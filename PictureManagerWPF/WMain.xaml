@@ -1,0 +1,199 @@
+﻿<Controls:MetroWindow x:Name="MainWindow" x:Class="PictureManager.WMain"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:data="clr-namespace:PictureManager.Data"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        mc:Ignorable="d"
+        Title="Picture Manager" Height="350" Width="927.074" WindowState="Maximized" Loaded="Window_Loaded" Closing="Window_Closing" FontSize="13.333" SaveWindowPosition="True">
+  <Controls:MetroWindow.Resources>
+    <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
+      <Setter Property="Visibility" Value="Collapsed"/>
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsMarked}" Value="True">
+          <Setter Property="Visibility" Value="Visible"/>
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <!-- WMain Context menus -->
+    <ContextMenu x:Key="MnuFolderFavorites" StaysOpen="True">
+      <MenuItem Header="Remove from Favorites" Click="MnuFolder_RemoveFromFavorites_Click"></MenuItem>
+    </ContextMenu>
+    <ContextMenu x:Key="MnuFolder" StaysOpen="True">
+      <MenuItem Header="New Folder"></MenuItem>
+      <MenuItem Header="Rename" x:Name="MnuFolderRename" Click="MnuFolder_Rename_Click"></MenuItem>
+      <MenuItem Header="Add to Favorites" Click="MnuFolder_AddToFavorites_Click"></MenuItem>
+    </ContextMenu>
+    <ContextMenu x:Key="MnuKeyword" StaysOpen="True">
+      <MenuItem Header="Show all (recursive)" x:Name="MnuKeywordShowAll" Click="MnuKeyword_ShowAll_Click"></MenuItem>
+    </ContextMenu>
+  </Controls:MetroWindow.Resources>
+
+  <Controls:MetroWindow.CommandBindings>
+    <CommandBinding Command="data:CustomCommands.KeywordShowAll" Executed="CmdKeywordShowAll_OnExecuted" />
+    <CommandBinding Command="data:CustomCommands.KeywordNew" Executed="CmdKeywordNew_OnExecuted" />
+  </Controls:MetroWindow.CommandBindings>
+  
+  <DockPanel >
+    <ToolBarTray DockPanel.Dock="Top">
+      <ToolBar Height="36">
+        <Button x:Name="BtnTest" Click="BtnTest_OnClick" ToolTip="Test Button">
+          <StackPanel Orientation="Horizontal">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+              <Rectangle.OpacityMask>
+                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_bug}"/>
+              </Rectangle.OpacityMask>
+            </Rectangle>
+            <TextBlock Margin="5,0,5,0">Test</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button x:Name="BtnKeywordsEditMode" Click="BtnKeywordsEditMode_OnClick" ToolTip="Edit Keywords">
+          <StackPanel Orientation="Horizontal">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+              <Rectangle.OpacityMask>
+                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_edit}"/>
+              </Rectangle.OpacityMask>
+            </Rectangle>
+            <TextBlock Margin="5,0,5,0">Edit</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button x:Name="BtnKeywordsEditModeCancel" Click="BtnKeywordsEditModeCancel_OnClick" ToolTip="Cancel edit Keywords">
+          <StackPanel Orientation="Horizontal">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+              <Rectangle.OpacityMask>
+                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_cancel}"/>
+              </Rectangle.OpacityMask>
+            </Rectangle>
+            <TextBlock Margin="5,0,5,0">Cancel</TextBlock>
+          </StackPanel>
+        </Button>
+        <Button x:Name="BtnKeywordsEditModeSave" Click="BtnKeywordsEditModeSave_OnClick" ToolTip="Save Keywords">
+          <StackPanel Orientation="Horizontal">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+              <Rectangle.OpacityMask>
+                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_save}"/>
+              </Rectangle.OpacityMask>
+            </Rectangle>
+            <TextBlock Margin="5,0,5,0">Save</TextBlock>
+          </StackPanel>
+        </Button>
+      </ToolBar>
+    </ToolBarTray>
+    <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
+      <StatusBar.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="100" />
+            </Grid.ColumnDefinitions>
+          </Grid>
+        </ItemsPanelTemplate>
+      </StatusBar.ItemsPanel>
+      <StatusBarItem>
+        <TextBlock Text="{Binding ViewBaseInfo}" />
+      </StatusBarItem>
+      <Separator Grid.Column="1" />
+      <StatusBarItem Grid.Column="2">
+        <TextBlock Text="{Binding CurrentPictureFilePath}" />
+      </StatusBarItem>
+      <Separator Grid.Column="3" />
+      <StatusBarItem Grid.Column="4">
+        <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
+      </StatusBarItem>
+    </StatusBar>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="350" />
+        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <TabControl x:Name="TcMain" SelectionChanged="TcMain_OnSelectionChanged">
+        <TabItem Header="Folders" HorizontalAlignment="Left">
+          <TreeView x:Name="TvFolders" TreeViewItem.Selected="TvFolders_OnSelected" >
+            <TreeView.ItemContainerStyle>
+              <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
+                <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected"  Value="{Binding IsSelected, Mode=TwoWay}" />
+              </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvFoldersStackPanel_PreviewMouseRightButtonDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                  <TextBox Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvFoldersEdit_OnKeyDown" LostFocus="TvFoldersEdit_LostFocus" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+          </TreeView>
+        </TabItem>
+        <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
+          <TreeView x:Name="TvKeywords" TreeViewItem.Selected="TvKeywords_OnSelected">
+            <TreeView.ItemContainerStyle>
+              <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
+                <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected"  Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsMarked}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"></Setter>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+
+            </TreeView.ItemContainerStyle>
+            <TreeView.Resources>
+
+              <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                  <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type data:Person}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" x:Name="TextBlockTitle" Margin="5,0,0,0" />
+                  <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type data:DataBase}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
+        </TabItem>
+        <TabItem Header="Filters" HorizontalAlignment="Left">
+          <TreeView x:Name="TvFilters"></TreeView>
+        </TabItem>
+      </TabControl>
+      <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <WebBrowser x:Name="WbThumbs" Grid.Column="2" Margin="0,0,2,2" ></WebBrowser>
+    </Grid>
+  </DockPanel>
+</Controls:MetroWindow>

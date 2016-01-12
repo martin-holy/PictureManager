@@ -1,0 +1,9 @@
+﻿body {
+  scrollbar-base-color: #B9B9B9;
+  scrollbar-track-color: #282828;
+  scrollbar-arrow-color: #F9F9F9;
+}
+
+#content {
+  background-color: #252525;
+}

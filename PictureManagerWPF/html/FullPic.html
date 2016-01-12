@@ -1,0 +1,26 @@
+﻿<!-- saved from url=(0026)http://msdn.microsoft.com/ -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=10" />
+  <title>Picture Manager - Full Picture Size</title>
+
+  <script src="js/main.js"></script>
+  <link rel="stylesheet" href="css/default/main.css" />
+  <link rel="stylesheet" href="css/default/theme.css" />
+</head>
+<body onmousewheel="mouseWheelEvent(event);" ondblclick="switchToBrowser();" onresize="fitPicture();">
+  <div id="content">
+    <div id="debug" style="display:none;"></div>
+    <div id="fullPicBox">
+      <img id="fullPic"
+           onmousedown="picMouseDownEvent(event);"
+           onmouseup="picMouseUpEvent();"
+           onmousemove="picMouseMoveEvent(event);"
+           onload="fitPicture();"
+           src="">
+    </div>
+  </div>
+</body>
+</html>
