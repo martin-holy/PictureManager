@@ -12,7 +12,7 @@ namespace PictureManager.Data {
     public int Id;
     public int DirId;
     public int Rating;
-    public bool Modifed;
+    public bool IsModifed;
     public bool IsNew = false;
     public bool IsSelected = false;
     public DbStuff Db;

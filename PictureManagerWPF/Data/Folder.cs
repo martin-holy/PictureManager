@@ -40,7 +40,7 @@ namespace PictureManager.Data {
             item.Items.Add(new Folder {Title = "..."});
         } catch (UnauthorizedAccessException) {
           item.ImageName = "appbar_folder_lock";
-          item.Accessible = false;
+          item.IsAccessible = false;
         } finally {
           Items.Add(item);
         }
@@ -73,7 +73,7 @@ namespace PictureManager.Data {
           Title = $"{(di.IsReady ? di.VolumeLabel : di.DriveType.ToString())} ({di.Name})",
           FullPath = drive,
           ImageName = driveImage,
-          Accessible = di.IsReady};
+          IsAccessible = di.IsReady};
 
         if (di.IsReady)
           item.Items.Add(new Folder {Title = "..."});

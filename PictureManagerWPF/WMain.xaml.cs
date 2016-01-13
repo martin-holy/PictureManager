@@ -78,11 +78,6 @@ namespace PictureManager {
       ACore.TreeView_FoldersOnSelected(item);
     }
 
-    private void TvKeywords_OnSelected(object sender, RoutedEventArgs e) {
-      Data.DataBase item = (Data.DataBase) ((TreeViewItem) e.OriginalSource).DataContext;
-      ACore.TreeView_KeywordsOnSelected(item, false);
-    }
-
     public void SwitchToBrowser() {
       if (ACore.ViewerOnly) {
         //App is first time loaded to main window
@@ -156,72 +151,11 @@ namespace PictureManager {
 
     #endregion
 
-    private void TvFoldersStackPanel_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-      ((StackPanel) sender).ContextMenu = null;
-      Data.Folder item = (Data.Folder) ((StackPanel) sender).DataContext;
-      if (!item.Accessible) return;
-      if (item.Parent != null && item.Parent.Title.Equals("Favorites")) {
-        ((StackPanel) sender).ContextMenu = MainWindow.Resources["MnuFolderFavorites"] as ContextMenu;
-      } else {
-        ((StackPanel) sender).ContextMenu = MainWindow.Resources["MnuFolder"] as ContextMenu;
-        foreach (MenuItem menuItem in ((StackPanel) sender).ContextMenu.Items) {
-          switch (menuItem.Name) {
-            case "MnuFolderRename": {
-              menuItem.IsEnabled = item.Parent != null;
-              break;
-            }
-          }
-        }
-      }
-    }
-
-    private void TvKeywordsStackPanel_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
-      ContextMenu menu = ((StackPanel) sender).ContextMenu;
-      if (menu != null) return;
-      Data.DataBase item = (Data.DataBase)((StackPanel)sender).DataContext;
-      menu = new ContextMenu {Tag = item};
-
-      if (item.Category) {
-        switch (item.Title) {
-          case "Current": {
-            return;
-          }
-          case "People": {
-            return;
-          }
-          case "Keywords": {
-            menu.Items.Add(new MenuItem() {Command = Data.CustomCommands.KeywordNew, CommandParameter = item});
-            break;
-          }
-        }
-      } else {
-        switch (item.GetType().Name) {
-          case nameof(Data.Person): {
-
-            break;
-          }
-          case nameof(Data.Keyword): {
-            menu.Items.Add(new MenuItem() {Command = Data.CustomCommands.KeywordNew, CommandParameter = item});
-            if (!ACore.KeywordsEditMode) {
-              menu.Items.Add(new MenuItem() {Command = Data.CustomCommands.KeywordShowAll, CommandParameter = item});
-            }
-            break;
-          }
-          case nameof(Data.DataBase): {
-
-            break;
-          }
-        }
-      }
-
-      ((StackPanel) sender).ContextMenu = menu;
-    }
-
     public void WbThumbsShowContextMenu() {
-      ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
+      /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
       if (cm == null) return;
       cm.PlacementTarget = WbThumbs;
-      cm.IsOpen = true;
+      cm.IsOpen = true;*/
 
     }
 
@@ -238,7 +172,7 @@ namespace PictureManager {
     }
 
     private void BtnKeywordsEditModeSave_OnClick(object sender, RoutedEventArgs e) {
-      var pictures = ACore.Pictures.Where(p => p.Modifed).ToList();
+      var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
       StatusProgressBar.Maximum = pictures.Count;
       StatusProgressBar.Value = 0;
       foreach (Data.Picture picture in pictures) {
@@ -254,17 +188,25 @@ namespace PictureManager {
     private void BtnKeywordsEditModeCancel_OnClick(object sender, RoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
       SetKeywordsButtonsVisibility();
-      switch (ACore.LastSelectedSource.GetType().Name) {
+      foreach (Data.Picture picture in ACore.Pictures) {
+        if (picture.IsModifed) {
+          ACore.RefreshPictureFromDb(picture);
+          ACore.WbUpdatePictureInfo(picture.Index);
+        }
+      }
+      ACore.MarkUsedKeywordsAndPeople();
+      /*switch (ACore.LastSelectedSource.GetType().Name) {
         case nameof(Data.Person):
         case nameof(Data.Keyword): {
-          ACore.TreeView_KeywordsOnSelected(ACore.LastSelectedSource, ACore.LastSelectedSourceRecursive);
+          ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(ACore.LastSelectedSource, null, MouseButton.Middle,
+            ACore.LastSelectedSourceRecursive);
           break;
         }
         case nameof(Data.Folder): {
           ACore.TreeView_FoldersOnSelected((Data.Folder) ACore.LastSelectedSource);
           break;
         }
-      }
+      }*/
     }
 
     private void SetKeywordsButtonsVisibility() {
@@ -278,11 +220,38 @@ namespace PictureManager {
     }
 
     private void CmdKeywordShowAll_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsOnSelected((Data.DataBase)e.Parameter, true);
+      ACore.TreeView_KeywordsStackPanel_PreviewMouseDown((Data.DataBase) e.Parameter, null, MouseButton.Left, true);
     }
 
     private void CmdKeywordNew_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
       ACore.CreateKeyword((Data.DataBase) e.Parameter, "New Keyword");
+    }
+
+    private void TvFoldersStackPanel_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
+      ((StackPanel)sender).ContextMenu = null;
+      Data.Folder item = (Data.Folder)((StackPanel)sender).DataContext;
+      if (!item.IsAccessible) return;
+      if (item.Parent != null && item.Parent.Title.Equals("Favorites")) {
+        ((StackPanel)sender).ContextMenu = MainWindow.Resources["MnuFolderFavorites"] as ContextMenu;
+      } else {
+        ((StackPanel)sender).ContextMenu = MainWindow.Resources["MnuFolder"] as ContextMenu;
+        foreach (MenuItem menuItem in ((StackPanel)sender).ContextMenu.Items) {
+          switch (menuItem.Name) {
+            case "MnuFolderRename": {
+                menuItem.IsEnabled = item.Parent != null;
+                break;
+              }
+          }
+        }
+      }
+    }
+
+    private void TvKeywordsStackPanel_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+      Data.DataBase item = (Data.DataBase) ((StackPanel) sender).DataContext;
+      ContextMenu contextMenu = ((StackPanel) sender).ContextMenu;
+      ContextMenu newContectMenu = ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(item, contextMenu, e.ChangedButton, false);
+      if (newContectMenu != null)
+        ((StackPanel) sender).ContextMenu = newContectMenu;
     }
   }
 }

@@ -36,8 +36,8 @@ namespace PictureManager.Data {
     }
 
     public string FullPath { get; set; }
-    public bool Accessible { get; set; } = true;
-    public bool Category { get; set; } = false;
+    public bool IsAccessible { get; set; } = true;
+    public bool IsCategory { get; set; }
     public ObservableCollection<DataBase> Items { get; set; }
 
     public DataBase() {

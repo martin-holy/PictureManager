@@ -8,6 +8,7 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using mshtml;
@@ -28,6 +29,7 @@ namespace PictureManager {
     public ObservableCollection<Picture> Pictures;
     public ObservableCollection<Picture> SelectedPictures;
     public List<DataBase> MarkedTags;
+    public List<DataBase> TagModifers; 
 
     private Picture _currentPicture;
     public Picture CurrentPicture {
@@ -51,6 +53,7 @@ namespace PictureManager {
       Pictures = new ObservableCollection<Picture>();
       SelectedPictures = new ObservableCollection<Picture>();
       MarkedTags = new List<DataBase>();
+      TagModifers = new List<DataBase>();
       Db = new DbStuff("Data Source = data.db");
       Db.CreateDbStructure();
 
@@ -85,10 +88,10 @@ namespace PictureManager {
     }
 
     public void CreateCategories() {
-      FolderCategoryFavorites = new Folder() { Title = "Favorites", Category = true, ImageName = "appbar_folder_star" };
-      KeywordsCategoryCurrent = new DataBase() {Title = "Current", Category = true, ImageName = "appbar_folder" };
-      KeywordsCategoryPeople = new DataBase() {Title = "People", Category = true, ImageName = "appbar_people_multiple" };
-      KeywordsCategoryKeywords = new DataBase() {Title = "Keywords", Category = true, ImageName = "appbar_tag" };
+      FolderCategoryFavorites = new Folder() { Title = "Favorites", IsCategory = true, ImageName = "appbar_folder_star" };
+      KeywordsCategoryCurrent = new DataBase() {Title = "Current", IsCategory = true, ImageName = "appbar_folder" };
+      KeywordsCategoryPeople = new DataBase() {Title = "People", IsCategory = true, ImageName = "appbar_people_multiple" };
+      KeywordsCategoryKeywords = new DataBase() {Title = "Keywords", IsCategory = true, ImageName = "appbar_tag" };
     }
 
     public void LoadFavorites() {
@@ -251,7 +254,7 @@ namespace PictureManager {
     }
 
     public Keyword CreateKeyword(DataBase root, string name) {
-      string kFullPath = root.Category ? name : $"{root.FullPath}/{name}";
+      string kFullPath = root.IsCategory ? name : $"{root.FullPath}/{name}";
       if (!Db.Execute($"insert into Keywords (Keyword) values ('{kFullPath}')")) return null;
       int keyId = Db.GetLastIdFor("Keywords");
       if (keyId == 0) return null;
@@ -283,9 +286,15 @@ namespace PictureManager {
         Title = name,
         ImageName = "appbar_people"
       };
-      //TODO do Insert insted Add
       KeywordsCategoryPeople.Items.Add(person);
+      KeywordsCategoryPeople.Items = new ObservableCollection<DataBase>(KeywordsCategoryPeople.Items.Cast<Person>().OrderBy(p => p.Title));
       return person;
+    }
+
+    public void RefreshPictureFromDb(Picture pic) {
+      pic.Rating = (int) (long) Db.ExecuteScalar($"select Rating from Pictures where Id = {pic.Id}");
+      LoadPictureKeywordsFromDb(pic);
+      LoadPicturePeopleFromDb(pic);
     }
 
     public void GetPicturesByFolder(string path) {
@@ -303,28 +312,76 @@ namespace PictureManager {
       CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
     }
 
-    public void GetPicturesByTag(DataBase item, bool recursive) {
+    public void GetPicturesByTag() {
       Pictures.Clear();
-      string sql = string.Empty;
 
-      switch (item.GetType().Name) {
+      #region People In / Out and Keywords In / Out
+      var peopleIn = TagModifers.Where(x => x.IsSelected && x is Person)
+        .Cast<Person>()
+        .Select(x => x.Id)
+        .Aggregate("", (current, id) => current + (id + ","));
+      if (peopleIn.EndsWith(","))
+        peopleIn = peopleIn.Remove(peopleIn.Length - 1);
+
+      var peopleOut = TagModifers.Where(x => !x.IsSelected && x is Person)
+        .Cast<Person>()
+        .Select(x => x.Id)
+        .Aggregate("", (current, id) => current + (id + ","));
+      if (peopleOut.EndsWith(","))
+        peopleOut = peopleOut.Remove(peopleOut.Length - 1);
+
+      var keywordsIn = TagModifers.Where(x => x.IsSelected && x is Keyword)
+        .Cast<Keyword>()
+        .Select(x => x.Id)
+        .Aggregate("", (current, id) => current + (id + ","));
+      if (keywordsIn.EndsWith(","))
+        keywordsIn = keywordsIn.Remove(keywordsIn.Length - 1);
+
+      var keywordsOut = TagModifers.Where(x => !x.IsSelected && x is Keyword)
+        .Cast<Keyword>()
+        .Select(x => x.Id)
+        .Aggregate("", (current, id) => current + (id + ","));
+      if (keywordsOut.EndsWith(","))
+        keywordsOut = keywordsOut.Remove(keywordsOut.Length - 1);
+      #endregion
+
+      List<string> sqlList = new List<string>();
+
+      if (!string.IsNullOrEmpty(peopleIn))
+        sqlList.Add($"select PictureId from PicturePerson where PersonId in ({peopleIn})");
+      if (!string.IsNullOrEmpty(peopleOut))
+        sqlList.Add($"select PictureId from PicturePerson where PictureId not in (select PictureId from PicturePerson where PersonId in ({peopleOut}))");
+      if (!string.IsNullOrEmpty(keywordsIn))
+        sqlList.Add($"select PictureId from PictureKeyword where KeywordId in ({keywordsIn})");
+      if (!string.IsNullOrEmpty(keywordsOut))
+        sqlList.Add($"select PictureId from PictureKeyword where KeywordId not in (select PictureId from PictureKeyword where KeywordId in ({keywordsOut}))");
+      if (LastSelectedSourceRecursive && LastSelectedSource is Keyword)
+        sqlList.Add($"select PictureId from PictureKeyword where KeywordId in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")");
+      string innerSql = sqlList.Aggregate("", (current, s) => current + (s + " union "));
+      if (innerSql.EndsWith("union "))
+        innerSql = innerSql.Remove(innerSql.Length - 6);
+      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
+                   $"from Pictures as P where P.Id in ({innerSql}) order by FileName";
+
+
+      /*switch (LastSelectedSource.GetType().Name) {
         case nameof(Person): {
           sql =
             "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
-            $"from Pictures as P where P.Id in (select PictureId from PicturePerson where PersonId = {((Person) item).Id}) order by FileName";
+            $"from Pictures as P where P.Id in (select PictureId from PicturePerson where PersonId = {((Person)LastSelectedSource).Id}) order by FileName";
           break;
         }
         case nameof(Keyword): {
-          string s = recursive
-            ? $"in (select Id from Keywords where Keyword like \"{((Keyword) item).FullPath}%\")"
-            : $"= {((Keyword) item).Id}";
+          string s = LastSelectedSourceRecursive
+            ? $"in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")"
+            : $"= {((Keyword)LastSelectedSource).Id}";
           sql =
             "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
             "from Pictures as P where P.Id in (select PictureId from PictureKeyword where " +
             $"KeywordId {s}) order by FileName";
           break;
         }
-      }
+      }*/
 
       foreach (DataRow row in Db.Select(sql)) {
         string picFullPath = Path.Combine((string)row[1], (string)row[2]);
@@ -630,7 +687,7 @@ namespace PictureManager {
     }
 
     public void TreeView_FoldersOnSelected(Folder item) {
-      if (!item.Accessible || item.Category) {
+      if (!item.IsAccessible || item.IsCategory) {
         item.IsSelected = false;
         return;
       }
@@ -640,6 +697,7 @@ namespace PictureManager {
       }
 
       LastSelectedSource = item;
+      LastSelectedSourceRecursive = false;
       GetPicturesByFolder(item.FullPath);
       CreateThumbnailsWebPage();
       //TODO: tohle dat asi do jineho vlakna
@@ -647,62 +705,133 @@ namespace PictureManager {
       MarkUsedKeywordsAndPeople();
     }
 
-    public void TreeView_KeywordsOnSelected(DataBase item, bool recursive) {
-      if (!item.Accessible || item.Category) {
-        item.IsSelected = false;
-        return;
-      }
+    public ContextMenu TreeView_KeywordsStackPanel_PreviewMouseDown(DataBase item, ContextMenu menu, MouseButton mouseButton, bool recursive) {
+      switch (mouseButton) {
+        #region MouseButton.Left
 
-      if (KeywordsEditMode) {
-        item.IsMarked = !item.IsMarked;
-        item.IsSelected = false;
-        if (item.IsMarked) MarkedTags.Add(item);
-        else MarkedTags.Remove(item);
+        case MouseButton.Left: {
+            if (item.IsCategory || !item.IsAccessible) return null;
+            if (KeywordsEditMode) {
+              item.IsMarked = !item.IsMarked;
+              if (item.IsMarked) MarkedTags.Add(item); else MarkedTags.Remove(item);
 
-        foreach (Picture picture in SelectedPictures) {
-          picture.Modifed = true;
-        }
-
-        switch (item.GetType().Name) {
-          case nameof(Person): {
-            foreach (Picture picture in SelectedPictures) {
-              if (item.IsMarked) {
-                picture.People.Add((Person) item);
-              } else {
-                picture.People.Remove((Person) item);
+              foreach (Picture picture in SelectedPictures) {
+                picture.IsModifed = true;
               }
-              WbUpdatePictureInfo(picture.Index);
-            }
-            break;
-          }
-          case nameof(Keyword): {
-            foreach (Picture picture in SelectedPictures) {
-              if (item.IsMarked) {
-                for (int i = picture.Keywords.Count - 1; i >= 0; i--) {
-                  if (((Keyword) item).FullPath.StartsWith(picture.Keywords[i].FullPath)) {
-                    UpdateKeywordPictureCount(picture.Keywords[i], false);
-                    picture.Keywords.RemoveAt(i);
+
+              switch (item.GetType().Name) {
+                case nameof(Person): {
+                    foreach (Picture picture in SelectedPictures) {
+                      if (item.IsMarked) {
+                        picture.People.Add((Person)item);
+                      } else {
+                        picture.People.Remove((Person)item);
+                      }
+                      WbUpdatePictureInfo(picture.Index);
+                    }
+                    break;
                   }
-                }
-                picture.Keywords.Add((Keyword) item);
-                UpdateKeywordPictureCount((Keyword) item, true);
-              } else {
-                picture.Keywords.Remove((Keyword) item);
-                  UpdateKeywordPictureCount((Keyword)item, false);
-                }
-              WbUpdatePictureInfo(picture.Index);
+                case nameof(Keyword): {
+                    foreach (Picture picture in SelectedPictures) {
+                      if (item.IsMarked) {
+                        for (int i = picture.Keywords.Count - 1; i >= 0; i--) {
+                          if (((Keyword)item).FullPath.StartsWith(picture.Keywords[i].FullPath)) {
+                            UpdateKeywordPictureCount(picture.Keywords[i], false);
+                            picture.Keywords.RemoveAt(i);
+                          }
+                        }
+                        picture.Keywords.Add((Keyword)item);
+                        UpdateKeywordPictureCount((Keyword)item, true);
+                      } else {
+                        picture.Keywords.Remove((Keyword)item);
+                        UpdateKeywordPictureCount((Keyword)item, false);
+                      }
+                      WbUpdatePictureInfo(picture.Index);
+                      //MarkUsedKeywordsAndPeople();
+                    }
+                    break;
+                  }
+              }
+            } else {
+              foreach (var m in TagModifers) {
+                m.IsSelected = false;
+              }
+              TagModifers.Clear();
+              TagModifers.Add(item);
+              item.IsSelected = true;
+              LastSelectedSource = item;
+              LastSelectedSourceRecursive = recursive;
+              GetPicturesByTag();
               MarkUsedKeywordsAndPeople();
+              CreateThumbnailsWebPage();
             }
+
             break;
           }
+
+        #endregion
+
+        #region MouseButton.Middle
+
+        case MouseButton.Middle: {
+          if (KeywordsEditMode) return null;
+          if (item.IsCategory || !item.IsAccessible) return null;
+          if (!TagModifers.Contains(item))
+            TagModifers.Add(item);
+          item.IsSelected = !item.IsSelected;
+          GetPicturesByTag();
+          MarkUsedKeywordsAndPeople();
+          CreateThumbnailsWebPage();
+          break;
         }
-      } else {
-        LastSelectedSource = item;
-        LastSelectedSourceRecursive = recursive;
-        GetPicturesByTag(item, recursive);
-        CreateThumbnailsWebPage();
-        MarkUsedKeywordsAndPeople();
+
+        #endregion
+
+        #region MouseButton.Right
+
+        case MouseButton.Right: {
+            if (menu != null) return null;
+            menu = new ContextMenu { Tag = item };
+
+            if (item.IsCategory) {
+              switch (item.Title) {
+                case "Current": {
+                    return null;
+                  }
+                case "People": {
+                    return null;
+                  }
+                case "Keywords": {
+                    menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordNew, CommandParameter = item });
+                    break;
+                  }
+              }
+            } else {
+              switch (item.GetType().Name) {
+                case nameof(Data.Person): {
+
+                    break;
+                  }
+                case nameof(Data.Keyword): {
+                    menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordNew, CommandParameter = item });
+                    if (!KeywordsEditMode) {
+                      menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordShowAll, CommandParameter = item });
+                    }
+                    break;
+                  }
+                case nameof(Data.DataBase): {
+
+                    break;
+                  }
+              }
+            }
+
+            return menu;
+          }
+
+          #endregion
       }
+      return null;
     }
 
     public void UpdateKeywordPictureCount(Keyword keyword, bool increase) {

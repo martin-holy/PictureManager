@@ -110,7 +110,7 @@
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
-        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="3" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
       <TabControl x:Name="TcMain" SelectionChanged="TcMain_OnSelectionChanged">
@@ -138,12 +138,15 @@
           </TreeView>
         </TabItem>
         <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
-          <TreeView x:Name="TvKeywords" TreeViewItem.Selected="TvKeywords_OnSelected">
+          <TreeView x:Name="TvKeywords">
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="IsSelected"  Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush1}"></Setter>
+                  </DataTrigger>
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"></Setter>
                   </DataTrigger>
@@ -154,7 +157,7 @@
             <TreeView.Resources>
 
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
@@ -165,7 +168,7 @@
                 </StackPanel>
               </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type data:Person}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
@@ -176,7 +179,7 @@
                 </StackPanel>
               </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type data:DataBase}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvKeywordsStackPanel_PreviewMouseRightButtonDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
