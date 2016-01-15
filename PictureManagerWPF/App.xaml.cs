@@ -7,7 +7,9 @@ namespace PictureManager {
   /// </summary>
   public partial class App {
     void App_Startup(object sender, StartupEventArgs e) {
+#if !DEBUG
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+#endif
       string argument = "";
       if (e.Args.Length != 0) argument = e.Args[0];
       WMain wMain = new WMain(argument);

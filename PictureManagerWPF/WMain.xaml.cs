@@ -114,7 +114,6 @@ namespace PictureManager {
       ACore.LoadFavorites();
     }
 
-    #region TvFolder Edit Item
     private void MnuFolder_Rename_Click(object sender, RoutedEventArgs e) {
       MenuItem menuItem = (MenuItem) sender;
       StackPanel stackPanel = (StackPanel) menuItem.DataContext;
@@ -142,14 +141,26 @@ namespace PictureManager {
       }
     }
 
-    private void TvFoldersEdit_LostFocus(object sender, RoutedEventArgs e) {
+    private void TreeViewCancelEdit_LostFocus(object sender, RoutedEventArgs e) {
       TextBox textBox = (TextBox)sender;
       TextBlock textBlock = (TextBlock)textBox.Tag;
       textBlock.Visibility = Visibility.Visible;
       textBox.Visibility = Visibility.Collapsed;
     }
 
-    #endregion
+    private void TvKeywordsEdit_OnKeyDown(object sender, KeyEventArgs e) {
+      if (e.Key == Key.Escape || e.Key == Key.Enter) {
+        TextBox textBox = (TextBox)sender;
+        TextBlock textBlock = (TextBlock)textBox.Tag;
+        if (e.Key == Key.Enter) {
+          if (!string.IsNullOrEmpty(textBox.Text)) {
+            ACore.RenameKeyword((Data.Keyword)textBox.DataContext, textBox.Text);
+          }
+        }
+        textBlock.Visibility = Visibility.Visible;
+        textBox.Visibility = Visibility.Collapsed;
+      }
+    }
 
     public void WbThumbsShowContextMenu() {
       /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
@@ -195,18 +206,6 @@ namespace PictureManager {
         }
       }
       ACore.MarkUsedKeywordsAndPeople();
-      /*switch (ACore.LastSelectedSource.GetType().Name) {
-        case nameof(Data.Person):
-        case nameof(Data.Keyword): {
-          ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(ACore.LastSelectedSource, null, MouseButton.Middle,
-            ACore.LastSelectedSourceRecursive);
-          break;
-        }
-        case nameof(Data.Folder): {
-          ACore.TreeView_FoldersOnSelected((Data.Folder) ACore.LastSelectedSource);
-          break;
-        }
-      }*/
     }
 
     private void SetKeywordsButtonsVisibility() {
@@ -220,11 +219,27 @@ namespace PictureManager {
     }
 
     private void CmdKeywordShowAll_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsStackPanel_PreviewMouseDown((Data.DataBase) e.Parameter, null, MouseButton.Left, true);
+      ACore.TreeView_KeywordsStackPanel_PreviewMouseDown((StackPanel)e.Parameter, MouseButton.Left, true);
     }
 
     private void CmdKeywordNew_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
       ACore.CreateKeyword((Data.DataBase) e.Parameter, "New Keyword");
+    }
+
+    private void CmdKeywordRename_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+      StackPanel stackPanel = (StackPanel) e.Parameter;
+      TextBlock textBlock = (TextBlock)stackPanel.Children[1];
+      TextBox textBox = (TextBox)stackPanel.Children[2];
+      textBlock.Visibility = Visibility.Collapsed;
+      textBox.Text = textBlock.Text;
+      textBox.Visibility = Visibility.Visible;
+      textBox.Focus();
+      textBox.SelectAll();
+      textBox.Tag = textBlock;
+    }
+
+    private void CmdKeywordDelete_OnExecuted(object sender, ExecutedRoutedEventArgs e) {
+      ACore.DeleteKeyword((Data.Keyword)e.Parameter);
     }
 
     private void TvFoldersStackPanel_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e) {
@@ -247,9 +262,8 @@ namespace PictureManager {
     }
 
     private void TvKeywordsStackPanel_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      Data.DataBase item = (Data.DataBase) ((StackPanel) sender).DataContext;
-      ContextMenu contextMenu = ((StackPanel) sender).ContextMenu;
-      ContextMenu newContectMenu = ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(item, contextMenu, e.ChangedButton, false);
+      e.Handled = true;
+      ContextMenu newContectMenu = ACore.TreeView_KeywordsStackPanel_PreviewMouseDown((StackPanel)sender, e.ChangedButton, false);
       if (newContectMenu != null)
         ((StackPanel) sender).ContextMenu = newContectMenu;
     }

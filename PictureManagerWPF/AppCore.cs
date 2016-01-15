@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.IO;
@@ -265,9 +264,11 @@ namespace PictureManager {
         Title = name,
         Parent = root as Keyword
       };
-      
-      root.Items.Add(newKeyword);
-      root.Items = new ObservableCollection<DataBase>(root.Items.Cast<Keyword>().OrderBy(k => k.Index).ThenBy(k => k.Title));
+
+      Keyword keyword =
+        root.Items.Cast<Keyword>()
+          .FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+      root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), newKeyword);
       return newKeyword;
     }
 
@@ -281,14 +282,18 @@ namespace PictureManager {
       if (!Db.Execute($"insert into People (Name) values ('{name}')")) return null;
       int id = Db.GetLastIdFor("People");
       if (id == 0) return null;
-      Person person = new Person {
+      Person newPerson = new Person {
         Id = id,
         Title = name,
         ImageName = "appbar_people"
       };
-      KeywordsCategoryPeople.Items.Add(person);
-      KeywordsCategoryPeople.Items = new ObservableCollection<DataBase>(KeywordsCategoryPeople.Items.Cast<Person>().OrderBy(p => p.Title));
-      return person;
+
+      Person person =
+        KeywordsCategoryPeople.Items.Cast<Person>()
+          .FirstOrDefault(p => string.Compare(p.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+
+      KeywordsCategoryPeople.Items.Insert(person == null ? 0 : KeywordsCategoryPeople.Items.IndexOf(person), newPerson);
+      return newPerson;
     }
 
     public void RefreshPictureFromDb(Picture pic) {
@@ -649,7 +654,8 @@ namespace PictureManager {
       string sql = "select P.Id, P.Name from People as P " +
                    $"where P.Id in (select PersonId from PicturePerson where PictureId = {pic.Id}) order by Name";
       foreach (DataRow row in Db.Select(sql)) {
-        foreach (Person p in KeywordsCategoryPeople.Items) {
+        foreach (var person in KeywordsCategoryPeople.Items) {
+          var p = (Person)person;
           if (p.Id == (int) (long) row[0]) {
             pic.People.Add(p);
             break;
@@ -705,7 +711,25 @@ namespace PictureManager {
       MarkUsedKeywordsAndPeople();
     }
 
-    public ContextMenu TreeView_KeywordsStackPanel_PreviewMouseDown(DataBase item, ContextMenu menu, MouseButton mouseButton, bool recursive) {
+    public void DeleteKeyword(Keyword keyword) {
+      if (keyword.Items.Count != 0) return;
+      Db.Execute($"delete from PictureKeyword where KeywordId = {keyword.Id}");
+      Db.Execute($"delete from Keywords where Id = {keyword.Id}");
+      keyword.Parent.Items.Remove(keyword);
+    }
+
+    public void RenameKeyword(Keyword keyword, string newName) {
+      if (keyword.Items.Count != 0) return;
+      keyword.FullPath = keyword.FullPath.Contains("/")
+        ? keyword.FullPath.Substring(0, keyword.FullPath.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + newName
+        : newName;
+      keyword.Title = newName;
+      Db.Execute($"update Keywords set Keyword = \"{keyword.FullPath}\" where Id = {keyword.Id}");
+    }
+
+    public ContextMenu TreeView_KeywordsStackPanel_PreviewMouseDown(StackPanel stackPanel, MouseButton mouseButton, bool recursive) {
+      DataBase item = (DataBase) stackPanel.DataContext;
+      ContextMenu menu = stackPanel.ContextMenu;
       switch (mouseButton) {
         #region MouseButton.Left
 
@@ -774,14 +798,15 @@ namespace PictureManager {
         #region MouseButton.Middle
 
         case MouseButton.Middle: {
-          if (KeywordsEditMode) return null;
+            //nothing for now
+          /*if (KeywordsEditMode) return null;
           if (item.IsCategory || !item.IsAccessible) return null;
           if (!TagModifers.Contains(item))
             TagModifers.Add(item);
           item.IsSelected = !item.IsSelected;
           GetPicturesByTag();
           MarkUsedKeywordsAndPeople();
-          CreateThumbnailsWebPage();
+          CreateThumbnailsWebPage();*/
           break;
         }
 
@@ -802,24 +827,34 @@ namespace PictureManager {
                     return null;
                   }
                 case "Keywords": {
-                    menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordNew, CommandParameter = item });
+                    menu.Items.Add(new MenuItem() { Command = CustomCommands.KeywordNew, CommandParameter = item });
                     break;
                   }
               }
             } else {
               switch (item.GetType().Name) {
-                case nameof(Data.Person): {
+                case nameof(Person): {
 
                     break;
                   }
-                case nameof(Data.Keyword): {
-                    menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordNew, CommandParameter = item });
-                    if (!KeywordsEditMode) {
-                      menu.Items.Add(new MenuItem() { Command = Data.CustomCommands.KeywordShowAll, CommandParameter = item });
+                case nameof(Keyword): {
+                    menu.Items.Add(new MenuItem() { Command = CustomCommands.KeywordNew, CommandParameter = item });
+                  if (item.Items.Count == 0) {
+                    menu.Items.Add(new MenuItem() {
+                      Command = CustomCommands.KeywordRename,
+                      CommandParameter = stackPanel
+                    });
+                    menu.Items.Add(new MenuItem() {
+                      Command = CustomCommands.KeywordDelete,
+                      CommandParameter = item
+                    });
+                  }
+                  if (!KeywordsEditMode) {
+                      menu.Items.Add(new MenuItem() { Command = CustomCommands.KeywordShowAll, CommandParameter = stackPanel });
                     }
                     break;
                   }
-                case nameof(Data.DataBase): {
+                case nameof(DataBase): {
 
                     break;
                   }
