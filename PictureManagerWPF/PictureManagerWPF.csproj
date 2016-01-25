@@ -100,7 +100,7 @@
     <Compile Include="ShellStuff\Interop\IShellItem.cs" />
     <Compile Include="ShellStuff\Interop\SIGDN.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
-    <Compile Include="ShellThumbnail.cs" />
+    <Compile Include="ShellStuff\ShellThumbnail.cs" />
     <Compile Include="WError.xaml.cs">
       <DependentUpon>WError.xaml</DependentUpon>
     </Compile>
