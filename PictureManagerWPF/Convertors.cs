@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Data;
 
 namespace PictureManager {
-  class StaticResourceConverter : IValueConverter {
+  public class StaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       return Application.Current.FindResource((string)value);
     }

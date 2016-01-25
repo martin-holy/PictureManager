@@ -6,7 +6,7 @@
         xmlns:data="clr-namespace:PictureManager.Data"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="Picture Manager" Height="350" Width="927.074" WindowState="Maximized" Loaded="Window_Loaded" Closing="Window_Closing" FontSize="13.333" SaveWindowPosition="True">
+        Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" Loaded="Window_Loaded" Closing="Window_Closing" FontSize="13.333" SaveWindowPosition="True">
   <Controls:MetroWindow.Resources>
     <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
       <Setter Property="Visibility" Value="Collapsed"/>
@@ -17,27 +17,25 @@
       </Style.Triggers>
     </Style>
 
-    <!-- WMain Context menus -->
-    <ContextMenu x:Key="MnuFolderFavorites" StaysOpen="True">
-      <MenuItem Header="Remove from Favorites" Click="MnuFolder_RemoveFromFavorites_Click"></MenuItem>
-    </ContextMenu>
-    <ContextMenu x:Key="MnuFolder" StaysOpen="True">
-      <MenuItem Header="New Folder"></MenuItem>
-      <MenuItem Header="Rename" x:Name="MnuFolderRename" Click="MnuFolder_Rename_Click"></MenuItem>
-      <MenuItem Header="Add to Favorites" Click="MnuFolder_AddToFavorites_Click"></MenuItem>
-    </ContextMenu>
-    <ContextMenu x:Key="MnuKeyword" StaysOpen="True">
-      <MenuItem Header="Show all (recursive)" x:Name="MnuKeywordShowAll" Click="MnuKeyword_ShowAll_Click"></MenuItem>
-    </ContextMenu>
+    <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
+    <RoutedUICommand x:Key="KeywordNew" Text="New" />
+    <RoutedUICommand x:Key="KeywordRename" Text="Rename" />
+    <RoutedUICommand x:Key="KeywordDelete" Text="Delete" />
+    <RoutedUICommand x:Key="FolderRename" Text="Rename" />
+    <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
+    <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
   </Controls:MetroWindow.Resources>
 
   <Controls:MetroWindow.CommandBindings>
-    <CommandBinding Command="data:CustomCommands.KeywordShowAll" Executed="CmdKeywordShowAll_OnExecuted" />
-    <CommandBinding Command="data:CustomCommands.KeywordNew" Executed="CmdKeywordNew_OnExecuted" />
-    <CommandBinding Command="data:CustomCommands.KeywordRename" Executed="CmdKeywordRename_OnExecuted" />
-    <CommandBinding Command="data:CustomCommands.KeywordDelete" Executed="CmdKeywordDelete_OnExecuted" />
+    <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdKeywordShowAll" />
+    <CommandBinding Command="{StaticResource KeywordNew}" Executed="CmdKeywordNew" />
+    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdKeywordRename" />
+    <CommandBinding Command="{StaticResource KeywordDelete}" Executed="CmdKeywordDelete" />
+    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
+    <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
+    <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
   </Controls:MetroWindow.CommandBindings>
-  
+
   <DockPanel >
     <ToolBarTray DockPanel.Dock="Top">
       <ToolBar Height="36">
@@ -115,32 +113,55 @@
         <ColumnDefinition Width="3" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
+      
       <TabControl x:Name="TcMain" SelectionChanged="TcMain_OnSelectionChanged">
+        
         <TabItem Header="Folders" HorizontalAlignment="Left">
-          <TreeView x:Name="TvFolders" TreeViewItem.Selected="TvFolders_OnSelected" >
+          <!-- TreeView Folders -->
+          <TreeView x:Name="TvFolders">
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="IsSelected"  Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush1}"></Setter>
+                  </DataTrigger>
+                </Style.Triggers>
               </Style>
             </TreeView.ItemContainerStyle>
-            <TreeView.ItemTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" PreviewMouseRightButtonDown="TvFoldersStackPanel_PreviewMouseRightButtonDown">
+
+            <TreeView.Resources>
+              <!-- TreeView Folders - BaseItem (Category) -->
+              <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvFoldersStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Folders - Folder -->
+              <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvFoldersStackPanel_PreviewMouseDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
                   <TextBox Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvFoldersEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                 </StackPanel>
               </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
+            </TreeView.Resources>
           </TreeView>
         </TabItem>
+        
         <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
-<!-- TreeView Keywords -->
+          <!-- TreeView Keywords -->
           <TreeView x:Name="TvKeywords">
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -155,15 +176,28 @@
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
-
             </TreeView.ItemContainerStyle>
+            
+            
             <TreeView.Resources>
-<!-- TreeView Keywords - Keywords -->
+              <!-- TreeView Keywords - BaseItem (Category) -->
+              <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
@@ -171,37 +205,33 @@
                   <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
-<!-- TreeView Keywords - Person -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Person}" ItemsSource="{Binding Items}">
+              
+              <!-- TreeView Keywords - Person -->
+              <HierarchicalDataTemplate DataType="{x:Type data:Person}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" x:Name="TextBlockTitle" Margin="5,0,0,0" />
                   <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
-<!-- TreeView Keywords - DataBase -->
-              <HierarchicalDataTemplate DataType="{x:Type data:DataBase}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding ImageName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
-                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
-                </StackPanel>
-              </HierarchicalDataTemplate>
             </TreeView.Resources>
+
           </TreeView>
         </TabItem>
+        
         <TabItem Header="Filters" HorizontalAlignment="Left">
-          <TreeView x:Name="TvFilters"></TreeView>
+          <TreeView x:Name="TvFilters">
+          </TreeView>
         </TabItem>
+        
       </TabControl>
+      
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      
       <WebBrowser x:Name="WbThumbs" Grid.Column="2" Margin="0,0,2,2" ></WebBrowser>
     </Grid>
   </DockPanel>

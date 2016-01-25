@@ -13,7 +13,9 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/basedark.xaml" />
         <ResourceDictionary Source="/Resources/Icons.xaml" />
       </ResourceDictionary.MergedDictionaries>
-      <pictureManager:StaticResourceConverter x:Key="StaticResourceConverter" />
+      <pictureManager:StaticResourceConverter x:Key="StaticResourceConverter"/>
+
+      
     </ResourceDictionary>
   </Application.Resources>
 </Application>

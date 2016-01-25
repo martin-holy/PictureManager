@@ -1,13 +1,14 @@
-﻿<Window x:Class="PictureManager.WSettings"
+﻿<Controls:MetroWindow x:Class="PictureManager.WSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PictureManager"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
-        Title="WSettings" Height="300" Width="300">
+        Title="Settings" Height="300" Width="300">
   <Grid>
     <TextBox x:Name="textBox" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" />
 
   </Grid>
-</Window>
+</Controls:MetroWindow>

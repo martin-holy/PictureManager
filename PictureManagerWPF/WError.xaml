@@ -7,11 +7,9 @@
         mc:Ignorable="d"
         Title="WError" Height="300" Width="638.781">
 
-  <DockPanel LastChildFill="True">
+  <DockPanel>
     <ScrollViewer>
-    <TextBox x:Name="TbError" >
-      
-    </TextBox>
+    <TextBox x:Name="TbError" />
     </ScrollViewer>
   </DockPanel>
 </Window>

@@ -77,10 +77,15 @@
     <Compile Include="AppCore.cs" />
     <Compile Include="Convertors.cs" />
     <Compile Include="Data\AppInfo.cs" />
-    <Compile Include="Data\CustomCommands.cs" />
+    <Compile Include="Data\BaseItem.cs" />
+    <Compile Include="Data\BaseTagItem.cs" />
+    <Compile Include="Data\FavoriteFolder.cs" />
+    <Compile Include="Data\FavoriteFolders.cs" />
     <Compile Include="Data\Folder.cs" />
+    <Compile Include="Data\Folders.cs" />
     <Compile Include="Data\Keyword.cs" />
-    <Compile Include="Data\DataBase.cs" />
+    <Compile Include="Data\Keywords.cs" />
+    <Compile Include="Data\People.cs" />
     <Compile Include="Data\Person.cs" />
     <Compile Include="Data\Picture.cs" />
     <Compile Include="DbStuff.cs" />
@@ -152,6 +157,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
