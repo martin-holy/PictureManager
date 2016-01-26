@@ -131,13 +131,9 @@
           <TreeView x:Name="TvFolders">
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush1}"></Setter>
-                  </DataTrigger>
-                </Style.Triggers>
               </Style>
             </TreeView.ItemContainerStyle>
 
@@ -175,12 +171,13 @@
           <TreeView x:Name="TvKeywords">
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                <Setter Property="IsExpanded"  Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush1}"></Setter>
-                  </DataTrigger>
+                  <!--<DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}"></Setter>
+                  </DataTrigger>-->
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"></Setter>
                   </DataTrigger>

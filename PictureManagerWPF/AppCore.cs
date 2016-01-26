@@ -17,20 +17,33 @@ using PictureManager.Properties;
 
 namespace PictureManager {
   public class AppCore {
+    private BaseItem _lastSelectedSource;
     public ObservableCollection<BaseItem> FoldersRoot;
     public ObservableCollection<BaseItem> KeywordsRoot;
     public Keywords Keywords;
     public People People;
     public Folders Folders;
     public FavoriteFolders FavoriteFolders;
-    public BaseItem LastSelectedSource;
+
+    public BaseItem LastSelectedSource {
+      get {
+        return _lastSelectedSource;
+      }
+      set {
+        if (_lastSelectedSource == value) return;
+        if (_lastSelectedSource != null)
+          _lastSelectedSource.IsSelected = false;
+        _lastSelectedSource = value;
+      }
+    }
+
     public bool LastSelectedSourceRecursive;
 
     public DbStuff Db;
     public ObservableCollection<Picture> Pictures;
     public ObservableCollection<Picture> SelectedPictures;
-    public List<BaseItem> MarkedTags;
-    public List<BaseItem> TagModifers; 
+    public List<BaseTagItem> MarkedTags;
+    public List<BaseTagItem> TagModifers; 
 
     private Picture _currentPicture;
     public Picture CurrentPicture {
@@ -53,8 +66,8 @@ namespace PictureManager {
       AppInfo = new AppInfo();
       Pictures = new ObservableCollection<Picture>();
       SelectedPictures = new ObservableCollection<Picture>();
-      MarkedTags = new List<BaseItem>();
-      TagModifers = new List<BaseItem>();
+      MarkedTags = new List<BaseTagItem>();
+      TagModifers = new List<BaseTagItem>();
       
       
       Db = new DbStuff("Data Source = data.db");
@@ -154,15 +167,13 @@ namespace PictureManager {
               }
             } else {
               //not KeywordsEditMode
-              foreach (var m in TagModifers) {
-                m.IsSelected = false;
-              }
-              var baseItem = (BaseItem)item;
-              baseItem.IsSelected = true;
-              TagModifers.Clear();
-              TagModifers.Add(baseItem);
 
-              LastSelectedSource = baseItem;
+              var baseTagItem = (BaseTagItem)item;
+              baseTagItem.IsSelected = true;
+              TagModifers.Clear();
+              TagModifers.Add(baseTagItem);
+
+              LastSelectedSource = baseTagItem;
               LastSelectedSourceRecursive = recursive;
               GetPicturesByTag();
               MarkUsedKeywordsAndPeople();
@@ -211,20 +222,16 @@ namespace PictureManager {
     }
 
     public void MarkUsedKeywordsAndPeople() {
-      foreach (var item in MarkedTags) {
-        if (item is Person) {
-          ((Person) item).IsMarked = false;
-          ((Person) item).PicCount = 0;
-        } else if (item is Keyword) {
-          ((Keyword) item).IsMarked = false;
-          ((Keyword) item).PicCount = 0;
-        }
+      //can by Person or Keyword
+      foreach (BaseTagItem item in MarkedTags) {
+        item.IsMarked = false;
+        item.PicCount = 0;
       }
 
       MarkedTags.Clear();
       var pictures = SelectedPictures.Count == 0 ? Pictures : SelectedPictures;
       foreach (Picture picture in pictures) {
-        foreach (Person person in picture.People) {
+        foreach (Person person in picture.People.Where(person => !person.IsMarked)) {
           person.IsMarked = true;
           MarkedTags.Add(person);
         }
@@ -234,7 +241,7 @@ namespace PictureManager {
             if (k.IsMarked) break;
             k.IsMarked = true;
             MarkedTags.Add(k);
-            k = k.Parent as Keyword;
+            k = k.Parent;
           } while (k != null);
         }
       }
@@ -272,35 +279,10 @@ namespace PictureManager {
     public void GetPicturesByTag() {
       Pictures.Clear();
 
-      #region People In / Out and Keywords In / Out
-      var peopleIn = TagModifers.Where(x => x.IsSelected && x is Person)
-        .Cast<Person>()
-        .Select(x => x.Id)
-        .Aggregate("", (current, id) => current + (id + ","));
-      if (peopleIn.EndsWith(","))
-        peopleIn = peopleIn.Remove(peopleIn.Length - 1);
-
-      var peopleOut = TagModifers.Where(x => !x.IsSelected && x is Person)
-        .Cast<Person>()
-        .Select(x => x.Id)
-        .Aggregate("", (current, id) => current + (id + ","));
-      if (peopleOut.EndsWith(","))
-        peopleOut = peopleOut.Remove(peopleOut.Length - 1);
-
-      var keywordsIn = TagModifers.Where(x => x.IsSelected && x is Keyword)
-        .Cast<Keyword>()
-        .Select(x => x.Id)
-        .Aggregate("", (current, id) => current + (id + ","));
-      if (keywordsIn.EndsWith(","))
-        keywordsIn = keywordsIn.Remove(keywordsIn.Length - 1);
-
-      var keywordsOut = TagModifers.Where(x => !x.IsSelected && x is Keyword)
-        .Cast<Keyword>()
-        .Select(x => x.Id)
-        .Aggregate("", (current, id) => current + (id + ","));
-      if (keywordsOut.EndsWith(","))
-        keywordsOut = keywordsOut.Remove(keywordsOut.Length - 1);
-      #endregion
+      var peopleIn = string.Join(",", TagModifers.Where(x => x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
+      var peopleOut = string.Join(",", TagModifers.Where(x => !x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
+      var keywordsIn = string.Join(",", TagModifers.Where(x => x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
+      var keywordsOut = string.Join(",", TagModifers.Where(x => !x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
 
       List<string> sqlList = new List<string>();
 
@@ -314,31 +296,10 @@ namespace PictureManager {
         sqlList.Add($"select PictureId from PictureKeyword where KeywordId not in (select PictureId from PictureKeyword where KeywordId in ({keywordsOut}))");
       if (LastSelectedSourceRecursive && LastSelectedSource is Keyword)
         sqlList.Add($"select PictureId from PictureKeyword where KeywordId in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")");
-      string innerSql = sqlList.Aggregate("", (current, s) => current + (s + " union "));
-      if (innerSql.EndsWith("union "))
-        innerSql = innerSql.Remove(innerSql.Length - 6);
+
+      string innerSql = string.Join(" union ", sqlList);
       string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
                    $"from Pictures as P where P.Id in ({innerSql}) order by FileName";
-
-
-      /*switch (LastSelectedSource.GetType().Name) {
-        case nameof(Person): {
-          sql =
-            "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
-            $"from Pictures as P where P.Id in (select PictureId from PicturePerson where PersonId = {((Person)LastSelectedSource).Id}) order by FileName";
-          break;
-        }
-        case nameof(Keyword): {
-          string s = LastSelectedSourceRecursive
-            ? $"in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")"
-            : $"= {((Keyword)LastSelectedSource).Id}";
-          sql =
-            "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
-            "from Pictures as P where P.Id in (select PictureId from PictureKeyword where " +
-            $"KeywordId {s}) order by FileName";
-          break;
-        }
-      }*/
 
       foreach (DataRow row in Db.Select(sql)) {
         string picFullPath = Path.Combine((string)row[1], (string)row[2]);

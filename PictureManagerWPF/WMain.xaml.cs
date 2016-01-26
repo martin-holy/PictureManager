@@ -146,6 +146,8 @@ namespace PictureManager {
               folder.IsSelected = false;
               return;
             }
+
+            folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
             ACore.LastSelectedSourceRecursive = false;
             ACore.GetPicturesByFolder(folder.FullPath);
