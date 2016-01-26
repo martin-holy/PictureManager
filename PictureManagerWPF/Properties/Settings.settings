@@ -14,10 +14,10 @@
     <Setting Name="RootKeyword" Type="System.String" Scope="User">
       <Value Profile="(Default)">#CoSpi</Value>
     </Setting>
-    <Setting Name="FolderKeywordIngnoreList" Type="System.String[]" Scope="User">
+    <Setting Name="FolderKeywordIngnoreList" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="FolderFavorites" Type="System.Collections.Generic.List&lt;System.String&gt;" Scope="User">
+    <Setting Name="FolderFavorites" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

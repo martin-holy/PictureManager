@@ -52,9 +52,6 @@ namespace PictureManager {
     }
 
     public void InitUi() {
-      if (Settings.Default.FolderFavorites == null)
-        Settings.Default.FolderFavorites = new List<string>();
-
       SetKeywordsButtonsVisibility();
 
       ACore.Init();
@@ -266,19 +263,12 @@ namespace PictureManager {
     }
 
     private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
-      string path = ((Data.Folder) e.Parameter).FullPath;
-      bool found = Settings.Default.FolderFavorites.Any(folderPath => path.Equals(folderPath, StringComparison.OrdinalIgnoreCase));
-      if (!found) {
-        Settings.Default.FolderFavorites.Add(path);
-        Settings.Default.Save();
-      }
+      ACore.FavoriteFolders.Add(((Data.Folder) e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
 
     private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
-      string path = ((Data.FavoriteFolder) e.Parameter).FullPath;
-      Settings.Default.FolderFavorites.Remove(path);
-      Settings.Default.Save();
+      ACore.FavoriteFolders.Remove(((Data.FavoriteFolder) e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
     #endregion
@@ -291,10 +281,20 @@ namespace PictureManager {
     }
 
     private void BtnTest_OnClick(object sender, RoutedEventArgs e) {
-      ACore.WbUpdatePictureInfo(0);
+
+    }
+
+    private void BtnSettings_OnClick(object sender, RoutedEventArgs e) {
+      var settings = new WSettings();
+      if (settings.ShowDialog() ?? true) {
+        Settings.Default.Save();
+      } else {
+        Settings.Default.Reload();
+      }
     }
 
     private void BtnKeywordsEditMode_OnClick(object sender, RoutedEventArgs e) {
+      if (ACore.Pictures.Count == 0) return;
       ACore.KeywordsEditMode = true;
       ACore.LastSelectedSource.IsSelected = false;
       SetKeywordsButtonsVisibility();

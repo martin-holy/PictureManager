@@ -73,9 +73,10 @@ namespace PictureManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public string[] FolderKeywordIngnoreList {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FolderKeywordIngnoreList {
             get {
-                return ((string[])(this["FolderKeywordIngnoreList"]));
+                return ((string)(this["FolderKeywordIngnoreList"]));
             }
             set {
                 this["FolderKeywordIngnoreList"] = value;
@@ -84,9 +85,10 @@ namespace PictureManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Generic.List<System.String> FolderFavorites {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FolderFavorites {
             get {
-                return ((global::System.Collections.Generic.List<System.String>)(this["FolderFavorites"]));
+                return ((string)(this["FolderFavorites"]));
             }
             set {
                 this["FolderFavorites"] = value;

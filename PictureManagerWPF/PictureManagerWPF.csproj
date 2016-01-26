@@ -90,6 +90,7 @@
     <Compile Include="Data\Picture.cs" />
     <Compile Include="DbStuff.cs" />
     <Compile Include="ScriptManager.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ShellStuff\ComReleaser.cs" />
     <Compile Include="ShellStuff\FileOperation.cs" />
     <Compile Include="ShellStuff\FileOperationProgressSink.cs" />
