@@ -273,20 +273,8 @@ namespace PictureManager {
       ACore.FavoriteFolders.Remove(((Data.FavoriteFolder) e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
-    #endregion
 
-    public void WbThumbsShowContextMenu() {
-      /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
-      if (cm == null) return;
-      cm.PlacementTarget = WbThumbs;
-      cm.IsOpen = true;*/
-    }
-
-    private void BtnTest_OnClick(object sender, RoutedEventArgs e) {
-
-    }
-
-    private void BtnSettings_OnClick(object sender, RoutedEventArgs e) {
+    private void CmdOpenSettings(object sender, ExecutedRoutedEventArgs e) {
       var settings = new WSettings();
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
@@ -295,14 +283,14 @@ namespace PictureManager {
       }
     }
 
-    private void BtnKeywordsEditMode_OnClick(object sender, RoutedEventArgs e) {
+    private void CmdKeywordsEditMode(object sender, ExecutedRoutedEventArgs e) {
       if (ACore.Pictures.Count == 0) return;
       ACore.KeywordsEditMode = true;
       ACore.LastSelectedSource.IsSelected = false;
       SetKeywordsButtonsVisibility();
     }
 
-    private void BtnKeywordsEditModeSave_OnClick(object sender, RoutedEventArgs e) {
+    private void CmdKeywordsEditModeSave(object sender, ExecutedRoutedEventArgs e) {
       var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
       StatusProgressBar.Maximum = pictures.Count;
       StatusProgressBar.Value = 0;
@@ -316,7 +304,7 @@ namespace PictureManager {
       SetKeywordsButtonsVisibility();
     }
 
-    private void BtnKeywordsEditModeCancel_OnClick(object sender, RoutedEventArgs e) {
+    private void CmdKeywordsEditModeCancel(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
       SetKeywordsButtonsVisibility();
       foreach (Data.Picture picture in ACore.Pictures) {
@@ -326,6 +314,19 @@ namespace PictureManager {
         }
       }
       ACore.MarkUsedKeywordsAndPeople();
+    }
+
+    private void CmdTestButton(object sender, ExecutedRoutedEventArgs e) {
+      
+    }
+
+    #endregion
+
+    public void WbThumbsShowContextMenu() {
+      /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
+      if (cm == null) return;
+      cm.PlacementTarget = WbThumbs;
+      cm.IsOpen = true;*/
     }
 
     private void TcMain_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {

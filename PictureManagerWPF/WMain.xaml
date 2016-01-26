@@ -24,6 +24,11 @@
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
+    <RoutedUICommand x:Key="OpenSettings" />
+    <RoutedUICommand x:Key="KeywordsEditMode" />
+    <RoutedUICommand x:Key="KeywordsEditModeSave" />
+    <RoutedUICommand x:Key="KeywordsEditModeCancel" />
+    <RoutedUICommand x:Key="TestButton" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
@@ -34,12 +39,17 @@
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
+    <CommandBinding Command="{StaticResource OpenSettings}" Executed="CmdOpenSettings" />
+    <CommandBinding Command="{StaticResource KeywordsEditMode}" Executed="CmdKeywordsEditMode" />
+    <CommandBinding Command="{StaticResource KeywordsEditModeSave}" Executed="CmdKeywordsEditModeSave" />
+    <CommandBinding Command="{StaticResource KeywordsEditModeCancel}" Executed="CmdKeywordsEditModeCancel" />
+    <CommandBinding Command="{StaticResource TestButton}" Executed="CmdTestButton" />
   </controls:MetroWindow.CommandBindings>
 
   <DockPanel >
     <ToolBarTray DockPanel.Dock="Top">
       <ToolBar Height="36">
-        <Button x:Name="BtnTest" Click="BtnTest_OnClick" ToolTip="Test Button">
+        <Button Command="{StaticResource TestButton}" ToolTip="Test Button">
           <StackPanel Orientation="Horizontal">
             <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
               <Rectangle.OpacityMask>
@@ -49,7 +59,7 @@
             <TextBlock Margin="5,0,5,0">Test</TextBlock>
           </StackPanel>
         </Button>
-        <Button x:Name="BtnSettings" Click="BtnSettings_OnClick" ToolTip="Application Settings">
+        <Button Command="{StaticResource OpenSettings}" ToolTip="Application Settings">
           <StackPanel Orientation="Horizontal">
             <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
               <Rectangle.OpacityMask>
@@ -59,7 +69,7 @@
             <TextBlock Margin="5,0,5,0">Settings</TextBlock>
           </StackPanel>
         </Button>
-        <Button x:Name="BtnKeywordsEditMode" Click="BtnKeywordsEditMode_OnClick" ToolTip="Edit Keywords">
+        <Button x:Name="BtnKeywordsEditMode" Command="{StaticResource KeywordsEditMode}" ToolTip="Edit Keywords">
           <StackPanel Orientation="Horizontal">
             <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
               <Rectangle.OpacityMask>
@@ -69,7 +79,7 @@
             <TextBlock Margin="5,0,5,0">Edit</TextBlock>
           </StackPanel>
         </Button>
-        <Button x:Name="BtnKeywordsEditModeCancel" Click="BtnKeywordsEditModeCancel_OnClick" ToolTip="Cancel edit Keywords">
+        <Button x:Name="BtnKeywordsEditModeCancel" Command="{StaticResource KeywordsEditModeCancel}" ToolTip="Cancel edit Keywords">
           <StackPanel Orientation="Horizontal">
             <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
               <Rectangle.OpacityMask>
@@ -79,7 +89,7 @@
             <TextBlock Margin="5,0,5,0">Cancel</TextBlock>
           </StackPanel>
         </Button>
-        <Button x:Name="BtnKeywordsEditModeSave" Click="BtnKeywordsEditModeSave_OnClick" ToolTip="Save Keywords">
+        <Button x:Name="BtnKeywordsEditModeSave" Command="{StaticResource KeywordsEditModeSave}" ToolTip="Save Keywords">
           <StackPanel Orientation="Horizontal">
             <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
               <Rectangle.OpacityMask>
