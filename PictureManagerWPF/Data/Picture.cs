@@ -93,7 +93,7 @@ namespace PictureManager.Data {
 
     public void SavePictureInToDb(Keywords keywords, People people) {
       if (Id == -1) {
-        GetPictureMetadata(keywords, people);
+        ReadMetadata(keywords, people);
         if (Db.Execute(
           $"insert into Pictures (DirectoryId, FileName, Rating) values ({DirId}, '{FileName}', {Rating})")) {
           Id = Db.GetLastIdFor("Pictures");
@@ -150,48 +150,96 @@ namespace PictureManager.Data {
       }
     }
 
-    public void SetPictureMetadata() {
+    public bool WriteMetadata() {
       FileInfo original = new FileInfo(FilePath);
       FileInfo newFile = new FileInfo(FilePath.Replace(".", "_newFile."));
+      bool bSuccess = false;
+      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
-      using (FileStream imageFileStream = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        BitmapFrame frameCopy = GetBitmapFrame(imageFileStream);
-        BitmapMetadata copyMetadata = (BitmapMetadata)frameCopy.Metadata ?? GetNewBitmapMetadata();
-        if (copyMetadata == null) return;
+      using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
+        BitmapDecoder decoder = BitmapDecoder.Create(originalFileStream, createOptions, BitmapCacheOption.None);
+        if (decoder.CodecInfo != null && decoder.CodecInfo.FileExtensions.Contains("jpg") && decoder.Frames[0] != null) {
+          BitmapMetadata metadata = decoder.Frames[0].Metadata == null
+            ? new BitmapMetadata("jpg")
+            : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
 
-        copyMetadata.Rating = Rating;
-        copyMetadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
+          if (metadata != null) {
 
-        BitmapEncoder encoder = GetBitmapEncoder();
-        if (encoder == null) return;
-        encoder.Frames.Add(frameCopy);
+            /*//People
+            const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
+            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+            int peopleIdx = -1;
+            List<string> addedPeople = new List<string>();
+            //TODO BitmapMetadata musi obsahovat jpg nebo png, vytvorim tak kopletni nova metadata, kam si ulozim neco co xmp a tu jedu vetev pak placnu tam kam potrebuju
+            BitmapMetadata people = new BitmapMetadata("xmpstruct");
+            people.SetQuery("/MPRI:Regions", "xmpbag");
 
-        using (FileStream imageFileOutStream = new FileStream(newFile.FullName, FileMode.Create)) {
-          encoder.Save(imageFileOutStream);
+            BitmapMetadata existingPeople = bm.GetQuery(microsoftRegions) as BitmapMetadata;
+            if (existingPeople != null) {
+              foreach (string idx in existingPeople) {
+                var existingPerson = bm.GetQuery(microsoftRegions + idx) as BitmapMetadata;
+                var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
+                if (personDisplayName == null) continue;
+                if (!People.Any(p => p.Title.Equals(personDisplayName.ToString()))) continue;
+                addedPeople.Add(personDisplayName.ToString());
+                peopleIdx++;
+                people.SetQuery($"/MPRI:Regions/{{ulong={peopleIdx}}}", existingPerson);
+              }
+            }
+
+            foreach (Person person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
+              peopleIdx++;
+              people.SetQuery($"/MPRI:Regions/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
+            }
+
+            bm.SetQuery(microsoftRegionInfo, people);*/
+
+
+            metadata.Rating = Rating;
+            metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
+
+            JpegBitmapEncoder encoder = new JpegBitmapEncoder {QualityLevel = Settings.Default.JpegQualityLevel};
+            encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
+              decoder.Frames[0].ColorContexts));
+
+            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+              encoder.Save(newFileStream);
+            }
+            bSuccess = true;
+          }
         }
       }
 
-      original.Delete();
-      newFile.MoveTo(original.FullName);
-    }
+      if (bSuccess) {
+        newFile.CreationTime = original.CreationTime;
+        original.Delete();
+        newFile.MoveTo(original.FullName);
+      }
+      return bSuccess;
+  }
 
-    public void GetPictureMetadata(Keywords keywords, People people) {
+    public void ReadMetadata(Keywords keywords, People people) {
       using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
         if (imageFileStream.Length == 0) return;
-        BitmapMetadata bm = (BitmapMetadata)GetBitmapFrame(imageFileStream).Metadata;
+        BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+        BitmapMetadata bm = (BitmapMetadata) decoder.Frames[0].Metadata;
         if (bm == null) return;
 
         //People
-        int i = 0;
-        object value;
         People.Clear();
-        do {
-          value = bm.GetQuery($"/xmp/MP:RegionInfo/MPRI:Regions/{{ulong={i}}}/MPReg:PersonDisplayName");
-          if (value != null) {
-            People.Add(people.GetPersonByName(value.ToString(), true));
+        const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+        const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+
+        var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
+        if (regions != null) {
+          foreach (string region in regions) {
+            var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+            if (personDisplayName != null) {
+              People.Add(people.GetPersonByName(personDisplayName.ToString(), true));
+            }
           }
-          i++;
-        } while (value != null);
+        }
 
         //Rating
         Rating = bm.Rating;
@@ -207,65 +255,6 @@ namespace PictureManager.Data {
         }
       }
     }
-
-    private BitmapFrame GetBitmapFrame(Stream file) {
-      BitmapDecoder bd = null;
-
-      switch (FileExt) {
-        case "jpg":
-        case "jpeg": {
-            bd = new JpegBitmapDecoder(
-              file,
-              BitmapCreateOptions.PreservePixelFormat,
-              BitmapCacheOption.None);
-            break;
-          }
-        case "png": {
-            bd = new PngBitmapDecoder(
-              file,
-              BitmapCreateOptions.PreservePixelFormat,
-              BitmapCacheOption.None);
-            break;
-          }
-      }
-
-      return bd == null ? null : BitmapFrame.Create(bd.Frames[0]);
-    }
-
-    private BitmapEncoder GetBitmapEncoder() {
-      BitmapEncoder be = null;
-      switch (FileExt) {
-        case "jpg":
-        case "jpeg": {
-            be = new JpegBitmapEncoder();
-            ((JpegBitmapEncoder)be).QualityLevel = Settings.Default.JpegQualityLevel;
-            break;
-          }
-        case "png": {
-            be = new PngBitmapEncoder();
-            break;
-          }
-      }
-      return be;
-    }
-
-    private BitmapMetadata GetNewBitmapMetadata() {
-      BitmapMetadata bm = null;
-      switch (FileExt) {
-        case "jpg":
-        case "jpeg": {
-            bm = new BitmapMetadata("jpg");
-            break;
-          }
-        case "png": {
-            bm = new BitmapMetadata("png");
-            break;
-          }
-      }
-      return bm;
-    }
-
-
 
   }
 }

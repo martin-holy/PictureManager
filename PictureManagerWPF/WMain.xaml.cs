@@ -296,7 +296,7 @@ namespace PictureManager {
       StatusProgressBar.Value = 0;
       foreach (Data.Picture picture in pictures) {
         picture.SavePictureInToDb(ACore.Keywords, ACore.People);
-        picture.SetPictureMetadata();
+        picture.WriteMetadata();
         StatusProgressBar.Value++;
       }
       StatusProgressBar.Value = 0;
