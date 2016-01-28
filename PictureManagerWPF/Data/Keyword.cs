@@ -12,14 +12,6 @@ namespace PictureManager.Data {
       Items = new ObservableCollection<Keyword>();
     }
 
-    public void UpdatePictureCount(bool increase) {
-      var keyword = this;
-      do {
-        keyword.PicCount = increase ? keyword.PicCount + 1 : keyword.PicCount - 1;
-        keyword = keyword.Parent;
-      } while (keyword != null);
-    }
-
     public void Rename(DbStuff db, string newName) {
       if (Items.Count != 0) return;
       FullPath = FullPath.Contains("/")

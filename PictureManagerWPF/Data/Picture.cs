@@ -171,7 +171,7 @@ namespace PictureManager.Data {
             const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
             int peopleIdx = -1;
             List<string> addedPeople = new List<string>();
-            //TODO BitmapMetadata musi obsahovat jpg nebo png, vytvorim tak kopletni nova metadata, kam si ulozim neco co xmp a tu jedu vetev pak placnu tam kam potrebuju
+            //TODO BitmapMetadata musi obsahovat jpg nebo png, vytvorim tak kopletni nova metadata, kam si ulozim neco do xmp a tu jedu vetev pak placnu tam kam potrebuju
             BitmapMetadata people = new BitmapMetadata("xmpstruct");
             people.SetQuery("/MPRI:Regions", "xmpbag");
 

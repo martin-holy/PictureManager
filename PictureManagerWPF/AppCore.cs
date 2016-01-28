@@ -119,72 +119,67 @@ namespace PictureManager {
 
       switch (mouseButton) {
         case MouseButton.Left: {
-            if (KeywordsEditMode) {
+          if (KeywordsEditMode) {
 
-              var baseTagItem = item as BaseTagItem;
-              if (baseTagItem != null) {
-                baseTagItem.IsMarked = !baseTagItem.IsMarked;
-                if (baseTagItem.IsMarked)
-                  MarkedTags.Add(baseTagItem);
-                else
-                  MarkedTags.Remove(baseTagItem);
-              }
-
-              foreach (Picture picture in SelectedPictures) {
-                picture.IsModifed = true;
-
-                switch (item.GetType().Name) {
-                  case nameof(Person): {
-                      var person = (Person)item;
-                      if (person.IsMarked) {
-                        picture.People.Add(person);
-                      } else {
-                        picture.People.Remove(person);
-                      }
-
-                      break;
-                    }
-                  case nameof(Keyword): {
-                      var keyword = (Keyword)item;
-                      if (keyword.IsMarked) {
-                        //remove potencial redundant keywords (example: if new keyword is "#CoSpi/Sunny" keyword "#CoSpi" is redundant)
-                        for (int i = picture.Keywords.Count - 1; i >= 0; i--) {
-                          if (keyword.FullPath.StartsWith(picture.Keywords[i].FullPath)) {
-                            picture.Keywords[i].UpdatePictureCount(false);
-                            picture.Keywords.RemoveAt(i);
-                          }
-                        }
-                        picture.Keywords.Add(keyword);
-                      } else {
-                        picture.Keywords.Remove(keyword);
-                      }
-                      keyword.UpdatePictureCount(keyword.IsMarked);
-                      break;
-                    }
-                }
-
-                WbUpdatePictureInfo(picture.Index);
-              }
-            } else {
-              //not KeywordsEditMode
-
-              var baseTagItem = (BaseTagItem)item;
-              baseTagItem.IsSelected = true;
-              TagModifers.Clear();
-              TagModifers.Add(baseTagItem);
-
-              LastSelectedSource = baseTagItem;
-              LastSelectedSourceRecursive = recursive;
-              GetPicturesByTag();
-              MarkUsedKeywordsAndPeople();
-              CreateThumbnailsWebPage();
+            var baseTagItem = item as BaseTagItem;
+            if (baseTagItem != null) {
+              baseTagItem.IsMarked = !baseTagItem.IsMarked;
+              if (baseTagItem.IsMarked)
+                MarkedTags.Add(baseTagItem);
+              else
+                MarkedTags.Remove(baseTagItem);
             }
 
-            break;
+            foreach (Picture picture in SelectedPictures) {
+              picture.IsModifed = true;
+
+              switch (item.GetType().Name) {
+                case nameof(Person): {
+                  var person = (Person) item;
+                  if (person.IsMarked) {
+                    picture.People.Add(person);
+                  } else {
+                    picture.People.Remove(person);
+                  }
+                  break;
+                }
+                case nameof(Keyword): {
+                  var keyword = (Keyword) item;
+                  if (keyword.IsMarked) {
+                    //remove potencial redundant keywords (example: if new keyword is "#CoSpi/Sunny" keyword "#CoSpi" is redundant)
+                    for (int i = picture.Keywords.Count - 1; i >= 0; i--) {
+                      if (keyword.FullPath.StartsWith(picture.Keywords[i].FullPath)) {
+                        picture.Keywords.RemoveAt(i);
+                      }
+                    }
+                    picture.Keywords.Add(keyword);
+                  } else {
+                    picture.Keywords.Remove(keyword);
+                  }
+                  break;
+                }
+              }
+              WbUpdatePictureInfo(picture.Index);
+            }
+            MarkUsedKeywordsAndPeople();
+          } else {
+            //not KeywordsEditMode
+            var baseTagItem = (BaseTagItem) item;
+            baseTagItem.IsSelected = true;
+            TagModifers.Clear();
+            TagModifers.Add(baseTagItem);
+
+            LastSelectedSource = baseTagItem;
+            LastSelectedSourceRecursive = recursive;
+            GetPicturesByTag();
+            MarkUsedKeywordsAndPeople();
+            CreateThumbnailsWebPage();
           }
+          break;
+        }
         case MouseButton.Middle: {
-            //nothing for now
-            /*if (KeywordsEditMode) return null;
+          //nothing for now
+          /*if (KeywordsEditMode) return null;
             if (item.IsCategory || !item.IsAccessible) return null;
             if (!TagModifers.Contains(item))
               TagModifers.Add(item);
@@ -192,18 +187,10 @@ namespace PictureManager {
             GetPicturesByTag();
             MarkUsedKeywordsAndPeople();
             CreateThumbnailsWebPage();*/
-            break;
-          }
+          break;
+        }
       }
     }
-
-
-
-
-
-
-
-
 
     public bool CurrentPictureMove(bool next) {
       LoadOtherPictures();
