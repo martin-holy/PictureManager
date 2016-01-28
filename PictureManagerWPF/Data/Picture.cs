@@ -165,35 +165,39 @@ namespace PictureManager.Data {
 
           if (metadata != null) {
 
-            /*//People
+            //People
             const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
             const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
             const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
             int peopleIdx = -1;
             List<string> addedPeople = new List<string>();
-            //TODO BitmapMetadata musi obsahovat jpg nebo png, vytvorim tak kopletni nova metadata, kam si ulozim neco do xmp a tu jedu vetev pak placnu tam kam potrebuju
-            BitmapMetadata people = new BitmapMetadata("xmpstruct");
-            people.SetQuery("/MPRI:Regions", "xmpbag");
-
-            BitmapMetadata existingPeople = bm.GetQuery(microsoftRegions) as BitmapMetadata;
+            //New metadata just for People
+            BitmapMetadata people = new BitmapMetadata("jpg");
+            people.SetQuery(microsoftRegionInfo, new BitmapMetadata("xmpstruct"));
+            people.SetQuery(microsoftRegions, new BitmapMetadata("xmpbag"));
+            //Adding existing people
+            BitmapMetadata existingPeople = metadata.GetQuery(microsoftRegions) as BitmapMetadata;
             if (existingPeople != null) {
               foreach (string idx in existingPeople) {
-                var existingPerson = bm.GetQuery(microsoftRegions + idx) as BitmapMetadata;
+                var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
                 var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
                 if (personDisplayName == null) continue;
                 if (!People.Any(p => p.Title.Equals(personDisplayName.ToString()))) continue;
                 addedPeople.Add(personDisplayName.ToString());
                 peopleIdx++;
-                people.SetQuery($"/MPRI:Regions/{{ulong={peopleIdx}}}", existingPerson);
+                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", existingPerson);
               }
             }
-
+            //Adding new people
             foreach (Person person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
               peopleIdx++;
-              people.SetQuery($"/MPRI:Regions/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
+              people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", new BitmapMetadata("xmpstruct"));
+              people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
             }
-
-            bm.SetQuery(microsoftRegionInfo, people);*/
+            //Writing all people to picture metadata
+            var allPeople = people.GetQuery(microsoftRegionInfo);
+            if (allPeople != null)
+              metadata.SetQuery(microsoftRegionInfo, allPeople);
 
 
             metadata.Rating = Rating;
