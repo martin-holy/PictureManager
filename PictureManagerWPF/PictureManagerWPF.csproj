@@ -94,13 +94,17 @@
     <Compile Include="ShellStuff\ComReleaser.cs" />
     <Compile Include="ShellStuff\FileOperation.cs" />
     <Compile Include="ShellStuff\FileOperationProgressSink.cs" />
-    <Compile Include="ShellStuff\Interop\CopyEngineResult.cs" />
-    <Compile Include="ShellStuff\Interop\FileOperationFlags.cs" />
-    <Compile Include="ShellStuff\Interop\IFileOperation.cs" />
-    <Compile Include="ShellStuff\Interop\IFileOperationProgressSink.cs" />
-    <Compile Include="ShellStuff\Interop\IShellItem.cs" />
-    <Compile Include="ShellStuff\Interop\SIGDN.cs" />
+    <Compile Include="ShellStuff\CopyEngineResult.cs" />
+    <Compile Include="ShellStuff\FileOperationFlags.cs" />
+    <Compile Include="ShellStuff\Interfaces\IFileOperation.cs" />
+    <Compile Include="ShellStuff\Interfaces\IFileOperationProgressSink.cs" />
+    <Compile Include="ShellStuff\Interfaces\IShellItem.cs" />
+    <Compile Include="ShellStuff\Interfaces\IEnumIDList.cs" />
+    <Compile Include="ShellStuff\Interfaces\IExtractImage.cs" />
+    <Compile Include="ShellStuff\Interfaces\IShellFolder.cs" />
+    <Compile Include="ShellStuff\Interfaces\IUnknown.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
+    <Compile Include="ShellStuff\ShellCommon.cs" />
     <Compile Include="ShellStuff\ShellThumbnail.cs" />
     <Compile Include="WError.xaml.cs">
       <DependentUpon>WError.xaml</DependentUpon>
@@ -110,6 +114,9 @@
     </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WTestThumbnailGallery.xaml.cs">
+      <DependentUpon>WTestThumbnailGallery.xaml</DependentUpon>
     </Compile>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -136,6 +143,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WTestThumbnailGallery.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

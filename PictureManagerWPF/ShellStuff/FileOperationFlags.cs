@@ -1,7 +1,6 @@
 using System;
 
-namespace MsdnMag
-{
+namespace PictureManager.ShellStuff {
     [Flags]
     internal enum FileOperationFlags : uint
     {

@@ -1,9 +1,9 @@
 // Stephen Toub
 
-using System;
 using System.Diagnostics;
+using PictureManager.ShellStuff.Interfaces;
 
-namespace MsdnMag
+namespace PictureManager.ShellStuff
 {
     public class FileOperationProgressSink : IFileOperationProgressSink
     {

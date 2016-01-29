@@ -5,8 +5,9 @@ using System.IO;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using PictureManager.ShellStuff.Interfaces;
 
-namespace MsdnMag {
+namespace PictureManager.ShellStuff {
   internal class FileOperation : IDisposable {
     private bool _disposed;
     private IFileOperation _fileOperation;

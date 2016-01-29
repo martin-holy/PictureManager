@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace MsdnMag
+namespace PictureManager.ShellStuff
 {
     class ComReleaser<T> : IDisposable where T : class
     {

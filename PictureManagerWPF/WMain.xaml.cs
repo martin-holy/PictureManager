@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using mshtml;
 using PictureManager.Properties;
+using PictureManager.ShellStuff;
 
 namespace PictureManager {
   /// <summary>
@@ -317,7 +321,11 @@ namespace PictureManager {
     }
 
     private void CmdTestButton(object sender, ExecutedRoutedEventArgs e) {
-      
+
+
+      /*WTestThumbnailGallery ttg = new WTestThumbnailGallery();
+      ttg.Show();
+      ttg.AddPhotosInFolder(ACore.Pictures);*/
     }
 
     #endregion

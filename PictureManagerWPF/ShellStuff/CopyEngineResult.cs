@@ -1,11 +1,6 @@
 // Stephen Toub
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MsdnMag
-{
+namespace PictureManager.ShellStuff {
     public enum CopyEngineResult : uint
     {
         COPYENGINE_OK = 0x0,

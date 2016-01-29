@@ -1,13 +1,10 @@
 // Stephen Toub
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 
-namespace MsdnMag
-{
+namespace PictureManager.ShellStuff.Interfaces {
     [ComImport]
     [Guid("43826d1e-e718-42ee-bc55-a1e261c37bfe")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

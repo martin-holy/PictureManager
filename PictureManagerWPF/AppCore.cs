@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -14,6 +15,8 @@ using System.Windows.Threading;
 using mshtml;
 using PictureManager.Data;
 using PictureManager.Properties;
+using PictureManager.ShellStuff;
+using Encoder = System.Text.Encoder;
 
 namespace PictureManager {
   public class AppCore {
@@ -312,7 +315,7 @@ namespace PictureManager {
       //append all pictures to content div
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < Pictures.Count; i++) {
-        string thumbPath = GetCachePathFor(Pictures[i].FilePath);
+        string thumbPath = Pictures[i].CacheFilePath;
         bool flag = File.Exists(thumbPath);
         if (!flag) CreateThumbnail(Pictures[i].FilePath, thumbPath);
         sb.Append(
@@ -384,20 +387,14 @@ namespace PictureManager {
       return null;
     }
 
-    public static string GetCachePathFor(string path) {
-      return path.Replace(":\\", @Settings.Default.CachePath);
-    }
-
     public static void CreateThumbnail(string origPath, string newPath) {
       int size = Settings.Default.ThumbnailSize;
       string dir = Path.GetDirectoryName(newPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
       try {
-        KodeSharp.SharedClasses.ShellThumbnail st = new KodeSharp.SharedClasses.ShellThumbnail();
-        st.GetThumbnail(origPath, size, size).Save(newPath, System.Drawing.Imaging.ImageFormat.Jpeg);
-        st.Dispose();
-        //TODO dodelat uvoleni pameni nefunguje ani Dispose ani GC.Colect
+        var thumb = new ShellThumbnail();
+        thumb.CreateThumbnail(origPath, newPath, size, 80L);
       } catch (Exception) {
         //file can have 0 size
       }

@@ -1,4 +1,4 @@
-﻿using MsdnMag;
+﻿using PictureManager.ShellStuff.Interfaces;
 
 namespace PictureManager.ShellStuff {
   public class PicFileOperationProgressSink: FileOperationProgressSink {

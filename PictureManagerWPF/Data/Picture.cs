@@ -9,6 +9,7 @@ using PictureManager.Properties;
 
 namespace PictureManager.Data {
   public class Picture {
+    public string CacheFilePath => FilePath.Replace(":\\", @Settings.Default.CachePath);
     public string FilePath;
     public string FileName;
     public string FileExt;
