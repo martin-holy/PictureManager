@@ -10,24 +10,23 @@ using PictureManager.ShellStuff.Interfaces;
 namespace PictureManager.ShellStuff {
   internal class FileOperation : IDisposable {
     private bool _disposed;
-    private IFileOperation _fileOperation;
-    private FileOperationProgressSink _callbackSink;
-    private uint _sinkCookie;
-
-    public uint SinkCookie {
-      get { return _sinkCookie; }
-    }
+    private readonly IFileOperation _fileOperation;
+    private readonly FileOperationProgressSink _callbackSink;
+    public uint SinkCookie { get; }
 
     public FileOperation() : this(null) {}
     public FileOperation(FileOperationProgressSink callbackSink) : this(callbackSink, null) {}
-
     public FileOperation(FileOperationProgressSink callbackSink, IWin32Window owner) {
       _callbackSink = callbackSink;
       _fileOperation = (IFileOperation) Activator.CreateInstance(_fileOperationType);
 
       _fileOperation.SetOperationFlags(FileOperationFlags.FOF_NOCONFIRMMKDIR);
-      if (_callbackSink != null) _sinkCookie = _fileOperation.Advise(_callbackSink);
+      if (_callbackSink != null) SinkCookie = _fileOperation.Advise(_callbackSink);
       if (owner != null) _fileOperation.SetOwnerWindow((uint) owner.Handle);
+    }
+
+    public void SetOperationFlags(FileOperationFlags operationFlags) {
+      _fileOperation.SetOperationFlags(operationFlags);
     }
 
     public void CopyItem(string source, string destination, string newName) {
@@ -69,7 +68,10 @@ namespace PictureManager.ShellStuff {
 
     public void PerformOperations() {
       ThrowIfDisposed();
-      _fileOperation.PerformOperations();
+      try { _fileOperation.PerformOperations(); }
+      catch (Exception) {
+        // canceling operation cause exception :-/
+      }
     }
 
     private void ThrowIfDisposed() {
@@ -79,7 +81,7 @@ namespace PictureManager.ShellStuff {
     public void Dispose() {
       if (!_disposed) {
         _disposed = true;
-        if (_callbackSink != null) _fileOperation.Unadvise(_sinkCookie);
+        if (_callbackSink != null) _fileOperation.Unadvise(SinkCookie);
         Marshal.FinalReleaseComObject(_fileOperation);
       }
     }
