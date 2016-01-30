@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using mshtml;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
@@ -21,6 +18,7 @@ namespace PictureManager {
     readonly string _argPicFile;
     private readonly WFullPic _wFullPic;
     public AppCore ACore;
+    private Point dragDropStartPosition;
 
     public WMain(string picFile) {
       InitializeComponent();
@@ -92,48 +90,17 @@ namespace PictureManager {
       ACore.ScrollToCurrent();
     }
 
-    private void TvKeywordsStackPanel_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      e.Handled = true;
+    private void TreeViewKeywords_Select(object sender, MouseButtonEventArgs e) {
+      //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;
 
       if (e.ChangedButton != MouseButton.Right) {
-        ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(stackPanel.DataContext, e.ChangedButton, false);
-      } else {
-        ContextMenu menu = stackPanel.ContextMenu;
-        if (menu != null) return;
-        object item = stackPanel.DataContext;
-        menu = new ContextMenu { Tag = item };
-
-        switch (item.GetType().Name) {
-          case nameof(Data.Keyword): {
-              menu.Items.Add(new MenuItem { Command = (ICommand)Resources["KeywordNew"], CommandParameter = item });
-              if (((Data.Keyword)item).Items.Count == 0) {
-                menu.Items.Add(new MenuItem { Command = (ICommand)Resources["KeywordRename"], CommandParameter = stackPanel });
-                menu.Items.Add(new MenuItem { Command = (ICommand)Resources["KeywordDelete"], CommandParameter = item });
-              }
-              if (!ACore.KeywordsEditMode) {
-                menu.Items.Add(new MenuItem { Command = (ICommand)Resources["KeywordShowAll"], CommandParameter = item });
-              }
-              break;
-            }
-          case nameof(Data.Keywords): {
-              menu.Items.Add(new MenuItem { Command = (ICommand)Resources["KeywordNew"], CommandParameter = item });
-              break;
-            }
-          case nameof(Data.Person): {
-              break;
-            }
-          case nameof(Data.People): {
-              break;
-            }
-        }
-
-        stackPanel.ContextMenu = menu;
+        ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
     }
 
-    private void TvFoldersStackPanel_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      e.Handled = true;
+    private void TreeViewFolders_Select(object sender, MouseButtonEventArgs e) {
+      //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;
       object item = stackPanel.DataContext;
 
@@ -151,6 +118,8 @@ namespace PictureManager {
               return;
             }
 
+            dragDropStartPosition = e.GetPosition(null);
+
             folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
             ACore.LastSelectedSourceRecursive = false;
@@ -167,31 +136,11 @@ namespace PictureManager {
           }
         }
       }
-
-      if (e.ChangedButton == MouseButton.Right) {
-        ContextMenu menu = stackPanel.ContextMenu;
-        if (menu != null) return;
-        menu = new ContextMenu {Tag = item};
-
-        switch (item.GetType().Name) {
-          case nameof(Data.Folder): {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = stackPanel});
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
-            break;
-          }
-          case nameof(Data.FavoriteFolder): {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemoveFromFavorites"], CommandParameter = item});
-            break;
-          }
-        }
-
-        stackPanel.ContextMenu = menu;
-      }
     }
 
     #region Commands
     private void CmdKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsStackPanel_PreviewMouseDown(e.Parameter, MouseButton.Left, true);
+      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
     private void CmdKeywordNew(object sender, ExecutedRoutedEventArgs e) {
@@ -345,6 +294,81 @@ namespace PictureManager {
 
     private void TcMain_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
       SetKeywordsButtonsVisibility();
+    }
+
+    private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
+      if (e.LeftButton != MouseButtonState.Pressed) return;
+      Vector diff = dragDropStartPosition - e.GetPosition(null);
+      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
+          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
+      var stackPanel = e.OriginalSource as StackPanel;
+      if (stackPanel == null) return;
+      DragDrop.DoDragDrop(stackPanel, stackPanel.DataContext, DragDropEffects.All);
+    }
+
+    private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
+      var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
+      var destData = (Data.Folder) ((StackPanel) sender).DataContext;
+      if (srcData != null && destData != null && srcData != destData && destData.IsAccessible) return;
+      e.Effects = DragDropEffects.None;
+      e.Handled = true;
+    }
+
+    private void TvFolders_OnDrop(object sender, DragEventArgs e) {
+      var srcData = (Data.Folder)e.Data.GetData(typeof(Data.Folder));
+      var destData = (Data.Folder)((StackPanel)sender).DataContext;
+
+      srcData.Parent.Items.Remove(srcData);
+      srcData.Parent = destData;
+      destData.Items.Add(srcData);
+    }
+
+    private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
+      //this is PreviewMouseRightButtonDown on StackPanel in TreeView
+      e.Handled = true;
+      StackPanel stackPanel = (StackPanel) sender;
+      object item = stackPanel.DataContext;
+
+      if (stackPanel.ContextMenu != null) return;
+      ContextMenu menu = new ContextMenu {Tag = item};
+
+      switch (item.GetType().Name) {
+        case nameof(Data.Folder): {
+          if (((Data.Folder) item).Parent != null) {
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = stackPanel});
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
+          }
+          break;
+        }
+        case nameof(Data.FavoriteFolder): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemoveFromFavorites"], CommandParameter = item});
+          break;
+        }
+        case nameof(Data.Keyword): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordNew"], CommandParameter = item});
+          if (((Data.Keyword) item).Items.Count == 0) {
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordRename"], CommandParameter = stackPanel});
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordDelete"], CommandParameter = item});
+          }
+          if (!ACore.KeywordsEditMode) {
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordShowAll"], CommandParameter = item});
+          }
+          break;
+        }
+        case nameof(Data.Keywords): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordNew"], CommandParameter = item});
+          break;
+        }
+        case nameof(Data.Person): {
+          break;
+        }
+        case nameof(Data.People): {
+          break;
+        }
+      }
+
+      if (menu.Items.Count > 0)
+        stackPanel.ContextMenu = menu;
     }
   }
 }

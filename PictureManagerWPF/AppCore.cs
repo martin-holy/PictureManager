@@ -117,7 +117,7 @@ namespace PictureManager {
       MarkUsedKeywordsAndPeople();
     }
 
-    public void TreeView_KeywordsStackPanel_PreviewMouseDown(object item, MouseButton mouseButton, bool recursive) {
+    public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
       if (item is Keywords || item is People) return;
 
       switch (mouseButton) {

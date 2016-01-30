@@ -138,11 +138,12 @@
         
         <TabItem Header="Folders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
-          <TreeView x:Name="TvFolders">
+          <TreeView x:Name="TvFolders" >
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
               </Style>
             </TreeView.ItemContainerStyle>
@@ -150,26 +151,33 @@
             <TreeView.Resources>
               <!-- TreeView Folders - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvFoldersStackPanel_PreviewMouseDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewFolders_Select">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
-                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
 
               <!-- TreeView Folders - Folder -->
               <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvFoldersStackPanel_PreviewMouseDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" AllowDrop="True"
+                            PreviewMouseRightButtonDown="AttachContextMenu"
+                            PreviewMouseUp="TreeViewFolders_Select" 
+                            Drop="TvFolders_OnDrop" 
+                            MouseMove="TvFolders_OnMouseMove" 
+                            DragEnter="TvFolders_AllowDropCheck" 
+                            DragLeave="TvFolders_AllowDropCheck"
+                            DragOver="TvFolders_AllowDropCheck">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
-                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
-                  <TextBox Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvFoldersEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvFoldersEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                 </StackPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>
@@ -183,13 +191,11 @@
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Style.Triggers>
-                  <!--<DataTrigger Binding="{Binding IsSelected}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}"></Setter>
-                  </DataTrigger>-->
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}"></Setter>
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
@@ -199,40 +205,40 @@
             <TreeView.Resources>
               <!-- TreeView Keywords - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
-                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
-                  <TextBlock Text="{Binding Title}" Margin="5,0,0,0" />
-                  <TextBox Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvKeywordsEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
-                  <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvKeywordsEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
               
               <!-- TreeView Keywords - Person -->
               <HierarchicalDataTemplate DataType="{x:Type data:Person}">
-                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseDown="TvKeywordsStackPanel_PreviewMouseDown">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
                   <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
                   </Rectangle>
-                  <TextBlock Text="{Binding Title}" x:Name="TextBlockTitle" Margin="5,0,0,0" />
-                  <TextBlock Text="{Binding PicCount}" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" x:Name="TextBlockTitle" Margin="5,0,0,0" />
+                  <TextBlock Text="{Binding PicCount}"  VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>
