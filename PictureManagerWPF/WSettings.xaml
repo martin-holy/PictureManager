@@ -16,7 +16,7 @@
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
         ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner" TitleCaps="False">
 
   <Grid>
     <Grid.RowDefinitions>

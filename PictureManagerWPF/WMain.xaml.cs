@@ -231,12 +231,17 @@ namespace PictureManager {
     }
 
     private void CmdOpenSettings(object sender, ExecutedRoutedEventArgs e) {
-      var settings = new WSettings();
+      var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
       } else {
         Settings.Default.Reload();
       }
+    }
+
+    private void CmdAbout(object sender, ExecutedRoutedEventArgs e) {
+      var about = new WAbout {Owner = this};
+      about.ShowDialog();
     }
 
     private void CmdKeywordsEditMode(object sender, ExecutedRoutedEventArgs e) {
