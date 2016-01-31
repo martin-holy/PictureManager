@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,10 +19,12 @@ namespace PictureManager {
     readonly string _argPicFile;
     private readonly WFullPic _wFullPic;
     public AppCore ACore;
-    private Point dragDropStartPosition;
+    private Point _dragDropStartPosition;
 
     public WMain(string picFile) {
       InitializeComponent();
+      var ver = Assembly.GetEntryAssembly().GetName().Version;
+      Title = $"{Title} {ver.Major}.{ver.Minor}";
 
       ACore = new AppCore {WbThumbs = WbThumbs};
       MainStatusBar.DataContext = ACore.AppInfo;
@@ -118,7 +121,7 @@ namespace PictureManager {
               return;
             }
 
-            dragDropStartPosition = e.GetPosition(null);
+            _dragDropStartPosition = e.GetPosition(null);
 
             folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
@@ -298,7 +301,7 @@ namespace PictureManager {
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed) return;
-      Vector diff = dragDropStartPosition - e.GetPosition(null);
+      Vector diff = _dragDropStartPosition - e.GetPosition(null);
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
@@ -318,6 +321,10 @@ namespace PictureManager {
       var srcData = (Data.Folder)e.Data.GetData(typeof(Data.Folder));
       var destData = (Data.Folder)((StackPanel)sender).DataContext;
 
+
+      //TODO: tady bud zaktualizuju u srcData na vsech lozkach FullPath
+      //TODO: nebo budu FullPath skladat vzdycky na dotaz na property, coze je blbost, bylo by to pomaly
+      //TODO: takze rekurzivne projet items na srcData a dat replace srcData.Parent.FullPath za descData.FullPath
       srcData.Parent.Items.Remove(srcData);
       srcData.Parent = destData;
       destData.Items.Add(srcData);
