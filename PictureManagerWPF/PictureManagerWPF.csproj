@@ -89,6 +89,9 @@
     <Compile Include="Data\Person.cs" />
     <Compile Include="Data\Picture.cs" />
     <Compile Include="DbStuff.cs" />
+    <Compile Include="Dialogs\InputDialog.xaml.cs">
+      <DependentUpon>InputDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScriptManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ShellStuff\ComReleaser.cs" />
@@ -122,6 +125,10 @@
     <Compile Include="WTestThumbnailGallery.xaml.cs">
       <DependentUpon>WTestThumbnailGallery.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dialogs\InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
