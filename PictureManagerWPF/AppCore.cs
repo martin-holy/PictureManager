@@ -3,21 +3,17 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using mshtml;
 using PictureManager.Data;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
-using Encoder = System.Text.Encoder;
 
 namespace PictureManager {
   public class AppCore {
@@ -26,6 +22,7 @@ namespace PictureManager {
     public ObservableCollection<BaseItem> KeywordsRoot;
     public Keywords Keywords;
     public People People;
+    public FolderKeywords FolderKeywords;
     public Folders Folders;
     public FavoriteFolders FavoriteFolders;
 
@@ -88,15 +85,17 @@ namespace PictureManager {
     public void Init() {
       People = new People {Db = Db, Title = "People", IconName = "appbar_people_multiple"};
       Keywords = new Keywords {Db = Db, Title = "Keywords", IconName = "appbar_tag"};
+      FolderKeywords = new FolderKeywords {Db = Db, Title = "Folder Keywords", IconName = "appbar_folder" };
       Folders = new Folders {Title = "Folders", IconName = "appbar_folder"};
       FavoriteFolders = new FavoriteFolders { Title = "Favorites", IconName = "appbar_folder_star"};
 
       People.Load();
       Keywords.Load();
+      FolderKeywords.Load();
       Folders.AddDrives();
       FavoriteFolders.Load();
 
-      KeywordsRoot = new ObservableCollection<BaseItem> {People, Keywords};
+      KeywordsRoot = new ObservableCollection<BaseItem> {People, FolderKeywords, Keywords };
       FoldersRoot = new ObservableCollection<BaseItem> {FavoriteFolders, Folders};
     }
 
@@ -119,11 +118,12 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is Keywords || item is People) return;
+      if (item is Keywords || item is People || item is FolderKeywords) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {
           if (KeywordsEditMode) {
+            if (item is FolderKeyword) return;
 
             var baseTagItem = item as BaseTagItem;
             if (baseTagItem != null) {
@@ -287,6 +287,9 @@ namespace PictureManager {
         sqlList.Add($"select PictureId from PictureKeyword where KeywordId not in (select PictureId from PictureKeyword where KeywordId in ({keywordsOut}))");
       if (LastSelectedSourceRecursive && LastSelectedSource is Keyword)
         sqlList.Add($"select PictureId from PictureKeyword where KeywordId in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")");
+      var folderKeyword = LastSelectedSource as FolderKeyword;
+      if (!string.IsNullOrEmpty(folderKeyword?.FolderIds))
+        sqlList.Add($"select Id from Pictures where DirectoryId in ({folderKeyword.FolderIds})");
 
       string innerSql = string.Join(" union ", sqlList);
       string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
@@ -342,6 +345,13 @@ namespace PictureManager {
     public void InitPictures(string dir) {
       int dirId = Db.InsertDirecotryInToDb(dir);
       if (dirId == 0) return;
+
+      //this will add this folder to Keywords->FolderKeywords if is not allready there
+      var folderKeyword = FolderKeywords.GetFolderKeywordByFullPath(FolderKeywords.GetFolderKeywordPath(dir), true);
+      if (folderKeyword != null)
+        folderKeyword.FolderIds = string.IsNullOrEmpty(folderKeyword.FolderIds)
+          ? dirId.ToString()
+          : $"{folderKeyword.FolderIds},{dirId}";
 
       for (int i = 0; i < Pictures.Count; i++) {
         Pictures[i].DirId = dirId;

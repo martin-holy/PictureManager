@@ -82,6 +82,8 @@
     <Compile Include="Data\FavoriteFolder.cs" />
     <Compile Include="Data\FavoriteFolders.cs" />
     <Compile Include="Data\Folder.cs" />
+    <Compile Include="Data\FolderKeyword.cs" />
+    <Compile Include="Data\FolderKeywords.cs" />
     <Compile Include="Data\Folders.cs" />
     <Compile Include="Data\Keyword.cs" />
     <Compile Include="Data\Keywords.cs" />

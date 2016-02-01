@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using mshtml;
+using PictureManager.Dialogs;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 
@@ -26,7 +27,7 @@ namespace PictureManager {
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore {WbThumbs = WbThumbs};
+      ACore = new AppCore() {WbThumbs = WbThumbs};
       MainStatusBar.DataContext = ACore.AppInfo;
 
       WbFullPicHtmlPath = System.IO.Path.Combine(Environment.CurrentDirectory, "html\\FullPic.html");
@@ -57,7 +58,7 @@ namespace PictureManager {
     }
 
     public void InitUi() {
-      SetKeywordsButtonsVisibility();
+      SetToolBarButtonsVisibility();
 
       ACore.Init();
       ACore.Folders.IsExpanded = true;
@@ -73,7 +74,7 @@ namespace PictureManager {
         _wFullPic.Show();
     }
 
-    private void SetKeywordsButtonsVisibility() {
+    public void SetToolBarButtonsVisibility() {
       BtnKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       BtnKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       BtnKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
@@ -100,6 +101,7 @@ namespace PictureManager {
       if (e.ChangedButton != MouseButton.Right) {
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
+      e.Handled = true;
     }
 
     private void TreeViewFolders_Select(object sender, MouseButtonEventArgs e) {
@@ -228,6 +230,7 @@ namespace PictureManager {
       var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
+        ACore.FolderKeywords.Load();
       } else {
         Settings.Default.Reload();
       }
@@ -242,7 +245,7 @@ namespace PictureManager {
       if (ACore.Pictures.Count == 0) return;
       ACore.KeywordsEditMode = true;
       ACore.LastSelectedSource.IsSelected = false;
-      SetKeywordsButtonsVisibility();
+      SetToolBarButtonsVisibility();
     }
 
     private void CmdKeywordsEditModeSave(object sender, ExecutedRoutedEventArgs e) {
@@ -256,12 +259,12 @@ namespace PictureManager {
       }
       StatusProgressBar.Value = 0;
       ACore.KeywordsEditMode = false;
-      SetKeywordsButtonsVisibility();
+      SetToolBarButtonsVisibility();
     }
 
     private void CmdKeywordsEditModeCancel(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
-      SetKeywordsButtonsVisibility();
+      SetToolBarButtonsVisibility();
       foreach (Data.Picture picture in ACore.Pictures) {
         if (picture.IsModifed) {
           picture.RefreshFromDb(ACore.Keywords, ACore.People);
@@ -272,13 +275,25 @@ namespace PictureManager {
     }
 
     private void CmdTestButton(object sender, ExecutedRoutedEventArgs e) {
-      Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
+      var inputDialog = new InputDialog {
+        Owner = this,
+        Title = "Test title",
+        IconName = "appbar_question",
+        Question = "Jak se máš",
+        Answer = "Já ok"
+      };
+
+      if (inputDialog.ShowDialog() ?? true) {
+        MessageBox.Show(inputDialog.Answer);
+      }
+
+      /*Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
       using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
         //fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION);
         fo.CopyItem(@"d:\!test\003.jpg", @"d:\!test\aaa", "003.jpg");
         fo.PerformOperations();
       }
-      var fileOperationResult = (Dictionary<string, string>) Application.Current.Properties["FileOperationResult"];
+      var fileOperationResult = (Dictionary<string, string>) Application.Current.Properties["FileOperationResult"];*/
 
       /*WTestThumbnailGallery ttg = new WTestThumbnailGallery();
       ttg.Show();
@@ -295,7 +310,7 @@ namespace PictureManager {
     }
 
     private void TcMain_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      SetKeywordsButtonsVisibility();
+      SetToolBarButtonsVisibility();
     }
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {

@@ -161,7 +161,7 @@
       
       <TabControl x:Name="TcMain" SelectionChanged="TcMain_OnSelectionChanged">
         
-        <TabItem Header="Folders" HorizontalAlignment="Left">
+        <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders" >
             <TreeView.ItemContainerStyle>
@@ -253,7 +253,21 @@
                   <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
-              
+
+              <!-- TreeView Keywords - FolderKeyword -->
+              <HierarchicalDataTemplate DataType="{x:Type data:FolderKeyword}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                    <Rectangle.OpacityMask>
+                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
+                    </Rectangle.OpacityMask>
+                  </Rectangle>
+                  <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
               <!-- TreeView Keywords - Person -->
               <HierarchicalDataTemplate DataType="{x:Type data:Person}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">

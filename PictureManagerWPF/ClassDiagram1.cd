@@ -18,7 +18,7 @@
   <Class Name="PictureManager.Data.FavoriteFolders">
     <Position X="9.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAgAAAAAAACAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Data\FavoriteFolders.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -37,9 +37,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.Data.Keyword">
-    <Position X="15" Y="5" Width="1.5" />
+    <Position X="16.75" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAACAAAAAAAQAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <HashCode>CAAAAAAAAAAACAAAAAAAQAAAAAAAAAAAAAEAAAAAgAA=</HashCode>
       <FileName>Data\Keyword.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -53,21 +53,21 @@
   <Class Name="PictureManager.Data.People">
     <Position X="13.25" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAEACAAAEAAAAAAAAAAAAAAAAAAAAACAAAA=</HashCode>
+      <HashCode>AAAAhAAAAAEACAAAEAAAAAAAAAAAAAAAAAAAAAiAAAA=</HashCode>
       <FileName>Data\People.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.Data.Person">
-    <Position X="16.75" Y="5" Width="1.5" />
+    <Position X="18.5" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
       <FileName>Data\Person.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.Data.Picture">
     <Position X="2.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAADgAAAAIAAAAABEAAAAAAAAAAAAAEAAAFgAABAgAA=</HashCode>
+      <HashCode>QACDgAAAAIAkAAABEAAAAACAgACAAAFAAgFgAABAgAg=</HashCode>
       <FileName>Data\Picture.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -80,10 +80,24 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.Data.BaseTagItem">
-    <Position X="15" Y="0.5" Width="1.5" />
+    <Position X="16.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAACAAAAAAEAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Data\BaseTagItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.Data.FolderKeyword">
+    <Position X="20.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAACAAAAAAAQAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\FolderKeyword.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.Data.FolderKeywords">
+    <Position X="15" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\FolderKeywords.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
