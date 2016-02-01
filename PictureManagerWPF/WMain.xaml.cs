@@ -153,21 +153,17 @@ namespace PictureManager {
       ACore.Keywords.CreateKeyword(keywords != null ? keywords.Items : keyword.Items, keyword, "New Keyword");
     }
 
-    #region Rename Keyword and Folder
-
-    private void CmdKeywordRename(object sender, ExecutedRoutedEventArgs e) {
-      StackPanel stackPanel = (StackPanel)e.Parameter;
-      TextBlock textBlock = (TextBlock)stackPanel.Children[1];
-      TextBox textBox = (TextBox)stackPanel.Children[2];
-      textBlock.Visibility = Visibility.Collapsed;
-      textBox.Text = textBlock.Text;
-      textBox.Visibility = Visibility.Visible;
-      textBox.Focus();
-      textBox.SelectAll();
-      textBox.Tag = textBlock;
+    private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.CreatePerson("New Person");
     }
 
-    private void CmdFolderRename(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.DeletePerson((Data.Person) e.Parameter);
+    }
+
+    #region Rename Keyword and Folder
+
+    private void CmdRenameTreeViewItem(object sender, ExecutedRoutedEventArgs e) {
       StackPanel stackPanel = (StackPanel)e.Parameter;
       TextBlock textBlock = (TextBlock)stackPanel.Children[1];
       TextBox textBox = (TextBox)stackPanel.Children[2];
@@ -186,32 +182,30 @@ namespace PictureManager {
       textBox.Visibility = Visibility.Collapsed;
     }
 
-    private void TvFoldersEdit_OnKeyDown(object sender, KeyEventArgs e) {
-      if (e.Key == Key.Escape || e.Key == Key.Enter) {
-        TextBox textBox = (TextBox)sender;
-        TextBlock textBlock = (TextBlock)textBox.Tag;
-        if (e.Key == Key.Enter) {
-          if (!string.IsNullOrEmpty(textBox.Text)) {
-            ((Data.Folder)textBox.DataContext).Rename(textBox.Text);
+    private void TreeViewEndEdit_OnKeyDown(object sender, KeyEventArgs e) {
+      if (e.Key != Key.Escape && e.Key != Key.Enter) return;
+      TextBox textBox = (TextBox) sender;
+      TextBlock textBlock = (TextBlock) textBox.Tag;
+      if (e.Key == Key.Enter) {
+        if (!string.IsNullOrEmpty(textBox.Text)) {
+          switch (textBox.DataContext.GetType().Name) {
+            case nameof(Data.Folder): {
+              ((Data.Folder) textBox.DataContext).Rename(ACore.Db, textBox.Text);
+              break;
+            }
+            case nameof(Data.Keyword): {
+              ((Data.Keyword) textBox.DataContext).Rename(ACore.Db, textBox.Text);
+              break;
+            }
+            case nameof(Data.Person): {
+              ((Data.Person) textBox.DataContext).Rename(ACore.Db, textBox.Text);
+              break;
+            }
           }
         }
-        textBlock.Visibility = Visibility.Visible;
-        textBox.Visibility = Visibility.Collapsed;
       }
-    }
-
-    private void TvKeywordsEdit_OnKeyDown(object sender, KeyEventArgs e) {
-      if (e.Key == Key.Escape || e.Key == Key.Enter) {
-        TextBox textBox = (TextBox)sender;
-        TextBlock textBlock = (TextBlock)textBox.Tag;
-        if (e.Key == Key.Enter) {
-          if (!string.IsNullOrEmpty(textBox.Text)) {
-            ((Data.Keyword)textBox.DataContext).Rename(ACore.Db, textBox.Text);
-          }
-        }
-        textBlock.Visibility = Visibility.Visible;
-        textBox.Visibility = Visibility.Collapsed;
-      }
+      textBlock.Visibility = Visibility.Visible;
+      textBox.Visibility = Visibility.Collapsed;
     }
 
     #endregion
@@ -323,16 +317,29 @@ namespace PictureManager {
     }
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
-      var srcData = (Data.Folder)e.Data.GetData(typeof(Data.Folder));
-      var destData = (Data.Folder)((StackPanel)sender).DataContext;
+      var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
+      var destData = (Data.Folder) ((StackPanel) sender).DataContext;
 
+      var flag = e.KeyStates == DragDropKeyStates.ControlKey ? 
+        ACore.CopyItem(srcData.FullPath, destData.FullPath) : 
+        ACore.MoveItem(srcData.FullPath, destData.FullPath);
+      if (!flag) return;
 
-      //TODO: tady bud zaktualizuju u srcData na vsech lozkach FullPath
-      //TODO: nebo budu FullPath skladat vzdycky na dotaz na property, coze je blbost, bylo by to pomaly
-      //TODO: takze rekurzivne projet items na srcData a dat replace srcData.Parent.FullPath za descData.FullPath
-      srcData.Parent.Items.Remove(srcData);
-      srcData.Parent = destData;
-      destData.Items.Add(srcData);
+      if (e.KeyStates != DragDropKeyStates.ControlKey) {
+        UpdateFullPath(srcData, srcData.Parent.FullPath, destData.FullPath);
+        srcData.Parent.Items.Remove(srcData);
+        srcData.Parent = destData;
+        destData.Items.Add(srcData);
+      } else {
+        destData.GetSubFolders(true);
+      }
+    }
+
+    private static void UpdateFullPath(Data.Folder data, string oldParentPath, string newParentPath) {
+      data.FullPath = data.FullPath?.Replace(oldParentPath, newParentPath);
+      foreach (var item in data.Items) {
+        UpdateFullPath(item, oldParentPath, newParentPath);
+      }
     }
 
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
@@ -372,9 +379,12 @@ namespace PictureManager {
           break;
         }
         case nameof(Data.Person): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonRename"], CommandParameter = stackPanel});
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonDelete"], CommandParameter = item});
           break;
         }
         case nameof(Data.People): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonNew"], CommandParameter = item});
           break;
         }
       }

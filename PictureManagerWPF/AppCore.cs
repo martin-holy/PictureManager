@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -371,6 +372,32 @@ namespace PictureManager {
           break;
         }
       }
+    }
+
+    public bool CopyItem(string from, string to) {
+      Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
+      using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
+        fo.CopyItem(from, to, from.Substring(from.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1));
+        fo.PerformOperations();
+      }
+      var fileOperationResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
+      if (fileOperationResult.Count == 0) return false;
+      //takze tady mam operace ktery se vykonaly. pokud uz slozka exustuje tak se nedeje nic. 
+      //kopiruje se kopletni obsah slozky, takze ne jenom JPG
+      //takze bych mel projet fileOperationResult a na vsechny JPG provest tichou operaci a upravit si cesty v DB 
+      return true;
+    }
+
+    public bool MoveItem(string from, string to) {
+      Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
+      using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
+        fo.MoveItem(from, to, from.Substring(from.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1));
+        fo.PerformOperations();
+      }
+      var fileOperationResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
+      if (fileOperationResult.Count == 0) return false;
+
+      return true;
     }
 
     #region Static Methods

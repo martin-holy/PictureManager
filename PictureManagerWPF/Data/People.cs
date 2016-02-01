@@ -49,5 +49,10 @@ namespace PictureManager.Data {
       return newPerson;
     }
 
+    public void DeletePerson(Person person) {
+      Db.Execute($"delete from PicturePerson where PersonId = {person.Id}");
+      Db.Execute($"delete from People where Id = {person.Id}");
+      Items.Remove(person);
+    }
   }
 }

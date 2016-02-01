@@ -26,13 +26,13 @@ namespace PictureManager.Data {
       Items = new ObservableCollection<Folder>();
     }
 
-    public void Rename(string name) {
+    public void Rename(DbStuff db, string newName) {
       //TODO presun slozky, presun cache, update vsech FullPath, update DB
       //AppStuff.FolderMoveWithCache(path, newPath)
 
 
 
-      Title = name;
+      Title = newName;
     }
 
     public void GetSubFolders(bool refresh) {

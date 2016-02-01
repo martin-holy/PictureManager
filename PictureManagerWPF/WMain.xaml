@@ -28,6 +28,9 @@
     <RoutedUICommand x:Key="KeywordNew" Text="New" />
     <RoutedUICommand x:Key="KeywordRename" Text="Rename" />
     <RoutedUICommand x:Key="KeywordDelete" Text="Delete" />
+    <RoutedUICommand x:Key="PersonNew" Text="New" />
+    <RoutedUICommand x:Key="PersonRename" Text="Rename" />
+    <RoutedUICommand x:Key="PersonDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
@@ -42,9 +45,12 @@
   <controls:MetroWindow.CommandBindings>
     <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdKeywordShowAll" />
     <CommandBinding Command="{StaticResource KeywordNew}" Executed="CmdKeywordNew" />
-    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdKeywordRename" />
+    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdRenameTreeViewItem" />
     <CommandBinding Command="{StaticResource KeywordDelete}" Executed="CmdKeywordDelete" />
-    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
+    <CommandBinding Command="{StaticResource PersonNew}" Executed="CmdPersonNew" />
+    <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdRenameTreeViewItem" />
+    <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
+    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdRenameTreeViewItem" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
     <CommandBinding Command="{StaticResource OpenSettings}" Executed="CmdOpenSettings" />
@@ -196,7 +202,7 @@
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
-                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvFoldersEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                 </StackPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>
@@ -243,7 +249,7 @@
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
-                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TvKeywordsEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                   <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -257,6 +263,7 @@
                     </Rectangle.OpacityMask>
                   </Rectangle>
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" x:Name="TextBlockTitle" Margin="5,0,0,0" />
+                  <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                   <TextBlock Text="{Binding PicCount}"  VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>

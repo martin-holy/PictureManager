@@ -86,8 +86,7 @@ namespace PictureManager {
       get { return GetAttributeValue<AssemblyCompanyAttribute>(a => a.Company); }
     }
 
-    protected string GetAttributeValue<TAttr>(Func<TAttr,
-      string> resolveFunc, string defaultResult = null) where TAttr : Attribute {
+    protected string GetAttributeValue<TAttr>(Func<TAttr,string> resolveFunc, string defaultResult = null) where TAttr : Attribute {
       object[] attributes = _assembly.GetCustomAttributes(typeof (TAttr), false);
       if (attributes.Length > 0)
         return resolveFunc((TAttr) attributes[0]);
