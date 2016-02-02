@@ -101,7 +101,6 @@ namespace PictureManager {
       if (e.ChangedButton != MouseButton.Right) {
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
-      e.Handled = true;
     }
 
     private void TreeViewFolders_Select(object sender, MouseButtonEventArgs e) {

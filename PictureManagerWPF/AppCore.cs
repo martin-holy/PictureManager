@@ -213,7 +213,7 @@ namespace PictureManager {
     }
 
     public void MarkUsedKeywordsAndPeople() {
-      //can by Person or Keyword
+      //can by Person, Keyword or FolderKeyword
       foreach (BaseTagItem item in MarkedTags) {
         item.IsMarked = false;
         item.PicCount = 0;
@@ -222,10 +222,12 @@ namespace PictureManager {
       MarkedTags.Clear();
       var pictures = SelectedPictures.Count == 0 ? Pictures : SelectedPictures;
       foreach (Picture picture in pictures) {
+
         foreach (Person person in picture.People.Where(person => !person.IsMarked)) {
           person.IsMarked = true;
           MarkedTags.Add(person);
         }
+
         foreach (Keyword keyword in picture.Keywords) {
           var k = keyword;
           do {
@@ -234,6 +236,17 @@ namespace PictureManager {
             MarkedTags.Add(k);
             k = k.Parent;
           } while (k != null);
+        }
+
+        FolderKeyword folderKeyword = FolderKeywords.GetFolderKeywordByDirId(picture.DirId);
+        if (folderKeyword != null && !folderKeyword.IsMarked) {
+          var fk = folderKeyword;
+          do {
+            if (fk.IsMarked) break;
+            fk.IsMarked = true;
+            MarkedTags.Add(fk);
+            fk = fk.Parent;
+          } while (fk != null);
         }
       }
 
@@ -246,6 +259,12 @@ namespace PictureManager {
           case nameof(Keyword): {
             Keyword keyword = (Keyword) item;
             keyword.PicCount = pictures.Count(p => p.Keywords.Any(k => k.FullPath.StartsWith(keyword.FullPath)));
+            break;
+          }
+          case nameof(FolderKeyword): {
+            FolderKeyword folderKeyword = (FolderKeyword) item;
+            folderKeyword.PicCount =
+              pictures.Count(p => p.FolderKeyword != null && p.FolderKeyword.FullPath.StartsWith(folderKeyword.FullPath));
             break;
           }
         }
@@ -292,7 +311,7 @@ namespace PictureManager {
         sqlList.Add($"select Id from Pictures where DirectoryId in ({folderKeyword.FolderIds})");
 
       string innerSql = string.Join(" union ", sqlList);
-      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating " +
+      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating, DirectoryId " +
                    $"from Pictures as P where P.Id in ({innerSql}) order by FileName";
 
       foreach (DataRow row in Db.Select(sql)) {
@@ -300,7 +319,9 @@ namespace PictureManager {
         if (File.Exists(picFullPath)) {
           Picture pic = new Picture(picFullPath, Db, Pictures.Count) {
             Id = (int) (long) row[0],
-            Rating = (int) (long) row[3]
+            Rating = (int) (long) row[3],
+            DirId = (int) (long) row[4],
+            FolderKeyword = FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
           };
           pic.LoadKeywordsFromDb(Keywords);
           pic.LoadPeopleFromDb(People);
@@ -346,15 +367,11 @@ namespace PictureManager {
       int dirId = Db.InsertDirecotryInToDb(dir);
       if (dirId == 0) return;
 
-      //this will add this folder to Keywords->FolderKeywords if is not allready there
-      var folderKeyword = FolderKeywords.GetFolderKeywordByFullPath(FolderKeywords.GetFolderKeywordPath(dir), true);
-      if (folderKeyword != null)
-        folderKeyword.FolderIds = string.IsNullOrEmpty(folderKeyword.FolderIds)
-          ? dirId.ToString()
-          : $"{folderKeyword.FolderIds},{dirId}";
-
+      FolderKeywords.Load();
+      FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(dir);
       for (int i = 0; i < Pictures.Count; i++) {
         Pictures[i].DirId = dirId;
+        Pictures[i].FolderKeyword = fk;
         Pictures[i].LoadFromDb(Keywords, People);
         WbUpdatePictureInfo(i);
         DoEvents();

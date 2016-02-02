@@ -21,9 +21,9 @@ namespace PictureManager.Data {
 
       foreach (DataRow row in Db.Select(sql)) {
         var id = (int) (long) row[0];
-        var path = (string) row[1];
+        var fullPath = (string) row[1];
 
-        path = GetFolderKeywordPath(path);
+        var path = GetFolderKeywordKeyPath(fullPath);
         if (string.IsNullOrEmpty(path)) continue;
 
         paths.Add(id, path);
@@ -33,7 +33,7 @@ namespace PictureManager.Data {
         FolderKeyword newItem = new FolderKeyword {
           IconName = "appbar_folder",
           FullPath = keyPath, 
-          FolderIds = string.Join(",", paths.Where(p => p.Value.Equals(keyPath)).Select(p => p.Key))
+          FolderIdList = paths.Where(p => p.Value.Equals(keyPath)).Select(p => p.Key).ToList()
         };
 
         if (!newItem.FullPath.Contains("\\")) {
@@ -41,7 +41,7 @@ namespace PictureManager.Data {
           Items.Add(newItem);
         } else {
           newItem.Title = newItem.FullPath.Substring(newItem.FullPath.LastIndexOf('\\') + 1);
-          FolderKeyword parentFolderKeyword = GetFolderKeywordByFullPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('\\')), true);
+          FolderKeyword parentFolderKeyword = GetFolderKeywordByKeyPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('\\')), true);
           if (parentFolderKeyword == null) continue;
           newItem.Parent = parentFolderKeyword;
           parentFolderKeyword.Items.Add(newItem);
@@ -49,21 +49,30 @@ namespace PictureManager.Data {
       }  
     }
 
-    public string GetFolderKeywordPath(string path) {
-      path = Settings.Default.FolderKeywordIngnoreList.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
+    public string GetFolderKeywordKeyPath(string fullPath) {
+      var keyPath = Settings.Default.FolderKeywordIngnoreList.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
         .OrderBy(x => x)
-        .Aggregate(path, (current, ignorePath) => current.Replace(ignorePath, string.Empty));
-      return path.Contains(":") ? string.Empty : path;
+        .Aggregate(fullPath, (current, ignorePath) => current.Replace(ignorePath, string.Empty));
+      return keyPath.Contains(":") ? string.Empty : keyPath;
     }
 
-    public FolderKeyword GetFolderKeywordByFullPath(string fullPath, bool create) {
+    public FolderKeyword GetFolderKeywordByDirId(int dirId) {
+      string fullPath = (string) Db.ExecuteScalar($"select Path from Directories where Id = {dirId}");
+      return GetFolderKeywordByKeyPath(GetFolderKeywordKeyPath(fullPath), false);
+    }
+
+    public FolderKeyword GetFolderKeywordByFullPath(string fullPath) {
+      return GetFolderKeywordByKeyPath(GetFolderKeywordKeyPath(fullPath), false);
+    }
+
+    public FolderKeyword GetFolderKeywordByKeyPath(string keyPath, bool create) {
       FolderKeyword parent = null;
       ObservableCollection<FolderKeyword> root = Items;
 
       while (true) {
-        if (root.Count == 0 || string.IsNullOrEmpty(fullPath)) return null;
+        if (root.Count == 0 || string.IsNullOrEmpty(keyPath)) return null;
 
-        string[] keyParts = fullPath.Split('\\');
+        string[] keyParts = keyPath.Split('\\');
         FolderKeyword folderKeyword = root.FirstOrDefault(fk => fk.Title.Equals(keyParts[0]));
         if (folderKeyword == null) {
           if (!create) return null;
@@ -73,7 +82,7 @@ namespace PictureManager.Data {
 
         parent = folderKeyword;
         root = folderKeyword.Items;
-        fullPath = fullPath.Substring(keyParts[0].Length + 1);
+        keyPath = keyPath.Substring(keyParts[0].Length + 1);
       }
     }
 
@@ -86,9 +95,7 @@ namespace PictureManager.Data {
         Parent = parent
       };
 
-      FolderKeyword folderKeyword =
-        root.FirstOrDefault(fk => string.Compare(fk.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
-      root.Insert(folderKeyword == null ? 0 : root.IndexOf(folderKeyword), newFolderKeyword);
+      root.Add(newFolderKeyword);
       return newFolderKeyword;
     }
   }

@@ -21,6 +21,7 @@ namespace PictureManager.Data {
     public DbStuff Db;
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
+    public FolderKeyword FolderKeyword;
 
     public Picture(string filePath, DbStuff db, int index) {
       FilePath = filePath;

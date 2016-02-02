@@ -6,10 +6,12 @@ namespace PictureManager.Data {
     public string FullPath;
     public ObservableCollection<FolderKeyword> Items { get; set; }
     public FolderKeyword Parent;
-    public string FolderIds; 
+    public List<int> FolderIdList;
+    public string FolderIds => string.Join(",", FolderIdList);
 
     public FolderKeyword() {
       Items = new ObservableCollection<FolderKeyword>();
+      FolderIdList = new List<int>();
     }
   }
 }
