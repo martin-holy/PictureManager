@@ -123,7 +123,10 @@ namespace PictureManager {
       switch (mouseButton) {
         case MouseButton.Left: {
           if (KeywordsEditMode) {
-            if (item is FolderKeyword) return;
+            if (item is FolderKeyword) {
+              ((FolderKeyword) item).IsSelected = false;
+              return;
+            }
 
             var baseTagItem = item as BaseTagItem;
             if (baseTagItem != null) {

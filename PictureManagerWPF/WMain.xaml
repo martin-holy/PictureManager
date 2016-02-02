@@ -66,7 +66,7 @@
       <ToolBar Height="36">
         <Button Command="{StaticResource TestButton}" ToolTip="Test Button">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_bug}"/>
               </Rectangle.OpacityMask>
@@ -76,7 +76,7 @@
         </Button>
         <Button Command="{StaticResource About}" ToolTip="About">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_question}"/>
               </Rectangle.OpacityMask>
@@ -86,7 +86,7 @@
         </Button>
         <Button Command="{StaticResource OpenSettings}" ToolTip="Application Settings">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_settings}"/>
               </Rectangle.OpacityMask>
@@ -96,7 +96,7 @@
         </Button>
         <Button x:Name="BtnKeywordsEditMode" Command="{StaticResource KeywordsEditMode}" ToolTip="Edit Keywords">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_edit}"/>
               </Rectangle.OpacityMask>
@@ -106,7 +106,7 @@
         </Button>
         <Button x:Name="BtnKeywordsEditModeCancel" Command="{StaticResource KeywordsEditModeCancel}" ToolTip="Cancel edit Keywords">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding  Converter={StaticResource IconNameToBrush}, ConverterParameter='appbar_cancel'}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_cancel}"/>
               </Rectangle.OpacityMask>
@@ -116,7 +116,7 @@
         </Button>
         <Button x:Name="BtnKeywordsEditModeSave" Command="{StaticResource KeywordsEditModeSave}" ToolTip="Save Keywords">
           <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=Button}, Path=Foreground}">
+            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding Converter={StaticResource IconNameToBrush}, ConverterParameter='appbar_save'}">
               <Rectangle.OpacityMask>
                 <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_save}"/>
               </Rectangle.OpacityMask>
@@ -177,7 +177,7 @@
               <!-- TreeView Folders - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewFolders_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
@@ -196,7 +196,7 @@
                             DragEnter="TvFolders_AllowDropCheck" 
                             DragLeave="TvFolders_AllowDropCheck"
                             DragOver="TvFolders_AllowDropCheck">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
@@ -231,7 +231,7 @@
               <!-- TreeView Keywords - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
@@ -243,7 +243,7 @@
               <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
@@ -257,7 +257,7 @@
               <!-- TreeView Keywords - FolderKeyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:FolderKeyword}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>
@@ -271,7 +271,7 @@
               <!-- TreeView Keywords - Person -->
               <HierarchicalDataTemplate DataType="{x:Type data:Person}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding RelativeSource={RelativeSource AncestorType=TreeViewItem}, Path=Foreground}">
+                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
                     <Rectangle.OpacityMask>
                       <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
                     </Rectangle.OpacityMask>

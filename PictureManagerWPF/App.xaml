@@ -14,7 +14,7 @@
         <ResourceDictionary Source="/Resources/Icons.xaml" />
       </ResourceDictionary.MergedDictionaries>
       <pictureManager:StaticResourceConverter x:Key="StaticResourceConverter"/>
-
+      <pictureManager:IconNameToBrush x:Key="IconNameToBrush" />
       
     </ResourceDictionary>
   </Application.Resources>

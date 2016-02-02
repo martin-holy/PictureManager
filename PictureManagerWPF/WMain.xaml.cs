@@ -75,7 +75,7 @@ namespace PictureManager {
     }
 
     public void SetToolBarButtonsVisibility() {
-      BtnKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
+      BtnKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
       BtnKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       BtnKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
     }
@@ -100,6 +100,7 @@ namespace PictureManager {
 
       if (e.ChangedButton != MouseButton.Right) {
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
+        SetToolBarButtonsVisibility();
       }
     }
 
