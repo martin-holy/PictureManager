@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using mshtml;
 using PictureManager.Dialogs;
@@ -58,8 +59,6 @@ namespace PictureManager {
     }
 
     public void InitUi() {
-      SetToolBarButtonsVisibility();
-
       ACore.Init();
       ACore.Folders.IsExpanded = true;
       ACore.Keywords.IsExpanded = true;
@@ -72,12 +71,6 @@ namespace PictureManager {
       _wFullPic.SetCurrentImage();
       if (!_wFullPic.IsActive)
         _wFullPic.Show();
-    }
-
-    public void SetToolBarButtonsVisibility() {
-      BtnKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-      BtnKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
-      BtnKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -100,7 +93,6 @@ namespace PictureManager {
 
       if (e.ChangedButton != MouseButton.Right) {
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
-        SetToolBarButtonsVisibility();
       }
     }
 
@@ -226,7 +218,7 @@ namespace PictureManager {
       ACore.FavoriteFolders.Load();
     }
 
-    private void CmdOpenSettings(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdOpenSettings(object sender, RoutedEventArgs e) {
       var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
@@ -236,19 +228,18 @@ namespace PictureManager {
       }
     }
 
-    private void CmdAbout(object sender, ExecutedRoutedEventArgs e) {
-      var about = new WAbout {Owner = this};
+    private void CmdAbout(object sender, RoutedEventArgs e) {
+      var about = new WAbout { Owner = this };
       about.ShowDialog();
     }
 
-    private void CmdKeywordsEditMode(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdKeywordsEditMode(object sender, RoutedEventArgs e) {
       if (ACore.Pictures.Count == 0) return;
       ACore.KeywordsEditMode = true;
       ACore.LastSelectedSource.IsSelected = false;
-      SetToolBarButtonsVisibility();
     }
 
-    private void CmdKeywordsEditModeSave(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdKeywordsEditModeSave(object sender, RoutedEventArgs e) {
       var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
       StatusProgressBar.Maximum = pictures.Count;
       StatusProgressBar.Value = 0;
@@ -259,12 +250,10 @@ namespace PictureManager {
       }
       StatusProgressBar.Value = 0;
       ACore.KeywordsEditMode = false;
-      SetToolBarButtonsVisibility();
     }
 
-    private void CmdKeywordsEditModeCancel(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdKeywordsEditModeCancel(object sender, RoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
-      SetToolBarButtonsVisibility();
       foreach (Data.Picture picture in ACore.Pictures) {
         if (picture.IsModifed) {
           picture.RefreshFromDb(ACore.Keywords, ACore.People);
@@ -274,8 +263,9 @@ namespace PictureManager {
       ACore.MarkUsedKeywordsAndPeople();
     }
 
-    private void CmdTestButton(object sender, ExecutedRoutedEventArgs e) {
-      var inputDialog = new InputDialog {
+    private void CmdTestButton(object sender, RoutedEventArgs e) {
+      MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
+      /*var inputDialog = new InputDialog {
         Owner = this,
         Title = "Test title",
         IconName = "appbar_question",
@@ -285,7 +275,7 @@ namespace PictureManager {
 
       if (inputDialog.ShowDialog() ?? true) {
         MessageBox.Show(inputDialog.Answer);
-      }
+      }*/
 
       /*Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
       using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
@@ -307,10 +297,6 @@ namespace PictureManager {
       if (cm == null) return;
       cm.PlacementTarget = WbThumbs;
       cm.IsOpen = true;*/
-    }
-
-    private void TcMain_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      SetToolBarButtonsVisibility();
     }
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
@@ -406,6 +392,25 @@ namespace PictureManager {
 
       if (menu.Items.Count > 0)
         stackPanel.ContextMenu = menu;
+    }
+
+    private void MainMenuButton_OnClick(object sender, RoutedEventArgs e) {
+      ContextMenu menu = ((Button) sender).ContextMenu;
+
+      McmKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+      McmKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
+      McmKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
+
+      menu.Placement = PlacementMode.Absolute;
+      menu.VerticalOffset = SystemParameters.WindowCaptionHeight + 9;
+      menu.HorizontalOffset = 1;
+
+      menu.IsOpen = true;
+    }
+
+    private void BtnMainContextMenu_OnContextMenuOpening(object sender, ContextMenuEventArgs e) {
+      ((Button)sender).ContextMenu.IsOpen = false;
+      e.Handled = true;
     }
   }
 }

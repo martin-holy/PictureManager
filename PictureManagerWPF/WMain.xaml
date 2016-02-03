@@ -11,6 +11,22 @@
         Closing="Window_Closing" 
         FontSize="13.333" 
         SaveWindowPosition="True" TitleCaps="False">
+  <controls:MetroWindow.LeftWindowCommands>
+    <controls:WindowCommands>
+      <Button x:Name="BtnMainContextMenu" Content="Menu" Click="MainMenuButton_OnClick" ContextMenuOpening="BtnMainContextMenu_OnContextMenuOpening" >
+        <Button.ContextMenu>
+          <ContextMenu x:Name="MainContextMenu">
+            <MenuItem x:Name="McmKeywordsEditMode" Header="Edit Keywords" Click="CmdKeywordsEditMode" />
+            <MenuItem x:Name="McmKeywordsEditModeSave" Header="Save edited Keywords" Click="CmdKeywordsEditModeSave" />
+            <MenuItem x:Name="McmKeywordsEditModeCancel" Header="Cancel edit Keywords" Click="CmdKeywordsEditModeCancel" />
+            <MenuItem x:Name="McmTestButton" Header="Test Button" Click="CmdTestButton" />
+            <MenuItem x:Name="McmOpenSettings" Header="Settings" Click="CmdOpenSettings" />
+            <MenuItem x:Name="McmAbout" Header="About" Click="CmdAbout" />
+          </ContextMenu>
+        </Button.ContextMenu>
+      </Button>
+    </controls:WindowCommands>
+  </controls:MetroWindow.LeftWindowCommands>
   <controls:MetroWindow.Resources>
     <Style TargetType="{x:Type controls:MetroWindow}">
       <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal" />
@@ -34,12 +50,6 @@
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
-    <RoutedUICommand x:Key="OpenSettings" />
-    <RoutedUICommand x:Key="KeywordsEditMode" />
-    <RoutedUICommand x:Key="KeywordsEditModeSave" />
-    <RoutedUICommand x:Key="KeywordsEditModeCancel" />
-    <RoutedUICommand x:Key="About" />
-    <RoutedUICommand x:Key="TestButton" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
@@ -53,79 +63,10 @@
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdRenameTreeViewItem" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
-    <CommandBinding Command="{StaticResource OpenSettings}" Executed="CmdOpenSettings" />
-    <CommandBinding Command="{StaticResource KeywordsEditMode}" Executed="CmdKeywordsEditMode" />
-    <CommandBinding Command="{StaticResource KeywordsEditModeSave}" Executed="CmdKeywordsEditModeSave" />
-    <CommandBinding Command="{StaticResource KeywordsEditModeCancel}" Executed="CmdKeywordsEditModeCancel" />
-    <CommandBinding Command="{StaticResource About}" Executed="CmdAbout" />
-    <CommandBinding Command="{StaticResource TestButton}" Executed="CmdTestButton" />
   </controls:MetroWindow.CommandBindings>
 
   <DockPanel >
-    <ToolBarTray DockPanel.Dock="Top">
-      <ToolBar Height="36">
-        <Button Command="{StaticResource TestButton}" ToolTip="Test Button">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_bug}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">Test</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button Command="{StaticResource About}" ToolTip="About">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_question}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">About</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button Command="{StaticResource OpenSettings}" ToolTip="Application Settings">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_settings}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">Settings</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button x:Name="BtnKeywordsEditMode" Command="{StaticResource KeywordsEditMode}" ToolTip="Edit Keywords">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_edit}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">Edit</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button x:Name="BtnKeywordsEditModeCancel" Command="{StaticResource KeywordsEditModeCancel}" ToolTip="Cancel edit Keywords">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding  Converter={StaticResource IconNameToBrush}, ConverterParameter='appbar_cancel'}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_cancel}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">Cancel</TextBlock>
-          </StackPanel>
-        </Button>
-        <Button x:Name="BtnKeywordsEditModeSave" Command="{StaticResource KeywordsEditModeSave}" ToolTip="Save Keywords">
-          <StackPanel Orientation="Horizontal">
-            <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding Converter={StaticResource IconNameToBrush}, ConverterParameter='appbar_save'}">
-              <Rectangle.OpacityMask>
-                <VisualBrush Stretch="Uniform" Visual="{StaticResource appbar_save}"/>
-              </Rectangle.OpacityMask>
-            </Rectangle>
-            <TextBlock Margin="5,0,5,0">Save</TextBlock>
-          </StackPanel>
-        </Button>
-      </ToolBar>
-    </ToolBarTray>
+    
     <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
       <StatusBar.ItemsPanel>
         <ItemsPanelTemplate>
@@ -159,11 +100,12 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
       
-      <TabControl x:Name="TcMain" SelectionChanged="TcMain_OnSelectionChanged">
+      <TabControl x:Name="TcMain">
         
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
-          <TreeView x:Name="TvFolders" >
+          <TreeView x:Name="TvFolders">
+
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />

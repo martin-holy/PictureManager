@@ -452,6 +452,7 @@ namespace PictureManager {
       try {
         var thumb = new ShellThumbnail();
         thumb.CreateThumbnail(origPath, newPath, size, 80L);
+        thumb.Dispose();
       } catch (Exception) {
         //file can have 0 size
       }
