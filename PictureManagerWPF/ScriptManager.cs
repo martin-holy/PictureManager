@@ -18,10 +18,6 @@ namespace PictureManager {
       _wMain.ShowFullPicture();
     }
 
-    public void DoDragDrop() {
-      //_wMain.ACore.DoDragDropOnThumbnails();
-    }
-
     public void FullPicMouseWheel(int delta) {
       _wMain.ACore.CurrentPictureMove(delta < 0);
       _wMain.ShowFullPicture();

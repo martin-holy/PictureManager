@@ -13,14 +13,12 @@
 <body>
 <div id="content">
     <div id="thumbnails"
-         onclick="thumbnailsOnClick(event);"
          ondblclick="thumbnailsDblClick(event);"
          onmouseover="thumbnailsMouseOver(event);"
          onmouseout="thumbnailsMouseOut(event);"
-         onmousemove="thumbnailsMouseMove(event);"
-         onmousedown="mouseDown(event);"
-         onmouseup="mouseUp(event);"
-         oncontextmenu="onContextMenu(event);">
+         onmousedown="thumbnailsMouseDown(event);"
+         oncontextmenu="onContextMenu(event);"
+         ondragstart="dragStart(event);">
       <!--<div class="thumbBox" id="0"><div class="keywords"></div><img src="D:\Temp\PictureManagerCache\!test\20150923_134519_Martin.jpg"/></div>
       <div class="thumbBox" id="1"><div class="keywords"></div><img src="D:\Temp\PictureManagerCache\!test\20150923_134519_Martin.jpg" /></div>
        -->

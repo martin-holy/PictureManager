@@ -63,6 +63,11 @@ namespace PictureManager {
     public bool OneFileOnly;
     public bool ViewerOnly = false; //application was run with file path parameter
     public bool KeywordsEditMode = false;
+
+    public enum FileOperations {
+      Copy,
+      Move
+    }
     
     public AppCore() {
       AppInfo = new AppInfo();
@@ -412,29 +417,45 @@ namespace PictureManager {
       }
     }
 
-    public bool CopyItem(string from, string to) {
+    public bool FileOperation(FileOperations mode, string from, string to) {
       Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
       using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
-        fo.CopyItem(from, to, from.Substring(from.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1));
+
+        if (from == null) {
+          foreach (var p in SelectedPictures) {
+            switch (mode) {
+              case FileOperations.Copy: {
+                fo.CopyItem(p.FilePath, to, p.FileName);
+                break;
+              }
+              case FileOperations.Move: {
+                fo.MoveItem(p.FilePath, to, p.FileName);
+                break;
+              }
+            }
+          }
+        } else {
+          var newName = from.Substring(from.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
+          switch (mode) {
+            case FileOperations.Copy: {
+              fo.CopyItem(from, to, newName);
+              break;
+            }
+            case FileOperations.Move: {
+              fo.MoveItem(from, to, newName);
+              break;
+            }
+          }
+        }
+
         fo.PerformOperations();
       }
+
       var fileOperationResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
       if (fileOperationResult.Count == 0) return false;
       //takze tady mam operace ktery se vykonaly. pokud uz slozka exustuje tak se nedeje nic. 
       //kopiruje se kopletni obsah slozky, takze ne jenom JPG
       //takze bych mel projet fileOperationResult a na vsechny JPG provest tichou operaci a upravit si cesty v DB 
-      return true;
-    }
-
-    public bool MoveItem(string from, string to) {
-      Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
-      using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
-        fo.MoveItem(from, to, from.Substring(from.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1));
-        fo.PerformOperations();
-      }
-      var fileOperationResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
-      if (fileOperationResult.Count == 0) return false;
-
       return true;
     }
 

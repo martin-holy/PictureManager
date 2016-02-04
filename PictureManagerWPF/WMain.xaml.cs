@@ -313,21 +313,32 @@ namespace PictureManager {
     }
 
     private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
+      var thumbs = e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
-      if (srcData != null && destData != null && srcData != destData && destData.IsAccessible) return;
+      if ((srcData != null || thumbs) && destData != null && srcData != destData && destData.IsAccessible) return;
       e.Effects = DragDropEffects.None;
       e.Handled = true;
     }
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
+      var thumbs = e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
+      var from = thumbs ? null : srcData.FullPath;
 
       var flag = e.KeyStates == DragDropKeyStates.ControlKey ? 
-        ACore.CopyItem(srcData.FullPath, destData.FullPath) : 
-        ACore.MoveItem(srcData.FullPath, destData.FullPath);
+        ACore.FileOperation(AppCore.FileOperations.Copy, from, destData.FullPath) : 
+        ACore.FileOperation(AppCore.FileOperations.Move, from, destData.FullPath);
       if (!flag) return;
+
+      if (thumbs) {
+        if (e.KeyStates != DragDropKeyStates.ControlKey) {
+          //TODO: remove thumbs and pictures from collection
+        }
+
+        return;
+      }
 
       if (e.KeyStates != DragDropKeyStates.ControlKey) {
         UpdateFullPath(srcData, srcData.Parent.FullPath, destData.FullPath);

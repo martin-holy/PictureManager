@@ -234,10 +234,9 @@
         </TabItem>
         
       </TabControl>
-      
+
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
-      
-      <WebBrowser x:Name="WbThumbs" Grid.Column="2" Margin="0,0,2,2" ></WebBrowser>
+      <WebBrowser x:Name="WbThumbs" Grid.Column="2" Margin="0,0,2,2" />
     </Grid>
   </DockPanel>
 </controls:MetroWindow>

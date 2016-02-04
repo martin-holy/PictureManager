@@ -56,10 +56,6 @@ function isUndefinedOrNull(o) {
   return (o === undefined || o === null) ? true : false;
 }
 
-function thumbnailsOnClick(event) {
-  imgSelect(event);
-}
-
 function thumbnailsDblClick(event) {
   window.external.ShowFullPicture(event.target.parentElement.id);
 }
@@ -72,20 +68,9 @@ function thumbnailsMouseOut(event) {
   hideKeywords(event.target.parentElement, false);
 }
 
-function thumbnailsMouseMove(event) {
-  if (mouseIsDown) {
-    window.external.DoDragDrop();
-    mouseIsDown = false;
-  }
-}
-
-function mouseDown(event) {
+function thumbnailsMouseDown(event) {
   if (event.which === 1)
-    mouseIsDown = true;
-}
-
-function mouseUp(event) {
-  mouseIsDown = false;
+    imgSelect(event);
 }
 
 function hideKeywords(elm, value) {
@@ -253,4 +238,9 @@ function imgSelect(event) {
     }
   }
   setSelected();
+}
+
+function dragStart(event) {
+  event.dataTransfer.effectAllowed = "copyMove";
+  event.dataTransfer.setData("text", "PictureManager");
 }
