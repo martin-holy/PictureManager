@@ -25,6 +25,7 @@ namespace PictureManager {
     public FolderKeywords FolderKeywords;
     public Folders Folders;
     public FavoriteFolders FavoriteFolders;
+    public WMain WMain;
 
     public BaseItem LastSelectedSource {
       get {
@@ -342,7 +343,10 @@ namespace PictureManager {
 
       //append all pictures to content div
       StringBuilder sb = new StringBuilder();
+      WMain.StatusProgressBar.Value = 0;
+      WMain.StatusProgressBar.Maximum = Pictures.Count;
       for (int i = 0; i < Pictures.Count; i++) {
+        WMain.StatusProgressBar.Value++;
         string thumbPath = Pictures[i].CacheFilePath;
         bool flag = File.Exists(thumbPath);
         if (!flag) CreateThumbnail(Pictures[i].FilePath, thumbPath);
@@ -357,7 +361,7 @@ namespace PictureManager {
 
       WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
       DoEvents();
-
+      WMain.StatusProgressBar.Value = 0;
       ScrollToCurrent();
     }
 
@@ -372,13 +376,17 @@ namespace PictureManager {
 
       FolderKeywords.Load();
       FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(dir);
+      WMain.StatusProgressBar.Value = 0;
+      WMain.StatusProgressBar.Maximum = Pictures.Count;
       for (int i = 0; i < Pictures.Count; i++) {
         Pictures[i].DirId = dirId;
         Pictures[i].FolderKeyword = fk;
         Pictures[i].LoadFromDb(Keywords, People);
         WbUpdatePictureInfo(i);
+        WMain.StatusProgressBar.Value++;
         DoEvents();
       }
+      WMain.StatusProgressBar.Value = 0;
     }
 
     public void LoadOtherPictures() {

@@ -28,7 +28,7 @@ namespace PictureManager {
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore() {WbThumbs = WbThumbs};
+      ACore = new AppCore() {WbThumbs = WbThumbs, WMain = this};
       MainStatusBar.DataContext = ACore.AppInfo;
 
       WbFullPicHtmlPath = System.IO.Path.Combine(Environment.CurrentDirectory, "html\\FullPic.html");
@@ -241,12 +241,13 @@ namespace PictureManager {
 
     private void CmdKeywordsEditModeSave(object sender, RoutedEventArgs e) {
       var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
-      StatusProgressBar.Maximum = pictures.Count;
       StatusProgressBar.Value = 0;
+      StatusProgressBar.Maximum = pictures.Count;
       foreach (Data.Picture picture in pictures) {
         picture.SavePictureInToDb(ACore.Keywords, ACore.People);
         picture.WriteMetadata();
         StatusProgressBar.Value++;
+        AppCore.DoEvents();
       }
       StatusProgressBar.Value = 0;
       ACore.KeywordsEditMode = false;
