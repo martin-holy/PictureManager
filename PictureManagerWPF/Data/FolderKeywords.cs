@@ -56,9 +56,13 @@ namespace PictureManager.Data {
       return keyPath.Contains(":") ? string.Empty : keyPath;
     }
 
-    public FolderKeyword GetFolderKeywordByDirId(int dirId) {
-      string fullPath = (string) Db.ExecuteScalar($"select Path from Directories where Id = {dirId}");
-      return GetFolderKeywordByKeyPath(GetFolderKeywordKeyPath(fullPath), false);
+    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, int dirId) {
+      foreach (FolderKeyword folderKeyword in items) {
+        if (folderKeyword.FolderIdList.Any(fid => fid == dirId)) return folderKeyword;
+        var fk = GetFolderKeywordByDirId(folderKeyword.Items, dirId);
+        if (fk != null) return fk;
+      }
+      return null;
     }
 
     public FolderKeyword GetFolderKeywordByFullPath(string fullPath) {

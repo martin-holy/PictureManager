@@ -264,7 +264,9 @@ namespace PictureManager {
     }
 
     private void CmdTestButton(object sender, RoutedEventArgs e) {
-      MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
+
+      //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
+
       /*var inputDialog = new InputDialog {
         Owner = this,
         Title = "Test title",

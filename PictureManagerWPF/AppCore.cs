@@ -241,7 +241,7 @@ namespace PictureManager {
           } while (k != null);
         }
 
-        FolderKeyword folderKeyword = FolderKeywords.GetFolderKeywordByDirId(picture.DirId);
+        FolderKeyword folderKeyword = FolderKeywords.GetFolderKeywordByDirId(FolderKeywords.Items, picture.DirId);
         if (folderKeyword != null && !folderKeyword.IsMarked) {
           var fk = folderKeyword;
           do {
