@@ -13,11 +13,6 @@ namespace PictureManager {
 
     }
 
-    public void ShowFullPicture(int index) {
-      _wMain.ACore.CurrentPicture = _wMain.ACore.Pictures[index];
-      _wMain.ShowFullPicture();
-    }
-
     public void FullPicMouseWheel(int delta) {
       _wMain.ACore.CurrentPictureMove(delta < 0);
       _wMain.ShowFullPicture();

@@ -41,10 +41,6 @@ function isUndefinedOrNull(o) {
   return (o === undefined || o === null) ? true : false;
 }
 
-function thumbnailsDblClick(event) {
-  window.external.ShowFullPicture(event.target.parentElement.id);
-}
-
 function thumbnailsMouseOver(event) {
   hideKeywords(event.target.parentElement, true);
 }

@@ -41,10 +41,32 @@ namespace PictureManager {
 
     private void WbThumbsOnDocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
       if (WbThumbs.Document == null) return;
-      WbThumbs.Document.MouseDown += WbThumbs_OnMouseDown;
+      WbThumbs.Document.MouseDown += WbThumbs_MouseDown;
+      WbThumbs.Document.Click += WbThumbs_Click;
     }
 
-    private void WbThumbs_OnMouseDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+    private void WbThumbs_Click(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+      #region DblClick hack
+      var tick = Application.Current.Properties["WbThumbs_DblClick"];
+      if (tick is int && Environment.TickCount - (int) tick < 300) {
+        WbThumbs_DblClick(sender, e);
+      } else {
+        Application.Current.Properties["WbThumbs_DblClick"] = Environment.TickCount;
+      }
+      #endregion
+    }
+
+    private void WbThumbs_DblClick(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+      var doc = WbThumbs.Document;
+      var src = doc?.GetElementFromPoint(e.ClientMousePosition);
+      var thumb = src?.Parent;
+      if (thumb == null) return;
+      if (thumb.Id == "content") return;
+      ACore.CurrentPicture = ACore.Pictures[int.Parse(thumb.Id)];
+      ShowFullPicture();
+    }
+
+    private void WbThumbs_MouseDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
       if (e.MouseButtonsPressed == System.Windows.Forms.MouseButtons.Left) {
         var doc = WbThumbs.Document;
         var src = doc?.GetElementFromPoint(e.ClientMousePosition);
