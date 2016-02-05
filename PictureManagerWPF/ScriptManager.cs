@@ -30,9 +30,5 @@ namespace PictureManager {
     public void OnContextMenu() {
       _wMain.WbThumbsShowContextMenu();
     }
-
-    public void SetSelected(string ids) {
-      _wMain.ACore.SetSelectedPictures(ids);
-    }
   }
 }

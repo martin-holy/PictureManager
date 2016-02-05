@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:data="clr-namespace:PictureManager.Data"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         mc:Ignorable="d"
         Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
         Loaded="Window_Loaded" 
@@ -236,7 +237,10 @@
       </TabControl>
 
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
-      <WebBrowser x:Name="WbThumbs" Grid.Column="2" Margin="0,0,2,2" />
+      <WindowsFormsHost Grid.Column="2">
+        <wf:WebBrowser x:Name="WbThumbs"  Margin="0,0,2,2"/>
+      </WindowsFormsHost>
+
     </Grid>
   </DockPanel>
 </controls:MetroWindow>

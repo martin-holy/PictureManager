@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using mshtml;
-using PictureManager.Dialogs;
 using PictureManager.Properties;
-using PictureManager.ShellStuff;
 
 namespace PictureManager {
   /// <summary>
@@ -24,6 +20,7 @@ namespace PictureManager {
     private Point _dragDropStartPosition;
 
     public WMain(string picFile) {
+      System.Windows.Forms.Application.EnableVisualStyles();
       InitializeComponent();
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
@@ -35,14 +32,77 @@ namespace PictureManager {
       WbThumbsHtmlPath = System.IO.Path.Combine(Environment.CurrentDirectory, "html\\index.html");
 
       WbThumbs.ObjectForScripting = new ScriptManager(this);
+      WbThumbs.DocumentCompleted += WbThumbsOnDocumentCompleted;
       WbThumbs.Navigate(WbThumbsHtmlPath);
-      WbThumbs.LoadCompleted += (o, args) => {
-        var doc = (HTMLDocumentEvents2_Event) WbThumbs.Document;
-        doc.oncontextmenu += obj => false;
-      };
 
       _wFullPic = new WFullPic(this);
       _argPicFile = picFile;
+    }
+
+    private void WbThumbsOnDocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
+      if (WbThumbs.Document == null) return;
+      WbThumbs.Document.MouseDown += WbThumbs_OnMouseDown;
+    }
+
+    private void WbThumbs_OnMouseDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+      if (e.MouseButtonsPressed == System.Windows.Forms.MouseButtons.Left) {
+        var doc = WbThumbs.Document;
+        var src = doc?.GetElementFromPoint(e.ClientMousePosition);
+
+        var thumb = src?.Parent;
+        if (thumb == null) return;
+
+        if (thumb.Id == "content") {
+          DeselectThumbnails();
+          return;
+        }
+
+        if (!thumb.GetAttribute("className").Contains("thumbBox")) return;
+        var picture = ACore.Pictures[int.Parse(thumb.Id)];
+
+        if (e.CtrlKeyPressed) {
+          if (thumb.GetAttribute("className").Contains("selected")) {
+            thumb.SetAttribute("className", "thumbBox");
+            ACore.SelectedPictures.Remove(picture);
+          } else {
+            thumb.SetAttribute("className", "thumbBox selected");
+            ACore.SelectedPictures.Add(picture);
+          }
+
+          ACore.CurrentPicture = ACore.SelectedPictures.Count == 0 ? null : ACore.SelectedPictures[0];
+          return;
+        }
+
+        if (e.ShiftKeyPressed && ACore.CurrentPicture != null) {
+          var start = picture.Index > ACore.CurrentPicture.Index ? ACore.CurrentPicture.Index : picture.Index;
+          var stop = picture.Index > ACore.CurrentPicture.Index ? picture.Index : ACore.CurrentPicture.Index;
+          for (var i = start; i < stop + 1; i++) {
+            ACore.SelectedPictures.Add(ACore.Pictures[i]);
+            var elm = doc.GetElementById(i.ToString());
+            elm?.SetAttribute("className", "thumbBox selected");
+          }
+        }
+
+        if (!e.CtrlKeyPressed && !e.ShiftKeyPressed) {
+          DeselectThumbnails();
+          thumb.SetAttribute("className", "thumbBox selected");
+          ACore.CurrentPicture = picture;
+          ACore.SelectedPictures.Add(picture);
+        }
+
+        ACore.MarkUsedKeywordsAndPeople();
+      }
+    }
+
+    public void DeselectThumbnails() {
+      if (ACore.SelectedPictures.Count == 0) return;
+      var doc = WbThumbs.Document;
+      if (doc == null) return;
+      foreach (var thumb in ACore.SelectedPictures.Select(picture => doc.GetElementById(picture.Index.ToString()))) {
+        thumb?.SetAttribute("className", "thumbBox");
+      }
+      ACore.SelectedPictures.Clear();
+      ACore.CurrentPicture = null;
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -266,6 +326,7 @@ namespace PictureManager {
 
     private void CmdTestButton(object sender, RoutedEventArgs e) {
 
+
       //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
 
       /*var inputDialog = new InputDialog {
@@ -313,10 +374,10 @@ namespace PictureManager {
     }
 
     private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
-      var thumbs = e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
+      var thumbs = e.Data.GetData(DataFormats.Text)?.Equals("PictureManager"); //thumbnails drop
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
-      if ((srcData != null || thumbs) && destData != null && srcData != destData && destData.IsAccessible) return;
+      if ((srcData != null || (thumbs != null && thumbs.Value)) && destData != null && srcData != destData && destData.IsAccessible) return;
       e.Effects = DragDropEffects.None;
       e.Handled = true;
     }

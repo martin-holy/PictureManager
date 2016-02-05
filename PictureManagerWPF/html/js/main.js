@@ -4,7 +4,6 @@ var picMarginTop;
 var picMarginLeft;
 var picMouseIsDown;
 var picBiggerThanScreen;
-var lastSelectedPicId = -1;
 var mouseIsDown = false;
 
 //to enable ScriptErrorsSuppressed = true
@@ -38,20 +37,6 @@ function scrollToElementById(id) {
   e.scrollIntoView();
 }
 
-/*function updateKeywords(id, data) {
-  var k = getKeywordsElementById(id);
-  if (!isUndefinedOrNull(k))
-    k.innerHTML = data;
-}*/
-
-/*function getKeywordsElementById(id) {
-  var thumb = document.getElementById(id);
-  if (isUndefinedOrNull(thumb)) return null;
-  var key = thumb.getElementsByClassName("keywords");
-  if (isUndefinedOrNull(key)) return null;
-  return key[0];
-}*/
-
 function isUndefinedOrNull(o) {
   return (o === undefined || o === null) ? true : false;
 }
@@ -66,11 +51,6 @@ function thumbnailsMouseOver(event) {
 
 function thumbnailsMouseOut(event) {
   hideKeywords(event.target.parentElement, false);
-}
-
-function thumbnailsMouseDown(event) {
-  if (event.which === 1)
-    imgSelect(event);
 }
 
 function hideKeywords(elm, value) {
@@ -185,59 +165,6 @@ function fitPicture() {
       pic.width = pnw;
     }
   }
-}
-
-function setSelected() {
-  var ids = [];
-  var thumbs = document.getElementById("thumbnails");
-  for (var i = 0; i < thumbs.children.length; i++) {
-    if (thumbs.children[i].classList.contains("selected"))
-      ids.push(Number(thumbs.children[i].id));
-  }
-  window.external.SetSelected(ids.toString());
-}
-
-//applies "selected" class to thumbnails
-function imgSelect(event) {
-  var thumb = event.target.parentElement;
-  var thumbs = document.getElementById("thumbnails");
-  var i;
-  if (thumb.id === "content") {
-    //clear selection for all thumbnails
-    for (i = 0; i < thumbs.children.length; i++) {
-      thumbs.children[i].classList.remove("selected");
-    }
-    setSelected();
-     return;
-  }
-
-  if (thumb.className !== "thumbBox") return;
-
-  if (event.ctrlKey) {
-    thumb.classList.toggle("selected") ? lastSelectedPicId = Number(thumb.id) : lastSelectedPicId = -1;
-  } else {
-    //clear selection for all thumbnails
-    for (i = 0; i < thumbs.children.length; i++) {
-      thumbs.children[i].classList.remove("selected");
-    }
-  }
-
-  if (!event.ctrlKey && !event.shiftKey) {
-    thumb.classList.add("selected");
-    lastSelectedPicId = Number(thumb.id);
-  }
-
-  if (event.shiftKey) {
-    if (lastSelectedPicId !== -1) {
-      var picId = Number(thumb.id);
-      var start = picId > lastSelectedPicId ? lastSelectedPicId : picId;
-      var stop = picId > lastSelectedPicId ? picId : lastSelectedPicId;
-      for (var j = start; j < stop + 1; j++) {
-        thumbs.children[j].classList.add("selected");
-      }
-    }
-  }
-  setSelected();
 }
 
 function dragStart(event) {

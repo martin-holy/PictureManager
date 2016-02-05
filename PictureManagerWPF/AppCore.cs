@@ -7,10 +7,8 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using mshtml;
 using PictureManager.Data;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
@@ -58,7 +56,8 @@ namespace PictureManager {
       }
     }
 
-    public WebBrowser WbThumbs;
+    //public WebBrowser WbThumbs;
+    public System.Windows.Forms.WebBrowser WbThumbs;
     public AppInfo AppInfo;
     public bool OneFileOnly;
     public bool ViewerOnly = false; //application was run with file path parameter
@@ -107,20 +106,6 @@ namespace PictureManager {
 
     public void UpdateViewBaseInfo() {
       AppInfo.ViewBaseInfo = $"{Pictures.Count} object(s) / {SelectedPictures.Count} selected";
-    }
-
-    public void SetSelectedPictures(string ids) {
-      SelectedPictures.Clear();
-      CurrentPicture = null;
-      if (!string.IsNullOrEmpty(ids)) {
-        foreach (var index in ids.Split(',')) {
-          SelectedPictures.Add(Pictures[int.Parse(index)]);
-        }
-        if (SelectedPictures.Count == 1) {
-          CurrentPicture = SelectedPictures[0];
-        }
-      }
-      MarkUsedKeywordsAndPeople();
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
@@ -343,7 +328,8 @@ namespace PictureManager {
     public void CreateThumbnailsWebPage() {
       //clear thumbnails content div
       if (WbThumbs.Document == null) return;
-      WbThumbs.InvokeScript("setContentOfElementById", "thumbnails", "");
+      WbThumbs.Document.InvokeScript("setContentOfElementById", new object[] { "thumbnails", "" });
+      //WbThumbs.InvokeScript("setContentOfElementById", "thumbnails", "");
       DoEvents();
 
       //append all pictures to content div
@@ -358,13 +344,15 @@ namespace PictureManager {
         sb.Append(
           $"<div class=\"thumbBox\" id=\"{i}\"><div class=\"keywords\">{Pictures[i].GetKeywordsAsString()}</div><img src=\"{thumbPath}\" /></div>");
         if (!flag) {
-          WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
+          WbThumbs.Document.InvokeScript("AppendToContentOfElementById", new object[] { "thumbnails", sb.ToString()});
+          //WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
           DoEvents();
           sb.Clear();
         }
       }
 
-      WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
+      WbThumbs.Document.GetElementById("thumbnails").InnerHtml = sb.ToString();
+      //WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
       DoEvents();
       WMain.StatusProgressBar.Value = 0;
       ScrollToCurrent();
@@ -372,7 +360,8 @@ namespace PictureManager {
 
     public void ScrollToCurrent() {
       if (CurrentPicture == null) return;
-      WbThumbs.InvokeScript("scrollToElementById", CurrentPicture.Index);
+      WbThumbs.Document.InvokeScript("scrollToElementById", new object[] { CurrentPicture.Index});
+      //WbThumbs.InvokeScript("scrollToElementById", CurrentPicture.Index);
     }
 
     public void InitPictures(string dir) {
@@ -403,17 +392,14 @@ namespace PictureManager {
       }
     }
 
-    
-
     public void WbUpdatePictureInfo(int index) {
-      var doc = (IHTMLDocument3) WbThumbs.Document;
-      var thumb = doc?.getElementById(index.ToString());
+      var doc = WbThumbs.Document;
+      var thumb = doc?.GetElementById(index.ToString());
       if (thumb == null) return;
-      foreach (IHTMLElement element in thumb.children) {
-        if (element.className != null && element.className.Equals("keywords")) {
-          element.innerHTML = Pictures[index].GetKeywordsAsString();
-          break;
-        }
+      foreach (System.Windows.Forms.HtmlElement element in thumb.Children) {
+        if (!element.GetAttribute("className").Equals("keywords")) continue;
+        element.InnerHtml = Pictures[index].GetKeywordsAsString();
+        break;
       }
     }
 
