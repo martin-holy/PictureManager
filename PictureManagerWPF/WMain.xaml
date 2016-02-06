@@ -238,7 +238,7 @@
 
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
       <WindowsFormsHost Grid.Column="2">
-        <wf:WebBrowser x:Name="WbThumbs"  Margin="0,0,2,2"/>
+        <wf:WebBrowser x:Name="WbThumbs" Margin="0,0,2,2"/>
       </WindowsFormsHost>
 
     </Grid>

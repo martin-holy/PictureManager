@@ -326,42 +326,51 @@ namespace PictureManager {
     }
 
     public void CreateThumbnailsWebPage() {
-      //clear thumbnails content div
-      if (WbThumbs.Document == null) return;
-      WbThumbs.Document.InvokeScript("setContentOfElementById", new object[] { "thumbnails", "" });
-      //WbThumbs.InvokeScript("setContentOfElementById", "thumbnails", "");
+      var doc = WbThumbs.Document;
+      var thumbs = doc?.GetElementById("thumbnails");
+      if (thumbs == null) return;
+
+      thumbs.InnerHtml = string.Empty;
       DoEvents();
 
-      //append all pictures to content div
-      StringBuilder sb = new StringBuilder();
       WMain.StatusProgressBar.Value = 0;
       WMain.StatusProgressBar.Maximum = Pictures.Count;
-      for (int i = 0; i < Pictures.Count; i++) {
-        WMain.StatusProgressBar.Value++;
-        string thumbPath = Pictures[i].CacheFilePath;
-        bool flag = File.Exists(thumbPath);
-        if (!flag) CreateThumbnail(Pictures[i].FilePath, thumbPath);
-        sb.Append(
-          $"<div class=\"thumbBox\" id=\"{i}\"><div class=\"keywords\">{Pictures[i].GetKeywordsAsString()}</div><img src=\"{thumbPath}\" /></div>");
-        if (!flag) {
-          WbThumbs.Document.InvokeScript("AppendToContentOfElementById", new object[] { "thumbnails", sb.ToString()});
-          //WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
-          DoEvents();
-          sb.Clear();
-        }
-      }
 
-      WbThumbs.Document.GetElementById("thumbnails").InnerHtml = sb.ToString();
-      //WbThumbs.InvokeScript("AppendToContentOfElementById", "thumbnails", sb.ToString());
-      DoEvents();
+      foreach (var picture in Pictures) {
+        string thumbPath = picture.CacheFilePath;
+        bool flag = File.Exists(thumbPath);
+        if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
+
+        var thumb = doc.CreateElement("div");
+        var keywords = doc.CreateElement("div");
+        var img = doc.CreateElement("img");
+
+        if (thumb == null || keywords == null || img == null) continue;
+
+        keywords.SetAttribute("className", "keywords");
+        keywords.InnerHtml = picture.GetKeywordsAsString();
+
+        img.SetAttribute("src", thumbPath);
+
+        thumb.SetAttribute("className", "thumbBox");
+        thumb.SetAttribute("id", picture.Index.ToString());
+        thumb.AppendChild(keywords);
+        thumb.AppendChild(img);
+        thumbs.AppendChild(thumb);
+
+        if (!flag) DoEvents();
+        WMain.StatusProgressBar.Value++;
+      }
+      
       WMain.StatusProgressBar.Value = 0;
-      ScrollToCurrent();
     }
 
     public void ScrollToCurrent() {
-      if (CurrentPicture == null) return;
-      WbThumbs.Document.InvokeScript("scrollToElementById", new object[] { CurrentPicture.Index});
-      //WbThumbs.InvokeScript("scrollToElementById", CurrentPicture.Index);
+      var doc = WbThumbs.Document;
+      if (doc == null) return;
+      if (CurrentPicture == null || CurrentPicture.Index == 0) return;
+      var thumb = doc.GetElementById(CurrentPicture.Index.ToString());
+      thumb?.ScrollIntoView(true);
     }
 
     public void InitPictures(string dir) {
