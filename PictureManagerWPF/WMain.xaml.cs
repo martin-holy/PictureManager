@@ -40,20 +40,17 @@ namespace PictureManager {
     }
 
     private void WbThumbsOnDocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
-      if (WbThumbs.Document == null) return;
+      if (WbThumbs.Document?.Body == null) return;
       WbThumbs.Document.MouseDown += WbThumbs_MouseDown;
-      WbThumbs.Document.Click += WbThumbs_Click;
+      WbThumbs.Document.Body.DoubleClick += WbThumbs_DblClick;
+      WbThumbs.Document.Body.KeyDown += WbThumbs_KeyDown;
     }
 
-    private void WbThumbs_Click(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
-      #region DblClick hack
-      var tick = Application.Current.Properties["WbThumbs_DblClick"];
-      if (tick is int && Environment.TickCount - (int) tick < 300) {
-        WbThumbs_DblClick(sender, e);
-      } else {
-        Application.Current.Properties["WbThumbs_DblClick"] = Environment.TickCount;
+    private void WbThumbs_KeyDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+      if (e.KeyPressedCode == 46) { //Delete 
+        if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
+          ACore.RemoveSelectedFromWeb();
       }
-      #endregion
     }
 
     private void WbThumbs_DblClick(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
@@ -96,6 +93,7 @@ namespace PictureManager {
         }
 
         if (e.ShiftKeyPressed && ACore.CurrentPicture != null) {
+          ACore.SelectedPictures.Clear();
           var start = picture.Index > ACore.CurrentPicture.Index ? ACore.CurrentPicture.Index : picture.Index;
           var stop = picture.Index > ACore.CurrentPicture.Index ? picture.Index : ACore.CurrentPicture.Index;
           for (var i = start; i < stop + 1; i++) {
@@ -105,7 +103,7 @@ namespace PictureManager {
           }
         }
 
-        if (!e.CtrlKeyPressed && !e.ShiftKeyPressed) {
+        if (!e.CtrlKeyPressed && !e.ShiftKeyPressed && !ACore.SelectedPictures.Contains(picture)) {
           DeselectThumbnails();
           thumb.SetAttribute("className", "thumbBox selected");
           ACore.CurrentPicture = picture;
@@ -266,7 +264,7 @@ namespace PictureManager {
         if (!string.IsNullOrEmpty(textBox.Text)) {
           switch (textBox.DataContext.GetType().Name) {
             case nameof(Data.Folder): {
-              ((Data.Folder) textBox.DataContext).Rename(ACore.Db, textBox.Text);
+              ((Data.Folder) textBox.DataContext).Rename(ACore, textBox.Text);
               break;
             }
             case nameof(Data.Keyword): {
@@ -288,6 +286,14 @@ namespace PictureManager {
 
     private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
       ACore.Keywords.DeleteKeyword((Data.Keyword) e.Parameter);
+    }
+
+    private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
+      ((Data.Folder) e.Parameter).New();
+    }
+
+    private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
+      ((Data.Folder) e.Parameter).Delete(ACore, true);
     }
 
     private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
@@ -405,38 +411,30 @@ namespace PictureManager {
     }
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
-      var thumbs = e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
+      var thumbs = e.Data.GetDataPresent(DataFormats.Text) && e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
       var from = thumbs ? null : srcData.FullPath;
+      var itemName = thumbs ? null : srcData.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
 
       var flag = e.KeyStates == DragDropKeyStates.ControlKey ? 
-        ACore.FileOperation(AppCore.FileOperations.Copy, from, destData.FullPath) : 
-        ACore.FileOperation(AppCore.FileOperations.Move, from, destData.FullPath);
+        ACore.FileOperation(AppCore.FileOperations.Copy, from, destData.FullPath, itemName) : 
+        ACore.FileOperation(AppCore.FileOperations.Move, from, destData.FullPath, itemName);
       if (!flag) return;
 
       if (thumbs) {
-        if (e.KeyStates != DragDropKeyStates.ControlKey) {
-          //TODO: remove thumbs and pictures from collection
-        }
-
+        if (e.KeyStates != DragDropKeyStates.ControlKey)
+          ACore.RemoveSelectedFromWeb();
         return;
       }
 
       if (e.KeyStates != DragDropKeyStates.ControlKey) {
-        UpdateFullPath(srcData, srcData.Parent.FullPath, destData.FullPath);
+        srcData.UpdateFullPath(srcData.Parent.FullPath, destData.FullPath);
         srcData.Parent.Items.Remove(srcData);
         srcData.Parent = destData;
         destData.Items.Add(srcData);
       } else {
         destData.GetSubFolders(true);
-      }
-    }
-
-    private static void UpdateFullPath(Data.Folder data, string oldParentPath, string newParentPath) {
-      data.FullPath = data.FullPath?.Replace(oldParentPath, newParentPath);
-      foreach (var item in data.Items) {
-        UpdateFullPath(item, oldParentPath, newParentPath);
       }
     }
 
@@ -451,8 +449,10 @@ namespace PictureManager {
 
       switch (item.GetType().Name) {
         case nameof(Data.Folder): {
+          menu.Items.Add(new MenuItem {Command = (ICommand)Resources["FolderNew"], CommandParameter = item});
           if (((Data.Folder) item).Parent != null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = stackPanel});
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderDelete"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
           }
           break;

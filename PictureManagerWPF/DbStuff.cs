@@ -26,9 +26,8 @@ namespace PictureManager {
       if (DbConn.State == ConnectionState.Open) DbConn.Close();
     }
 
-    public int GetLastIdFor(string tableName) {
-      var id = ExecuteScalar(string.Format("select seq from sqlite_sequence where name = '{0}'", tableName));
-      return id == null ? 0 : (int)(long)id;
+    public int? GetLastIdFor(string tableName) {
+      return (int?) (long?) ExecuteScalar($"select seq from sqlite_sequence where name = '{tableName}'");
     }
 
     public object ExecuteScalar(string sql) {
@@ -60,31 +59,14 @@ namespace PictureManager {
       }
     }
 
-    public int InsertDirecotryInToDb(string dir) {
-      object dirId = ExecuteScalar(string.Format("select Id from Directories where Path = '{0}'", dir));
-      if (dirId == null) {
-        if (Execute(string.Format("insert into Directories (Path) values ('{0}')", dir)))
-          return GetLastIdFor("Directories");
-      } else {
-        return (int)(long)dirId;
-      }
-      return 0;
+    public int? GetDirectoryIdByPath(string path) {
+      return (int?) (long?) ExecuteScalar($"select Id from Directories where Path = '{path}'");
     }
 
-    public object InsertDirecotryInToDb2(SQLiteConnection con, string dir) {
-      object dirId;
-      using (SQLiteCommand com = new SQLiteCommand(con)) {
-        com.CommandText = string.Format("select Id from Directories where Path = '{0}'", dir);
-        dirId = com.ExecuteScalar();
-        if (dirId == null) {
-          com.CommandText = string.Format("insert into Directories (Path) values ('{0}')", dir);
-          if (com.ExecuteNonQuery() == 1) {
-            com.CommandText = "select max(Id) from Directories";
-            dirId = com.ExecuteScalar();
-          }
-        }
-      }
-      return dirId;
+    public int? InsertDirecotryInToDb(string path) {
+      int? dirId = GetDirectoryIdByPath(path);
+      if (dirId != null) return dirId;
+      return Execute($"insert into Directories (Path) values ('{path}')") ? GetLastIdFor("Directories") : null;
     }
 
     public void CreateDbStructure() {

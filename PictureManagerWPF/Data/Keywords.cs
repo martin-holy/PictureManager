@@ -65,10 +65,10 @@ namespace PictureManager.Data {
     public Keyword CreateKeyword(ObservableCollection<Keyword> root, Keyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
       if (!Db.Execute($"insert into Keywords (Keyword) values ('{kFullPath}')")) return null;
-      int keyId = Db.GetLastIdFor("Keywords");
-      if (keyId == 0) return null;
+      var keyId = Db.GetLastIdFor("Keywords");
+      if (keyId == null) return null;
       Keyword newKeyword = new Keyword {
-        Id = keyId,
+        Id = (int) keyId,
         IconName = "appbar_tag",
         FullPath = kFullPath,
         Title = name,

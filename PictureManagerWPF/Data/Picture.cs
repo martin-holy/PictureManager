@@ -96,9 +96,9 @@ namespace PictureManager.Data {
     public void SavePictureInToDb(Keywords keywords, People people) {
       if (Id == -1) {
         ReadMetadata(keywords, people);
-        if (Db.Execute(
-          $"insert into Pictures (DirectoryId, FileName, Rating) values ({DirId}, '{FileName}', {Rating})")) {
-          Id = Db.GetLastIdFor("Pictures");
+        if (Db.Execute($"insert into Pictures (DirectoryId, FileName, Rating) values ({DirId}, '{FileName}', {Rating})")) {
+          var id = Db.GetLastIdFor("Pictures");
+          if (id != null) Id = (int) id;
         }
       } else {
         Db.Execute($"update Pictures set Rating = {Rating} where Id = {Id}");

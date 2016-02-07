@@ -48,7 +48,9 @@
     <RoutedUICommand x:Key="PersonNew" Text="New" />
     <RoutedUICommand x:Key="PersonRename" Text="Rename" />
     <RoutedUICommand x:Key="PersonDelete" Text="Delete" />
+    <RoutedUICommand x:Key="FolderNew" Text="New folder" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
+    <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
   </controls:MetroWindow.Resources>
@@ -61,7 +63,9 @@
     <CommandBinding Command="{StaticResource PersonNew}" Executed="CmdPersonNew" />
     <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdRenameTreeViewItem" />
     <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
+    <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdRenameTreeViewItem" />
+    <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
   </controls:MetroWindow.CommandBindings>

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
 
 namespace PictureManager.Data {
   public class Folder: BaseItem {
@@ -26,12 +27,10 @@ namespace PictureManager.Data {
       Items = new ObservableCollection<Folder>();
     }
 
-    public void Rename(DbStuff db, string newName) {
-      //TODO presun slozky, presun cache, update vsech FullPath, update DB
-      //AppStuff.FolderMoveWithCache(path, newPath)
-
-
-
+    public void Rename(AppCore aCore, string newName) {
+      if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
+      if (!aCore.FileOperation(AppCore.FileOperations.Move, FullPath, Parent.FullPath, newName)) return;
+      UpdateFullPath(FullPath, Path.Combine(Parent.FullPath, newName));
       Title = newName;
     }
 
@@ -61,6 +60,41 @@ namespace PictureManager.Data {
           Items.Add(item);
         }
       }
+    }
+
+    public void UpdateFullPath(string oldParentPath, string newParentPath) {
+      FullPath = FullPath?.Replace(oldParentPath, newParentPath);
+      foreach (var item in Items) {
+        item.UpdateFullPath(oldParentPath, newParentPath);
+      }
+    }
+
+    public void New() {
+      IsExpanded = true;
+      const string newFolderName = "New Folder";
+
+      int i = 0;
+      while (Items.Any(x => x.Title.Equals($"{newFolderName} {i}"))) {
+        i++;
+      }
+
+      var newFullPath = $"{FullPath}\\{newFolderName} {i}";
+      Directory.CreateDirectory(newFullPath);
+
+      var newFolder = new Folder {
+        Title = $"{newFolderName} {i}",
+        FullPath = newFullPath,
+        IconName = "appbar_folder",
+        Parent = this,
+        IsAccessible = true
+      };
+
+      Items.Insert(0, newFolder);
+    }
+
+    public void Delete(AppCore aCore, bool recycle) {
+      if (!aCore.FileOperation(AppCore.FileOperations.Delete, FullPath, recycle)) return;
+      Parent.Items.Remove(this);
     }
   }
 }

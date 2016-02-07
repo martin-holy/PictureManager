@@ -11,7 +11,7 @@ namespace PictureManager.ShellStuff {
         FOF_NOCONFIRMATION         = 0x0010,  // Don't prompt the user.
         FOF_WANTMAPPINGHANDLE      = 0x0020,  // Fill in SHFILEOPSTRUCT.hNameMappings
                                               // Must be freed using SHFreeNameMappings
-        FOF_ALLOWUNDO              = 0x0040,
+        FOF_ALLOWUNDO              = 0x0040,  // Recycle bin
         FOF_FILESONLY              = 0x0080,  // on *.*, do only files
         FOF_SIMPLEPROGRESS         = 0x0100,  // means don't show names of files
         FOF_NOCONFIRMMKDIR         = 0x0200,  // don't confirm making any needed dirs
@@ -22,7 +22,7 @@ namespace PictureManager.ShellStuff {
         FOF_WANTNUKEWARNING        = 0x4000,  // during delete operation, warn if nuking instead of recycling (partially overrides FOF_NOCONFIRMATION)
         FOF_NORECURSEREPARSE       = 0x8000,  // treat reparse points as objects, not containers
 
-        FOFX_NOSKIPJUNCTIONS       = 0x00010000,  // Don't avoid binding to junctions (like Task folder, Recycle-Bin)
+        FOFX_NOSKIPJUNCTIONS         = 0x00010000,  // Don't avoid binding to junctions (like Task folder, Recycle-Bin)
         FOFX_PREFERHARDLINK          = 0x00020000,  // Create hard link if possible
         FOFX_SHOWELEVATIONPROMPT     = 0x00040000,  // Show elevation prompts when error UI is disabled (use with FOF_NOERRORUI)
         FOFX_EARLYFAILURE            = 0x00100000,  // Fail operation as soon as a single error occurs rather than trying to process other items (applies only when using FOF_NOERRORUI)
@@ -32,6 +32,7 @@ namespace PictureManager.ShellStuff {
         FOFX_NOMINIMIZEBOX           = 0x01000000,  // Don't allow minimizing the progress dialog
         FOFX_MOVEACLSACROSSVOLUMES   = 0x02000000,  // Copy security information when performing a cross-volume move operation
         FOFX_DONTDISPLAYSOURCEPATH   = 0x04000000,  // Don't display the path of source file in progress dialog
-        FOFX_DONTDISPLAYDESTPATH = 0x08000000,  // Don't display the path of destination file in progress dialog
-    }
+        FOFX_DONTDISPLAYDESTPATH     = 0x08000000,  // Don't display the path of destination file in progress dialog
+        FOFX_RECYCLEONDELETE         = 0x00080000   // Introduced in Windows 8. When a file is deleted, send it to the Recycle Bin rather than permanently deleting it.
+  }
 }

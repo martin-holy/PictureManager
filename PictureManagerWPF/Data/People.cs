@@ -36,10 +36,10 @@ namespace PictureManager.Data {
 
     public Person CreatePerson(string name) {
       if (!Db.Execute($"insert into People (Name) values ('{name}')")) return null;
-      int id = Db.GetLastIdFor("People");
-      if (id == 0) return null;
+      var id = Db.GetLastIdFor("People");
+      if (id == null) return null;
       Person newPerson = new Person {
-        Id = id,
+        Id = (int) id,
         Title = name,
         IconName = "appbar_people"
       };
