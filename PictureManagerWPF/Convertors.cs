@@ -39,4 +39,16 @@ namespace PictureManager {
       throw new Exception("The method or operation is not implemented.");
     }
   }
+
+  public class RatingConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      return int.Parse((string)parameter) < (int) value
+        ? new SolidColorBrush(Color.FromRgb(255, 255, 255))
+        : new SolidColorBrush(Color.FromRgb(104, 104, 104));
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new Exception("The method or operation is not implemented.");
+    }
+  }
 }

@@ -47,13 +47,13 @@ namespace PictureManager.Data {
       }
     }
 
-    public void ExpandTo(string fullPath) {
+    public Folder ExpandTo(string fullPath) {
       ObservableCollection<Folder> items = Items;
       while (true) {
         var folder = items.FirstOrDefault(f => fullPath.StartsWith(f.FullPath, StringComparison.OrdinalIgnoreCase));
-        if (folder == null) return;
+        if (folder == null) return null;
         if (folder.Items.Count != 0) folder.IsExpanded = true;
-        if (fullPath.Equals(folder.FullPath, StringComparison.OrdinalIgnoreCase)) return;
+        if (fullPath.Equals(folder.FullPath, StringComparison.OrdinalIgnoreCase)) return folder;
         items = folder.Items;
       }
     }

@@ -47,9 +47,11 @@ namespace PictureManager {
     }
 
     private void WbThumbs_KeyDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
-      if (e.KeyPressedCode == 46) { //Delete 
-        if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
-          ACore.RemoveSelectedFromWeb();
+      if (e.KeyPressedCode == 46) {//Delete 
+        var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        if (result == MessageBoxResult.Yes)
+          if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
+            ACore.RemoveSelectedFromWeb();
       }
     }
 
@@ -208,7 +210,7 @@ namespace PictureManager {
             break;
           }
           case nameof(Data.FavoriteFolder): {
-            ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
+            var folder = ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
             break;
           }
         }

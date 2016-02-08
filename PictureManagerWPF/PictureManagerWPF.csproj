@@ -88,6 +88,8 @@
     <Compile Include="Data\People.cs" />
     <Compile Include="Data\Person.cs" />
     <Compile Include="Data\Picture.cs" />
+    <Compile Include="Data\Rating.cs" />
+    <Compile Include="Data\Ratings.cs" />
     <Compile Include="DbStuff.cs" />
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>

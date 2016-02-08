@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Linq;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -23,6 +22,7 @@ namespace PictureManager {
     public FolderKeywords FolderKeywords;
     public Folders Folders;
     public FavoriteFolders FavoriteFolders;
+    public Ratings Ratings;
     public WMain WMain;
     public string[] SuportedExts = { ".jpg", ".jpeg" };
 
@@ -89,14 +89,16 @@ namespace PictureManager {
       FolderKeywords = new FolderKeywords {Db = Db, Title = "Folder Keywords", IconName = "appbar_folder" };
       Folders = new Folders {Title = "Folders", IconName = "appbar_folder"};
       FavoriteFolders = new FavoriteFolders { Title = "Favorites", IconName = "appbar_folder_star"};
+      Ratings = new Ratings { Title = "Ratings", IconName = "appbar_star" };
 
       People.Load();
       Keywords.Load();
       FolderKeywords.Load();
       Folders.AddDrives();
       FavoriteFolders.Load();
+      Ratings.Load();
 
-      KeywordsRoot = new ObservableCollection<BaseItem> {People, FolderKeywords, Keywords };
+      KeywordsRoot = new ObservableCollection<BaseItem> {Ratings, People, FolderKeywords, Keywords};
       FoldersRoot = new ObservableCollection<BaseItem> {FavoriteFolders, Folders};
     }
 
@@ -105,7 +107,7 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is Keywords || item is People || item is FolderKeywords) return;
+      if (item is Keywords || item is People || item is FolderKeywords || item is Ratings) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {
@@ -150,6 +152,11 @@ namespace PictureManager {
                   } else {
                     picture.Keywords.Remove(keyword);
                   }
+                  break;
+                }
+                case nameof(Rating): {
+                  var rating = (Rating) item;
+                  picture.Rating = rating.Value;
                   break;
                 }
               }
@@ -203,7 +210,7 @@ namespace PictureManager {
     }
 
     public void MarkUsedKeywordsAndPeople() {
-      //can by Person, Keyword or FolderKeyword
+      //can by Person, Keyword, FolderKeyword or Rating
       foreach (BaseTagItem item in MarkedTags) {
         item.IsMarked = false;
         item.PicCount = 0;
@@ -240,6 +247,11 @@ namespace PictureManager {
         }
       }
 
+      foreach (var rating in pictures.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
+        rating.IsMarked = true;
+        MarkedTags.Add(rating);
+      }
+
       foreach (var item in MarkedTags) {
         switch (item.GetType().Name) {
           case nameof(Person): {
@@ -255,6 +267,11 @@ namespace PictureManager {
             FolderKeyword folderKeyword = (FolderKeyword) item;
             folderKeyword.PicCount =
               pictures.Count(p => p.FolderKeyword != null && p.FolderKeyword.FullPath.StartsWith(folderKeyword.FullPath));
+            break;
+          }
+          case nameof(Rating): {
+            Rating rating = (Rating) item;
+            rating.PicCount = pictures.Count(p => p.Rating == rating.Value);
             break;
           }
         }

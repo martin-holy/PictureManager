@@ -37,11 +37,13 @@ namespace PictureManager.Data {
 
     public string GetKeywordsAsString() {
       StringBuilder sb = new StringBuilder();
+
       foreach (Person p in People.OrderBy(x => x.Title)) {
         sb.Append("<div>");
         sb.Append(p.Title);
         sb.Append("</div>");
       }
+
       List<string> keywordsList = new List<string>();
       foreach (Keyword keyword in Keywords.OrderBy(x => x.FullPath)) {
         foreach (string k in keyword.FullPath.Split('/')) {
@@ -54,6 +56,11 @@ namespace PictureManager.Data {
         sb.Append(keyword);
         sb.Append("</div>");
       }
+
+      sb.Append("<div>");
+      sb.Append(Rating);
+      sb.Append("</div>");
+
       return sb.ToString();
     }
 

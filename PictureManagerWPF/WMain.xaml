@@ -40,6 +40,19 @@
         </DataTrigger>
       </Style.Triggers>
     </Style>
+    
+    <!-- IconRect -->
+    <Style x:Key="IconRect" TargetType="Rectangle">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
+      <Setter Property="OpacityMask">
+        <Setter.Value>
+          <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}" />
+        </Setter.Value>
+      </Setter>
+    </Style>
 
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="KeywordNew" Text="New" />
@@ -124,11 +137,7 @@
               <!-- TreeView Folders - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewFolders_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -143,11 +152,7 @@
                             DragEnter="TvFolders_AllowDropCheck" 
                             DragLeave="TvFolders_AllowDropCheck"
                             DragOver="TvFolders_AllowDropCheck">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                   <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                 </StackPanel>
@@ -178,11 +183,7 @@
               <!-- TreeView Keywords - BaseItem (Category) -->
               <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -190,11 +191,7 @@
               <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                   <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                   <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
@@ -204,11 +201,7 @@
               <!-- TreeView Keywords - FolderKeyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:FolderKeyword}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="5,0,0,0" />
                   <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
                   <TextBlock Text="{Binding PicCount}" VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
@@ -218,13 +211,23 @@
               <!-- TreeView Keywords - Person -->
               <HierarchicalDataTemplate DataType="{x:Type data:Person}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu" PreviewMouseUp="TreeViewKeywords_Select">
-                  <Rectangle Width="18" Height="18" VerticalAlignment="Center" Fill="{Binding IconName, Converter={StaticResource IconNameToBrush}}">
-                    <Rectangle.OpacityMask>
-                      <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}"/>
-                    </Rectangle.OpacityMask>
-                  </Rectangle>
+                  <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Text="{Binding Title}" VerticalAlignment="Center" x:Name="TextBlockTitle" Margin="5,0,0,0" />
                   <TextBox VerticalAlignment="Center" Margin="5,0,0,0" Visibility="Collapsed" KeyDown="TreeViewEndEdit_OnKeyDown" LostFocus="TreeViewCancelEdit_LostFocus" />
+                  <TextBlock Text="{Binding PicCount}"  VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Keywords - Rating -->
+              <HierarchicalDataTemplate DataType="{x:Type data:Rating}">
+                <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseUp="TreeViewKeywords_Select">
+                  <StackPanel Orientation="Horizontal">
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+                  </StackPanel>
                   <TextBlock Text="{Binding PicCount}"  VerticalAlignment="Center" Margin="5,0,0,0" Style="{StaticResource KeywordsPicCountStyle}" Background="{DynamicResource AccentColorBrush4}" Padding="5,0" />
                 </StackPanel>
               </HierarchicalDataTemplate>
