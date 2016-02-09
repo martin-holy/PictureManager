@@ -308,6 +308,11 @@ namespace PictureManager {
       ACore.FavoriteFolders.Load();
     }
 
+    private void CmdCompressPictures(object sender, RoutedEventArgs e) {
+      var compress = new WCompress(ACore) {Owner = this};
+      compress.ShowDialog();
+    }
+
     private void CmdOpenSettings(object sender, RoutedEventArgs e) {
       var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
@@ -499,6 +504,7 @@ namespace PictureManager {
       McmKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
       McmKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       McmKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
+      McmCompressPictures.Visibility = ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
       menu.Placement = PlacementMode.Absolute;
       menu.VerticalOffset = SystemParameters.WindowCaptionHeight + 9;

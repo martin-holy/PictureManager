@@ -115,6 +115,9 @@
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WCompress.xaml.cs">
+      <DependentUpon>WCompress.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WError.xaml.cs">
       <DependentUpon>WError.xaml</DependentUpon>
     </Compile>
@@ -136,6 +139,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WAbout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WCompress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

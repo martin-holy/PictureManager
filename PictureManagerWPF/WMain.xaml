@@ -21,6 +21,7 @@
             <MenuItem x:Name="McmKeywordsEditMode" Header="Edit Keywords" Click="CmdKeywordsEditMode" />
             <MenuItem x:Name="McmKeywordsEditModeSave" Header="Save edited Keywords" Click="CmdKeywordsEditModeSave" />
             <MenuItem x:Name="McmKeywordsEditModeCancel" Header="Cancel edit Keywords" Click="CmdKeywordsEditModeCancel" />
+            <MenuItem x:Name="McmCompressPictures" Header="Compress Pictures" Click="CmdCompressPictures" />
             <MenuItem x:Name="McmTestButton" Header="Test Button" Click="CmdTestButton" />
             <MenuItem x:Name="McmOpenSettings" Header="Settings" Click="CmdOpenSettings" />
             <MenuItem x:Name="McmAbout" Header="About" Click="CmdAbout" />

@@ -60,8 +60,9 @@ body, html {
   display: none;
 }
 
-#thumbnails img {
-
+#thumbnails {
+    /*text-justify: distribute;
+    text-align: justify;*/
 }
 
 #debug {
