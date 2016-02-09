@@ -226,11 +226,13 @@ namespace PictureManager {
       var keyword = e.Parameter as Data.Keyword;
       var keywords = e.Parameter as Data.Keywords;
       if (keyword == null && keywords == null) return;
-      ACore.Keywords.CreateKeyword(keywords != null ? keywords.Items : keyword.Items, keyword, "New Keyword");
+      var k = ACore.Keywords.CreateKeyword(keywords != null ? keywords.Items : keyword.Items, keyword, "New Keyword");
+      k.IsTitleEdited = true;
     }
 
     private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.CreatePerson("New Person");
+      var p = ACore.People.CreatePerson("New Person");
+      p.IsTitleEdited = true;
     }
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -241,27 +243,17 @@ namespace PictureManager {
 
     private void CmdRenameTreeViewItem(object sender, ExecutedRoutedEventArgs e) {
       StackPanel stackPanel = (StackPanel)e.Parameter;
-      TextBlock textBlock = (TextBlock)stackPanel.Children[1];
-      TextBox textBox = (TextBox)stackPanel.Children[2];
-      textBlock.Visibility = Visibility.Collapsed;
-      textBox.Text = textBlock.Text;
-      textBox.Visibility = Visibility.Visible;
-      textBox.Focus();
-      textBox.SelectAll();
-      textBox.Tag = textBlock;
+      ((Data.BaseItem) stackPanel.DataContext).IsTitleEdited = true;
     }
 
     private void TreeViewCancelEdit_LostFocus(object sender, RoutedEventArgs e) {
-      TextBox textBox = (TextBox)sender;
-      TextBlock textBlock = (TextBlock)textBox.Tag;
-      textBlock.Visibility = Visibility.Visible;
-      textBox.Visibility = Visibility.Collapsed;
+      ((Data.BaseItem) ((TextBox) sender).DataContext).IsTitleEdited = false;
     }
 
     private void TreeViewEndEdit_OnKeyDown(object sender, KeyEventArgs e) {
       if (e.Key != Key.Escape && e.Key != Key.Enter) return;
       TextBox textBox = (TextBox) sender;
-      TextBlock textBlock = (TextBlock) textBox.Tag;
+
       if (e.Key == Key.Enter) {
         if (!string.IsNullOrEmpty(textBox.Text)) {
           switch (textBox.DataContext.GetType().Name) {
@@ -280,8 +272,7 @@ namespace PictureManager {
           }
         }
       }
-      textBlock.Visibility = Visibility.Visible;
-      textBox.Visibility = Visibility.Collapsed;
+      ((Data.BaseItem) textBox.DataContext).IsTitleEdited = false;
     }
 
     #endregion
@@ -291,11 +282,14 @@ namespace PictureManager {
     }
 
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      ((Data.Folder) e.Parameter).New();
+      var newFolder = ((Data.Folder) e.Parameter).New();
+      newFolder.IsTitleEdited = true;
     }
 
     private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
-      ((Data.Folder) e.Parameter).Delete(ACore, true);
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes)
+        ((Data.Folder) e.Parameter).Delete(ACore, true);
     }
 
     private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {

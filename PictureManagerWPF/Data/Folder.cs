@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualBasic.FileIO;
 
 namespace PictureManager.Data {
   public class Folder: BaseItem {
@@ -69,7 +68,7 @@ namespace PictureManager.Data {
       }
     }
 
-    public void New() {
+    public Folder New() {
       IsExpanded = true;
       const string newFolderName = "New Folder";
 
@@ -90,6 +89,8 @@ namespace PictureManager.Data {
       };
 
       Items.Insert(0, newFolder);
+
+      return newFolder;
     }
 
     public void Delete(AppCore aCore, bool recycle) {
