@@ -125,6 +125,7 @@ namespace PictureManager {
       }
       ACore.SelectedPictures.Clear();
       ACore.CurrentPicture = null;
+      ACore.MarkUsedKeywordsAndPeople();
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -210,7 +211,7 @@ namespace PictureManager {
             break;
           }
           case nameof(Data.FavoriteFolder): {
-            var folder = ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
+            ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
             break;
           }
         }

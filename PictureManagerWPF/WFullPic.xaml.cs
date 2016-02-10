@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Windows.Forms;
 using System.Windows.Input;
+using Application = System.Windows.Application;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace PictureManager {
   /// <summary>
@@ -12,13 +14,27 @@ namespace PictureManager {
       InitializeComponent();
       _wMain = wMain;
       WbFullPic.ObjectForScripting = new ScriptManager(_wMain);
+      WbFullPic.DocumentCompleted += WbFullPicOnDocumentCompleted;
       WbFullPic.Navigate(_wMain.WbFullPicHtmlPath);
       WbFullPic.Focus();
     }
 
+    private void WbFullPicOnDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs webBrowserDocumentCompletedEventArgs) {
+      if (WbFullPic.Document?.Body == null) return;
+      WbFullPic.Document.Body.DoubleClick += WbFullPic_DblClick;
+      SetCurrentImage();
+    }
+
+    private void WbFullPic_DblClick(object sender, HtmlElementEventArgs e) {
+      _wMain.SwitchToBrowser();
+      Hide();
+    }
+
     public void SetCurrentImage() {
-      if (WbFullPic.IsLoaded)
-        WbFullPic.InvokeScript("setAttrOfElementById", "fullPic", "src", _wMain.ACore.CurrentPicture.FilePath);
+      if (_wMain.ACore.CurrentPicture == null) return;
+      var doc = WbFullPic.Document;
+      var fullPic = doc?.GetElementById("fullPic");
+      fullPic?.SetAttribute("src", _wMain.ACore.CurrentPicture.FilePath);
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e) {
@@ -54,10 +70,6 @@ namespace PictureManager {
             break;
           }
       }
-    }
-
-    private void WbFullPic_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e) {
-      SetCurrentImage();
     }
   }
 }
