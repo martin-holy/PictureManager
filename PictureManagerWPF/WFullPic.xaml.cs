@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System.IO;
+using System.Reflection;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -15,7 +17,13 @@ namespace PictureManager {
       _wMain = wMain;
       WbFullPic.ObjectForScripting = new ScriptManager(_wMain);
       WbFullPic.DocumentCompleted += WbFullPicOnDocumentCompleted;
-      WbFullPic.Navigate(_wMain.WbFullPicHtmlPath);
+
+      using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.FullPic.html"))
+        if (stream != null)
+          using (StreamReader reader = new StreamReader(stream)) {
+            WbFullPic.DocumentText = reader.ReadToEnd();
+          }
+
       WbFullPic.Focus();
     }
 

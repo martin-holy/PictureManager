@@ -9,17 +9,9 @@ namespace PictureManager {
       _wMain = wMain;
     }
 
-    public void Test() {
-
-    }
-
     public void FullPicMouseWheel(int delta) {
       _wMain.ACore.CurrentPictureMove(delta < 0);
       _wMain.ShowFullPicture();
-    }
-
-    public void SwitchToBrowser() {
-      _wMain.SwitchToBrowser();
     }
 
     public void OnContextMenu() {

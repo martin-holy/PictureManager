@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -12,8 +13,6 @@ namespace PictureManager {
   /// Interaction logic for WMain.xaml
   /// </summary>
   public partial class WMain {
-    public string WbFullPicHtmlPath;
-    public string WbThumbsHtmlPath;
     readonly string _argPicFile;
     private readonly WFullPic _wFullPic;
     public AppCore ACore;
@@ -25,21 +24,23 @@ namespace PictureManager {
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore() {WbThumbs = WbThumbs, WMain = this};
+      ACore = new AppCore {WbThumbs = WbThumbs, WMain = this};
       MainStatusBar.DataContext = ACore.AppInfo;
 
-      WbFullPicHtmlPath = System.IO.Path.Combine(Environment.CurrentDirectory, "html\\FullPic.html");
-      WbThumbsHtmlPath = System.IO.Path.Combine(Environment.CurrentDirectory, "html\\index.html");
-
       WbThumbs.ObjectForScripting = new ScriptManager(this);
-      WbThumbs.DocumentCompleted += WbThumbsOnDocumentCompleted;
-      WbThumbs.Navigate(WbThumbsHtmlPath);
+      WbThumbs.DocumentCompleted += WbThumbs_DocumentCompleted;
+
+      using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.Thumbs.html"))
+        if (stream != null)
+          using (StreamReader reader = new StreamReader(stream)) {
+            WbThumbs.DocumentText = reader.ReadToEnd();
+          }
 
       _wFullPic = new WFullPic(this);
       _argPicFile = picFile;
     }
 
-    private void WbThumbsOnDocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
+    private void WbThumbs_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
       if (WbThumbs.Document?.Body == null) return;
       WbThumbs.Document.MouseDown += WbThumbs_MouseDown;
       WbThumbs.Document.Body.DoubleClick += WbThumbs_DblClick;
@@ -130,7 +131,7 @@ namespace PictureManager {
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       //app opened with argument
-      if (System.IO.File.Exists(_argPicFile)) {
+      if (File.Exists(_argPicFile)) {
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
         ACore.Pictures.Add(new Data.Picture(_argPicFile, ACore.Db, 0));
@@ -165,7 +166,7 @@ namespace PictureManager {
         //App is first time loaded to main window
         ACore.ViewerOnly = false;
         InitUi();
-        ACore.Folders.ExpandTo(System.IO.Path.GetDirectoryName(_argPicFile));
+        ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile));
       }
       ACore.ScrollToCurrent();
     }

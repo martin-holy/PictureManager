@@ -1,26 +1,136 @@
 ﻿<!-- saved from url=(0026)http://msdn.microsoft.com/ -->
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=10" />
-  <title>Picture Manager - Full Picture Size</title>
+  <head>
+    <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=10" />
+    <title>Picture Manager - Full Picture Size</title>
 
-  <script src="js/main.js"></script>
-  <link rel="stylesheet" href="css/default/main.css" />
-  <link rel="stylesheet" href="css/default/theme.css" />
-</head>
-<body onmousewheel="mouseWheelEvent(event);" ondblclick="switchToBrowser();" onresize="fitPicture();">
-  <div id="content">
-    <div id="debug" style="display:none;"></div>
-    <div id="fullPicBox">
-      <img id="fullPic"
-           onmousedown="picMouseDownEvent(event);"
-           onmouseup="picMouseUpEvent();"
-           onmousemove="picMouseMoveEvent(event);"
-           onload="fitPicture();"
-           src="">
+    <script>
+      var picBiggerThanScreen;
+      var picMouseDownX;
+      var picMouseDownY;
+      var picMarginTop;
+      var picMarginLeft;
+      var picMouseIsDown;
+
+      //to enable ScriptErrorsSuppressed = true
+      function noError() { return true; }
+      window.onerror = noError;
+
+      function Body_OnMouseWheel(event) {
+        window.external.FullPicMouseWheel(event.wheelDelta);
+      }
+
+      function FullPic_OnMouseDown(event) {
+        picMouseIsDown = true;
+        if (picBiggerThanScreen) {
+          var pic = event.currentTarget;
+          picMouseDownX = event.x;
+          picMouseDownY = event.y;
+
+          picMarginTop = Math.round(event.y - ((pic.naturalHeight / pic.height) * (picMouseDownY - pic.offsetTop)));
+          picMarginLeft = Math.round(event.x - ((pic.naturalWidth / pic.width) * (picMouseDownX - pic.offsetLeft)));
+
+          pic.style.marginTop = picMarginTop + "px";
+          pic.style.marginLeft = picMarginLeft + "px";
+
+          pic.width = pic.naturalWidth;
+          pic.height = pic.naturalHeight;
+        }
+      }
+
+      function FullPic_OnMouseUp() {
+        picMouseIsDown = false;
+        if (picBiggerThanScreen) {
+          var pic = document.getElementById("fullPic");
+          if (pic !== undefined && pic !== null) {
+            pic.removeAttribute("style");
+          }
+          FitPicture();
+        }
+      }
+
+      function FullPic_OnMouseMove(event) {
+        if (picMouseIsDown && picBiggerThanScreen) {
+          var pic = document.getElementById("fullPic");
+          if (pic !== undefined && pic !== null) {
+            pic.style.marginTop = ((event.y - picMouseDownY) + picMarginTop) + "px";
+            pic.style.marginLeft = ((event.x - picMouseDownX) + picMarginLeft) + "px";
+          }
+        }
+      }
+
+      function FitPicture() {
+        var pic = document.getElementById("fullPic");
+        if (pic !== undefined && pic !== null) {
+          pic.removeAttribute("height");
+          pic.removeAttribute("width");
+
+          var bh = window.document.body.clientHeight;
+          var bw = window.document.body.clientWidth;
+          var pnh = pic.naturalHeight;
+          var pnw = pic.naturalWidth;
+          var ph;
+          var pw;
+
+          if ((pnh > bh) || (pnw > bw)) { //picture is bigger than window  
+            picBiggerThanScreen = true;
+            pic.className = "";
+
+            if (bh / pnh > bw / pnw) { //landscape
+              pw = bw;
+              ph = pnh * (bw / pnw);
+            } else {
+              pw = pnw * (bh / pnh);
+              ph = bh;
+            }
+
+            pic.height = ph;
+            pic.width = pw;
+          } else {
+            picBiggerThanScreen = false;
+            pic.className = "centerFullPic";
+            pic.height = pnh;
+            pic.width = pnw;
+          }
+        }
+      }
+    </script>
+
+    <style>
+      body, html {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+        background-color: #252525;
+        overflow: hidden;
+      }
+
+      .centerFullPic {
+        position: absolute;
+        margin: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+
+      #fullPicBox {
+        text-align: center;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body OnMouseWheel="Body_OnMouseWheel(event);" OnResize="FitPicture();">
+    <div id="content">
+      <div id="fullPicBox">
+        <img id="fullPic" draggable="false" 
+          OnMouseDown="FullPic_OnMouseDown(event);"
+          OnMouseUp="FullPic_OnMouseUp();"
+          OnMouseMove="FullPic_OnMouseMove(event);"
+          OnLoad="FitPicture();"
+          src="d:\20150902_164714_Martin.jpg">
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
