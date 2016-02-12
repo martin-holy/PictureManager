@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using PictureManager.Properties;
+using PictureManager.ShellStuff;
 
 namespace PictureManager {
   /// <summary>
@@ -335,7 +337,7 @@ namespace PictureManager {
       StatusProgressBar.Value = 0;
       StatusProgressBar.Maximum = pictures.Count;
       foreach (Data.Picture picture in pictures) {
-        picture.SavePictureInToDb(ACore.Keywords, ACore.People);
+        picture.SavePictureInToDb(ACore.Keywords, ACore.People, false);
         picture.WriteMetadata();
         StatusProgressBar.Value++;
         AppCore.DoEvents();
@@ -355,6 +357,14 @@ namespace PictureManager {
       ACore.MarkUsedKeywordsAndPeople();
     }
 
+    private void CmdReloadMetadata(object sender, RoutedEventArgs e) {
+      var pictures = ACore.SelectedPictures.Count > 0 ? ACore.SelectedPictures : ACore.Pictures;
+      foreach (var picture in pictures) {
+        picture.SavePictureInToDb(ACore.Keywords, ACore.People, true);
+        ACore.WbUpdatePictureInfo(picture.Index);
+      }
+    }
+
     private void CmdTestButton(object sender, RoutedEventArgs e) {
 
 
@@ -371,14 +381,6 @@ namespace PictureManager {
       if (inputDialog.ShowDialog() ?? true) {
         MessageBox.Show(inputDialog.Answer);
       }*/
-
-      /*Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
-      using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
-        //fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION);
-        fo.CopyItem(@"d:\!test\003.jpg", @"d:\!test\aaa", "003.jpg");
-        fo.PerformOperations();
-      }
-      var fileOperationResult = (Dictionary<string, string>) Application.Current.Properties["FileOperationResult"];*/
 
       /*WTestThumbnailGallery ttg = new WTestThumbnailGallery();
       ttg.Show();
@@ -501,6 +503,7 @@ namespace PictureManager {
       McmKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       McmKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
       McmCompressPictures.Visibility = ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+      McmReloadMetadata.Visibility = ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
 
       menu.Placement = PlacementMode.Absolute;
       menu.VerticalOffset = SystemParameters.WindowCaptionHeight + 9;

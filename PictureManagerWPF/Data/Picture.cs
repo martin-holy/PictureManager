@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.IO;
@@ -96,11 +97,11 @@ namespace PictureManager.Data {
         LoadKeywordsFromDb(keywords);
         LoadPeopleFromDb(people);
       } else {
-        SavePictureInToDb(keywords, people);
+        SavePictureInToDb(keywords, people, false);
       }
     }
 
-    public void SavePictureInToDb(Keywords keywords, People people) {
+    public void SavePictureInToDb(Keywords keywords, People people, bool update) {
       if (Id == -1) {
         ReadMetadata(keywords, people);
         if (Db.Execute($"insert into Pictures (DirectoryId, FileName, Rating) values ({DirId}, '{FileName}', {Rating})")) {
@@ -108,6 +109,7 @@ namespace PictureManager.Data {
           if (id != null) Id = (int) id;
         }
       } else {
+        if (update) ReadMetadata(keywords, people);
         Db.Execute($"update Pictures set Rating = {Rating} where Id = {Id}");
       }
 
@@ -233,39 +235,46 @@ namespace PictureManager.Data {
   }
 
     public void ReadMetadata(Keywords keywords, People people) {
-      using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        if (imageFileStream.Length == 0) return;
-        BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        BitmapMetadata bm = (BitmapMetadata) decoder.Frames[0].Metadata;
-        if (bm == null) return;
+      try {
+        using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+          if (imageFileStream.Length == 0) return;
+          BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+          BitmapMetadata bm = (BitmapMetadata) decoder.Frames[0].Metadata;
+          if (bm == null) return;
 
-        //People
-        People.Clear();
-        const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-        const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+          //People
+          People.Clear();
+          const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+          const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
 
-        var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
-        if (regions != null) {
-          foreach (string region in regions) {
-            var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-            if (personDisplayName != null) {
-              People.Add(people.GetPersonByName(personDisplayName.ToString(), true));
+          var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
+          if (regions != null) {
+            foreach (string region in regions) {
+              var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+              if (personDisplayName != null) {
+                People.Add(people.GetPersonByName(personDisplayName.ToString(), true));
+              }
+            }
+          }
+
+          //Rating
+          Rating = bm.Rating;
+
+          //Keywords
+          Keywords.Clear();
+          if (bm.Keywords == null) return;
+          //Filter out duplicities
+          foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+            if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
+              var keyword = keywords.GetKeywordByFullPath(k, true);
+              if (keyword != null)
+                Keywords.Add(keyword);
             }
           }
         }
-
-        //Rating
-        Rating = bm.Rating;
-
-        //Keywords
-        Keywords.Clear();
-        if (bm.Keywords == null) return;
-        //Filter out duplicities
-        foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-          if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-            Keywords.Add(keywords.GetKeywordByFullPath(k, true));
-          }
-        }
+      }
+      catch (Exception) {
+        // ignored
       }
     }
 

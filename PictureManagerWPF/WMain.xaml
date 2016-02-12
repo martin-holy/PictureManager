@@ -23,6 +23,7 @@
             <MenuItem x:Name="McmKeywordsEditModeCancel" Header="Cancel edit Keywords" Click="CmdKeywordsEditModeCancel" />
             <MenuItem x:Name="McmCompressPictures" Header="Compress Pictures" Click="CmdCompressPictures" />
             <MenuItem x:Name="McmTestButton" Header="Test Button" Click="CmdTestButton" />
+            <MenuItem x:Name="McmReloadMetadata" Header="Reload Metadata" Click="CmdReloadMetadata" />
             <MenuItem x:Name="McmOpenSettings" Header="Settings" Click="CmdOpenSettings" />
             <MenuItem x:Name="McmAbout" Header="About" Click="CmdAbout" />
           </ContextMenu>

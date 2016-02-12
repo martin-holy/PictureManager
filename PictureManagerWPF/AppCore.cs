@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.Windows;
@@ -589,9 +590,22 @@ namespace PictureManager {
       if (dir == null) return;
       Directory.CreateDirectory(dir);
       try {
-        var thumb = new ShellThumbnail();
+
+        /*var thumb = new ShellThumbnail();
         thumb.CreateThumbnail(origPath, newPath, size, 80L);
-        thumb.Dispose();
+        thumb.Dispose();*/
+
+        var process = new Process {
+          StartInfo = new ProcessStartInfo {
+            Arguments = $"src|\"{origPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
+            FileName = "ThumbnailCreator.exe",
+            UseShellExecute = false,
+            CreateNoWindow = true
+          }
+        };
+
+        process.Start();
+        process.WaitForExit(1000);
       } catch (Exception) {
         //file can have 0 size
       }

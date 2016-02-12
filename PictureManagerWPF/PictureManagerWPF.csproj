@@ -104,13 +104,8 @@
     <Compile Include="ShellStuff\Interfaces\IFileOperation.cs" />
     <Compile Include="ShellStuff\Interfaces\IFileOperationProgressSink.cs" />
     <Compile Include="ShellStuff\Interfaces\IShellItem.cs" />
-    <Compile Include="ShellStuff\Interfaces\IEnumIDList.cs" />
-    <Compile Include="ShellStuff\Interfaces\IExtractImage.cs" />
-    <Compile Include="ShellStuff\Interfaces\IShellFolder.cs" />
-    <Compile Include="ShellStuff\Interfaces\IUnknown.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
     <Compile Include="ShellStuff\ShellCommon.cs" />
-    <Compile Include="ShellStuff\ShellThumbnail.cs" />
     <Compile Include="VersionInfo.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
@@ -209,6 +204,11 @@
     <EmbeddedResource Include="html\FullPic.html" />
     <EmbeddedResource Include="html\Thumbs.html" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThumbnailCreator.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

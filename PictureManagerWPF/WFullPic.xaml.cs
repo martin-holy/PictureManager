@@ -34,15 +34,18 @@ namespace PictureManager {
     }
 
     private void WbFullPic_DblClick(object sender, HtmlElementEventArgs e) {
-      _wMain.SwitchToBrowser();
+      SwitchToBrowser();
       Hide();
     }
 
     public void SetCurrentImage() {
       if (_wMain.ACore.CurrentPicture == null) return;
-      var doc = WbFullPic.Document;
-      var fullPic = doc?.GetElementById("fullPic");
-      fullPic?.SetAttribute("src", _wMain.ACore.CurrentPicture.FilePath);
+      WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", _wMain.ACore.CurrentPicture.FilePath);
+    }
+
+    private void SwitchToBrowser() {
+      WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", "");
+      _wMain.SwitchToBrowser();
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e) {
@@ -66,14 +69,14 @@ namespace PictureManager {
             if (_wMain.ACore.ViewerOnly) {
               Application.Current.Shutdown();
             } else {
-              _wMain.SwitchToBrowser();
+              SwitchToBrowser();
               Hide();
             }
             break;
           }
         case Key.Enter:
           {
-            _wMain.SwitchToBrowser();
+            SwitchToBrowser();
             Hide();
             break;
           }

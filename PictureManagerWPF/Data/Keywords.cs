@@ -46,7 +46,7 @@ namespace PictureManager.Data {
       ObservableCollection<Keyword> root = Items;
 
       while (true) {
-        if (root.Count == 0 || string.IsNullOrEmpty(fullPath)) return null;
+        if (string.IsNullOrEmpty(fullPath)) return null;
 
         string[] keyParts = fullPath.Split('/');
         Keyword keyword = root.FirstOrDefault(k => k.Title.Equals(keyParts[0]));
