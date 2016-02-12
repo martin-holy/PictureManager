@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using PictureManager.Properties;
-using PictureManager.ShellStuff;
 
 namespace PictureManager {
   /// <summary>
@@ -159,7 +158,7 @@ namespace PictureManager {
         _wFullPic.Show();
     }
 
-    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+    private void Window_Closing(object sender, CancelEventArgs e) {
       _wFullPic.Close();
     }
 
@@ -207,10 +206,7 @@ namespace PictureManager {
             ACore.LastSelectedSource = folder;
             ACore.LastSelectedSourceRecursive = false;
             ACore.GetPicturesByFolder(folder.FullPath);
-            ACore.CreateThumbnailsWebPage();
-            //TODO: tohle dat asi do jineho vlakna
-            ACore.InitPictures(folder.FullPath);
-            ACore.MarkUsedKeywordsAndPeople();
+            ACore.CreateThumbnailsWebPage(folder.FullPath);
             break;
           }
           case nameof(Data.FavoriteFolder): {
@@ -334,16 +330,35 @@ namespace PictureManager {
 
     private void CmdKeywordsEditModeSave(object sender, RoutedEventArgs e) {
       var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
+
       StatusProgressBar.Value = 0;
-      StatusProgressBar.Maximum = pictures.Count;
-      foreach (Data.Picture picture in pictures) {
-        picture.SavePictureInToDb(ACore.Keywords, ACore.People, false);
-        picture.WriteMetadata();
-        StatusProgressBar.Value++;
-        AppCore.DoEvents();
-      }
-      StatusProgressBar.Value = 0;
-      ACore.KeywordsEditMode = false;
+      StatusProgressBar.Maximum = 100;
+
+      BackgroundWorker bw = new BackgroundWorker {WorkerReportsProgress = true};
+
+      bw.ProgressChanged += delegate(object bwsender, ProgressChangedEventArgs bwe) {
+        StatusProgressBar.Value = bwe.ProgressPercentage;
+      };
+
+      bw.DoWork += delegate(object bwsender, DoWorkEventArgs bwe) {
+        var worker = (BackgroundWorker) bwsender;
+        var acore = (AppCore) bwe.Argument;
+        var count = pictures.Count;
+        var done = 0;
+
+        foreach (var picture in pictures) {
+          picture.SavePictureInToDb(acore.Keywords, acore.People, false);
+          picture.WriteMetadata();
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), picture.Index);
+        }
+      };
+
+      bw.RunWorkerCompleted += delegate {
+        ACore.KeywordsEditMode = false;
+      };
+
+      bw.RunWorkerAsync(ACore);
     }
 
     private void CmdKeywordsEditModeCancel(object sender, RoutedEventArgs e) {

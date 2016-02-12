@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Threading;
 using PictureManager.Data;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
@@ -26,6 +26,19 @@ namespace PictureManager {
     public Ratings Ratings;
     public WMain WMain;
     public string[] SuportedExts = { ".jpg", ".jpeg" };
+    public System.Windows.Forms.WebBrowser WbThumbs;
+    public AppInfo AppInfo;
+    public bool OneFileOnly;
+    public bool ViewerOnly = false; //application was run with file path parameter
+    public bool KeywordsEditMode = false;
+    public enum FileOperations { Copy, Move, Delete }
+    public bool LastSelectedSourceRecursive;
+    public DbStuff Db;
+    public ObservableCollection<Picture> Pictures;
+    public ObservableCollection<Picture> SelectedPictures;
+    public List<BaseTagItem> MarkedTags;
+    public List<BaseTagItem> TagModifers;
+    public BackgroundWorker ThumbsWebBackgroundWorker;
 
     public BaseItem LastSelectedSource {
       get {
@@ -39,14 +52,6 @@ namespace PictureManager {
       }
     }
 
-    public bool LastSelectedSourceRecursive;
-
-    public DbStuff Db;
-    public ObservableCollection<Picture> Pictures;
-    public ObservableCollection<Picture> SelectedPictures;
-    public List<BaseTagItem> MarkedTags;
-    public List<BaseTagItem> TagModifers; 
-
     private Picture _currentPicture;
     public Picture CurrentPicture {
       get {
@@ -58,13 +63,6 @@ namespace PictureManager {
       }
     }
 
-    public System.Windows.Forms.WebBrowser WbThumbs;
-    public AppInfo AppInfo;
-    public bool OneFileOnly;
-    public bool ViewerOnly = false; //application was run with file path parameter
-    public bool KeywordsEditMode = false;
-    public enum FileOperations {Copy, Move, Delete}
-    
     public AppCore() {
       AppInfo = new AppInfo();
       Pictures = new ObservableCollection<Picture>();
@@ -174,8 +172,7 @@ namespace PictureManager {
             LastSelectedSource = baseTagItem;
             LastSelectedSourceRecursive = recursive;
             GetPicturesByTag();
-            MarkUsedKeywordsAndPeople();
-            CreateThumbnailsWebPage();
+            CreateThumbnailsWebPage(string.Empty);
           }
           break;
         }
@@ -338,32 +335,32 @@ namespace PictureManager {
       CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
     }
 
-    public void CreateThumbnailsWebPage() {
+    public void CreateThumbnailsWebPage(string folderPath) {
       var doc = WbThumbs.Document;
       var thumbs = doc?.GetElementById("thumbnails");
       if (thumbs == null) return;
-
       thumbs.InnerHtml = string.Empty;
-      DoEvents();
+      doc.Window?.ScrollTo(0, 0);
 
       WMain.StatusProgressBar.Value = 0;
-      WMain.StatusProgressBar.Maximum = Pictures.Count;
+      WMain.StatusProgressBar.Maximum = 100;
 
-      foreach (var picture in Pictures) {
-        string thumbPath = picture.CacheFilePath;
-        bool flag = File.Exists(thumbPath);
-        if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
+      ThumbsWebBackgroundWorker = new BackgroundWorker { WorkerReportsProgress = true };
 
+      ThumbsWebBackgroundWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
+        if (e.UserState == null) return;
+
+        var picture = Pictures[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
         var img = doc.CreateElement("img");
 
-        if (thumb == null || keywords == null || img == null) continue;
+        if (thumb == null || keywords == null || img == null) return;
 
         keywords.SetAttribute("className", "keywords");
         keywords.InnerHtml = picture.GetKeywordsAsString();
 
-        img.SetAttribute("src", thumbPath);
+        img.SetAttribute("src", picture.CacheFilePath);
 
         thumb.SetAttribute("className", "thumbBox");
         thumb.SetAttribute("id", picture.Index.ToString());
@@ -371,11 +368,32 @@ namespace PictureManager {
         thumb.AppendChild(img);
         thumbs.AppendChild(thumb);
 
-        if (!flag) DoEvents();
-        WMain.StatusProgressBar.Value++;
-      }
-      
-      WMain.StatusProgressBar.Value = 0;
+        WMain.StatusProgressBar.Value = e.ProgressPercentage;
+      };
+
+      ThumbsWebBackgroundWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker) sender;
+        var pictures = (ObservableCollection<Picture>) e.Argument;
+        var count = pictures.Count;
+        var done = 0;
+
+        foreach (var picture in Pictures) {
+          var thumbPath = picture.CacheFilePath;
+          bool flag = File.Exists(thumbPath);
+          if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), picture.Index);
+        }
+      };
+
+      ThumbsWebBackgroundWorker.RunWorkerCompleted += delegate {
+        if (!folderPath.Equals(string.Empty))
+          InitPictures(folderPath);
+        else
+          MarkUsedKeywordsAndPeople();
+      };
+
+      ThumbsWebBackgroundWorker.RunWorkerAsync(Pictures);
     }
 
     public void ScrollToCurrent() {
@@ -393,16 +411,36 @@ namespace PictureManager {
       FolderKeywords.Load();
       FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(dir);
       WMain.StatusProgressBar.Value = 0;
-      WMain.StatusProgressBar.Maximum = Pictures.Count;
-      for (int i = 0; i < Pictures.Count; i++) {
-        Pictures[i].DirId = (int) dirId;
-        Pictures[i].FolderKeyword = fk;
-        Pictures[i].LoadFromDb(Keywords, People);
-        WbUpdatePictureInfo(i);
-        WMain.StatusProgressBar.Value++;
-        //DoEvents();
-      }
-      WMain.StatusProgressBar.Value = 0;
+      WMain.StatusProgressBar.Maximum = 100;
+
+      BackgroundWorker bw = new BackgroundWorker {WorkerReportsProgress = true};
+
+      bw.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
+        if (e.UserState == null) return;
+        WbUpdatePictureInfo((int)e.UserState);
+        WMain.StatusProgressBar.Value = e.ProgressPercentage;
+      };
+
+      bw.DoWork += delegate(object sender, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)sender;
+        var acore = (AppCore)e.Argument;
+        var count = acore.Pictures.Count;
+        var done = 0;
+
+        foreach (var picture in Pictures) {
+          picture.DirId = (int) dirId;
+          picture.FolderKeyword = fk;
+          picture.LoadFromDb(acore.Keywords, acore.People);
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
+        }
+      };
+
+      bw.RunWorkerCompleted += delegate {
+        MarkUsedKeywordsAndPeople();
+      };
+
+      bw.RunWorkerAsync(this);
     }
 
     public void LoadOtherPictures() {
@@ -570,20 +608,6 @@ namespace PictureManager {
       }
     }
 
-    #region Static Methods
-
-    public static void DoEvents() {
-      DispatcherFrame frame = new DispatcherFrame();
-      Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background,
-          new DispatcherOperationCallback(ExitFrame), frame);
-      Dispatcher.PushFrame(frame);
-    }
-
-    public static object ExitFrame(object f) {
-      ((DispatcherFrame)f).Continue = false;
-      return null;
-    }
-
     public static void CreateThumbnail(string origPath, string newPath) {
       int size = Settings.Default.ThumbnailSize;
       string dir = Path.GetDirectoryName(newPath);
@@ -611,6 +635,5 @@ namespace PictureManager {
       }
     }
 
-    #endregion
   }
 }
