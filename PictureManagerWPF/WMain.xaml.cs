@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using PictureManager.Properties;
+using HtmlElement = System.Windows.Forms.HtmlElement;
 
 namespace PictureManager {
   /// <summary>
@@ -54,6 +55,11 @@ namespace PictureManager {
         if (result == MessageBoxResult.Yes)
           if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
             ACore.RemoveSelectedFromWeb();
+      }
+
+      if (e.CtrlKeyPressed && e.KeyPressedCode == 65) {
+        SelectAllThumbnails();
+        e.ReturnValue = false;
       }
     }
 
@@ -127,6 +133,27 @@ namespace PictureManager {
       }
       ACore.SelectedPictures.Clear();
       ACore.CurrentPicture = null;
+      ACore.MarkUsedKeywordsAndPeople();
+    }
+
+    public void SelectAllThumbnails() {
+      var doc = WbThumbs.Document;
+      var thumbs = doc?.GetElementById("thumbnails");
+      if (thumbs == null) return;
+
+      foreach (HtmlElement thumb in thumbs.Children) {
+        thumb.SetAttribute("className", "thumbBox selected");
+      }
+
+      ACore.SelectedPictures.Clear();
+
+      foreach (var picture in ACore.Pictures) {
+        ACore.SelectedPictures.Add(picture);
+      }
+
+      if (ACore.Pictures.Count != 0)
+        ACore.CurrentPicture = ACore.Pictures[0];
+
       ACore.MarkUsedKeywordsAndPeople();
     }
 
