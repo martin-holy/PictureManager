@@ -76,6 +76,7 @@ namespace PictureManager {
       var pictures = (ObservableCollection<Data.Picture>) e.Argument;
       var count = pictures.Count;
       var done = 0;
+      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
       foreach (var picture in pictures) {
         if (worker.CancellationPending) {
@@ -90,7 +91,9 @@ namespace PictureManager {
         try {
           using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
             JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = _jpegQualityLevel };
-            encoder.Frames.Add(BitmapFrame.Create(originalFileStream));
+            //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
+            //is a KEY to lossless jpeg edit if the QualityLevel is the same
+            encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
 
             using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
               encoder.Save(newFileStream);

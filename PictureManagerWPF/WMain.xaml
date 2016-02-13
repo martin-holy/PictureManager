@@ -242,7 +242,12 @@
 
               <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}" AllowDrop="True"
+                            Drop="TvKeywords_OnDrop"
+                            MouseMove="TvKeywords_OnMouseMove"
+                            DragEnter="TvKeywords_AllowDropCheck" 
+                            DragLeave="TvKeywords_AllowDropCheck"
+                            DragOver="TvKeywords_AllowDropCheck">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBox Style="{StaticResource TreeViewEditBox}" />

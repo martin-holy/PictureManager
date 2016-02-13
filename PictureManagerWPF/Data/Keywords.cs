@@ -18,7 +18,7 @@ namespace PictureManager.Data {
       const string sql =
         "select Id, Keyword, (select count(PK.Id) from PictureKeyword as PK where PK.KeywordId in "
         + "(select XK.Id from Keywords as XK where XK.Keyword like K.Keyword||\"%\")) as PicturesCount, Idx from "
-        + "Keywords as K order by Keyword";
+        + "Keywords as K order by Idx, Keyword";
 
       foreach (DataRow row in Db.Select(sql)) {
         Keyword newItem = new Keyword() {

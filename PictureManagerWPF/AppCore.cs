@@ -39,8 +39,7 @@ namespace PictureManager {
     public ObservableCollection<Picture> SelectedPictures;
     public List<BaseTagItem> MarkedTags;
     public List<BaseTagItem> TagModifers;
-    public BackgroundWorker ThumbsWebBackgroundWorker;
-    public BackgroundWorker InitPicturesBackgroundWorker;
+    public BackgroundWorker ThumbsWebWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
 
     public BaseItem LastSelectedSource {
@@ -175,8 +174,8 @@ namespace PictureManager {
             LastSelectedSource = baseTagItem;
             LastSelectedSourceRecursive = recursive;
 
-            if (ThumbsWebBackgroundWorker != null && ThumbsWebBackgroundWorker.IsBusy) {
-              ThumbsWebBackgroundWorker.CancelAsync();
+            if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
+              ThumbsWebWorker.CancelAsync();
               ThumbsResetEvent.WaitOne();
             }
 
@@ -361,9 +360,9 @@ namespace PictureManager {
       WMain.StatusProgressBar.Value = 0;
       WMain.StatusProgressBar.Maximum = 100;
 
-      ThumbsWebBackgroundWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      ThumbsWebWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
-      ThumbsWebBackgroundWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
+      ThumbsWebWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
 
         var picture = Pictures[(int) e.UserState];
@@ -387,7 +386,7 @@ namespace PictureManager {
         WMain.StatusProgressBar.Value = e.ProgressPercentage;
       };
 
-      ThumbsWebBackgroundWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+      ThumbsWebWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) sender;
         var count = Pictures.Count;
         var done = 0;
@@ -412,12 +411,12 @@ namespace PictureManager {
         }
       };
 
-      ThumbsWebBackgroundWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
+      ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
         MarkUsedKeywordsAndPeople();
       };
 
-      ThumbsWebBackgroundWorker.RunWorkerAsync();
+      ThumbsWebWorker.RunWorkerAsync();
     }
 
     public void ScrollToCurrent() {

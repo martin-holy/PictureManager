@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 using HtmlElement = System.Windows.Forms.HtmlElement;
 
@@ -204,6 +205,7 @@ namespace PictureManager {
       StackPanel stackPanel = (StackPanel)sender;
 
       if (e.ChangedButton != MouseButton.Right) {
+        _dragDropStartPosition = e.GetPosition(null);
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
     }
@@ -233,8 +235,8 @@ namespace PictureManager {
             ACore.LastSelectedSource = folder;
             ACore.LastSelectedSourceRecursive = false;
 
-            if (ACore.ThumbsWebBackgroundWorker != null && ACore.ThumbsWebBackgroundWorker.IsBusy) {
-              ACore.ThumbsWebBackgroundWorker.CancelAsync();
+            if (ACore.ThumbsWebWorker != null && ACore.ThumbsWebWorker.IsBusy) {
+              ACore.ThumbsWebWorker.CancelAsync();
               ACore.ThumbsResetEvent.WaitOne();
             }
 
@@ -413,8 +415,75 @@ namespace PictureManager {
       }
     }
 
-    private void CmdTestButton(object sender, RoutedEventArgs e) {
+    public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
+      var original = new FileInfo(filePath);
+      if (!original.Exists) return false;
+      var temp = new FileInfo(original.FullName.Replace(".", "_temp."));
 
+      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
+
+      try {
+        using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
+          JpegBitmapEncoder encoder = new JpegBitmapEncoder {QualityLevel = quality, Rotation = rotation};
+
+          //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
+          //is a KEY to lossless jpeg edit if the QualityLevel is the same
+          encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
+
+          using (Stream newFileStream = File.Open(temp.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+            encoder.Save(newFileStream);
+          }
+        }
+      }
+      catch (Exception) {
+        return false;
+      }
+
+      try {
+        temp.CreationTime = original.CreationTime;
+        original.Delete();
+        temp.MoveTo(original.FullName);
+      }
+      catch (Exception) {
+        return false;
+      }
+
+      return true;
+    }
+
+    private void JpegTest() {
+      var original = @"d:\!test\TestInTest\20160209_143609.jpg";
+      var newFile = original;
+
+      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
+
+      for (int i = 0; i < 7; i++) {
+        using (Stream originalFileStream = File.Open(newFile, FileMode.Open, FileAccess.Read)) {
+          JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = 80 };
+          if (i == 1) encoder.Rotation = Rotation.Rotate0;
+          if (i == 2) encoder.Rotation = Rotation.Rotate270;
+          if (i == 3) encoder.Rotation = Rotation.Rotate90;
+          if (i == 4) encoder.Rotation = Rotation.Rotate180;
+          if (i == 5) encoder.FlipHorizontal = true;
+          if (i == 6) encoder.FlipVertical = true;
+          encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
+
+          newFile = original.Replace(".", $"_{i:000}.");
+
+          using (Stream newFileStream = File.Open(newFile, FileMode.Create, FileAccess.ReadWrite)) {
+            encoder.Save(newFileStream);
+          }
+        }
+      }
+
+      
+
+    }
+
+    private void CmdTestButton(object sender, RoutedEventArgs e) {
+      //JpegTest();
+
+      RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
 
       //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
 
@@ -442,6 +511,47 @@ namespace PictureManager {
       if (cm == null) return;
       cm.PlacementTarget = WbThumbs;
       cm.IsOpen = true;*/
+    }
+
+    private void TvKeywords_OnMouseMove(object sender, MouseEventArgs e) {
+      if (e.LeftButton != MouseButtonState.Pressed) return;
+      Vector diff = _dragDropStartPosition - e.GetPosition(null);
+      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
+          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
+      var stackPanel = e.OriginalSource as StackPanel;
+      if (stackPanel == null) return;
+      DragDrop.DoDragDrop(stackPanel, stackPanel.DataContext, DragDropEffects.Move);
+    }
+
+    private void TvKeywords_AllowDropCheck(object sender, DragEventArgs e) {
+      var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
+      var destData = (Data.Keyword)((StackPanel)sender).DataContext;
+      if (srcData != null && destData != null && srcData != destData && srcData.Parent == destData.Parent) return;
+      e.Effects = DragDropEffects.None;
+      e.Handled = true;
+    }
+
+    private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
+      var panel = (StackPanel) sender;
+      var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
+      var destData = (Data.Keyword)panel.DataContext;
+      if (srcData == null || destData == null) return;
+      var items = destData.Parent.Items;
+      var destIndex = items.IndexOf(destData);
+      var srcIndex = items.IndexOf(srcData);
+      var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight/2;
+      int newIndex;
+      if (srcIndex > destIndex) {
+        newIndex = dropOnTop ? destIndex : destIndex + 1;
+      } else {
+        newIndex = dropOnTop ? destIndex - 1 : destIndex;
+      }
+      items.Move(items.IndexOf(srcData), newIndex);
+
+      for (var i = 0; i < items.Count; i++) {
+        items[i].Index = i;
+        ACore.Db.Execute($"update Keywords set Idx={i} where Id={items[i].Id}");
+      }
     }
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
