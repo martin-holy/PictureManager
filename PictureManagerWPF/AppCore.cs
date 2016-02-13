@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using PictureManager.Data;
@@ -39,6 +40,8 @@ namespace PictureManager {
     public List<BaseTagItem> MarkedTags;
     public List<BaseTagItem> TagModifers;
     public BackgroundWorker ThumbsWebBackgroundWorker;
+    public BackgroundWorker InitPicturesBackgroundWorker;
+    public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
 
     public BaseItem LastSelectedSource {
       get {
@@ -171,8 +174,14 @@ namespace PictureManager {
 
             LastSelectedSource = baseTagItem;
             LastSelectedSourceRecursive = recursive;
+
+            if (ThumbsWebBackgroundWorker != null && ThumbsWebBackgroundWorker.IsBusy) {
+              ThumbsWebBackgroundWorker.CancelAsync();
+              ThumbsResetEvent.WaitOne();
+            }
+
             GetPicturesByTag();
-            CreateThumbnailsWebPage(string.Empty);
+            CreateThumbnailsWebPage();
           }
           break;
         }
@@ -278,6 +287,12 @@ namespace PictureManager {
 
     public void GetPicturesByFolder(string path) {
       if (!Directory.Exists(path)) return;
+
+      var dirId = Db.InsertDirecotryInToDb(path);
+      if (dirId == null) return;
+      FolderKeywords.Load();
+      FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(path);
+
       Pictures.Clear();
 
       foreach (
@@ -285,7 +300,7 @@ namespace PictureManager {
           Directory.EnumerateFiles(path)
             .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
             .OrderBy(x => x)) {
-        Pictures.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Pictures.Count));
+        Pictures.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Pictures.Count) {DirId = (int) dirId, FolderKeyword = fk});
       }
       CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
     }
@@ -335,20 +350,21 @@ namespace PictureManager {
       CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
     }
 
-    public void CreateThumbnailsWebPage(string folderPath) {
+    public void CreateThumbnailsWebPage() {
       var doc = WbThumbs.Document;
       var thumbs = doc?.GetElementById("thumbnails");
       if (thumbs == null) return;
+
       thumbs.InnerHtml = string.Empty;
       doc.Window?.ScrollTo(0, 0);
 
       WMain.StatusProgressBar.Value = 0;
       WMain.StatusProgressBar.Maximum = 100;
 
-      ThumbsWebBackgroundWorker = new BackgroundWorker { WorkerReportsProgress = true };
+      ThumbsWebBackgroundWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
       ThumbsWebBackgroundWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
-        if (e.UserState == null) return;
+        if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
 
         var picture = Pictures[(int) e.UserState];
         var thumb = doc.CreateElement("div");
@@ -373,27 +389,35 @@ namespace PictureManager {
 
       ThumbsWebBackgroundWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) sender;
-        var pictures = (ObservableCollection<Picture>) e.Argument;
-        var count = pictures.Count;
+        var count = Pictures.Count;
         var done = 0;
 
         foreach (var picture in Pictures) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            ThumbsResetEvent.Set();
+            break;
+          }
+
           var thumbPath = picture.CacheFilePath;
           bool flag = File.Exists(thumbPath);
           if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
+
+          if (picture.Id == -1) {
+            picture.LoadFromDb(Keywords, People);
+          }
+
           done++;
           worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), picture.Index);
         }
       };
 
-      ThumbsWebBackgroundWorker.RunWorkerCompleted += delegate {
-        if (!folderPath.Equals(string.Empty))
-          InitPictures(folderPath);
-        else
-          MarkUsedKeywordsAndPeople();
+      ThumbsWebBackgroundWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
+        if (((BackgroundWorker) sender).CancellationPending) return;
+        MarkUsedKeywordsAndPeople();
       };
 
-      ThumbsWebBackgroundWorker.RunWorkerAsync(Pictures);
+      ThumbsWebBackgroundWorker.RunWorkerAsync();
     }
 
     public void ScrollToCurrent() {
@@ -402,45 +426,6 @@ namespace PictureManager {
       if (CurrentPicture == null || CurrentPicture.Index == 0) return;
       var thumb = doc.GetElementById(CurrentPicture.Index.ToString());
       thumb?.ScrollIntoView(true);
-    }
-
-    public void InitPictures(string dir) {
-      int? dirId = Db.InsertDirecotryInToDb(dir);
-      if (dirId == null) return;
-
-      FolderKeywords.Load();
-      FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(dir);
-      WMain.StatusProgressBar.Value = 0;
-      WMain.StatusProgressBar.Maximum = 100;
-
-      BackgroundWorker bw = new BackgroundWorker {WorkerReportsProgress = true};
-
-      bw.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
-        if (e.UserState == null) return;
-        WbUpdatePictureInfo((int)e.UserState);
-        WMain.StatusProgressBar.Value = e.ProgressPercentage;
-      };
-
-      bw.DoWork += delegate(object sender, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)sender;
-        var acore = (AppCore)e.Argument;
-        var count = acore.Pictures.Count;
-        var done = 0;
-
-        foreach (var picture in Pictures) {
-          picture.DirId = (int) dirId;
-          picture.FolderKeyword = fk;
-          picture.LoadFromDb(acore.Keywords, acore.People);
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
-        }
-      };
-
-      bw.RunWorkerCompleted += delegate {
-        MarkUsedKeywordsAndPeople();
-      };
-
-      bw.RunWorkerAsync(this);
     }
 
     public void LoadOtherPictures() {
@@ -613,26 +598,18 @@ namespace PictureManager {
       string dir = Path.GetDirectoryName(newPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
-      try {
 
-        /*var thumb = new ShellThumbnail();
-        thumb.CreateThumbnail(origPath, newPath, size, 80L);
-        thumb.Dispose();*/
+      var process = new Process {
+        StartInfo = new ProcessStartInfo {
+          Arguments = $"src|\"{origPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
 
-        var process = new Process {
-          StartInfo = new ProcessStartInfo {
-            Arguments = $"src|\"{origPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
-            FileName = "ThumbnailCreator.exe",
-            UseShellExecute = false,
-            CreateNoWindow = true
-          }
-        };
-
-        process.Start();
-        process.WaitForExit(1000);
-      } catch (Exception) {
-        //file can have 0 size
-      }
+      process.Start();
+      process.WaitForExit(1000);
     }
 
   }

@@ -232,8 +232,14 @@ namespace PictureManager {
             folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
             ACore.LastSelectedSourceRecursive = false;
+
+            if (ACore.ThumbsWebBackgroundWorker != null && ACore.ThumbsWebBackgroundWorker.IsBusy) {
+              ACore.ThumbsWebBackgroundWorker.CancelAsync();
+              ACore.ThumbsResetEvent.WaitOne();
+            }
+
             ACore.GetPicturesByFolder(folder.FullPath);
-            ACore.CreateThumbnailsWebPage(folder.FullPath);
+            ACore.CreateThumbnailsWebPage();
             break;
           }
           case nameof(Data.FavoriteFolder): {
