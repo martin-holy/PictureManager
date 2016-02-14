@@ -276,6 +276,31 @@ namespace PictureManager {
       ACore.People.DeletePerson((Data.Person) e.Parameter);
     }
 
+    private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Keywords.DeleteKeyword((Data.Keyword)e.Parameter);
+    }
+
+    private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
+      var newFolder = ((Data.Folder)e.Parameter).New();
+      newFolder.IsTitleEdited = true;
+    }
+
+    private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes)
+        ((Data.Folder)e.Parameter).Delete(ACore, true);
+    }
+
+    private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
+      ACore.FavoriteFolders.Add(((Data.Folder)e.Parameter).FullPath);
+      ACore.FavoriteFolders.Load();
+    }
+
+    private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
+      ACore.FavoriteFolders.Remove(((Data.FavoriteFolder)e.Parameter).FullPath);
+      ACore.FavoriteFolders.Load();
+    }
+
     #region Rename Keyword and Folder
 
     private void CmdRenameTreeViewItem(object sender, ExecutedRoutedEventArgs e) {
@@ -314,38 +339,22 @@ namespace PictureManager {
 
     #endregion
 
-    private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Keywords.DeleteKeyword((Data.Keyword) e.Parameter);
+
+    private void CmdCompressPictures_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.Pictures.Count > 0;
     }
 
-    private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      var newFolder = ((Data.Folder) e.Parameter).New();
-      newFolder.IsTitleEdited = true;
-    }
-
-    private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result == MessageBoxResult.Yes)
-        ((Data.Folder) e.Parameter).Delete(ACore, true);
-    }
-
-    private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Add(((Data.Folder) e.Parameter).FullPath);
-      ACore.FavoriteFolders.Load();
-    }
-
-    private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Remove(((Data.FavoriteFolder) e.Parameter).FullPath);
-      ACore.FavoriteFolders.Load();
-    }
-
-    private void CmdCompressPictures(object sender, RoutedEventArgs e) {
-      var compress = new WCompress(ACore) {Owner = this};
+    private void CmdCompressPictures_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var compress = new WCompress(ACore) { Owner = this };
       compress.ShowDialog();
     }
 
-    private void CmdOpenSettings(object sender, RoutedEventArgs e) {
-      var settings = new WSettings {Owner = this};
+    private void CmdOpenSettings_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = true;
+    }
+
+    private void CmdOpenSettings_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var settings = new WSettings { Owner = this };
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
         ACore.FolderKeywords.Load();
@@ -354,32 +363,43 @@ namespace PictureManager {
       }
     }
 
-    private void CmdAbout(object sender, RoutedEventArgs e) {
+    private void CmdAbout_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = true;
+    }
+
+    private void CmdAbout_Executed(object sender, ExecutedRoutedEventArgs e) {
       var about = new WAbout { Owner = this };
       about.ShowDialog();
     }
 
-    private void CmdKeywordsEditMode(object sender, RoutedEventArgs e) {
-      if (ACore.Pictures.Count == 0) return;
+    private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0;
+    }
+
+    private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = true;
       ACore.LastSelectedSource.IsSelected = false;
     }
 
-    private void CmdKeywordsEditModeSave(object sender, RoutedEventArgs e) {
+    private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode && ACore.Pictures.Count(p => p.IsModifed) > 0;
+    }
+
+    private void CmdKeywordsSave_Executed(object sender, ExecutedRoutedEventArgs e) {
       var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
 
       StatusProgressBar.Value = 0;
       StatusProgressBar.Maximum = 100;
 
-      BackgroundWorker bw = new BackgroundWorker {WorkerReportsProgress = true};
+      BackgroundWorker bw = new BackgroundWorker { WorkerReportsProgress = true };
 
-      bw.ProgressChanged += delegate(object bwsender, ProgressChangedEventArgs bwe) {
+      bw.ProgressChanged += delegate (object bwsender, ProgressChangedEventArgs bwe) {
         StatusProgressBar.Value = bwe.ProgressPercentage;
       };
 
-      bw.DoWork += delegate(object bwsender, DoWorkEventArgs bwe) {
-        var worker = (BackgroundWorker) bwsender;
-        var acore = (AppCore) bwe.Argument;
+      bw.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
+        var worker = (BackgroundWorker)bwsender;
+        var acore = (AppCore)bwe.Argument;
         var count = pictures.Count;
         var done = 0;
 
@@ -387,7 +407,7 @@ namespace PictureManager {
           picture.SavePictureInToDb(acore.Keywords, acore.People, false);
           picture.WriteMetadata();
           done++;
-          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), picture.Index);
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
         }
       };
 
@@ -398,7 +418,11 @@ namespace PictureManager {
       bw.RunWorkerAsync(ACore);
     }
 
-    private void CmdKeywordsEditModeCancel(object sender, RoutedEventArgs e) {
+    private void CmdKeywordsCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode;
+    }
+
+    private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
       foreach (Data.Picture picture in ACore.Pictures) {
         if (picture.IsModifed) {
@@ -409,7 +433,11 @@ namespace PictureManager {
       ACore.MarkUsedKeywordsAndPeople();
     }
 
-    private void CmdReloadMetadata(object sender, RoutedEventArgs e) {
+    private void CmdReloadMetadata_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.Pictures.Count > 0;
+    }
+
+    private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
       var pictures = ACore.SelectedPictures.Count > 0 ? ACore.SelectedPictures : ACore.Pictures;
       foreach (var picture in pictures) {
         picture.SavePictureInToDb(ACore.Keywords, ACore.People, true);
@@ -482,7 +510,11 @@ namespace PictureManager {
 
     }
 
-    private void CmdTestButton(object sender, RoutedEventArgs e) {
+    private void CmdTestButton_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = true;
+    }
+
+    private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
       //JpegTest();
 
       //RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
@@ -493,10 +525,10 @@ namespace PictureManager {
       if (File.Exists(filePath)) {
         Process.Start("rundll32.exe", "shell32.dll, OpenAs_RunDLL " + filePath);
       }*/
-      
+
 
       //psi.UseShellExecute = true;
-      
+
 
       //Process.Start(psi);
 
@@ -673,27 +705,6 @@ namespace PictureManager {
 
       if (menu.Items.Count > 0)
         stackPanel.ContextMenu = menu;
-    }
-
-    private void MainMenuButton_OnClick(object sender, RoutedEventArgs e) {
-      ContextMenu menu = ((Button) sender).ContextMenu;
-
-      McmKeywordsEditMode.Visibility = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-      McmKeywordsEditModeSave.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
-      McmKeywordsEditModeCancel.Visibility = TabKeywords.IsSelected && ACore.KeywordsEditMode ? Visibility.Visible : Visibility.Collapsed;
-      McmCompressPictures.Visibility = ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-      McmReloadMetadata.Visibility = ACore.Pictures.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-
-      menu.Placement = PlacementMode.Absolute;
-      menu.VerticalOffset = SystemParameters.WindowCaptionHeight + 9;
-      menu.HorizontalOffset = 1;
-
-      menu.IsOpen = true;
-    }
-
-    private void BtnMainContextMenu_OnContextMenuOpening(object sender, ContextMenuEventArgs e) {
-      ((Button)sender).ContextMenu.IsOpen = false;
-      e.Handled = true;
     }
   }
 }

@@ -6,6 +6,7 @@
         xmlns:data="clr-namespace:PictureManager.Data"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:pm="clr-namespace:PictureManager"
         mc:Ignorable="d"
         Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
         Loaded="Window_Loaded" 
@@ -15,20 +16,20 @@
   
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
-      <Button x:Name="BtnMainContextMenu" Content="Menu" Click="MainMenuButton_OnClick" ContextMenuOpening="BtnMainContextMenu_OnContextMenuOpening" >
-        <Button.ContextMenu>
-          <ContextMenu x:Name="MainContextMenu">
-            <MenuItem x:Name="McmKeywordsEditMode" Header="Edit Keywords" Click="CmdKeywordsEditMode" />
-            <MenuItem x:Name="McmKeywordsEditModeSave" Header="Save edited Keywords" Click="CmdKeywordsEditModeSave" />
-            <MenuItem x:Name="McmKeywordsEditModeCancel" Header="Cancel edit Keywords" Click="CmdKeywordsEditModeCancel" />
-            <MenuItem x:Name="McmCompressPictures" Header="Compress Pictures" Click="CmdCompressPictures" />
-            <MenuItem x:Name="McmTestButton" Header="Test Button" Click="CmdTestButton" />
-            <MenuItem x:Name="McmReloadMetadata" Header="Reload Metadata" Click="CmdReloadMetadata" />
-            <MenuItem x:Name="McmOpenSettings" Header="Settings" Click="CmdOpenSettings" />
-            <MenuItem x:Name="McmAbout" Header="About" Click="CmdAbout" />
-          </ContextMenu>
-        </Button.ContextMenu>
-      </Button>
+      <Menu Background="Transparent">
+        <MenuItem Header="Tools" Background="Transparent">
+          <MenuItem Command="pm:CustomCommands.CmdCompressPictures" />
+          <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
+          <MenuItem Command="pm:CustomCommands.CmdOpenSettings" />
+          <MenuItem Command="pm:CustomCommands.CmdTestButton" />
+        </MenuItem>
+        <MenuItem Header="Keywords" Background="Transparent">
+          <MenuItem Command="pm:CustomCommands.CmdKeywordsEdit" />
+          <MenuItem Command="pm:CustomCommands.CmdKeywordsSave" />
+          <MenuItem Command="pm:CustomCommands.CmdKeywordsCancel" />
+        </MenuItem>
+        <MenuItem Command="pm:CustomCommands.CmdAbout" Background="Transparent" />
+      </Menu>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
   
@@ -102,6 +103,8 @@
       <EventSetter Event="PreviewMouseUp" Handler="TreeViewKeywords_Select" />
     </Style>
 
+    
+
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="KeywordNew" Text="New" />
     <RoutedUICommand x:Key="KeywordRename" Text="Rename" />
@@ -129,6 +132,15 @@
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
+
+    <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdKeywordsCancel" CanExecute="CmdKeywordsCancel_CanExecute" Executed="CmdKeywordsCancel_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdCompressPictures" CanExecute="CmdCompressPictures_CanExecute" Executed="CmdCompressPictures_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdTestButton_CanExecute" Executed="CmdTestButton_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdOpenSettings_CanExecute" Executed="CmdOpenSettings_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAbout_CanExecute" Executed="CmdAbout_Executed" />
   </controls:MetroWindow.CommandBindings>
 
   <DockPanel>

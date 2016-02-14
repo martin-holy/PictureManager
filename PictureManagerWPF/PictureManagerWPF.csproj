@@ -74,6 +74,7 @@
     </ApplicationDefinition>
     <Compile Include="AppCore.cs" />
     <Compile Include="Convertors.cs" />
+    <Compile Include="CustomCommands.cs" />
     <Compile Include="Data\AppInfo.cs" />
     <Compile Include="Data\BaseItem.cs" />
     <Compile Include="Data\BaseTagItem.cs" />
