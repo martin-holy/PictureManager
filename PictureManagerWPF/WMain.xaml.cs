@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 using HtmlElement = System.Windows.Forms.HtmlElement;
+using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
 
 namespace PictureManager {
   /// <summary>
@@ -483,7 +485,20 @@ namespace PictureManager {
     private void CmdTestButton(object sender, RoutedEventArgs e) {
       //JpegTest();
 
-      RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
+      //RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
+
+
+      /*//cause blue screen :-(
+      var filePath = @"d:\!test\TestInTest\20160209_143609.jpg";
+      if (File.Exists(filePath)) {
+        Process.Start("rundll32.exe", "shell32.dll, OpenAs_RunDLL " + filePath);
+      }*/
+      
+
+      //psi.UseShellExecute = true;
+      
+
+      //Process.Start(psi);
 
       //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
 
@@ -565,16 +580,22 @@ namespace PictureManager {
     }
 
     private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
-      var thumbs = e.Data.GetData(DataFormats.Text)?.Equals("PictureManager"); //thumbnails drop
+      var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
+      if (thumbs) {
+        var dragged = (string[]) e.Data.GetData(DataFormats.FileDrop);
+        var selected = ACore.SelectedPictures.Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        thumbs = selected.SequenceEqual(dragged);
+      }
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
-      if ((srcData != null || (thumbs != null && thumbs.Value)) && destData != null && srcData != destData && destData.IsAccessible) return;
-      e.Effects = DragDropEffects.None;
-      e.Handled = true;
+      if ((srcData == null && !thumbs) || destData == null || srcData == destData || !destData.IsAccessible) {
+        e.Effects = DragDropEffects.None;
+        e.Handled = true;
+      }
     }
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
-      var thumbs = e.Data.GetDataPresent(DataFormats.Text) && e.Data.GetData(DataFormats.Text).Equals("PictureManager"); //thumbnails drop
+      var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
       var destData = (Data.Folder) ((StackPanel) sender).DataContext;
       var from = thumbs ? null : srcData.FullPath;

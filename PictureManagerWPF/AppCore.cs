@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -610,6 +611,5 @@ namespace PictureManager {
       process.Start();
       process.WaitForExit(1000);
     }
-
   }
 }

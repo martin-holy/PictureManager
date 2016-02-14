@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Linq;
+using System.Runtime.InteropServices;
+using System.Windows;
 
 namespace PictureManager {
   [ComVisible(true)]
@@ -16,6 +18,12 @@ namespace PictureManager {
 
     public void OnContextMenu() {
       _wMain.WbThumbsShowContextMenu();
+    }
+
+    public void Thumbs_OnDragStart() {
+      var dob = new DataObject();
+      dob.SetData(DataFormats.FileDrop, _wMain.ACore.SelectedPictures.Select(p => p.FilePath).ToArray());
+      DragDrop.DoDragDrop(_wMain, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
   }
 }
