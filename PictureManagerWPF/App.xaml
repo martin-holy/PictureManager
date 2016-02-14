@@ -17,6 +17,17 @@
       <pictureManager:IconNameToBrush x:Key="IconNameToBrush" />
       <pictureManager:RatingConverter x:Key="RatingConverter" />
       
+      <Style x:Key="RootMenuStyle" TargetType="MenuItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="5" />
+        <Style.Triggers>
+          <Trigger Property="MenuItem.IsMouseOver" Value="True">
+            <Setter Property="MenuItem.Background" Value="{DynamicResource WhiteBrush}" />
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+      
     </ResourceDictionary>
+    
   </Application.Resources>
 </Application>

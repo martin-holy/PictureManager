@@ -17,28 +17,28 @@
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
       <Menu Background="Transparent">
-        <MenuItem Header="Tools" Background="Transparent">
+        <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:CustomCommands.CmdCompressPictures" />
           <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
           <MenuItem Command="pm:CustomCommands.CmdOpenSettings" />
           <MenuItem Command="pm:CustomCommands.CmdTestButton" />
         </MenuItem>
-        <MenuItem Header="Keywords" Background="Transparent">
+        <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:CustomCommands.CmdKeywordsEdit" />
           <MenuItem Command="pm:CustomCommands.CmdKeywordsSave" />
           <MenuItem Command="pm:CustomCommands.CmdKeywordsCancel" />
         </MenuItem>
-        <MenuItem Command="pm:CustomCommands.CmdAbout" Background="Transparent" />
+        <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
       </Menu>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
   
   <controls:MetroWindow.Resources>
-    
+
     <Style TargetType="{x:Type controls:MetroWindow}">
       <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal" />
     </Style>
-
+    
     <!-- KeywordsPicCountStyle -->
     <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
       <Setter Property="Text" Value="{Binding PicCount}"></Setter>
@@ -144,7 +144,7 @@
   </controls:MetroWindow.CommandBindings>
 
   <DockPanel>
-    
+
     <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
       <StatusBar.ItemsPanel>
         <ItemsPanelTemplate>
@@ -170,6 +170,16 @@
       <StatusBarItem Grid.Column="4">
         <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
       </StatusBarItem>
+      <StatusBar.Style>
+        <Style>
+          <Setter Property="StatusBar.Background" Value="{DynamicResource AccentColorBrush}" />
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding KeywordsEditMode}" Value="True">
+              <Setter Property="StatusBar.Background" Value="#CA5100" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </StatusBar.Style>
     </StatusBar>
     
     <Grid>

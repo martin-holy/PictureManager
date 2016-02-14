@@ -16,6 +16,12 @@ namespace PictureManager.Data {
       set { _currentPictureFilePath = value; OnPropertyChanged("CurrentPictureFilePath"); }
     }
 
+    private bool _keywordsEditMode;
+    public bool KeywordsEditMode {
+      get { return _keywordsEditMode; }
+      set { _keywordsEditMode = value; OnPropertyChanged("KeywordsEditMode"); }
+    }
+
     public void OnPropertyChanged(string name) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }

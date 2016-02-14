@@ -32,7 +32,6 @@ namespace PictureManager {
     public AppInfo AppInfo;
     public bool OneFileOnly;
     public bool ViewerOnly = false; //application was run with file path parameter
-    public bool KeywordsEditMode = false;
     public enum FileOperations { Copy, Move, Delete }
     public bool LastSelectedSourceRecursive;
     public DbStuff Db;
@@ -43,10 +42,18 @@ namespace PictureManager {
     public BackgroundWorker ThumbsWebWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
 
-    public BaseItem LastSelectedSource {
-      get {
-        return _lastSelectedSource;
+    private bool _keywordsEditMode;
+
+    public bool KeywordsEditMode {
+      get { return _keywordsEditMode; }
+      set {
+        _keywordsEditMode = value;
+        AppInfo.KeywordsEditMode = value;
       }
+    }
+
+    public BaseItem LastSelectedSource {
+      get { return _lastSelectedSource; }
       set {
         if (_lastSelectedSource == value) return;
         if (_lastSelectedSource != null)
@@ -57,9 +64,7 @@ namespace PictureManager {
 
     private Picture _currentPicture;
     public Picture CurrentPicture {
-      get {
-        return _currentPicture;
-      }
+      get { return _currentPicture; }
       set {
         _currentPicture = value;
         AppInfo.CurrentPictureFilePath = value == null ? string.Empty : value.FilePath;
