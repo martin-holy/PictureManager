@@ -11,7 +11,7 @@ namespace PictureManager {
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new Exception("The method or operation is not implemented.");
+      throw new NotSupportedException();
     }
   }
 
@@ -36,7 +36,7 @@ namespace PictureManager {
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new Exception("The method or operation is not implemented.");
+      throw new NotSupportedException();
     }
   }
 
@@ -48,7 +48,7 @@ namespace PictureManager {
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new Exception("The method or operation is not implemented.");
+      throw new NotSupportedException();
     }
   }
 }
