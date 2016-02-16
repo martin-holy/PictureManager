@@ -57,5 +57,15 @@ namespace PictureManager.Data {
         items = folder.Items;
       }
     }
+
+    public bool GetVisibleTreeIndexFor(ObservableCollection<Folder> folders, Folder folder, ref int index) {
+      foreach (var item in folders) {
+        index++;
+        if (item.Equals(folder)) return true;
+        if (!item.IsExpanded) continue;
+        if (GetVisibleTreeIndexFor(item.Items, folder, ref index)) return true;
+      }
+      return false;
+    }
   }
 }

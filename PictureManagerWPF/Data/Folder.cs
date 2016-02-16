@@ -121,6 +121,8 @@ namespace PictureManager.Data {
         inputDialog.DialogResult = true;
       };
 
+      inputDialog.TxtAnswer.SelectAll();
+
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) Rename(wMain.ACore, inputDialog.Answer);
         else New(inputDialog.Answer);

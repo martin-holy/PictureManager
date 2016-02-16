@@ -250,7 +250,13 @@ namespace PictureManager {
             break;
           }
           case nameof(Data.FavoriteFolder): {
-            ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
+            var folder = ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
+            if (folder != null) {
+              var visibleTreeIndex = 0;
+              ACore.Folders.GetVisibleTreeIndexFor(ACore.Folders.Items, folder, ref visibleTreeIndex);
+              var offset = (ACore.FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
+              TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
+            }
             break;
           }
         }
@@ -529,7 +535,23 @@ namespace PictureManager {
       e.CanExecute = true;
     }
 
+    private ScrollViewer _tvFoldersScrollViewer;
+    private ScrollViewer TvFoldersScrollViewer
+    {
+      get
+      {
+        if (_tvFoldersScrollViewer != null) return _tvFoldersScrollViewer;
+        DependencyObject border = VisualTreeHelper.GetChild(TvFolders, 0);
+        if (border != null) {
+          _tvFoldersScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+        }
+
+        return _tvFoldersScrollViewer;
+      }
+    }
+
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+      
       //JpegTest();
 
       //RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
