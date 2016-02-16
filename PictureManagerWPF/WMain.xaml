@@ -86,6 +86,7 @@
       <Setter Property="Margin" Value="5,0,0,0" />
       <Setter Property="Visibility" Value="Collapsed" />
       <EventSetter Event="KeyDown" Handler="TreeViewEndEdit_OnKeyDown" />
+      <EventSetter Event="PreviewKeyDown" Handler="TreeViewEndEdit_OnPreviewKeyDown"></EventSetter>
       <EventSetter Event="LostFocus" Handler="TreeViewCancelEdit_LostFocus" />
       <Style.Triggers>
         <DataTrigger Binding="{Binding IsTitleEdited}" Value="True">
@@ -128,7 +129,7 @@
     <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdRenameTreeViewItem" />
     <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
-    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdRenameTreeViewItem" />
+    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
@@ -228,7 +229,6 @@
                             DragOver="TvFolders_AllowDropCheck">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
-                  <TextBox Style="{StaticResource TreeViewEditBox}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using PictureManager.Dialogs;
 
 namespace PictureManager.Data {
   public class Folder: BaseItem {
@@ -68,27 +69,21 @@ namespace PictureManager.Data {
       }
     }
 
-    public Folder New() {
+    public Folder New(string folderName) {
       IsExpanded = true;
-      const string newFolderName = "New Folder";
-
-      int i = 0;
-      while (Items.Any(x => x.Title.Equals($"{newFolderName} {i}"))) {
-        i++;
-      }
-
-      var newFullPath = $"{FullPath}\\{newFolderName} {i}";
+      var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
 
       var newFolder = new Folder {
-        Title = $"{newFolderName} {i}",
+        Title = folderName,
         FullPath = newFullPath,
         IconName = "appbar_folder",
         Parent = this,
         IsAccessible = true
       };
 
-      Items.Insert(0, newFolder);
+      Folder folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
+      Items.Insert(folder == null ? 0 : Items.IndexOf(folder), newFolder);
 
       return newFolder;
     }
@@ -96,6 +91,40 @@ namespace PictureManager.Data {
     public void Delete(AppCore aCore, bool recycle) {
       if (!aCore.FileOperation(AppCore.FileOperations.Delete, FullPath, recycle)) return;
       Parent.Items.Remove(this);
+    }
+
+    public bool IsItCorrectFolderName(string name) {
+      string[] incorectChars = {"\\", "/", ":", "*", "?", "\"", "<", ">", "|"};
+      return !incorectChars.Any(name.Contains);
+    }
+
+    public void NewOrRename(WMain wMain, bool rename) {
+      InputDialog inputDialog = new InputDialog {
+        Owner = wMain,
+        IconName = "appbar_folder",
+        Title = rename ? "Rename Folder" : "New Folder",
+        Question = rename ? "Enter new name for folder." : "Enter name of new folder.",
+        Answer = rename ? Title : string.Empty
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        if (Directory.Exists($"{Parent.FullPath}\\{inputDialog.TxtAnswer.Text}")) {
+          inputDialog.ShowErrorMessage("Folder already exists!");
+          return;
+        }
+
+        if (!IsItCorrectFolderName(inputDialog.TxtAnswer.Text)) {
+          inputDialog.ShowErrorMessage("New folder's name contains incorrect character(s)!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
+
+      if (inputDialog.ShowDialog() ?? true) {
+        if (rename) Rename(wMain.ACore, inputDialog.Answer);
+        else New(inputDialog.Answer);
+      }
     }
   }
 }

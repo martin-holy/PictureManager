@@ -4,12 +4,14 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Remoting.Metadata;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PictureManager.Dialogs;
 using PictureManager.Properties;
 using HtmlElement = System.Windows.Forms.HtmlElement;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
@@ -282,8 +284,11 @@ namespace PictureManager {
     }
 
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      var newFolder = ((Data.Folder)e.Parameter).New();
-      newFolder.IsTitleEdited = true;
+      ((Data.Folder) e.Parameter).NewOrRename(this, false);
+    }
+
+    private void CmdFolderRename(object sender, ExecutedRoutedEventArgs e) {
+      ((Data.Folder) e.Parameter).NewOrRename(this, true);
     }
 
     private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -313,9 +318,18 @@ namespace PictureManager {
       ((Data.BaseItem) ((TextBox) sender).DataContext).IsTitleEdited = false;
     }
 
+    private void TreeViewEndEdit_OnPreviewKeyDown(object sender, KeyEventArgs e) {
+      TextBox textBox = (TextBox)sender;
+      if (e.Key == Key.Subtract || e.Key == Key.Add) {
+        /*textBox.Text = textBox.Text.Insert(textBox.CaretIndex, "+");
+        textBox.CaretIndex++;*/
+        //e.Handled = true;
+      }
+    }
+
     private void TreeViewEndEdit_OnKeyDown(object sender, KeyEventArgs e) {
       if (e.Key != Key.Escape && e.Key != Key.Enter) return;
-      TextBox textBox = (TextBox) sender;
+      TextBox textBox = (TextBox)sender;
 
       if (e.Key == Key.Enter) {
         if (!string.IsNullOrEmpty(textBox.Text)) {
@@ -668,7 +682,7 @@ namespace PictureManager {
         case nameof(Data.Folder): {
           menu.Items.Add(new MenuItem {Command = (ICommand)Resources["FolderNew"], CommandParameter = item});
           if (((Data.Folder) item).Parent != null) {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = stackPanel});
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderDelete"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
           }
