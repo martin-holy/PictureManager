@@ -27,6 +27,7 @@
           <MenuItem Command="pm:CustomCommands.CmdKeywordsEdit" Tag="appbar_edit" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:CustomCommands.CmdKeywordsSave" Tag="appbar_save" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:CustomCommands.CmdKeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:CustomCommands.CmdKeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
         <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
       </Menu>
@@ -137,6 +138,7 @@
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsCancel" CanExecute="CmdKeywordsCancel_CanExecute" Executed="CmdKeywordsCancel_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdKeywordsComment" CanExecute="CmdKeywordsComment_CanExecute" Executed="CmdKeywordsComment_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCompressPictures" CanExecute="CmdCompressPictures_CanExecute" Executed="CmdCompressPictures_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdTestButton_CanExecute" Executed="CmdTestButton_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />

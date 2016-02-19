@@ -67,6 +67,12 @@ namespace PictureManager {
         SelectAllThumbnails();
         e.ReturnValue = false;
       }
+
+      if (e.CtrlKeyPressed && e.KeyPressedCode == 75) {
+        if (ACore.SelectedPictures.Count == 1)
+          CmdKeywordsComment_Executed(null, null);
+        e.ReturnValue = false;
+      }
     }
 
     private void WbThumbs_DblClick(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
@@ -420,12 +426,12 @@ namespace PictureManager {
 
       bw.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
         var worker = (BackgroundWorker)bwsender;
-        var acore = (AppCore)bwe.Argument;
+        var aCore = (AppCore)bwe.Argument;
         var count = pictures.Count;
         var done = 0;
 
         foreach (var picture in pictures) {
-          picture.SavePictureInToDb(acore.Keywords, acore.People, false);
+          picture.SavePictureInToDb(aCore, false);
           picture.WriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
@@ -454,6 +460,43 @@ namespace PictureManager {
       ACore.MarkUsedKeywordsAndPeople();
     }
 
+    private void CmdKeywordsComment_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.SelectedPictures.Count == 1;
+    }
+
+    private void CmdKeywordsComment_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var picture = ACore.SelectedPictures[0];
+      InputDialog inputDialog = new InputDialog {
+        Owner = this,
+        IconName = "appbar_notification",
+        Title = "Comment",
+        Question = "Add a comment.",
+        Answer = picture.Comment
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        if (inputDialog.TxtAnswer.Text.Length > 256) {
+          inputDialog.ShowErrorMessage("Comment is too long!");
+          return;
+        }
+
+        if (ACore.IncorectChars.Any(inputDialog.TxtAnswer.Text.Contains)) {
+          inputDialog.ShowErrorMessage("Comment contains incorrect character(s)!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (inputDialog.ShowDialog() ?? true) {
+        picture.Comment = inputDialog.TxtAnswer.Text;
+        picture.SavePictureInToDb(ACore, false);
+        picture.WriteMetadata();
+      }
+    }
+
     private void CmdReloadMetadata_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = ACore.Pictures.Count > 0;
     }
@@ -461,7 +504,7 @@ namespace PictureManager {
     private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
       var pictures = ACore.SelectedPictures.Count > 0 ? ACore.SelectedPictures : ACore.Pictures;
       foreach (var picture in pictures) {
-        picture.SavePictureInToDb(ACore.Keywords, ACore.People, true);
+        picture.SavePictureInToDb(ACore, true);
         ACore.WbUpdatePictureInfo(picture.Index);
       }
     }

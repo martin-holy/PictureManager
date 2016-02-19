@@ -17,6 +17,11 @@ namespace PictureManager {
       new InputGestureCollection {new KeyGesture(Key.Q, ModifierKeys.Control)}
       );
 
+    public static readonly RoutedUICommand CmdKeywordsComment = new RoutedUICommand(
+      "Comment", "CmdKeywordsComment", typeof(CustomCommands),
+      new InputGestureCollection { new KeyGesture(Key.K, ModifierKeys.Control) }
+      );
+
     public static readonly RoutedUICommand CmdCompressPictures = new RoutedUICommand(
       "Compress Pictures", "CmdCompressPictures", typeof (CustomCommands));
 

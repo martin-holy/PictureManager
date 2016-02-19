@@ -28,6 +28,7 @@ namespace PictureManager {
     public Ratings Ratings;
     public WMain WMain;
     public string[] SuportedExts = { ".jpg", ".jpeg" };
+    public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
     public System.Windows.Forms.WebBrowser WbThumbs;
     public AppInfo AppInfo;
     public bool OneFileOnly;
@@ -335,7 +336,7 @@ namespace PictureManager {
         sqlList.Add($"select Id from Pictures where DirectoryId in ({folderKeyword.FolderIds})");
 
       string innerSql = string.Join(" union ", sqlList);
-      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating, DirectoryId " +
+      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating, DirectoryId, Comment " +
                    $"from Pictures as P where P.Id in ({innerSql}) order by FileName";
 
       foreach (DataRow row in Db.Select(sql)) {
@@ -345,6 +346,7 @@ namespace PictureManager {
             Id = (int) (long) row[0],
             Rating = (int) (long) row[3],
             DirId = (int) (long) row[4],
+            Comment = (string) row[5],
             FolderKeyword = FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
           };
           pic.LoadKeywordsFromDb(Keywords);
@@ -409,7 +411,7 @@ namespace PictureManager {
           if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
 
           if (picture.Id == -1) {
-            picture.LoadFromDb(Keywords, People);
+            picture.LoadFromDb(this);
           }
 
           done++;

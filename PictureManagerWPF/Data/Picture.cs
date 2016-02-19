@@ -14,6 +14,8 @@ namespace PictureManager.Data {
     public string FilePath;
     public string FileName;
     public string FileExt;
+    public string Comment;
+    public string CommentEscaped => Comment.Replace("'", "''");
     public int Index;
     public int Id;
     public int DirId;
@@ -62,6 +64,10 @@ namespace PictureManager.Data {
       sb.Append(Rating);
       sb.Append("</div>");
 
+      if (Comment != string.Empty) {
+        sb.Append("<div>C</div>");
+      }
+
       return sb.ToString();
     }
 
@@ -89,28 +95,29 @@ namespace PictureManager.Data {
       LoadPeopleFromDb(people);
     }
 
-    public void LoadFromDb(Keywords keywords, People people) {
-      var result = Db.Select($"select Id, Rating from Pictures where DirectoryId = {DirId} and FileName = '{FileName}'");
+    public void LoadFromDb(AppCore aCore) {
+      var result = Db.Select($"select Id, Rating, Comment from Pictures where DirectoryId = {DirId} and FileName = '{FileName}'");
       if (result != null && result.Count == 1) {
         Id = (int)(long)result[0][0];
         Rating = (int)(long)result[0][1];
-        LoadKeywordsFromDb(keywords);
-        LoadPeopleFromDb(people);
+        Comment = (string) result[0][2];
+        LoadKeywordsFromDb(aCore.Keywords);
+        LoadPeopleFromDb(aCore.People);
       } else {
-        SavePictureInToDb(keywords, people, false);
+        SavePictureInToDb(aCore, false);
       }
     }
 
-    public void SavePictureInToDb(Keywords keywords, People people, bool update) {
+    public void SavePictureInToDb(AppCore aCore, bool update) {
       if (Id == -1) {
-        ReadMetadata(keywords, people);
-        if (Db.Execute($"insert into Pictures (DirectoryId, FileName, Rating) values ({DirId}, '{FileName}', {Rating})")) {
+        ReadMetadata(aCore);
+        if (Db.Execute($"insert into Pictures (DirectoryId, FileName, Rating, Comment) values ({DirId}, '{FileName}', {Rating}), '{CommentEscaped}'")) {
           var id = Db.GetLastIdFor("Pictures");
           if (id != null) Id = (int) id;
         }
       } else {
-        if (update) ReadMetadata(keywords, people);
-        Db.Execute($"update Pictures set Rating = {Rating} where Id = {Id}");
+        if (update) ReadMetadata(aCore);
+        Db.Execute($"update Pictures set Rating = {Rating}, Comment = '{CommentEscaped}' where Id = {Id}");
       }
 
       SavePictureKeywordsToDb();
@@ -212,6 +219,7 @@ namespace PictureManager.Data {
 
 
             metadata.Rating = Rating;
+            metadata.Comment = Comment;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
 
             JpegBitmapEncoder encoder = new JpegBitmapEncoder {QualityLevel = Settings.Default.JpegQualityLevel};
@@ -234,7 +242,7 @@ namespace PictureManager.Data {
       return bSuccess;
   }
 
-    public void ReadMetadata(Keywords keywords, People people) {
+    public void ReadMetadata(AppCore aCore) {
       try {
         using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
           if (imageFileStream.Length == 0) return;
@@ -252,7 +260,7 @@ namespace PictureManager.Data {
             foreach (string region in regions) {
               var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
               if (personDisplayName != null) {
-                People.Add(people.GetPersonByName(personDisplayName.ToString(), true));
+                People.Add(aCore.People.GetPersonByName(personDisplayName.ToString(), true));
               }
             }
           }
@@ -260,13 +268,16 @@ namespace PictureManager.Data {
           //Rating
           Rating = bm.Rating;
 
+          //Comment
+          Comment = aCore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+
           //Keywords
           Keywords.Clear();
           if (bm.Keywords == null) return;
           //Filter out duplicities
           foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
             if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-              var keyword = keywords.GetKeywordByFullPath(k, true);
+              var keyword = aCore.Keywords.GetKeywordByFullPath(k, true);
               if (keyword != null)
                 Keywords.Add(keyword);
             }
