@@ -77,6 +77,7 @@
     <Compile Include="CustomCommands.cs" />
     <Compile Include="Data\AppInfo.cs" />
     <Compile Include="Data\BaseItem.cs" />
+    <Compile Include="Data\BaseMediaItem.cs" />
     <Compile Include="Data\BaseTagItem.cs" />
     <Compile Include="Data\FavoriteFolder.cs" />
     <Compile Include="Data\FavoriteFolders.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Data\Folders.cs" />
     <Compile Include="Data\Keyword.cs" />
     <Compile Include="Data\Keywords.cs" />
+    <Compile Include="Data\MediaItems.cs" />
     <Compile Include="Data\People.cs" />
     <Compile Include="Data\Person.cs" />
     <Compile Include="Data\Picture.cs" />

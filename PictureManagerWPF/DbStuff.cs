@@ -96,12 +96,12 @@ namespace PictureManager {
               + ",[Keyword] nvarchar(128) NOT NULL COLLATE NOCASE"
               + ",[Idx] integer NOT NULL DEFAULT 0);");
 
-      Execute("CREATE TABLE IF NOT EXISTS \"PictureKeyword\"("
+      Execute("CREATE TABLE IF NOT EXISTS \"MediaItemKeyword\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[PictureId] integer NOT NULL"
+              + ",[MediaItemId] integer NOT NULL"
               + ",[KeywordId] integer NOT NULL);");
 
-      Execute("CREATE TABLE IF NOT EXISTS \"Pictures\"("
+      Execute("CREATE TABLE IF NOT EXISTS \"MediaItems\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[DirectoryId] integer NOT NULL"
               + ",[FileName] nvarchar(256) NOT NULL COLLATE NOCASE"
@@ -112,9 +112,9 @@ namespace PictureManager {
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE);");
 
-      Execute("CREATE TABLE IF NOT EXISTS \"PicturePerson\"("
+      Execute("CREATE TABLE IF NOT EXISTS \"MediaItemPerson\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[PictureId] integer NOT NULL"
+              + ",[MediaItemId] integer NOT NULL"
               + ",[PersonId] integer NOT NULL); ");
 
       Execute("CREATE TABLE IF NOT EXISTS \"FavoriteFolders\"("

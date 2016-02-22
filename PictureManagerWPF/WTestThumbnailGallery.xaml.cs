@@ -30,16 +30,16 @@ namespace PictureManager {
         item.Padding = new Thickness(1, 2, 1, 2);
 
         Image image = new Image();
-        using (var stream = new FileStream(picture.CacheFilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+        using (var stream = new FileStream(picture.FilePathCache, FileMode.Open, FileAccess.Read, FileShare.Read)) {
           var bitmapFrame = BitmapFrame.Create(stream, BitmapCreateOptions.DelayCreation, BitmapCacheOption.None);
           image.Width = bitmapFrame.PixelWidth;
           image.Height = bitmapFrame.PixelHeight;
         }
 
-        BitmapImage bi = new BitmapImage(new Uri(picture.CacheFilePath));
+        BitmapImage bi = new BitmapImage(new Uri(picture.FilePathCache));
         bi.Freeze();
         image.Stretch = Stretch.None;
-        image.Source = new BitmapImage(new Uri(picture.CacheFilePath));
+        image.Source = new BitmapImage(new Uri(picture.FilePathCache));
         item.Content = image;
 
         pictureBox.Items.Add(item);

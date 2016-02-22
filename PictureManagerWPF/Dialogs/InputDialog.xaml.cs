@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Windows;
-using System.Windows.Media;
+using System.Runtime.CompilerServices;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -9,7 +8,7 @@ namespace PictureManager.Dialogs {
   public partial class InputDialog: INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged(string name) {
+    public void OnPropertyChanged([CallerMemberName] string name = "") {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
@@ -18,18 +17,14 @@ namespace PictureManager.Dialogs {
     private string _answer;
     private bool _error;
 
-    public string IconName { get { return _iconName;} set { _iconName = value; OnPropertyChanged("IconName"); } }
-    public string Question { get { return _question; } set { _question = value; OnPropertyChanged("Question"); } }
-    public string Answer { get { return _answer; } set { _answer = value; OnPropertyChanged("Answer"); } }
-    public bool Error { get { return _error; } set { _error = value; OnPropertyChanged("Error"); } }
+    public string IconName { get { return _iconName;} set { _iconName = value; OnPropertyChanged(); } }
+    public string Question { get { return _question; } set { _question = value; OnPropertyChanged(); } }
+    public string Answer { get { return _answer; } set { _answer = value; OnPropertyChanged(); } }
+    public bool Error { get { return _error; } set { _error = value; OnPropertyChanged(); } }
 
     public InputDialog() {
       InitializeComponent();
       TxtAnswer.Focus();
-    }
-
-    private void BtnDialogOk_OnClick(object sender, RoutedEventArgs e) {
-      DialogResult = true;
     }
 
     public void ShowErrorMessage(string text) {

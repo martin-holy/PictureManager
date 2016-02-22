@@ -12,7 +12,7 @@ namespace PictureManager {
     }
 
     public void FullPicMouseWheel(int delta) {
-      _wMain.ACore.CurrentPictureMove(delta < 0);
+      _wMain.ACore.MediaItems.CurrentItemMove(delta < 0);
       _wMain.ShowFullPicture();
     }
 
@@ -22,7 +22,7 @@ namespace PictureManager {
 
     public void Thumbs_OnDragStart() {
       var dob = new DataObject();
-      dob.SetData(DataFormats.FileDrop, _wMain.ACore.SelectedPictures.Select(p => p.FilePath).ToArray());
+      dob.SetData(DataFormats.FileDrop, _wMain.ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray());
       DragDrop.DoDragDrop(_wMain, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
   }

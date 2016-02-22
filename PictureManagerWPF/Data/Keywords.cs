@@ -16,8 +16,8 @@ namespace PictureManager.Data {
       Items.Clear();
 
       const string sql =
-        "select Id, Keyword, (select count(PK.Id) from PictureKeyword as PK where PK.KeywordId in "
-        + "(select XK.Id from Keywords as XK where XK.Keyword like K.Keyword||\"%\")) as PicturesCount, Idx from "
+        "select Id, Keyword, (select count(MK.Id) from MediaItemKeyword as MK where MK.KeywordId in "
+        + "(select XK.Id from Keywords as XK where XK.Keyword like K.Keyword||\"%\")) as MediaItemsCount, Idx from "
         + "Keywords as K order by Idx, Keyword";
 
       foreach (DataRow row in Db.Select(sql)) {
@@ -83,7 +83,7 @@ namespace PictureManager.Data {
 
     public void DeleteKeyword(Keyword keyword) {
       if (keyword.Items.Count != 0) return;
-      Db.Execute($"delete from PictureKeyword where KeywordId = {keyword.Id}");
+      Db.Execute($"delete from MediaItemKeyword where KeywordId = {keyword.Id}");
       Db.Execute($"delete from Keywords where Id = {keyword.Id}");
       var items = keyword.Parent == null ? Items : keyword.Parent.Items;
       items.Remove(keyword);

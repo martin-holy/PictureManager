@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Windows.Input;
@@ -27,8 +25,7 @@ namespace PictureManager {
     public FavoriteFolders FavoriteFolders;
     public Ratings Ratings;
     public WMain WMain;
-    public string[] SuportedExts = { ".jpg", ".jpeg" };
-    public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
+    public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
     public System.Windows.Forms.WebBrowser WbThumbs;
     public AppInfo AppInfo;
     public bool OneFileOnly;
@@ -36,8 +33,7 @@ namespace PictureManager {
     public enum FileOperations { Copy, Move, Delete }
     public bool LastSelectedSourceRecursive;
     public DbStuff Db;
-    public ObservableCollection<Picture> Pictures;
-    public ObservableCollection<Picture> SelectedPictures;
+    public MediaItems MediaItems;
     public List<BaseTagItem> MarkedTags;
     public List<BaseTagItem> TagModifers;
     public BackgroundWorker ThumbsWebWorker;
@@ -63,32 +59,14 @@ namespace PictureManager {
       }
     }
 
-    private Picture _currentPicture;
-    public Picture CurrentPicture {
-      get { return _currentPicture; }
-      set {
-        _currentPicture = value;
-        AppInfo.CurrentPictureFilePath = value == null ? string.Empty : value.FilePath;
-      }
-    }
-
     public AppCore() {
       AppInfo = new AppInfo();
-      Pictures = new ObservableCollection<Picture>();
-      SelectedPictures = new ObservableCollection<Picture>();
+      MediaItems = new MediaItems(this);
       MarkedTags = new List<BaseTagItem>();
       TagModifers = new List<BaseTagItem>();
       
-      
       Db = new DbStuff("Data Source = data.db");
       Db.CreateDbStructure();
-
-      Pictures.CollectionChanged += delegate(object sender, NotifyCollectionChangedEventArgs args) {
-        if (args.Action == NotifyCollectionChangedAction.Reset)
-          SelectedPictures.Clear();
-        UpdateViewBaseInfo();
-      };
-      SelectedPictures.CollectionChanged += delegate { UpdateViewBaseInfo(); };
     }
 
     public void Init() {
@@ -110,8 +88,9 @@ namespace PictureManager {
       FoldersRoot = new ObservableCollection<BaseItem> {FavoriteFolders, Folders};
     }
 
-    public void UpdateViewBaseInfo() {
-      AppInfo.ViewBaseInfo = $"{Pictures.Count} object(s) / {SelectedPictures.Count} selected";
+    public void UpdateStatusBarInfo() {
+      AppInfo.ViewBaseInfo = $"{MediaItems.Items.Count} object(s) / {MediaItems.Items.Count(x => x.IsSelected)} selected";
+      AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
@@ -120,8 +99,9 @@ namespace PictureManager {
       switch (mouseButton) {
         case MouseButton.Left: {
           if (KeywordsEditMode) {
-            if (item is FolderKeyword) {
-              ((FolderKeyword) item).IsSelected = false;
+            var fk = item as FolderKeyword;
+            if (fk != null) {
+              fk.IsSelected = false;
               return;
             }
 
@@ -134,42 +114,8 @@ namespace PictureManager {
                 MarkedTags.Remove(baseTagItem);
             }
 
-            foreach (Picture picture in SelectedPictures) {
-              picture.IsModifed = true;
+            MediaItems.EditMetadata(item);
 
-              switch (item.GetType().Name) {
-                case nameof(Person): {
-                  var person = (Person) item;
-                  if (person.IsMarked) {
-                    picture.People.Add(person);
-                  } else {
-                    picture.People.Remove(person);
-                  }
-                  break;
-                }
-                case nameof(Keyword): {
-                  var keyword = (Keyword) item;
-                  if (keyword.IsMarked) {
-                    //remove potencial redundant keywords (example: if new keyword is "#CoSpi/Sunny" keyword "#CoSpi" is redundant)
-                    for (int i = picture.Keywords.Count - 1; i >= 0; i--) {
-                      if (keyword.FullPath.StartsWith(picture.Keywords[i].FullPath)) {
-                        picture.Keywords.RemoveAt(i);
-                      }
-                    }
-                    picture.Keywords.Add(keyword);
-                  } else {
-                    picture.Keywords.Remove(keyword);
-                  }
-                  break;
-                }
-                case nameof(Rating): {
-                  var rating = (Rating) item;
-                  picture.Rating = rating.Value;
-                  break;
-                }
-              }
-              WbUpdatePictureInfo(picture.Index);
-            }
             MarkUsedKeywordsAndPeople();
           } else {
             //not KeywordsEditMode
@@ -186,7 +132,7 @@ namespace PictureManager {
               ThumbsResetEvent.WaitOne();
             }
 
-            GetPicturesByTag();
+            MediaItems.LoadByTag();
             CreateThumbnailsWebPage();
           }
           break;
@@ -206,39 +152,23 @@ namespace PictureManager {
       }
     }
 
-    public bool CurrentPictureMove(bool next) {
-      LoadOtherPictures();
-      if (next) {
-        if (CurrentPicture.Index < Pictures.Count - 1) {
-          CurrentPicture = Pictures[CurrentPicture.Index + 1];
-          return true;
-        }
-      } else {
-        if (CurrentPicture.Index > 0) {
-          CurrentPicture = Pictures[CurrentPicture.Index - 1];
-          return true;
-        }
-      }
-      return false;
-    }
-
     public void MarkUsedKeywordsAndPeople() {
       //can by Person, Keyword, FolderKeyword or Rating
       foreach (BaseTagItem item in MarkedTags) {
         item.IsMarked = false;
         item.PicCount = 0;
       }
-
       MarkedTags.Clear();
-      var pictures = SelectedPictures.Count == 0 ? Pictures : SelectedPictures;
-      foreach (Picture picture in pictures) {
 
-        foreach (Person person in picture.People.Where(person => !person.IsMarked)) {
+      var mediaItems = MediaItems.GetSelectedOrAll();
+      foreach (BaseMediaItem mi in mediaItems) {
+
+        foreach (Person person in mi.People.Where(person => !person.IsMarked)) {
           person.IsMarked = true;
           MarkedTags.Add(person);
         }
 
-        foreach (Keyword keyword in picture.Keywords) {
+        foreach (Keyword keyword in mi.Keywords) {
           var k = keyword;
           do {
             if (k.IsMarked) break;
@@ -248,7 +178,7 @@ namespace PictureManager {
           } while (k != null);
         }
 
-        FolderKeyword folderKeyword = FolderKeywords.GetFolderKeywordByDirId(FolderKeywords.Items, picture.DirId);
+        FolderKeyword folderKeyword = FolderKeywords.GetFolderKeywordByDirId(FolderKeywords.Items, mi.DirId);
         if (folderKeyword != null && !folderKeyword.IsMarked) {
           var fk = folderKeyword;
           do {
@@ -260,7 +190,7 @@ namespace PictureManager {
         }
       }
 
-      foreach (var rating in pictures.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
+      foreach (var rating in mediaItems.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
         rating.IsMarked = true;
         MarkedTags.Add(rating);
       }
@@ -268,93 +198,27 @@ namespace PictureManager {
       foreach (var item in MarkedTags) {
         switch (item.GetType().Name) {
           case nameof(Person): {
-            ((Person) item).PicCount = pictures.Count(p => p.People.Contains((Person) item));
+            ((Person) item).PicCount = mediaItems.Count(p => p.People.Contains((Person) item));
             break;
           }
           case nameof(Keyword): {
             Keyword keyword = (Keyword) item;
-            keyword.PicCount = pictures.Count(p => p.Keywords.Any(k => k.FullPath.StartsWith(keyword.FullPath)));
+            keyword.PicCount = mediaItems.Count(p => p.Keywords.Any(k => k.FullPath.StartsWith(keyword.FullPath)));
             break;
           }
           case nameof(FolderKeyword): {
             FolderKeyword folderKeyword = (FolderKeyword) item;
             folderKeyword.PicCount =
-              pictures.Count(p => p.FolderKeyword != null && p.FolderKeyword.FullPath.StartsWith(folderKeyword.FullPath));
+              mediaItems.Count(p => p.FolderKeyword != null && p.FolderKeyword.FullPath.StartsWith(folderKeyword.FullPath));
             break;
           }
           case nameof(Rating): {
             Rating rating = (Rating) item;
-            rating.PicCount = pictures.Count(p => p.Rating == rating.Value);
+            rating.PicCount = mediaItems.Count(p => p.Rating == rating.Value);
             break;
           }
         }
       }
-    }
-
-    public void GetPicturesByFolder(string path) {
-      if (!Directory.Exists(path)) return;
-
-      var dirId = Db.InsertDirecotryInToDb(path);
-      if (dirId == null) return;
-      FolderKeywords.Load();
-      FolderKeyword fk = FolderKeywords.GetFolderKeywordByFullPath(path);
-
-      Pictures.Clear();
-
-      foreach (
-        string file in
-          Directory.EnumerateFiles(path)
-            .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
-            .OrderBy(x => x)) {
-        Pictures.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Pictures.Count) {DirId = (int) dirId, FolderKeyword = fk});
-      }
-      CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
-    }
-
-    public void GetPicturesByTag() {
-      Pictures.Clear();
-
-      var peopleIn = string.Join(",", TagModifers.Where(x => x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
-      var peopleOut = string.Join(",", TagModifers.Where(x => !x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
-      var keywordsIn = string.Join(",", TagModifers.Where(x => x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
-      var keywordsOut = string.Join(",", TagModifers.Where(x => !x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
-
-      List<string> sqlList = new List<string>();
-
-      if (!string.IsNullOrEmpty(peopleIn))
-        sqlList.Add($"select PictureId from PicturePerson where PersonId in ({peopleIn})");
-      if (!string.IsNullOrEmpty(peopleOut))
-        sqlList.Add($"select PictureId from PicturePerson where PictureId not in (select PictureId from PicturePerson where PersonId in ({peopleOut}))");
-      if (!string.IsNullOrEmpty(keywordsIn))
-        sqlList.Add($"select PictureId from PictureKeyword where KeywordId in ({keywordsIn})");
-      if (!string.IsNullOrEmpty(keywordsOut))
-        sqlList.Add($"select PictureId from PictureKeyword where KeywordId not in (select PictureId from PictureKeyword where KeywordId in ({keywordsOut}))");
-      if (LastSelectedSourceRecursive && LastSelectedSource is Keyword)
-        sqlList.Add($"select PictureId from PictureKeyword where KeywordId in (select Id from Keywords where Keyword like \"{((Keyword)LastSelectedSource).FullPath}%\")");
-      var folderKeyword = LastSelectedSource as FolderKeyword;
-      if (!string.IsNullOrEmpty(folderKeyword?.FolderIds))
-        sqlList.Add($"select Id from Pictures where DirectoryId in ({folderKeyword.FolderIds})");
-
-      string innerSql = string.Join(" union ", sqlList);
-      string sql = "select Id, (select Path from Directories as D where D.Id = P.DirectoryId) as Path, FileName, Rating, DirectoryId, Comment " +
-                   $"from Pictures as P where P.Id in ({innerSql}) order by FileName";
-
-      foreach (DataRow row in Db.Select(sql)) {
-        string picFullPath = Path.Combine((string)row[1], (string)row[2]);
-        if (File.Exists(picFullPath)) {
-          Picture pic = new Picture(picFullPath, Db, Pictures.Count) {
-            Id = (int) (long) row[0],
-            Rating = (int) (long) row[3],
-            DirId = (int) (long) row[4],
-            Comment = (string) row[5],
-            FolderKeyword = FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
-          };
-          pic.LoadKeywordsFromDb(Keywords);
-          pic.LoadPeopleFromDb(People);
-          Pictures.Add(pic);
-        }
-      }
-      CurrentPicture = Pictures.Count == 0 ? null : Pictures[0];
     }
 
     public void CreateThumbnailsWebPage() {
@@ -373,7 +237,7 @@ namespace PictureManager {
       ThumbsWebWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
 
-        var picture = Pictures[(int) e.UserState];
+        var picture = MediaItems.Items[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
         var img = doc.CreateElement("img");
@@ -383,7 +247,7 @@ namespace PictureManager {
         keywords.SetAttribute("className", "keywords");
         keywords.InnerHtml = picture.GetKeywordsAsString();
 
-        img.SetAttribute("src", picture.CacheFilePath);
+        img.SetAttribute("src", picture.FilePathCache);
 
         thumb.SetAttribute("className", "thumbBox");
         thumb.SetAttribute("id", picture.Index.ToString());
@@ -396,17 +260,17 @@ namespace PictureManager {
 
       ThumbsWebWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) sender;
-        var count = Pictures.Count;
+        var count = MediaItems.Items.Count;
         var done = 0;
 
-        foreach (var picture in Pictures) {
+        foreach (var picture in MediaItems.Items) {
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
             break;
           }
 
-          var thumbPath = picture.CacheFilePath;
+          var thumbPath = picture.FilePathCache;
           bool flag = File.Exists(thumbPath);
           if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
 
@@ -427,34 +291,6 @@ namespace PictureManager {
       ThumbsWebWorker.RunWorkerAsync();
     }
 
-    public void ScrollToCurrent() {
-      var doc = WbThumbs.Document;
-      if (doc == null) return;
-      if (CurrentPicture == null || CurrentPicture.Index == 0) return;
-      var thumb = doc.GetElementById(CurrentPicture.Index.ToString());
-      thumb?.ScrollIntoView(true);
-    }
-
-    public void LoadOtherPictures() {
-      if (OneFileOnly) {
-        string filePath = Pictures[0].FilePath;
-        GetPicturesByFolder(Path.GetDirectoryName(filePath));
-        CurrentPicture = Pictures.FirstOrDefault(p => p.FilePath == filePath);
-        OneFileOnly = false;
-      }
-    }
-
-    public void WbUpdatePictureInfo(int index) {
-      var doc = WbThumbs.Document;
-      var thumb = doc?.GetElementById(index.ToString());
-      if (thumb == null) return;
-      foreach (System.Windows.Forms.HtmlElement element in thumb.Children) {
-        if (!element.GetAttribute("className").Equals("keywords")) continue;
-        element.InnerHtml = Pictures[index].GetKeywordsAsString();
-        break;
-      }
-    }
-
     public bool FileOperation(FileOperations mode, bool recycle) {
       return FileOperation(mode, null, null, null, recycle);
     }
@@ -469,18 +305,18 @@ namespace PictureManager {
 
     public bool FileOperation(FileOperations mode, string from, string to, string newName, bool recycle) {
       Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
-      //Copy, Move or delete selected pictures or folder
+      //Copy, Move or delete selected MediaItems or folder
       using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
         var flags = FileOperationFlags.FOF_NOCONFIRMMKDIR | (recycle
           ? FileOperationFlags.FOFX_RECYCLEONDELETE
           : FileOperationFlags.FOF_WANTNUKEWARNING);
         fo.SetOperationFlags(flags);
-        if (from == null) { //Pictures
-          foreach (var p in SelectedPictures) {
+        if (from == null) { //MediaItems
+          foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
             switch (mode) {
-              case FileOperations.Copy: { fo.CopyItem(p.FilePath, to, p.FileName); break; }
-              case FileOperations.Move: { fo.MoveItem(p.FilePath, to, p.FileName); break; }
-              case FileOperations.Delete: { fo.DeleteItem(p.FilePath); break; }
+              case FileOperations.Copy: { fo.CopyItem(mi.FilePath, to, mi.FileNameWithExt); break; }
+              case FileOperations.Move: { fo.MoveItem(mi.FilePath, to, mi.FileNameWithExt); break; }
+              case FileOperations.Delete: { fo.DeleteItem(mi.FilePath); break; }
             }
           }
         } else { //Folders
@@ -505,14 +341,14 @@ namespace PictureManager {
 
         foreach (
           var item in
-            fileOperationResult.Where(x => SuportedExts.Any(ext => x.Key.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))) {
+            fileOperationResult.Where(x => MediaItems.SuportedExts.Any(ext => x.Key.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))) {
           int? srcDirId = Db.GetDirectoryIdByPath(Path.GetDirectoryName(item.Key));
           if (srcDirId == null) continue;
           int? srcPicId =
             (int?)
               (long?)
                 Db.ExecuteScalar(
-                  $"select Id from Pictures where DirectoryId={srcDirId} and FileName=\"{Path.GetFileName(item.Key)}\"");
+                  $"select Id from MediaItems where DirectoryId={srcDirId} and FileName=\"{Path.GetFileName(item.Key)}\"");
           if (srcPicId == null) continue;
           int? destDirId = item.Value == null ? null : Db.InsertDirecotryInToDb(Path.GetDirectoryName(item.Value));
           if (destDirId == null && mode != FileOperations.Delete) continue;
@@ -521,15 +357,15 @@ namespace PictureManager {
             case FileOperations.Copy: {
               //duplicate Picture
               Db.Execute(
-                $"insert into Pictures (DirectoryId, FileName, Rating) select {destDirId}, \"{Path.GetFileName(item.Value)}\", Rating from Pictures where Id={srcPicId}");
-              int? destPicId = Db.GetLastIdFor("Pictures");
+                $"insert into MediaItems (DirectoryId, FileName, Rating, Comment) select {destDirId}, \"{Path.GetFileName(item.Value)}\", Rating, Comment from MediaItems where Id={srcPicId}");
+              int? destPicId = Db.GetLastIdFor("MediaItems");
               if (destPicId == null) continue;
               //duplicate Picture Keywords
               Db.Execute(
-                $"insert into PictureKeyword (PictureId, KeywordId) select {destPicId}, KeywordId from PictureKeyword where PictureId={srcPicId}");
+                $"insert into MediaItemKeyword (MediaItemId, KeywordId) select {destPicId}, KeywordId from MediaItemKeyword where MediaItemId={srcPicId}");
               //duplicate Picture People
               Db.Execute(
-                $"insert into PicturePerson (PictureId, PersonId) select {destPicId}, PersonId from PicturePerson where PictureId={srcPicId}");
+                $"insert into MediaItemPerson (MediaItemId, PersonId) select {destPicId}, PersonId from MediaItemPerson where MediaItemId={srcPicId}");
               //duplicate thumbnail
               fo.CopyItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
                 Path.GetFileName(item.Value));
@@ -538,15 +374,15 @@ namespace PictureManager {
             case FileOperations.Move: {
               //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
               Db.Execute(
-                $"update Pictures set DirectoryId={destDirId}, FileName=\"{Path.GetFileName(item.Value)}\" where Id={srcPicId}");
+                $"update MediaItems set DirectoryId={destDirId}, FileName=\"{Path.GetFileName(item.Value)}\" where Id={srcPicId}");
               fo.MoveItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
                 Path.GetFileName(item.Value));
               break;
             }
             case FileOperations.Delete: {
-              Db.Execute($"delete from PictureKeyword where PictureId={srcPicId}");
-              Db.Execute($"delete from PicturePerson where PictureId={srcPicId}");
-              Db.Execute($"delete from Pictures where Id={srcPicId}");
+              Db.Execute($"delete from MediaItemKeyword where MediaItemId={srcPicId}");
+              Db.Execute($"delete from MediaItemPerson where MediaItemId={srcPicId}");
+              Db.Execute($"delete from MediaItems where Id={srcPicId}");
               fo.DeleteItem(item.Key.Replace(":\\", cachePath));
               break;
             }
@@ -578,26 +414,6 @@ namespace PictureManager {
       }
 
       return true;
-    }
-
-    public void RemoveSelectedFromWeb() {
-      var doc = WbThumbs.Document;
-      if (doc == null) return;
-      foreach (var picture in SelectedPictures) {
-        var thumb = doc.GetElementById(picture.Index.ToString());
-        if (thumb == null) continue;
-        thumb.OuterHtml = string.Empty;
-        Pictures.Remove(picture);
-      }
-      SelectedPictures.Clear();
-
-      var index = 0;
-      foreach (var picture in Pictures) {
-        var thumb = doc.GetElementById(picture.Index.ToString());
-        thumb?.SetAttribute("id", index.ToString());
-        picture.Index = index;
-        index++;
-      }
     }
 
     public static void CreateThumbnail(string origPath, string newPath) {

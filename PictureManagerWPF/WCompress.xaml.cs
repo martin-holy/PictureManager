@@ -2,6 +2,8 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using PictureManager.ShellStuff;
@@ -13,7 +15,7 @@ namespace PictureManager {
   public partial class WCompress : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged(string name) {
+    public void OnPropertyChanged([CallerMemberName] string name = "") {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
@@ -28,7 +30,7 @@ namespace PictureManager {
       get { return _jpegQualityLevel; }
       set {
         _jpegQualityLevel = value;
-        OnPropertyChanged("JpegQualityLevel");
+        OnPropertyChanged();
       }
     }
 
@@ -67,8 +69,8 @@ namespace PictureManager {
       _compress.ProgressChanged += compress_ProgressChanged;
       _compress.RunWorkerCompleted += compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? _appCore.SelectedPictures
-        : _appCore.Pictures);
+        ? _appCore.MediaItems.Items.Where(x => x.IsSelected)
+        : _appCore.MediaItems.Items);
     }
 
     private void compress_DoWork(object sender, DoWorkEventArgs e) {

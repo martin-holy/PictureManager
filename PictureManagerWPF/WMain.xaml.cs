@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -60,113 +61,74 @@ namespace PictureManager {
         var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)
           if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
-            ACore.RemoveSelectedFromWeb();
+            ACore.MediaItems.RemoveSelectedFromWeb();
       }
 
       if (e.CtrlKeyPressed && e.KeyPressedCode == 65) {
-        SelectAllThumbnails();
+        ACore.MediaItems.SelectAll();
+        ACore.MarkUsedKeywordsAndPeople();
         e.ReturnValue = false;
       }
 
       if (e.CtrlKeyPressed && e.KeyPressedCode == 75) {
-        if (ACore.SelectedPictures.Count == 1)
+        if (ACore.MediaItems.Items.Count(x => x.IsSelected) == 1)
           CmdKeywordsComment_Executed(null, null);
         e.ReturnValue = false;
       }
     }
 
-    private void WbThumbs_DblClick(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
-      var doc = WbThumbs.Document;
-      var src = doc?.GetElementFromPoint(e.ClientMousePosition);
-      var thumb = src?.Parent;
+    private void WbThumbs_DblClick(object sender, HtmlElementEventArgs e) {
+      var thumb = WbThumbs.Document?.GetElementFromPoint(e.ClientMousePosition)?.Parent;
       if (thumb == null) return;
       if (thumb.Id == "content") return;
-      ACore.CurrentPicture = ACore.Pictures[int.Parse(thumb.Id)];
+      ACore.MediaItems.DeselectAll();
+      ACore.MediaItems.Current = ACore.MediaItems.Items[int.Parse(thumb.Id)];
+      ACore.MediaItems.Current.IsSelected = true;
       ShowFullPicture();
     }
 
-    private void WbThumbs_MouseDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+    private void WbThumbs_MouseDown(object sender, HtmlElementEventArgs e) {
       if (e.MouseButtonsPressed == System.Windows.Forms.MouseButtons.Left) {
-        var doc = WbThumbs.Document;
-        var src = doc?.GetElementFromPoint(e.ClientMousePosition);
-
-        var thumb = src?.Parent;
+        var thumb = WbThumbs.Document?.GetElementFromPoint(e.ClientMousePosition)?.Parent;
         if (thumb == null) return;
 
         if (thumb.Id == "content") {
-          DeselectThumbnails();
+          ACore.MediaItems.DeselectAll();
+          ACore.UpdateStatusBarInfo();
+          ACore.MarkUsedKeywordsAndPeople();
           return;
         }
 
         if (!thumb.GetAttribute("className").Contains("thumbBox")) return;
-        var picture = ACore.Pictures[int.Parse(thumb.Id)];
+        var mi = ACore.MediaItems.Items[int.Parse(thumb.Id)];
 
         if (e.CtrlKeyPressed) {
-          if (thumb.GetAttribute("className").Contains("selected")) {
-            thumb.SetAttribute("className", "thumbBox");
-            ACore.SelectedPictures.Remove(picture);
-          } else {
-            thumb.SetAttribute("className", "thumbBox selected");
-            ACore.SelectedPictures.Add(picture);
-          }
-
-          ACore.CurrentPicture = ACore.SelectedPictures.Count == 0 ? null : ACore.SelectedPictures[0];
+          mi.IsSelected = !mi.IsSelected;
+          ACore.MediaItems.SetCurrent();
+          ACore.UpdateStatusBarInfo();
+          ACore.MarkUsedKeywordsAndPeople();
           return;
         }
 
-        if (e.ShiftKeyPressed && ACore.CurrentPicture != null) {
-          ACore.SelectedPictures.Clear();
-          var start = picture.Index > ACore.CurrentPicture.Index ? ACore.CurrentPicture.Index : picture.Index;
-          var stop = picture.Index > ACore.CurrentPicture.Index ? picture.Index : ACore.CurrentPicture.Index;
+        var current = ACore.MediaItems.Current;
+        if (e.ShiftKeyPressed && current != null) {
+          ACore.MediaItems.DeselectAll();
+          var start = mi.Index > current.Index ? current.Index : mi.Index;
+          var stop = mi.Index > current.Index ? mi.Index : current.Index;
           for (var i = start; i < stop + 1; i++) {
-            ACore.SelectedPictures.Add(ACore.Pictures[i]);
-            var elm = doc.GetElementById(i.ToString());
-            elm?.SetAttribute("className", "thumbBox selected");
+            ACore.MediaItems.Items[i].IsSelected = true;
           }
         }
 
-        if (!e.CtrlKeyPressed && !e.ShiftKeyPressed && !ACore.SelectedPictures.Contains(picture)) {
-          DeselectThumbnails();
-          thumb.SetAttribute("className", "thumbBox selected");
-          ACore.CurrentPicture = picture;
-          ACore.SelectedPictures.Add(picture);
+        if (!e.CtrlKeyPressed && !e.ShiftKeyPressed && !mi.IsSelected) {
+          ACore.MediaItems.DeselectAll();
+          mi.IsSelected = true;
         }
 
+        ACore.MediaItems.SetCurrent();
+        ACore.UpdateStatusBarInfo();
         ACore.MarkUsedKeywordsAndPeople();
       }
-    }
-
-    public void DeselectThumbnails() {
-      if (ACore.SelectedPictures.Count == 0) return;
-      var doc = WbThumbs.Document;
-      if (doc == null) return;
-      foreach (var thumb in ACore.SelectedPictures.Select(picture => doc.GetElementById(picture.Index.ToString()))) {
-        thumb?.SetAttribute("className", "thumbBox");
-      }
-      ACore.SelectedPictures.Clear();
-      ACore.CurrentPicture = null;
-      ACore.MarkUsedKeywordsAndPeople();
-    }
-
-    public void SelectAllThumbnails() {
-      var doc = WbThumbs.Document;
-      var thumbs = doc?.GetElementById("thumbnails");
-      if (thumbs == null) return;
-
-      foreach (HtmlElement thumb in thumbs.Children) {
-        thumb.SetAttribute("className", "thumbBox selected");
-      }
-
-      ACore.SelectedPictures.Clear();
-
-      foreach (var picture in ACore.Pictures) {
-        ACore.SelectedPictures.Add(picture);
-      }
-
-      if (ACore.Pictures.Count != 0)
-        ACore.CurrentPicture = ACore.Pictures[0];
-
-      ACore.MarkUsedKeywordsAndPeople();
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -174,8 +136,8 @@ namespace PictureManager {
       if (File.Exists(_argPicFile)) {
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
-        ACore.Pictures.Add(new Data.Picture(_argPicFile, ACore.Db, 0));
-        ACore.CurrentPicture = ACore.Pictures[0];
+        ACore.MediaItems.Items.Add(new Data.Picture(_argPicFile, ACore.Db, 0, WbThumbs));
+        ACore.MediaItems.Items[0].IsSelected = true;
         ShowFullPicture();
       } else {
         InitUi();
@@ -191,7 +153,7 @@ namespace PictureManager {
     }
 
     public void ShowFullPicture() {
-      if (ACore.CurrentPicture == null) return;
+      if (ACore.MediaItems.Current == null) return;
       _wFullPic.SetCurrentImage();
       if (!_wFullPic.IsActive)
         _wFullPic.Show();
@@ -208,7 +170,8 @@ namespace PictureManager {
         InitUi();
         ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile));
       }
-      ACore.ScrollToCurrent();
+      ACore.MediaItems.ScrollToCurrent();
+      ACore.UpdateStatusBarInfo();
     }
 
     private void TreeViewKeywords_Select(object sender, MouseButtonEventArgs e) {
@@ -251,7 +214,7 @@ namespace PictureManager {
               ACore.ThumbsResetEvent.WaitOne();
             }
 
-            ACore.GetPicturesByFolder(folder.FullPath);
+            ACore.MediaItems.LoadByFolder(folder.FullPath);
             ACore.CreateThumbnailsWebPage();
             break;
           }
@@ -368,7 +331,7 @@ namespace PictureManager {
 
 
     private void CmdCompressPictures_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.Pictures.Count > 0;
+      e.CanExecute = ACore.MediaItems.Items.Count > 0;
     }
 
     private void CmdCompressPictures_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -400,7 +363,7 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.Pictures.Count > 0;
+      e.CanExecute = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.MediaItems.Items.Count > 0;
     }
 
     private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -409,11 +372,11 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode && ACore.Pictures.Count(p => p.IsModifed) > 0;
+      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode && ACore.MediaItems.Items.Count(p => p.IsModifed) > 0;
     }
 
     private void CmdKeywordsSave_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var pictures = ACore.Pictures.Where(p => p.IsModifed).ToList();
+      var pictures = ACore.MediaItems.Items.Where(p => p.IsModifed).ToList();
 
       StatusProgressBar.Value = 0;
       StatusProgressBar.Maximum = 100;
@@ -431,7 +394,7 @@ namespace PictureManager {
         var done = 0;
 
         foreach (var picture in pictures) {
-          picture.SavePictureInToDb(aCore, false);
+          picture.SaveMediaItemInToDb(aCore, false);
           picture.WriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
@@ -451,27 +414,25 @@ namespace PictureManager {
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
-      foreach (Data.Picture picture in ACore.Pictures) {
-        if (picture.IsModifed) {
-          picture.RefreshFromDb(ACore.Keywords, ACore.People);
-          ACore.WbUpdatePictureInfo(picture.Index);
-        }
+      foreach (Data.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
+        mi.LoadFromDb(ACore);
+        mi.WbUpdateInfo();
       }
       ACore.MarkUsedKeywordsAndPeople();
     }
 
     private void CmdKeywordsComment_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.SelectedPictures.Count == 1;
+      e.CanExecute = ACore.MediaItems.Items.Count(x => x.IsSelected) == 1;
     }
 
     private void CmdKeywordsComment_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var picture = ACore.SelectedPictures[0];
+      var current = ACore.MediaItems.Current;
       InputDialog inputDialog = new InputDialog {
         Owner = this,
         IconName = "appbar_notification",
         Title = "Comment",
         Question = "Add a comment.",
-        Answer = picture.Comment
+        Answer = current.Comment
       };
 
       inputDialog.BtnDialogOk.Click += delegate {
@@ -491,21 +452,21 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
-        picture.Comment = inputDialog.TxtAnswer.Text;
-        picture.SavePictureInToDb(ACore, false);
-        picture.WriteMetadata();
+        current.Comment = inputDialog.TxtAnswer.Text;
+        current.SaveMediaItemInToDb(ACore, false);
+        current.WriteMetadata();
       }
     }
 
     private void CmdReloadMetadata_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.Pictures.Count > 0;
+      e.CanExecute = ACore.MediaItems.Items.Count > 0;
     }
 
     private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var pictures = ACore.SelectedPictures.Count > 0 ? ACore.SelectedPictures : ACore.Pictures;
-      foreach (var picture in pictures) {
-        picture.SavePictureInToDb(ACore, true);
-        ACore.WbUpdatePictureInfo(picture.Index);
+      var mediaItems = ACore.MediaItems.GetSelectedOrAll();
+      foreach (var mi in mediaItems) {
+        mi.SaveMediaItemInToDb(ACore, true);
+        mi.WbUpdateInfo();
       }
     }
 
@@ -594,11 +555,11 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
-      
+
+
       //JpegTest();
 
       //RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
-
 
       /*//cause blue screen :-(
       var filePath = @"d:\!test\TestInTest\20160209_143609.jpg";
@@ -606,25 +567,7 @@ namespace PictureManager {
         Process.Start("rundll32.exe", "shell32.dll, OpenAs_RunDLL " + filePath);
       }*/
 
-
-      //psi.UseShellExecute = true;
-
-
-      //Process.Start(psi);
-
       //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
-
-      /*var inputDialog = new InputDialog {
-        Owner = this,
-        Title = "Test title",
-        IconName = "appbar_question",
-        Question = "Jak se máš",
-        Answer = "Já ok"
-      };
-
-      if (inputDialog.ShowDialog() ?? true) {
-        MessageBox.Show(inputDialog.Answer);
-      }*/
 
       /*WTestThumbnailGallery ttg = new WTestThumbnailGallery();
       ttg.Show();
@@ -695,7 +638,7 @@ namespace PictureManager {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       if (thumbs) {
         var dragged = (string[]) e.Data.GetData(DataFormats.FileDrop);
-        var selected = ACore.SelectedPictures.Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
         thumbs = selected.SequenceEqual(dragged);
       }
       var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
@@ -720,7 +663,7 @@ namespace PictureManager {
 
       if (thumbs) {
         if (e.KeyStates != DragDropKeyStates.ControlKey)
-          ACore.RemoveSelectedFromWeb();
+          ACore.MediaItems.RemoveSelectedFromWeb();
         return;
       }
 

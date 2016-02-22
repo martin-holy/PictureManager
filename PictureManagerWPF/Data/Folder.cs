@@ -18,7 +18,7 @@ namespace PictureManager.Data {
       }
     }
 
-    public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged("IsAccessible"); } }
+    public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath { get; set; }
     public ObservableCollection<Folder> Items { get; set; }
     public Folder Parent;
