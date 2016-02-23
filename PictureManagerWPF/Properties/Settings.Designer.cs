@@ -94,5 +94,17 @@ namespace PictureManager.Properties {
                 this["FolderFavorites"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CatalogFolders {
+            get {
+                return ((string)(this["CatalogFolders"]));
+            }
+            set {
+                this["CatalogFolders"] = value;
+            }
+        }
     }
 }

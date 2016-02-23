@@ -36,5 +36,8 @@ namespace PictureManager {
 
     public static readonly RoutedUICommand CmdAbout = new RoutedUICommand(
       "About", "CmdAbout", typeof (CustomCommands));
+
+    public static readonly RoutedUICommand CmdCatalog = new RoutedUICommand(
+      "Catalog", "CmdCatalog", typeof(CustomCommands));
   }
 }

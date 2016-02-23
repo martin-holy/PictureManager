@@ -263,23 +263,23 @@ namespace PictureManager {
         var count = MediaItems.Items.Count;
         var done = 0;
 
-        foreach (var picture in MediaItems.Items) {
+        foreach (var mi in MediaItems.Items) {
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
             break;
           }
 
-          var thumbPath = picture.FilePathCache;
+          var thumbPath = mi.FilePathCache;
           bool flag = File.Exists(thumbPath);
-          if (!flag) CreateThumbnail(picture.FilePath, thumbPath);
+          if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
 
-          if (picture.Id == -1) {
-            picture.LoadFromDb(this);
+          if (mi.Id == -1) {
+            mi.LoadFromDb(this);
           }
 
           done++;
-          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), picture.Index);
+          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), mi.Index);
         }
       };
 

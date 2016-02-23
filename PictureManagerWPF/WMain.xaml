@@ -20,6 +20,7 @@
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:CustomCommands.CmdCompressPictures" />
           <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
+          <MenuItem Command="pm:CustomCommands.CmdCatalog" />
           <MenuItem Command="pm:CustomCommands.CmdOpenSettings" Tag="appbar_settings" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:CustomCommands.CmdTestButton" />
         </MenuItem>
@@ -140,10 +141,11 @@
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsCancel" CanExecute="CmdKeywordsCancel_CanExecute" Executed="CmdKeywordsCancel_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsComment" CanExecute="CmdKeywordsComment_CanExecute" Executed="CmdKeywordsComment_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCompressPictures" CanExecute="CmdCompressPictures_CanExecute" Executed="CmdCompressPictures_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdTestButton_CanExecute" Executed="CmdTestButton_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdAlways_CanExecute" Executed="CmdTestButton_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdOpenSettings_CanExecute" Executed="CmdOpenSettings_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAbout_CanExecute" Executed="CmdAbout_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdAlways_CanExecute" Executed="CmdOpenSettings_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
   </controls:MetroWindow.CommandBindings>
 
   <DockPanel>

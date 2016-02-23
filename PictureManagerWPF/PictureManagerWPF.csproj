@@ -113,6 +113,9 @@
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WCatalog.xaml.cs">
+      <DependentUpon>WCatalog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WCompress.xaml.cs">
       <DependentUpon>WCompress.xaml</DependentUpon>
     </Compile>
@@ -137,6 +140,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="WAbout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WCatalog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -329,6 +329,9 @@ namespace PictureManager {
 
     #endregion
 
+    private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = true;
+    }
 
     private void CmdCompressPictures_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = ACore.MediaItems.Items.Count > 0;
@@ -337,10 +340,6 @@ namespace PictureManager {
     private void CmdCompressPictures_Executed(object sender, ExecutedRoutedEventArgs e) {
       var compress = new WCompress(ACore) { Owner = this };
       compress.ShowDialog();
-    }
-
-    private void CmdOpenSettings_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = true;
     }
 
     private void CmdOpenSettings_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -353,13 +352,14 @@ namespace PictureManager {
       }
     }
 
-    private void CmdAbout_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = true;
-    }
-
     private void CmdAbout_Executed(object sender, ExecutedRoutedEventArgs e) {
       var about = new WAbout { Owner = this };
       about.ShowDialog();
+    }
+
+    private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var catalog = new WCatalog(ACore) { Owner = this };
+      catalog.ShowDialog();
     }
 
     private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -535,10 +535,6 @@ namespace PictureManager {
 
     }
 
-    private void CmdTestButton_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = true;
-    }
-
     private ScrollViewer _tvFoldersScrollViewer;
     private ScrollViewer TvFoldersScrollViewer
     {
@@ -556,6 +552,11 @@ namespace PictureManager {
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
 
+
+      var path = @"d:\Download\New\!iya";
+      var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
+
+      //var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.GetFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
 
       //JpegTest();
 
