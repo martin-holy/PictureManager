@@ -103,6 +103,8 @@ namespace PictureManager.Data {
           Items.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Items.Count, WbThumbs) 
             { DirId = (int)dirId, FolderKeyword = fk });
       }
+
+      ACore.UpdateStatusBarInfo();
     }
 
     public void LoadByTag() {
@@ -149,6 +151,8 @@ namespace PictureManager.Data {
           Items.Add(pic);
         }
       }
+
+      ACore.UpdateStatusBarInfo();
     }
 
     public void ScrollToCurrent() {

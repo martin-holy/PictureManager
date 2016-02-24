@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using PictureManager.Dialogs;
 
 namespace PictureManager.Data {
   public class People : BaseItem {
@@ -32,6 +33,27 @@ namespace PictureManager.Data {
 
     public Person GetPersonById(int id) {
       return Items.FirstOrDefault(x => x.Id == id);
+    }
+
+    public void NewOrRename(WMain wMain, Person person, bool rename) {
+      InputDialog inputDialog = new InputDialog {
+        Owner = wMain,
+        IconName = "appbar_people",
+        Title = rename ? "Rename Person" : "New Person",
+        Question = rename ? "Enter new name for person." : "Enter name of new person.",
+        Answer = rename ? person.Title : string.Empty
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (inputDialog.ShowDialog() ?? true) {
+        if (rename) person.Rename(Db, inputDialog.Answer);
+        else CreatePerson(inputDialog.Answer);
+      }
     }
 
     public Person CreatePerson(string name) {

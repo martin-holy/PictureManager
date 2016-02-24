@@ -74,28 +74,6 @@
       <Setter Property="Text" Value="{Binding Title}" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="5,0,0,0" />
-      <Style.Triggers>
-        <DataTrigger Binding="{Binding IsTitleEdited}" Value="True">
-          <Setter Property="Visibility" Value="Collapsed" />
-        </DataTrigger>
-      </Style.Triggers>
-    </Style>
-
-    <!-- TreeViewEditBox -->
-    <Style x:Key="TreeViewEditBox" TargetType="TextBox">
-      <Setter Property="Text" Value="{Binding Title, Mode=OneTime}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="5,0,0,0" />
-      <Setter Property="Visibility" Value="Collapsed" />
-      <EventSetter Event="KeyDown" Handler="TreeViewEndEdit_OnKeyDown" />
-      <EventSetter Event="PreviewKeyDown" Handler="TreeViewEndEdit_OnPreviewKeyDown"></EventSetter>
-      <EventSetter Event="LostFocus" Handler="TreeViewCancelEdit_LostFocus" />
-      <Style.Triggers>
-        <DataTrigger Binding="{Binding IsTitleEdited}" Value="True">
-          <Setter Property="Visibility" Value="Visible" />
-          <Setter Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Mode=Self}}" />
-        </DataTrigger>
-      </Style.Triggers>
     </Style>
 
     <!-- TreeViewKeywordsStackPanel -->
@@ -105,8 +83,6 @@
       <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
       <EventSetter Event="PreviewMouseUp" Handler="TreeViewKeywords_Select" />
     </Style>
-
-    
 
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="KeywordNew" Text="New" />
@@ -125,10 +101,10 @@
   <controls:MetroWindow.CommandBindings>
     <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdKeywordShowAll" />
     <CommandBinding Command="{StaticResource KeywordNew}" Executed="CmdKeywordNew" />
-    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdRenameTreeViewItem" />
+    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdKeywordRename" />
     <CommandBinding Command="{StaticResource KeywordDelete}" Executed="CmdKeywordDelete" />
     <CommandBinding Command="{StaticResource PersonNew}" Executed="CmdPersonNew" />
-    <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdRenameTreeViewItem" />
+    <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdPersonRename" />
     <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
@@ -276,7 +252,6 @@
                             DragOver="TvKeywords_AllowDropCheck">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
-                  <TextBox Style="{StaticResource TreeViewEditBox}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -295,7 +270,6 @@
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
-                  <TextBox Style="{StaticResource TreeViewEditBox}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>

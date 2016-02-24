@@ -1,20 +1,15 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Metadata;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
-using HtmlElement = System.Windows.Forms.HtmlElement;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
 
 namespace PictureManager {
@@ -171,6 +166,7 @@ namespace PictureManager {
         ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile));
       }
       ACore.MediaItems.ScrollToCurrent();
+      ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -241,13 +237,21 @@ namespace PictureManager {
       var keyword = e.Parameter as Data.Keyword;
       var keywords = e.Parameter as Data.Keywords;
       if (keyword == null && keywords == null) return;
-      var k = ACore.Keywords.CreateKeyword(keywords != null ? keywords.Items : keyword.Items, keyword, "New Keyword");
-      k.IsTitleEdited = true;
+      ACore.Keywords.NewOrRename(this, keywords != null ? keywords.Items : keyword.Items, keyword, false);
+    }
+
+    private void CmdKeywordRename(object sender, ExecutedRoutedEventArgs e) {
+      var keyword = e.Parameter as Data.Keyword;
+      if (keyword == null) return;
+      ACore.Keywords.NewOrRename(this, keyword.Items, keyword, true);
     }
 
     private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
-      var p = ACore.People.CreatePerson("New Person");
-      p.IsTitleEdited = true;
+      ACore.People.NewOrRename(this, null, false);
+    }
+
+    private void CmdPersonRename(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.NewOrRename(this, e.Parameter as Data.Person, true);
     }
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -281,53 +285,6 @@ namespace PictureManager {
       ACore.FavoriteFolders.Remove(((Data.FavoriteFolder)e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
-
-    #region Rename Keyword and Folder
-
-    private void CmdRenameTreeViewItem(object sender, ExecutedRoutedEventArgs e) {
-      StackPanel stackPanel = (StackPanel)e.Parameter;
-      ((Data.BaseItem) stackPanel.DataContext).IsTitleEdited = true;
-    }
-
-    private void TreeViewCancelEdit_LostFocus(object sender, RoutedEventArgs e) {
-      ((Data.BaseItem) ((TextBox) sender).DataContext).IsTitleEdited = false;
-    }
-
-    private void TreeViewEndEdit_OnPreviewKeyDown(object sender, KeyEventArgs e) {
-      TextBox textBox = (TextBox)sender;
-      if (e.Key == Key.Subtract || e.Key == Key.Add) {
-        /*textBox.Text = textBox.Text.Insert(textBox.CaretIndex, "+");
-        textBox.CaretIndex++;*/
-        //e.Handled = true;
-      }
-    }
-
-    private void TreeViewEndEdit_OnKeyDown(object sender, KeyEventArgs e) {
-      if (e.Key != Key.Escape && e.Key != Key.Enter) return;
-      TextBox textBox = (TextBox)sender;
-
-      if (e.Key == Key.Enter) {
-        if (!string.IsNullOrEmpty(textBox.Text)) {
-          switch (textBox.DataContext.GetType().Name) {
-            case nameof(Data.Folder): {
-              ((Data.Folder) textBox.DataContext).Rename(ACore, textBox.Text);
-              break;
-            }
-            case nameof(Data.Keyword): {
-              ((Data.Keyword) textBox.DataContext).Rename(ACore.Db, textBox.Text);
-              break;
-            }
-            case nameof(Data.Person): {
-              ((Data.Person) textBox.DataContext).Rename(ACore.Db, textBox.Text);
-              break;
-            }
-          }
-        }
-      }
-      ((Data.BaseItem) textBox.DataContext).IsTitleEdited = false;
-    }
-
-    #endregion
 
     private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = true;
@@ -684,7 +641,7 @@ namespace PictureManager {
       StackPanel stackPanel = (StackPanel) sender;
       object item = stackPanel.DataContext;
 
-      if (stackPanel.ContextMenu != null) return;
+      //if (stackPanel.ContextMenu != null) return;
       ContextMenu menu = new ContextMenu {Tag = item};
 
       switch (item.GetType().Name) {
@@ -704,7 +661,7 @@ namespace PictureManager {
         case nameof(Data.Keyword): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordNew"], CommandParameter = item});
           if (((Data.Keyword) item).Items.Count == 0) {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordRename"], CommandParameter = stackPanel});
+            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordRename"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordDelete"], CommandParameter = item});
           }
           if (!ACore.KeywordsEditMode) {
@@ -717,7 +674,7 @@ namespace PictureManager {
           break;
         }
         case nameof(Data.Person): {
-          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonRename"], CommandParameter = stackPanel});
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonRename"], CommandParameter = item});
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonDelete"], CommandParameter = item});
           break;
         }

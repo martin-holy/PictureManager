@@ -283,7 +283,9 @@ namespace PictureManager.Data {
           Rating = bm.Rating;
 
           //Comment
-          Comment = aCore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+          Comment = bm.Comment == null
+            ? string.Empty
+            : aCore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
 
           //Keywords
           Keywords.Clear();

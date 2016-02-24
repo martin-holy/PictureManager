@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
+using PictureManager.Dialogs;
 
 namespace PictureManager.Data {
   public class Keywords: BaseItem {
@@ -59,6 +60,27 @@ namespace PictureManager.Data {
         parent = keyword;
         root = keyword.Items;
         fullPath = fullPath.Substring(keyParts[0].Length + 1);
+      }
+    }
+
+    public void NewOrRename(WMain wMain, ObservableCollection<Keyword> root, Keyword keyword, bool rename) {
+      InputDialog inputDialog = new InputDialog {
+        Owner = wMain,
+        IconName = "appbar_tag",
+        Title = rename ? "Rename Keyword" : "New Keyword",
+        Question = rename ? "Enter new name for keyword." : "Enter name of new keyword.",
+        Answer = rename ? keyword.Title : string.Empty
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (inputDialog.ShowDialog() ?? true) {
+        if (rename) keyword.Rename(Db, inputDialog.Answer);
+        else CreateKeyword(root, keyword, inputDialog.Answer);
       }
     }
 
