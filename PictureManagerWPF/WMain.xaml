@@ -84,6 +84,16 @@
       <EventSetter Event="PreviewMouseUp" Handler="TreeViewKeywords_Select" />
     </Style>
 
+    <!-- TreeViewKeywordsStackPanelWithDragDrop -->
+    <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewKeywordsStackPanel}" TargetType="StackPanel">
+      <Setter Property="AllowDrop" Value="True" />
+      <EventSetter Event="Drop" Handler="TvKeywords_OnDrop" />
+      <EventSetter Event="MouseMove" Handler="TvKeywords_OnMouseMove" />
+      <EventSetter Event="DragEnter" Handler="TvKeywords_AllowDropCheck" />
+      <EventSetter Event="DragLeave" Handler="TvKeywords_AllowDropCheck" />
+      <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
+    </Style>
+
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="KeywordNew" Text="New" />
     <RoutedUICommand x:Key="KeywordRename" Text="Rename" />
@@ -244,12 +254,7 @@
 
               <!-- TreeView Keywords - Keyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}" AllowDrop="True"
-                            Drop="TvKeywords_OnDrop"
-                            MouseMove="TvKeywords_OnMouseMove"
-                            DragEnter="TvKeywords_AllowDropCheck" 
-                            DragLeave="TvKeywords_AllowDropCheck"
-                            DragOver="TvKeywords_AllowDropCheck">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
@@ -267,7 +272,7 @@
 
               <!-- TreeView Keywords - Person -->
               <HierarchicalDataTemplate DataType="{x:Type data:Person}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />

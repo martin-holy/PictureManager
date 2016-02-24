@@ -552,33 +552,64 @@ namespace PictureManager {
     }
 
     private void TvKeywords_AllowDropCheck(object sender, DragEventArgs e) {
-      var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
-      var destData = (Data.Keyword)((StackPanel)sender).DataContext;
-      if (srcData != null && destData != null && srcData != destData && srcData.Parent == destData.Parent) return;
-      e.Effects = DragDropEffects.None;
-      e.Handled = true;
+      if (e.Data.GetDataPresent(typeof (Data.Keyword))) {
+        var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
+        var destData = (Data.Keyword)((StackPanel)sender).DataContext;
+        if (srcData != null && destData != null && srcData != destData && srcData.Parent == destData.Parent) return;
+        e.Effects = DragDropEffects.None;
+        e.Handled = true;
+      } else if (e.Data.GetDataPresent(typeof(Data.Person))) {
+        var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
+        var destData = (Data.Person)((StackPanel)sender).DataContext;
+        if (srcData != null && destData != null && srcData != destData) return;
+        e.Effects = DragDropEffects.None;
+        e.Handled = true;
+      }
     }
 
     private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
-      var panel = (StackPanel) sender;
-      var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
-      var destData = (Data.Keyword)panel.DataContext;
-      if (srcData == null || destData == null) return;
-      var items = destData.Parent.Items;
-      var destIndex = items.IndexOf(destData);
-      var srcIndex = items.IndexOf(srcData);
-      var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight/2;
-      int newIndex;
-      if (srcIndex > destIndex) {
-        newIndex = dropOnTop ? destIndex : destIndex + 1;
-      } else {
-        newIndex = dropOnTop ? destIndex - 1 : destIndex;
-      }
-      items.Move(items.IndexOf(srcData), newIndex);
+      var panel = (StackPanel)sender;
 
-      for (var i = 0; i < items.Count; i++) {
-        items[i].Index = i;
-        ACore.Db.Execute($"update Keywords set Idx={i} where Id={items[i].Id}");
+      if (e.Data.GetDataPresent(typeof (Data.Keyword))) {
+        var srcData = (Data.Keyword) e.Data.GetData(typeof (Data.Keyword));
+        var destData = (Data.Keyword) panel.DataContext;
+        if (srcData == null || destData == null) return;
+        var items = destData.Parent.Items;
+        var destIndex = items.IndexOf(destData);
+        var srcIndex = items.IndexOf(srcData);
+        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight/2;
+        int newIndex;
+        if (srcIndex > destIndex) {
+          newIndex = dropOnTop ? destIndex : destIndex + 1;
+        } else {
+          newIndex = dropOnTop ? destIndex - 1 : destIndex;
+        }
+        items.Move(items.IndexOf(srcData), newIndex);
+
+        for (var i = 0; i < items.Count; i++) {
+          items[i].Index = i;
+          ACore.Db.Execute($"update Keywords set Idx={i} where Id={items[i].Id}");
+        }
+      } else if (e.Data.GetDataPresent(typeof (Data.Person))) {
+        var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
+        var destData = (Data.Person)panel.DataContext;
+        if (srcData == null || destData == null) return;
+        var items = ACore.People.Items;
+        var destIndex = items.IndexOf(destData);
+        var srcIndex = items.IndexOf(srcData);
+        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
+        int newIndex;
+        if (srcIndex > destIndex) {
+          newIndex = dropOnTop ? destIndex : destIndex + 1;
+        } else {
+          newIndex = dropOnTop ? destIndex - 1 : destIndex;
+        }
+        items.Move(items.IndexOf(srcData), newIndex);
+
+        for (var i = 0; i < items.Count; i++) {
+          items[i].Index = i;
+          ACore.Db.Execute($"update People set Idx={i} where Id={items[i].Id}");
+        }
       }
     }
 

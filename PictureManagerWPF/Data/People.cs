@@ -15,11 +15,12 @@ namespace PictureManager.Data {
 
     public void Load() {
       Items.Clear();
-      const string sql = "select Id, Name from People order by Name";
+      const string sql = "select Id, Name, Idx from People order by Idx, Name";
       foreach (DataRow row in Db.Select(sql)) {
         Items.Add(new Person {
           Id = (int) (long) row[0],
           Title = (string) row[1],
+          Index = (int) (long) row[2],
           IconName = "appbar_people"
         });
       }

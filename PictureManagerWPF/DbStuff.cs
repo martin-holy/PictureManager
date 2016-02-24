@@ -110,7 +110,8 @@ namespace PictureManager {
 
       Execute("CREATE TABLE IF NOT EXISTS \"People\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE);");
+              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE"
+              + ",[Idx] integer NOT NULL DEFAULT 0);");
 
       Execute("CREATE TABLE IF NOT EXISTS \"MediaItemPerson\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
