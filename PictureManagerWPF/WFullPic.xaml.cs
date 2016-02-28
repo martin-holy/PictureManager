@@ -92,6 +92,7 @@ namespace PictureManager {
                 _wMain.ACore.MediaItems.Items[index].IsSelected = true;
               if (itemsCount <= index && itemsCount != 0)
                 _wMain.ACore.MediaItems.Items[index - 1].IsSelected = true;
+              _wMain.ACore.MediaItems.SetCurrent();
               SetCurrentImage();
             }
           break;

@@ -146,6 +146,7 @@
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
           </Grid>
         </ItemsPanelTemplate>
@@ -160,6 +161,9 @@
       <Separator Grid.Column="3" />
       <StatusBarItem Grid.Column="4">
         <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
+      </StatusBarItem>
+      <StatusBarItem Grid.Column="5">
+        <ComboBox x:Name="CmbThumbPage" Visibility="Collapsed" SelectionChanged="CmbThumbPage_OnSelectionChanged" />
       </StatusBarItem>
       <StatusBar.Style>
         <Style>

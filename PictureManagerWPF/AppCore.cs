@@ -38,6 +38,8 @@ namespace PictureManager {
     public List<BaseTagItem> TagModifers;
     public BackgroundWorker ThumbsWebWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
+    public int ThumbsPageIndex;
+    public int ThumbsPerPage = 300;
 
     private bool _keywordsEditMode;
 
@@ -133,7 +135,7 @@ namespace PictureManager {
             }
 
             MediaItems.LoadByTag();
-            CreateThumbnailsWebPage();
+            InitThumbsPagesControl();
           }
           break;
         }
@@ -221,6 +223,17 @@ namespace PictureManager {
       }
     }
 
+    public void InitThumbsPagesControl() {
+      WMain.CmbThumbPage.Visibility = MediaItems.Items.Count > ThumbsPerPage ? Visibility.Visible : Visibility.Collapsed;
+      WMain.CmbThumbPage.Items.Clear();
+      var iPageCount = MediaItems.Items.Count / ThumbsPerPage;
+      if (MediaItems.Items.Count > iPageCount * ThumbsPerPage) iPageCount++;
+      for (int i = 0; i < iPageCount; i++) {
+        WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
+      }
+      WMain.CmbThumbPage.SelectedIndex = 0;
+    }
+
     public void CreateThumbnailsWebPage() {
       var doc = WbThumbs.Document;
       var thumbs = doc?.GetElementById("thumbnails");
@@ -237,7 +250,7 @@ namespace PictureManager {
       ThumbsWebWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
 
-        var picture = MediaItems.Items[(int) e.UserState];
+        var mi = MediaItems.Items[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
         var img = doc.CreateElement("img");
@@ -245,12 +258,12 @@ namespace PictureManager {
         if (thumb == null || keywords == null || img == null) return;
 
         keywords.SetAttribute("className", "keywords");
-        keywords.InnerHtml = picture.GetKeywordsAsString();
+        keywords.InnerHtml = mi.GetKeywordsAsString();
 
-        img.SetAttribute("src", picture.FilePathCache);
+        img.SetAttribute("src", mi.FilePathCache);
 
         thumb.SetAttribute("className", "thumbBox");
-        thumb.SetAttribute("id", picture.Index.ToString());
+        thumb.SetAttribute("id", mi.Index.ToString());
         thumb.AppendChild(keywords);
         thumb.AppendChild(img);
         thumbs.AppendChild(thumb);
@@ -261,9 +274,13 @@ namespace PictureManager {
       ThumbsWebWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) sender;
         var count = MediaItems.Items.Count;
+        var iFrom = ThumbsPageIndex == 0 ? 0 : ThumbsPageIndex * ThumbsPerPage;
+        var iTo = count > iFrom + ThumbsPerPage ? iFrom + ThumbsPerPage : count;
         var done = 0;
 
-        foreach (var mi in MediaItems.Items) {
+        //foreach (var mi in MediaItems.Items) {
+        for (int i = iFrom; i < iTo; i++) {
+          var mi = MediaItems.Items[i];
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
@@ -279,12 +296,17 @@ namespace PictureManager {
           }
 
           done++;
-          worker.ReportProgress(Convert.ToInt32(((double) done/count)*100), mi.Index);
+          worker.ReportProgress(Convert.ToInt32(((double) done/(iTo - iFrom))*100), mi.Index);
         }
       };
 
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
+        MediaItems.ScrollToCurrent();
+        if (MediaItems.Current != null) {
+          MediaItems.Current.IsSelected = false;
+          MediaItems.Current.IsSelected = true;
+        }
         MarkUsedKeywordsAndPeople();
       };
 

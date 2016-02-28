@@ -172,7 +172,11 @@ namespace PictureManager.Data {
     public void RemoveSelectedFromWeb() {
       var doc = WbThumbs.Document;
       if (doc == null) return;
-      foreach (var mi in Items.Where(x => x.IsSelected)) {
+      var items = Items.Where(x => x.IsSelected).ToList();
+      if (items.Count == 0) return;
+      var firstIndex = items[0].Index;
+
+      foreach (var mi in items) {
         var thumb = doc.GetElementById(mi.Index.ToString());
         if (thumb == null) continue;
         thumb.OuterHtml = string.Empty;

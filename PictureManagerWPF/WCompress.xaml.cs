@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -69,25 +70,25 @@ namespace PictureManager {
       _compress.ProgressChanged += compress_ProgressChanged;
       _compress.RunWorkerCompleted += compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? _appCore.MediaItems.Items.Where(x => x.IsSelected)
-        : _appCore.MediaItems.Items);
+        ? _appCore.MediaItems.Items.Where(x => x.IsSelected).ToList()
+        : _appCore.MediaItems.Items.ToList());
     }
 
     private void compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
-      var pictures = (ObservableCollection<Data.Picture>) e.Argument;
-      var count = pictures.Count;
+      var mis = (List<Data.BaseMediaItem>) e.Argument;
+      var count = mis.Count;
       var done = 0;
       const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
-      foreach (var picture in pictures) {
+      foreach (var mi in mis) {
         if (worker.CancellationPending) {
           e.Cancel = true;
           break;
         }
 
-        FileInfo original = new FileInfo(picture.FilePath);
-        FileInfo newFile = new FileInfo(picture.FilePath.Replace(".", "_newFile."));
+        FileInfo original = new FileInfo(mi.FilePath);
+        FileInfo newFile = new FileInfo(mi.FilePath.Replace(".", "_newFile."));
         bool bSuccess = false;
 
         try {

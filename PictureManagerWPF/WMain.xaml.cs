@@ -62,6 +62,7 @@ namespace PictureManager {
       if (e.CtrlKeyPressed && e.KeyPressedCode == 65) {
         ACore.MediaItems.SelectAll();
         ACore.MarkUsedKeywordsAndPeople();
+        ACore.UpdateStatusBarInfo();
         e.ReturnValue = false;
       }
 
@@ -165,6 +166,9 @@ namespace PictureManager {
         InitUi();
         ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile));
       }
+      if (ACore.MediaItems.Current != null) {
+        CmbThumbPage.SelectedIndex = ACore.MediaItems.Current.Index / ACore.ThumbsPerPage;
+      }
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
@@ -211,7 +215,7 @@ namespace PictureManager {
             }
 
             ACore.MediaItems.LoadByFolder(folder.FullPath);
-            ACore.CreateThumbnailsWebPage();
+            ACore.InitThumbsPagesControl();
             break;
           }
           case nameof(Data.FavoriteFolder): {
@@ -651,8 +655,10 @@ namespace PictureManager {
       if (!flag) return;
 
       if (thumbs) {
-        if (e.KeyStates != DragDropKeyStates.ControlKey)
+        if (e.KeyStates != DragDropKeyStates.ControlKey) {
           ACore.MediaItems.RemoveSelectedFromWeb();
+          ACore.UpdateStatusBarInfo();
+        }
         return;
       }
 
@@ -717,6 +723,12 @@ namespace PictureManager {
 
       if (menu.Items.Count > 0)
         stackPanel.ContextMenu = menu;
+    }
+
+    private void CmbThumbPage_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+      if (CmbThumbPage.SelectedIndex == -1) return;
+      ACore.ThumbsPageIndex = CmbThumbPage.SelectedIndex;
+      ACore.CreateThumbnailsWebPage();
     }
   }
 }

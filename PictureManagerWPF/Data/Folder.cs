@@ -83,7 +83,7 @@ namespace PictureManager.Data {
       };
 
       Folder folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
-      Items.Insert(folder == null ? 0 : Items.IndexOf(folder), newFolder);
+      Items.Insert(folder == null ? Items.Count : Items.IndexOf(folder), newFolder);
 
       return newFolder;
     }
