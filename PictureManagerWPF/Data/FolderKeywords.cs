@@ -50,10 +50,12 @@ namespace PictureManager.Data {
     }
 
     public string GetFolderKeywordKeyPath(string fullPath) {
-      var keyPath = Settings.Default.FolderKeywordIngnoreList.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries)
-        .OrderBy(x => x)
-        .Aggregate(fullPath, (current, ignorePath) => current.Replace(ignorePath, string.Empty));
-      return keyPath.Contains(":") ? string.Empty : keyPath;
+      foreach (var ignorePath in Settings.Default.FolderKeywordIngnoreList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)) {
+        if (fullPath.StartsWith(ignorePath, StringComparison.OrdinalIgnoreCase)) {
+          return fullPath.Substring(ignorePath.Length);
+        }
+      }
+      return string.Empty;
     }
 
     public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, int dirId) {

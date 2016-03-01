@@ -320,7 +320,7 @@ namespace PictureManager {
 
     private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {
       var catalog = new WCatalog(ACore) { Owner = this };
-      catalog.ShowDialog();
+      catalog.Show();
     }
 
     private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

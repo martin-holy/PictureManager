@@ -59,7 +59,7 @@
       <Label Grid.Column="1" Grid.Row="1" Content="{Binding TimeRemaining}" x:Name="LblTimeRemaining" />-->
 
       <CheckBox Grid.Column="0" Grid.Row="1" Margin="5,0" x:Name="ChbRebuildThumbs" Content="Rebuild thumbnails" />
-      <CheckBox Grid.Column="1" Grid.Row="1" Margin="5,0" x:Name="ChbNewOnly" Content="New only" />
+      <CheckBox Grid.Column="1" Grid.Row="1" Margin="5,0" x:Name="ChbNewOnly" IsChecked="True" Content="New only" />
 
       <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
         <Button Margin="3,0,0,3" Content="Update" x:Name="BtnUpdate" Click="BtnUpdate_OnClick" />

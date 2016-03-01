@@ -16,15 +16,10 @@ namespace PictureManager.Data {
     public void Load() {
       Items.Clear();
 
-      const string sql =
-        "select Id, Keyword, (select count(MK.Id) from MediaItemKeyword as MK where MK.KeywordId in "
-        + "(select XK.Id from Keywords as XK where XK.Keyword like K.Keyword||\"%\")) as MediaItemsCount, Idx from "
-        + "Keywords as K order by Idx, Keyword";
-
-      foreach (DataRow row in Db.Select(sql)) {
-        Keyword newItem = new Keyword() {
+      foreach (DataRow row in Db.Select("select Id, Keyword, Idx from Keywords order by Idx, Keyword")) {
+        Keyword newItem = new Keyword {
           Id = (int) (long) row[0],
-          Index = (int) (long) row[3],
+          Index = (int) (long) row[2],
           IconName = "appbar_tag",
           FullPath = (string) row[1]
         };

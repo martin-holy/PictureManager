@@ -146,6 +146,8 @@ namespace PictureManager.Data {
             Comment = (string)row[5],
             FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
           };
+
+          //TODO tyhle dva radky vaznou
           pic.LoadKeywordsFromDb(ACore.Keywords);
           pic.LoadPeopleFromDb(ACore.People);
           Items.Add(pic);
@@ -157,7 +159,11 @@ namespace PictureManager.Data {
 
     public void ScrollToCurrent() {
       if (Current == null || Current.Index == 0) return;
-      WbThumbs.Document?.GetElementById(Current.Index.ToString())?.ScrollIntoView(true);
+      ScrollTo(Current.Index);
+    }
+
+    public void ScrollTo(int index) {
+      WbThumbs.Document?.GetElementById(index.ToString())?.ScrollIntoView(true);
     }
 
     public void LoadSiblings() {
@@ -191,6 +197,9 @@ namespace PictureManager.Data {
         mi.Index = index;
         index++;
       }
+
+      index = firstIndex == 0 ? 0 : firstIndex - 1;
+      ScrollTo(index);
     }
 
     public void SetCurrent() {
