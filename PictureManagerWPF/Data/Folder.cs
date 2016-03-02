@@ -108,7 +108,7 @@ namespace PictureManager.Data {
       };
 
       inputDialog.BtnDialogOk.Click += delegate {
-        if (Directory.Exists($"{Parent.FullPath}\\{inputDialog.TxtAnswer.Text}")) {
+        if (Directory.Exists($"{(rename ? Parent.FullPath : FullPath)}\\{inputDialog.TxtAnswer.Text}")) {
           inputDialog.ShowErrorMessage("Folder already exists!");
           return;
         }

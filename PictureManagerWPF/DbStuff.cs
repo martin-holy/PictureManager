@@ -74,22 +74,10 @@ namespace PictureManager {
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[Path] nvarchar(256) NOT NULL COLLATE NOCASE);");
 
-      Execute("CREATE TABLE IF NOT EXISTS \"FilterFolders\"("
-              + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE"
-              + ",[ParentId] integer NOT NULL DEFAULT 0);");
-
       Execute("CREATE TABLE IF NOT EXISTS \"Filters\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE"
-              + ",[Description] nvarchar(256)"
-              + ",[FilterFolderId] integer NOT NULL"
-              + ",[DirectoryId] integer"
-              + ",[MatchType] integer NOT NULL DEFAULT 0"
-              + ",[IncludedKeywords] varchar(256)"
-              + ",[ExcludedKeywords] varchar(256)"
-              + ",[IncludedPeople] varchar(256)"
-              + ",[ExcludedPeople] varchar(256));");
+              + ",[ParentId] integer"
+              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE);");
 
       Execute("CREATE TABLE IF NOT EXISTS \"Keywords\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"

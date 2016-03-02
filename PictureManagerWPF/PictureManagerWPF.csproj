@@ -40,7 +40,6 @@
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
@@ -49,16 +48,10 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -81,6 +74,8 @@
     <Compile Include="Data\BaseTagItem.cs" />
     <Compile Include="Data\FavoriteFolder.cs" />
     <Compile Include="Data\FavoriteFolders.cs" />
+    <Compile Include="Data\Filter.cs" />
+    <Compile Include="Data\Filters.cs" />
     <Compile Include="Data\Folder.cs" />
     <Compile Include="Data\FolderKeyword.cs" />
     <Compile Include="Data\FolderKeywords.cs" />
@@ -122,6 +117,9 @@
     <Compile Include="WError.xaml.cs">
       <DependentUpon>WError.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WFilterBuilder.xaml.cs">
+      <DependentUpon>WFilterBuilder.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WFullPic.xaml.cs">
       <DependentUpon>WFullPic.xaml</DependentUpon>
     </Compile>
@@ -152,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WError.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WFilterBuilder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

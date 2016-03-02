@@ -18,12 +18,15 @@ namespace PictureManager {
     private BaseItem _lastSelectedSource;
     public ObservableCollection<BaseItem> FoldersRoot;
     public ObservableCollection<BaseItem> KeywordsRoot;
+    public ObservableCollection<BaseItem> FiltersRoot;
     public Keywords Keywords;
     public People People;
     public FolderKeywords FolderKeywords;
     public Folders Folders;
     public FavoriteFolders FavoriteFolders;
     public Ratings Ratings;
+    public Filters Filters;
+
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
     public System.Windows.Forms.WebBrowser WbThumbs;
@@ -74,10 +77,11 @@ namespace PictureManager {
     public void Init() {
       People = new People {Db = Db, Title = "People", IconName = "appbar_people_multiple"};
       Keywords = new Keywords {Db = Db, Title = "Keywords", IconName = "appbar_tag"};
-      FolderKeywords = new FolderKeywords {Db = Db, Title = "Folder Keywords", IconName = "appbar_folder" };
+      FolderKeywords = new FolderKeywords {Db = Db, Title = "Folder Keywords", IconName = "appbar_folder"};
       Folders = new Folders {Title = "Folders", IconName = "appbar_folder"};
-      FavoriteFolders = new FavoriteFolders { Title = "Favorites", IconName = "appbar_folder_star"};
-      Ratings = new Ratings { Title = "Ratings", IconName = "appbar_star" };
+      FavoriteFolders = new FavoriteFolders {Title = "Favorites", IconName = "appbar_folder_star"};
+      Ratings = new Ratings {Title = "Ratings", IconName = "appbar_star"};
+      Filters = new Filters {Title = "Filters", IconName = "appbar_filter" };
 
       People.Load();
       Keywords.Load();
@@ -85,9 +89,11 @@ namespace PictureManager {
       Folders.AddDrives();
       FavoriteFolders.Load();
       Ratings.Load();
+      Filters.Load();
 
       KeywordsRoot = new ObservableCollection<BaseItem> {Ratings, People, FolderKeywords, Keywords};
       FoldersRoot = new ObservableCollection<BaseItem> {FavoriteFolders, Folders};
+      FiltersRoot = new ObservableCollection<BaseItem> {Filters};
     }
 
     public void UpdateStatusBarInfo() {

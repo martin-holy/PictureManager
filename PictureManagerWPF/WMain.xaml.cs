@@ -146,6 +146,7 @@ namespace PictureManager {
       ACore.Keywords.IsExpanded = true;
       TvFolders.ItemsSource = ACore.FoldersRoot;
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
+      TvFilters.ItemsSource = ACore.FiltersRoot;
     }
 
     public void ShowFullPicture() {
@@ -260,6 +261,24 @@ namespace PictureManager {
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
       ACore.People.DeletePerson((Data.Person) e.Parameter);
+    }
+
+    private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
+      var fb = new WFilterBuilder { Owner = this, IsNew = true};
+      if (fb.ShowDialog() ?? true) {
+        
+      }
+    }
+
+    private void CmdFilterEdit(object sender, ExecutedRoutedEventArgs e) {
+      var fb = new WFilterBuilder { Owner = this, IsNew = false };
+      if (fb.ShowDialog() ?? true) {
+
+      }
+    }
+
+    private void CmdFilterDelete(object sender, ExecutedRoutedEventArgs e) {
+      
     }
 
     private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -717,6 +736,16 @@ namespace PictureManager {
         }
         case nameof(Data.People): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonNew"], CommandParameter = item});
+          break;
+        }
+        case nameof(Data.Filters): {
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
+          break;
+        }
+        case nameof(Data.Filter): {
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterEdit"], CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterDelete"], CommandParameter = item });
           break;
         }
       }
