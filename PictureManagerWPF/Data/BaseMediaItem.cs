@@ -41,6 +41,7 @@ namespace PictureManager.Data {
     public int Id;
     public int DirId;
     public int Rating;
+    public int Orientation;
     public bool IsModifed;
     public DbStuff Db;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -109,11 +110,12 @@ namespace PictureManager.Data {
     }
 
     public void LoadFromDb(AppCore aCore) {
-      var result = Db.Select($"select Id, Rating, Comment from MediaItems where DirectoryId = {DirId} and FileName = '{FileNameWithExt}'");
+      var result = Db.Select($"select Id, Rating, Comment, Orientation from MediaItems where DirectoryId = {DirId} and FileName = '{FileNameWithExt}'");
       if (result != null && result.Count == 1) {
         Id = (int)(long)result[0][0];
         Rating = (int)(long)result[0][1];
         Comment = (string)result[0][2];
+        Orientation = (int)(long)result[0][3];
         LoadKeywordsFromDb(aCore.Keywords);
         LoadPeopleFromDb(aCore.People);
       } else {
@@ -124,13 +126,13 @@ namespace PictureManager.Data {
     public void SaveMediaItemInToDb(AppCore aCore, bool update) {
       if (Id == -1) {
         ReadMetadata(aCore);
-        if (Db.Execute($"insert into MediaItems (DirectoryId, FileName, Rating, Comment) values ({DirId}, '{FileNameWithExt}', {Rating}, '{CommentEscaped}')")) {
+        if (Db.Execute($"insert into MediaItems (DirectoryId, FileName, Rating, Comment, Orientation) values ({DirId}, '{FileNameWithExt}', {Rating}, '{CommentEscaped}', {Orientation})")) {
           var id = Db.GetLastIdFor("MediaItems");
           if (id != null) Id = (int)id;
         }
       } else {
         if (update) ReadMetadata(aCore);
-        Db.Execute($"update MediaItems set Rating = {Rating}, Comment = '{CommentEscaped}' where Id = {Id}");
+        Db.Execute($"update MediaItems set Rating = {Rating}, Comment = '{CommentEscaped}', Orientation = {Orientation} where Id = {Id}");
       }
 
       SaveMediaItemKeywordsToDb();
@@ -286,6 +288,13 @@ namespace PictureManager.Data {
           Comment = bm.Comment == null
             ? string.Empty
             : aCore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+
+          //Orientation
+          var orientation = bm.GetQuery("System.Photo.Orientation");
+          if (orientation != null) {
+            //3: 180, 6: 270, 8: 90
+            Orientation = (ushort) orientation;
+          }
 
           //Keywords
           Keywords.Clear();

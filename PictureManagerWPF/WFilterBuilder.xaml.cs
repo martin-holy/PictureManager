@@ -134,6 +134,14 @@ namespace PictureManager {
         byte[] biteArray = new byte[readFileStream.Length];
         readFileStream.Position = 0;
         readFileStream.Read(biteArray, 0, (int)readFileStream.Length);
+
+
+        /*cmd.CommandText = "INSERT INTO TilesData(x, y, data) VALUES(@p1, @p2, @p3)";
+        cmd.Parameters.Add(new SQLiteParameter("@p1", t.X));
+        cmd.Parameters.Add(new SQLiteParameter("@p2", t.Y));
+        cmd.Parameters.Add(new SQLiteParameter("@p3", biteArray));
+        cmd.ExecuteNonQuery();*/
+
       }
     }
 
@@ -244,6 +252,7 @@ namespace PictureManager {
 
   [Serializable]
   public class BaseFilterItem : INotifyPropertyChanged {
+    [field:NonSerialized]
     public event PropertyChangedEventHandler PropertyChanged;
 
     public void OnPropertyChanged([CallerMemberName] string name = "") {

@@ -94,7 +94,8 @@ namespace PictureManager {
               + ",[DirectoryId] integer NOT NULL"
               + ",[FileName] nvarchar(256) NOT NULL COLLATE NOCASE"
               + ",[Rating] integer DEFAULT 0"
-              + ",[Comment] nvarchar(256) COLLATE NOCASE);");
+              + ",[Comment] nvarchar(256) COLLATE NOCASE"
+              + ",[Orientation] integer NOT NULL DEFAULT 1);");
 
       Execute("CREATE TABLE IF NOT EXISTS \"People\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"

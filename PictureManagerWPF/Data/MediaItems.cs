@@ -133,7 +133,7 @@ namespace PictureManager.Data {
         sqlList.Add($"select Id from MediaItems where DirectoryId in ({folderKeyword.FolderIds})");
 
       string innerSql = string.Join(" union ", sqlList);
-      string sql = "select Id, (select Path from Directories as D where D.Id = M.DirectoryId) as Path, FileName, Rating, DirectoryId, Comment " +
+      string sql = "select Id, (select Path from Directories as D where D.Id = M.DirectoryId) as Path, FileName, Rating, DirectoryId, Comment, Orientation " +
                    $"from MediaItems as M where M.Id in ({innerSql}) order by FileName";
 
       foreach (DataRow row in Db.Select(sql)) {
@@ -144,6 +144,7 @@ namespace PictureManager.Data {
             Rating = (int)(long)row[3],
             DirId = (int)(long)row[4],
             Comment = (string)row[5],
+            Orientation = (int)(long)row[6],
             FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
           };
 

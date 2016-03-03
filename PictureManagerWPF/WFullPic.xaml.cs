@@ -44,7 +44,21 @@ namespace PictureManager {
     public void SetCurrentImage() {
       var current = _wMain.ACore.MediaItems.Current;
       var filePath = current == null ? string.Empty : current.FilePath;
-      WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", filePath);
+      var fullPic = WbFullPic.Document?.GetElementById("fullPic");
+      if (fullPic == null) return;
+      //TODO: BeginUpdate and EndUpdate na fullPic, nebo to udelat vsechno pres style
+      fullPic.SetAttribute("src", filePath);
+      fullPic.Style = string.Empty;
+      if (current != null) {
+        var o = 0;
+        switch (current.Orientation) {
+          case 1: o = 0; break;
+          case 3: o = 180; break;
+          case 6: o = 90; break;
+          case 8: o = 270; break;
+        }
+        fullPic.Style = $"transform: rotate({o}deg)";
+      }
     }
 
     private void SwitchToBrowser() {
@@ -86,8 +100,8 @@ namespace PictureManager {
           if (result == MessageBoxResult.Yes)
             if (_wMain.ACore.FileOperation(AppCore.FileOperations.Delete, true)) {
               var index = _wMain.ACore.MediaItems.Current.Index;
-              var itemsCount = _wMain.ACore.MediaItems.Items.Count;
               _wMain.ACore.MediaItems.RemoveSelectedFromWeb();
+              var itemsCount = _wMain.ACore.MediaItems.Items.Count;
               if (itemsCount > index)
                 _wMain.ACore.MediaItems.Items[index].IsSelected = true;
               if (itemsCount <= index && itemsCount != 0)

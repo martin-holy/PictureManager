@@ -9,9 +9,12 @@
       var picBiggerThanScreen;
       var picMouseDownX;
       var picMouseDownY;
+      var clientMouseDownX;
+      var clientMouseDownY;
       var picMarginTop;
       var picMarginLeft;
       var picMouseIsDown;
+      var picIsRotated;
 
       //to enable ScriptErrorsSuppressed = true
       function noError() { return true; }
@@ -28,8 +31,17 @@
           picMouseDownX = event.x;
           picMouseDownY = event.y;
 
-          picMarginTop = Math.round(event.y - ((pic.naturalHeight / pic.height) * (picMouseDownY - pic.offsetTop)));
-          picMarginLeft = Math.round(event.x - ((pic.naturalWidth / pic.width) * (picMouseDownX - pic.offsetLeft)));
+          clientMouseDownX = event.clientX;
+          clientMouseDownY = event.clientY;
+
+          if (picIsRotated) {
+            var offset = ((pic.naturalWidth - pic.naturalHeight) / 2);
+            picMarginTop = Math.round(offset + event.clientY - ((pic.naturalWidth / pic.width) * picMouseDownY));
+            picMarginLeft = Math.round((offset * -1) + event.clientX - ((pic.naturalHeight / pic.height) * picMouseDownX));
+          } else {
+            picMarginTop = Math.round(event.clientY - ((pic.naturalHeight / pic.height) * picMouseDownY));
+            picMarginLeft = Math.round(event.clientX - ((pic.naturalWidth / pic.width) * picMouseDownX));
+          }
 
           pic.style.marginTop = picMarginTop + "px";
           pic.style.marginLeft = picMarginLeft + "px";
@@ -44,7 +56,8 @@
         if (picBiggerThanScreen) {
           var pic = document.getElementById("fullPic");
           if (pic !== undefined && pic !== null) {
-            pic.removeAttribute("style");
+            pic.style.marginTop = "";
+            pic.style.marginLeft = "";
           }
           FitPicture();
         }
@@ -54,8 +67,11 @@
         if (picMouseIsDown && picBiggerThanScreen) {
           var pic = document.getElementById("fullPic");
           if (pic !== undefined && pic !== null) {
-            pic.style.marginTop = ((event.y - picMouseDownY) + picMarginTop) + "px";
-            pic.style.marginLeft = ((event.x - picMouseDownX) + picMarginLeft) + "px";
+            var yDiff = clientMouseDownY - event.clientY;
+            var xDiff = clientMouseDownX - event.clientX;
+
+            pic.style.marginTop = (picMarginTop - yDiff) + "px";
+            pic.style.marginLeft = (picMarginLeft - xDiff) + "px";
           }
         }
       }
@@ -66,17 +82,28 @@
           pic.removeAttribute("height");
           pic.removeAttribute("width");
 
+          //if the picture is rotated, switch width and height
+          picIsRotated = (pic.style.transform.indexOf("270deg") > 0 || pic.style.transform.indexOf("90deg") > 0);
+          
           var bh = window.document.body.clientHeight;
           var bw = window.document.body.clientWidth;
-          var pnh = pic.naturalHeight;
-          var pnw = pic.naturalWidth;
-          var ph;
-          var pw;
+          var pnh;
+          var pnw;
+
+          if (picIsRotated) {
+            pnw = pic.naturalHeight;
+            pnh = pic.naturalWidth;
+          } else {
+            pnh = pic.naturalHeight;
+            pnw = pic.naturalWidth;
+          }
 
           if ((pnh > bh) || (pnw > bw)) { //picture is bigger than window  
             picBiggerThanScreen = true;
             pic.className = "";
 
+            var ph;
+            var pw;
             if (bh / pnh > bw / pnw) { //landscape
               pw = bw;
               ph = pnh * (bw / pnw);
@@ -85,8 +112,17 @@
               ph = bh;
             }
 
+            if (picIsRotated) {
+              var tmp = pw;
+              pw = ph;
+              ph = tmp;
+            }
+
             pic.height = ph;
             pic.width = pw;
+            pic.style.marginTop = ((bh - ph) / 2) + "px";
+            pic.style.marginLeft = ((bw - pw) / 2) + "px";
+            
           } else {
             picBiggerThanScreen = false;
             pic.className = "centerFullPic";
@@ -116,7 +152,6 @@
       }
 
       #fullPicBox {
-        text-align: center;
         height: 100%;
       }
     </style>
@@ -124,7 +159,7 @@
   <body OnMouseWheel="Body_OnMouseWheel(event);" OnResize="FitPicture();">
     <div id="content">
       <div id="fullPicBox">
-        <img id="fullPic" draggable="false" 
+        <img id="fullPic" draggable="false"
           OnMouseDown="FullPic_OnMouseDown(event);"
           OnMouseUp="FullPic_OnMouseUp();"
           OnMouseMove="FullPic_OnMouseMove(event);"

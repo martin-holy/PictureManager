@@ -385,7 +385,7 @@ namespace PictureManager {
             case FileOperations.Copy: {
               //duplicate Picture
               Db.Execute(
-                $"insert into MediaItems (DirectoryId, FileName, Rating, Comment) select {destDirId}, \"{Path.GetFileName(item.Value)}\", Rating, Comment from MediaItems where Id={srcPicId}");
+                $"insert into MediaItems (DirectoryId, FileName, Rating, Comment, Orientation) select {destDirId}, \"{Path.GetFileName(item.Value)}\", Rating, Comment, Orientation from MediaItems where Id={srcPicId}");
               int? destPicId = Db.GetLastIdFor("MediaItems");
               if (destPicId == null) continue;
               //duplicate Picture Keywords

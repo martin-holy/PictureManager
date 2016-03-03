@@ -76,7 +76,7 @@ namespace PictureManager {
     private void WbThumbs_DblClick(object sender, HtmlElementEventArgs e) {
       var thumb = WbThumbs.Document?.GetElementFromPoint(e.ClientMousePosition)?.Parent;
       if (thumb == null) return;
-      if (thumb.Id == "content") return;
+      if (thumb.Id == "content" || thumb.Id == null) return;
       ACore.MediaItems.DeselectAll();
       ACore.MediaItems.Current = ACore.MediaItems.Items[int.Parse(thumb.Id)];
       ACore.MediaItems.Current.IsSelected = true;
