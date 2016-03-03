@@ -7,8 +7,6 @@
 
     <script>
       var picBiggerThanScreen;
-      var picMouseDownX;
-      var picMouseDownY;
       var clientMouseDownX;
       var clientMouseDownY;
       var picMarginTop;
@@ -28,8 +26,8 @@
         picMouseIsDown = true;
         if (picBiggerThanScreen) {
           var pic = event.currentTarget;
-          picMouseDownX = event.x;
-          picMouseDownY = event.y;
+          var picMouseDownX = event.x;
+          var picMouseDownY = event.y;
 
           clientMouseDownX = event.clientX;
           clientMouseDownY = event.clientY;
