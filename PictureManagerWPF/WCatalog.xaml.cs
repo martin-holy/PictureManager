@@ -58,6 +58,8 @@ namespace PictureManager {
       var folder = TvFolders.SelectedItem as Data.Folder;
       _selectedFolderPath = folder == null ? string.Empty : folder.FullPath;
 
+      if (folder != null && folder.IsAccessible) return;
+
       BtnUpdate.IsEnabled = false;
       _update = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
       _update.DoWork += update_DoWork;
@@ -190,8 +192,13 @@ namespace PictureManager {
         };
         try {
           if (di.GetDirectories().Length > 0)
-            item.Items.Add(new Data.Folder { Title = "..." });
-        } catch (UnauthorizedAccessException) {
+            item.Items.Add(new Data.Folder {Title = "..."});
+        }
+        catch (UnauthorizedAccessException) {
+          item.IconName = "appbar_folder_lock";
+          item.IsAccessible = false;
+        }
+        catch (DirectoryNotFoundException) {
           item.IconName = "appbar_folder_lock";
           item.IsAccessible = false;
         } finally {

@@ -10,7 +10,8 @@ namespace PictureManager.Data {
     }
 
     public void Load() {
-      Items.Clear();
+      Filter.GetSubFilters(false, Items, Db, null);
+      IsExpanded = true;
     }
   }
 }

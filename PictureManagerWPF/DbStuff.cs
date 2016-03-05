@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 
@@ -47,6 +48,20 @@ namespace PictureManager {
       return true;
     }
 
+    public bool Execute(string sql, Dictionary<string, object> args) {
+      if (!OpenDbConnection()) return false;
+      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+        cmd.CommandText = sql;
+        if (args != null) {
+          foreach (var arg in args) {
+            cmd.Parameters.Add(new SQLiteParameter(arg.Key, arg.Value));
+          }
+        }
+        cmd.ExecuteNonQuery();
+      }
+      return true;
+    }
+
     public DataRowCollection Select(string sql) {
       if (!OpenDbConnection()) return null;
       using (SQLiteCommand cmd = DbConn.CreateCommand()) {
@@ -77,7 +92,8 @@ namespace PictureManager {
       Execute("CREATE TABLE IF NOT EXISTS \"Filters\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[ParentId] integer"
-              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE);");
+              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE"
+              + ",[Data] blob NOT NULL);");
 
       Execute("CREATE TABLE IF NOT EXISTS \"Keywords\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"

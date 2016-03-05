@@ -35,11 +35,21 @@
   <DockPanel>
     <DockPanel DockPanel.Dock="Top" Margin="0,5,5,0">
       <Label Content="Filter name:" />
-      <TextBox x:Name="TbFilterName" FontSize="15" />
+      <TextBox x:Name="TbFilterName" FontSize="15" Text="{Binding FilterTitle, Mode=TwoWay}" />
     </DockPanel>
     
     <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,5">
-      <Button Margin="3,0,0,3" Content="Ok" x:Name="BtnOk" Click="BtnOk_OnClick" />
+      <Button Margin="3,0,0,3" Content="Ok" x:Name="BtnOk" Click="BtnOk_OnClick">
+        <Button.Style>
+          <Style TargetType="Button" BasedOn="{StaticResource MetroButton}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Text, ElementName=TbFilterName}" Value="">
+                <Setter Property="IsEnabled" Value="False" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
       <Button Margin="3,0,0,3" Content="Cancel" IsCancel="True" />
     </StackPanel>
     

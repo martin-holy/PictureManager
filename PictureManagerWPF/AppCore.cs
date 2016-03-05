@@ -81,7 +81,7 @@ namespace PictureManager {
       Folders = new Folders {Title = "Folders", IconName = "appbar_folder"};
       FavoriteFolders = new FavoriteFolders {Title = "Favorites", IconName = "appbar_folder_star"};
       Ratings = new Ratings {Title = "Ratings", IconName = "appbar_star"};
-      Filters = new Filters {Title = "Filters", IconName = "appbar_filter" };
+      Filters = new Filters {Db = Db, Title = "Filters", IconName = "appbar_filter" };
 
       People.Load();
       Keywords.Load();

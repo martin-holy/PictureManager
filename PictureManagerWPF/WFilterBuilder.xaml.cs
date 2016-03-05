@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -22,16 +23,15 @@ namespace PictureManager {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public ObservableCollection<BaseFilterItem> FilterRoot;
-    public bool IsNew;
+    public Data.Filter FiltersTreeItem { get; set; }
+    public string FilterTitle { get { return FiltersTreeItem.Title; } set { FiltersTreeItem.Title = value; OnPropertyChanged(); } }
     public ContextMenu MnuFilterGroupOps;
     public ContextMenu MnuFilterConditionProperties;
     public ContextMenu MnuFilterConditionOps;
 
-    public WFilterBuilder() {
+    public WFilterBuilder(Data.Filter filtersTreeItem) {
+      FiltersTreeItem = filtersTreeItem;
       InitializeComponent();
-
-      FilterRoot = new ObservableCollection<BaseFilterItem>();
 
       BuildMnuFilterGroupOps();
       BuildMnuFilterConditionProperties();
@@ -121,39 +121,12 @@ namespace PictureManager {
     }
 
     private void BtnOk_OnClick(object sender, RoutedEventArgs e) {
-      using (FileStream writeFileStream = new FileStream("Filter.dat", FileMode.Create)) {
-        BinaryFormatter formatter = new BinaryFormatter();
-        try {
-          formatter.Serialize(writeFileStream, FilterRoot);
-        } catch (System.Runtime.Serialization.SerializationException ex) {
-          //ignored
-        }
-      }
-
-      using (FileStream readFileStream = new FileStream("Filter.dat", FileMode.Open)) {
-        byte[] biteArray = new byte[readFileStream.Length];
-        readFileStream.Position = 0;
-        readFileStream.Read(biteArray, 0, (int)readFileStream.Length);
-
-
-        /*cmd.CommandText = "INSERT INTO TilesData(x, y, data) VALUES(@p1, @p2, @p3)";
-        cmd.Parameters.Add(new SQLiteParameter("@p1", t.X));
-        cmd.Parameters.Add(new SQLiteParameter("@p2", t.Y));
-        cmd.Parameters.Add(new SQLiteParameter("@p3", biteArray));
-        cmd.ExecuteNonQuery();*/
-
-      }
-    }
-
-    public void LoadFilter() {
-      if (IsNew) {
-        FilterRoot.Add(new FilterGroup {Operator = FilterGroupOps.And});
-      }
+      DialogResult = true;
     }
 
     private void WFilterBuilder_OnLoaded(object sender, RoutedEventArgs e) {
-      LoadFilter();
-      TvFilter.ItemsSource = FilterRoot;
+      ExpandAll(FiltersTreeItem.FilterData);
+      TvFilter.ItemsSource = FiltersTreeItem.FilterData;
     }
 
     private void FilterGroup_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -208,14 +181,21 @@ namespace PictureManager {
       if (item == null) return;
       item.IsSelected = false;
     }
+
+    private void ExpandAll(ObservableCollection<BaseFilterItem> items) {
+      foreach (var item in items) {
+        var group = item as FilterGroup;
+        if (group == null) continue;
+        group.IsExpanded = true;
+        ExpandAll(group.Items);
+      }
+    }
   }
 
   [Serializable]
   public enum FilterGroupOps {
     And = 0,
-    Or = 1,
-    NotAnd = 2,
-    NotOr = 3
+    Or = 1
   }
 
   [Serializable]
@@ -226,18 +206,18 @@ namespace PictureManager {
     IsGreaterThanOrEqualTo = 3,
     IsLessThan = 4,
     IsLessThanOrEqualTo = 5,
-    IsBetween = 6,
-    IsNotBetween = 7,
-    Contains = 8,
-    DoesNotContain = 9,
-    BeginsWith = 10,
-    EndsWith = 11,
+
+    Contains = 6,
+    DoesNotContain = 7,
+    StartsWith = 8,
+    DoesNotStartWith = 9,
+    EndsWith = 10,
+    DoesNotEndWith = 11,
     IsLike = 12,
     IsNotLike = 13,
-    IsAnyOf = 14,
-    IsNoneOf = 15,
-    IsBlank = 16,
-    IsNotBlank = 17
+
+    IsBlank = 14,
+    IsNotBlank = 15
   }
 
   [Serializable]

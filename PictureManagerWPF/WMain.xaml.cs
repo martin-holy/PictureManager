@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -264,16 +265,29 @@ namespace PictureManager {
     }
 
     private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
-      var fb = new WFilterBuilder { Owner = this, IsNew = true};
+      var parent = e.Parameter as Data.Filter;
+      var newFilter = new Data.Filter {Parent = parent, Db = ACore.Db, Title = "New filter", IconName = "appbar_filter"};
+      newFilter.FilterData.Add(new FilterGroup {Operator = FilterGroupOps.And});
+      var fb = new WFilterBuilder(newFilter) {Owner = this};
       if (fb.ShowDialog() ?? true) {
-        
+        newFilter.SaveFilter();
+        if (parent != null) {
+          parent.Items.Add(newFilter);
+        } else {
+          ACore.Filters.Items.Add(newFilter);
+        }
       }
     }
 
     private void CmdFilterEdit(object sender, ExecutedRoutedEventArgs e) {
-      var fb = new WFilterBuilder { Owner = this, IsNew = false };
+      var filter = (Data.Filter) e.Parameter;
+      var title = filter.Title;
+      var fb = new WFilterBuilder(filter) {Owner = this};
       if (fb.ShowDialog() ?? true) {
-
+        filter.SaveFilter();
+      } else {
+        filter.Title = title;
+        filter.ReloadData();
       }
     }
 
