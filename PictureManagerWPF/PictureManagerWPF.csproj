@@ -89,6 +89,9 @@
     <Compile Include="Data\Rating.cs" />
     <Compile Include="Data\Ratings.cs" />
     <Compile Include="DbStuff.cs" />
+    <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
+      <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
@@ -104,6 +107,9 @@
     <Compile Include="ShellStuff\Interfaces\IShellItem.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
     <Compile Include="ShellStuff\ShellCommon.cs" />
+    <Compile Include="UserControls\DirectoryList.xaml.cs">
+      <DependentUpon>DirectoryList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="VersionInfo.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
@@ -129,6 +135,10 @@
     <Compile Include="WTestThumbnailGallery.xaml.cs">
       <DependentUpon>WTestThumbnailGallery.xaml</DependentUpon>
     </Compile>
+    <Page Include="Dialogs\DirectoryListDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\InputDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -136,6 +146,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\DirectoryList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WAbout.xaml">
       <SubType>Designer</SubType>
@@ -222,9 +236,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UserControls\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

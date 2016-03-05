@@ -1,0 +1,28 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.DirectoryListDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:userControls="clr-namespace:PictureManager.UserControls"
+        mc:Ignorable="d"
+        Title="DirectoryListDialog" Height="450" Width="350" 
+        BorderBrush="{DynamicResource AccentColorBrush}" 
+        Background="{DynamicResource WhiteBrush}" 
+        ShowInTaskbar="False" 
+        FontSize="13.333" 
+        ShowMaxRestoreButton="False" 
+        ShowMinButton="False" 
+        WindowStartupLocation="CenterOwner" TitleCaps="False" 
+        x:Name="This" DataContext="{Binding ElementName=This}">
+
+  <DockPanel>
+    <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,5,5">
+      <Button IsDefault="True" Name="BtnDialogOk" MinWidth="60" Margin="0,0,10,0">_Ok</Button>
+      <Button IsCancel="True" MinWidth="60">_Cancel</Button>
+    </WrapPanel>
+
+    <userControls:DirectoryList x:Name="DirList" />
+  </DockPanel>
+</controls:MetroWindow>
+

@@ -545,10 +545,15 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+      DirectoryListDialog dld = new DirectoryListDialog {
+        Title = "Folder Keyword Ingnore List",
+        DirList = {SettingsPropertyName = "FolderKeywordIngnoreList"}
+      };
+      dld.ShowDialog();
 
 
-      var path = @"d:\Download\New\!iya";
-      var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
+      //var path = @"d:\Download\New\!iya";
+      //var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
 
       //var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.GetFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
 
