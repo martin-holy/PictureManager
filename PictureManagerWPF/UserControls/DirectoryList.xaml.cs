@@ -49,7 +49,7 @@ namespace PictureManager.UserControls {
 
     private List<string> GetPaths() {
       return ((string) Settings.Default[SettingsPropertyName]).Split(new[] {Environment.NewLine},
-        StringSplitOptions.RemoveEmptyEntries).ToList();
+        StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x).ToList();
     }
 
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {

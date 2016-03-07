@@ -548,15 +548,15 @@ namespace PictureManager {
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
       //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
 
-      using (PmDbContext context = new PmDbContext()) {
+      /*using (PmDbContext context = new PmDbContext()) {
         var mediaItemKeyword = context.MediaItemKeywords;
-      }
+      }*/
 
-      /*DirectoryListDialog dld = new DirectoryListDialog {
+      DirectoryListDialog dld = new DirectoryListDialog {
         Title = "Catalog Folders",
         DirList = {SettingsPropertyName = "CatalogFolders" }
       };
-      dld.ShowDialog();*/
+      dld.ShowDialog();
 
 
       //var path = @"d:\Download\New\!iya";

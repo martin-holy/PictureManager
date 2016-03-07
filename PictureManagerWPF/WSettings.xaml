@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:PictureManager"
         xmlns:p="clr-namespace:PictureManager.Properties"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:userControls="clr-namespace:PictureManager.UserControls"
         mc:Ignorable="d"
         Title="Settings" 
         Height="300" 
@@ -22,7 +22,6 @@
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
-      <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="28" />
@@ -32,23 +31,21 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Label Grid.Row="0" Grid.Column="0" Content="Cache path:"/>
-    <Label Grid.Row="1" Grid.Column="0" Content="Favorite folders:"/>
-    <Label Grid.Row="2" Grid.Column="0" Content="Folder keyword ignore list:"/>
-    <Label Grid.Row="3" Grid.Column="0" Content="Jpeg quality level:"/>
-    <Label Grid.Row="4" Grid.Column="0" Content="Thumbnail size:"/>
+    <Label Grid.Row="1" Grid.Column="0" Content="Folder keyword ignore list:"/>
+    <Label Grid.Row="2" Grid.Column="0" Content="Jpeg quality level:"/>
+    <Label Grid.Row="3" Grid.Column="0" Content="Thumbnail size:"/>
 
     <TextBox Grid.Column="1" Grid.Row="0" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=CachePath, Mode=TwoWay}" />
-    <TextBox Grid.Column="1" Grid.Row="1" Margin="3" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="{Binding Source={x:Static p:Settings.Default}, Path=FolderFavorites, Mode=TwoWay}" />
-    <TextBox Grid.Column="1" Grid.Row="2" Margin="3" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" Text="{Binding Source={x:Static p:Settings.Default}, Path=FolderKeywordIngnoreList, Mode=TwoWay}" />
-    <DockPanel Grid.Column="1" Grid.Row="3">
+    <userControls:DirectoryList Grid.Column="1" Grid.Row="1" Margin="3" x:Name="DirListFkIgnoreList" />
+    <DockPanel Grid.Column="1" Grid.Row="2">
       <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}" />
       <Slider Margin="3" Minimum="80" Maximum="95" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}"/>
     </DockPanel>
-    <DockPanel Grid.Column="1" Grid.Row="4">
+    <DockPanel Grid.Column="1" Grid.Row="3">
       <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}" />
       <Slider Margin="3" Minimum="200" Maximum="500" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}"/>
     </DockPanel>
-    <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 3, 0">
+    <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 3, 0">
       <Button Margin="3, 0, 0, 3" Content="Save" Click="ButtonBase_OnClick" />
       <Button Margin="3, 0, 0, 3" Content="Cancel" IsCancel="True" />
     </StackPanel>
