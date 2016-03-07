@@ -18,7 +18,7 @@ namespace PictureManager.Data {
         ? FullPath.Substring(0, FullPath.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + newName
         : newName;
       Title = newName;
-      db.Execute($"update Keywords set Keyword = \"{FullPath}\" where Id = {Id}");
+      db.Execute($"update Keywords set Name = \"{FullPath}\" where Id = {Id}");
     }
   }
 }

@@ -16,7 +16,7 @@ namespace PictureManager.Data {
     public void Load() {
       Items.Clear();
 
-      foreach (DataRow row in Db.Select("select Id, Keyword, Idx from Keywords order by Idx, Keyword")) {
+      foreach (DataRow row in Db.Select("select Id, Name, Idx from Keywords order by Idx, Name")) {
         Keyword newItem = new Keyword {
           Id = (int) (long) row[0],
           Index = (int) (long) row[2],
@@ -81,7 +81,7 @@ namespace PictureManager.Data {
 
     public Keyword CreateKeyword(ObservableCollection<Keyword> root, Keyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
-      if (!Db.Execute($"insert into Keywords (Keyword) values ('{kFullPath}')")) return null;
+      if (!Db.Execute($"insert into Keywords (Name) values ('{kFullPath}')")) return null;
       var keyId = Db.GetLastIdFor("Keywords");
       if (keyId == null) return null;
       Keyword newKeyword = new Keyword {

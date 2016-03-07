@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Linq;
 using System.Data.SQLite;
 
 namespace PictureManager {
@@ -97,7 +98,7 @@ namespace PictureManager {
 
       Execute("CREATE TABLE IF NOT EXISTS \"Keywords\"("
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[Keyword] nvarchar(128) NOT NULL COLLATE NOCASE"
+              + ",[Name] nvarchar(128) NOT NULL COLLATE NOCASE"
               + ",[Idx] integer NOT NULL DEFAULT 0);");
 
       Execute("CREATE TABLE IF NOT EXISTS \"MediaItemKeyword\"("
@@ -122,10 +123,6 @@ namespace PictureManager {
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[MediaItemId] integer NOT NULL"
               + ",[PersonId] integer NOT NULL); ");
-
-      Execute("CREATE TABLE IF NOT EXISTS \"FavoriteFolders\"("
-              + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
-              + ",[Path] nvarchar(256) NOT NULL COLLATE NOCASE); ");
     }
   }
 }

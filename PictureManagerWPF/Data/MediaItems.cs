@@ -127,7 +127,7 @@ namespace PictureManager.Data {
       if (!string.IsNullOrEmpty(keywordsOut))
         sqlList.Add($"select MediaItemId from MediaItemKeyword where MediaItemId not in (select MediaItemId from MediaItemKeyword where KeywordId in ({keywordsOut}))");
       if (ACore.LastSelectedSourceRecursive && ACore.LastSelectedSource is Keyword)
-        sqlList.Add($"select MediaItemId from MediaItemKeyword where KeywordId in (select Id from Keywords where Keyword like \"{((Keyword)ACore.LastSelectedSource).FullPath}%\")");
+        sqlList.Add($"select MediaItemId from MediaItemKeyword where KeywordId in (select Id from Keywords where Name like \"{((Keyword)ACore.LastSelectedSource).FullPath}%\")");
       var folderKeyword = ACore.LastSelectedSource as FolderKeyword;
       if (!string.IsNullOrEmpty(folderKeyword?.FolderIds))
         sqlList.Add($"select Id from MediaItems where DirectoryId in ({folderKeyword.FolderIds})");

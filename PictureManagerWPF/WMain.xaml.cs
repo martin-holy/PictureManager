@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PictureManager.DataModel;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
@@ -545,11 +546,17 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
-      DirectoryListDialog dld = new DirectoryListDialog {
-        Title = "Folder Keyword Ingnore List",
-        DirList = {SettingsPropertyName = "FolderKeywordIngnoreList"}
+      //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
+
+      using (PmDbContext context = new PmDbContext()) {
+        var mediaItemKeyword = context.MediaItemKeywords;
+      }
+
+      /*DirectoryListDialog dld = new DirectoryListDialog {
+        Title = "Catalog Folders",
+        DirList = {SettingsPropertyName = "CatalogFolders" }
       };
-      dld.ShowDialog();
+      dld.ShowDialog();*/
 
 
       //var path = @"d:\Download\New\!iya";

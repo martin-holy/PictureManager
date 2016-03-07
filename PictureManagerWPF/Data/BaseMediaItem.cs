@@ -93,8 +93,8 @@ namespace PictureManager.Data {
 
     public void LoadKeywordsFromDb(Keywords keywords) {
       Keywords.Clear();
-      string sql = "select K.Id, K.Keyword from Keywords as K " +
-                   $"where K.Id in (select KeywordId from MediaItemKeyword where MediaItemId = {Id}) order by Keyword";
+      string sql = "select K.Id, K.Name from Keywords as K " +
+                   $"where K.Id in (select KeywordId from MediaItemKeyword where MediaItemId = {Id}) order by K.Name";
       foreach (DataRow row in Db.Select(sql)) {
         Keywords.Add(keywords.GetKeywordByFullPath((string)row[1], false));
       }
