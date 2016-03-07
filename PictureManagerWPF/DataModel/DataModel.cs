@@ -13,6 +13,7 @@ namespace PictureManager.DataModel {
     public DbSet<MediaItemPerson> MediaItemPeople { get; set; }
     public DbSet<MediaItem> MediaItems { get; set; }
     public DbSet<Person> People { get; set; }
+    public DbSet<PeopleGroup> PeopleGroups { get; set; }
   }
 
   [Table(Name = "Directories")]
@@ -104,7 +105,16 @@ namespace PictureManager.DataModel {
     [Column(Name = "Name")]
     public string Name { get; set; }
 
-    [Column(Name = "Idx")]
-    public int Idx { get; set; }
+    [Column(Name = "PeopleGroupId")]
+    public int PeopleGroupId { get; set; }
+  }
+
+  [Table(Name = "PeopleGroups")]
+  public class PeopleGroup {
+    [Column(Name = "Id")]
+    public int Id { get; set; }
+
+    [Column(Name = "Name")]
+    public string Name { get; set; }
   }
 }

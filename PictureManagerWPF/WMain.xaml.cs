@@ -258,11 +258,23 @@ namespace PictureManager {
     }
 
     private void CmdPersonRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRename(this, e.Parameter as Data.Person, true);
+      ACore.People.NewOrRename(this, (Data.Person)e.Parameter, true);
     }
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
       ACore.People.DeletePerson((Data.Person) e.Parameter);
+    }
+
+    private void CmdPeopleGroupNew(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.NewOrRenameGroup(this, null, false);
+    }
+
+    private void CmdPeopleGroupRename(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.NewOrRenameGroup(this, (Data.PeopleGroup)e.Parameter, true);
+    }
+
+    private void CmdPeopleGroupDelete(object sender, ExecutedRoutedEventArgs e) {
+      ACore.People.DeletePeopleGroup((Data.PeopleGroup)e.Parameter);
     }
 
     private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
@@ -609,8 +621,8 @@ namespace PictureManager {
         e.Handled = true;
       } else if (e.Data.GetDataPresent(typeof(Data.Person))) {
         var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
-        var destData = (Data.Person)((StackPanel)sender).DataContext;
-        if (srcData != null && destData != null && srcData != destData) return;
+        var destData = ((StackPanel)sender).DataContext as Data.PeopleGroup;
+        if (srcData != null && destData != null) return;
         e.Effects = DragDropEffects.None;
         e.Handled = true;
       }
@@ -641,24 +653,19 @@ namespace PictureManager {
         }
       } else if (e.Data.GetDataPresent(typeof (Data.Person))) {
         var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
-        var destData = (Data.Person)panel.DataContext;
+        var destData = (Data.PeopleGroup)panel.DataContext;
         if (srcData == null || destData == null) return;
-        var items = ACore.People.Items;
-        var destIndex = items.IndexOf(destData);
-        var srcIndex = items.IndexOf(srcData);
-        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
-        int newIndex;
-        if (srcIndex > destIndex) {
-          newIndex = dropOnTop ? destIndex : destIndex + 1;
+        if (srcData.PeopleGroupId == destData.Id) return;
+        if (srcData.PeopleGroupId != -1) {
+          var oldGroup =
+            ACore.People.Items.FirstOrDefault(x => x is Data.PeopleGroup && ((Data.PeopleGroup) x).Id == srcData.PeopleGroupId);
+          ((Data.PeopleGroup) @oldGroup)?.Items.Remove(srcData);
         } else {
-          newIndex = dropOnTop ? destIndex - 1 : destIndex;
+          ACore.People.Items.Remove(srcData);
         }
-        items.Move(items.IndexOf(srcData), newIndex);
-
-        for (var i = 0; i < items.Count; i++) {
-          items[i].Index = i;
-          ACore.Db.Execute($"update People set Idx={i} where Id={items[i].Id}");
-        }
+        srcData.PeopleGroupId = destData.Id;
+        destData.Items.Add(srcData);
+        ACore.Db.Execute($"update People set PeopleGroupId = {destData.Id} where Id = {srcData.Id}");
       }
     }
 
@@ -762,6 +769,12 @@ namespace PictureManager {
         }
         case nameof(Data.People): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonNew"], CommandParameter = item});
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupNew"], CommandParameter = item });
+          break;
+        }
+        case nameof(Data.PeopleGroup): {
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupRename"], CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupDelete"], CommandParameter = item });
           break;
         }
         case nameof(Data.Filters): {

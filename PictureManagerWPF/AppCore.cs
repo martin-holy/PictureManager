@@ -102,7 +102,7 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is Keywords || item is People || item is FolderKeywords || item is Ratings) return;
+      if (item is Keywords || item is People || item is FolderKeywords || item is Ratings || item is PeopleGroup) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {

@@ -105,6 +105,9 @@
     <RoutedUICommand x:Key="PersonNew" Text="New" />
     <RoutedUICommand x:Key="PersonRename" Text="Rename" />
     <RoutedUICommand x:Key="PersonDelete" Text="Delete" />
+    <RoutedUICommand x:Key="PeopleGroupNew" Text="New Group" />
+    <RoutedUICommand x:Key="PeopleGroupRename" Text="Rename" />
+    <RoutedUICommand x:Key="PeopleGroupDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderNew" Text="New folder" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
@@ -123,6 +126,9 @@
     <CommandBinding Command="{StaticResource PersonNew}" Executed="CmdPersonNew" />
     <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdPersonRename" />
     <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
+    <CommandBinding Command="{StaticResource PeopleGroupNew}" Executed="CmdPeopleGroupNew" />
+    <CommandBinding Command="{StaticResource PeopleGroupRename}" Executed="CmdPeopleGroupRename" />
+    <CommandBinding Command="{StaticResource PeopleGroupDelete}" Executed="CmdPeopleGroupDelete" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
@@ -278,6 +284,15 @@
               <!-- TreeView Keywords - FolderKeyword -->
               <HierarchicalDataTemplate DataType="{x:Type data:FolderKeyword}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Keywords - PeopleGroup -->
+              <HierarchicalDataTemplate DataType="{x:Type data:PeopleGroup}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />

@@ -105,6 +105,7 @@
     <Compile Include="Data\Keywords.cs" />
     <Compile Include="Data\MediaItems.cs" />
     <Compile Include="Data\People.cs" />
+    <Compile Include="Data\PeopleGroup.cs" />
     <Compile Include="Data\Person.cs" />
     <Compile Include="Data\Picture.cs" />
     <Compile Include="Data\Rating.cs" />
