@@ -67,6 +67,7 @@ namespace PictureManager {
 
 
       //TODO: BeginUpdate and EndUpdate na fullPic, nebo to udelat vsechno pres style
+	  //nebo to zkusit pres display none
       fullPic.SetAttribute("src", filePath);
       fullPic.Style = string.Empty;
       if (current != null) {

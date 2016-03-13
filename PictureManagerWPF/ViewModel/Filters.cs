@@ -1,16 +1,18 @@
 ﻿using System.Collections.ObjectModel;
 
-namespace PictureManager.Data {
-  public class Filters: BaseItem {
+namespace PictureManager.ViewModel {
+  public class Filters: BaseTreeViewItem {
     public ObservableCollection<Filter> Items { get; set; }
-    public DbStuff Db;
+    public DataModel.PmDataContext Db;
 
     public Filters() {
       Items = new ObservableCollection<Filter>();
+      Title = "Filters";
+      IconName = "appbar_filter";
     }
 
     public void Load() {
-      Filter.GetSubFilters(false, Items, Db, null);
+      Filter.GetSubFilters(false, Items, null, Db);
       IsExpanded = true;
     }
   }

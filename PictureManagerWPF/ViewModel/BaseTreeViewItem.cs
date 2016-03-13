@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PictureManager.Data {
-  public class BaseItem:INotifyPropertyChanged {
+namespace PictureManager.ViewModel {
+  public class BaseTreeViewItem : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
     public void OnPropertyChanged([CallerMemberName] string name = "") {

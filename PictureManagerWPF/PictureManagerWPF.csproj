@@ -38,32 +38,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MahApps.Metro, Version=1.2.4.0, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.1.2.4.0\lib\net45\MahApps.Metro.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.99.0\lib\net46\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data.SQLite.EF6, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.EF6.1.0.99.0\lib\net46\System.Data.SQLite.EF6.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.99.0\lib\net46\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Drawing" />
@@ -71,7 +54,6 @@
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
@@ -89,28 +71,18 @@
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="DataModel\DataModel.cs" />
-    <Compile Include="Data\AppInfo.cs" />
-    <Compile Include="Data\BaseItem.cs" />
-    <Compile Include="Data\BaseMediaItem.cs" />
-    <Compile Include="Data\BaseTagItem.cs" />
-    <Compile Include="Data\FavoriteFolder.cs" />
-    <Compile Include="Data\FavoriteFolders.cs" />
-    <Compile Include="Data\Filter.cs" />
-    <Compile Include="Data\Filters.cs" />
-    <Compile Include="Data\Folder.cs" />
-    <Compile Include="Data\FolderKeyword.cs" />
-    <Compile Include="Data\FolderKeywords.cs" />
-    <Compile Include="Data\Folders.cs" />
-    <Compile Include="Data\Keyword.cs" />
-    <Compile Include="Data\Keywords.cs" />
-    <Compile Include="Data\MediaItems.cs" />
-    <Compile Include="Data\People.cs" />
-    <Compile Include="Data\PeopleGroup.cs" />
-    <Compile Include="Data\Person.cs" />
-    <Compile Include="Data\Picture.cs" />
-    <Compile Include="Data\Rating.cs" />
-    <Compile Include="Data\Ratings.cs" />
-    <Compile Include="DbStuff.cs" />
+    <Compile Include="ViewModel\AppInfo.cs" />
+    <Compile Include="ViewModel\BaseMediaItem.cs" />
+    <Compile Include="ViewModel\FavoriteFolder.cs" />
+    <Compile Include="ViewModel\FavoriteFolders.cs" />
+    <Compile Include="ViewModel\Filter.cs" />
+    <Compile Include="ViewModel\Filters.cs" />
+    <Compile Include="ViewModel\Folder.cs" />
+    <Compile Include="ViewModel\FolderKeyword.cs" />
+    <Compile Include="ViewModel\FolderKeywords.cs" />
+    <Compile Include="ViewModel\Folders.cs" />
+    <Compile Include="ViewModel\MediaItems.cs" />
+    <Compile Include="ViewModel\Picture.cs" />
     <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
       <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
     </Compile>
@@ -133,6 +105,15 @@
       <DependentUpon>DirectoryList.xaml</DependentUpon>
     </Compile>
     <Compile Include="VersionInfo.cs" />
+    <Compile Include="ViewModel\BaseTreeViewItem.cs" />
+    <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
+    <Compile Include="ViewModel\Keyword.cs" />
+    <Compile Include="ViewModel\Keywords.cs" />
+    <Compile Include="ViewModel\People.cs" />
+    <Compile Include="ViewModel\PeopleGroup.cs" />
+    <Compile Include="ViewModel\Person.cs" />
+    <Compile Include="ViewModel\Rating.cs" />
+    <Compile Include="ViewModel\Ratings.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
     </Compile>
@@ -153,9 +134,6 @@
     </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WTestThumbnailGallery.xaml.cs">
-      <DependentUpon>WTestThumbnailGallery.xaml</DependentUpon>
     </Compile>
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
@@ -213,10 +191,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WTestThumbnailGallery.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -244,9 +218,12 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="ViewModel\ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="html\FullPic.html" />

@@ -3,12 +3,14 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using PictureManager.Properties;
 
-namespace PictureManager.Data {
-  public class FavoriteFolders : BaseItem {
+namespace PictureManager.ViewModel {
+  public class FavoriteFolders : BaseTreeViewItem {
     public ObservableCollection<FavoriteFolder> Items { get; set; }
 
     public FavoriteFolders() {
       Items = new ObservableCollection<FavoriteFolder>();
+      Title = "Favorites";
+      IconName = "appbar_folder_star";
     }
 
     public void Load() {

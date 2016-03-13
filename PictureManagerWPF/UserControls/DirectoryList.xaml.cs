@@ -23,8 +23,8 @@ namespace PictureManager.UserControls {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public ObservableCollection<Data.BaseItem> FoldersRoot;
-    public Data.Folders Folders;
+    public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
+    public ViewModel.Folders Folders;
 
     private string _settingsPropertyName;
     public string SettingsPropertyName {
@@ -42,8 +42,8 @@ namespace PictureManager.UserControls {
     public DirectoryList() {
       InitializeComponent();
 
-      Folders = new Data.Folders { Title = "Folders", IconName = "appbar_folder" };
-      FoldersRoot = new ObservableCollection<Data.BaseItem> { Folders };
+      Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
+      FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       ItemsSource = FoldersRoot;
     }
 
@@ -62,12 +62,12 @@ namespace PictureManager.UserControls {
       ContextMenu menu = new ContextMenu {Tag = item};
 
       switch (item.GetType().Name) {
-        case nameof(Data.Folders): {
+        case nameof(ViewModel.Folders): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAdd"], CommandParameter = item});
           break;
         }
-        case nameof(Data.Folder): {
-          if (((Data.Folder) item).Parent == null) {
+        case nameof(ViewModel.Folder): {
+          if (((ViewModel.Folder) item).Parent == null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemove"], CommandParameter = item});
           }
           break;
@@ -83,7 +83,7 @@ namespace PictureManager.UserControls {
       Folders.Items.Clear();
       foreach (var path in paths) {
         DirectoryInfo di = new DirectoryInfo(path);
-        Data.Folder item = new Data.Folder {
+        ViewModel.Folder item = new ViewModel.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = "appbar_folder",
@@ -91,7 +91,7 @@ namespace PictureManager.UserControls {
         };
         try {
           if (di.GetDirectories().Length > 0)
-            item.Items.Add(new Data.Folder { Title = "..." });
+            item.Items.Add(new ViewModel.Folder { Title = "..." });
         } catch (UnauthorizedAccessException) {
           item.IconName = "appbar_folder_lock";
           item.IsAccessible = false;
@@ -116,7 +116,7 @@ namespace PictureManager.UserControls {
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {
-      var folder = e.Parameter as Data.Folder;
+      var folder = e.Parameter as ViewModel.Folder;
       if (folder == null) return;
       var paths = GetPaths();
       paths.Remove(folder.FullPath);

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -11,7 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 
-namespace PictureManager.Data {
+namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -38,25 +37,33 @@ namespace PictureManager.Data {
     public string Comment;
     public string CommentEscaped => Comment?.Replace("'", "''");
     public int Index;
-    public int Id;
-    public int DirId;
-    public int Rating;
-    public int Orientation;
+    public long Id;
+    public long DirId;
+    public long Rating;
+    public long Orientation;
     public bool IsModifed;
-    public DbStuff Db;
+    public DataModel.PmDataContext Db;
+    public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
     public WebBrowser WbThumbs;
 
-    public BaseMediaItem(string filePath, DbStuff db, int index, WebBrowser wbThumbs) {
+    public BaseMediaItem(string filePath, DataModel.PmDataContext db, int index, WebBrowser wbThumbs, DataModel.MediaItem data) {
       FilePath = filePath;
       Db = db;
       Index = index;
       WbThumbs = wbThumbs;
-      Id = -1;
-      DirId = -1;
+
+      if (data == null) return;
+      Id = data.Id;
+      DirId = data.DirectoryId;
+      Comment = data.Comment;
+      Rating = data.Rating;
+      Orientation = data.Orientation;
+      Data = data;
     }
+
 
     public string GetKeywordsAsString() {
       StringBuilder sb = new StringBuilder();
@@ -91,48 +98,63 @@ namespace PictureManager.Data {
       return sb.ToString();
     }
 
-    public void LoadKeywordsFromDb(Keywords keywords) {
+    private void LoadKeywordsFromDb(Keywords keywords) {
       Keywords.Clear();
-      string sql = "select K.Id, K.Name from Keywords as K " +
-                   $"where K.Id in (select KeywordId from MediaItemKeyword where MediaItemId = {Id}) order by K.Name";
-      foreach (DataRow row in Db.Select(sql)) {
-        Keywords.Add(keywords.GetKeywordByFullPath((string)row[1], false));
+      var ks = from mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
+        join k in Db.Keywords on mik.KeywordId equals k.Id
+        select k.Name;
+      foreach (var k in ks) {
+        Keywords.Add(keywords.GetKeywordByFullPath(k, false));
       }
     }
 
-    public void LoadPeopleFromDb(People people) {
+    private void LoadPeopleFromDb(People people) {
       People.Clear();
-      string sql = "select P.Id, P.Name from People as P " +
-                   $"where P.Id in (select PersonId from MediaItemPerson where MediaItemId = {Id}) order by Name";
-      foreach (DataRow row in Db.Select(sql)) {
-        People.Add(people.GetPersonById((int)(long)row[0]));
+      var ps = from mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
+        join p in Db.People on mip.PersonId equals p.Id
+        select p;
+      foreach (var p in ps) {
+        People.Add(people.GetPerson(p.Id, p.PeopleGroupId));
       }
     }
 
-    public void LoadFromDb(AppCore aCore) {
-      var result = Db.Select($"select Id, Rating, Comment, Orientation from MediaItems where DirectoryId = {DirId} and FileName = '{FileNameWithExt}'");
-      if (result != null && result.Count == 1) {
-        Id = (int)(long)result[0][0];
-        Rating = (int)(long)result[0][1];
-        Comment = (string)result[0][2];
-        Orientation = (int)(long)result[0][3];
+    public void LoadFromDb(AppCore aCore, DataModel.MediaItem mi) {
+      if (mi == null)
+        mi = Db.MediaItems.SingleOrDefault(x => x.DirectoryId == DirId && x.FileName == FileNameWithExt);
+      if (mi != null) {
+        if (Data == null) {
+          Data = mi;
+          Id = mi.Id;
+          Rating = mi.Rating;
+          Comment = mi.Comment;
+          Orientation = mi.Orientation;
+        }
+        FolderKeyword = aCore.FolderKeywords.GetFolderKeywordByFullPath(Path.GetDirectoryName(FilePath));
         LoadKeywordsFromDb(aCore.Keywords);
         LoadPeopleFromDb(aCore.People);
       } else {
-        SaveMediaItemInToDb(aCore, false);
+        SaveMediaItemInToDb(aCore, false, true);
       }
     }
 
-    public void SaveMediaItemInToDb(AppCore aCore, bool update) {
-      if (Id == -1) {
+    public void SaveMediaItemInToDb(AppCore aCore, bool update, bool isNew) {
+      if (isNew) {
         ReadMetadata(aCore);
-        if (Db.Execute($"insert into MediaItems (DirectoryId, FileName, Rating, Comment, Orientation) values ({DirId}, '{FileNameWithExt}', {Rating}, '{CommentEscaped}', {Orientation})")) {
-          var id = Db.GetLastIdFor("MediaItems");
-          if (id != null) Id = (int)id;
-        }
+        Data = new DataModel.MediaItem {
+          Id = Db.GetNextIdFor("MediaItems"),
+          DirectoryId = DirId,
+          FileName = FileNameWithExt,
+          Rating = Rating,
+          Comment = Comment,
+          Orientation = Orientation
+        };
+        Db.MediaItems.InsertOnSubmit(Data);
       } else {
         if (update) ReadMetadata(aCore);
-        Db.Execute($"update MediaItems set Rating = {Rating}, Comment = '{CommentEscaped}', Orientation = {Orientation} where Id = {Id}");
+        Data.Rating = Rating;
+        Data.Comment = CommentEscaped;
+        Data.Orientation = Orientation;
+        Db.MediaItems.Context.SubmitChanges();
       }
 
       SaveMediaItemKeywordsToDb();
@@ -140,48 +162,45 @@ namespace PictureManager.Data {
     }
 
     public void SaveMediaItemKeywordsToDb() {
-      if (Keywords.Count == 0) {
-        Db.Execute($"delete from MediaItemKeyword where MediaItemId = {Id}");
-        return;
-      }
       //Update connection between Keywords and MediaItem
-      List<int> keyIds = Keywords.Select(k => k.Id).ToList();
-      string keyIdss = keyIds.Aggregate("", (current, id) => current + (id + ","));
-      keyIdss = keyIdss.Remove(keyIdss.Length - 1);
-      Db.Execute($"delete from MediaItemKeyword where MediaItemId = {Id} and KeywordId not in ({keyIdss})");
-
-      //Select existing Keywords for MediaItem
-      foreach (DataRow row in Db.Select($"select KeywordId from MediaItemKeyword where MediaItemId = {Id}")) {
-        keyIds.Remove((int)(long)row[0]);
+      var keyIds = Keywords.Select(k => k.Id).ToList();
+      foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
+        if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
+          Db.MediaItemKeywords.DeleteOnSubmit(mik);
+        else 
+          keyIds.Remove(mik.KeywordId);
       }
-
       //Insert new Keywords to MediaItem
       foreach (var keyId in keyIds) {
-        Db.Execute($"insert into MediaItemKeyword (MediaItemId, KeywordId) values ({Id}, {keyId})");
+        Db.MediaItemKeywords.InsertOnSubmit(new DataModel.MediaItemKeyword {
+          Id = Db.GetNextIdFor("MediaItemKeyword"),
+          KeywordId = keyId,
+          MediaItemId = Id
+        });
       }
+
+      Db.MediaItemKeywords.Context.SubmitChanges();
     }
 
     public void SaveMediaItemPeopleInToDb() {
-      if (People.Count == 0) {
-        Db.Execute($"delete from MediaItemPerson where MediaItemId = {Id}");
-        return;
-      }
-
       //Update connection between People and MediaItem
-      List<int> ids = People.Select(p => p.Id).ToList();
-      var idss = ids.Aggregate("", (current, id) => current + (id + ","));
-      idss = idss.Remove(idss.Length - 1);
-      Db.Execute($"delete from MediaItemPerson where MediaItemId = {Id} and PersonId not in ({idss})");
-
-      //Select existing People for MediaItem and remove them from inserting
-      foreach (DataRow row in Db.Select($"select PersonId from MediaItemPerson where MediaItemId = {Id}")) {
-        ids.Remove((int)(long)row[0]);
+      var ids = People.Select(p => p.Id).ToList();
+      foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
+        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null)
+          Db.MediaItemPeople.DeleteOnSubmit(mip);
+        else
+          ids.Remove(mip.PersonId);
       }
-
       //Insert new People to MediaItem
       foreach (var id in ids) {
-        Db.Execute($"insert into MediaItemPerson (MediaItemId, PersonId) values ({Id}, {id})");
+        Db.MediaItemPeople.InsertOnSubmit(new DataModel.MediaItemPerson {
+          Id = Db.GetNextIdFor("MediaItemPerson"),
+          PersonId = id,
+          MediaItemId = Id
+        });
       }
+
+      Db.MediaItemPeople.Context.SubmitChanges();
     }
 
     public bool WriteMetadata() {
@@ -234,7 +253,7 @@ namespace PictureManager.Data {
               metadata.SetQuery(microsoftRegionInfo, allPeople);
 
 
-            metadata.Rating = Rating;
+            metadata.Rating = (int) Rating;
             metadata.Comment = Comment;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
 
@@ -276,7 +295,7 @@ namespace PictureManager.Data {
             foreach (string region in regions) {
               var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
               if (personDisplayName != null) {
-                People.Add(aCore.People.GetPersonByName(personDisplayName.ToString(), true));
+                People.Add(aCore.People.GetPerson(personDisplayName.ToString(), true));
               }
             }
           }

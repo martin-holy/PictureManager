@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PictureManager.Data {
+namespace PictureManager.ViewModel {
   public class AppInfo : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 

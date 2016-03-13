@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -76,7 +75,7 @@ namespace PictureManager {
 
     private void compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
-      var mis = (List<Data.BaseMediaItem>) e.Argument;
+      var mis = (List<ViewModel.BaseMediaItem>) e.Argument;
       var count = mis.Count;
       var done = 0;
       const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;

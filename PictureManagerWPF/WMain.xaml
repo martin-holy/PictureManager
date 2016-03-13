@@ -3,10 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:data="clr-namespace:PictureManager.Data"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:pm="clr-namespace:PictureManager"
+        xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
         mc:Ignorable="d"
         Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
         Loaded="Window_Loaded" 
@@ -85,13 +85,15 @@
 
     <!-- TreeViewKeywordsStackPanel -->
     <Style x:Key="TreeViewKeywordsStackPanel" TargetType="StackPanel" BasedOn="{StaticResource TreeViewStackPanel}">
-      <EventSetter Event="PreviewMouseUp" Handler="TreeViewKeywords_Select" />
+      <EventSetter Event="PreviewMouseUp" Handler="TvKeywords_Select" />
     </Style>
 
     <!-- TreeViewKeywordsStackPanelWithDragDrop -->
     <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewKeywordsStackPanel}" TargetType="StackPanel">
       <Setter Property="AllowDrop" Value="True" />
       <EventSetter Event="Drop" Handler="TvKeywords_OnDrop" />
+      <EventSetter Event="MouseLeftButtonDown" Handler="TvKeywords_OnMouseLeftButtonDown" />
+      <EventSetter Event="MouseLeftButtonUp" Handler="TvKeywords_OnMouseLeftButtonUp" />
       <EventSetter Event="MouseMove" Handler="TvKeywords_OnMouseMove" />
       <EventSetter Event="DragEnter" Handler="TvKeywords_AllowDropCheck" />
       <EventSetter Event="DragLeave" Handler="TvKeywords_AllowDropCheck" />
@@ -113,6 +115,7 @@
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
+    <RoutedUICommand x:Key="FolderKeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FilterNew" Text="New" />
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
     <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
@@ -134,6 +137,7 @@
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
+    <CommandBinding Command="{StaticResource FolderKeywordShowAll}" Executed="CmdFolderKeywordShowAll" />
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
@@ -218,20 +222,22 @@
 
             <TreeView.Resources>
               <!-- TreeView Folders - BaseItem (Category) -->
-              <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" 
                             PreviewMouseRightButtonDown="AttachContextMenu" 
-                            PreviewMouseUp="TreeViewFolders_Select">
+                            PreviewMouseUp="TvFolders_Select">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
 
               <!-- TreeView Folders - Folder -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" AllowDrop="True"
+                            MouseLeftButtonUp="TvFolders_OnMouseLeftButtonUp"
+                            MouseLeftButtonDown="TvFolders_OnMouseLeftButtonDown"
                             PreviewMouseRightButtonDown="AttachContextMenu"
-                            PreviewMouseUp="TreeViewFolders_Select" 
+                            PreviewMouseUp="TvFolders_Select" 
                             Drop="TvFolders_OnDrop" 
                             MouseMove="TvFolders_OnMouseMove" 
                             DragEnter="TvFolders_AllowDropCheck" 
@@ -265,15 +271,15 @@
 
             <TreeView.Resources>
               <!-- TreeView Keywords - BaseItem (Category) -->
-              <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - Keyword -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Keyword}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Keyword}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -282,7 +288,7 @@
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - FolderKeyword -->
-              <HierarchicalDataTemplate DataType="{x:Type data:FolderKeyword}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderKeyword}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -291,7 +297,7 @@
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - PeopleGroup -->
-              <HierarchicalDataTemplate DataType="{x:Type data:PeopleGroup}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:PeopleGroup}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -300,7 +306,7 @@
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - Person -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Person}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Person}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -309,7 +315,7 @@
               </HierarchicalDataTemplate>
 
               <!-- TreeView Keywords - Rating -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Rating}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Rating}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
                   <StackPanel Orientation="Horizontal">
                     <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
@@ -346,7 +352,7 @@
 
             <TreeView.Resources>
               <!-- TreeView Filters - BaseItem (Category) -->
-              <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -354,7 +360,7 @@
               </HierarchicalDataTemplate>
 
               <!-- TreeView Filters - Filter -->
-              <HierarchicalDataTemplate DataType="{x:Type data:Filter}" ItemsSource="{Binding Items}">
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Filter}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />

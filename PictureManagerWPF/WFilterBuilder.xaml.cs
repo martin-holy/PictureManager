@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.IO;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,13 +20,13 @@ namespace PictureManager {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public Data.Filter FiltersTreeItem { get; set; }
+    public ViewModel.Filter FiltersTreeItem { get; set; }
     public string FilterTitle { get { return FiltersTreeItem.Title; } set { FiltersTreeItem.Title = value; OnPropertyChanged(); } }
     public ContextMenu MnuFilterGroupOps;
     public ContextMenu MnuFilterConditionProperties;
     public ContextMenu MnuFilterConditionOps;
 
-    public WFilterBuilder(Data.Filter filtersTreeItem) {
+    public WFilterBuilder(ViewModel.Filter filtersTreeItem) {
       FiltersTreeItem = filtersTreeItem;
       InitializeComponent();
 

@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using PictureManager.Dialogs;
 
-namespace PictureManager.Data {
-  public class Folder: BaseItem {
+namespace PictureManager.ViewModel {
+  public class Folder : BaseTreeViewItem {
     private bool _isAccessible;
 
     public override bool IsExpanded {
@@ -103,7 +103,7 @@ namespace PictureManager.Data {
         Owner = wMain,
         IconName = "appbar_folder",
         Title = rename ? "Rename Folder" : "New Folder",
-        Question = rename ? "Enter new name for folder." : "Enter name of new folder.",
+        Question = rename ? "Enter the new name for the folder." : "Enter the name of the new folder.",
         Answer = rename ? Title : string.Empty
       };
 

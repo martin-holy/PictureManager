@@ -1,32 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using PictureManager.Properties;
 
-namespace PictureManager.Data {
-  public class FolderKeywords: BaseItem {
+namespace PictureManager.ViewModel {
+  public class FolderKeywords: BaseTreeViewItem {
     public ObservableCollection<FolderKeyword> Items { get; set; }
-    public DbStuff Db;
+    public DataModel.PmDataContext Db;
 
     public FolderKeywords() {
       Items = new ObservableCollection<FolderKeyword>();
+      Title = "Folder Keywords";
+      IconName = "appbar_folder";
     }
 
     public void Load() {
       Items.Clear();
-      Dictionary<int, string> paths = new Dictionary<int, string>();
-      const string sql = "select Id, Path from Directories order by Path";
-
-      foreach (DataRow row in Db.Select(sql)) {
-        var id = (int) (long) row[0];
-        var fullPath = (string) row[1];
-
-        var path = GetFolderKeywordKeyPath(fullPath);
+      Dictionary<long, string> paths = new Dictionary<long, string>();
+      foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
+        var path = GetFolderKeywordKeyPath(dir.Path);
         if (string.IsNullOrEmpty(path)) continue;
 
-        paths.Add(id, path);
+        paths.Add(dir.Id, path);
       }
 
       foreach (var keyPath in paths.Select(p => p.Value).Distinct().OrderBy(p => p)) {
@@ -58,7 +54,7 @@ namespace PictureManager.Data {
       return string.Empty;
     }
 
-    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, int dirId) {
+    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, long dirId) {
       foreach (FolderKeyword folderKeyword in items) {
         if (folderKeyword.FolderIdList.Any(fid => fid == dirId)) return folderKeyword;
         var fk = GetFolderKeywordByDirId(folderKeyword.Items, dirId);

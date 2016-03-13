@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -9,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.DataModel;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
@@ -23,6 +21,7 @@ namespace PictureManager {
     private readonly WFullPic _wFullPic;
     public AppCore ACore;
     private Point _dragDropStartPosition;
+    private object _dragDropObject;
 
     public WMain(string picFile) {
       System.Windows.Forms.Application.EnableVisualStyles();
@@ -53,7 +52,7 @@ namespace PictureManager {
       WbThumbs.Document.Body.KeyDown += WbThumbs_KeyDown;
     }
 
-    private void WbThumbs_KeyDown(object sender, System.Windows.Forms.HtmlElementEventArgs e) {
+    private void WbThumbs_KeyDown(object sender, HtmlElementEventArgs e) {
       if (e.KeyPressedCode == 46) {//Delete 
         var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)
@@ -134,7 +133,7 @@ namespace PictureManager {
       if (File.Exists(_argPicFile)) {
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
-        ACore.MediaItems.Items.Add(new Data.Picture(_argPicFile, ACore.Db, 0, WbThumbs));
+        ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, ACore.Db, 0, WbThumbs, null));
         ACore.MediaItems.Items[0].IsSelected = true;
         ShowFullPicture();
       } else {
@@ -177,36 +176,33 @@ namespace PictureManager {
       ACore.UpdateStatusBarInfo();
     }
 
-    private void TreeViewKeywords_Select(object sender, MouseButtonEventArgs e) {
+    private void TvKeywords_Select(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;
 
       if (e.ChangedButton != MouseButton.Right) {
-        _dragDropStartPosition = e.GetPosition(null);
         ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
     }
 
-    private void TreeViewFolders_Select(object sender, MouseButtonEventArgs e) {
+    private void TvFolders_Select(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;
       object item = stackPanel.DataContext;
 
       if (e.ChangedButton == MouseButton.Left) {
         switch (item.GetType().Name) {
-          case nameof(Data.Folders):
-          case nameof(Data.FavoriteFolders): {
-            ((Data.BaseItem) item).IsSelected = false;
+          case nameof(ViewModel.Folders):
+          case nameof(ViewModel.FavoriteFolders): {
+            ((ViewModel.BaseTreeViewItem) item).IsSelected = false;
             break;
           }
-          case nameof(Data.Folder): {
-            var folder = (Data.Folder) item;
+          case nameof(ViewModel.Folder): {
+            var folder = (ViewModel.Folder) item;
             if (!folder.IsAccessible) {
               folder.IsSelected = false;
               return;
             }
-
-            _dragDropStartPosition = e.GetPosition(null);
 
             folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
@@ -221,8 +217,8 @@ namespace PictureManager {
             ACore.InitThumbsPagesControl();
             break;
           }
-          case nameof(Data.FavoriteFolder): {
-            var folder = ACore.Folders.ExpandTo(((Data.FavoriteFolder) item).FullPath);
+          case nameof(ViewModel.FavoriteFolder): {
+            var folder = ACore.Folders.ExpandTo(((ViewModel.FavoriteFolder) item).FullPath);
             if (folder != null) {
               var visibleTreeIndex = 0;
               ACore.Folders.GetVisibleTreeIndexFor(ACore.Folders.Items, folder, ref visibleTreeIndex);
@@ -241,28 +237,34 @@ namespace PictureManager {
     }
 
     private void CmdKeywordNew(object sender, ExecutedRoutedEventArgs e) {
-      var keyword = e.Parameter as Data.Keyword;
-      var keywords = e.Parameter as Data.Keywords;
+      var keyword = e.Parameter as ViewModel.Keyword;
+      var keywords = e.Parameter as ViewModel.Keywords;
       if (keyword == null && keywords == null) return;
       ACore.Keywords.NewOrRename(this, keywords != null ? keywords.Items : keyword.Items, keyword, false);
     }
 
     private void CmdKeywordRename(object sender, ExecutedRoutedEventArgs e) {
-      var keyword = e.Parameter as Data.Keyword;
+      var keyword = e.Parameter as ViewModel.Keyword;
       if (keyword == null) return;
       ACore.Keywords.NewOrRename(this, keyword.Items, keyword, true);
     }
 
+    private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Keywords.DeleteKeyword((ViewModel.Keyword) e.Parameter);
+    }
+
     private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRename(this, null, false);
+      ACore.People.NewOrRenamePerson(this, null, e.Parameter as ViewModel.PeopleGroup, false);
     }
 
     private void CmdPersonRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRename(this, (Data.Person)e.Parameter, true);
+      ACore.People.NewOrRenamePerson(this, (ViewModel.Person) e.Parameter, null, true);
     }
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.DeletePerson((Data.Person) e.Parameter);
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes)
+        ACore.People.DeletePerson((ViewModel.Person) e.Parameter);
     }
 
     private void CmdPeopleGroupNew(object sender, ExecutedRoutedEventArgs e) {
@@ -270,16 +272,18 @@ namespace PictureManager {
     }
 
     private void CmdPeopleGroupRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRenameGroup(this, (Data.PeopleGroup)e.Parameter, true);
+      ACore.People.NewOrRenameGroup(this, (ViewModel.PeopleGroup) e.Parameter, true);
     }
 
     private void CmdPeopleGroupDelete(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.DeletePeopleGroup((Data.PeopleGroup)e.Parameter);
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes)
+        ACore.People.DeletePeopleGroup((ViewModel.PeopleGroup) e.Parameter);
     }
 
     private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
-      var parent = e.Parameter as Data.Filter;
-      var newFilter = new Data.Filter {Parent = parent, Db = ACore.Db, Title = "New filter", IconName = "appbar_filter"};
+      var parent = e.Parameter as ViewModel.Filter;
+      var newFilter = new ViewModel.Filter {Parent = parent, Db = ACore.Db, Title = "New filter"};
       newFilter.FilterData.Add(new FilterGroup {Operator = FilterGroupOps.And});
       var fb = new WFilterBuilder(newFilter) {Owner = this};
       if (fb.ShowDialog() ?? true) {
@@ -293,7 +297,7 @@ namespace PictureManager {
     }
 
     private void CmdFilterEdit(object sender, ExecutedRoutedEventArgs e) {
-      var filter = (Data.Filter) e.Parameter;
+      var filter = (ViewModel.Filter) e.Parameter;
       var title = filter.Title;
       var fb = new WFilterBuilder(filter) {Owner = this};
       if (fb.ShowDialog() ?? true) {
@@ -308,32 +312,32 @@ namespace PictureManager {
       
     }
 
-    private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Keywords.DeleteKeyword((Data.Keyword)e.Parameter);
-    }
-
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      ((Data.Folder) e.Parameter).NewOrRename(this, false);
+      ((ViewModel.Folder) e.Parameter).NewOrRename(this, false);
     }
 
     private void CmdFolderRename(object sender, ExecutedRoutedEventArgs e) {
-      ((Data.Folder) e.Parameter).NewOrRename(this, true);
+      ((ViewModel.Folder) e.Parameter).NewOrRename(this, true);
     }
 
     private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result == MessageBoxResult.Yes)
-        ((Data.Folder)e.Parameter).Delete(ACore, true);
+        ((ViewModel.Folder)e.Parameter).Delete(ACore, true);
     }
 
     private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Add(((Data.Folder)e.Parameter).FullPath);
+      ACore.FavoriteFolders.Add(((ViewModel.Folder)e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
 
     private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Remove(((Data.FavoriteFolder)e.Parameter).FullPath);
+      ACore.FavoriteFolders.Remove(((ViewModel.FavoriteFolder)e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
+    }
+
+    private void CmdFolderKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
+      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
     private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -401,7 +405,7 @@ namespace PictureManager {
         var done = 0;
 
         foreach (var picture in pictures) {
-          picture.SaveMediaItemInToDb(aCore, false);
+          picture.SaveMediaItemInToDb(aCore, false, false);
           picture.WriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
@@ -421,8 +425,8 @@ namespace PictureManager {
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
-      foreach (Data.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
-        mi.LoadFromDb(ACore);
+      foreach (ViewModel.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
+        mi.LoadFromDb(ACore, mi.Data);
         mi.WbUpdateInfo();
       }
       ACore.MarkUsedKeywordsAndPeople();
@@ -460,7 +464,7 @@ namespace PictureManager {
 
       if (inputDialog.ShowDialog() ?? true) {
         current.Comment = inputDialog.TxtAnswer.Text;
-        current.SaveMediaItemInToDb(ACore, false);
+        current.SaveMediaItemInToDb(ACore, false, false);
         current.WriteMetadata();
       }
     }
@@ -472,7 +476,7 @@ namespace PictureManager {
     private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
       var mediaItems = ACore.MediaItems.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(ACore, true);
+        mi.SaveMediaItemInToDb(ACore, true, false);
         mi.WbUpdateInfo();
       }
     }
@@ -513,35 +517,6 @@ namespace PictureManager {
       return true;
     }
 
-    private void JpegTest() {
-      var original = @"d:\!test\TestInTest\20160209_143609.jpg";
-      var newFile = original;
-
-      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-
-      for (int i = 0; i < 7; i++) {
-        using (Stream originalFileStream = File.Open(newFile, FileMode.Open, FileAccess.Read)) {
-          JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = 80 };
-          if (i == 1) encoder.Rotation = Rotation.Rotate0;
-          if (i == 2) encoder.Rotation = Rotation.Rotate270;
-          if (i == 3) encoder.Rotation = Rotation.Rotate90;
-          if (i == 4) encoder.Rotation = Rotation.Rotate180;
-          if (i == 5) encoder.FlipHorizontal = true;
-          if (i == 6) encoder.FlipVertical = true;
-          encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
-
-          newFile = original.Replace(".", $"_{i:000}.");
-
-          using (Stream newFileStream = File.Open(newFile, FileMode.Create, FileAccess.ReadWrite)) {
-            encoder.Save(newFileStream);
-          }
-        }
-      }
-
-      
-
-    }
-
     private ScrollViewer _tvFoldersScrollViewer;
     private ScrollViewer TvFoldersScrollViewer
     {
@@ -560,15 +535,35 @@ namespace PictureManager {
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
       //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
 
-      /*using (PmDbContext context = new PmDbContext()) {
-        var mediaItemKeyword = context.MediaItemKeywords;
-      }*/
+      //PmDbContext context = new PmDbContext();
+      //var data = context.Directories.ToList();
+      
 
-      DirectoryListDialog dld = new DirectoryListDialog {
+      //var list = TestGetDirectories();
+
+      /*var cont = new DataContext(ACore.Db.DbConn);
+      var dirs = cont.GetTable<DataModel.Directory>().ToList();
+      var mitems = cont.GetTable<DataModel.MediaItem>().ToList();
+      var dd = mitems.Where(x => x.FileName.StartsWith("2015"));
+      var mip = cont.GetTable<DataModel.MediaItemPerson>();
+
+      var testt =
+        from dir in dirs
+        join mitem in mitems on dir.Id equals mitem.DirectoryId
+        where dir.Path.StartsWith("P:")
+        select new {FileName = mitem.FileName, DirPath = dir.Path};*/
+
+
+
+
+
+
+
+      /*DirectoryListDialog dld = new DirectoryListDialog {
         Title = "Catalog Folders",
         DirList = {SettingsPropertyName = "CatalogFolders" }
       };
-      dld.ShowDialog();
+      dld.ShowDialog();*/
 
 
       //var path = @"d:\Download\New\!iya";
@@ -602,6 +597,28 @@ namespace PictureManager {
       cm.IsOpen = true;*/
     }
 
+    private void TvFolders_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      var stackPanel = sender as StackPanel;
+      if (stackPanel == null) return;
+      _dragDropObject = stackPanel.DataContext;
+      _dragDropStartPosition = e.GetPosition(null);
+    }
+
+    private void TvFolders_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      _dragDropObject = null;
+    }
+
+    private void TvKeywords_OnMouseLeftButtonDown(object sender, MouseEventArgs e) {
+      var stackPanel = sender as StackPanel;
+      if (stackPanel == null) return;
+      _dragDropObject = stackPanel.DataContext;
+      _dragDropStartPosition = e.GetPosition(null);
+    }
+
+    private void TvKeywords_OnMouseLeftButtonUp(object sender, MouseEventArgs e) {
+      _dragDropObject = null;
+    }
+
     private void TvKeywords_OnMouseMove(object sender, MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed) return;
       Vector diff = _dragDropStartPosition - e.GetPosition(null);
@@ -609,31 +626,37 @@ namespace PictureManager {
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
       if (stackPanel == null) return;
-      DragDrop.DoDragDrop(stackPanel, stackPanel.DataContext, DragDropEffects.Move);
+      DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move);
     }
 
     private void TvKeywords_AllowDropCheck(object sender, DragEventArgs e) {
-      if (e.Data.GetDataPresent(typeof (Data.Keyword))) {
-        var srcData = (Data.Keyword)e.Data.GetData(typeof(Data.Keyword));
-        var destData = (Data.Keyword)((StackPanel)sender).DataContext;
+      var dataContext = ((StackPanel) sender).DataContext;
+      if (e.Data.GetDataPresent(typeof (ViewModel.Keyword))) {
+        var srcData = (ViewModel.Keyword)e.Data.GetData(typeof(ViewModel.Keyword));
+        var destData = (ViewModel.Keyword) dataContext;
         if (srcData != null && destData != null && srcData != destData && srcData.Parent == destData.Parent) return;
         e.Effects = DragDropEffects.None;
         e.Handled = true;
-      } else if (e.Data.GetDataPresent(typeof(Data.Person))) {
-        var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
-        var destData = ((StackPanel)sender).DataContext as Data.PeopleGroup;
-        if (srcData != null && destData != null) return;
-        e.Effects = DragDropEffects.None;
-        e.Handled = true;
+      } else if (e.Data.GetDataPresent(typeof(ViewModel.Person))) {
+        var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
+        var destDataPeople = dataContext as ViewModel.People;
+        var destDataPeopleGroup = dataContext as ViewModel.PeopleGroup;
+
+        if (srcData == null || (destDataPeople != null && srcData.PeopleGroupId == null) ||
+            (destDataPeopleGroup != null && destDataPeopleGroup.Id == srcData.PeopleGroupId) ||
+            (destDataPeople == null && destDataPeopleGroup == null)) {
+          e.Effects = DragDropEffects.None;
+          e.Handled = true;
+        }
       }
     }
 
     private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
       var panel = (StackPanel)sender;
 
-      if (e.Data.GetDataPresent(typeof (Data.Keyword))) {
-        var srcData = (Data.Keyword) e.Data.GetData(typeof (Data.Keyword));
-        var destData = (Data.Keyword) panel.DataContext;
+      if (e.Data.GetDataPresent(typeof (ViewModel.Keyword))) {
+        var srcData = (ViewModel.Keyword) e.Data.GetData(typeof (ViewModel.Keyword));
+        var destData = (ViewModel.Keyword) panel.DataContext;
         if (srcData == null || destData == null) return;
         var items = destData.Parent.Items;
         var destIndex = items.IndexOf(destData);
@@ -649,23 +672,14 @@ namespace PictureManager {
 
         for (var i = 0; i < items.Count; i++) {
           items[i].Index = i;
-          ACore.Db.Execute($"update Keywords set Idx={i} where Id={items[i].Id}");
+          items[i].Data.Idx = i;
+          ACore.Db.Keywords.Context.SubmitChanges();
         }
-      } else if (e.Data.GetDataPresent(typeof (Data.Person))) {
-        var srcData = (Data.Person)e.Data.GetData(typeof(Data.Person));
-        var destData = (Data.PeopleGroup)panel.DataContext;
-        if (srcData == null || destData == null) return;
-        if (srcData.PeopleGroupId == destData.Id) return;
-        if (srcData.PeopleGroupId != -1) {
-          var oldGroup =
-            ACore.People.Items.FirstOrDefault(x => x is Data.PeopleGroup && ((Data.PeopleGroup) x).Id == srcData.PeopleGroupId);
-          ((Data.PeopleGroup) @oldGroup)?.Items.Remove(srcData);
-        } else {
-          ACore.People.Items.Remove(srcData);
-        }
-        srcData.PeopleGroupId = destData.Id;
-        destData.Items.Add(srcData);
-        ACore.Db.Execute($"update People set PeopleGroupId = {destData.Id} where Id = {srcData.Id}");
+      } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
+        var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
+        var destData = panel.DataContext as ViewModel.PeopleGroup;
+        if (srcData == null) return;
+        ACore.People.MovePerson(srcData, destData);
       }
     }
 
@@ -686,8 +700,8 @@ namespace PictureManager {
         var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
         thumbs = selected.SequenceEqual(dragged);
       }
-      var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
-      var destData = (Data.Folder) ((StackPanel) sender).DataContext;
+      var srcData = (ViewModel.Folder) e.Data.GetData(typeof (ViewModel.Folder));
+      var destData = (ViewModel.Folder) ((StackPanel) sender).DataContext;
       if ((srcData == null && !thumbs) || destData == null || srcData == destData || !destData.IsAccessible) {
         e.Effects = DragDropEffects.None;
         e.Handled = true;
@@ -696,8 +710,8 @@ namespace PictureManager {
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
-      var srcData = (Data.Folder) e.Data.GetData(typeof (Data.Folder));
-      var destData = (Data.Folder) ((StackPanel) sender).DataContext;
+      var srcData = (ViewModel.Folder) e.Data.GetData(typeof (ViewModel.Folder));
+      var destData = (ViewModel.Folder) ((StackPanel) sender).DataContext;
       var from = thumbs ? null : srcData.FullPath;
       var itemName = thumbs ? null : srcData.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
 
@@ -734,22 +748,28 @@ namespace PictureManager {
       ContextMenu menu = new ContextMenu {Tag = item};
 
       switch (item.GetType().Name) {
-        case nameof(Data.Folder): {
+        case nameof(ViewModel.Folder): {
           menu.Items.Add(new MenuItem {Command = (ICommand)Resources["FolderNew"], CommandParameter = item});
-          if (((Data.Folder) item).Parent != null) {
+          if (((ViewModel.Folder) item).Parent != null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderDelete"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
           }
           break;
         }
-        case nameof(Data.FavoriteFolder): {
+        case nameof(ViewModel.FavoriteFolder): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemoveFromFavorites"], CommandParameter = item});
           break;
         }
-        case nameof(Data.Keyword): {
+        case nameof(ViewModel.FolderKeyword): {
+          if (!ACore.KeywordsEditMode) {
+            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FolderKeywordShowAll"], CommandParameter = item });
+          }
+          break;
+        }
+        case nameof(ViewModel.Keyword): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordNew"], CommandParameter = item});
-          if (((Data.Keyword) item).Items.Count == 0) {
+          if (((ViewModel.Keyword) item).Items.Count == 0) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordRename"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordDelete"], CommandParameter = item});
           }
@@ -758,30 +778,31 @@ namespace PictureManager {
           }
           break;
         }
-        case nameof(Data.Keywords): {
+        case nameof(ViewModel.Keywords): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordNew"], CommandParameter = item});
           break;
         }
-        case nameof(Data.Person): {
+        case nameof(ViewModel.Person): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonRename"], CommandParameter = item});
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonDelete"], CommandParameter = item});
           break;
         }
-        case nameof(Data.People): {
+        case nameof(ViewModel.People): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["PersonNew"], CommandParameter = item});
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupNew"], CommandParameter = item });
           break;
         }
-        case nameof(Data.PeopleGroup): {
+        case nameof(ViewModel.PeopleGroup): {
+          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PersonNew"], CommandParameter = item });
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupRename"], CommandParameter = item });
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["PeopleGroupDelete"], CommandParameter = item });
           break;
         }
-        case nameof(Data.Filters): {
+        case nameof(ViewModel.Filters): {
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
           break;
         }
-        case nameof(Data.Filter): {
+        case nameof(ViewModel.Filter): {
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterEdit"], CommandParameter = item });
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterDelete"], CommandParameter = item });

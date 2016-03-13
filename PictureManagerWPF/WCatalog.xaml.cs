@@ -24,8 +24,8 @@ namespace PictureManager {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public ObservableCollection<Data.BaseItem> FoldersRoot;
-    public Data.Folders Folders;
+    public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
+    public ViewModel.Folders Folders;
 
     private AppCore _aCore;
     private BackgroundWorker _update;
@@ -43,8 +43,8 @@ namespace PictureManager {
       InitializeComponent();
 
       _aCore = aCore;
-      Folders = new Data.Folders { Title = "Folders", IconName = "appbar_folder" };
-      FoldersRoot = new ObservableCollection<Data.BaseItem> { Folders };
+      Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
+      FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
       Folders.IsExpanded = true;
       TvFolders.Focus();
@@ -55,7 +55,7 @@ namespace PictureManager {
       _newOnly = ChbNewOnly.IsChecked == true;
       _rebuildThumbnails = ChbRebuildThumbs.IsChecked == true;
 
-      var folder = TvFolders.SelectedItem as Data.Folder;
+      var folder = TvFolders.SelectedItem as ViewModel.Folder;
       _selectedFolderPath = folder == null ? string.Empty : folder.FullPath;
 
       if (folder != null && folder.IsAccessible) return;
@@ -105,19 +105,17 @@ namespace PictureManager {
       }
 
       try {
-        var dirId = _aCore.Db.InsertDirecotryInToDb(path);
-        if (dirId == null) return;
+        var dirId = _aCore.InsertDirecotryInToDb(path);
 
         foreach (var file in Directory.EnumerateFiles(path)
           .Where(f => _aCore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
           .OrderBy(x => x)) {
           
-          var mi = new Data.BaseMediaItem(file, _aCore.Db, 0, null) {DirId = (int) dirId};
-          var miId = (int?) (long?) _aCore.Db.ExecuteScalar(
-                  $"select Id from MediaItems where DirectoryId = {dirId} and FileName = '{mi.FileNameWithExt}'");
-          if (miId != null) mi.Id = (int) miId;
-          if (!_newOnly || miId == null)
-            mi.SaveMediaItemInToDb(_aCore, true);
+          var mi = new ViewModel.BaseMediaItem(file, _aCore.Db, 0, null, null) {DirId = dirId};
+          var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == mi.FileNameWithExt);
+          if (miInDb != null) mi.Id = miInDb.Id;
+          if (!_newOnly || miInDb == null)
+            mi.SaveMediaItemInToDb(_aCore, true, miInDb == null);
 
           if (_rebuildThumbnails || !File.Exists(mi.FilePathCache))
             AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
@@ -162,12 +160,12 @@ namespace PictureManager {
       ContextMenu menu = new ContextMenu { Tag = item };
 
       switch (item.GetType().Name) {
-        case nameof(Data.Folders): {
+        case nameof(ViewModel.Folders): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAdd"], CommandParameter = item});
           break;
         }
-        case nameof(Data.Folder): {
-          if (((Data.Folder) item).Parent == null) {
+        case nameof(ViewModel.Folder): {
+          if (((ViewModel.Folder) item).Parent == null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemove"], CommandParameter = item});
           }
           break;
@@ -184,7 +182,7 @@ namespace PictureManager {
       Folders.Items.Clear();
       foreach (var path in paths) {
         DirectoryInfo di = new DirectoryInfo(path);
-        Data.Folder item = new Data.Folder {
+        ViewModel.Folder item = new ViewModel.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = "appbar_folder",
@@ -192,7 +190,7 @@ namespace PictureManager {
         };
         try {
           if (di.GetDirectories().Length > 0)
-            item.Items.Add(new Data.Folder {Title = "..."});
+            item.Items.Add(new ViewModel.Folder {Title = "..."});
         }
         catch (UnauthorizedAccessException) {
           item.IconName = "appbar_folder_lock";
@@ -219,7 +217,7 @@ namespace PictureManager {
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {
-      var folder = e.Parameter as Data.Folder;
+      var folder = e.Parameter as ViewModel.Folder;
       if (folder == null) return;
       var paths = Settings.Default.CatalogFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
       paths.Remove(folder.FullPath);

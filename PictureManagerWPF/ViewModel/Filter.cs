@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace PictureManager.Data {
-  public class Filter: BaseTagItem {
+namespace PictureManager.ViewModel {
+  public class Filter: BaseTreeViewTagItem {
+    public DataModel.Filter Data;
     public ObservableCollection<Filter> Items { get; set; }
     public Filter Parent;
-    public DbStuff Db;
+    public DataModel.PmDataContext Db;
     public ObservableCollection<BaseFilterItem> FilterData;
 
     public override bool IsExpanded
@@ -18,7 +18,7 @@ namespace PictureManager.Data {
       set
       {
         base.IsExpanded = value;
-        if (value) GetSubFilters(false, Items, Db, this);
+        if (value) GetSubFilters(false, Items, this, Db);
       }
     }
 
@@ -26,28 +26,30 @@ namespace PictureManager.Data {
       Items = new ObservableCollection<Filter>();
       FilterData = new ObservableCollection<BaseFilterItem>();
       Id = -1;
+      IconName = "appbar_filter";
     }
 
-    public static void GetSubFilters(bool refresh, ObservableCollection<Filter> items, DbStuff db, Filter parent) {
+    public Filter(DataModel.Filter data, DataModel.PmDataContext db, Filter parent) : this() {
+      Data = data;
+      Parent = parent;
+      Db = db;
+      Id = data.Id;
+      Title = data.Name;
+    }
+
+    public static void GetSubFilters(bool refresh, ObservableCollection<Filter> items, Filter parent, DataModel.PmDataContext db) {
       if (!refresh && parent != null) {
         if (items.Count <= 0) return;
         if (items[0].Title != @"...") return;
       }
       items.Clear();
-      var sql =
-        $"select Id, Name, Data, (select count(Id) from Filters where ParentId = F.Id) as ChildsCount from Filters F where ParentId {(parent == null ? "is null" : $"= {parent.Id}")}";
-      foreach (DataRow row in db.Select(sql)) {
-        Filter item = new Filter {
-          Parent = parent,
-          Db = db,
-          Id = (int)(long)row[0],
-          Title = (string)row[1],
-          IconName = "appbar_filter"
-        };
+      var parentId = parent?.Id;
 
-        item.LoadFilterData((byte[]) row[2]);
+      foreach (var f in db.Filters.Where(x => x.ParentId == parentId)) {
+        Filter item = new Filter(f, db, parent);
+        item.LoadFilterData(f.Data);
 
-        if ((long)row[3] != 0) {
+        if (db.Filters.Count(x => x.ParentId == f.Id) != 0) {
           item.Items.Add(new Filter { Title = "..." });
         }
 
@@ -57,7 +59,7 @@ namespace PictureManager.Data {
 
     public void ReloadData() {
       if (Id == -1) return;
-      LoadFilterData((byte[]) Db.ExecuteScalar($"select Data from Filters where Id = {Id}"));
+      LoadFilterData(Db.Filters.Single(x => x.Id == Id).Data);
     }
 
     public void LoadFilterData(byte[] biteArray) {
@@ -108,14 +110,22 @@ namespace PictureManager.Data {
       filterFile.Delete();
 
       //insert or update filter to DB
-      var sql = Id == -1
-        ? $"insert into Filters (ParentId, Name, Data) values ({Parent?.Id.ToString() ?? "null"}, '{Title}', @p1)"
-        : $"update Filters set Name = '{Title}', Data = @p1 where Id = {Id}";
-      if (!Db.Execute(sql, new Dictionary<string, object> { { "@p1", biteArray } })) return;
-
       if (Id == -1) {
-        var id = Db.GetLastIdFor("Filters");
-        if (id != null) Id = (int) id;
+        var dmFilter = new DataModel.Filter {
+          Id = Db.GetNextIdFor("Filters"),
+          Name = Title,
+          Data = biteArray,
+          ParentId = Parent?.Id
+        };
+
+        Db.Filters.InsertOnSubmit(dmFilter);
+        Db.Filters.Context.SubmitChanges();
+
+        Id = dmFilter.Id;
+      } else {
+        Data.Data = biteArray;
+        Data.Name = Title;
+        Db.Filters.Context.SubmitChanges();
       }
     }
   }

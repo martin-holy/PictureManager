@@ -3,12 +3,14 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Data {
-  public class Folders : BaseItem {
+namespace PictureManager.ViewModel {
+  public class Folders : BaseTreeViewItem {
     public ObservableCollection<Folder> Items { get; set; }
 
     public Folders() {
       Items = new ObservableCollection<Folder>();
+      Title = "Folders";
+      IconName = "appbar_folder";
     }
 
     public void AddDrives() {

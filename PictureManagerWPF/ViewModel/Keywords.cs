@@ -1,29 +1,23 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 using PictureManager.Dialogs;
 
-namespace PictureManager.Data {
-  public class Keywords: BaseItem {
+namespace PictureManager.ViewModel {
+  public class Keywords: BaseTreeViewItem {
     public ObservableCollection<Keyword> Items { get; set; }
-    public DbStuff Db;
+    public DataModel.PmDataContext Db;
 
     public Keywords() {
       Items = new ObservableCollection<Keyword>();
+      Title = "Keywords";
+      IconName = "appbar_tag";
     }
 
     public void Load() {
       Items.Clear();
 
-      foreach (DataRow row in Db.Select("select Id, Name, Idx from Keywords order by Idx, Name")) {
-        Keyword newItem = new Keyword {
-          Id = (int) (long) row[0],
-          Index = (int) (long) row[2],
-          IconName = "appbar_tag",
-          FullPath = (string) row[1]
-        };
-
+      foreach (Keyword newItem in Db.Keywords.OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x))) {
         if (!newItem.FullPath.Contains("/")) {
           newItem.Title = newItem.FullPath;
           Items.Add(newItem);
@@ -63,48 +57,69 @@ namespace PictureManager.Data {
         Owner = wMain,
         IconName = "appbar_tag",
         Title = rename ? "Rename Keyword" : "New Keyword",
-        Question = rename ? "Enter new name for keyword." : "Enter name of new keyword.",
+        Question = rename ? "Enter the new name for the keyword." : "Enter the name of the new keyword.",
         Answer = rename ? keyword.Title : string.Empty
       };
 
       inputDialog.BtnDialogOk.Click += delegate {
+        if (rename && string.Compare(inputDialog.Answer, keyword.Title, StringComparison.OrdinalIgnoreCase) == 0) {
+          inputDialog.DialogResult = true;
+          return;
+        }
+
+        if (root.SingleOrDefault(x => x.FullPath.Equals(inputDialog.Answer)) != null) {
+          inputDialog.ShowErrorMessage("Keyword name already exists!");
+          return;
+        }
+
         inputDialog.DialogResult = true;
       };
 
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
-        if (rename) keyword.Rename(Db, inputDialog.Answer);
+        if (rename) {
+          var path = keyword.FullPath;
+          path = path.Contains("/")
+            ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
+            : inputDialog.Answer;
+          keyword.FullPath = path;
+          keyword.Data.Name = path;
+          keyword.Title = inputDialog.Answer;
+          Db.Keywords.Context.SubmitChanges();
+        }
         else CreateKeyword(root, keyword, inputDialog.Answer);
       }
     }
 
     public Keyword CreateKeyword(ObservableCollection<Keyword> root, Keyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
-      if (!Db.Execute($"insert into Keywords (Name) values ('{kFullPath}')")) return null;
-      var keyId = Db.GetLastIdFor("Keywords");
-      if (keyId == null) return null;
-      Keyword newKeyword = new Keyword {
-        Id = (int) keyId,
-        IconName = "appbar_tag",
-        FullPath = kFullPath,
-        Title = name,
-        Parent = parent
+      var dmKeyword = new DataModel.Keyword {
+        Id = Db.GetNextIdFor("Keywords"),
+        Name = kFullPath
       };
+
+      Db.Keywords.InsertOnSubmit(dmKeyword);
+      Db.Keywords.Context.SubmitChanges();
+
+      var vmKeyword = new Keyword(dmKeyword);
 
       Keyword keyword =
         root.FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
-      root.Insert(keyword == null ? 0 : root.IndexOf(keyword), newKeyword);
-      return newKeyword;
+      root.Insert(keyword == null ? 0 : root.IndexOf(keyword), vmKeyword);
+      return vmKeyword;
     }
 
     public void DeleteKeyword(Keyword keyword) {
-      if (keyword.Items.Count != 0) return;
-      Db.Execute($"delete from MediaItemKeyword where KeywordId = {keyword.Id}");
-      Db.Execute($"delete from Keywords where Id = {keyword.Id}");
+      foreach (var mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
+        Db.MediaItemKeywords.DeleteOnSubmit(mik);
+      }
+
+      Db.Keywords.DeleteOnSubmit(keyword.Data);
+      Db.Keywords.Context.SubmitChanges();
+
       var items = keyword.Parent == null ? Items : keyword.Parent.Items;
       items.Remove(keyword);
     }
-
   }
 }

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace PictureManager.Data {
+namespace PictureManager.ViewModel {
   public class MediaItems {
     public ObservableCollection<BaseMediaItem> Items;
     public BaseMediaItem Current;
     public AppCore ACore;
     public WebBrowser WbThumbs => ACore.WbThumbs;
-    public DbStuff Db => ACore.Db;
+    public DataModel.PmDataContext Db => ACore.Db;
     public string[] SuportedExts = { ".jpg", ".jpeg" };
 
     public MediaItems(AppCore aCore) {
@@ -89,8 +88,7 @@ namespace PictureManager.Data {
     public void LoadByFolder(string path) {
       if (!Directory.Exists(path)) return;
 
-      var dirId = Db.InsertDirecotryInToDb(path);
-      if (dirId == null) return;
+      var dirId = ACore.InsertDirecotryInToDb(path);
       ACore.FolderKeywords.Load();
       FolderKeyword fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(path);
 
@@ -100,21 +98,81 @@ namespace PictureManager.Data {
       foreach (string file in Directory.EnumerateFiles(path)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
         .OrderBy(x => x)) {
-          Items.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Items.Count, WbThumbs) 
-            { DirId = (int)dirId, FolderKeyword = fk });
+          Items.Add(new Picture(file.Replace(":\\\\", ":\\"), Db, Items.Count, WbThumbs, null) 
+            { DirId = dirId, FolderKeyword = fk });
+      }
+
+      ACore.UpdateStatusBarInfo();
+    }
+
+    public void LoadByTag(BaseTreeViewTagItem tag, bool recursive) {
+      Current = null;
+      Items.Clear();
+
+      IQueryable<DataModel.MediaItem> items = null;
+
+      switch (tag.GetType().Name) {
+        case nameof(Keyword): {
+          var keyword = (Keyword) tag;
+          if (recursive) {
+            items = from k in Db.Keywords.Where(x => x.Name.StartsWith(keyword.FullPath))
+              join mik in Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
+              from k2 in keywords
+              join mi in Db.MediaItems on k2.MediaItemId equals mi.Id
+              select mi;
+          } else {
+            items = from mi in Db.MediaItems
+              join mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
+              select mi;
+          }
+          break;
+        }
+        case nameof(Person): {
+          var person = (Person) tag;
+          items = from mi in Db.MediaItems
+            join mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
+            select mi;
+          break;
+        }
+        case nameof(FolderKeyword): {
+          var folderKeyword = (FolderKeyword) tag;
+          if (recursive) {
+            var itemss = new List<DataModel.MediaItem>();
+            foreach (var fkDir in Db.Directories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
+              foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(fkDir.Path))) {
+                foreach (var mi in Db.MediaItems.Where(x => x.DirectoryId == dir.Id)) {
+                  itemss.Add(mi);
+                }
+              }
+            }
+            items = itemss.OrderBy(x => x.FileName).AsQueryable();
+          } else {
+            items = Db.MediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId));
+          }
+          break;
+        }
+      }
+
+      if (items != null) {
+        foreach (var item in items) {
+          var filePath = Path.Combine(Db.Directories.Single(x => x.Id == item.DirectoryId).Path, item.FileName);
+          if (!File.Exists(filePath)) continue;
+          Picture pic = new Picture(filePath, Db, Items.Count, WbThumbs, item);
+          pic.LoadFromDb(ACore, item);
+          Items.Add(pic);
+        }
       }
 
       ACore.UpdateStatusBarInfo();
     }
 
     public void LoadByTag() {
-      Current = null;
+      /*Current = null;
       Items.Clear();
-
-      var peopleIn = string.Join(",", ACore.TagModifers.Where(x => x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
-      var peopleOut = string.Join(",", ACore.TagModifers.Where(x => !x.IsSelected && x is Person).Cast<Person>().Select(x => x.Id));
-      var keywordsIn = string.Join(",", ACore.TagModifers.Where(x => x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
-      var keywordsOut = string.Join(",", ACore.TagModifers.Where(x => !x.IsSelected && x is Keyword).Cast<Keyword>().Select(x => x.Id));
+      var peopleIn = string.Join(",", ACore.TagModifers.OfType<Person>().Where(x => x.IsSelected).Select(x => x.Id));
+      var peopleOut = string.Join(",", ACore.TagModifers.OfType<Person>().Where(x => !x.IsSelected).Select(x => x.Id));
+      var keywordsIn = string.Join(",", ACore.TagModifers.OfType<Keyword>().Where(x => x.IsSelected).Select(x => x.Id));
+      var keywordsOut = string.Join(",", ACore.TagModifers.OfType<Keyword>().Where(x => !x.IsSelected).Select(x => x.Id));
 
       List<string> sqlList = new List<string>();
 
@@ -139,7 +197,7 @@ namespace PictureManager.Data {
       foreach (DataRow row in Db.Select(sql)) {
         string picFullPath = Path.Combine((string)row[1], (string)row[2]);
         if (File.Exists(picFullPath)) {
-          Picture pic = new Picture(picFullPath, Db, Items.Count, WbThumbs) {
+          Picture pic = new Picture(picFullPath, Db, Items.Count, WbThumbs, null) {
             Id = (int)(long)row[0],
             Rating = (int)(long)row[3],
             DirId = (int)(long)row[4],
@@ -148,14 +206,12 @@ namespace PictureManager.Data {
             FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath((string)row[1])
           };
 
-          //TODO tyhle dva radky vaznou
-          pic.LoadKeywordsFromDb(ACore.Keywords);
-          pic.LoadPeopleFromDb(ACore.People);
+          pic.LoadFromDb(ACore);
           Items.Add(pic);
         }
       }
 
-      ACore.UpdateStatusBarInfo();
+      ACore.UpdateStatusBarInfo();*/
     }
 
     public void ScrollToCurrent() {

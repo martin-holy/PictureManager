@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:data="clr-namespace:PictureManager.Data"
+        xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
         mc:Ignorable="d"
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
@@ -81,7 +81,7 @@
 
       <TreeView.Resources>
         <!-- TreeView Folders - BaseItem (Category) -->
-        <HierarchicalDataTemplate DataType="{x:Type data:BaseItem}" ItemsSource="{Binding Items}">
+        <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu">
             <Rectangle Style="{StaticResource IconRect}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -89,7 +89,7 @@
         </HierarchicalDataTemplate>
 
         <!-- TreeView Folders - Folder -->
-        <HierarchicalDataTemplate DataType="{x:Type data:Folder}" ItemsSource="{Binding Items}">
+        <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu">
             <Rectangle Style="{StaticResource IconRect}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />
