@@ -124,6 +124,7 @@ namespace PictureManager {
 
           worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100));
         }
+        worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100), true);
       }
       catch (Exception) {
         // ignored
@@ -133,6 +134,8 @@ namespace PictureManager {
     private void update_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbUpdateProgress.Value = e.ProgressPercentage;
       FilesProgress = $"{_filesDone} / {_filesCount}";
+      if (e.UserState != null)
+        _aCore.Db.DataContext.SubmitChanges();
     }
 
     private void update_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Linq;
 using System.Data.Linq.Mapping;
@@ -11,6 +12,7 @@ namespace PictureManager.DataModel {
     public SQLiteConnection DbConn;
     public string ConnectionString;
     public DataContext DataContext;
+    public Dictionary<string, long> TableIds;
 
     public Table<Directory> Directories;
     public Table<Filter> Filters;
@@ -21,6 +23,7 @@ namespace PictureManager.DataModel {
     public Table<Person> People;
     public Table<PeopleGroup> PeopleGroups;
     public Table<SQLiteSequence> SQLiteSequences;
+
 
     public PmDataContext(string connectionString) {
       ConnectionString = connectionString;
@@ -52,11 +55,17 @@ namespace PictureManager.DataModel {
       PeopleGroups = DataContext.GetTable<PeopleGroup>();
       SQLiteSequences = DataContext.GetTable<SQLiteSequence>();
 
+      TableIds = new Dictionary<string, long>();
+      foreach (var s in SQLiteSequences) {
+        TableIds.Add(s.Name, s.Seq);
+      }
       return true;
     }
 
     public long GetNextIdFor(string tableName) {
-      return SQLiteSequences.Single(x => x.Name.Equals(tableName)).Seq + 1;
+      var nextId = TableIds[tableName] + 1;
+      TableIds[tableName] = nextId;
+      return nextId;
     }
 
     public bool Execute(string sql) {

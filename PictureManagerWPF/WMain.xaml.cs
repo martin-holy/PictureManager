@@ -414,6 +414,7 @@ namespace PictureManager {
 
       bw.RunWorkerCompleted += delegate {
         ACore.KeywordsEditMode = false;
+        ACore.Db.DataContext.SubmitChanges();
       };
 
       bw.RunWorkerAsync(ACore);
@@ -426,7 +427,7 @@ namespace PictureManager {
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.KeywordsEditMode = false;
       foreach (ViewModel.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
-        mi.LoadFromDb(ACore, mi.Data);
+        mi.ReLoadFromDb(ACore, mi.Data);
         mi.WbUpdateInfo();
       }
       ACore.MarkUsedKeywordsAndPeople();
@@ -466,6 +467,7 @@ namespace PictureManager {
         current.Comment = inputDialog.TxtAnswer.Text;
         current.SaveMediaItemInToDb(ACore, false, false);
         current.WriteMetadata();
+        ACore.Db.DataContext.SubmitChanges();
       }
     }
 
@@ -479,6 +481,7 @@ namespace PictureManager {
         mi.SaveMediaItemInToDb(ACore, true, false);
         mi.WbUpdateInfo();
       }
+      ACore.Db.DataContext.SubmitChanges();
     }
 
     public bool RotateJpeg(string filePath, int quality, Rotation rotation) {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PictureManager.Dialogs;
@@ -6,27 +7,32 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class Keywords: BaseTreeViewItem {
     public ObservableCollection<Keyword> Items { get; set; }
+    public List<Keyword> AllKeywords; 
     public DataModel.PmDataContext Db;
 
     public Keywords() {
       Items = new ObservableCollection<Keyword>();
+      AllKeywords = new List<Keyword>();
       Title = "Keywords";
       IconName = "appbar_tag";
     }
 
     public void Load() {
       Items.Clear();
+      AllKeywords.Clear();
 
       foreach (Keyword newItem in Db.Keywords.OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x))) {
         if (!newItem.FullPath.Contains("/")) {
           newItem.Title = newItem.FullPath;
           Items.Add(newItem);
+          AllKeywords.Add(newItem);
         } else {
           newItem.Title = newItem.FullPath.Substring(newItem.FullPath.LastIndexOf('/') + 1);
           Keyword parentKeyword = GetKeywordByFullPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('/')), false);
           if (parentKeyword == null) continue;
           newItem.Parent = parentKeyword;
           parentKeyword.Items.Add(newItem);
+          AllKeywords.Add(newItem);
         }
       }
     }
@@ -50,6 +56,10 @@ namespace PictureManager.ViewModel {
         root = keyword.Items;
         fullPath = fullPath.Substring(keyParts[0].Length + 1);
       }
+    }
+
+    public Keyword GetKeyword(long id) {
+      return AllKeywords.SingleOrDefault(x => x.Id == id);
     }
 
     public void NewOrRename(WMain wMain, ObservableCollection<Keyword> root, Keyword keyword, bool rename) {

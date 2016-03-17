@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using PictureManager.Dialogs;
@@ -6,21 +7,25 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class People : BaseTreeViewItem {
     public ObservableCollection<BaseTreeViewItem> Items { get; set; }
+    public List<Person> AllPeople; 
     public DataModel.PmDataContext Db;
 
     public People() {
       Items = new ObservableCollection<BaseTreeViewItem>();
+      AllPeople = new List<Person>();
       Title = "People";
       IconName = "appbar_people_multiple";
     }
 
     public void Load() {
       Items.Clear();
+      AllPeople.Clear();
       //Add PeopleGroups
       foreach (var pg in Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
         //Add People to the PeopleGroup
         foreach (var p in Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
           pg.Items.Add(p);
+          AllPeople.Add(p);
         }
         Items.Add(pg);
       }
@@ -28,6 +33,7 @@ namespace PictureManager.ViewModel {
       //Add People without group
       foreach (var p in Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
         Items.Add(p);
+        AllPeople.Add(p);
       }
     }
 
@@ -37,6 +43,10 @@ namespace PictureManager.ViewModel {
         return g.Items.Single(x => x.Id == id);
       }
       return Items.OfType<Person>().Single(x => x.Id == id);
+    }
+
+    public Person GetPerson(long id) {
+      return AllPeople.SingleOrDefault(x => x.Id == id);
     }
 
     public Person GetPerson(string name, bool create) {

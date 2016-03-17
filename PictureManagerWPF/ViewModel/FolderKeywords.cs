@@ -7,16 +7,19 @@ using PictureManager.Properties;
 namespace PictureManager.ViewModel {
   public class FolderKeywords: BaseTreeViewItem {
     public ObservableCollection<FolderKeyword> Items { get; set; }
+    public List<FolderKeyword> AllFolderKeywords;
     public DataModel.PmDataContext Db;
 
     public FolderKeywords() {
       Items = new ObservableCollection<FolderKeyword>();
+      AllFolderKeywords = new List<FolderKeyword>();
       Title = "Folder Keywords";
       IconName = "appbar_folder";
     }
 
     public void Load() {
       Items.Clear();
+      AllFolderKeywords.Clear();
       Dictionary<long, string> paths = new Dictionary<long, string>();
       foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
         var path = GetFolderKeywordKeyPath(dir.Path);
@@ -35,12 +38,14 @@ namespace PictureManager.ViewModel {
         if (!newItem.FullPath.Contains("\\")) {
           newItem.Title = newItem.FullPath;
           Items.Add(newItem);
+          AllFolderKeywords.Add(newItem);
         } else {
           newItem.Title = newItem.FullPath.Substring(newItem.FullPath.LastIndexOf('\\') + 1);
           FolderKeyword parentFolderKeyword = GetFolderKeywordByKeyPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('\\')), true);
           if (parentFolderKeyword == null) continue;
           newItem.Parent = parentFolderKeyword;
           parentFolderKeyword.Items.Add(newItem);
+          AllFolderKeywords.Add(newItem);
         }
       }  
     }
@@ -64,7 +69,11 @@ namespace PictureManager.ViewModel {
     }
 
     public FolderKeyword GetFolderKeywordByFullPath(string fullPath) {
-      return GetFolderKeywordByKeyPath(GetFolderKeywordKeyPath(fullPath), false);
+      return GetFolderKeywordByKeyPath(GetFolderKeywordKeyPath(fullPath));
+    }
+
+    public FolderKeyword GetFolderKeywordByKeyPath(string keyPath) {
+      return AllFolderKeywords.SingleOrDefault(x => x.FullPath == keyPath);
     }
 
     public FolderKeyword GetFolderKeywordByKeyPath(string keyPath, bool create) {

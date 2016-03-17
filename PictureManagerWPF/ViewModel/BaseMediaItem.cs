@@ -118,30 +118,21 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public void LoadFromDb(AppCore aCore, DataModel.MediaItem mi) {
-      if (mi == null)
-        mi = Db.MediaItems.SingleOrDefault(x => x.DirectoryId == DirId && x.FileName == FileNameWithExt);
-      if (mi != null) {
-        if (Data == null) {
-          Data = mi;
-          Id = mi.Id;
-          Rating = mi.Rating;
-          Comment = mi.Comment;
-          Orientation = mi.Orientation;
-        }
-        FolderKeyword = aCore.FolderKeywords.GetFolderKeywordByFullPath(Path.GetDirectoryName(FilePath));
-        LoadKeywordsFromDb(aCore.Keywords);
-        LoadPeopleFromDb(aCore.People);
-      } else {
-        SaveMediaItemInToDb(aCore, false, true);
-      }
+    public void ReLoadFromDb(AppCore aCore, DataModel.MediaItem mi) {
+      if (mi == null) return;
+      Rating = mi.Rating;
+      Comment = mi.Comment;
+      Orientation = mi.Orientation;
+      LoadKeywordsFromDb(aCore.Keywords);
+      LoadPeopleFromDb(aCore.People);
     }
 
     public void SaveMediaItemInToDb(AppCore aCore, bool update, bool isNew) {
       if (isNew) {
         ReadMetadata(aCore);
+        Id = Db.GetNextIdFor("MediaItems");
         Data = new DataModel.MediaItem {
-          Id = Db.GetNextIdFor("MediaItems"),
+          Id = Id,
           DirectoryId = DirId,
           FileName = FileNameWithExt,
           Rating = Rating,
@@ -154,7 +145,6 @@ namespace PictureManager.ViewModel {
         Data.Rating = Rating;
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
-        Db.MediaItems.Context.SubmitChanges();
       }
 
       SaveMediaItemKeywordsToDb();
@@ -167,7 +157,7 @@ namespace PictureManager.ViewModel {
       foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
         if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
           Db.MediaItemKeywords.DeleteOnSubmit(mik);
-        else 
+        else
           keyIds.Remove(mik.KeywordId);
       }
       //Insert new Keywords to MediaItem
@@ -178,17 +168,15 @@ namespace PictureManager.ViewModel {
           MediaItemId = Id
         });
       }
-
-      Db.MediaItemKeywords.Context.SubmitChanges();
     }
 
     public void SaveMediaItemPeopleInToDb() {
       //Update connection between People and MediaItem
       var ids = People.Select(p => p.Id).ToList();
       foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
-        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null)
+        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null) 
           Db.MediaItemPeople.DeleteOnSubmit(mip);
-        else
+         else
           ids.Remove(mip.PersonId);
       }
       //Insert new People to MediaItem
@@ -199,8 +187,6 @@ namespace PictureManager.ViewModel {
           MediaItemId = Id
         });
       }
-
-      Db.MediaItemPeople.Context.SubmitChanges();
     }
 
     public bool WriteMetadata() {

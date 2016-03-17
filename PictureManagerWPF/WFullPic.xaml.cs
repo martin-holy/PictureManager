@@ -67,7 +67,8 @@ namespace PictureManager {
 
 
       //TODO: BeginUpdate and EndUpdate na fullPic, nebo to udelat vsechno pres style
-	  //nebo to zkusit pres display none
+      //nebo to zkusit pres display none
+      //fullPic.Style = "display: none";
       fullPic.SetAttribute("src", filePath);
       fullPic.Style = string.Empty;
       if (current != null) {
@@ -80,6 +81,8 @@ namespace PictureManager {
         }
         fullPic.Style = $"transform: rotate({o}deg)";
       }
+
+
     }
 
     private void SwitchToBrowser() {

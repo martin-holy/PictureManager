@@ -287,19 +287,18 @@ namespace PictureManager {
         var done = 0;
 
         for (int i = iFrom; i < iTo; i++) {
-          var mi = MediaItems.Items[i];
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
             break;
           }
-
+          var mi = MediaItems.Items[i];
           var thumbPath = mi.FilePathCache;
           bool flag = File.Exists(thumbPath);
           if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
 
           if (mi.Data == null) {
-            mi.LoadFromDb(this, null);
+            mi.SaveMediaItemInToDb(this, false, true);
           }
 
           done++;
@@ -309,6 +308,7 @@ namespace PictureManager {
 
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
+        Db.DataContext.SubmitChanges();
         MediaItems.ScrollToCurrent();
         if (MediaItems.Current != null) {
           MediaItems.Current.IsSelected = false;
