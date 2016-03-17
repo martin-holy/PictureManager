@@ -44,45 +44,18 @@ namespace PictureManager {
     public void SetCurrentImage() {
       var current = _wMain.ACore.MediaItems.Current;
       var filePath = current == null ? string.Empty : current.FilePath;
-      var fullPic = WbFullPic.Document?.GetElementById("fullPic");
-      if (fullPic == null) return;
 
-      /*var newFullPic = WbFullPic.Document.CreateElement("img");
-      if (newFullPic == null) return;
-      newFullPic.OuterHtml = fullPic.OuterHtml.Replace("id=\"fullPic\"", "id=\"newFullPic\"");
-      newFullPic.SetAttribute("src", filePath);
-      newFullPic.Style = string.Empty;
+      var o = 0;
       if (current != null) {
-        var o = 0;
         switch (current.Orientation) {
           case 1: o = 0; break;
           case 3: o = 180; break;
           case 6: o = 90; break;
           case 8: o = 270; break;
         }
-        newFullPic.Style = $"transform: rotate({o}deg)";
       }
 
-      fullPic.OuterHtml = newFullPic.OuterHtml.Replace("id=\"newFullPic\"", "id=\"fullPic\"");*/
-
-
-      //TODO: BeginUpdate and EndUpdate na fullPic, nebo to udelat vsechno pres style
-      //nebo to zkusit pres display none
-      //fullPic.Style = "display: none";
-      fullPic.SetAttribute("src", filePath);
-      fullPic.Style = string.Empty;
-      if (current != null) {
-        var o = 0;
-        switch (current.Orientation) {
-          case 1: o = 0; break;
-          case 3: o = 180; break;
-          case 6: o = 90; break;
-          case 8: o = 270; break;
-        }
-        fullPic.Style = $"transform: rotate({o}deg)";
-      }
-
-
+      WbFullPic.Document?.InvokeScript("SetPicture", new object[] {filePath, o});
     }
 
     private void SwitchToBrowser() {

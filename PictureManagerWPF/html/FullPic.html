@@ -76,58 +76,69 @@
 
       function FitPicture() {
         var pic = document.getElementById("fullPic");
-        if (pic !== undefined && pic !== null) {
-          pic.removeAttribute("height");
-          pic.removeAttribute("width");
+        if (pic === undefined || pic === null) return;
+        pic.removeAttribute("height");
+        pic.removeAttribute("width");
 
-          //if the picture is rotated, switch width and height
-          picIsRotated = (pic.style.transform.indexOf("270deg") > 0 || pic.style.transform.indexOf("90deg") > 0);
-          
-          var bh = window.document.body.clientHeight;
-          var bw = window.document.body.clientWidth;
-          var pnh;
-          var pnw;
+        //if the picture is rotated, switch width and height
+        picIsRotated = (pic.style.transform.indexOf("270deg") > 0 || pic.style.transform.indexOf("90deg") > 0);
+
+        var bh = window.document.body.clientHeight;
+        var bw = window.document.body.clientWidth;
+        var pnh;
+        var pnw;
+
+        if (picIsRotated) {
+          pnw = pic.naturalHeight;
+          pnh = pic.naturalWidth;
+        } else {
+          pnh = pic.naturalHeight;
+          pnw = pic.naturalWidth;
+        }
+
+        if ((pnh > bh) || (pnw > bw)) { //picture is bigger than window  
+          picBiggerThanScreen = true;
+          pic.className = "";
+
+          var ph;
+          var pw;
+          if (bh / pnh > bw / pnw) { //landscape
+            pw = bw;
+            ph = pnh * (bw / pnw);
+          } else {
+            pw = pnw * (bh / pnh);
+            ph = bh;
+          }
 
           if (picIsRotated) {
-            pnw = pic.naturalHeight;
-            pnh = pic.naturalWidth;
-          } else {
-            pnh = pic.naturalHeight;
-            pnw = pic.naturalWidth;
+            var tmp = pw;
+            pw = ph;
+            ph = tmp;
           }
 
-          if ((pnh > bh) || (pnw > bw)) { //picture is bigger than window  
-            picBiggerThanScreen = true;
-            pic.className = "";
+          pic.height = ph;
+          pic.width = pw;
+          pic.style.marginTop = ((bh - ph) / 2) + "px";
+          pic.style.marginLeft = ((bw - pw) / 2) + "px";
 
-            var ph;
-            var pw;
-            if (bh / pnh > bw / pnw) { //landscape
-              pw = bw;
-              ph = pnh * (bw / pnw);
-            } else {
-              pw = pnw * (bh / pnh);
-              ph = bh;
-            }
-
-            if (picIsRotated) {
-              var tmp = pw;
-              pw = ph;
-              ph = tmp;
-            }
-
-            pic.height = ph;
-            pic.width = pw;
-            pic.style.marginTop = ((bh - ph) / 2) + "px";
-            pic.style.marginLeft = ((bw - pw) / 2) + "px";
-            
-          } else {
-            picBiggerThanScreen = false;
-            pic.className = "centerFullPic";
-            pic.height = pnh;
-            pic.width = pnw;
-          }
+        } else {
+          picBiggerThanScreen = false;
+          pic.className = "centerFullPic";
+          pic.height = pnh;
+          pic.width = pnw;
         }
+
+        pic.style.display = "block";
+      }
+
+      function SetPicture(src, orientation) {
+        var pic = document.getElementById("fullPic");
+        if (pic === undefined || pic === null) return;
+        pic.style.marginTop = null;
+        pic.style.marginLeft = null;
+        pic.style.display = "none";
+        pic.style.transform = "rotate(" + orientation + "deg)";
+        pic.src = src;
       }
     </script>
 
