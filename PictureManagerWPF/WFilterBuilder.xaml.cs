@@ -2,12 +2,16 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Forms;
 using System.Windows.Input;
 using PictureManager.Dialogs;
+using ContextMenu = System.Windows.Controls.ContextMenu;
+using MenuItem = System.Windows.Controls.MenuItem;
 
 namespace PictureManager {
   /// <summary>
@@ -154,22 +158,47 @@ namespace PictureManager {
       var x = sender as TextBlock;
       if (x == null) return;
       var fc = (FilterCondition) x.DataContext;
-      InputDialog inputDialog = new InputDialog {
-        Owner = this,
-        IconName = "appbar_filter",
-        Title = "Filter condition value",
-        Question = "Enter filter condition value.",
-        Answer = fc.Value
-      };
+      if (fc.Property == FilterConditionProperties.FileDirectory) {
+        FolderBrowserDialog dir = new FolderBrowserDialog();
+        if (Directory.Exists(fc.Value)) dir.SelectedPath = fc.Value;
+        if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+          fc.Value = dir.SelectedPath;
+        }
+      } else if (fc.Property == FilterConditionProperties.FilePath) {
+        OpenFileDialog fd = new OpenFileDialog {
+          Multiselect = true,
+          Filter = "JPG|*.jpg"
+        };
+        if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+          var parent = fc.Parent;
+          var first = true;
+          foreach (var file in fd.FileNames) {
+            if (first) {
+              fc.Value = file;
+              first = false;
+            } else {
+              parent.Items.Add(new FilterCondition {Operator = fc.Operator, Parent = parent, Property = fc.Property, Value = file});
+            }
+          }
+        }
+      } else {
+        InputDialog inputDialog = new InputDialog {
+          Owner = this,
+          IconName = "appbar_filter",
+          Title = "Filter condition value",
+          Question = "Enter filter condition value.",
+          Answer = fc.Value
+        };
 
-      inputDialog.BtnDialogOk.Click += delegate {
-        inputDialog.DialogResult = true;
-      };
+        inputDialog.BtnDialogOk.Click += delegate {
+          inputDialog.DialogResult = true;
+        };
 
-      inputDialog.TxtAnswer.SelectAll();
+        inputDialog.TxtAnswer.SelectAll();
 
-      if (inputDialog.ShowDialog() ?? true) {
-        fc.Value = inputDialog.Answer;
+        if (inputDialog.ShowDialog() ?? true) {
+          fc.Value = inputDialog.Answer;
+        }
       }
     }
 
@@ -224,7 +253,8 @@ namespace PictureManager {
     Keyword = 2,
     FilePath = 3,
     FileName = 4,
-    Comment = 5
+    FileDirectory = 5,
+    Comment = 6
   }
 
   [Serializable]

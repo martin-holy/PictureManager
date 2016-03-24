@@ -148,6 +148,8 @@ namespace PictureManager {
       TvFolders.ItemsSource = ACore.FoldersRoot;
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
       TvFilters.ItemsSource = ACore.FiltersRoot;
+      CmbViewers.ItemsSource = ACore.Viewers.Items;
+      CmbViewers.SelectedItem = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
     }
 
     public void ShowFullPicture() {
@@ -310,6 +312,40 @@ namespace PictureManager {
 
     private void CmdFilterDelete(object sender, ExecutedRoutedEventArgs e) {
       
+    }
+
+    private void CmdViewerNew(object sender, ExecutedRoutedEventArgs e) {
+      var newViewer = new ViewModel.Viewer {Db = ACore.Db, Title = "New viewer"};
+      var vb = new WViewerBuilder(newViewer) {Owner = this};
+      if (vb.ShowDialog() ?? true) {
+        newViewer.DirsAllowed = vb.DirListAllowed.Paths.ToArray();
+        newViewer.DirsDenied = vb.DirListDenied.Paths.ToArray();
+        newViewer.Save();
+        ACore.Viewers.Items.Add(newViewer);
+      }
+    }
+
+    private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
+      var viewer = (ViewModel.Viewer)e.Parameter;
+      var title = viewer.Title;
+      var vb = new WViewerBuilder(viewer) { Owner = this };
+      if (vb.ShowDialog() ?? true) {
+        viewer.DirsAllowed = vb.DirListAllowed.Paths.ToArray();
+        viewer.DirsDenied = vb.DirListDenied.Paths.ToArray();
+        viewer.Save();
+      } else {
+        viewer.Title = title;
+      }
+    }
+
+    private void CmdViewerDelete(object sender, ExecutedRoutedEventArgs e) {
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes) {
+        var viewer = (ViewModel.Viewer) e.Parameter;
+        ACore.Db.Viewers.DeleteOnSubmit(viewer.Data);
+        ACore.Db.DataContext.SubmitChanges();
+        ACore.Viewers.Items.Remove(viewer);
+      }
     }
 
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
@@ -811,6 +847,15 @@ namespace PictureManager {
           menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterDelete"], CommandParameter = item });
           break;
         }
+        case nameof(ViewModel.Viewers): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerNew"]});
+          break;
+        }
+        case nameof(ViewModel.Viewer): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerEdit"], CommandParameter = item});
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerDelete"], CommandParameter = item});
+          break;
+        }
       }
 
       if (menu.Items.Count > 0)
@@ -821,6 +866,13 @@ namespace PictureManager {
       if (CmbThumbPage.SelectedIndex == -1) return;
       ACore.ThumbsPageIndex = CmbThumbPage.SelectedIndex;
       ACore.CreateThumbnailsWebPage();
+    }
+
+    private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+      var viewer = CmbViewers.SelectedItem as ViewModel.Viewer;
+      if (viewer == null) return;
+      Settings.Default.Viewer = viewer.Title;
+      Settings.Default.Save();
     }
   }
 }

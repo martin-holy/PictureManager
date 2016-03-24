@@ -22,6 +22,7 @@ namespace PictureManager.DataModel {
     public Table<MediaItem> MediaItems;
     public Table<Person> People;
     public Table<PeopleGroup> PeopleGroups;
+    public Table<Viewer> Viewers; 
     public Table<SQLiteSequence> SQLiteSequences;
 
 
@@ -53,6 +54,7 @@ namespace PictureManager.DataModel {
       MediaItems = DataContext.GetTable<MediaItem>();
       People = DataContext.GetTable<Person>();
       PeopleGroups = DataContext.GetTable<PeopleGroup>();
+      Viewers = DataContext.GetTable<Viewer>();
       SQLiteSequences = DataContext.GetTable<SQLiteSequence>();
 
       TableIds = new Dictionary<string, long>();
@@ -63,6 +65,9 @@ namespace PictureManager.DataModel {
     }
 
     public long GetNextIdFor(string tableName) {
+      if (!TableIds.ContainsKey(tableName)) {
+        TableIds.Add(tableName, 0);
+      }
       var nextId = TableIds[tableName] + 1;
       TableIds[tableName] = nextId;
       return nextId;
@@ -131,6 +136,14 @@ namespace PictureManager.DataModel {
               + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
               + ",[MediaItemId] integer NOT NULL"
               + ",[PersonId] integer NOT NULL); ");
+
+      Execute("CREATE TABLE IF NOT EXISTS \"Viewers\"("
+              + "[Id] integer PRIMARY KEY AUTOINCREMENT NOT NULL"
+              + ",[Name] nvarchar(64) NOT NULL COLLATE NOCASE"
+              + ",[DirsAllowed] ntext NOT NULL"
+              + ",[DirsDenied] ntext NOT NULL"
+              + ",[FilesAllowed] ntext NOT NULL"
+              + ",[FilesDenied] ntext NOT NULL); ");
     }
   }
 
@@ -234,6 +247,27 @@ namespace PictureManager.DataModel {
 
     [Column(Name = "Name", CanBeNull = false)]
     public string Name { get; set; }
+  }
+
+  [Table(Name = "Viewers")]
+  public class Viewer {
+    [Column(Name = "Id", IsPrimaryKey = true, CanBeNull = false)]
+    public long Id { get; set; }
+
+    [Column(Name = "Name", CanBeNull = false)]
+    public string Name { get; set; }
+
+    [Column(Name = "DirsAllowed", CanBeNull = false)]
+    public string DirsAllowed { get; set; }
+
+    [Column(Name = "DirsDenied", CanBeNull = false)]
+    public string DirsDenied { get; set; }
+
+    [Column(Name = "FilesAllowed", CanBeNull = false)]
+    public string FilesAllowed { get; set; }
+
+    [Column(Name = "FilesDenied", CanBeNull = false)]
+    public string FilesDenied { get; set; }
   }
 
   [Table(Name = "sqlite_sequence")]

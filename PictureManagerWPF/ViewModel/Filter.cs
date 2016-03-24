@@ -45,7 +45,7 @@ namespace PictureManager.ViewModel {
       items.Clear();
       var parentId = parent?.Id;
 
-      foreach (var f in db.Filters.Where(x => x.ParentId == parentId)) {
+      foreach (var f in db.Filters.ToArray().Where(x => x.ParentId.Equals(parentId))) {
         Filter item = new Filter(f, db, parent);
         item.LoadFilterData(f.Data);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using PictureManager.Properties;
 
@@ -22,6 +23,7 @@ namespace PictureManager.ViewModel {
       AllFolderKeywords.Clear();
       Dictionary<long, string> paths = new Dictionary<long, string>();
       foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
+        if (!Directory.Exists(dir.Path)) continue;
         var path = GetFolderKeywordKeyPath(dir.Path);
         if (string.IsNullOrEmpty(path)) continue;
 

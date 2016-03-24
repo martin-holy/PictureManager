@@ -27,6 +27,26 @@
         </Style.Triggers>
       </Style>
 
+      <!-- IconRect -->
+      <Style x:Key="IconRect" TargetType="Rectangle">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
+        <Setter Property="OpacityMask">
+          <Setter.Value>
+            <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}" />
+          </Setter.Value>
+        </Setter>
+      </Style>
+
+      <!-- TreeViewTitle -->
+      <Style x:Key="TreeViewTitle" TargetType="TextBlock">
+        <Setter Property="Text" Value="{Binding Title}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="5,0,0,0" />
+      </Style>
+
       <Rectangle x:Key="MenuItemIconRect" x:Shared="False" Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
         <Rectangle.OpacityMask>
           <VisualBrush Stretch="Uniform" Visual="{Binding Tag, RelativeSource={RelativeSource AncestorType=MenuItem},

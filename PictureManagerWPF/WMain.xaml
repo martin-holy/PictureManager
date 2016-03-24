@@ -32,6 +32,16 @@
         </MenuItem>
         <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
       </Menu>
+      <ComboBox x:Name="CmbViewers" SelectionChanged="CmbViewers_OnSelectionChanged">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal" Background="Transparent">
+              <Rectangle Style="{StaticResource IconRect}" />
+              <TextBlock Style="{StaticResource TreeViewTitle}" />
+            </StackPanel>
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
   
@@ -54,26 +64,6 @@
           <Setter Property="Visibility" Value="Visible"/>
         </DataTrigger>
       </Style.Triggers>
-    </Style>
-    
-    <!-- IconRect -->
-    <Style x:Key="IconRect" TargetType="Rectangle">
-      <Setter Property="Width" Value="18" />
-      <Setter Property="Height" Value="18" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
-      <Setter Property="OpacityMask">
-        <Setter.Value>
-          <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}" />
-        </Setter.Value>
-      </Setter>
-    </Style>
-
-    <!-- TreeViewTitle -->
-    <Style x:Key="TreeViewTitle" TargetType="TextBlock">
-      <Setter Property="Text" Value="{Binding Title}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="5,0,0,0" />
     </Style>
 
     <!-- TreeViewStackPanel -->
@@ -119,6 +109,9 @@
     <RoutedUICommand x:Key="FilterNew" Text="New" />
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
     <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
+    <RoutedUICommand x:Key="ViewerNew" Text="New" />
+    <RoutedUICommand x:Key="ViewerEdit" Text="Edit" />
+    <RoutedUICommand x:Key="ViewerDelete" Text="Delete" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
@@ -141,6 +134,9 @@
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
+    <CommandBinding Command="{StaticResource ViewerNew}" Executed="CmdViewerNew" />
+    <CommandBinding Command="{StaticResource ViewerEdit}" Executed="CmdViewerEdit" />
+    <CommandBinding Command="{StaticResource ViewerDelete}" Executed="CmdViewerDelete" />
 
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
@@ -331,7 +327,7 @@
 
           </TreeView>
         </TabItem>
-        
+
         <TabItem Header="Filters" HorizontalAlignment="Left">
           <!-- TreeView Filters -->
           <TreeView x:Name="TvFilters">
@@ -367,11 +363,19 @@
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
+
+              <!-- TreeView Filters - Viewer -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:Viewer}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
             </TreeView.Resources>
 
           </TreeView>
         </TabItem>
-        
       </TabControl>
 
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />

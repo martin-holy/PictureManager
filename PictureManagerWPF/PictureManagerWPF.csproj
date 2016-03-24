@@ -114,6 +114,8 @@
     <Compile Include="ViewModel\Person.cs" />
     <Compile Include="ViewModel\Rating.cs" />
     <Compile Include="ViewModel\Ratings.cs" />
+    <Compile Include="ViewModel\Viewer.cs" />
+    <Compile Include="ViewModel\Viewers.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
     </Compile>
@@ -134,6 +136,9 @@
     </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WViewerBuilder.xaml.cs">
+      <DependentUpon>WViewerBuilder.xaml</DependentUpon>
     </Compile>
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
@@ -188,6 +193,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WViewerBuilder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

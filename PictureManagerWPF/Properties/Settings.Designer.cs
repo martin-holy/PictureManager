@@ -106,5 +106,17 @@ namespace PictureManager.Properties {
                 this["CatalogFolders"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Viewer {
+            get {
+                return ((string)(this["Viewer"]));
+            }
+            set {
+                this["Viewer"] = value;
+            }
+        }
     }
 }

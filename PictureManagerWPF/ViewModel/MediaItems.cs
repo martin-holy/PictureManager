@@ -102,12 +102,17 @@ namespace PictureManager.ViewModel {
       foreach (var file in Directory.EnumerateFiles(path)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
         .OrderBy(x => x)) {
+
+        var filePath = file.Replace(":\\\\", ":\\");
+        //Filter by Viewer
+        if (!CanViewerSeeThis(filePath)) continue;
+
         DataModel.MediaItem item;
-        if (dbItemsByDir.TryGetValue(Path.GetFileName(file) ?? string.Empty, out item)) {
+        if (dbItemsByDir.TryGetValue(Path.GetFileName(file), out item)) {
           dbItems.Add(item);
         }
 
-        var pic = new Picture(file.Replace(":\\\\", ":\\"), Db, Items.Count, WbThumbs, item) {
+        var pic = new Picture(filePath, Db, Items.Count, WbThumbs, item) {
           DirId = dirId,
           FolderKeyword = fk
         };
@@ -151,7 +156,7 @@ namespace PictureManager.ViewModel {
               join mik in Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
               from k2 in keywords
               join mi in Db.MediaItems on k2.MediaItemId equals mi.Id
-              select mi).ToArray();
+              select mi).ToList().Distinct().ToArray();
           } else {
             items = (from mi in Db.MediaItems
               join mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
@@ -203,6 +208,10 @@ namespace PictureManager.ViewModel {
           if (!dirs.ContainsKey(item.DirectoryId)) continue;
           var filePath = Path.Combine(dirs[item.DirectoryId].Path, item.FileName);
           if (!File.Exists(filePath)) continue;
+
+          //Filter by Viewer
+          if (!CanViewerSeeThis(filePath)) continue;
+
           Picture pic = new Picture(filePath, Db, Items.Count, WbThumbs, item);
           //Load People
           foreach (var mip in mips.Where(x => x.MediaItemId == item.Id)) {
@@ -220,6 +229,23 @@ namespace PictureManager.ViewModel {
       }
 
       ACore.UpdateStatusBarInfo();
+    }
+
+    private bool CanViewerSeeThis(string filePath) {
+      var ok = false;
+      var viewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Properties.Settings.Default.Viewer);
+      if (viewer != null) {
+        if (viewer.DirsAllowed.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+          if (viewer.DirsDenied.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+            ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+          } else {
+            ok = !viewer.FilesDenied.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+          }
+        } else {
+          ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+        }
+      }
+      return ok;
     }
 
     public void ScrollToCurrent() {

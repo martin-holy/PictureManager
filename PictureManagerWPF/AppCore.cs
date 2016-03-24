@@ -25,6 +25,7 @@ namespace PictureManager {
     public ViewModel.FavoriteFolders FavoriteFolders;
     public ViewModel.Ratings Ratings;
     public ViewModel.Filters Filters;
+    public ViewModel.Viewers Viewers;
 
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
@@ -82,6 +83,7 @@ namespace PictureManager {
       FavoriteFolders = new ViewModel.FavoriteFolders();
       Ratings = new ViewModel.Ratings();
       Filters = new ViewModel.Filters {Db = Db};
+      Viewers = new ViewModel.Viewers {Db = Db};
 
       People.Load();
       People.Load();
@@ -91,10 +93,11 @@ namespace PictureManager {
       FavoriteFolders.Load();
       Ratings.Load();
       Filters.Load();
+      Viewers.Load();
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
       KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords};
-      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters};
+      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters, Viewers};
     }
 
     public void UpdateStatusBarInfo() {
@@ -367,12 +370,13 @@ namespace PictureManager {
         fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
                              FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE);
         var cachePath = @Settings.Default.CachePath;
+        var mItems = Db.MediaItems.ToArray();
 
         foreach (var item in foResult.Where(x => MediaItems.SuportedExts.Any(ext => x.Key.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))) {
           var srcDirId = GetDirectoryIdByPath(Path.GetDirectoryName(item.Key));
           if (srcDirId == null) continue;
 
-          var srcPic = Db.MediaItems.SingleOrDefault(x => x.DirectoryId == srcDirId && x.FileName == Path.GetFileName(item.Key));
+          var srcPic = mItems.SingleOrDefault(x => x.DirectoryId == srcDirId && x.FileName == Path.GetFileName(item.Key));
           if (srcPic == null) continue;
 
           var destDirId = item.Value == null ? null : (long?) InsertDirecotryInToDb(Path.GetDirectoryName(item.Value));
@@ -390,7 +394,6 @@ namespace PictureManager {
                 Comment = srcPic.Comment,
                 Orientation = srcPic.Orientation
               });
-              Db.MediaItems.Context.SubmitChanges();
 
               //duplicate Picture Keywords
               foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
@@ -399,8 +402,6 @@ namespace PictureManager {
                   KeywordId = mik.KeywordId,
                   MediaItemId = destPicId
                 });
-                //TODO: nevim jestli GetNextIdFor vrati dalsi Id kdyz neudelam SubmitChanges
-                Db.MediaItemKeywords.Context.SubmitChanges();
               }
 
                 //duplicate Picture People
@@ -410,8 +411,6 @@ namespace PictureManager {
                   PersonId = mip.PersonId,
                   MediaItemId = destPicId
                 });
-                //TODO: nevim jestli GetNextIdFor vrati dalsi Id kdyz neudelam SubmitChanges
-                Db.MediaItemPeople.Context.SubmitChanges();
               }
 
               //duplicate thumbnail
@@ -423,7 +422,6 @@ namespace PictureManager {
               //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
               srcPic.DirectoryId = (long) destDirId;
               srcPic.FileName = Path.GetFileName(item.Value);
-              Db.MediaItems.Context.SubmitChanges();
 
               fo.MoveItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
                 Path.GetFileName(item.Value));
@@ -433,15 +431,12 @@ namespace PictureManager {
               foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
                 Db.MediaItemKeywords.DeleteOnSubmit(mik);
               }
-              Db.MediaItemKeywords.Context.SubmitChanges();
 
               foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
                 Db.MediaItemPeople.DeleteOnSubmit(mip);
               }
-              Db.MediaItemPeople.Context.SubmitChanges();
 
               Db.MediaItems.DeleteOnSubmit(srcPic);
-              Db.MediaItems.Context.SubmitChanges();
 
               fo.DeleteItem(item.Key.Replace(":\\", cachePath));
               break;
@@ -460,7 +455,6 @@ namespace PictureManager {
               foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(from))) {
                 dir.Path = dir.Path.Replace(from, newFullPath);
               }
-              Db.Directories.Context.SubmitChanges();
               break;
             }
             case FileOperations.Delete: {
@@ -471,6 +465,7 @@ namespace PictureManager {
         }
 
         fo.PerformOperations();
+        Db.DataContext.SubmitChanges();
       }
 
       return true;

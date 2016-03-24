@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PictureManager"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Filter Builder" Height="300" Width="300"
+        Title="Filter Builder" Height="400" Width="500"
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
         ShowInTaskbar="False" 

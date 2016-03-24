@@ -25,6 +25,7 @@ namespace PictureManager.UserControls {
 
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ViewModel.Folders Folders;
+    public List<string> Paths; 
 
     private string _settingsPropertyName;
     public string SettingsPropertyName {
@@ -33,6 +34,7 @@ namespace PictureManager.UserControls {
       }
       set {
         _settingsPropertyName = value;
+        LoadPathsFromSettings();
         LoadFolders();
         Folders.IsExpanded = true;
         Focus();
@@ -42,14 +44,30 @@ namespace PictureManager.UserControls {
     public DirectoryList() {
       InitializeComponent();
 
+      Paths = new List<string>();
       Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       ItemsSource = FoldersRoot;
     }
 
-    private List<string> GetPaths() {
-      return ((string) Settings.Default[SettingsPropertyName]).Split(new[] {Environment.NewLine},
-        StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x).ToList();
+    private void LoadPathsFromSettings() {
+      Paths.Clear();
+      Paths.AddRange(((string) Settings.Default[_settingsPropertyName]).Split(new[] {Environment.NewLine},
+        StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x).ToList());
+    }
+
+    public void LoadPathsFromList(List<string> paths) {
+      Paths.Clear();
+      if (paths != null)
+        Paths.AddRange(paths);
+      LoadFolders();
+      Folders.IsExpanded = true;
+      Focus();
+    }
+
+    public void SavePathsToSettings() {
+      Settings.Default[_settingsPropertyName] = string.Join(Environment.NewLine, Paths);
+      Settings.Default.Save();
     }
 
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
@@ -79,9 +97,8 @@ namespace PictureManager.UserControls {
     }
 
     private void LoadFolders() {
-      var paths = GetPaths();
       Folders.Items.Clear();
-      foreach (var path in paths) {
+      foreach (var path in Paths.OrderBy(x => x)) {
         DirectoryInfo di = new DirectoryInfo(path);
         ViewModel.Folder item = new ViewModel.Folder {
           Title = di.Name,
@@ -107,10 +124,7 @@ namespace PictureManager.UserControls {
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
       FolderBrowserDialog dir = new FolderBrowserDialog();
       if (dir.ShowDialog() == DialogResult.OK) {
-        var paths = GetPaths();
-        paths.Add(dir.SelectedPath);
-        Settings.Default[SettingsPropertyName] = string.Join(Environment.NewLine, paths);
-        Settings.Default.Save();
+        Paths.Add($"{dir.SelectedPath}{(dir.SelectedPath.EndsWith("\\") ? string.Empty : "\\")}");
         LoadFolders();
       }
     }
@@ -118,10 +132,7 @@ namespace PictureManager.UserControls {
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {
       var folder = e.Parameter as ViewModel.Folder;
       if (folder == null) return;
-      var paths = GetPaths();
-      paths.Remove(folder.FullPath);
-      Settings.Default[SettingsPropertyName] = string.Join(Environment.NewLine, paths);
-      Settings.Default.Save();
+      Paths.Remove(folder.FullPath);
       LoadFolders();
     }
   }

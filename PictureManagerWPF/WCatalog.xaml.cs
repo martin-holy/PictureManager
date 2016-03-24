@@ -58,7 +58,7 @@ namespace PictureManager {
       var folder = TvFolders.SelectedItem as ViewModel.Folder;
       _selectedFolderPath = folder == null ? string.Empty : folder.FullPath;
 
-      if (folder != null && folder.IsAccessible) return;
+      if (folder != null && !folder.IsAccessible) return;
 
       BtnUpdate.IsEnabled = false;
       _update = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
@@ -110,10 +110,9 @@ namespace PictureManager {
         foreach (var file in Directory.EnumerateFiles(path)
           .Where(f => _aCore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
           .OrderBy(x => x)) {
-          
-          var mi = new ViewModel.BaseMediaItem(file, _aCore.Db, 0, null, null) {DirId = dirId};
-          var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == mi.FileNameWithExt);
-          if (miInDb != null) mi.Id = miInDb.Id;
+
+          var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
+          var mi = new ViewModel.BaseMediaItem(file, _aCore.Db, 0, null, miInDb) {DirId = dirId};
           if (!_newOnly || miInDb == null)
             mi.SaveMediaItemInToDb(_aCore, true, miInDb == null);
 
