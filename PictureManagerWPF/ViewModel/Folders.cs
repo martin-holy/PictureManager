@@ -7,6 +7,7 @@ namespace PictureManager.ViewModel {
   public class Folders : BaseTreeViewItem {
     public ObservableCollection<Folder> Items { get; set; }
 
+
     public Folders() {
       Items = new ObservableCollection<Folder>();
       Title = "Folders";
@@ -14,6 +15,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void AddDrives() {
+      Items.Clear();
       string[] drives = Environment.GetLogicalDrives();
 
       foreach (string drive in drives) {

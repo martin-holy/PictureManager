@@ -30,6 +30,7 @@ namespace PictureManager {
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
       ACore = new AppCore {WbThumbs = WbThumbs, WMain = this};
+      Application.Current.Properties["AppCore"] = ACore;
       MainStatusBar.DataContext = ACore.AppInfo;
 
       WbThumbs.ObjectForScripting = new ScriptManager(this);
@@ -873,6 +874,8 @@ namespace PictureManager {
       if (viewer == null) return;
       Settings.Default.Viewer = viewer.Title;
       Settings.Default.Save();
+      ACore.FolderKeywords.Load();
+      ACore.Folders.AddDrives();
     }
   }
 }

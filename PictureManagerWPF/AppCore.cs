@@ -78,7 +78,7 @@ namespace PictureManager {
     public void Init() {
       People = new ViewModel.People {Db = Db};
       Keywords = new ViewModel.Keywords {Db = Db};
-      FolderKeywords = new ViewModel.FolderKeywords {Db = Db};
+      FolderKeywords = new ViewModel.FolderKeywords {Db = Db, ACore = this};
       Folders = new ViewModel.Folders();
       FavoriteFolders = new ViewModel.FavoriteFolders();
       Ratings = new ViewModel.Ratings();
@@ -482,6 +482,40 @@ namespace PictureManager {
       var newDirId = Db.GetNextIdFor("Directories");
       Db.Directories.InsertOnSubmit(new DataModel.Directory {Id = newDirId, Path = path});
       return newDirId;
+    }
+
+    public bool CanViewerSeeThisFile(string filePath) {
+      var ok = false;
+      var viewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+      if (viewer != null) {
+        if (viewer.DirsAllowed.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+          if (viewer.DirsDenied.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+            ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+          } else {
+            ok = !viewer.FilesDenied.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+          }
+        } else {
+          ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+        }
+      }
+      return ok;
+    }
+
+    public bool CanViewerSeeThisDirectory(string dirPath) {
+      var ok = false;
+      var viewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+      if (viewer != null) {
+        if (viewer.DirsAllowed.Any(x => x.Contains(dirPath)) || viewer.DirsAllowed.Any(dirPath.Contains)) {
+          if (viewer.DirsDenied.Any(x => x.Contains(dirPath)) || viewer.DirsDenied.Any(dirPath.Contains)) {
+            ok = viewer.FilesAllowed.Any(x => x.StartsWith(dirPath));
+          } else {
+            ok = !viewer.FilesDenied.Any(x => x.StartsWith(dirPath));
+          }
+        } else {
+          ok = viewer.FilesAllowed.Any(x => x.StartsWith(dirPath));
+        }
+      }
+      return ok;
     }
 
     public static void CreateThumbnail(string origPath, string newPath) {

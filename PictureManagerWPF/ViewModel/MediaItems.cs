@@ -105,7 +105,7 @@ namespace PictureManager.ViewModel {
 
         var filePath = file.Replace(":\\\\", ":\\");
         //Filter by Viewer
-        if (!CanViewerSeeThis(filePath)) continue;
+        if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
         DataModel.MediaItem item;
         if (dbItemsByDir.TryGetValue(Path.GetFileName(file), out item)) {
@@ -210,7 +210,7 @@ namespace PictureManager.ViewModel {
           if (!File.Exists(filePath)) continue;
 
           //Filter by Viewer
-          if (!CanViewerSeeThis(filePath)) continue;
+          if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
           Picture pic = new Picture(filePath, Db, Items.Count, WbThumbs, item);
           //Load People
@@ -229,23 +229,6 @@ namespace PictureManager.ViewModel {
       }
 
       ACore.UpdateStatusBarInfo();
-    }
-
-    private bool CanViewerSeeThis(string filePath) {
-      var ok = false;
-      var viewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Properties.Settings.Default.Viewer);
-      if (viewer != null) {
-        if (viewer.DirsAllowed.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-          if (viewer.DirsDenied.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-            ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-          } else {
-            ok = !viewer.FilesDenied.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-          }
-        } else {
-          ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-        }
-      }
-      return ok;
     }
 
     public void ScrollToCurrent() {

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
@@ -41,9 +42,11 @@ namespace PictureManager.ViewModel {
       }
       Items.Clear();
 
+      var aCore = (AppCore)Application.Current.Properties["AppCore"];
       foreach (string dir in Directory.GetDirectories(FullPath).OrderBy(x => x)) {
+        if (!aCore.CanViewerSeeThisDirectory(dir)) continue;
         DirectoryInfo di = new DirectoryInfo(dir);
-        Folder item = new Folder() {
+        Folder item = new Folder {
           Title = di.Name,
           FullPath = dir,
           IconName = "appbar_folder",
@@ -52,7 +55,7 @@ namespace PictureManager.ViewModel {
         };
         try {
           if (di.GetDirectories().Length > 0)
-            item.Items.Add(new Folder() {Title = "..."});
+            item.Items.Add(new Folder {Title = "..."});
         } catch (UnauthorizedAccessException) {
           item.IconName = "appbar_folder_lock";
           item.IsAccessible = false;
