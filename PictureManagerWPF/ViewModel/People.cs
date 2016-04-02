@@ -21,9 +21,9 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllPeople.Clear();
       //Add PeopleGroups
-      foreach (var pg in Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
+      foreach (var pg in Db.ListPeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
         //Add People to the PeopleGroup
-        foreach (var p in Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
+        foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
           pg.Items.Add(p);
           AllPeople.Add(p);
         }
@@ -31,7 +31,7 @@ namespace PictureManager.ViewModel {
       }
 
       //Add People without group
-      foreach (var p in Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
+      foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
         Items.Add(p);
         AllPeople.Add(p);
       }
@@ -50,7 +50,7 @@ namespace PictureManager.ViewModel {
     }
 
     public Person GetPerson(string name, bool create) {
-      var dmPerson = Db.People.SingleOrDefault(x => x.Name.Equals(name));
+      var dmPerson = Db.ListPeople.SingleOrDefault(x => x.Name.Equals(name));
       if (dmPerson != null) {
         return GetPerson(dmPerson.Id, dmPerson.PeopleGroupId);
       }
@@ -64,8 +64,8 @@ namespace PictureManager.ViewModel {
         PeopleGroupId = peopleGroup?.Id
       };
 
-      Db.People.InsertOnSubmit(dmPerson);
-      Db.People.Context.SubmitChanges();
+      Db.InsertOnSubmit(dmPerson);
+      Db.DataContext.SubmitChanges();
 
       var vmPerson = new Person(dmPerson);
       SetInPalce(vmPerson, true);
@@ -78,8 +78,8 @@ namespace PictureManager.ViewModel {
         Name = name
       };
 
-      Db.PeopleGroups.InsertOnSubmit(dmPeopleGroup);
-      Db.PeopleGroups.Context.SubmitChanges();
+      Db.InsertOnSubmit(dmPeopleGroup);
+      Db.DataContext.SubmitChanges();
 
       var vmPeopleGroup = new PeopleGroup(dmPeopleGroup);
       SetInPalce(vmPeopleGroup, true);
@@ -101,7 +101,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.People.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+        if (Db.ListPeople.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Person's name already exists!");
           return;
         }
@@ -115,7 +115,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           person.Title = inputDialog.Answer;
           person.Data.Name = inputDialog.Answer;
-          Db.People.Context.SubmitChanges();
+          Db.DataContext.SubmitChanges();
           SetInPalce(person, false);
         } else CreatePerson(inputDialog.Answer, peopleGroup);
       }
@@ -136,7 +136,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.PeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
+        if (Db.ListPeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;
         }
@@ -150,14 +150,14 @@ namespace PictureManager.ViewModel {
         if (rename) {
           peopleGroup.Title = inputDialog.Answer;
           peopleGroup.Data.Name = inputDialog.Answer;
-          Db.PeopleGroups.Context.SubmitChanges();
+          Db.DataContext.SubmitChanges();
           SetInPalce(peopleGroup, false);
         } else CreateGroup(inputDialog.Answer);
       }
     }
 
     public void SetInPalce(Person person, bool isNew) {
-      var idx = Db.People.ToList().Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
+      var idx = Db.ListPeople.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
       if (person.PeopleGroupId == null) {
         idx += Items.OfType<PeopleGroup>().Count();
         if (isNew)
@@ -174,7 +174,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void SetInPalce(PeopleGroup peopleGroup, bool isNew) {
-      var idx = Db.PeopleGroups.ToList().OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
+      var idx = Db.ListPeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
       if (isNew)
         Items.Insert(idx, peopleGroup);
       else 
@@ -182,12 +182,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePerson(Person person) {
-      foreach (var mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
-        Db.MediaItemPeople.DeleteOnSubmit(mip);
+      foreach (var mip in Db.ListMediaItemPeople.Where(x => x.PersonId == person.Id)) {
+        Db.DeleteOnSubmit(mip);
       }
 
-      Db.People.DeleteOnSubmit(person.Data);
-      Db.People.Context.SubmitChanges();
+      Db.DeleteOnSubmit(person.Data);
+      Db.DataContext.SubmitChanges();
 
       if (person.PeopleGroupId == null) {
         Items.Remove(person);
@@ -197,12 +197,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePeopleGroup(PeopleGroup group) {
-      foreach (var p in Db.People.Where(x => x.PeopleGroupId == group.Id)) {
+      foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == group.Id)) {
         p.PeopleGroupId = null;
       }
-      Db.People.Context.SubmitChanges();
-      Db.PeopleGroups.DeleteOnSubmit(group.Data);
-      Db.PeopleGroups.Context.SubmitChanges();
+
+      Db.DeleteOnSubmit(group.Data);
+      Db.DataContext.SubmitChanges();
 
       foreach (var person in group.Items) {
         person.PeopleGroupId = null;
@@ -226,7 +226,7 @@ namespace PictureManager.ViewModel {
       var newGroupId = peopleGroup?.Id;
       person.PeopleGroupId = newGroupId;
       person.Data.PeopleGroupId = newGroupId;
-      Db.People.Context.SubmitChanges();
+      Db.DataContext.SubmitChanges();
       SetInPalce(person, true); //person is new in the group
     }
   }

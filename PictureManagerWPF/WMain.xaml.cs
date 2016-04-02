@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -136,6 +137,7 @@ namespace PictureManager {
         ACore.OneFileOnly = true;
         ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, ACore.Db, 0, WbThumbs, null));
         ACore.MediaItems.Items[0].IsSelected = true;
+        ACore.MediaItems.Current = ACore.MediaItems.Items[0];
         ShowFullPicture();
       } else {
         InitUi();
@@ -253,7 +255,9 @@ namespace PictureManager {
     }
 
     private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Keywords.DeleteKeyword((ViewModel.Keyword) e.Parameter);
+      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+      if (result == MessageBoxResult.Yes)
+        ACore.Keywords.DeleteKeyword((ViewModel.Keyword) e.Parameter);
     }
 
     private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
@@ -343,7 +347,7 @@ namespace PictureManager {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result == MessageBoxResult.Yes) {
         var viewer = (ViewModel.Viewer) e.Parameter;
-        ACore.Db.Viewers.DeleteOnSubmit(viewer.Data);
+        ACore.Db.DeleteOnSubmit(viewer.Data);
         ACore.Db.DataContext.SubmitChanges();
         ACore.Viewers.Items.Remove(viewer);
       }
@@ -573,11 +577,13 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var dirs = ACore.Db.ListDirectories.Where(x => !Directory.Exists(x.Path)).Select(x => x.Path);
+      
       //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
 
       //PmDbContext context = new PmDbContext();
       //var data = context.Directories.ToList();
-      
+
 
       //var list = TestGetDirectories();
 
@@ -713,7 +719,7 @@ namespace PictureManager {
         for (var i = 0; i < items.Count; i++) {
           items[i].Index = i;
           items[i].Data.Idx = i;
-          ACore.Db.Keywords.Context.SubmitChanges();
+          ACore.Db.DataContext.SubmitChanges();
         }
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
@@ -730,10 +736,17 @@ namespace PictureManager {
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
       if (stackPanel == null) return;
-      DragDrop.DoDragDrop(stackPanel, stackPanel.DataContext, DragDropEffects.All);
+      DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.All);
     }
 
     private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
+      var pos = e.GetPosition(TvFolders);
+      if (pos.Y < 25) {
+        TvFoldersScrollViewer.ScrollToVerticalOffset(TvFoldersScrollViewer.VerticalOffset - 25);
+      } else if (TvFolders.ActualHeight - pos.Y < 25) {
+        TvFoldersScrollViewer.ScrollToVerticalOffset(TvFoldersScrollViewer.VerticalOffset + 25);
+      }
+
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       if (thumbs) {
         var dragged = (string[]) e.Data.GetData(DataFormats.FileDrop);
@@ -771,8 +784,13 @@ namespace PictureManager {
       if (e.KeyStates != DragDropKeyStates.ControlKey) {
         srcData.UpdateFullPath(srcData.Parent.FullPath, destData.FullPath);
         srcData.Parent.Items.Remove(srcData);
+
+        //check if was destination expanded
+        if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
+
         srcData.Parent = destData;
-        destData.Items.Add(srcData);
+        ViewModel.Folder folder = destData.Items.FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
+        destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
       } else {
         destData.GetSubFolders(true);
       }

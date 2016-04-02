@@ -12,26 +12,6 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Catalog" Height="300" Width="400" WindowStartupLocation="CenterOwner" TitleCaps="False">
   <controls:MetroWindow.Resources>
-    <!-- IconRect -->
-    <Style x:Key="IconRect" TargetType="Rectangle">
-      <Setter Property="Width" Value="18" />
-      <Setter Property="Height" Value="18" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
-      <Setter Property="OpacityMask">
-        <Setter.Value>
-          <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}" />
-        </Setter.Value>
-      </Setter>
-    </Style>
-
-    <!-- TreeViewTitle -->
-    <Style x:Key="TreeViewTitle" TargetType="TextBlock">
-      <Setter Property="Text" Value="{Binding Title}" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="5,0,0,0" />
-    </Style>
-
     <RoutedUICommand x:Key="FolderAdd" Text="Add folder" />
     <RoutedUICommand x:Key="FolderRemove" Text="Remove folder" />
   </controls:MetroWindow.Resources>

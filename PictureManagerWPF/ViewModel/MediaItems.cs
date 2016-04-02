@@ -88,16 +88,17 @@ namespace PictureManager.ViewModel {
 
     public void LoadByFolder(string path) {
       if (!Directory.Exists(path)) return;
-      var nextDirId = Db.GetNextIdFor("Directories");
+      var maxDirId = Db.GetMaxIdFor("Directories");
       var dirId = ACore.InsertDirecotryInToDb(path);
-      if (nextDirId == dirId) ACore.FolderKeywords.Load();
+      if (dirId > maxDirId) ACore.FolderKeywords.Load();
       FolderKeyword fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(path);
 
       Current = null;
       Items.Clear();
 
       var dbItems = new List<DataModel.MediaItem>();
-      var dbItemsByDir = Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
+      //var dbItemsByDir = Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
+      var dbItemsByDir = Db.ListMediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
 
       foreach (var file in Directory.EnumerateFiles(path)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
@@ -120,14 +121,22 @@ namespace PictureManager.ViewModel {
       }
 
       //Load People and Keywords for thous that are already in DB
-      var mips = (from mip in Db.MediaItemPeople.ToArray()
+      /*var mips = (from mip in Db.MediaItemPeople.ToArray()
                   join mi in dbItems on mip.MediaItemId equals mi.Id
                   select mip).ToArray();
 
       var miks = (from mik in Db.MediaItemKeywords.ToArray()
                   join mi in dbItems on mik.MediaItemId equals mi.Id
+                  select mik).ToArray();*/
+
+      var mips = (from mip in Db.ListMediaItemPeople
+                  join mi in dbItems on mip.MediaItemId equals mi.Id
+                  select mip).ToArray();
+
+      var miks = (from mik in Db.ListMediaItemKeywords
+                  join mi in dbItems on mik.MediaItemId equals mi.Id
                   select mik).ToArray();
-      
+
       foreach (var item in Items.Where(x => x.Data != null)) {
         //Load People
         foreach (var mip in mips.Where(x => x.MediaItemId == item.Id)) {
@@ -150,59 +159,59 @@ namespace PictureManager.ViewModel {
 
       switch (tag.GetType().Name) {
         case nameof(Keyword): {
-          var keyword = (Keyword) tag;
-          if (recursive) {
-            items = (from k in Db.Keywords.Where(x => x.Name.StartsWith(keyword.FullPath))
-              join mik in Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
-              from k2 in keywords
-              join mi in Db.MediaItems on k2.MediaItemId equals mi.Id
-              select mi).ToList().Distinct().ToArray();
-          } else {
-            items = (from mi in Db.MediaItems
-              join mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
-              select mi).ToArray();
+            var keyword = (Keyword)tag;
+            if (recursive) {
+              items = (from k in Db.ListKeywords.Where(x => x.Name.StartsWith(keyword.FullPath))
+                       join mik in Db.ListMediaItemKeywords on k.Id equals mik.KeywordId into keywords
+                       from k2 in keywords
+                       join mi in Db.ListMediaItems on k2.MediaItemId equals mi.Id
+                       select mi).ToList().Distinct().ToArray();
+            } else {
+              items = (from mi in Db.ListMediaItems
+                       join mik in Db.ListMediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
+                       select mi).ToArray();
+            }
+            break;
           }
-          break;
-        }
         case nameof(Person): {
-          var person = (Person) tag;
-          items = (from mi in Db.MediaItems
-            join mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
-            select mi).ToArray();
-          break;
-        }
+            var person = (Person)tag;
+            items = (from mi in Db.ListMediaItems
+                     join mip in Db.ListMediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
+                     select mi).ToArray();
+            break;
+          }
         case nameof(FolderKeyword): {
-          var folderKeyword = (FolderKeyword) tag;
-          if (recursive) {
-            var itemss = new List<DataModel.MediaItem>();
-            foreach (var fkDir in Db.Directories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
-              foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(fkDir.Path))) {
-                foreach (var mi in Db.MediaItems.Where(x => x.DirectoryId == dir.Id)) {
-                  itemss.Add(mi);
+            var folderKeyword = (FolderKeyword)tag;
+            if (recursive) {
+              var itemss = new List<DataModel.MediaItem>();
+              foreach (var fkDir in Db.ListDirectories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
+                foreach (var dir in Db.ListDirectories.Where(x => x.Path.StartsWith(fkDir.Path))) {
+                  foreach (var mi in Db.ListMediaItems.Where(x => x.DirectoryId == dir.Id)) {
+                    itemss.Add(mi);
+                  }
                 }
               }
+              items = itemss.OrderBy(x => x.FileName).ToArray();
+            } else {
+              items = Db.ListMediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
             }
-            items = itemss.OrderBy(x => x.FileName).ToArray();
-          } else {
-            items = Db.MediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
+            break;
           }
-          break;
-        }
       }
 
       if (items != null) {
-        var allDirs = (from d in Db.Directories.ToArray()
-          join mi in items on d.Id equals mi.DirectoryId
-          select d).Distinct().ToArray();
+        var allDirs = (from d in Db.ListDirectories
+                       join mi in items on d.Id equals mi.DirectoryId
+                       select d).Distinct().ToArray();
         var dirs = allDirs.Where(dir => Directory.Exists(dir.Path)).ToDictionary(dir => dir.Id);
 
-        var mips = (from mip in Db.MediaItemPeople.ToArray()
-          join mi in items on mip.MediaItemId equals mi.Id
-          select mip).ToArray();
+        var mips = (from mip in Db.ListMediaItemPeople
+                    join mi in items on mip.MediaItemId equals mi.Id
+                    select mip).ToArray();
 
-        var miks = (from mik in Db.MediaItemKeywords.ToArray()
-          join mi in items on mik.MediaItemId equals mi.Id
-          select mik).ToArray();
+        var miks = (from mik in Db.ListMediaItemKeywords
+                    join mi in items on mik.MediaItemId equals mi.Id
+                    select mik).ToArray();
 
         foreach (var item in items.OrderBy(x => x.FileName)) {
           if (!dirs.ContainsKey(item.DirectoryId)) continue;

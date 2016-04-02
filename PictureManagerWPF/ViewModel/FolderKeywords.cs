@@ -23,7 +23,7 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllFolderKeywords.Clear();
       Dictionary<long, string> paths = new Dictionary<long, string>();
-      foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
+      foreach (var dir in Db.ListDirectories.OrderBy(x => x.Path)) {
         if (!Directory.Exists(dir.Path)) continue;
         if (!ACore.CanViewerSeeThisDirectory(dir.Path)) continue;
         var path = GetFolderKeywordKeyPath(dir.Path);

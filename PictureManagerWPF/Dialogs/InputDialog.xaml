@@ -13,7 +13,7 @@
         ShowMaxRestoreButton="False" 
         ShowMinButton="False" 
         WindowStartupLocation="CenterOwner" TitleCaps="False" ResizeMode="NoResize" 
-        x:Name="This" DataContext="{Binding ElementName=This}">
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <controls:MetroWindow.Resources>
     <Style x:Key="ErrorStyle" TargetType="TextBox">
       <Style.Triggers>
@@ -39,7 +39,7 @@
       </Rectangle.OpacityMask>
     </Rectangle>
     <Label Name="LblQuestion" Grid.Column="1" Grid.Row="0" Content="{Binding Path=Question}"/>
-    <TextBox Name="TxtAnswer" Grid.Column="1" Grid.Row="1" MinWidth="250" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" />
+    <TextBox Name="TxtAnswer" Grid.Column="1" Grid.Row="1" MinWidth="250" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
 
     <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,15,0,0">
       <Button IsDefault="True" Name="BtnDialogOk" MinWidth="60" Margin="0,0,10,0">_Ok</Button>

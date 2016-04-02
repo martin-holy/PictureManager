@@ -25,6 +25,25 @@ namespace PictureManager.DataModel {
     public Table<Viewer> Viewers; 
     public Table<SQLiteSequence> SQLiteSequences;
 
+    private List<Directory> _listDirectories;
+    private List<Filter> _listFilters;
+    private List<Keyword> _listKeywords;
+    private List<MediaItemKeyword> _listMediaItemKeywords;
+    private List<MediaItemPerson> _listMediaItemPeople;
+    private List<MediaItem> _listMediaItems;
+    private List<Person> _listPeople;
+    private List<PeopleGroup> _listPeopleGroups;
+    private List<Viewer> _listViewers;
+
+    public List<Directory> ListDirectories => _listDirectories ?? (_listDirectories = Directories.ToList());
+    public List<Filter> ListFilters => _listFilters ?? (_listFilters = Filters.ToList());
+    public List<Keyword> ListKeywords => _listKeywords ?? (_listKeywords = Keywords.ToList());
+    public List<MediaItemKeyword> ListMediaItemKeywords => _listMediaItemKeywords ?? (_listMediaItemKeywords = MediaItemKeywords.ToList());
+    public List<MediaItemPerson> ListMediaItemPeople => _listMediaItemPeople ?? (_listMediaItemPeople = MediaItemPeople.ToList());
+    public List<MediaItem> ListMediaItems => _listMediaItems ?? (_listMediaItems = MediaItems.ToList());
+    public List<Person> ListPeople => _listPeople ?? (_listPeople = People.ToList());
+    public List<PeopleGroup> ListPeopleGroups => _listPeopleGroups ?? (_listPeopleGroups = PeopleGroups.ToList());
+    public List<Viewer> ListViewers => _listViewers ?? (_listViewers = Viewers.ToList());
 
     public PmDataContext(string connectionString) {
       ConnectionString = connectionString;
@@ -64,6 +83,106 @@ namespace PictureManager.DataModel {
       return true;
     }
 
+    public void InsertOnSubmit(object data) {
+      switch (data.GetType().Name) {
+        case nameof(Directory): {
+          Directories.InsertOnSubmit((Directory) data);
+          ListDirectories.Add((Directory) data);
+          break;
+        }
+        case nameof(Filter): {
+          Filters.InsertOnSubmit((Filter) data);
+          ListFilters.Add((Filter) data);
+          break;
+        }
+        case nameof(Keyword): {
+          Keywords.InsertOnSubmit((Keyword) data);
+          ListKeywords.Add((Keyword) data);
+          break;
+        }
+        case nameof(MediaItemKeyword): {
+          MediaItemKeywords.InsertOnSubmit((MediaItemKeyword) data);
+          ListMediaItemKeywords.Add((MediaItemKeyword) data);
+          break;
+        }
+        case nameof(MediaItemPerson): {
+          MediaItemPeople.InsertOnSubmit((MediaItemPerson) data);
+          ListMediaItemPeople.Add((MediaItemPerson) data);
+          break;
+        }
+        case nameof(MediaItem): {
+          MediaItems.InsertOnSubmit((MediaItem) data);
+          ListMediaItems.Add((MediaItem) data);
+          break;
+        }
+        case nameof(Person): {
+          People.InsertOnSubmit((Person) data);
+          ListPeople.Add((Person) data);
+          break;
+        }
+        case nameof(PeopleGroup): {
+          PeopleGroups.InsertOnSubmit((PeopleGroup) data);
+          ListPeopleGroups.Add((PeopleGroup) data);
+          break;
+        }
+        case nameof(Viewer): {
+          Viewers.InsertOnSubmit((Viewer) data);
+          ListViewers.Add((Viewer) data);
+          break;
+        }
+      }
+    }
+
+    public void DeleteOnSubmit(object data) {
+      switch (data.GetType().Name) {
+        case nameof(Directory): {
+          Directories.DeleteOnSubmit((Directory) data);
+          ListDirectories.Remove((Directory) data);
+          break;
+        }
+        case nameof(Filter): {
+          Filters.DeleteOnSubmit((Filter) data);
+          ListFilters.Remove((Filter) data);
+          break;
+        }
+        case nameof(Keyword): {
+          Keywords.DeleteOnSubmit((Keyword) data);
+          ListKeywords.Remove((Keyword) data);
+          break;
+        }
+        case nameof(MediaItemKeyword): {
+          MediaItemKeywords.DeleteOnSubmit((MediaItemKeyword) data);
+          ListMediaItemKeywords.Remove((MediaItemKeyword) data);
+          break;
+        }
+        case nameof(MediaItemPerson): {
+          MediaItemPeople.DeleteOnSubmit((MediaItemPerson) data);
+          ListMediaItemPeople.Remove((MediaItemPerson) data);
+          break;
+        }
+        case nameof(MediaItem): {
+          MediaItems.DeleteOnSubmit((MediaItem) data);
+          ListMediaItems.Remove((MediaItem) data);
+          break;
+        }
+        case nameof(Person): {
+          People.DeleteOnSubmit((Person) data);
+          ListPeople.Remove((Person) data);
+          break;
+        }
+        case nameof(PeopleGroup): {
+          PeopleGroups.DeleteOnSubmit((PeopleGroup) data);
+          ListPeopleGroups.Remove((PeopleGroup) data);
+          break;
+        }
+        case nameof(Viewer): {
+          Viewers.DeleteOnSubmit((Viewer) data);
+          ListViewers.Remove((Viewer) data);
+          break;
+        }
+      }
+    }
+
     public long GetNextIdFor(string tableName) {
       if (!TableIds.ContainsKey(tableName)) {
         TableIds.Add(tableName, 0);
@@ -71,6 +190,10 @@ namespace PictureManager.DataModel {
       var nextId = TableIds[tableName] + 1;
       TableIds[tableName] = nextId;
       return nextId;
+    }
+
+    public long GetMaxIdFor(string tableName) {
+      return !TableIds.ContainsKey(tableName) ? 0 : TableIds[tableName];
     }
 
     public bool Execute(string sql) {

@@ -71,6 +71,7 @@
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="DataModel\DataModel.cs" />
+    <Compile Include="Info.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseMediaItem.cs" />
     <Compile Include="ViewModel\FavoriteFolder.cs" />
@@ -219,7 +220,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

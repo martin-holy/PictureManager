@@ -124,8 +124,11 @@ namespace PictureManager.UserControls {
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
       FolderBrowserDialog dir = new FolderBrowserDialog();
       if (dir.ShowDialog() == DialogResult.OK) {
-        Paths.Add($"{dir.SelectedPath}{(dir.SelectedPath.EndsWith("\\") ? string.Empty : "\\")}");
-        LoadFolders();
+        var path = $"{dir.SelectedPath}{(dir.SelectedPath.EndsWith("\\") ? string.Empty : "\\")}";
+        if (!Paths.Contains(path)) {
+          Paths.Add(path);
+          LoadFolders();
+        }
       }
     }
 

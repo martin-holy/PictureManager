@@ -40,7 +40,7 @@ namespace PictureManager.ViewModel {
           FilesAllowed = string.Join(";", FilesAllowed),
           FilesDenied = string.Join(";", FilesDenied)
         };
-        Db.Viewers.InsertOnSubmit(data);
+        Db.InsertOnSubmit(data);
         Data = data;
         Id = data.Id;
       } else {

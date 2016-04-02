@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -30,6 +32,10 @@ namespace PictureManager.Dialogs {
     public void ShowErrorMessage(string text) {
       TxtAnswer.ToolTip = text;
       Error = true;
+    }
+
+    private void TxtAnswer_OnKeyUp(object sender, KeyEventArgs e) {
+      Answer = TxtAnswer.Text;
     }
   }
 }

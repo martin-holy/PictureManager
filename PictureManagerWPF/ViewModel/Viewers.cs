@@ -14,7 +14,7 @@ namespace PictureManager.ViewModel {
 
     public void Load() {
       Items.Clear();
-      foreach (var viewer in Db.Viewers.OrderBy(x => x.Name).Select(x => new Viewer(Db, x))) {
+      foreach (var viewer in Db.ListViewers.OrderBy(x => x.Name).Select(x => new Viewer(Db, x))) {
         Items.Add(viewer);
       }
       IsExpanded = true;

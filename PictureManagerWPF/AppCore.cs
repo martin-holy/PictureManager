@@ -302,6 +302,7 @@ namespace PictureManager {
 
           if (mi.Data == null) {
             mi.SaveMediaItemInToDb(this, false, true);
+            Application.Current.Properties["SubmitChanges"] = true;
           }
 
           done++;
@@ -311,7 +312,8 @@ namespace PictureManager {
 
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
-        Db.DataContext.SubmitChanges();
+        if ((bool)Application.Current.Properties["SubmitChanges"])
+          Db.DataContext.SubmitChanges();
         MediaItems.ScrollToCurrent();
         if (MediaItems.Current != null) {
           MediaItems.Current.IsSelected = false;
@@ -320,6 +322,7 @@ namespace PictureManager {
         MarkUsedKeywordsAndPeople();
       };
 
+      Application.Current.Properties["SubmitChanges"] = false;
       ThumbsWebWorker.RunWorkerAsync();
     }
 
@@ -362,7 +365,7 @@ namespace PictureManager {
         fo.PerformOperations();
       }
 
-      var foResult = (Dictionary<string, string>) Application.Current.Properties["FileOperationResult"];
+      var foResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
       if (foResult.Count == 0) return false;
 
       //update DB and thumbnail cache
@@ -370,96 +373,139 @@ namespace PictureManager {
         fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
                              FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE);
         var cachePath = @Settings.Default.CachePath;
-        var mItems = Db.MediaItems.ToArray();
+        var mItems = Db.ListMediaItems;
+        var dirs = Db.ListDirectories;
 
-        foreach (var item in foResult.Where(x => MediaItems.SuportedExts.Any(ext => x.Key.EndsWith(ext, StringComparison.OrdinalIgnoreCase)))) {
-          var srcDirId = GetDirectoryIdByPath(Path.GetDirectoryName(item.Key));
-          if (srcDirId == null) continue;
+        if (mode == FileOperations.Delete) {
+          var itemsToDel = new List<DataModel.MediaItem>();
 
-          var srcPic = mItems.SingleOrDefault(x => x.DirectoryId == srcDirId && x.FileName == Path.GetFileName(item.Key));
-          if (srcPic == null) continue;
-
-          var destDirId = item.Value == null ? null : (long?) InsertDirecotryInToDb(Path.GetDirectoryName(item.Value));
-          if (destDirId == null && mode != FileOperations.Delete) continue;
-
-          switch (mode) {
-            case FileOperations.Copy: {
-              //duplicate Picture
-              var destPicId = Db.GetNextIdFor("MediaItems");
-              Db.MediaItems.InsertOnSubmit(new DataModel.MediaItem {
-                Id = destPicId,
-                DirectoryId = srcPic.DirectoryId,
-                FileName = Path.GetFileName(item.Value),
-                Rating = srcPic.Rating,
-                Comment = srcPic.Comment,
-                Orientation = srcPic.Orientation
-              });
-
-              //duplicate Picture Keywords
-              foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
-                Db.MediaItemKeywords.InsertOnSubmit(new DataModel.MediaItemKeyword {
-                  Id = Db.GetNextIdFor("MediaItemKeyword"),
-                  KeywordId = mik.KeywordId,
-                  MediaItemId = destPicId
-                });
-              }
-
-                //duplicate Picture People
-              foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
-                Db.MediaItemPeople.InsertOnSubmit(new DataModel.MediaItemPerson {
-                  Id = Db.GetNextIdFor("MediaItemPerson"),
-                  PersonId = mip.PersonId,
-                  MediaItemId = destPicId
-                });
-              }
-
-              //duplicate thumbnail
-              fo.CopyItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
-                Path.GetFileName(item.Value));
-              break;
+          if (from == null) {
+            //delete by file/s
+            foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
+              if (File.Exists(mi.FilePath)) continue;
+              fo.DeleteItem(mi.FilePath.Replace(":\\", cachePath));
+              itemsToDel.Add(mi.Data);
             }
-            case FileOperations.Move: {
-              //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
-              srcPic.DirectoryId = (long) destDirId;
-              srcPic.FileName = Path.GetFileName(item.Value);
-
-              fo.MoveItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
-                Path.GetFileName(item.Value));
-              break;
-            }
-            case FileOperations.Delete: {
-              foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
-                Db.MediaItemKeywords.DeleteOnSubmit(mik);
+          } else {
+            //delete by folder
+            foreach (var dir in dirs.Where(x => x.Path.Equals(from) || x.Path.StartsWith(from + "\\"))) {
+              foreach (var mi in mItems.Where(x => x.DirectoryId.Equals(dir.Id))) {
+                var miFilePath = Path.Combine(dir.Path, mi.FileName);
+                if (File.Exists(miFilePath)) continue;
+                fo.DeleteItem(miFilePath.Replace(":\\", cachePath));
+                itemsToDel.Add(mi);
               }
-
-              foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
-                Db.MediaItemPeople.DeleteOnSubmit(mip);
-              }
-
-              Db.MediaItems.DeleteOnSubmit(srcPic);
-
-              fo.DeleteItem(item.Key.Replace(":\\", cachePath));
-              break;
             }
+          }
+
+          foreach (var mi in itemsToDel) {
+            foreach(var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == mi.Id)) {
+              Db.DeleteOnSubmit(mik);
+            }
+
+            foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == mi.Id)) {
+              Db.DeleteOnSubmit(mip);
+            }
+
+            Db.DeleteOnSubmit(mi);
           }
         }
 
-        //move, rename or delete folder in a TreeView
-        if (from != null) {
-          switch (mode) {
-            case FileOperations.Move: {
-              var newFullPath = foResult[from];
-              var newName2 = newFullPath.Substring(newFullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
-              fo.MoveItem(from.Replace(":\\", cachePath), to.Replace(":\\", cachePath), newName2);
+        if (mode == FileOperations.Copy || mode == FileOperations.Move) {
+          foreach (var item in foResult) {
+            if (MediaItems.SuportedExts.Any(ext => item.Value.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) {
+              if (!File.Exists(item.Value)) continue;
 
-              foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(from))) {
-                dir.Path = dir.Path.Replace(from, newFullPath);
+              var srcDirId = dirs.SingleOrDefault(x => x.Path.Equals(Path.GetDirectoryName(item.Key)))?.Id;
+              if (srcDirId == null) continue;
+
+              var srcPic = mItems.SingleOrDefault(x => x.DirectoryId == srcDirId && x.FileName == Path.GetFileName(item.Key));
+              if (srcPic == null) continue;
+
+              //get destination directory or create it if doesn't exists
+              var dirPath = Path.GetDirectoryName(item.Value);
+              var destDirId = dirs.SingleOrDefault(x => x.Path.Equals(dirPath))?.Id;
+              if (destDirId == null) {
+                destDirId = Db.GetNextIdFor("Directories");
+                Db.InsertOnSubmit(new DataModel.Directory { Id = (long)destDirId, Path = dirPath });
               }
-              break;
-            }
-            case FileOperations.Delete: {
-              fo.DeleteItem(from.Replace(":\\", cachePath));
-              break;
+
+              #region Copy files
+
+              if (mode == FileOperations.Copy) {
+                //duplicate Picture
+                var destPicId = Db.GetNextIdFor("MediaItems");
+
+                Db.InsertOnSubmit(new DataModel.MediaItem {
+                  Id = destPicId,
+                  DirectoryId = (long) destDirId,
+                  FileName = Path.GetFileName(item.Value),
+                  Rating = srcPic.Rating,
+                  Comment = srcPic.Comment,
+                  Orientation = srcPic.Orientation
+                });
+
+                //duplicate Picture Keywords
+                foreach (var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
+                  Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
+                    Id = Db.GetNextIdFor("MediaItemKeyword"),
+                    KeywordId = mik.KeywordId,
+                    MediaItemId = destPicId
+                  });
+                }
+
+                //duplicate Picture People
+                foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
+                  Db.InsertOnSubmit(new DataModel.MediaItemPerson {
+                    Id = Db.GetNextIdFor("MediaItemPerson"),
+                    PersonId = mip.PersonId,
+                    MediaItemId = destPicId
+                  });
+                }
+
+                //duplicate thumbnail
+                fo.CopyItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
+                  Path.GetFileName(item.Value));
+              }
+
+              #endregion
+
+              #region Move files
+              if (mode == FileOperations.Move) {
+                //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
+                srcPic.DirectoryId = (long) destDirId;
+                srcPic.FileName = Path.GetFileName(item.Value);
+
+                //delete empty directory
+                if (mItems.Count(x => x.DirectoryId.Equals(srcDirId)) == 0) {
+                  var emptyDir = dirs.SingleOrDefault(x => x.Id.Equals(srcDirId));
+                  if (emptyDir != null) {
+                    Db.DeleteOnSubmit(emptyDir);
+                  }
+                }
+
+                //move thumbnail
+                fo.MoveItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
+                  Path.GetFileName(item.Value));
+              }
+
+              #endregion
+            } else {
+              #region Move directories
+              if (mode == FileOperations.Move) {
+                //test if it is directory
+                if (!Directory.Exists(item.Value)) continue;
+
+                foreach (var dir in dirs.Where(x => x.Path.Equals(item.Key) || x.Path.StartsWith(item.Key + "\\"))) {
+                  dir.Path = dir.Path.Replace(item.Key, item.Value);
+                }
+
+                //move thumbnails
+                var destPath = Path.GetDirectoryName(item.Value);
+                fo.MoveItem(item.Key.Replace(":\\", cachePath), destPath.Replace(":\\", cachePath),
+                  item.Value.Substring(destPath.Length + 1));
+              }
+              #endregion
             }
           }
         }
@@ -472,7 +518,7 @@ namespace PictureManager {
     }
 
     public long? GetDirectoryIdByPath(string path) {
-      var dir = Db.Directories.SingleOrDefault(x => x.Path.Equals(path));
+      var dir = Db.ListDirectories.SingleOrDefault(x => x.Path.Equals(path));
       return dir?.Id;
     }
 
@@ -480,7 +526,9 @@ namespace PictureManager {
       var dirId = GetDirectoryIdByPath(path);
       if (dirId != null) return (long) dirId;
       var newDirId = Db.GetNextIdFor("Directories");
-      Db.Directories.InsertOnSubmit(new DataModel.Directory {Id = newDirId, Path = path});
+      //Db.Directories.InsertOnSubmit(new DataModel.Directory {Id = newDirId, Path = path});
+      Db.InsertOnSubmit(new DataModel.Directory { Id = newDirId, Path = path });
+      Db.DataContext.SubmitChanges();
       return newDirId;
     }
 

@@ -66,6 +66,8 @@ namespace PictureManager.ViewModel {
     }
 
     public void UpdateFullPath(string oldParentPath, string newParentPath) {
+      oldParentPath = oldParentPath.EndsWith("\\") ? oldParentPath.Substring(0, oldParentPath.Length - 1) : oldParentPath;
+      newParentPath = newParentPath.EndsWith("\\") ? newParentPath.Substring(0, newParentPath.Length - 1) : newParentPath;
       FullPath = FullPath?.Replace(oldParentPath, newParentPath);
       foreach (var item in Items) {
         item.UpdateFullPath(oldParentPath, newParentPath);
@@ -76,6 +78,8 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
       var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
+      var aCore = (AppCore) Application.Current.Properties["AppCore"];
+      aCore.InsertDirecotryInToDb(newFullPath);
 
       var newFolder = new Folder {
         Title = folderName,

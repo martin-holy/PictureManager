@@ -100,8 +100,8 @@ namespace PictureManager.ViewModel {
 
     private void LoadKeywordsFromDb(Keywords keywords) {
       Keywords.Clear();
-      var ks = from mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
-        join k in Db.Keywords on mik.KeywordId equals k.Id
+      var ks = from mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == Id)
+        join k in Db.ListKeywords on mik.KeywordId equals k.Id
         select k.Name;
       foreach (var k in ks) {
         Keywords.Add(keywords.GetKeywordByFullPath(k, false));
@@ -110,8 +110,8 @@ namespace PictureManager.ViewModel {
 
     private void LoadPeopleFromDb(People people) {
       People.Clear();
-      var ps = from mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
-        join p in Db.People on mip.PersonId equals p.Id
+      var ps = from mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == Id)
+        join p in Db.ListPeople on mip.PersonId equals p.Id
         select p;
       foreach (var p in ps) {
         People.Add(people.GetPerson(p.Id, p.PeopleGroupId));
@@ -139,7 +139,7 @@ namespace PictureManager.ViewModel {
           Comment = Comment,
           Orientation = Orientation
         };
-        Db.MediaItems.InsertOnSubmit(Data);
+        Db.InsertOnSubmit(Data);
       } else {
         if (update) ReadMetadata(aCore);
         Data.Rating = Rating;
@@ -154,15 +154,15 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemKeywordsToDb() {
       //Update connection between Keywords and MediaItem
       var keyIds = Keywords.Select(k => k.Id).ToList();
-      foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
+      foreach (var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == Id)) {
         if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
-          Db.MediaItemKeywords.DeleteOnSubmit(mik);
+          Db.DeleteOnSubmit(mik);
         else
           keyIds.Remove(mik.KeywordId);
       }
       //Insert new Keywords to MediaItem
       foreach (var keyId in keyIds) {
-        Db.MediaItemKeywords.InsertOnSubmit(new DataModel.MediaItemKeyword {
+        Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
           Id = Db.GetNextIdFor("MediaItemKeyword"),
           KeywordId = keyId,
           MediaItemId = Id
@@ -173,15 +173,15 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemPeopleInToDb() {
       //Update connection between People and MediaItem
       var ids = People.Select(p => p.Id).ToList();
-      foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
+      foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == Id)) {
         if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null) 
-          Db.MediaItemPeople.DeleteOnSubmit(mip);
+          Db.DeleteOnSubmit(mip);
          else
           ids.Remove(mip.PersonId);
       }
       //Insert new People to MediaItem
       foreach (var id in ids) {
-        Db.MediaItemPeople.InsertOnSubmit(new DataModel.MediaItemPerson {
+        Db.InsertOnSubmit(new DataModel.MediaItemPerson {
           Id = Db.GetNextIdFor("MediaItemPerson"),
           PersonId = id,
           MediaItemId = Id
@@ -191,7 +191,7 @@ namespace PictureManager.ViewModel {
 
     public bool WriteMetadata() {
       FileInfo original = new FileInfo(FilePath);
-      FileInfo newFile = new FileInfo(FilePath.Replace(".", "_newFile."));
+      FileInfo newFile = new FileInfo(FilePath + "_newFile");
       bool bSuccess = false;
       const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
@@ -240,7 +240,7 @@ namespace PictureManager.ViewModel {
 
 
             metadata.Rating = (int) Rating;
-            metadata.Comment = Comment;
+            metadata.Comment = Comment ?? string.Empty;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
 
             JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };

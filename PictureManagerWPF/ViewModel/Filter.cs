@@ -45,11 +45,11 @@ namespace PictureManager.ViewModel {
       items.Clear();
       var parentId = parent?.Id;
 
-      foreach (var f in db.Filters.ToArray().Where(x => x.ParentId.Equals(parentId))) {
+      foreach (var f in db.ListFilters.Where(x => x.ParentId.Equals(parentId))) {
         Filter item = new Filter(f, db, parent);
         item.LoadFilterData(f.Data);
 
-        if (db.Filters.Count(x => x.ParentId == f.Id) != 0) {
+        if (db.ListFilters.Count(x => x.ParentId == f.Id) != 0) {
           item.Items.Add(new Filter { Title = "..." });
         }
 
@@ -59,7 +59,7 @@ namespace PictureManager.ViewModel {
 
     public void ReloadData() {
       if (Id == -1) return;
-      LoadFilterData(Db.Filters.Single(x => x.Id == Id).Data);
+      LoadFilterData(Db.ListFilters.Single(x => x.Id == Id).Data);
     }
 
     public void LoadFilterData(byte[] biteArray) {
@@ -118,14 +118,14 @@ namespace PictureManager.ViewModel {
           ParentId = Parent?.Id
         };
 
-        Db.Filters.InsertOnSubmit(dmFilter);
-        Db.Filters.Context.SubmitChanges();
+        Db.InsertOnSubmit(dmFilter);
+        Db.DataContext.SubmitChanges();
 
         Id = dmFilter.Id;
       } else {
         Data.Data = biteArray;
         Data.Name = Title;
-        Db.Filters.Context.SubmitChanges();
+        Db.DataContext.SubmitChanges();
       }
     }
   }
