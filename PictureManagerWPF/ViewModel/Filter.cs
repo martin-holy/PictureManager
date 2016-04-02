@@ -119,13 +119,13 @@ namespace PictureManager.ViewModel {
         };
 
         Db.InsertOnSubmit(dmFilter);
-        Db.DataContext.SubmitChanges();
+        Db.SubmitChanges();
 
         Id = dmFilter.Id;
       } else {
         Data.Data = biteArray;
         Data.Name = Title;
-        Db.DataContext.SubmitChanges();
+        Db.SubmitChanges();
       }
     }
   }

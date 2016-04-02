@@ -96,7 +96,7 @@ namespace PictureManager.ViewModel {
           keyword.FullPath = path;
           keyword.Data.Name = path;
           keyword.Title = inputDialog.Answer;
-          Db.DataContext.SubmitChanges();
+          Db.SubmitChanges();
         }
         else CreateKeyword(root, keyword, inputDialog.Answer);
       }
@@ -110,7 +110,7 @@ namespace PictureManager.ViewModel {
       };
 
       Db.InsertOnSubmit(dmKeyword);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       var vmKeyword = new Keyword(dmKeyword);
 
@@ -126,7 +126,7 @@ namespace PictureManager.ViewModel {
       }
 
       Db.DeleteOnSubmit(keyword.Data);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       var items = keyword.Parent == null ? Items : keyword.Parent.Items;
       items.Remove(keyword);

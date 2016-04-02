@@ -65,7 +65,7 @@ namespace PictureManager.ViewModel {
       };
 
       Db.InsertOnSubmit(dmPerson);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       var vmPerson = new Person(dmPerson);
       SetInPalce(vmPerson, true);
@@ -79,7 +79,7 @@ namespace PictureManager.ViewModel {
       };
 
       Db.InsertOnSubmit(dmPeopleGroup);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       var vmPeopleGroup = new PeopleGroup(dmPeopleGroup);
       SetInPalce(vmPeopleGroup, true);
@@ -115,7 +115,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           person.Title = inputDialog.Answer;
           person.Data.Name = inputDialog.Answer;
-          Db.DataContext.SubmitChanges();
+          Db.SubmitChanges();
           SetInPalce(person, false);
         } else CreatePerson(inputDialog.Answer, peopleGroup);
       }
@@ -150,7 +150,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           peopleGroup.Title = inputDialog.Answer;
           peopleGroup.Data.Name = inputDialog.Answer;
-          Db.DataContext.SubmitChanges();
+          Db.SubmitChanges();
           SetInPalce(peopleGroup, false);
         } else CreateGroup(inputDialog.Answer);
       }
@@ -187,7 +187,7 @@ namespace PictureManager.ViewModel {
       }
 
       Db.DeleteOnSubmit(person.Data);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       if (person.PeopleGroupId == null) {
         Items.Remove(person);
@@ -202,7 +202,7 @@ namespace PictureManager.ViewModel {
       }
 
       Db.DeleteOnSubmit(group.Data);
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
 
       foreach (var person in group.Items) {
         person.PeopleGroupId = null;
@@ -226,7 +226,7 @@ namespace PictureManager.ViewModel {
       var newGroupId = peopleGroup?.Id;
       person.PeopleGroupId = newGroupId;
       person.Data.PeopleGroupId = newGroupId;
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
       SetInPalce(person, true); //person is new in the group
     }
   }

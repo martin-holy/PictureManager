@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -348,7 +347,7 @@ namespace PictureManager {
       if (result == MessageBoxResult.Yes) {
         var viewer = (ViewModel.Viewer) e.Parameter;
         ACore.Db.DeleteOnSubmit(viewer.Data);
-        ACore.Db.DataContext.SubmitChanges();
+        ACore.Db.SubmitChanges();
         ACore.Viewers.Items.Remove(viewer);
       }
     }
@@ -455,7 +454,7 @@ namespace PictureManager {
 
       bw.RunWorkerCompleted += delegate {
         ACore.KeywordsEditMode = false;
-        ACore.Db.DataContext.SubmitChanges();
+        ACore.Db.SubmitChanges();
       };
 
       bw.RunWorkerAsync(ACore);
@@ -508,7 +507,7 @@ namespace PictureManager {
         current.Comment = inputDialog.TxtAnswer.Text;
         current.SaveMediaItemInToDb(ACore, false, false);
         current.WriteMetadata();
-        ACore.Db.DataContext.SubmitChanges();
+        ACore.Db.SubmitChanges();
       }
     }
 
@@ -522,7 +521,7 @@ namespace PictureManager {
         mi.SaveMediaItemInToDb(ACore, true, false);
         mi.WbUpdateInfo();
       }
-      ACore.Db.DataContext.SubmitChanges();
+      ACore.Db.SubmitChanges();
     }
 
     public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
@@ -719,7 +718,7 @@ namespace PictureManager {
         for (var i = 0; i < items.Count; i++) {
           items[i].Index = i;
           items[i].Data.Idx = i;
-          ACore.Db.DataContext.SubmitChanges();
+          ACore.Db.SubmitChanges();
         }
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));

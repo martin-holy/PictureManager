@@ -50,7 +50,7 @@ namespace PictureManager.ViewModel {
         Data.FilesAllowed = string.Join(";", FilesAllowed);
         Data.FilesDenied = string.Join(";", FilesDenied);
       }
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
     }
   }
 }

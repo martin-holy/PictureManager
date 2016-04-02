@@ -134,7 +134,7 @@ namespace PictureManager {
       PbUpdateProgress.Value = e.ProgressPercentage;
       FilesProgress = $"{_filesDone} / {_filesCount}";
       if (e.UserState != null)
-        _aCore.Db.DataContext.SubmitChanges();
+        _aCore.Db.SubmitChanges();
     }
 
     private void update_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {

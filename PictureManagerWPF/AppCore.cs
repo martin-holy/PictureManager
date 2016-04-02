@@ -238,7 +238,7 @@ namespace PictureManager {
       WMain.CmbThumbPage.Visibility = MediaItems.Items.Count > ThumbsPerPage ? Visibility.Visible : Visibility.Collapsed;
       WMain.CmbThumbPage.Items.Clear();
       var iPageCount = MediaItems.Items.Count / ThumbsPerPage;
-      if (MediaItems.Items.Count > iPageCount * ThumbsPerPage) iPageCount++;
+      if (iPageCount == 0) iPageCount++;
       for (int i = 0; i < iPageCount; i++) {
         WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
       }
@@ -313,7 +313,7 @@ namespace PictureManager {
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
         if ((bool)Application.Current.Properties["SubmitChanges"])
-          Db.DataContext.SubmitChanges();
+          Db.SubmitChanges();
         MediaItems.ScrollToCurrent();
         if (MediaItems.Current != null) {
           MediaItems.Current.IsSelected = false;
@@ -511,7 +511,7 @@ namespace PictureManager {
         }
 
         fo.PerformOperations();
-        Db.DataContext.SubmitChanges();
+        Db.SubmitChanges();
       }
 
       return true;
@@ -528,7 +528,7 @@ namespace PictureManager {
       var newDirId = Db.GetNextIdFor("Directories");
       //Db.Directories.InsertOnSubmit(new DataModel.Directory {Id = newDirId, Path = path});
       Db.InsertOnSubmit(new DataModel.Directory { Id = newDirId, Path = path });
-      Db.DataContext.SubmitChanges();
+      Db.SubmitChanges();
       return newDirId;
     }
 

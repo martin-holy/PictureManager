@@ -14,6 +14,8 @@ namespace PictureManager.DataModel {
     public DataContext DataContext;
     public Dictionary<string, long> TableIds;
 
+    private List<object> _toDelete = new List<object>(); 
+
     public Table<Directory> Directories;
     public Table<Filter> Filters;
     public Table<Keyword> Keywords;
@@ -83,6 +85,28 @@ namespace PictureManager.DataModel {
       return true;
     }
 
+    public void SubmitChanges() {
+      SubmitDelete();
+      DataContext.SubmitChanges();
+    }
+
+    private void SubmitDelete() {
+      foreach (var data in _toDelete) {
+        switch (data.GetType().Name) {
+          case nameof(Directory): { ListDirectories.Remove((Directory)data); break; }
+          case nameof(Filter): { ListFilters.Remove((Filter) data); break; }
+          case nameof(Keyword): { ListKeywords.Remove((Keyword)data); break; }
+          case nameof(MediaItemKeyword): { ListMediaItemKeywords.Remove((MediaItemKeyword)data); break; }
+          case nameof(MediaItemPerson): { ListMediaItemPeople.Remove((MediaItemPerson)data); break; }
+          case nameof(MediaItem): { ListMediaItems.Remove((MediaItem)data); break; }
+          case nameof(Person): { ListPeople.Remove((Person)data); break; }
+          case nameof(PeopleGroup): { ListPeopleGroups.Remove((PeopleGroup)data); break; }
+          case nameof(Viewer): { ListViewers.Remove((Viewer)data); break; }
+        }
+      }
+      _toDelete.Clear();
+    }
+
     public void InsertOnSubmit(object data) {
       switch (data.GetType().Name) {
         case nameof(Directory): {
@@ -134,52 +158,17 @@ namespace PictureManager.DataModel {
     }
 
     public void DeleteOnSubmit(object data) {
+      _toDelete.Add(data);
       switch (data.GetType().Name) {
-        case nameof(Directory): {
-          Directories.DeleteOnSubmit((Directory) data);
-          ListDirectories.Remove((Directory) data);
-          break;
-        }
-        case nameof(Filter): {
-          Filters.DeleteOnSubmit((Filter) data);
-          ListFilters.Remove((Filter) data);
-          break;
-        }
-        case nameof(Keyword): {
-          Keywords.DeleteOnSubmit((Keyword) data);
-          ListKeywords.Remove((Keyword) data);
-          break;
-        }
-        case nameof(MediaItemKeyword): {
-          MediaItemKeywords.DeleteOnSubmit((MediaItemKeyword) data);
-          ListMediaItemKeywords.Remove((MediaItemKeyword) data);
-          break;
-        }
-        case nameof(MediaItemPerson): {
-          MediaItemPeople.DeleteOnSubmit((MediaItemPerson) data);
-          ListMediaItemPeople.Remove((MediaItemPerson) data);
-          break;
-        }
-        case nameof(MediaItem): {
-          MediaItems.DeleteOnSubmit((MediaItem) data);
-          ListMediaItems.Remove((MediaItem) data);
-          break;
-        }
-        case nameof(Person): {
-          People.DeleteOnSubmit((Person) data);
-          ListPeople.Remove((Person) data);
-          break;
-        }
-        case nameof(PeopleGroup): {
-          PeopleGroups.DeleteOnSubmit((PeopleGroup) data);
-          ListPeopleGroups.Remove((PeopleGroup) data);
-          break;
-        }
-        case nameof(Viewer): {
-          Viewers.DeleteOnSubmit((Viewer) data);
-          ListViewers.Remove((Viewer) data);
-          break;
-        }
+        case nameof(Directory): { Directories.DeleteOnSubmit((Directory) data); break; }
+        case nameof(Filter): { Filters.DeleteOnSubmit((Filter) data); break; }
+        case nameof(Keyword): { Keywords.DeleteOnSubmit((Keyword) data); break; }
+        case nameof(MediaItemKeyword): { MediaItemKeywords.DeleteOnSubmit((MediaItemKeyword) data); break; }
+        case nameof(MediaItemPerson): { MediaItemPeople.DeleteOnSubmit((MediaItemPerson) data); break; }
+        case nameof(MediaItem): { MediaItems.DeleteOnSubmit((MediaItem) data); break; }
+        case nameof(Person): { People.DeleteOnSubmit((Person) data); break; }
+        case nameof(PeopleGroup): { PeopleGroups.DeleteOnSubmit((PeopleGroup) data); break; }
+        case nameof(Viewer): { Viewers.DeleteOnSubmit((Viewer) data); break; }
       }
     }
 
