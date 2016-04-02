@@ -561,10 +561,8 @@ namespace PictureManager {
     }
 
     private ScrollViewer _tvFoldersScrollViewer;
-    private ScrollViewer TvFoldersScrollViewer
-    {
-      get
-      {
+    private ScrollViewer TvFoldersScrollViewer {
+      get {
         if (_tvFoldersScrollViewer != null) return _tvFoldersScrollViewer;
         DependencyObject border = VisualTreeHelper.GetChild(TvFolders, 0);
         if (border != null) {
@@ -572,6 +570,19 @@ namespace PictureManager {
         }
 
         return _tvFoldersScrollViewer;
+      }
+    }
+
+    private ScrollViewer _tvKeywordsScrollViewer;
+    private ScrollViewer TvKeywordsScrollViewer {
+      get {
+        if (_tvKeywordsScrollViewer != null) return _tvKeywordsScrollViewer;
+        DependencyObject border = VisualTreeHelper.GetChild(TvKeywords, 0);
+        if (border != null) {
+          _tvKeywordsScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+        }
+
+        return _tvKeywordsScrollViewer;
       }
     }
 
@@ -675,6 +686,13 @@ namespace PictureManager {
     }
 
     private void TvKeywords_AllowDropCheck(object sender, DragEventArgs e) {
+      var pos = e.GetPosition(TvKeywords);
+      if (pos.Y < 25) {
+        TvKeywordsScrollViewer.ScrollToVerticalOffset(TvKeywordsScrollViewer.VerticalOffset - 25);
+      } else if (TvKeywords.ActualHeight - pos.Y < 25) {
+        TvKeywordsScrollViewer.ScrollToVerticalOffset(TvKeywordsScrollViewer.VerticalOffset + 25);
+      }
+
       var dataContext = ((StackPanel) sender).DataContext;
       if (e.Data.GetDataPresent(typeof (ViewModel.Keyword))) {
         var srcData = (ViewModel.Keyword)e.Data.GetData(typeof(ViewModel.Keyword));
