@@ -736,8 +736,8 @@ namespace PictureManager {
         for (var i = 0; i < items.Count; i++) {
           items[i].Index = i;
           items[i].Data.Idx = i;
-          ACore.Db.SubmitChanges();
         }
+        ACore.Db.SubmitChanges();
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
         var destData = panel.DataContext as ViewModel.PeopleGroup;

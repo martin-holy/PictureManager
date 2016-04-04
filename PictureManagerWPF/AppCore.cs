@@ -238,7 +238,7 @@ namespace PictureManager {
       WMain.CmbThumbPage.Visibility = MediaItems.Items.Count > ThumbsPerPage ? Visibility.Visible : Visibility.Collapsed;
       WMain.CmbThumbPage.Items.Clear();
       var iPageCount = MediaItems.Items.Count / ThumbsPerPage;
-      if (iPageCount == 0) iPageCount++;
+      if (iPageCount == 0 || MediaItems.Items.Count > ThumbsPerPage) iPageCount++;
       for (int i = 0; i < iPageCount; i++) {
         WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
       }
@@ -526,7 +526,6 @@ namespace PictureManager {
       var dirId = GetDirectoryIdByPath(path);
       if (dirId != null) return (long) dirId;
       var newDirId = Db.GetNextIdFor("Directories");
-      //Db.Directories.InsertOnSubmit(new DataModel.Directory {Id = newDirId, Path = path});
       Db.InsertOnSubmit(new DataModel.Directory { Id = newDirId, Path = path });
       Db.SubmitChanges();
       return newDirId;
