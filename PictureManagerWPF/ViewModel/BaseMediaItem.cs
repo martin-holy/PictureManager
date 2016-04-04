@@ -247,10 +247,15 @@ namespace PictureManager.ViewModel {
             encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
               decoder.Frames[0].ColorContexts));
 
-            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-              encoder.Save(newFileStream);
+            try {
+              using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+                encoder.Save(newFileStream);
+              }
+              bSuccess = true;
             }
-            bSuccess = true;
+            catch (Exception ex) {
+
+            }
           }
         }
       }

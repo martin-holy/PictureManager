@@ -414,12 +414,14 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && !ACore.KeywordsEditMode && ACore.MediaItems.Items.Count > 0;
+      e.CanExecute = !ACore.KeywordsEditMode && ACore.MediaItems.Items.Count > 0;
     }
 
     private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
+      Application.Current.Properties["EditKeywordsFromFolders"] = TabFolders.IsSelected;
+      ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
+      TabKeywords.IsSelected = true;
       ACore.KeywordsEditMode = true;
-      ACore.LastSelectedSource.IsSelected = false;
     }
 
     private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -454,6 +456,9 @@ namespace PictureManager {
 
       bw.RunWorkerCompleted += delegate {
         ACore.KeywordsEditMode = false;
+        if ((bool) Application.Current.Properties["EditKeywordsFromFolders"]) {
+          TabFolders.IsSelected = true;
+        }
         ACore.Db.SubmitChanges();
       };
 
@@ -465,12 +470,15 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
-      ACore.KeywordsEditMode = false;
       foreach (ViewModel.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
         mi.ReLoadFromDb(ACore, mi.Data);
         mi.WbUpdateInfo();
       }
       ACore.MarkUsedKeywordsAndPeople();
+      ACore.KeywordsEditMode = false;
+      if ((bool)Application.Current.Properties["EditKeywordsFromFolders"]) {
+        TabFolders.IsSelected = true;
+      }
     }
 
     private void CmdKeywordsComment_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
