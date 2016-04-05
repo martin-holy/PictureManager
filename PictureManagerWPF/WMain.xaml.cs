@@ -211,7 +211,6 @@ namespace PictureManager {
 
             folder.IsSelected = true;
             ACore.LastSelectedSource = folder;
-            ACore.LastSelectedSourceRecursive = false;
 
             if (ACore.ThumbsWebWorker != null && ACore.ThumbsWebWorker.IsBusy) {
               ACore.ThumbsWebWorker.CancelAsync();

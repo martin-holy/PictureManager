@@ -34,11 +34,9 @@ namespace PictureManager {
     public bool OneFileOnly;
     public bool ViewerOnly = false; //application was run with file path parameter
     public enum FileOperations { Copy, Move, Delete }
-    public bool LastSelectedSourceRecursive;
     public DataModel.PmDataContext Db;
     public ViewModel.MediaItems MediaItems;
     public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
-    public List<ViewModel.BaseTreeViewTagItem> TagModifers;
     public BackgroundWorker ThumbsWebWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
     public int ThumbsPageIndex;
@@ -68,7 +66,6 @@ namespace PictureManager {
       AppInfo = new ViewModel.AppInfo();
       MediaItems = new ViewModel.MediaItems(this);
       MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
-      TagModifers = new List<ViewModel.BaseTreeViewTagItem>();
 
       Db = new DataModel.PmDataContext("Data Source = data.db");
       Db.CreateDbStructure();
@@ -85,7 +82,6 @@ namespace PictureManager {
       Filters = new ViewModel.Filters {Db = Db};
       Viewers = new ViewModel.Viewers {Db = Db};
 
-      People.Load();
       People.Load();
       Keywords.Load();
       FolderKeywords.Load();
@@ -132,12 +128,16 @@ namespace PictureManager {
           } else {
             //not KeywordsEditMode
             var baseTagItem = (ViewModel.BaseTreeViewTagItem) item;
-            baseTagItem.IsSelected = true;
-            TagModifers.Clear();
-            TagModifers.Add(baseTagItem);
 
-            LastSelectedSource = baseTagItem;
-            LastSelectedSourceRecursive = recursive;
+            var rating = item as ViewModel.Rating;
+            if (rating != null) {
+              if (Ratings.Items.Count(x => x.IsSelected) == 0)
+                LastSelectedSource = baseTagItem;
+              rating.IsSelected = !rating.IsSelected;
+            } else {
+              baseTagItem.IsSelected = true;
+              LastSelectedSource = baseTagItem;
+            }
 
             if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
               ThumbsWebWorker.CancelAsync();
@@ -231,6 +231,11 @@ namespace PictureManager {
             break;
           }
         }
+      }
+
+      foreach (var pg in People.Items.Where(x => x is ViewModel.PeopleGroup).Cast<ViewModel.PeopleGroup>()) {
+        pg.PicCount = pg.Items.Sum(x => x.PicCount);
+        pg.IsMarked = pg.PicCount > 0;
       }
     }
 
