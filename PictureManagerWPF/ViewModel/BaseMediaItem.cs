@@ -191,18 +191,20 @@ namespace PictureManager.ViewModel {
     }
 
     public void ReSave() {
+      //TODO: try to preserve EXIF information
       FileInfo original = new FileInfo(FilePath);
       FileInfo newFile = new FileInfo(FilePath + "_newFile");
       try {
         using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(originalFileStream);
-          using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-            ImageCodecInfo encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
-            if (encoder == null) return;
-            EncoderParameters encParams = new EncoderParameters(1) {
-              Param = { [0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.JpegQualityLevel) }
-            };
-            bmp.Save(newFileStream, encoder, encParams);
+          using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(originalFileStream)) {
+            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+              ImageCodecInfo encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
+              if (encoder == null) return;
+              EncoderParameters encParams = new EncoderParameters(1) {
+                Param = {[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.JpegQualityLevel)}
+              };
+              bmp.Save(newFileStream, encoder, encParams);
+            }
           }
         }
 
