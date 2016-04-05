@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -189,6 +190,38 @@ namespace PictureManager.ViewModel {
       }
     }
 
+    public void ReSave() {
+      FileInfo original = new FileInfo(FilePath);
+      FileInfo newFile = new FileInfo(FilePath + "_newFile");
+      try {
+        using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
+          System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(originalFileStream);
+          using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+            ImageCodecInfo encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
+            if (encoder == null) return;
+            EncoderParameters encParams = new EncoderParameters(1) {
+              Param = { [0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.JpegQualityLevel) }
+            };
+            bmp.Save(newFileStream, encoder, encParams);
+          }
+        }
+
+        newFile.CreationTime = original.CreationTime;
+        original.Delete();
+        newFile.MoveTo(original.FullName);
+      }
+      catch (Exception) {
+        if (newFile.Exists) newFile.Delete();
+      }
+    }
+
+    public bool TryWriteMetadata() {
+      var bSuccess = WriteMetadata();
+      if (bSuccess) return true;
+      ReSave();
+      return WriteMetadata();
+    }
+
     public bool WriteMetadata() {
       FileInfo original = new FileInfo(FilePath);
       FileInfo newFile = new FileInfo(FilePath + "_newFile");
@@ -253,8 +286,8 @@ namespace PictureManager.ViewModel {
               }
               bSuccess = true;
             }
-            catch (Exception ex) {
-
+            catch (Exception) {
+              bSuccess = false;
             }
           }
         }

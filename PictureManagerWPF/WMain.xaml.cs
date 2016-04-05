@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -448,7 +449,7 @@ namespace PictureManager {
 
         foreach (var picture in pictures) {
           picture.SaveMediaItemInToDb(aCore, false, false);
-          picture.WriteMetadata();
+          picture.TryWriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
         }
@@ -514,7 +515,7 @@ namespace PictureManager {
       if (inputDialog.ShowDialog() ?? true) {
         current.Comment = inputDialog.TxtAnswer.Text;
         current.SaveMediaItemInToDb(ACore, false, false);
-        current.WriteMetadata();
+        current.TryWriteMetadata();
         ACore.Db.SubmitChanges();
       }
     }
@@ -595,8 +596,12 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var dirs = ACore.Db.ListDirectories.Where(x => !Directory.Exists(x.Path)).Select(x => x.Path);
-      
+      var filePath = @"D:\!test\badfile.jpg";
+      System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(filePath);
+      bmp.Save(@"D:\!test\badfile_fix.jpg", ImageFormat.Jpeg);
+
+      //var dirs = ACore.Db.ListDirectories.Where(x => !Directory.Exists(x.Path)).Select(x => x.Path);
+
       //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
 
       //PmDbContext context = new PmDbContext();
