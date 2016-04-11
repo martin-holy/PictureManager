@@ -261,6 +261,9 @@
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                   </DataTrigger>
+                  <DataTrigger Binding="{Binding IsChosen}" Value="True">
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
+                  </DataTrigger>
                 </Style.Triggers>
               </Style>
             </TreeView.ItemContainerStyle>

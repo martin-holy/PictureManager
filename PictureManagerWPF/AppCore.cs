@@ -131,9 +131,9 @@ namespace PictureManager {
 
             var rating = item as ViewModel.Rating;
             if (rating != null) {
-              if (Ratings.Items.Count(x => x.IsSelected) == 0)
-                LastSelectedSource = baseTagItem;
-              rating.IsSelected = !rating.IsSelected;
+              if (LastSelectedSource != null) LastSelectedSource.IsSelected = true;
+              rating.IsChosen = !rating.IsChosen;
+              rating.IsSelected = false;
             } else {
               baseTagItem.IsSelected = true;
               LastSelectedSource = baseTagItem;
@@ -144,21 +144,16 @@ namespace PictureManager {
               ThumbsResetEvent.WaitOne();
             }
 
-            MediaItems.LoadByTag(baseTagItem, recursive);
+            var folder = LastSelectedSource as ViewModel.Folder;
+            if (folder != null) {
+              MediaItems.LoadByFolder(folder.FullPath);
+              InitThumbsPagesControl();
+              return;
+            }
+
+            MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) LastSelectedSource, recursive);
             InitThumbsPagesControl();
           }
-          break;
-        }
-        case MouseButton.Middle: {
-          //nothing for now
-          /*if (KeywordsEditMode) return null;
-            if (item.IsCategory || !item.IsAccessible) return null;
-            if (!TagModifers.Contains(item))
-              TagModifers.Add(item);
-            item.IsSelected = !item.IsSelected;
-            GetPicturesByTag();
-            MarkUsedKeywordsAndPeople();
-            CreateThumbnailsWebPage();*/
           break;
         }
       }

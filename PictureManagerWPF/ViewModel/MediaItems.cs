@@ -97,19 +97,23 @@ namespace PictureManager.ViewModel {
       Items.Clear();
 
       var dbItems = new List<DataModel.MediaItem>();
-      //var dbItemsByDir = Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
       var dbItemsByDir = Db.ListMediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
+      var chosenRatings = ACore.Ratings.Items.Where(x => x.IsChosen).ToArray();
 
       foreach (var file in Directory.EnumerateFiles(path)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
         .OrderBy(x => x)) {
 
         var filePath = file.Replace(":\\\\", ":\\");
+
         //Filter by Viewer
         if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
         DataModel.MediaItem item;
         if (dbItemsByDir.TryGetValue(Path.GetFileName(file), out item)) {
+          //Filter by Rating
+          if (chosenRatings.Any() && !chosenRatings.Any(x => x.Value.Equals((int) item.Rating))) continue;
+
           dbItems.Add(item);
         }
 
@@ -121,14 +125,6 @@ namespace PictureManager.ViewModel {
       }
 
       //Load People and Keywords for thous that are already in DB
-      /*var mips = (from mip in Db.MediaItemPeople.ToArray()
-                  join mi in dbItems on mip.MediaItemId equals mi.Id
-                  select mip).ToArray();
-
-      var miks = (from mik in Db.MediaItemKeywords.ToArray()
-                  join mi in dbItems on mik.MediaItemId equals mi.Id
-                  select mik).ToArray();*/
-
       var mips = (from mip in Db.ListMediaItemPeople
                   join mi in dbItems on mip.MediaItemId equals mi.Id
                   select mip).ToArray();
@@ -200,6 +196,10 @@ namespace PictureManager.ViewModel {
       }
 
       if (items != null) {
+        var chosenRatings = ACore.Ratings.Items.Where(x => x.IsChosen).ToArray();
+        if (chosenRatings.Any())
+          items = items.Where(i => chosenRatings.Any(x => x.Value.Equals((int) i.Rating))).ToArray();
+
         var allDirs = (from d in Db.ListDirectories
                        join mi in items on d.Id equals mi.DirectoryId
                        select d).Distinct().ToArray();
