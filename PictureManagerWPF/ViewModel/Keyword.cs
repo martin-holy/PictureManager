@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace PictureManager.ViewModel {
   public class Keyword: BaseTreeViewTagItem {
@@ -18,6 +19,9 @@ namespace PictureManager.ViewModel {
       Index = data.Idx;
       IconName = "appbar_tag";
       FullPath = data.Name;
+      Title = data.Name.Contains("/")
+        ? data.Name.Substring(data.Name.IndexOf("/", StringComparison.OrdinalIgnoreCase) + 1)
+        : data.Name;
     }
   }
 }
