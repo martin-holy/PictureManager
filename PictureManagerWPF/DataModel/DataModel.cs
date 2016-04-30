@@ -80,6 +80,41 @@ namespace PictureManager.DataModel {
       _toDelete.Add(data);
     }
 
+    private void UpdateInList(BaseTable data, bool addIt) {
+      switch (data.GetType().Name) {
+        case nameof(Directory): {
+            if (addIt) Directories.Add((Directory) data); else Directories.Remove((Directory)data); break;
+          }
+        case nameof(Filter): {
+            if (addIt) Filters.Add((Filter)data); else Filters.Remove((Filter)data); break;
+          }
+        case nameof(Keyword): {
+            if (addIt) Keywords.Add((Keyword)data); else Keywords.Remove((Keyword)data); break;
+          }
+        case nameof(MediaItemKeyword): {
+            if (addIt) MediaItemKeywords.Add((MediaItemKeyword)data); else MediaItemKeywords.Remove((MediaItemKeyword)data); break;
+          }
+        case nameof(MediaItemPerson): {
+            if (addIt) MediaItemPeople.Add((MediaItemPerson)data); else MediaItemPeople.Remove((MediaItemPerson)data); break;
+          }
+        case nameof(MediaItem): {
+            if (addIt) MediaItems.Add((MediaItem)data); else MediaItems.Remove((MediaItem)data); break;
+          }
+        case nameof(Person): {
+            if (addIt) People.Add((Person)data); else People.Remove((Person)data); break;
+          }
+        case nameof(PeopleGroup): {
+            if (addIt) PeopleGroups.Add((PeopleGroup)data); else PeopleGroups.Remove((PeopleGroup)data); break;
+          }
+        case nameof(Viewer): {
+            if (addIt) Viewers.Add((Viewer)data); else Viewers.Remove((Viewer)data); break;
+          }
+        case nameof(ViewerAccess): {
+            if (addIt) ViewersAccess.Add((ViewerAccess)data); else ViewersAccess.Remove((ViewerAccess)data); break;
+          }
+      }
+    }
+
     public bool SubmitChanges() {
       if (!OpenDbConnection()) return false;
 
@@ -96,6 +131,7 @@ namespace PictureManager.DataModel {
               cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
             }
             cmd.ExecuteNonQuery();
+            UpdateInList(o, true);
           }
           _toInsert.Clear();
 
@@ -117,6 +153,7 @@ namespace PictureManager.DataModel {
             cmd.Parameters.Clear();
             cmd.Parameters.Add(new SQLiteParameter("@Id", o.Id));
             cmd.ExecuteNonQuery();
+            UpdateInList(o, false);
           }
           _toDelete.Clear();
 
@@ -148,14 +185,7 @@ namespace PictureManager.DataModel {
       var qInsert = $"insert into {tableName} ({string.Join(", ", columns.Keys)}) values ({paramNames})";
       var qUpdate = $"update {tableName} set {setColumns} where Id = @Id";
       var qDelete = $"delete from {tableName} where Id = @Id";
-      TableInfos.Add(typeof (T),
-        new TableInfo {
-          Columns = columns,
-          QuerySelect = qSelect,
-          QueryInsert = qInsert,
-          QueryUpdate = qUpdate,
-          QueryDelete = qDelete
-        });
+      
 
       var data = new List<T>();
       foreach (DataRow row in Select(qSelect)) {
@@ -170,6 +200,16 @@ namespace PictureManager.DataModel {
         }
         data.Add(item);
       }
+
+      TableInfos.Add(typeof(T),
+        new TableInfo {
+          Columns = columns,
+          QuerySelect = qSelect,
+          QueryInsert = qInsert,
+          QueryUpdate = qUpdate,
+          QueryDelete = qDelete,
+          Items = data
+        });
 
       return data;
     }
@@ -206,6 +246,7 @@ namespace PictureManager.DataModel {
     public string QueryUpdate;
     public string QueryDelete;
     public Dictionary<string, PropertyInfo> Columns;
+    public object Items;
   }
 
   #region Tables
