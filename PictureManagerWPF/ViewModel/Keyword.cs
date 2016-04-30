@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 
 namespace PictureManager.ViewModel {
   public class Keyword: BaseTreeViewTagItem {
-    public long Index;
+    public int Index;
     public string FullPath;
     public DataModel.Keyword Data;
     public ObservableCollection<Keyword> Items { get; set; }

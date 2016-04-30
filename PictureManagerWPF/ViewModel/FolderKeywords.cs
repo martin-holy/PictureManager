@@ -22,8 +22,8 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
       AllFolderKeywords.Clear();
-      Dictionary<long, string> paths = new Dictionary<long, string>();
-      foreach (var dir in Db.ListDirectories.OrderBy(x => x.Path)) {
+      Dictionary<int, string> paths = new Dictionary<int, string>();
+      foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
         if (!Directory.Exists(dir.Path)) continue;
         if (!ACore.CanViewerSeeThisDirectory(dir.Path)) continue;
         var path = GetFolderKeywordKeyPath(dir.Path);
@@ -63,7 +63,7 @@ namespace PictureManager.ViewModel {
       return string.Empty;
     }
 
-    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, long dirId) {
+    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, int dirId) {
       foreach (FolderKeyword folderKeyword in items) {
         if (folderKeyword.FolderIdList.Any(fid => fid == dirId)) return folderKeyword;
         var fk = GetFolderKeywordByDirId(folderKeyword.Items, dirId);

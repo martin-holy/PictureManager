@@ -68,7 +68,7 @@ namespace PictureManager {
       MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
 
       Db = new DataModel.PmDataContext("Data Source = data.db");
-      Db.CreateDbStructure();
+      //Db.CreateDbStructure();
       Db.Load();
     }
 
@@ -132,7 +132,7 @@ namespace PictureManager {
             var rating = item as ViewModel.Rating;
             if (rating != null) {
               if (LastSelectedSource != null) LastSelectedSource.IsSelected = true;
-              rating.IsChosen = !rating.IsChosen;
+              rating.BgBrush = rating.BgBrush == BgBrushes.Chosen ? BgBrushes.Default : BgBrushes.Chosen;
               rating.IsSelected = false;
             } else {
               baseTagItem.IsSelected = true;
@@ -373,8 +373,8 @@ namespace PictureManager {
         fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
                              FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE);
         var cachePath = @Settings.Default.CachePath;
-        var mItems = Db.ListMediaItems;
-        var dirs = Db.ListDirectories;
+        var mItems = Db.MediaItems;
+        var dirs = Db.Directories;
 
         if (mode == FileOperations.Delete) {
           var itemsToDel = new List<DataModel.MediaItem>();
@@ -399,11 +399,11 @@ namespace PictureManager {
           }
 
           foreach (var mi in itemsToDel) {
-            foreach(var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == mi.Id)) {
+            foreach(var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == mi.Id)) {
               Db.DeleteOnSubmit(mik);
             }
 
-            foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == mi.Id)) {
+            foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == mi.Id)) {
               Db.DeleteOnSubmit(mip);
             }
 
@@ -427,7 +427,7 @@ namespace PictureManager {
               var destDirId = dirs.SingleOrDefault(x => x.Path.Equals(dirPath))?.Id;
               if (destDirId == null) {
                 destDirId = Db.GetNextIdFor("Directories");
-                Db.InsertOnSubmit(new DataModel.Directory { Id = (long)destDirId, Path = dirPath });
+                Db.InsertOnSubmit(new DataModel.Directory {Id = (int) destDirId, Path = dirPath});
               }
 
               #region Copy files
@@ -438,7 +438,7 @@ namespace PictureManager {
 
                 Db.InsertOnSubmit(new DataModel.MediaItem {
                   Id = destPicId,
-                  DirectoryId = (long) destDirId,
+                  DirectoryId = (int) destDirId,
                   FileName = Path.GetFileName(item.Value),
                   Rating = srcPic.Rating,
                   Comment = srcPic.Comment,
@@ -446,7 +446,7 @@ namespace PictureManager {
                 });
 
                 //duplicate Picture Keywords
-                foreach (var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
+                foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
                   Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
                     Id = Db.GetNextIdFor("MediaItemKeyword"),
                     KeywordId = mik.KeywordId,
@@ -455,7 +455,7 @@ namespace PictureManager {
                 }
 
                 //duplicate Picture People
-                foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
+                foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
                   Db.InsertOnSubmit(new DataModel.MediaItemPerson {
                     Id = Db.GetNextIdFor("MediaItemPerson"),
                     PersonId = mip.PersonId,
@@ -473,8 +473,9 @@ namespace PictureManager {
               #region Move files
               if (mode == FileOperations.Move) {
                 //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
-                srcPic.DirectoryId = (long) destDirId;
+                srcPic.DirectoryId = (int) destDirId;
                 srcPic.FileName = Path.GetFileName(item.Value);
+                Db.UpdateOnSubmit(srcPic);
 
                 //delete empty directory
                 if (mItems.Count(x => x.DirectoryId.Equals(srcDirId)) == 0) {
@@ -498,6 +499,7 @@ namespace PictureManager {
 
                 foreach (var dir in dirs.Where(x => x.Path.Equals(item.Key) || x.Path.StartsWith(item.Key + "\\"))) {
                   dir.Path = dir.Path.Replace(item.Key, item.Value);
+                  Db.UpdateOnSubmit(dir);
                 }
 
                 //move thumbnails
@@ -517,14 +519,14 @@ namespace PictureManager {
       return true;
     }
 
-    public long? GetDirectoryIdByPath(string path) {
-      var dir = Db.ListDirectories.SingleOrDefault(x => x.Path.Equals(path));
+    public int? GetDirectoryIdByPath(string path) {
+      var dir = Db.Directories.SingleOrDefault(x => x.Path.Equals(path));
       return dir?.Id;
     }
 
-    public long InsertDirecotryInToDb(string path) {
+    public int InsertDirecotryInToDb(string path) {
       var dirId = GetDirectoryIdByPath(path);
-      if (dirId != null) return (long) dirId;
+      if (dirId != null) return (int) dirId;
       var newDirId = Db.GetNextIdFor("Directories");
       Db.InsertOnSubmit(new DataModel.Directory { Id = newDirId, Path = path });
       Db.SubmitChanges();
@@ -532,36 +534,48 @@ namespace PictureManager {
     }
 
     public bool CanViewerSeeThisFile(string filePath) {
-      var ok = false;
-      var viewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer != null) {
-        if (viewer.DirsAllowed.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-          if (viewer.DirsDenied.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-            ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-          } else {
-            ok = !viewer.FilesDenied.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-          }
+      bool ok;
+      var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+      if (viewer == null) return false;
+
+      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFi = new string[0];
+      var excFi = new string[0];
+
+      if (incFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+        if (excFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+          ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
         } else {
-          ok = viewer.FilesAllowed.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+          ok = !excFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
         }
+      } else {
+        ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
       }
+
       return ok;
     }
 
     public bool CanViewerSeeThisDirectory(string dirPath) {
-      var ok = false;
-      var viewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer != null) {
-        if (viewer.DirsAllowed.Any(x => x.Contains(dirPath)) || viewer.DirsAllowed.Any(dirPath.Contains)) {
-          if (viewer.DirsDenied.Any(x => x.Contains(dirPath)) || viewer.DirsDenied.Any(dirPath.Contains)) {
-            ok = viewer.FilesAllowed.Any(x => x.StartsWith(dirPath));
-          } else {
-            ok = !viewer.FilesDenied.Any(x => x.StartsWith(dirPath));
-          }
+      bool ok;
+      var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+      if (viewer == null) return false;
+
+      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFi = new string[0];
+      var excFi = new string[0];
+
+      if (incFo.Any(x => x.Contains(dirPath)) || incFo.Any(dirPath.Contains)) {
+        if (excFo.Any(x => x.Contains(dirPath)) || excFo.Any(dirPath.Contains)) {
+          ok = incFi.Any(x => x.StartsWith(dirPath));
         } else {
-          ok = viewer.FilesAllowed.Any(x => x.StartsWith(dirPath));
+          ok = !excFi.Any(x => x.StartsWith(dirPath));
         }
+      } else {
+        ok = incFi.Any(x => x.StartsWith(dirPath));
       }
+
       return ok;
     }
 

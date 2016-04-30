@@ -13,6 +13,7 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/basedark.xaml" />
         <ResourceDictionary Source="/Resources/Icons.xaml" />
       </ResourceDictionary.MergedDictionaries>
+      
       <pm:StaticResourceConverter x:Key="StaticResourceConverter"/>
       <pm:IconNameToBrush x:Key="IconNameToBrush" />
       <pm:RatingConverter x:Key="RatingConverter" />

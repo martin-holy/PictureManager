@@ -21,9 +21,9 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllPeople.Clear();
       //Add PeopleGroups
-      foreach (var pg in Db.ListPeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
+      foreach (var pg in Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
         //Add People to the PeopleGroup
-        foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
+        foreach (var p in Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
           pg.Items.Add(p);
           AllPeople.Add(p);
         }
@@ -31,13 +31,13 @@ namespace PictureManager.ViewModel {
       }
 
       //Add People without group
-      foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
+      foreach (var p in Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
         Items.Add(p);
         AllPeople.Add(p);
       }
     }
 
-    public Person GetPerson(long id, long? peopleGroupId) {
+    public Person GetPerson(int id, int? peopleGroupId) {
       if (peopleGroupId != null) {
         var g = Items.OfType<PeopleGroup>().Single(x => x.Id == peopleGroupId);
         return g.Items.Single(x => x.Id == id);
@@ -45,12 +45,12 @@ namespace PictureManager.ViewModel {
       return Items.OfType<Person>().Single(x => x.Id == id);
     }
 
-    public Person GetPerson(long id) {
+    public Person GetPerson(int id) {
       return AllPeople.SingleOrDefault(x => x.Id == id);
     }
 
     public Person GetPerson(string name, bool create) {
-      var dmPerson = Db.ListPeople.SingleOrDefault(x => x.Name.Equals(name));
+      var dmPerson = Db.People.SingleOrDefault(x => x.Name.Equals(name));
       if (dmPerson != null) {
         return GetPerson(dmPerson.Id, dmPerson.PeopleGroupId);
       }
@@ -101,7 +101,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.ListPeople.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+        if (Db.People.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Person's name already exists!");
           return;
         }
@@ -115,6 +115,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           person.Title = inputDialog.Answer;
           person.Data.Name = inputDialog.Answer;
+          Db.UpdateOnSubmit(person.Data);
           Db.SubmitChanges();
           SetInPalce(person, false);
         } else CreatePerson(inputDialog.Answer, peopleGroup);
@@ -136,7 +137,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.ListPeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
+        if (Db.PeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;
         }
@@ -150,6 +151,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           peopleGroup.Title = inputDialog.Answer;
           peopleGroup.Data.Name = inputDialog.Answer;
+          Db.UpdateOnSubmit(peopleGroup.Data);
           Db.SubmitChanges();
           SetInPalce(peopleGroup, false);
         } else CreateGroup(inputDialog.Answer);
@@ -157,7 +159,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void SetInPalce(Person person, bool isNew) {
-      var idx = Db.ListPeople.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
+      var idx = Db.People.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
       if (person.PeopleGroupId == null) {
         idx += Items.OfType<PeopleGroup>().Count();
         if (isNew)
@@ -174,7 +176,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void SetInPalce(PeopleGroup peopleGroup, bool isNew) {
-      var idx = Db.ListPeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
+      var idx = Db.PeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
       if (isNew)
         Items.Insert(idx, peopleGroup);
       else 
@@ -182,7 +184,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePerson(Person person) {
-      foreach (var mip in Db.ListMediaItemPeople.Where(x => x.PersonId == person.Id)) {
+      foreach (var mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
         Db.DeleteOnSubmit(mip);
       }
 
@@ -197,7 +199,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePeopleGroup(PeopleGroup group) {
-      foreach (var p in Db.ListPeople.Where(x => x.PeopleGroupId == group.Id)) {
+      foreach (var p in Db.People.Where(x => x.PeopleGroupId == group.Id)) {
         p.PeopleGroupId = null;
       }
 
@@ -226,6 +228,7 @@ namespace PictureManager.ViewModel {
       var newGroupId = peopleGroup?.Id;
       person.PeopleGroupId = newGroupId;
       person.Data.PeopleGroupId = newGroupId;
+      Db.UpdateOnSubmit(person.Data);
       Db.SubmitChanges();
       SetInPalce(person, true); //person is new in the group
     }

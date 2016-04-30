@@ -111,7 +111,7 @@ namespace PictureManager {
           .Where(f => _aCore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
           .OrderBy(x => x)) {
 
-          var miInDb = _aCore.Db.ListMediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
+          var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
           var mi = new ViewModel.BaseMediaItem(file, _aCore.Db, 0, null, miInDb) {DirId = dirId};
           if (!_newOnly || miInDb == null)
             mi.SaveMediaItemInToDb(_aCore, true, miInDb == null);

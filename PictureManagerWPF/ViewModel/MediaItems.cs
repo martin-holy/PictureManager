@@ -97,8 +97,8 @@ namespace PictureManager.ViewModel {
       Items.Clear();
 
       var dbItems = new List<DataModel.MediaItem>();
-      var dbItemsByDir = Db.ListMediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
-      var chosenRatings = ACore.Ratings.Items.Where(x => x.IsChosen).ToArray();
+      var dbItemsByDir = Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
+      var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).ToArray();
 
       foreach (var file in Directory.EnumerateFiles(path)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
@@ -125,11 +125,11 @@ namespace PictureManager.ViewModel {
       }
 
       //Load People and Keywords for thous that are already in DB
-      var mips = (from mip in Db.ListMediaItemPeople
+      var mips = (from mip in Db.MediaItemPeople
                   join mi in dbItems on mip.MediaItemId equals mi.Id
                   select mip).ToArray();
 
-      var miks = (from mik in Db.ListMediaItemKeywords
+      var miks = (from mik in Db.MediaItemKeywords
                   join mi in dbItems on mik.MediaItemId equals mi.Id
                   select mik).ToArray();
 
@@ -148,6 +148,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void LoadByTag(BaseTreeViewTagItem tag, bool recursive) {
+      if (tag == null) return;
       Current = null;
       Items.Clear();
 
@@ -157,22 +158,22 @@ namespace PictureManager.ViewModel {
         case nameof(Keyword): {
             var keyword = (Keyword)tag;
             if (recursive) {
-              items = (from k in Db.ListKeywords.Where(x => x.Name.StartsWith(keyword.FullPath))
-                       join mik in Db.ListMediaItemKeywords on k.Id equals mik.KeywordId into keywords
+              items = (from k in Db.Keywords.Where(x => x.Name.StartsWith(keyword.FullPath))
+                       join mik in Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
                        from k2 in keywords
-                       join mi in Db.ListMediaItems on k2.MediaItemId equals mi.Id
+                       join mi in Db.MediaItems on k2.MediaItemId equals mi.Id
                        select mi).ToList().Distinct().ToArray();
             } else {
-              items = (from mi in Db.ListMediaItems
-                       join mik in Db.ListMediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
+              items = (from mi in Db.MediaItems
+                       join mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
                        select mi).ToArray();
             }
             break;
           }
         case nameof(Person): {
             var person = (Person)tag;
-            items = (from mi in Db.ListMediaItems
-                     join mip in Db.ListMediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
+            items = (from mi in Db.MediaItems
+                     join mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
                      select mi).ToArray();
             break;
           }
@@ -180,36 +181,36 @@ namespace PictureManager.ViewModel {
             var folderKeyword = (FolderKeyword)tag;
             if (recursive) {
               var itemss = new List<DataModel.MediaItem>();
-              foreach (var fkDir in Db.ListDirectories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
-                foreach (var dir in Db.ListDirectories.Where(x => x.Path.StartsWith(fkDir.Path))) {
-                  foreach (var mi in Db.ListMediaItems.Where(x => x.DirectoryId == dir.Id)) {
+              foreach (var fkDir in Db.Directories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
+                foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(fkDir.Path))) {
+                  foreach (var mi in Db.MediaItems.Where(x => x.DirectoryId == dir.Id)) {
                     itemss.Add(mi);
                   }
                 }
               }
               items = itemss.OrderBy(x => x.FileName).ToArray();
             } else {
-              items = Db.ListMediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
+              items = Db.MediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
             }
             break;
           }
       }
 
       if (items != null) {
-        var chosenRatings = ACore.Ratings.Items.Where(x => x.IsChosen).ToArray();
+        var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).ToArray();
         if (chosenRatings.Any())
           items = items.Where(i => chosenRatings.Any(x => x.Value.Equals((int) i.Rating))).ToArray();
 
-        var allDirs = (from d in Db.ListDirectories
+        var allDirs = (from d in Db.Directories
                        join mi in items on d.Id equals mi.DirectoryId
                        select d).Distinct().ToArray();
         var dirs = allDirs.Where(dir => Directory.Exists(dir.Path)).ToDictionary(dir => dir.Id);
 
-        var mips = (from mip in Db.ListMediaItemPeople
+        var mips = (from mip in Db.MediaItemPeople
                     join mi in items on mip.MediaItemId equals mi.Id
                     select mip).ToArray();
 
-        var miks = (from mik in Db.ListMediaItemKeywords
+        var miks = (from mik in Db.MediaItemKeywords
                     join mi in items on mik.MediaItemId equals mi.Id
                     select mik).ToArray();
 

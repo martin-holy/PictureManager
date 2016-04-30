@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -133,6 +132,7 @@ namespace PictureManager {
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       //app opened with argument
       if (File.Exists(_argPicFile)) {
+        ACore.AppInfo.AppMode = AppModes.Viewer;
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
         ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, ACore.Db, 0, WbThumbs, null));
@@ -140,6 +140,7 @@ namespace PictureManager {
         ACore.MediaItems.Current = ACore.MediaItems.Items[0];
         ShowFullPicture();
       } else {
+        ACore.AppInfo.AppMode = AppModes.Browser;
         InitUi();
       }
     }
@@ -319,37 +320,41 @@ namespace PictureManager {
     }
 
     private void CmdViewerNew(object sender, ExecutedRoutedEventArgs e) {
-      var newViewer = new ViewModel.Viewer {Db = ACore.Db, Title = "New viewer"};
-      var vb = new WViewerBuilder(newViewer) {Owner = this};
-      if (vb.ShowDialog() ?? true) {
-        newViewer.DirsAllowed = vb.DirListAllowed.Paths.ToArray();
-        newViewer.DirsDenied = vb.DirListDenied.Paths.ToArray();
-        newViewer.Save();
-        ACore.Viewers.Items.Add(newViewer);
-      }
+      ACore.Viewers.NewOrRenameViewer(this, (ViewModel.Viewer)e.Parameter, false);
+    }
+
+    private void CmdViewerRename(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Viewers.NewOrRenameViewer(this, (ViewModel.Viewer)e.Parameter, true);
     }
 
     private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
-      var viewer = (ViewModel.Viewer)e.Parameter;
-      var title = viewer.Title;
-      var vb = new WViewerBuilder(viewer) { Owner = this };
-      if (vb.ShowDialog() ?? true) {
-        viewer.DirsAllowed = vb.DirListAllowed.Paths.ToArray();
-        viewer.DirsDenied = vb.DirListDenied.Paths.ToArray();
-        viewer.Save();
-      } else {
-        viewer.Title = title;
-      }
+      ACore.AppInfo.AppMode = AppModes.ViewerEdit;
+      Application.Current.Properties["EditedViewer"] = e.Parameter;
     }
 
     private void CmdViewerDelete(object sender, ExecutedRoutedEventArgs e) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result == MessageBoxResult.Yes) {
         var viewer = (ViewModel.Viewer) e.Parameter;
-        ACore.Db.DeleteOnSubmit(viewer.Data);
+        foreach (var va in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Id)) {
+          ACore.Db.DeleteOnSubmit(va);
+        }
+        ACore.Db.DeleteOnSubmit((DataModel.Viewer) viewer.DbData);
         ACore.Db.SubmitChanges();
         ACore.Viewers.Items.Remove(viewer);
       }
+    }
+
+    private void CmdViewerIncludeFolder(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Viewers.AddFolder(true, ((ViewModel.Folder) e.Parameter).FullPath);
+    }
+
+    private void CmdViewerExcludeFolder(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Viewers.AddFolder(false, ((ViewModel.Folder)e.Parameter).FullPath);
+    }
+
+    private void CmdViewerRemoveFolder(object sender, ExecutedRoutedEventArgs e) {
+      ACore.Viewers.RemoveFolder((ViewModel.BaseTreeViewItem) e.Parameter);
     }
 
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
@@ -422,6 +427,7 @@ namespace PictureManager {
       ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
       ACore.KeywordsEditMode = true;
+      ACore.AppInfo.AppMode = AppModes.KeywordsEdit;
     }
 
     private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -460,6 +466,7 @@ namespace PictureManager {
           TabFolders.IsSelected = true;
         }
         ACore.Db.SubmitChanges();
+        ACore.AppInfo.AppMode = AppModes.Browser;
       };
 
       bw.RunWorkerAsync(ACore);
@@ -476,6 +483,7 @@ namespace PictureManager {
       }
       ACore.MarkUsedKeywordsAndPeople();
       ACore.KeywordsEditMode = false;
+      ACore.AppInfo.AppMode = AppModes.Browser;
       if ((bool)Application.Current.Properties["EditKeywordsFromFolders"]) {
         TabFolders.IsSelected = true;
       }
@@ -595,9 +603,36 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var filePath = @"D:\!test\badfile.jpg";
-      System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(filePath);
-      bmp.Save(@"D:\!test\badfile_fix.jpg", ImageFormat.Jpeg);
+
+
+      //var dir = new DataModel.Directory {Path = "ds"};
+
+      var db = new DataModel.PmDataContext("Data Source = data.db");
+      db.Load();
+      var dir = new DataModel.Directory {Id = db.GetNextIdFor("Directories"), Path = "aaa"};
+      db.InsertOnSubmit(dir);
+      db.SubmitChanges();
+
+      dir.Path = "www";
+      db.UpdateOnSubmit(dir);
+      db.SubmitChanges();
+
+      db.DeleteOnSubmit(dir);
+      db.SubmitChanges();
+
+
+      /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
+      var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
+      var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
+      //3659174697441353
+      var filePath = @"d:\!test\20150831_114319_Martin.jpg";
+      var fileInfo = new FileInfo(filePath);
+
+      foreach (var file in Directory.EnumerateFiles(@"d:\Pictures\01 Digital_Foto\-=Hotovo\2016\2016_04_07+ - Penedo Furado\")) {
+        var x = ShellStuff.FileInformation.GetFileIdInfo(file);
+      }
+
+      var xx = ShellStuff.FileInformation.GetFileIdInfo(filePath);*/
 
       //var dirs = ACore.Db.ListDirectories.Where(x => !Directory.Exists(x.Path)).Select(x => x.Path);
 
@@ -748,7 +783,9 @@ namespace PictureManager {
         for (var i = 0; i < items.Count; i++) {
           items[i].Index = i;
           items[i].Data.Idx = i;
+          ACore.Db.UpdateOnSubmit(items[i].Data);
         }
+        
         ACore.Db.SubmitChanges();
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
@@ -842,6 +879,10 @@ namespace PictureManager {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderDelete"], CommandParameter = item});
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
           }
+          if (ACore.AppInfo.AppMode == AppModes.ViewerEdit) {
+            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerIncludeFolder"], CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerExcludeFolder"], CommandParameter = item });
+          }
           break;
         }
         case nameof(ViewModel.FavoriteFolder): {
@@ -900,8 +941,14 @@ namespace PictureManager {
           break;
         }
         case nameof(ViewModel.Viewer): {
+          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerRename"], CommandParameter = item});
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerEdit"], CommandParameter = item});
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerDelete"], CommandParameter = item});
+          break;
+        }
+        case nameof(ViewModel.BaseTreeViewItem): {
+          if (((ViewModel.BaseTreeViewItem)item).DbData is DataModel.ViewerAccess)
+            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerRemoveFolder"], CommandParameter = item });
           break;
         }
       }
@@ -923,6 +970,42 @@ namespace PictureManager {
       Settings.Default.Save();
       ACore.FolderKeywords.Load();
       ACore.Folders.AddDrives();
+    }
+
+    private void BtnStatBarOk_OnClick(object sender, RoutedEventArgs e) {
+      switch (ACore.AppInfo.AppMode) {
+        case AppModes.Browser:
+          break;
+        case AppModes.Viewer:
+          break;
+        case AppModes.KeywordsEdit: {
+          CmdKeywordsSave_Executed(null, null);
+          break;
+        }
+        case AppModes.ViewerEdit:
+          ACore.Db.SubmitChanges();
+          ACore.AppInfo.AppMode = AppModes.Browser;
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
+    }
+
+    private void BtnStatBarCancel_OnClick(object sender, RoutedEventArgs e) {
+      switch (ACore.AppInfo.AppMode) {
+        case AppModes.Browser:
+          break;
+        case AppModes.Viewer:
+          break;
+        case AppModes.KeywordsEdit: {
+          CmdKeywordsCancel_Executed(null, null);
+          break;
+        }
+        case AppModes.ViewerEdit:
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
+      }
     }
   }
 }

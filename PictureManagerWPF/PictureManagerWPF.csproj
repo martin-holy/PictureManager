@@ -71,7 +71,9 @@
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="DataModel\DataModel.cs" />
+    <Compile Include="Enums.cs" />
     <Compile Include="Info.cs" />
+    <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseMediaItem.cs" />
     <Compile Include="ViewModel\FavoriteFolder.cs" />
@@ -138,9 +140,6 @@
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WViewerBuilder.xaml.cs">
-      <DependentUpon>WViewerBuilder.xaml</DependentUpon>
-    </Compile>
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -194,10 +193,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSettings.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WViewerBuilder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class AppInfo : INotifyPropertyChanged {
@@ -21,6 +22,22 @@ namespace PictureManager.ViewModel {
     public bool KeywordsEditMode {
       get { return _keywordsEditMode; }
       set { _keywordsEditMode = value; OnPropertyChanged(); }
+    }
+
+    private AppModes _appMode;
+    public AppModes AppMode
+    {
+      get { return _appMode; }
+      set {
+        _appMode = value;
+        OnPropertyChanged();
+        var aCore = (AppCore) Application.Current.Properties["AppCore"];
+        if (aCore != null) {
+          aCore.WMain.StatBarOkCancelPanel.Visibility = _appMode == AppModes.KeywordsEdit || _appMode == AppModes.ViewerEdit
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        }
+      }
     }
 
     public void OnPropertyChanged([CallerMemberName] string name = "") {

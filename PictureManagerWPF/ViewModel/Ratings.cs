@@ -18,7 +18,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public Rating GetRatingByValue(long value) {
+    public Rating GetRatingByValue(int value) {
       return Items.Single(x => x.Value == value);
     }
   }

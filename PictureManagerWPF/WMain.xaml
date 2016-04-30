@@ -110,8 +110,12 @@
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
     <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
     <RoutedUICommand x:Key="ViewerNew" Text="New" />
+    <RoutedUICommand x:Key="ViewerRename" Text="Rename" />
     <RoutedUICommand x:Key="ViewerEdit" Text="Edit" />
     <RoutedUICommand x:Key="ViewerDelete" Text="Delete" />
+    <RoutedUICommand x:Key="ViewerIncludeFolder" Text="Include for Viewer" />
+    <RoutedUICommand x:Key="ViewerExcludeFolder" Text="Exclude for Viewer" />
+    <RoutedUICommand x:Key="ViewerRemoveFolder" Text="Remove" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
@@ -135,8 +139,12 @@
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
     <CommandBinding Command="{StaticResource ViewerNew}" Executed="CmdViewerNew" />
+    <CommandBinding Command="{StaticResource ViewerRename}" Executed="CmdViewerRename" />
     <CommandBinding Command="{StaticResource ViewerEdit}" Executed="CmdViewerEdit" />
     <CommandBinding Command="{StaticResource ViewerDelete}" Executed="CmdViewerDelete" />
+    <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
+    <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
+    <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
 
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
@@ -163,6 +171,7 @@
               <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="100" />
               <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
           </Grid>
         </ItemsPanelTemplate>
@@ -181,11 +190,20 @@
       <StatusBarItem Grid.Column="5">
         <ComboBox x:Name="CmbThumbPage" Visibility="Collapsed" SelectionChanged="CmbThumbPage_OnSelectionChanged" />
       </StatusBarItem>
+      <StatusBarItem Grid.Column="6">
+        <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
+          <Button Margin="0,0,0,0" Content="Ok" Click="BtnStatBarOk_OnClick" MinWidth="60" />
+          <Button Margin="3,0,0,0" Content="Cancel" Click="BtnStatBarCancel_OnClick" MinWidth="60" />
+        </StackPanel>
+      </StatusBarItem>
       <StatusBar.Style>
         <Style>
           <Setter Property="StatusBar.Background" Value="{DynamicResource AccentColorBrush}" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding KeywordsEditMode}" Value="True">
+            <DataTrigger Binding="{Binding AppMode}" Value="2">
+              <Setter Property="StatusBar.Background" Value="#CA5100" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding AppMode}" Value="3">
               <Setter Property="StatusBar.Background" Value="#CA5100" />
             </DataTrigger>
           </Style.Triggers>
@@ -261,7 +279,7 @@
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding IsChosen}" Value="True">
+                  <DataTrigger Binding="{Binding BgBrush}" Value="2"> <!-- IsChosen -->
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -339,6 +357,7 @@
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="ToolTip" Value="{Binding ToolTip}" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Style.Triggers>
@@ -372,7 +391,6 @@
                 <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
-                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
             </TreeView.Resources>

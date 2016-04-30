@@ -1,6 +1,6 @@
 ﻿namespace PictureManager.ViewModel {
   public class Person : BaseTreeViewTagItem {
-    public long? PeopleGroupId;
+    public int? PeopleGroupId;
     public DataModel.Person Data;
 
     public Person() { }

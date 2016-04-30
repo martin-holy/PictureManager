@@ -21,7 +21,7 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllKeywords.Clear();
 
-      foreach (Keyword newItem in Db.ListKeywords.OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x))) {
+      foreach (Keyword newItem in Db.Keywords.OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x))) {
         if (!newItem.FullPath.Contains("/")) {
           newItem.Title = newItem.FullPath;
           Items.Add(newItem);
@@ -58,7 +58,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public Keyword GetKeyword(long id) {
+    public Keyword GetKeyword(int id) {
       return AllKeywords.SingleOrDefault(x => x.Id == id);
     }
 
@@ -96,6 +96,7 @@ namespace PictureManager.ViewModel {
           keyword.FullPath = path;
           keyword.Data.Name = path;
           keyword.Title = inputDialog.Answer;
+          Db.UpdateOnSubmit(keyword.Data);
           Db.SubmitChanges();
         }
         else CreateKeyword(root, keyword, inputDialog.Answer);
@@ -121,7 +122,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeleteKeyword(Keyword keyword) {
-      foreach (var mik in Db.ListMediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
+      foreach (var mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
         Db.DeleteOnSubmit(mik);
       }
 

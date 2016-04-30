@@ -38,10 +38,10 @@ namespace PictureManager.ViewModel {
     public string Comment;
     public string CommentEscaped => Comment?.Replace("'", "''");
     public int Index;
-    public long Id;
-    public long DirId;
-    public long Rating;
-    public long Orientation;
+    public int Id;
+    public int DirId;
+    public int Rating;
+    public int Orientation;
     public bool IsModifed;
     public DataModel.PmDataContext Db;
     public DataModel.MediaItem Data;
@@ -101,8 +101,8 @@ namespace PictureManager.ViewModel {
 
     private void LoadKeywordsFromDb(Keywords keywords) {
       Keywords.Clear();
-      var ks = from mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == Id)
-        join k in Db.ListKeywords on mik.KeywordId equals k.Id
+      var ks = from mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
+        join k in Db.Keywords on mik.KeywordId equals k.Id
         select k.Name;
       foreach (var k in ks) {
         Keywords.Add(keywords.GetKeywordByFullPath(k, false));
@@ -111,8 +111,8 @@ namespace PictureManager.ViewModel {
 
     private void LoadPeopleFromDb(People people) {
       People.Clear();
-      var ps = from mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == Id)
-        join p in Db.ListPeople on mip.PersonId equals p.Id
+      var ps = from mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
+        join p in Db.People on mip.PersonId equals p.Id
         select p;
       foreach (var p in ps) {
         People.Add(people.GetPerson(p.Id, p.PeopleGroupId));
@@ -146,6 +146,7 @@ namespace PictureManager.ViewModel {
         Data.Rating = Rating;
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
+        Db.UpdateOnSubmit(Data);
       }
 
       SaveMediaItemKeywordsToDb();
@@ -155,7 +156,7 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemKeywordsToDb() {
       //Update connection between Keywords and MediaItem
       var keyIds = Keywords.Select(k => k.Id).ToList();
-      foreach (var mik in Db.ListMediaItemKeywords.Where(x => x.MediaItemId == Id)) {
+      foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
         if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
           Db.DeleteOnSubmit(mik);
         else
@@ -174,7 +175,7 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemPeopleInToDb() {
       //Update connection between People and MediaItem
       var ids = People.Select(p => p.Id).ToList();
-      foreach (var mip in Db.ListMediaItemPeople.Where(x => x.MediaItemId == Id)) {
+      foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
         if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null) 
           Db.DeleteOnSubmit(mip);
          else
