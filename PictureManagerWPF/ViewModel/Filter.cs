@@ -7,8 +7,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace PictureManager.ViewModel {
   public class Filter: BaseTreeViewTagItem {
     public DataModel.Filter Data;
-    public ObservableCollection<Filter> Items { get; set; }
-    public Filter Parent;
     public DataModel.PmDataContext Db;
     public ObservableCollection<BaseFilterItem> FilterData;
 
@@ -23,7 +21,6 @@ namespace PictureManager.ViewModel {
     }
 
     public Filter() {
-      Items = new ObservableCollection<Filter>();
       FilterData = new ObservableCollection<BaseFilterItem>();
       Id = -1;
       IconName = "appbar_filter";
@@ -37,7 +34,7 @@ namespace PictureManager.ViewModel {
       Title = data.Name;
     }
 
-    public static void GetSubFilters(bool refresh, ObservableCollection<Filter> items, Filter parent, DataModel.PmDataContext db) {
+    public static void GetSubFilters(bool refresh, ObservableCollection<BaseTreeViewItem> items, Filter parent, DataModel.PmDataContext db) {
       if (!refresh && parent != null) {
         if (items.Count <= 0) return;
         if (items[0].Title != @"...") return;
@@ -115,7 +112,7 @@ namespace PictureManager.ViewModel {
           Id = Db.GetNextIdFor("Filters"),
           Name = Title,
           Data = biteArray,
-          ParentId = Parent?.Id
+          ParentId = (Parent as Filter)?.Id
         };
 
         Db.InsertOnSubmit(dmFilter);

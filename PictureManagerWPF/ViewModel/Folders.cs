@@ -5,11 +5,8 @@ using System.Linq;
 
 namespace PictureManager.ViewModel {
   public class Folders : BaseTreeViewItem {
-    public ObservableCollection<Folder> Items { get; set; }
-
 
     public Folders() {
-      Items = new ObservableCollection<Folder>();
       Title = "Folders";
       IconName = "appbar_folder";
     }
@@ -52,9 +49,9 @@ namespace PictureManager.ViewModel {
     }
 
     public Folder ExpandTo(string fullPath) {
-      ObservableCollection<Folder> items = Items;
+      var items = Items;
       while (true) {
-        var folder = items.FirstOrDefault(f => fullPath.StartsWith(f.FullPath, StringComparison.OrdinalIgnoreCase));
+        var folder = items.Cast<Folder>().FirstOrDefault(f => fullPath.StartsWith(f.FullPath, StringComparison.OrdinalIgnoreCase));
         if (folder == null) return null;
         if (folder.Items.Count != 0) folder.IsExpanded = true;
         if (fullPath.Equals(folder.FullPath, StringComparison.OrdinalIgnoreCase)) return folder;
@@ -62,7 +59,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public bool GetVisibleTreeIndexFor(ObservableCollection<Folder> folders, Folder folder, ref int index) {
+    public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
       foreach (var item in folders) {
         index++;
         if (item.Equals(folder)) return true;

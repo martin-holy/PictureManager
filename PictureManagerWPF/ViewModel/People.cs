@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class People : BaseTreeViewItem {
-    public ObservableCollection<BaseTreeViewItem> Items { get; set; }
     public List<Person> AllPeople; 
     public DataModel.PmDataContext Db;
 
     public People() {
-      Items = new ObservableCollection<BaseTreeViewItem>();
       AllPeople = new List<Person>();
       Title = "People";
       IconName = "appbar_people_multiple";
@@ -40,7 +37,7 @@ namespace PictureManager.ViewModel {
     public Person GetPerson(int id, int? peopleGroupId) {
       if (peopleGroupId != null) {
         var g = Items.OfType<PeopleGroup>().Single(x => x.Id == peopleGroupId);
-        return g.Items.Single(x => x.Id == id);
+        return g.Items.Cast<Person>().Single(x => x.Id == id);
       }
       return Items.OfType<Person>().Single(x => x.Id == id);
     }
@@ -206,12 +203,12 @@ namespace PictureManager.ViewModel {
       Db.DeleteOnSubmit(group.Data);
       Db.SubmitChanges();
 
-      foreach (var person in group.Items) {
+      foreach (var person in group.Items.Cast<Person>()) {
         person.PeopleGroupId = null;
         Items.Add(person);
       }
 
-      foreach (var person in group.Items) {
+      foreach (var person in group.Items.Cast<Person>()) {
         SetInPalce(person, false);
       }
       

@@ -181,7 +181,7 @@ namespace PictureManager {
             if (k.IsMarked) break;
             k.IsMarked = true;
             MarkedTags.Add(k);
-            k = k.Parent;
+            k = (ViewModel.Keyword) k.Parent;
           } while (k != null);
         }
 
@@ -192,7 +192,7 @@ namespace PictureManager {
             if (fk.IsMarked) break;
             fk.IsMarked = true;
             MarkedTags.Add(fk);
-            fk = fk.Parent;
+            fk = (ViewModel.FolderKeyword) fk.Parent;
           } while (fk != null);
         }
       }
@@ -229,7 +229,7 @@ namespace PictureManager {
       }
 
       foreach (var pg in People.Items.Where(x => x is ViewModel.PeopleGroup).Cast<ViewModel.PeopleGroup>()) {
-        pg.PicCount = pg.Items.Sum(x => x.PicCount);
+        pg.PicCount = pg.Items.Cast<ViewModel.Person>().Sum(x => x.PicCount);
         pg.IsMarked = pg.PicCount > 0;
       }
     }

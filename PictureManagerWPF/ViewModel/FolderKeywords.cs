@@ -7,13 +7,11 @@ using PictureManager.Properties;
 
 namespace PictureManager.ViewModel {
   public class FolderKeywords: BaseTreeViewItem {
-    public ObservableCollection<FolderKeyword> Items { get; set; }
     public List<FolderKeyword> AllFolderKeywords;
     public DataModel.PmDataContext Db;
     public AppCore ACore;
 
     public FolderKeywords() {
-      Items = new ObservableCollection<FolderKeyword>();
       AllFolderKeywords = new List<FolderKeyword>();
       Title = "Folder Keywords";
       IconName = "appbar_folder";
@@ -63,8 +61,8 @@ namespace PictureManager.ViewModel {
       return string.Empty;
     }
 
-    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<FolderKeyword> items, int dirId) {
-      foreach (FolderKeyword folderKeyword in items) {
+    public FolderKeyword GetFolderKeywordByDirId(ObservableCollection<BaseTreeViewItem> items, int dirId) {
+      foreach (var folderKeyword in items.Cast<FolderKeyword>()) {
         if (folderKeyword.FolderIdList.Any(fid => fid == dirId)) return folderKeyword;
         var fk = GetFolderKeywordByDirId(folderKeyword.Items, dirId);
         if (fk != null) return fk;
@@ -82,13 +80,13 @@ namespace PictureManager.ViewModel {
 
     public FolderKeyword GetFolderKeywordByKeyPath(string keyPath, bool create) {
       FolderKeyword parent = null;
-      ObservableCollection<FolderKeyword> root = Items;
+      var root = Items;
 
       while (true) {
         if (root.Count == 0 || string.IsNullOrEmpty(keyPath)) return null;
 
         string[] keyParts = keyPath.Split('\\');
-        FolderKeyword folderKeyword = root.FirstOrDefault(fk => fk.Title.Equals(keyParts[0]));
+        FolderKeyword folderKeyword = root.Cast<FolderKeyword>().FirstOrDefault(fk => fk.Title.Equals(keyParts[0]));
         if (folderKeyword == null) {
           if (!create) return null;
           folderKeyword = CreateFolderKeyword(root, parent, keyParts[0]);
@@ -101,7 +99,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public FolderKeyword CreateFolderKeyword(ObservableCollection<FolderKeyword> root, FolderKeyword parent, string name) {
+    public FolderKeyword CreateFolderKeyword(ObservableCollection<BaseTreeViewItem> root, FolderKeyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
       FolderKeyword newFolderKeyword = new FolderKeyword {
         IconName = "appbar_folder",

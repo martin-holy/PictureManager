@@ -6,12 +6,10 @@ using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class Keywords: BaseTreeViewItem {
-    public ObservableCollection<Keyword> Items { get; set; }
     public List<Keyword> AllKeywords; 
     public DataModel.PmDataContext Db;
 
     public Keywords() {
-      Items = new ObservableCollection<Keyword>();
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
       IconName = "appbar_tag";
@@ -39,13 +37,13 @@ namespace PictureManager.ViewModel {
 
     public Keyword GetKeywordByFullPath(string fullPath, bool create) {
       Keyword parent = null;
-      ObservableCollection<Keyword> root = Items;
+      var root = Items;
 
       while (true) {
         if (string.IsNullOrEmpty(fullPath)) return null;
 
         string[] keyParts = fullPath.Split('/');
-        Keyword keyword = root.FirstOrDefault(k => k.Title.Equals(keyParts[0]));
+        Keyword keyword = root.Cast<Keyword>().FirstOrDefault(k => k.Title.Equals(keyParts[0]));
         if (keyword == null) {
           if (!create) return null;
           keyword = CreateKeyword(root, parent, keyParts[0]);
@@ -62,7 +60,7 @@ namespace PictureManager.ViewModel {
       return AllKeywords.SingleOrDefault(x => x.Id == id);
     }
 
-    public void NewOrRename(WMain wMain, ObservableCollection<Keyword> root, Keyword keyword, bool rename) {
+    public void NewOrRename(WMain wMain, ObservableCollection<BaseTreeViewItem> root, Keyword keyword, bool rename) {
       InputDialog inputDialog = new InputDialog {
         Owner = wMain,
         IconName = "appbar_tag",
@@ -77,7 +75,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (root.SingleOrDefault(x => x.FullPath.Equals(inputDialog.Answer)) != null) {
+        if (root.Cast<Keyword>().SingleOrDefault(x => x.FullPath.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Keyword name already exists!");
           return;
         }
@@ -103,7 +101,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public Keyword CreateKeyword(ObservableCollection<Keyword> root, Keyword parent, string name) {
+    public Keyword CreateKeyword(ObservableCollection<BaseTreeViewItem> root, Keyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
       var dmKeyword = new DataModel.Keyword {
         Id = Db.GetNextIdFor("Keywords"),
@@ -116,7 +114,7 @@ namespace PictureManager.ViewModel {
       var vmKeyword = new Keyword(dmKeyword);
 
       Keyword keyword =
-        root.FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+        root.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
       root.Insert(keyword == null ? 0 : root.IndexOf(keyword), vmKeyword);
       return vmKeyword;
     }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -21,17 +20,11 @@ namespace PictureManager.ViewModel {
 
     public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath { get; set; }
-    public ObservableCollection<Folder> Items { get; set; }
-    public Folder Parent;
-
-    public Folder() {
-      Items = new ObservableCollection<Folder>();
-    }
 
     public void Rename(AppCore aCore, string newName) {
       if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
-      if (!aCore.FileOperation(AppCore.FileOperations.Move, FullPath, Parent.FullPath, newName)) return;
-      UpdateFullPath(FullPath, Path.Combine(Parent.FullPath, newName));
+      if (!aCore.FileOperation(AppCore.FileOperations.Move, FullPath, ((Folder) Parent).FullPath, newName)) return;
+      UpdateFullPath(FullPath, Path.Combine(((Folder) Parent).FullPath, newName));
       Title = newName;
     }
 
@@ -69,7 +62,7 @@ namespace PictureManager.ViewModel {
       oldParentPath = oldParentPath.EndsWith("\\") ? oldParentPath.Substring(0, oldParentPath.Length - 1) : oldParentPath;
       newParentPath = newParentPath.EndsWith("\\") ? newParentPath.Substring(0, newParentPath.Length - 1) : newParentPath;
       FullPath = FullPath?.Replace(oldParentPath, newParentPath);
-      foreach (var item in Items) {
+      foreach (var item in Items.Cast<Folder>()) {
         item.UpdateFullPath(oldParentPath, newParentPath);
       }
     }
@@ -89,7 +82,7 @@ namespace PictureManager.ViewModel {
         IsAccessible = true
       };
 
-      Folder folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
+      Folder folder = Items.Cast<Folder>().FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
       Items.Insert(folder == null ? Items.Count : Items.IndexOf(folder), newFolder);
 
       return newFolder;
@@ -115,7 +108,7 @@ namespace PictureManager.ViewModel {
       };
 
       inputDialog.BtnDialogOk.Click += delegate {
-        if (Directory.Exists($"{(rename ? Parent.FullPath : FullPath)}\\{inputDialog.TxtAnswer.Text}")) {
+        if (Directory.Exists($"{(rename ? ((Folder) Parent).FullPath : FullPath)}\\{inputDialog.TxtAnswer.Text}")) {
           inputDialog.ShowErrorMessage("Folder already exists!");
           return;
         }

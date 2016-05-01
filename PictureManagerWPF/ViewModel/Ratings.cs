@@ -1,12 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
+﻿using System.Linq;
 
 namespace PictureManager.ViewModel {
   public class Ratings : BaseTreeViewItem {
-    public ObservableCollection<Rating> Items { get; set; }
 
     public Ratings() {
-      Items = new ObservableCollection<Rating>();
       Title = "Ratings";
       IconName = "appbar_star";
     }
@@ -19,7 +16,7 @@ namespace PictureManager.ViewModel {
     }
 
     public Rating GetRatingByValue(int value) {
-      return Items.Single(x => x.Value == value);
+      return Items.Cast<Rating>().Single(x => x.Value == value);
     }
   }
 }

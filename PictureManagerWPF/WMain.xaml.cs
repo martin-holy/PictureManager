@@ -781,11 +781,11 @@ namespace PictureManager {
         items.Move(items.IndexOf(srcData), newIndex);
 
         for (var i = 0; i < items.Count; i++) {
-          items[i].Index = i;
-          items[i].Data.Idx = i;
-          ACore.Db.UpdateOnSubmit(items[i].Data);
+          ((ViewModel.Keyword) items[i]).Index = i;
+          ((ViewModel.Keyword) items[i]).Data.Idx = i;
+          ACore.Db.UpdateOnSubmit(((ViewModel.Keyword) items[i]).Data);
         }
-        
+
         ACore.Db.SubmitChanges();
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
@@ -848,14 +848,14 @@ namespace PictureManager {
       }
 
       if (e.KeyStates != DragDropKeyStates.ControlKey) {
-        srcData.UpdateFullPath(srcData.Parent.FullPath, destData.FullPath);
+        srcData.UpdateFullPath(((ViewModel.Folder) srcData.Parent).FullPath, destData.FullPath);
         srcData.Parent.Items.Remove(srcData);
 
         //check if was destination expanded
         if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
 
         srcData.Parent = destData;
-        ViewModel.Folder folder = destData.Items.FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
+        ViewModel.Folder folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
         destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
       } else {
         destData.GetSubFolders(true);
