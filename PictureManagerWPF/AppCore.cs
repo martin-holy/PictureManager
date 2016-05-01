@@ -383,7 +383,9 @@ namespace PictureManager {
             //delete by file/s
             foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
               if (File.Exists(mi.FilePath)) continue;
-              fo.DeleteItem(mi.FilePath.Replace(":\\", cachePath));
+              var cacheFilePath = mi.FilePath.Replace(":\\", cachePath);
+              if (!File.Exists(cacheFilePath)) continue;
+              fo.DeleteItem(cacheFilePath);
               itemsToDel.Add(mi.Data);
             }
           } else {
@@ -392,7 +394,9 @@ namespace PictureManager {
               foreach (var mi in mItems.Where(x => x.DirectoryId.Equals(dir.Id))) {
                 var miFilePath = Path.Combine(dir.Path, mi.FileName);
                 if (File.Exists(miFilePath)) continue;
-                fo.DeleteItem(miFilePath.Replace(":\\", cachePath));
+                var cacheFilePath = miFilePath.Replace(":\\", cachePath);
+                if (!File.Exists(cacheFilePath)) continue;
+                fo.DeleteItem(cacheFilePath);
                 itemsToDel.Add(mi);
               }
             }
