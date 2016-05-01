@@ -57,6 +57,7 @@ namespace PictureManager {
     private void BtnCompress_OnClick(object sender, RoutedEventArgs e) {
       GbSettings.IsEnabled = false;
       BtnCompress.IsEnabled = false;
+      BtnCancel.Content = "Cancel";
 
       PbCompressProgress.Value = 0;
       _totalSourceSize = 0;
@@ -145,6 +146,7 @@ namespace PictureManager {
     private void compress_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
       GbSettings.IsEnabled = true;
       BtnCompress.IsEnabled = true;
+      BtnCancel.Content = "Close";
     }
 
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {

@@ -72,7 +72,7 @@
 
     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
       <Button Margin="3,0,0,3" Content="Compress" x:Name="BtnCompress" Click="BtnCompress_OnClick" />
-      <Button Margin="3,0,0,3" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+      <Button Margin="3,0,0,3" Content="Close" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
 
   </Grid>
