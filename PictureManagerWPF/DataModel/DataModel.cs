@@ -170,12 +170,21 @@ namespace PictureManager.DataModel {
 
     private List<T> GetTableData<T>() where T : new() {
       var tableName = ((TableAttribute) typeof (T).GetCustomAttribute(typeof (TableAttribute), false))?.Name;
+      var data = new List<T>();
+      if (tableName == null) return data;
 
       var columns = new Dictionary<string, PropertyInfo>();
+      var columnsToCreate = new List<string>();
       foreach (var propertyInfo in typeof(T).GetProperties()) {
         var colName = propertyInfo.GetCustomAttribute<ColumnAttribute>(true)?.Name;
         if (colName == null) continue;
         columns.Add(colName, propertyInfo);
+
+        var attrs = propertyInfo.GetCustomAttributes<ColumnAttribute>(true).FirstOrDefault();
+        if (attrs == null) continue;
+        var isPrimaryKey = attrs.IsPrimaryKey ? "PRIMARY KEY AUTOINCREMENT" : string.Empty;
+        var canBeNull = attrs.CanBeNull ? string.Empty : "NOT NULL";
+        columnsToCreate.Add($"{colName} {attrs.DbType} {isPrimaryKey} {canBeNull}");
       }
 
       //create queries
@@ -185,9 +194,13 @@ namespace PictureManager.DataModel {
       var qInsert = $"insert into {tableName} ({string.Join(", ", columns.Keys)}) values ({paramNames})";
       var qUpdate = $"update {tableName} set {setColumns} where Id = @Id";
       var qDelete = $"delete from {tableName} where Id = @Id";
-      
+      var qCreate = $"CREATE TABLE IF NOT EXISTS \"{tableName}\" ({string.Join(", ", columnsToCreate)});";
 
-      var data = new List<T>();
+      //create table if not exists
+      if (!tableName.Equals("sqlite_sequence"))
+        Execute(qCreate);
+
+      
       foreach (DataRow row in Select(qSelect)) {
         var item = new T();
         var i = 0;
@@ -224,6 +237,15 @@ namespace PictureManager.DataModel {
           return ds.Tables[0].Rows;
         }
       }
+    }
+
+    public bool Execute(string sql) {
+      if (!OpenDbConnection()) return false;
+      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+        cmd.CommandText = sql;
+        cmd.ExecuteNonQuery();
+      }
+      return true;
     }
 
     public int GetNextIdFor(string tableName) {
