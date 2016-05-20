@@ -302,7 +302,7 @@ namespace PictureManager {
 
           if (mi.Data == null) {
             mi.SaveMediaItemInToDb(this, false, true);
-            Application.Current.Properties["SubmitChanges"] = true;
+            Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
           }
 
           done++;
@@ -312,7 +312,7 @@ namespace PictureManager {
 
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
-        if ((bool)Application.Current.Properties["SubmitChanges"])
+        if ((bool)Application.Current.Properties[nameof(AppProps.SubmitChanges)])
           Db.SubmitChanges();
         MediaItems.ScrollToCurrent();
         if (MediaItems.Current != null) {
@@ -322,7 +322,7 @@ namespace PictureManager {
         MarkUsedKeywordsAndPeople();
       };
 
-      Application.Current.Properties["SubmitChanges"] = false;
+      Application.Current.Properties[nameof(AppProps.SubmitChanges)] = false;
       ThumbsWebWorker.RunWorkerAsync();
     }
 
@@ -339,7 +339,7 @@ namespace PictureManager {
     }
 
     public bool FileOperation(FileOperations mode, string from, string to, string newName, bool recycle) {
-      Application.Current.Properties["FileOperationResult"] = new Dictionary<string, string>();
+      Application.Current.Properties[nameof(AppProps.FileOperationResult)] = new Dictionary<string, string>();
       //Copy, Move or delete selected MediaItems or folder
       using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
         var flags = FileOperationFlags.FOF_NOCONFIRMMKDIR | (recycle
@@ -365,7 +365,7 @@ namespace PictureManager {
         fo.PerformOperations();
       }
 
-      var foResult = (Dictionary<string, string>)Application.Current.Properties["FileOperationResult"];
+      var foResult = (Dictionary<string, string>)Application.Current.Properties[nameof(AppProps.FileOperationResult)];
       if (foResult.Count == 0) return false;
 
       //update DB and thumbnail cache

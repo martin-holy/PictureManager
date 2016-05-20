@@ -31,7 +31,7 @@ namespace PictureManager.ViewModel {
       set {
         _appMode = value;
         OnPropertyChanged();
-        var aCore = (AppCore) Application.Current.Properties["AppCore"];
+        var aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
         if (aCore != null) {
           aCore.WMain.StatBarOkCancelPanel.Visibility = _appMode == AppModes.KeywordsEdit || _appMode == AppModes.ViewerEdit
             ? Visibility.Visible

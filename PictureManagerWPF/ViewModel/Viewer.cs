@@ -21,7 +21,7 @@ namespace PictureManager.ViewModel {
 
       IconName = "appbar_eye";
 
-      aCore = (AppCore) Application.Current.Properties["AppCore"];
+      aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
     }
 
     public Viewer(DataModel.PmDataContext db, DataModel.Viewer data) : this() {

@@ -35,7 +35,7 @@ namespace PictureManager.ViewModel {
       }
       Items.Clear();
 
-      var aCore = (AppCore)Application.Current.Properties["AppCore"];
+      var aCore = (AppCore)Application.Current.Properties[nameof(AppProps.AppCore)];
       foreach (string dir in Directory.GetDirectories(FullPath).OrderBy(x => x)) {
         if (!aCore.CanViewerSeeThisDirectory(dir)) continue;
         DirectoryInfo di = new DirectoryInfo(dir);
@@ -71,7 +71,7 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
       var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
-      var aCore = (AppCore) Application.Current.Properties["AppCore"];
+      var aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       aCore.InsertDirecotryInToDb(newFullPath);
 
       var newFolder = new Folder {

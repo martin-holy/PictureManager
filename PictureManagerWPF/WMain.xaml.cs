@@ -30,7 +30,7 @@ namespace PictureManager {
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
       ACore = new AppCore {WbThumbs = WbThumbs, WMain = this};
-      Application.Current.Properties["AppCore"] = ACore;
+      Application.Current.Properties[nameof(AppProps.AppCore)] = ACore;
       MainStatusBar.DataContext = ACore.AppInfo;
 
       WbThumbs.ObjectForScripting = new ScriptManager(this);
@@ -329,7 +329,7 @@ namespace PictureManager {
 
     private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
       ACore.AppInfo.AppMode = AppModes.ViewerEdit;
-      Application.Current.Properties["EditedViewer"] = e.Parameter;
+      Application.Current.Properties[nameof(AppProps.EditedViewer)] = e.Parameter;
     }
 
     private void CmdViewerDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -423,7 +423,7 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
-      Application.Current.Properties["EditKeywordsFromFolders"] = TabFolders.IsSelected;
+      Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)] = TabFolders.IsSelected;
       ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
       ACore.KeywordsEditMode = true;
@@ -462,7 +462,7 @@ namespace PictureManager {
 
       bw.RunWorkerCompleted += delegate {
         ACore.KeywordsEditMode = false;
-        if ((bool) Application.Current.Properties["EditKeywordsFromFolders"]) {
+        if ((bool) Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
           TabFolders.IsSelected = true;
         }
         ACore.Db.SubmitChanges();
@@ -484,7 +484,7 @@ namespace PictureManager {
       ACore.MarkUsedKeywordsAndPeople();
       ACore.KeywordsEditMode = false;
       ACore.AppInfo.AppMode = AppModes.Browser;
-      if ((bool)Application.Current.Properties["EditKeywordsFromFolders"]) {
+      if ((bool)Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
         TabFolders.IsSelected = true;
       }
     }

@@ -81,7 +81,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void AddFolder(bool included, string path) {
-      var editedViewer = (Viewer) Application.Current.Properties["EditedViewer"];
+      var editedViewer = (Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)];
       editedViewer?.AddFolder(included, path);
     }
 

@@ -275,7 +275,7 @@ namespace PictureManager.ViewModel {
               metadata.SetQuery(microsoftRegionInfo, allPeople);
 
 
-            metadata.Rating = (int) Rating;
+            metadata.Rating = Rating;
             metadata.Comment = Comment ?? string.Empty;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
 
