@@ -2,17 +2,23 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class Keywords: BaseTreeViewItem {
     public List<Keyword> AllKeywords; 
     public DataModel.PmDataContext Db;
+    private static readonly Mutex Mut = new Mutex();
 
     public Keywords() {
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
       IconName = "appbar_tag";
+    }
+
+    ~Keywords() {
+      Mut.Dispose();
     }
 
     public void Load() {
@@ -36,19 +42,28 @@ namespace PictureManager.ViewModel {
     }
 
     public Keyword GetKeywordByFullPath(string fullPath, bool create) {
+      if (create) Mut.WaitOne();
+
       Keyword parent = null;
       var root = Items;
 
       while (true) {
-        if (string.IsNullOrEmpty(fullPath)) return null;
+        if (string.IsNullOrEmpty(fullPath)) {
+          if (create) Mut.ReleaseMutex();
+          return null;
+        }
 
         string[] keyParts = fullPath.Split('/');
         Keyword keyword = root.Cast<Keyword>().FirstOrDefault(k => k.Title.Equals(keyParts[0]));
         if (keyword == null) {
           if (!create) return null;
+          
           keyword = CreateKeyword(root, parent, keyParts[0]);
         }
-        if (keyParts.Length <= 1) return keyword;
+        if (keyParts.Length <= 1) {
+          if (create) Mut.ReleaseMutex();
+          return keyword;
+        }
 
         parent = keyword;
         root = keyword.Items;
@@ -104,12 +119,11 @@ namespace PictureManager.ViewModel {
     public Keyword CreateKeyword(ObservableCollection<BaseTreeViewItem> root, Keyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
       var dmKeyword = new DataModel.Keyword {
-        Id = Db.GetNextIdFor("Keywords"),
+        Id = Db.GetNextIdFor<DataModel.Keyword>(),
         Name = kFullPath
       };
 
-      Db.InsertOnSubmit(dmKeyword);
-      Db.SubmitChanges();
+      Db.Insert(dmKeyword);
 
       var vmKeyword = new Keyword(dmKeyword);
 

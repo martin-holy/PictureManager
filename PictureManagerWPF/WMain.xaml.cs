@@ -604,10 +604,14 @@ namespace PictureManager {
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
 
+      int i = 0;
+      int j = ++i ;
+      int k = j;
+
 
       //var dir = new DataModel.Directory {Path = "ds"};
 
-      var db = new DataModel.PmDataContext("Data Source = data.db");
+      /*var db = new DataModel.PmDataContext("Data Source = data.db");
       db.Load();
       var dir = new DataModel.Directory {Id = db.GetNextIdFor("Directories"), Path = "aaa"};
       db.InsertOnSubmit(dir);
@@ -618,7 +622,7 @@ namespace PictureManager {
       db.SubmitChanges();
 
       db.DeleteOnSubmit(dir);
-      db.SubmitChanges();
+      db.SubmitChanges();*/
 
 
       /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");

@@ -68,7 +68,7 @@ namespace PictureManager.ViewModel {
 
     public Viewer CreateViewer(string name) {
       var dmViewer = new DataModel.Viewer {
-        Id = Db.GetNextIdFor("Viewers"),
+        Id = Db.GetNextIdFor<DataModel.Viewer>(),
         Name = name
       };
 

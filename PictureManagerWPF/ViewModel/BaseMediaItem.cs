@@ -131,7 +131,7 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemInToDb(AppCore aCore, bool update, bool isNew) {
       if (isNew) {
         ReadMetadata(aCore);
-        Id = Db.GetNextIdFor("MediaItems");
+        Id = Db.GetNextIdFor<DataModel.MediaItem>();
         Data = new DataModel.MediaItem {
           Id = Id,
           DirectoryId = DirId,
@@ -165,7 +165,7 @@ namespace PictureManager.ViewModel {
       //Insert new Keywords to MediaItem
       foreach (var keyId in keyIds) {
         Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
-          Id = Db.GetNextIdFor("MediaItemKeyword"),
+          Id = Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
           KeywordId = keyId,
           MediaItemId = Id
         });
@@ -184,7 +184,7 @@ namespace PictureManager.ViewModel {
       //Insert new People to MediaItem
       foreach (var id in ids) {
         Db.InsertOnSubmit(new DataModel.MediaItemPerson {
-          Id = Db.GetNextIdFor("MediaItemPerson"),
+          Id = Db.GetNextIdFor<DataModel.MediaItemPerson>(),
           PersonId = id,
           MediaItemId = Id
         });

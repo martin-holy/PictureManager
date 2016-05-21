@@ -71,8 +71,8 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
       var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
-      var aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
-      aCore.InsertDirecotryInToDb(newFullPath);
+      var db = (DataModel.PmDataContext) Application.Current.Properties[nameof(AppProps.Db)];
+      db.InsertDirecotryInToDb(newFullPath);
 
       var newFolder = new Folder {
         Title = folderName,

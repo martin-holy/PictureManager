@@ -1,17 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class People : BaseTreeViewItem {
     public List<Person> AllPeople; 
     public DataModel.PmDataContext Db;
+    private static readonly Mutex Mut = new Mutex();
 
     public People() {
       AllPeople = new List<Person>();
       Title = "People";
       IconName = "appbar_people_multiple";
+    }
+
+    ~People() {
+      Mut.Dispose();
     }
 
     public void Load() {
@@ -34,6 +40,10 @@ namespace PictureManager.ViewModel {
       }
     }
 
+    public Person GetPerson(int id) {
+      return AllPeople.SingleOrDefault(x => x.Id == id);
+    }
+
     public Person GetPerson(int id, int? peopleGroupId) {
       if (peopleGroupId != null) {
         var g = Items.OfType<PeopleGroup>().Single(x => x.Id == peopleGroupId);
@@ -42,27 +52,27 @@ namespace PictureManager.ViewModel {
       return Items.OfType<Person>().Single(x => x.Id == id);
     }
 
-    public Person GetPerson(int id) {
-      return AllPeople.SingleOrDefault(x => x.Id == id);
-    }
-
     public Person GetPerson(string name, bool create) {
+      if (create) Mut.WaitOne();
       var dmPerson = Db.People.SingleOrDefault(x => x.Name.Equals(name));
       if (dmPerson != null) {
+        Mut.ReleaseMutex();
         return GetPerson(dmPerson.Id, dmPerson.PeopleGroupId);
       }
-      return create ? CreatePerson(name, null) : null;
+      if (!create) return null;
+      var newPerson = CreatePerson(name, null);
+      Mut.ReleaseMutex();
+      return newPerson;
     }
 
     public Person CreatePerson(string name, PeopleGroup peopleGroup) {
       var dmPerson = new DataModel.Person {
-        Id = Db.GetNextIdFor("People"),
+        Id = Db.GetNextIdFor<DataModel.Person>(),
         Name = name,
         PeopleGroupId = peopleGroup?.Id
       };
 
-      Db.InsertOnSubmit(dmPerson);
-      Db.SubmitChanges();
+      Db.Insert(dmPerson);
 
       var vmPerson = new Person(dmPerson);
       SetInPalce(vmPerson, true);
@@ -71,7 +81,7 @@ namespace PictureManager.ViewModel {
 
     public PeopleGroup CreateGroup(string name) {
       var dmPeopleGroup = new DataModel.PeopleGroup {
-        Id = Db.GetNextIdFor("PeopleGroups"),
+        Id = Db.GetNextIdFor<DataModel.PeopleGroup>(),
         Name = name
       };
 

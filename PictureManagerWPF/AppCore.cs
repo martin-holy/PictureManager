@@ -68,7 +68,7 @@ namespace PictureManager {
       MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
 
       Db = new DataModel.PmDataContext("Data Source = data.db");
-      //Db.CreateDbStructure();
+      Application.Current.Properties[nameof(AppProps.Db)] = Db;
       Db.Load();
     }
 
@@ -430,7 +430,7 @@ namespace PictureManager {
               var dirPath = Path.GetDirectoryName(item.Value);
               var destDirId = dirs.SingleOrDefault(x => x.Path.Equals(dirPath))?.Id;
               if (destDirId == null) {
-                destDirId = Db.GetNextIdFor("Directories");
+                destDirId = Db.GetNextIdFor<DataModel.Directory>();
                 Db.InsertOnSubmit(new DataModel.Directory {Id = (int) destDirId, Path = dirPath});
               }
 
@@ -438,7 +438,7 @@ namespace PictureManager {
 
               if (mode == FileOperations.Copy) {
                 //duplicate Picture
-                var destPicId = Db.GetNextIdFor("MediaItems");
+                var destPicId = Db.GetNextIdFor<DataModel.MediaItem>();
 
                 Db.InsertOnSubmit(new DataModel.MediaItem {
                   Id = destPicId,
@@ -452,7 +452,7 @@ namespace PictureManager {
                 //duplicate Picture Keywords
                 foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
                   Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
-                    Id = Db.GetNextIdFor("MediaItemKeyword"),
+                    Id = Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
                     KeywordId = mik.KeywordId,
                     MediaItemId = destPicId
                   });
@@ -461,7 +461,7 @@ namespace PictureManager {
                 //duplicate Picture People
                 foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
                   Db.InsertOnSubmit(new DataModel.MediaItemPerson {
-                    Id = Db.GetNextIdFor("MediaItemPerson"),
+                    Id = Db.GetNextIdFor<DataModel.MediaItemPerson>(),
                     PersonId = mip.PersonId,
                     MediaItemId = destPicId
                   });
@@ -523,24 +523,10 @@ namespace PictureManager {
       return true;
     }
 
-    public int? GetDirectoryIdByPath(string path) {
-      var dir = Db.Directories.SingleOrDefault(x => x.Path.Equals(path));
-      return dir?.Id;
-    }
-
-    public int InsertDirecotryInToDb(string path) {
-      var dirId = GetDirectoryIdByPath(path);
-      if (dirId != null) return (int) dirId;
-      var newDirId = Db.GetNextIdFor("Directories");
-      Db.InsertOnSubmit(new DataModel.Directory { Id = newDirId, Path = path });
-      Db.SubmitChanges();
-      return newDirId;
-    }
-
     public bool CanViewerSeeThisFile(string filePath) {
       bool ok;
       var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer == null) return false;
+      if (viewer == null) return true;
 
       var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
@@ -563,7 +549,7 @@ namespace PictureManager {
     public bool CanViewerSeeThisDirectory(string dirPath) {
       bool ok;
       var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer == null) return false;
+      if (viewer == null) return true;
 
       var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();

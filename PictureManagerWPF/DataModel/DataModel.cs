@@ -5,18 +5,19 @@ using System.Data.Linq.Mapping;
 using System.Data.SQLite;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 
 namespace PictureManager.DataModel {
 
   public class PmDataContext : IDisposable {
     public SQLiteConnection DbConn;
     public string ConnectionString;
-    public Dictionary<string, int> TableIds = new Dictionary<string, int>();
     public Dictionary<Type, TableInfo> TableInfos = new Dictionary<Type, TableInfo>(); 
 
     private readonly List<BaseTable> _toInsert = new List<BaseTable>();
     private readonly List<BaseTable> _toUpdate = new List<BaseTable>();
     private readonly List<BaseTable> _toDelete = new List<BaseTable>();
+    private static readonly Mutex Mut = new Mutex();
 
     public List<Directory> Directories;
     public List<Filter> Filters;
@@ -37,6 +38,7 @@ namespace PictureManager.DataModel {
     public void Dispose() {
       DbConn.Close();
       DbConn.Dispose();
+      Mut.Dispose();
     }
 
     public bool OpenDbConnection() {
@@ -60,12 +62,26 @@ namespace PictureManager.DataModel {
       PeopleGroups = GetTableData<PeopleGroup>();
       Viewers = GetTableData<Viewer>();
       ViewersAccess = GetTableData<ViewerAccess>();
-      SQLiteSequences = GetTableData<SQLiteSequence>();
-
-      TableIds.Clear();
-      SQLiteSequences.ForEach(s => TableIds.Add(s.Name, s.Seq));
 
       return true;
+    }
+
+    public void Insert(BaseTable o) {
+      if (!OpenDbConnection()) return;
+      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+        Insert(cmd, o);
+      }
+    }
+
+    public void Insert(SQLiteCommand cmd, BaseTable o) {
+      var columns = GetColumnValues(o);
+      cmd.CommandText = TableInfos[o.GetType()].QueryInsert;
+      cmd.Parameters.Clear();
+      foreach (var column in columns) {
+        cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
+      }
+      cmd.ExecuteNonQuery();
+      UpdateInList(o, true);
     }
 
     public void InsertOnSubmit(BaseTable data) {
@@ -81,6 +97,8 @@ namespace PictureManager.DataModel {
     }
 
     private void UpdateInList(BaseTable data, bool addIt) {
+      if (!Mut.WaitOne()) return;
+
       switch (data.GetType().Name) {
         case nameof(Directory): {
             if (addIt) Directories.Add((Directory) data); else Directories.Remove((Directory)data); break;
@@ -113,6 +131,8 @@ namespace PictureManager.DataModel {
             if (addIt) ViewersAccess.Add((ViewerAccess)data); else ViewersAccess.Remove((ViewerAccess)data); break;
           }
       }
+
+      Mut.ReleaseMutex();
     }
 
     public bool SubmitChanges() {
@@ -123,16 +143,7 @@ namespace PictureManager.DataModel {
           cmd.Transaction = tr;
 
           //Insert
-          foreach (var o in _toInsert) {
-            var columns = GetColumnValues(o);
-            cmd.CommandText = TableInfos[o.GetType()].QueryInsert;
-            cmd.Parameters.Clear();
-            foreach (var column in columns) {
-              cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
-            }
-            cmd.ExecuteNonQuery();
-            UpdateInList(o, true);
-          }
+          _toInsert.ForEach(o => Insert(cmd, o));
           _toInsert.Clear();
 
           //Update
@@ -199,7 +210,6 @@ namespace PictureManager.DataModel {
       //create table if not exists
       if (!tableName.Equals("sqlite_sequence"))
         Execute(qCreate);
-
       
       foreach (DataRow row in Select(qSelect)) {
         var item = new T();
@@ -214,6 +224,8 @@ namespace PictureManager.DataModel {
         data.Add(item);
       }
 
+      var maxId = data.Count == 0 ? 0 : data.Cast<BaseTable>().Max(x => x.Id);
+
       TableInfos.Add(typeof(T),
         new TableInfo {
           Columns = columns,
@@ -221,7 +233,9 @@ namespace PictureManager.DataModel {
           QueryInsert = qInsert,
           QueryUpdate = qUpdate,
           QueryDelete = qDelete,
-          Items = data
+          Items = data,
+          //MaxId = SQLiteSequences?.SingleOrDefault(s => s.Name == tableName)?.Seq ?? 0
+          MaxId = maxId
         });
 
       return data;
@@ -248,17 +262,34 @@ namespace PictureManager.DataModel {
       return true;
     }
 
-    public int GetNextIdFor(string tableName) {
-      if (!TableIds.ContainsKey(tableName)) {
-        TableIds.Add(tableName, 0);
-      }
-      var nextId = TableIds[tableName] + 1;
-      TableIds[tableName] = nextId;
+    public int GetNextIdFor<T>() {
+      Mut.WaitOne();
+      var nextId = ++ TableInfos[typeof (T)].MaxId;
+      Mut.ReleaseMutex();
       return nextId;
     }
 
-    public int GetMaxIdFor(string tableName) {
-      return !TableIds.ContainsKey(tableName) ? 0 : TableIds[tableName];
+
+    public int GetMaxIdFor<T>() {
+      return TableInfos[typeof (T)].MaxId;
+    }
+
+    public int? GetDirectoryIdByPath(string path) {
+      var dir = Directories.SingleOrDefault(x => x.Path.Equals(path));
+      return dir?.Id;
+    }
+
+    public int InsertDirecotryInToDb(string path) {
+      Mut.WaitOne();
+      var dirId = GetDirectoryIdByPath(path);
+      if (dirId != null) {
+        Mut.ReleaseMutex();
+        return (int) dirId;
+      }
+      var newDirId = GetNextIdFor<Directory>();
+      Insert(new Directory { Id = newDirId, Path = path });
+      Mut.ReleaseMutex();
+      return newDirId;
     }
   }
 
@@ -269,6 +300,7 @@ namespace PictureManager.DataModel {
     public string QueryDelete;
     public Dictionary<string, PropertyInfo> Columns;
     public object Items;
+    public int MaxId;
   }
 
   #region Tables

@@ -105,7 +105,7 @@ namespace PictureManager {
       }
 
       try {
-        var dirId = _aCore.InsertDirecotryInToDb(path);
+        var dirId = _aCore.Db.InsertDirecotryInToDb(path);
 
         foreach (var file in Directory.EnumerateFiles(path)
           .Where(f => _aCore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))

@@ -88,8 +88,8 @@ namespace PictureManager.ViewModel {
 
     public void LoadByFolder(string path) {
       if (!Directory.Exists(path)) return;
-      var maxDirId = Db.GetMaxIdFor("Directories");
-      var dirId = ACore.InsertDirecotryInToDb(path);
+      var maxDirId = Db.GetMaxIdFor<DataModel.Directory>();
+      var dirId = Db.InsertDirecotryInToDb(path);
       if (dirId > maxDirId) ACore.FolderKeywords.Load();
       FolderKeyword fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(path);
 

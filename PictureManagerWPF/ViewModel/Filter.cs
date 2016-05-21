@@ -109,7 +109,7 @@ namespace PictureManager.ViewModel {
       //insert or update filter to DB
       if (Id == -1) {
         var dmFilter = new DataModel.Filter {
-          Id = Db.GetNextIdFor("Filters"),
+          Id = Db.GetNextIdFor<DataModel.Filter>(),
           Name = Title,
           Data = biteArray,
           ParentId = (Parent as Filter)?.Id

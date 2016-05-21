@@ -61,10 +61,10 @@ namespace PictureManager.ViewModel {
 
     public void AddFolder(bool included, string path) {
       var dmViewerAccess = new DataModel.ViewerAccess {
-        Id = Db.GetNextIdFor("ViewersAccess"),
+        Id = Db.GetNextIdFor<DataModel.ViewerAccess>(),
         ViewerId = Id,
         IsIncluded = included,
-        DirectoryId = aCore.InsertDirecotryInToDb(path)
+        DirectoryId = Db.InsertDirecotryInToDb(path)
       };
 
       Db.InsertOnSubmit(dmViewerAccess);
