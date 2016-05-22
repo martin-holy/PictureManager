@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace PictureManager.ViewModel {
   public class Keyword: BaseTreeViewTagItem {
@@ -14,8 +15,15 @@ namespace PictureManager.ViewModel {
       IconName = "appbar_tag";
       FullPath = data.Name;
       Title = data.Name.Contains("/")
-        ? data.Name.Substring(data.Name.IndexOf("/", StringComparison.OrdinalIgnoreCase) + 1)
+        ? data.Name.Substring(data.Name.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1)
         : data.Name;
+    }
+
+    public void Sort() {
+      var sorted = Items.Cast<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
+      for (var i = 0; i < Items.Count; i++) {
+        Items.Move(Items.IndexOf(Items[i]), sorted.IndexOf((Keyword) Items[i]));
+      }
     }
   }
 }

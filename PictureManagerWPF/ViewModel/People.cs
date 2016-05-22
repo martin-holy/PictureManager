@@ -75,6 +75,7 @@ namespace PictureManager.ViewModel {
       Db.Insert(dmPerson);
 
       var vmPerson = new Person(dmPerson);
+      AllPeople.Add(vmPerson);
       SetInPalce(vmPerson, true);
       return vmPerson;
     }
@@ -203,6 +204,8 @@ namespace PictureManager.ViewModel {
       } else {
         Items.OfType<PeopleGroup>().Single(x => x.Id == person.PeopleGroupId).Items.Remove(person);
       }
+
+      AllPeople.Remove(person);
     }
 
     public void DeletePeopleGroup(PeopleGroup group) {

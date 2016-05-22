@@ -181,7 +181,7 @@ namespace PictureManager {
             if (k.IsMarked) break;
             k.IsMarked = true;
             MarkedTags.Add(k);
-            k = (ViewModel.Keyword) k.Parent;
+            k = k.Parent as ViewModel.Keyword;
           } while (k != null);
         }
 

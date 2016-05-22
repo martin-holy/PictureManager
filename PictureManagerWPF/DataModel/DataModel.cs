@@ -84,6 +84,38 @@ namespace PictureManager.DataModel {
       UpdateInList(o, true);
     }
 
+    public void Update(BaseTable o) {
+      if (!OpenDbConnection()) return;
+      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+        Update(cmd, o);
+      }
+    }
+
+    public void Update(SQLiteCommand cmd, BaseTable o) {
+      var columns = GetColumnValues(o);
+      cmd.CommandText = TableInfos[o.GetType()].QueryUpdate;
+      cmd.Parameters.Clear();
+      foreach (var column in columns) {
+        cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
+      }
+      cmd.ExecuteNonQuery();
+    }
+
+    public void Delete(BaseTable o) {
+      if (!OpenDbConnection()) return;
+      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+        Delete(cmd, o);
+      }
+    }
+
+    public void Delete(SQLiteCommand cmd, BaseTable o) {
+      cmd.CommandText = TableInfos[o.GetType()].QueryDelete;
+      cmd.Parameters.Clear();
+      cmd.Parameters.Add(new SQLiteParameter("@Id", o.Id));
+      cmd.ExecuteNonQuery();
+      UpdateInList(o, false);
+    }
+
     public void InsertOnSubmit(BaseTable data) {
       _toInsert.Add(data);
     }
@@ -142,32 +174,14 @@ namespace PictureManager.DataModel {
         using (SQLiteCommand cmd = DbConn.CreateCommand()) {
           cmd.Transaction = tr;
 
-          //Insert
           _toInsert.ForEach(o => Insert(cmd, o));
           _toInsert.Clear();
 
-          //Update
-          foreach (var o in _toUpdate) {
-            var columns = GetColumnValues(o);
-            cmd.CommandText = TableInfos[o.GetType()].QueryUpdate;
-            cmd.Parameters.Clear();
-            foreach (var column in columns) {
-              cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
-            }
-            cmd.ExecuteNonQuery();
-          }
+          _toUpdate.ForEach(o => Update(cmd, o));
           _toUpdate.Clear();
 
-          //Delete
-          foreach (var o in _toDelete) {
-            cmd.CommandText = TableInfos[o.GetType()].QueryDelete;
-            cmd.Parameters.Clear();
-            cmd.Parameters.Add(new SQLiteParameter("@Id", o.Id));
-            cmd.ExecuteNonQuery();
-            UpdateInList(o, false);
-          }
+          _toDelete.ForEach(o => Delete(cmd, o));
           _toDelete.Clear();
-
         }
         tr.Commit();
       }

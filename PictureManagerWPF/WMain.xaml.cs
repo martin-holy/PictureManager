@@ -242,16 +242,15 @@ namespace PictureManager {
     }
 
     private void CmdKeywordNew(object sender, ExecutedRoutedEventArgs e) {
-      var keyword = e.Parameter as ViewModel.Keyword;
-      var keywords = e.Parameter as ViewModel.Keywords;
-      if (keyword == null && keywords == null) return;
-      ACore.Keywords.NewOrRename(this, keywords != null ? keywords.Items : keyword.Items, keyword, false);
+      var root = e.Parameter as ViewModel.BaseTreeViewItem;
+      if (root == null) return;
+      ACore.Keywords.NewOrRename(this, root, false);
     }
 
     private void CmdKeywordRename(object sender, ExecutedRoutedEventArgs e) {
       var keyword = e.Parameter as ViewModel.Keyword;
       if (keyword == null) return;
-      ACore.Keywords.NewOrRename(this, keyword.Items, keyword, true);
+      ACore.Keywords.NewOrRename(this, keyword, true);
     }
 
     private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
