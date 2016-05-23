@@ -10,6 +10,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
+using Application = System.Windows.Application;
 
 namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
@@ -27,7 +28,7 @@ namespace PictureManager.ViewModel {
       set {
         _isSelected = value;
 
-        WbThumbs.Document?.GetElementById(Index.ToString())?.SetAttribute("className", value ? "thumbBox selected" : "thumbBox");
+        ACore.WbThumbs.Document?.GetElementById(Index.ToString())?.SetAttribute("className", value ? "thumbBox selected" : "thumbBox");
         OnPropertyChanged();
       }
     }
@@ -43,18 +44,16 @@ namespace PictureManager.ViewModel {
     public int Rating;
     public int Orientation;
     public bool IsModifed;
-    public DataModel.PmDataContext Db;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
-    public WebBrowser WbThumbs;
+    public AppCore ACore;
 
-    public BaseMediaItem(string filePath, DataModel.PmDataContext db, int index, WebBrowser wbThumbs, DataModel.MediaItem data) {
+    public BaseMediaItem(string filePath, int index, DataModel.MediaItem data) {
+      ACore = ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
-      Db = db;
       Index = index;
-      WbThumbs = wbThumbs;
 
       if (data == null) return;
       Id = data.Id;
@@ -64,7 +63,6 @@ namespace PictureManager.ViewModel {
       Orientation = data.Orientation;
       Data = data;
     }
-
 
     public string GetKeywordsAsString() {
       StringBuilder sb = new StringBuilder();
@@ -99,39 +97,38 @@ namespace PictureManager.ViewModel {
       return sb.ToString();
     }
 
-    private void LoadKeywordsFromDb(Keywords keywords) {
+    private void LoadKeywordsFromDb() {
       Keywords.Clear();
-      var ks = from mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
-        join k in Db.Keywords on mik.KeywordId equals k.Id
+      var ks = from mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
+        join k in ACore.Db.Keywords on mik.KeywordId equals k.Id
         select k.Name;
       foreach (var k in ks) {
-        Keywords.Add(keywords.GetKeywordByFullPath(k, false));
+        Keywords.Add(ACore.Keywords.GetKeywordByFullPath(k, false));
       }
     }
 
-    private void LoadPeopleFromDb(People people) {
+    private void LoadPeopleFromDb() {
       People.Clear();
-      var ps = from mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
-        join p in Db.People on mip.PersonId equals p.Id
+      var ps = from mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
+        join p in ACore.Db.People on mip.PersonId equals p.Id
         select p;
       foreach (var p in ps) {
-        People.Add(people.GetPerson(p.Id, p.PeopleGroupId));
+        People.Add(ACore.People.GetPerson(p.Id, p.PeopleGroupId));
       }
     }
 
-    public void ReLoadFromDb(AppCore aCore, DataModel.MediaItem mi) {
-      if (mi == null) return;
-      Rating = mi.Rating;
-      Comment = mi.Comment;
-      Orientation = mi.Orientation;
-      LoadKeywordsFromDb(aCore.Keywords);
-      LoadPeopleFromDb(aCore.People);
+    public void ReLoadFromDb() {
+      Rating = Data.Rating;
+      Comment = Data.Comment;
+      Orientation = Data.Orientation;
+      LoadKeywordsFromDb();
+      LoadPeopleFromDb();
     }
 
-    public void SaveMediaItemInToDb(AppCore aCore, bool update, bool isNew) {
+    public void SaveMediaItemInToDb(bool update, bool isNew) {
       if (isNew) {
-        ReadMetadata(aCore);
-        Id = Db.GetNextIdFor<DataModel.MediaItem>();
+        ReadMetadata();
+        Id = ACore.Db.GetNextIdFor<DataModel.MediaItem>();
         Data = new DataModel.MediaItem {
           Id = Id,
           DirectoryId = DirId,
@@ -140,13 +137,13 @@ namespace PictureManager.ViewModel {
           Comment = Comment,
           Orientation = Orientation
         };
-        Db.InsertOnSubmit(Data);
+        ACore.Db.InsertOnSubmit(Data);
       } else {
-        if (update) ReadMetadata(aCore);
+        if (update) ReadMetadata();
         Data.Rating = Rating;
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
-        Db.UpdateOnSubmit(Data);
+        ACore.Db.UpdateOnSubmit(Data);
       }
 
       SaveMediaItemKeywordsToDb();
@@ -156,16 +153,16 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemKeywordsToDb() {
       //Update connection between Keywords and MediaItem
       var keyIds = Keywords.Select(k => k.Id).ToList();
-      foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
+      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
         if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
-          Db.DeleteOnSubmit(mik);
+          ACore.Db.DeleteOnSubmit(mik);
         else
           keyIds.Remove(mik.KeywordId);
       }
       //Insert new Keywords to MediaItem
       foreach (var keyId in keyIds) {
-        Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
-          Id = Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
+        ACore.Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
+          Id = ACore.Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
           KeywordId = keyId,
           MediaItemId = Id
         });
@@ -175,16 +172,16 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemPeopleInToDb() {
       //Update connection between People and MediaItem
       var ids = People.Select(p => p.Id).ToList();
-      foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
-        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null) 
-          Db.DeleteOnSubmit(mip);
+      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
+        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null)
+          ACore.Db.DeleteOnSubmit(mip);
          else
           ids.Remove(mip.PersonId);
       }
       //Insert new People to MediaItem
       foreach (var id in ids) {
-        Db.InsertOnSubmit(new DataModel.MediaItemPerson {
-          Id = Db.GetNextIdFor<DataModel.MediaItemPerson>(),
+        ACore.Db.InsertOnSubmit(new DataModel.MediaItemPerson {
+          Id = ACore.Db.GetNextIdFor<DataModel.MediaItemPerson>(),
           PersonId = id,
           MediaItemId = Id
         });
@@ -304,7 +301,7 @@ namespace PictureManager.ViewModel {
       return bSuccess;
     }
 
-    public void ReadMetadata(AppCore aCore) {
+    public void ReadMetadata() {
       try {
         using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
           if (imageFileStream.Length == 0) return;
@@ -322,7 +319,7 @@ namespace PictureManager.ViewModel {
             foreach (string region in regions) {
               var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
               if (personDisplayName != null) {
-                People.Add(aCore.People.GetPerson(personDisplayName.ToString(), true));
+                People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
               }
             }
           }
@@ -333,7 +330,7 @@ namespace PictureManager.ViewModel {
           //Comment
           Comment = bm.Comment == null
             ? string.Empty
-            : aCore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+            : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
 
           //Orientation
           var orientation = bm.GetQuery("System.Photo.Orientation");
@@ -348,7 +345,7 @@ namespace PictureManager.ViewModel {
           //Filter out duplicities
           foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
             if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-              var keyword = aCore.Keywords.GetKeywordByFullPath(k, true);
+              var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
               if (keyword != null)
                 Keywords.Add(keyword);
             }
@@ -360,7 +357,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void WbUpdateInfo() {
-      var thumb = WbThumbs.Document?.GetElementById(Index.ToString());
+      var thumb = ACore.WbThumbs.Document?.GetElementById(Index.ToString());
       if (thumb == null) return;
       foreach (HtmlElement element in thumb.Children) {
         if (!element.GetAttribute("className").Equals("keywords")) continue;

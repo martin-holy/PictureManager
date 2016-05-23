@@ -13,7 +13,7 @@ using PictureManager.ShellStuff;
 using Directory = System.IO.Directory;
 
 namespace PictureManager {
-  public class AppCore {
+  public class AppCore : IDisposable {
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot;
@@ -33,7 +33,6 @@ namespace PictureManager {
     public ViewModel.AppInfo AppInfo;
     public bool OneFileOnly;
     public bool ViewerOnly = false; //application was run with file path parameter
-    public enum FileOperations { Copy, Move, Delete }
     public DataModel.PmDataContext Db;
     public ViewModel.MediaItems MediaItems;
     public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
@@ -62,25 +61,43 @@ namespace PictureManager {
       }
     }
 
-    public AppCore() {
+    public void Dispose() {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing) {
+      if (!disposing) return;
+
+      if (Db != null) {
+        Db.Dispose();
+        Db = null;
+      }
+
+      if (ThumbsResetEvent != null) {
+        ThumbsResetEvent.Dispose();
+        ThumbsResetEvent = null;
+      }
+    }
+
+    public void InitBase() {
       AppInfo = new ViewModel.AppInfo();
-      MediaItems = new ViewModel.MediaItems(this);
+      MediaItems = new ViewModel.MediaItems();
       MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
 
       Db = new DataModel.PmDataContext("Data Source = data.db");
-      Application.Current.Properties[nameof(AppProps.Db)] = Db;
       Db.Load();
     }
 
     public void Init() {
-      People = new ViewModel.People {Db = Db};
-      Keywords = new ViewModel.Keywords {Db = Db};
-      FolderKeywords = new ViewModel.FolderKeywords {Db = Db, ACore = this};
+      People = new ViewModel.People();
+      Keywords = new ViewModel.Keywords();
+      FolderKeywords = new ViewModel.FolderKeywords();
       Folders = new ViewModel.Folders();
       FavoriteFolders = new ViewModel.FavoriteFolders();
       Ratings = new ViewModel.Ratings();
-      Filters = new ViewModel.Filters {Db = Db};
-      Viewers = new ViewModel.Viewers {Db = Db};
+      Filters = new ViewModel.Filters();
+      Viewers = new ViewModel.Viewers();
 
       People.Load();
       Keywords.Load();
@@ -301,7 +318,7 @@ namespace PictureManager {
           if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
 
           if (mi.Data == null) {
-            mi.SaveMediaItemInToDb(this, false, true);
+            mi.SaveMediaItemInToDb(false, true);
             Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
           }
 

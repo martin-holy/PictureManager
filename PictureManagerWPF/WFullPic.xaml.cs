@@ -13,19 +13,25 @@ namespace PictureManager {
   /// Interaction logic for WFullPic.xaml
   /// </summary>
   public partial class WFullPic {
-    readonly WMain _wMain;
+    public AppCore ACore;
 
-    public WFullPic(WMain wMain) {
+    public WFullPic() {
       InitializeComponent();
-      _wMain = wMain;
-      WbFullPic.ObjectForScripting = new ScriptManager(_wMain);
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+      WbFullPic.ObjectForScripting = new ScriptManager(ACore);
       WbFullPic.DocumentCompleted += WbFullPicOnDocumentCompleted;
 
-      using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.FullPic.html"))
+      Stream stream = null;
+      try {
+        stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.FullPic.html");
         if (stream != null)
           using (StreamReader reader = new StreamReader(stream)) {
+            stream = null;
             WbFullPic.DocumentText = reader.ReadToEnd();
           }
+      } finally {
+        stream?.Dispose();
+      }
 
       WbFullPic.Focus();
     }
@@ -42,7 +48,7 @@ namespace PictureManager {
     }
 
     public void SetCurrentImage() {
-      var current = _wMain.ACore.MediaItems.Current;
+      var current = ACore.MediaItems.Current;
       var filePath = current == null ? string.Empty : current.FilePath;
 
       var o = 0;
@@ -60,25 +66,25 @@ namespace PictureManager {
 
     private void SwitchToBrowser() {
       WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", "");
-      _wMain.SwitchToBrowser();
+      ACore.WMain.SwitchToBrowser();
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e) {
       switch (e.Key) {
         case Key.Right:
         case Key.PageDown: {
-            if (_wMain.ACore.MediaItems.CurrentItemMove(true))
+            if (ACore.MediaItems.CurrentItemMove(true))
               SetCurrentImage();
             break;
           }
         case Key.Left:
         case Key.PageUp: {
-            if (_wMain.ACore.MediaItems.CurrentItemMove(false))
+            if (ACore.MediaItems.CurrentItemMove(false))
               SetCurrentImage();
             break;
           }
         case Key.Escape: {
-            if (_wMain.ACore.ViewerOnly) {
+            if (ACore.ViewerOnly) {
               Application.Current.Shutdown();
             } else {
               SwitchToBrowser();
@@ -92,18 +98,18 @@ namespace PictureManager {
             break;
           }
         case Key.Delete: {
-          if (_wMain.ACore.MediaItems.Items.Count(x => x.IsSelected) != 1) return;
+          if (ACore.MediaItems.Items.Count(x => x.IsSelected) != 1) return;
           var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
           if (result == MessageBoxResult.Yes)
-            if (_wMain.ACore.FileOperation(AppCore.FileOperations.Delete, true)) {
-              var index = _wMain.ACore.MediaItems.Current.Index;
-              _wMain.ACore.MediaItems.RemoveSelectedFromWeb();
-              var itemsCount = _wMain.ACore.MediaItems.Items.Count;
+            if (ACore.FileOperation(FileOperations.Delete, true)) {
+              var index = ACore.MediaItems.Current.Index;
+              ACore.MediaItems.RemoveSelectedFromWeb();
+              var itemsCount = ACore.MediaItems.Items.Count;
               if (itemsCount > index)
-                _wMain.ACore.MediaItems.Items[index].IsSelected = true;
+                ACore.MediaItems.Items[index].IsSelected = true;
               if (itemsCount <= index && itemsCount != 0)
-                _wMain.ACore.MediaItems.Items[index - 1].IsSelected = true;
-              _wMain.ACore.MediaItems.SetCurrent();
+                ACore.MediaItems.Items[index - 1].IsSelected = true;
+              ACore.MediaItems.SetCurrent();
               SetCurrentImage();
             }
           break;

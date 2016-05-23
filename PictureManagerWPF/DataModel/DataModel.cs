@@ -36,9 +36,20 @@ namespace PictureManager.DataModel {
     }
 
     public void Dispose() {
-      DbConn.Close();
-      DbConn.Dispose();
-      Mut.Dispose();
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing) {
+      if (!disposing) return;
+
+      if (DbConn != null) {
+        DbConn.Close();
+        DbConn.Dispose();
+        DbConn = null;
+      }
+
+      Mut?.Dispose();
     }
 
     public bool OpenDbConnection() {

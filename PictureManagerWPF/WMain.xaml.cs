@@ -31,18 +31,26 @@ namespace PictureManager {
 
       ACore = new AppCore {WbThumbs = WbThumbs, WMain = this};
       Application.Current.Properties[nameof(AppProps.AppCore)] = ACore;
+      ACore.InitBase();
       MainStatusBar.DataContext = ACore.AppInfo;
 
-      WbThumbs.ObjectForScripting = new ScriptManager(this);
+      WbThumbs.ObjectForScripting = new ScriptManager(ACore);
       WbThumbs.DocumentCompleted += WbThumbs_DocumentCompleted;
 
-      using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.Thumbs.html"))
+      Stream stream = null;
+      try {
+        stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.Thumbs.html");
         if (stream != null)
           using (StreamReader reader = new StreamReader(stream)) {
+            stream = null;
             WbThumbs.DocumentText = reader.ReadToEnd();
           }
+      }
+      finally {
+        stream?.Dispose();
+      }
 
-      _wFullPic = new WFullPic(this);
+      _wFullPic = new WFullPic();
       _argPicFile = picFile;
     }
 
@@ -57,7 +65,7 @@ namespace PictureManager {
       if (e.KeyPressedCode == 46) {//Delete 
         var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
         if (result == MessageBoxResult.Yes)
-          if (ACore.FileOperation(AppCore.FileOperations.Delete, !e.ShiftKeyPressed))
+          if (ACore.FileOperation(FileOperations.Delete, !e.ShiftKeyPressed))
             ACore.MediaItems.RemoveSelectedFromWeb();
       }
 
@@ -135,7 +143,7 @@ namespace PictureManager {
         ACore.AppInfo.AppMode = AppModes.Viewer;
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
-        ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, ACore.Db, 0, WbThumbs, null));
+        ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, 0, null));
         ACore.MediaItems.Items[0].IsSelected = true;
         ACore.MediaItems.Current = ACore.MediaItems.Items[0];
         ShowFullPicture();
@@ -244,13 +252,13 @@ namespace PictureManager {
     private void CmdKeywordNew(object sender, ExecutedRoutedEventArgs e) {
       var root = e.Parameter as ViewModel.BaseTreeViewItem;
       if (root == null) return;
-      ACore.Keywords.NewOrRename(this, root, false);
+      ACore.Keywords.NewOrRename(root, false);
     }
 
     private void CmdKeywordRename(object sender, ExecutedRoutedEventArgs e) {
       var keyword = e.Parameter as ViewModel.Keyword;
       if (keyword == null) return;
-      ACore.Keywords.NewOrRename(this, keyword, true);
+      ACore.Keywords.NewOrRename(keyword, true);
     }
 
     private void CmdKeywordDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -260,11 +268,11 @@ namespace PictureManager {
     }
 
     private void CmdPersonNew(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRenamePerson(this, null, e.Parameter as ViewModel.PeopleGroup, false);
+      ACore.People.NewOrRenamePerson(null, e.Parameter as ViewModel.PeopleGroup, false);
     }
 
     private void CmdPersonRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRenamePerson(this, (ViewModel.Person) e.Parameter, null, true);
+      ACore.People.NewOrRenamePerson((ViewModel.Person) e.Parameter, null, true);
     }
 
     private void CmdPersonDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -274,11 +282,11 @@ namespace PictureManager {
     }
 
     private void CmdPeopleGroupNew(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRenameGroup(this, null, false);
+      ACore.People.NewOrRenameGroup(null, false);
     }
 
     private void CmdPeopleGroupRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.People.NewOrRenameGroup(this, (ViewModel.PeopleGroup) e.Parameter, true);
+      ACore.People.NewOrRenameGroup((ViewModel.PeopleGroup) e.Parameter, true);
     }
 
     private void CmdPeopleGroupDelete(object sender, ExecutedRoutedEventArgs e) {
@@ -289,7 +297,7 @@ namespace PictureManager {
 
     private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
       var parent = e.Parameter as ViewModel.Filter;
-      var newFilter = new ViewModel.Filter {Parent = parent, Db = ACore.Db, Title = "New filter"};
+      var newFilter = new ViewModel.Filter {Parent = parent, Title = "New filter"};
       newFilter.FilterData.Add(new FilterGroup {Operator = FilterGroupOps.And});
       var fb = new WFilterBuilder(newFilter) {Owner = this};
       if (fb.ShowDialog() ?? true) {
@@ -319,11 +327,11 @@ namespace PictureManager {
     }
 
     private void CmdViewerNew(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.NewOrRenameViewer(this, (ViewModel.Viewer)e.Parameter, false);
+      ACore.Viewers.NewOrRenameViewer((ViewModel.Viewer)e.Parameter, false);
     }
 
     private void CmdViewerRename(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.NewOrRenameViewer(this, (ViewModel.Viewer)e.Parameter, true);
+      ACore.Viewers.NewOrRenameViewer((ViewModel.Viewer)e.Parameter, true);
     }
 
     private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
@@ -338,7 +346,7 @@ namespace PictureManager {
         foreach (var va in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Id)) {
           ACore.Db.DeleteOnSubmit(va);
         }
-        ACore.Db.DeleteOnSubmit((DataModel.Viewer) viewer.DbData);
+        ACore.Db.DeleteOnSubmit(viewer.Data);
         ACore.Db.SubmitChanges();
         ACore.Viewers.Items.Remove(viewer);
       }
@@ -357,17 +365,17 @@ namespace PictureManager {
     }
 
     private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      ((ViewModel.Folder) e.Parameter).NewOrRename(this, false);
+      ((ViewModel.Folder) e.Parameter).NewOrRename(false);
     }
 
     private void CmdFolderRename(object sender, ExecutedRoutedEventArgs e) {
-      ((ViewModel.Folder) e.Parameter).NewOrRename(this, true);
+      ((ViewModel.Folder) e.Parameter).NewOrRename(true);
     }
 
     private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result == MessageBoxResult.Yes)
-        ((ViewModel.Folder)e.Parameter).Delete(ACore, true);
+        ((ViewModel.Folder)e.Parameter).Delete(true);
     }
 
     private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
@@ -447,12 +455,11 @@ namespace PictureManager {
 
       bw.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
         var worker = (BackgroundWorker)bwsender;
-        var aCore = (AppCore)bwe.Argument;
         var count = pictures.Count;
         var done = 0;
 
         foreach (var picture in pictures) {
-          picture.SaveMediaItemInToDb(aCore, false, false);
+          picture.SaveMediaItemInToDb(false, false);
           picture.TryWriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
@@ -468,7 +475,7 @@ namespace PictureManager {
         ACore.AppInfo.AppMode = AppModes.Browser;
       };
 
-      bw.RunWorkerAsync(ACore);
+      bw.RunWorkerAsync();
     }
 
     private void CmdKeywordsCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -477,7 +484,7 @@ namespace PictureManager {
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       foreach (ViewModel.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
-        mi.ReLoadFromDb(ACore, mi.Data);
+        mi.ReLoadFromDb();
         mi.WbUpdateInfo();
       }
       ACore.MarkUsedKeywordsAndPeople();
@@ -520,7 +527,7 @@ namespace PictureManager {
 
       if (inputDialog.ShowDialog() ?? true) {
         current.Comment = inputDialog.TxtAnswer.Text;
-        current.SaveMediaItemInToDb(ACore, false, false);
+        current.SaveMediaItemInToDb(false, false);
         current.TryWriteMetadata();
         ACore.Db.SubmitChanges();
       }
@@ -533,7 +540,7 @@ namespace PictureManager {
     private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
       var mediaItems = ACore.MediaItems.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(ACore, true, false);
+        mi.SaveMediaItemInToDb(true, false);
         mi.WbUpdateInfo();
       }
       ACore.Db.SubmitChanges();
@@ -603,9 +610,7 @@ namespace PictureManager {
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
 
-      int i = 0;
-      int j = ++i ;
-      int k = j;
+
 
 
       //var dir = new DataModel.Directory {Path = "ds"};
@@ -838,8 +843,8 @@ namespace PictureManager {
       var itemName = thumbs ? null : srcData.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
 
       var flag = e.KeyStates == DragDropKeyStates.ControlKey ? 
-        ACore.FileOperation(AppCore.FileOperations.Copy, from, destData.FullPath, itemName) : 
-        ACore.FileOperation(AppCore.FileOperations.Move, from, destData.FullPath, itemName);
+        ACore.FileOperation(FileOperations.Copy, from, destData.FullPath, itemName) : 
+        ACore.FileOperation(FileOperations.Move, from, destData.FullPath, itemName);
       if (!flag) return;
 
       if (thumbs) {
@@ -950,7 +955,7 @@ namespace PictureManager {
           break;
         }
         case nameof(ViewModel.BaseTreeViewItem): {
-          if (((ViewModel.BaseTreeViewItem)item).DbData is DataModel.ViewerAccess)
+          if (((ViewModel.BaseTreeViewItem)item).Tag is DataModel.ViewerAccess)
             menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerRemoveFolder"], CommandParameter = item });
           break;
         }

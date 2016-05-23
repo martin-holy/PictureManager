@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
@@ -11,6 +12,8 @@ namespace PictureManager.ViewModel {
     }
 
     public ObservableCollection<BaseTreeViewItem> Items { get; set; }
+    public AppCore ACore;
+    public object Tag;
 
     private bool _isExpanded;
     private bool _isSelected;
@@ -19,7 +22,6 @@ namespace PictureManager.ViewModel {
     private string _toolTip;
     private BgBrushes _bgBrush;
     private BaseTreeViewItem _parent;
-    private object _dbData;
 
     public virtual bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
     public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
@@ -28,10 +30,10 @@ namespace PictureManager.ViewModel {
     public string ToolTip { get { return _toolTip; } set { _toolTip = value; OnPropertyChanged(); } }
     public BgBrushes BgBrush { get { return _bgBrush; } set { _bgBrush = value; OnPropertyChanged(); } }
     public BaseTreeViewItem Parent { get { return _parent; } set { _parent = value; OnPropertyChanged(); } }
-    public object DbData { get { return _dbData; } set { _dbData = value; OnPropertyChanged(); } }
 
     public BaseTreeViewItem() {
       Items = new ObservableCollection<BaseTreeViewItem>();
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
     }
   }
 }

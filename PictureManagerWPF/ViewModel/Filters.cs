@@ -1,6 +1,5 @@
 ﻿namespace PictureManager.ViewModel {
   public class Filters: BaseTreeViewItem {
-    public DataModel.PmDataContext Db;
 
     public Filters() {
       Title = "Filters";
@@ -8,7 +7,8 @@
     }
 
     public void Load() {
-      Filter.GetSubFilters(false, Items, null, Db);
+      var f = new Filter();
+      f.GetSubFilters(false, Items, null);
       IsExpanded = true;
     }
   }

@@ -7,7 +7,6 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class People : BaseTreeViewItem {
     public List<Person> AllPeople; 
-    public DataModel.PmDataContext Db;
     private static readonly Mutex Mut = new Mutex();
 
     public People() {
@@ -24,9 +23,9 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllPeople.Clear();
       //Add PeopleGroups
-      foreach (var pg in Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
+      foreach (var pg in ACore.Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
         //Add People to the PeopleGroup
-        foreach (var p in Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
+        foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
           pg.Items.Add(p);
           AllPeople.Add(p);
         }
@@ -34,7 +33,7 @@ namespace PictureManager.ViewModel {
       }
 
       //Add People without group
-      foreach (var p in Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
+      foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
         Items.Add(p);
         AllPeople.Add(p);
       }
@@ -54,7 +53,7 @@ namespace PictureManager.ViewModel {
 
     public Person GetPerson(string name, bool create) {
       if (create) Mut.WaitOne();
-      var dmPerson = Db.People.SingleOrDefault(x => x.Name.Equals(name));
+      var dmPerson = ACore.Db.People.SingleOrDefault(x => x.Name.Equals(name));
       if (dmPerson != null) {
         Mut.ReleaseMutex();
         return GetPerson(dmPerson.Id, dmPerson.PeopleGroupId);
@@ -67,12 +66,12 @@ namespace PictureManager.ViewModel {
 
     public Person CreatePerson(string name, PeopleGroup peopleGroup) {
       var dmPerson = new DataModel.Person {
-        Id = Db.GetNextIdFor<DataModel.Person>(),
+        Id = ACore.Db.GetNextIdFor<DataModel.Person>(),
         Name = name,
         PeopleGroupId = peopleGroup?.Id
       };
 
-      Db.Insert(dmPerson);
+      ACore.Db.Insert(dmPerson);
 
       var vmPerson = new Person(dmPerson);
       AllPeople.Add(vmPerson);
@@ -82,21 +81,21 @@ namespace PictureManager.ViewModel {
 
     public PeopleGroup CreateGroup(string name) {
       var dmPeopleGroup = new DataModel.PeopleGroup {
-        Id = Db.GetNextIdFor<DataModel.PeopleGroup>(),
+        Id = ACore.Db.GetNextIdFor<DataModel.PeopleGroup>(),
         Name = name
       };
 
-      Db.InsertOnSubmit(dmPeopleGroup);
-      Db.SubmitChanges();
+      ACore.Db.InsertOnSubmit(dmPeopleGroup);
+      ACore.Db.SubmitChanges();
 
       var vmPeopleGroup = new PeopleGroup(dmPeopleGroup);
       SetInPalce(vmPeopleGroup, true);
       return vmPeopleGroup;
     }
 
-    public void NewOrRenamePerson(WMain wMain, Person person, PeopleGroup peopleGroup, bool rename) {
+    public void NewOrRenamePerson(Person person, PeopleGroup peopleGroup, bool rename) {
       InputDialog inputDialog = new InputDialog {
-        Owner = wMain,
+        Owner = ACore.WMain,
         IconName = "appbar_people",
         Title = rename ? "Rename Person" : "New Person",
         Question = rename ? "Enter the new name of the person." : "Enter the name of the new person.",
@@ -109,7 +108,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.People.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+        if (ACore.Db.People.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Person's name already exists!");
           return;
         }
@@ -123,16 +122,16 @@ namespace PictureManager.ViewModel {
         if (rename) {
           person.Title = inputDialog.Answer;
           person.Data.Name = inputDialog.Answer;
-          Db.UpdateOnSubmit(person.Data);
-          Db.SubmitChanges();
+          ACore.Db.UpdateOnSubmit(person.Data);
+          ACore.Db.SubmitChanges();
           SetInPalce(person, false);
         } else CreatePerson(inputDialog.Answer, peopleGroup);
       }
     }
 
-    public void NewOrRenameGroup(WMain wMain, PeopleGroup peopleGroup, bool rename) {
+    public void NewOrRenameGroup(PeopleGroup peopleGroup, bool rename) {
       InputDialog inputDialog = new InputDialog {
-        Owner = wMain,
+        Owner = ACore.WMain,
         IconName = "appbar_people_multiple",
         Title = rename ? "Rename Group" : "New Group",
         Question = rename ? "Enter the new name for the group." : "Enter the name of the new group.",
@@ -145,7 +144,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.PeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
+        if (ACore.Db.PeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;
         }
@@ -159,15 +158,15 @@ namespace PictureManager.ViewModel {
         if (rename) {
           peopleGroup.Title = inputDialog.Answer;
           peopleGroup.Data.Name = inputDialog.Answer;
-          Db.UpdateOnSubmit(peopleGroup.Data);
-          Db.SubmitChanges();
+          ACore.Db.UpdateOnSubmit(peopleGroup.Data);
+          ACore.Db.SubmitChanges();
           SetInPalce(peopleGroup, false);
         } else CreateGroup(inputDialog.Answer);
       }
     }
 
     public void SetInPalce(Person person, bool isNew) {
-      var idx = Db.People.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
+      var idx = ACore.Db.People.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
       if (person.PeopleGroupId == null) {
         idx += Items.OfType<PeopleGroup>().Count();
         if (isNew)
@@ -184,7 +183,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void SetInPalce(PeopleGroup peopleGroup, bool isNew) {
-      var idx = Db.PeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
+      var idx = ACore.Db.PeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
       if (isNew)
         Items.Insert(idx, peopleGroup);
       else 
@@ -192,12 +191,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePerson(Person person) {
-      foreach (var mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
-        Db.DeleteOnSubmit(mip);
+      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
+        ACore.Db.DeleteOnSubmit(mip);
       }
 
-      Db.DeleteOnSubmit(person.Data);
-      Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(person.Data);
+      ACore.Db.SubmitChanges();
 
       if (person.PeopleGroupId == null) {
         Items.Remove(person);
@@ -209,12 +208,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void DeletePeopleGroup(PeopleGroup group) {
-      foreach (var p in Db.People.Where(x => x.PeopleGroupId == group.Id)) {
+      foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == group.Id)) {
         p.PeopleGroupId = null;
       }
 
-      Db.DeleteOnSubmit(group.Data);
-      Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(group.Data);
+      ACore.Db.SubmitChanges();
 
       foreach (var person in group.Items.Cast<Person>()) {
         person.PeopleGroupId = null;
@@ -238,8 +237,8 @@ namespace PictureManager.ViewModel {
       var newGroupId = peopleGroup?.Id;
       person.PeopleGroupId = newGroupId;
       person.Data.PeopleGroupId = newGroupId;
-      Db.UpdateOnSubmit(person.Data);
-      Db.SubmitChanges();
+      ACore.Db.UpdateOnSubmit(person.Data);
+      ACore.Db.SubmitChanges();
       SetInPalce(person, true); //person is new in the group
     }
   }

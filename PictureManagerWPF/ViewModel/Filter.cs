@@ -7,7 +7,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace PictureManager.ViewModel {
   public class Filter: BaseTreeViewTagItem {
     public DataModel.Filter Data;
-    public DataModel.PmDataContext Db;
     public ObservableCollection<BaseFilterItem> FilterData;
 
     public override bool IsExpanded
@@ -16,7 +15,7 @@ namespace PictureManager.ViewModel {
       set
       {
         base.IsExpanded = value;
-        if (value) GetSubFilters(false, Items, this, Db);
+        if (value) GetSubFilters(false, Items, this);
       }
     }
 
@@ -26,15 +25,14 @@ namespace PictureManager.ViewModel {
       IconName = "appbar_filter";
     }
 
-    public Filter(DataModel.Filter data, DataModel.PmDataContext db, Filter parent) : this() {
+    public Filter(DataModel.Filter data, Filter parent) : this() {
       Data = data;
       Parent = parent;
-      Db = db;
       Id = data.Id;
       Title = data.Name;
     }
 
-    public static void GetSubFilters(bool refresh, ObservableCollection<BaseTreeViewItem> items, Filter parent, DataModel.PmDataContext db) {
+    public void GetSubFilters(bool refresh, ObservableCollection<BaseTreeViewItem> items, Filter parent) {
       if (!refresh && parent != null) {
         if (items.Count <= 0) return;
         if (items[0].Title != @"...") return;
@@ -42,11 +40,11 @@ namespace PictureManager.ViewModel {
       items.Clear();
       var parentId = parent?.Id;
 
-      foreach (var f in db.Filters.Where(x => x.ParentId.Equals(parentId))) {
-        Filter item = new Filter(f, db, parent);
+      foreach (var f in ACore.Db.Filters.Where(x => x.ParentId.Equals(parentId))) {
+        Filter item = new Filter(f, parent);
         item.LoadFilterData(f.Data);
 
-        if (db.Filters.Count(x => x.ParentId == f.Id) != 0) {
+        if (ACore.Db.Filters.Count(x => x.ParentId == f.Id) != 0) {
           item.Items.Add(new Filter { Title = "..." });
         }
 
@@ -56,7 +54,7 @@ namespace PictureManager.ViewModel {
 
     public void ReloadData() {
       if (Id == -1) return;
-      LoadFilterData(Db.Filters.Single(x => x.Id == Id).Data);
+      LoadFilterData(ACore.Db.Filters.Single(x => x.Id == Id).Data);
     }
 
     public void LoadFilterData(byte[] biteArray) {
@@ -109,21 +107,21 @@ namespace PictureManager.ViewModel {
       //insert or update filter to DB
       if (Id == -1) {
         var dmFilter = new DataModel.Filter {
-          Id = Db.GetNextIdFor<DataModel.Filter>(),
+          Id = ACore.Db.GetNextIdFor<DataModel.Filter>(),
           Name = Title,
           Data = biteArray,
           ParentId = (Parent as Filter)?.Id
         };
 
-        Db.InsertOnSubmit(dmFilter);
-        Db.SubmitChanges();
+        ACore.Db.InsertOnSubmit(dmFilter);
+        ACore.Db.SubmitChanges();
 
         Id = dmFilter.Id;
       } else {
         Data.Data = biteArray;
         Data.Name = Title;
-        Db.UpdateOnSubmit(Data);
-        Db.SubmitChanges();
+        ACore.Db.UpdateOnSubmit(Data);
+        ACore.Db.SubmitChanges();
       }
     }
   }

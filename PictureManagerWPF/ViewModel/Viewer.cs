@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class Viewer : BaseTreeViewTagItem {
-    public DataModel.PmDataContext Db;
-
     public BaseTreeViewItem IncludedFolders;
     public BaseTreeViewItem ExcludedFolders;
-
-    private readonly AppCore aCore;
+    public DataModel.Viewer Data;
 
     public Viewer() {
       IncludedFolders = new BaseTreeViewItem {Title = "Included Folders", IconName = "appbar_folder_star", Parent = this};
@@ -20,13 +16,10 @@ namespace PictureManager.ViewModel {
       Items.Add(ExcludedFolders);
 
       IconName = "appbar_eye";
-
-      aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
     }
 
-    public Viewer(DataModel.PmDataContext db, DataModel.Viewer data) : this() {
-      Db = db;
-      DbData = data;
+    public Viewer(DataModel.Viewer data) : this() {
+      Data = data;
       Id = data.Id;
       Title = data.Name;
 
@@ -38,8 +31,8 @@ namespace PictureManager.ViewModel {
       (included ? IncludedFolders : ExcludedFolders).Items.Clear();
       
       var dirs =
-        from va in Db.ViewersAccess.Where(x => x.IsIncluded == included && x.ViewerId == Id && x.DirectoryId != null)
-        join d in Db.Directories on va.DirectoryId equals d.Id
+        from va in ACore.Db.ViewersAccess.Where(x => x.IsIncluded == included && x.ViewerId == Id && x.DirectoryId != null)
+        join d in ACore.Db.Directories on va.DirectoryId equals d.Id
         orderby d.Path
         select new KeyValuePair<DataModel.ViewerAccess, DataModel.Directory>(va, d);
 
@@ -51,7 +44,7 @@ namespace PictureManager.ViewModel {
 
     private BaseTreeViewItem InitFolder(DataModel.ViewerAccess data, bool included, string path) {
       return new BaseTreeViewItem {
-        DbData = data,
+        Tag = data,
         IconName = "appbar_folder",
         Title = GetTitleFromPath(path),
         ToolTip = path,
@@ -61,13 +54,13 @@ namespace PictureManager.ViewModel {
 
     public void AddFolder(bool included, string path) {
       var dmViewerAccess = new DataModel.ViewerAccess {
-        Id = Db.GetNextIdFor<DataModel.ViewerAccess>(),
+        Id = ACore.Db.GetNextIdFor<DataModel.ViewerAccess>(),
         ViewerId = Id,
         IsIncluded = included,
-        DirectoryId = Db.InsertDirecotryInToDb(path)
+        DirectoryId = ACore.Db.InsertDirecotryInToDb(path)
       };
 
-      Db.InsertOnSubmit(dmViewerAccess);
+      ACore.Db.InsertOnSubmit(dmViewerAccess);
       SetInPlace(InitFolder(dmViewerAccess, included, path));
     }
 

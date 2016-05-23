@@ -5,7 +5,6 @@ using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class Viewers : BaseTreeViewItem {
-    public DataModel.PmDataContext Db;
 
     public Viewers() {
       Title = "Viewers";
@@ -15,16 +14,16 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
      
-      foreach (var viewer in Db.Viewers.OrderBy(x => x.Name).Select(x => new Viewer(Db, x))) {
+      foreach (var viewer in ACore.Db.Viewers.OrderBy(x => x.Name).Select(x => new Viewer(x))) {
         viewer.Parent = this;
         Items.Add(viewer);
       }
       IsExpanded = true;
     }
 
-    public void NewOrRenameViewer(WMain wMain, Viewer viewer, bool rename) {
+    public void NewOrRenameViewer(Viewer viewer, bool rename) {
       InputDialog inputDialog = new InputDialog {
-        Owner = wMain,
+        Owner = ACore.WMain,
         IconName = "appbar_eye",
         Title = rename ? "Rename Viewer" : "New Viewer",
         Question = rename ? "Enter the new name of the viewer." : "Enter the name of the new viewer.",
@@ -37,7 +36,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        if (Db.Viewers.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+        if (ACore.Db.Viewers.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Viewer's name already exists!");
           return;
         }
@@ -50,16 +49,16 @@ namespace PictureManager.ViewModel {
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
           viewer.Title = inputDialog.Answer;
-          ((DataModel.Viewer)viewer.DbData).Name = inputDialog.Answer;
-          Db.UpdateOnSubmit((DataModel.Viewer)viewer.DbData);
-          Db.SubmitChanges();
+          (viewer.Data).Name = inputDialog.Answer;
+          ACore.Db.UpdateOnSubmit(viewer.Data);
+          ACore.Db.SubmitChanges();
           SetInPalce(viewer, false);
         } else CreateViewer(inputDialog.Answer);
       }
     }
 
     public void SetInPalce(Viewer viewer, bool isNew) {
-      var idx = Db.Viewers.OrderBy(x => x.Name).ToList().IndexOf((DataModel.Viewer)viewer.DbData);
+      var idx = ACore.Db.Viewers.OrderBy(x => x.Name).ToList().IndexOf(viewer.Data);
       if (isNew)
         Items.Insert(idx, viewer);
       else
@@ -68,14 +67,14 @@ namespace PictureManager.ViewModel {
 
     public Viewer CreateViewer(string name) {
       var dmViewer = new DataModel.Viewer {
-        Id = Db.GetNextIdFor<DataModel.Viewer>(),
+        Id = ACore.Db.GetNextIdFor<DataModel.Viewer>(),
         Name = name
       };
 
-      Db.InsertOnSubmit(dmViewer);
-      Db.SubmitChanges();
+      ACore.Db.InsertOnSubmit(dmViewer);
+      ACore.Db.SubmitChanges();
 
-      var vmViewer = new Viewer(Db, dmViewer);
+      var vmViewer = new Viewer(dmViewer);
       SetInPalce(vmViewer, true);
       return vmViewer;
     }
@@ -86,15 +85,15 @@ namespace PictureManager.ViewModel {
     }
 
     public void RemoveFolder(BaseTreeViewItem folder) {
-      var data = folder.DbData as DataModel.ViewerAccess;
+      var data = folder.Tag as DataModel.ViewerAccess;
       if (data == null) return;
 
       var viewer = Items.Cast<Viewer>().SingleOrDefault(x => x.Id == data.ViewerId);
       if (viewer == null) return;
 
-      Db.DeleteOnSubmit(data);
+      ACore.Db.DeleteOnSubmit(data);
       (data.IsIncluded ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Remove(folder);
-      Db.SubmitChanges();
+      ACore.Db.SubmitChanges();
     }
   }
 }

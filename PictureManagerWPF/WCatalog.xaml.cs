@@ -27,7 +27,7 @@ namespace PictureManager {
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ViewModel.Folders Folders;
 
-    private AppCore _aCore;
+    private readonly AppCore _aCore;
     private BackgroundWorker _update;
     private bool _justFilesCount;
     private int _filesCount;
@@ -39,10 +39,10 @@ namespace PictureManager {
     private string _filesProgress;
     public string FilesProgress { get { return _filesProgress; } set { _filesProgress = value; OnPropertyChanged(); } }
 
-    public WCatalog(AppCore aCore) {
+    public WCatalog(AppCore appCore) {
       InitializeComponent();
 
-      _aCore = aCore;
+      _aCore = appCore;
       Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
@@ -112,9 +112,9 @@ namespace PictureManager {
           .OrderBy(x => x)) {
 
           var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
-          var mi = new ViewModel.BaseMediaItem(file, _aCore.Db, 0, null, miInDb) {DirId = dirId};
+          var mi = new ViewModel.BaseMediaItem(file, 0, miInDb) {DirId = dirId};
           if (!_newOnly || miInDb == null)
-            mi.SaveMediaItemInToDb(_aCore, true, miInDb == null);
+            mi.SaveMediaItemInToDb(true, miInDb == null);
 
           if (_rebuildThumbnails || !File.Exists(mi.FilePathCache))
             AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);

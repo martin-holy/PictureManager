@@ -7,7 +7,6 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class Keywords: BaseTreeViewItem {
     public List<Keyword> AllKeywords; 
-    public DataModel.PmDataContext Db;
     private static readonly Mutex Mut = new Mutex();
 
     public Keywords() {
@@ -24,7 +23,7 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllKeywords.Clear();
 
-      foreach (Keyword newItem in Db.Keywords.OrderBy(x => x.Name).Select(x => new Keyword(x))) {
+      foreach (Keyword newItem in ACore.Db.Keywords.OrderBy(x => x.Name).Select(x => new Keyword(x))) {
         var lioSlash = newItem.FullPath.LastIndexOf('/');
         if (lioSlash == -1) {
           newItem.Title = newItem.FullPath;
@@ -76,9 +75,9 @@ namespace PictureManager.ViewModel {
       return AllKeywords.SingleOrDefault(x => x.Id == id);
     }
 
-    public void NewOrRename(WMain wMain, BaseTreeViewItem item, bool rename) {
+    public void NewOrRename(BaseTreeViewItem item, bool rename) {
       InputDialog inputDialog = new InputDialog {
-        Owner = wMain,
+        Owner = ACore.WMain,
         IconName = "appbar_tag",
         Title = rename ? "Rename Keyword" : "New Keyword",
         Question = rename ? "Enter the new name for the keyword." : "Enter the name of the new keyword.",
@@ -114,7 +113,7 @@ namespace PictureManager.ViewModel {
           keyword.Title = inputDialog.Answer;
           (keyword.Parent as Keywords)?.Sort();
           (keyword.Parent as Keyword)?.Sort();
-          Db.Update(keyword.Data);
+          ACore.Db.Update(keyword.Data);
         } else CreateKeyword(item, inputDialog.Answer);
       }
     }
@@ -124,10 +123,10 @@ namespace PictureManager.ViewModel {
 
       var parent = root as Keyword;
       var dmKeyword = new DataModel.Keyword {
-        Id = Db.GetNextIdFor<DataModel.Keyword>(),
+        Id = ACore.Db.GetNextIdFor<DataModel.Keyword>(),
         Name = parent == null ? name : $"{parent.FullPath}/{name}"
       };
-      Db.Insert(dmKeyword);
+      ACore.Db.Insert(dmKeyword);
 
       var vmKeyword = new Keyword(dmKeyword) {Parent = root};
       AllKeywords.Add(vmKeyword);
@@ -140,12 +139,12 @@ namespace PictureManager.ViewModel {
 
     public void DeleteKeyword(Keyword keyword) {
       //TODO: SubmitChanges can submit other not commited changes as well!!
-      foreach (var mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
-        Db.DeleteOnSubmit(mik);
+      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
+        ACore.Db.DeleteOnSubmit(mik);
       }
 
-      Db.DeleteOnSubmit(keyword.Data);
-      Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(keyword.Data);
+      ACore.Db.SubmitChanges();
       AllKeywords.Remove(keyword);
 
       var items = keyword.Parent == null ? Items : keyword.Parent.Items;

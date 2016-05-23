@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
@@ -21,9 +20,9 @@ namespace PictureManager.ViewModel {
     public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath { get; set; }
 
-    public void Rename(AppCore aCore, string newName) {
+    public void Rename(string newName) {
       if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
-      if (!aCore.FileOperation(AppCore.FileOperations.Move, FullPath, ((Folder) Parent).FullPath, newName)) return;
+      if (!ACore.FileOperation(FileOperations.Move, FullPath, ((Folder) Parent).FullPath, newName)) return;
       UpdateFullPath(FullPath, Path.Combine(((Folder) Parent).FullPath, newName));
       Title = newName;
     }
@@ -35,9 +34,8 @@ namespace PictureManager.ViewModel {
       }
       Items.Clear();
 
-      var aCore = (AppCore)Application.Current.Properties[nameof(AppProps.AppCore)];
       foreach (string dir in Directory.GetDirectories(FullPath).OrderBy(x => x)) {
-        if (!aCore.CanViewerSeeThisDirectory(dir)) continue;
+        if (!ACore.CanViewerSeeThisDirectory(dir)) continue;
         DirectoryInfo di = new DirectoryInfo(dir);
         Folder item = new Folder {
           Title = di.Name,
@@ -71,8 +69,7 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
       var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
-      var db = (DataModel.PmDataContext) Application.Current.Properties[nameof(AppProps.Db)];
-      db.InsertDirecotryInToDb(newFullPath);
+      ACore.Db.InsertDirecotryInToDb(newFullPath);
 
       var newFolder = new Folder {
         Title = folderName,
@@ -88,8 +85,8 @@ namespace PictureManager.ViewModel {
       return newFolder;
     }
 
-    public void Delete(AppCore aCore, bool recycle) {
-      if (!aCore.FileOperation(AppCore.FileOperations.Delete, FullPath, recycle)) return;
+    public void Delete(bool recycle) {
+      if (!ACore.FileOperation(FileOperations.Delete, FullPath, recycle)) return;
       Parent.Items.Remove(this);
     }
 
@@ -98,9 +95,9 @@ namespace PictureManager.ViewModel {
       return !incorectChars.Any(name.Contains);
     }
 
-    public void NewOrRename(WMain wMain, bool rename) {
+    public void NewOrRename(bool rename) {
       InputDialog inputDialog = new InputDialog {
-        Owner = wMain,
+        Owner = ACore.WMain,
         IconName = "appbar_folder",
         Title = rename ? "Rename Folder" : "New Folder",
         Question = rename ? "Enter the new name for the folder." : "Enter the name of the new folder.",
@@ -124,7 +121,7 @@ namespace PictureManager.ViewModel {
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
-        if (rename) Rename(wMain.ACore, inputDialog.Answer);
+        if (rename) Rename(inputDialog.Answer);
         else New(inputDialog.Answer);
       }
     }

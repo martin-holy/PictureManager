@@ -8,8 +8,6 @@ using PictureManager.Properties;
 namespace PictureManager.ViewModel {
   public class FolderKeywords: BaseTreeViewItem {
     public List<FolderKeyword> AllFolderKeywords;
-    public DataModel.PmDataContext Db;
-    public AppCore ACore;
 
     public FolderKeywords() {
       AllFolderKeywords = new List<FolderKeyword>();
@@ -21,7 +19,7 @@ namespace PictureManager.ViewModel {
       Items.Clear();
       AllFolderKeywords.Clear();
       Dictionary<int, string> paths = new Dictionary<int, string>();
-      foreach (var dir in Db.Directories.OrderBy(x => x.Path)) {
+      foreach (var dir in ACore.Db.Directories.OrderBy(x => x.Path)) {
         if (!Directory.Exists(dir.Path)) continue;
         if (!ACore.CanViewerSeeThisDirectory(dir.Path)) continue;
         var path = GetFolderKeywordKeyPath(dir.Path);

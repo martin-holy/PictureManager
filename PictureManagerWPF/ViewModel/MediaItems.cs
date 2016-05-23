@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using System.Windows;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.ViewModel {
@@ -11,12 +11,10 @@ namespace PictureManager.ViewModel {
     public ObservableCollection<BaseMediaItem> Items;
     public BaseMediaItem Current;
     public AppCore ACore;
-    public WebBrowser WbThumbs => ACore.WbThumbs;
-    public DataModel.PmDataContext Db => ACore.Db;
     public string[] SuportedExts = { ".jpg", ".jpeg" };
 
-    public MediaItems(AppCore aCore) {
-      ACore = aCore;
+    public MediaItems() {
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       Items = new ObservableCollection<BaseMediaItem>();
     }
 
@@ -88,8 +86,8 @@ namespace PictureManager.ViewModel {
 
     public void LoadByFolder(string path) {
       if (!Directory.Exists(path)) return;
-      var maxDirId = Db.GetMaxIdFor<DataModel.Directory>();
-      var dirId = Db.InsertDirecotryInToDb(path);
+      var maxDirId = ACore.Db.GetMaxIdFor<DataModel.Directory>();
+      var dirId = ACore.Db.InsertDirecotryInToDb(path);
       if (dirId > maxDirId) ACore.FolderKeywords.Load();
       FolderKeyword fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(path);
 
@@ -97,7 +95,7 @@ namespace PictureManager.ViewModel {
       Items.Clear();
 
       var dbItems = new List<DataModel.MediaItem>();
-      var dbItemsByDir = Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
+      var dbItemsByDir = ACore.Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Rating>().ToArray();
 
       foreach (var file in Directory.EnumerateFiles(path)
@@ -117,7 +115,7 @@ namespace PictureManager.ViewModel {
           dbItems.Add(item);
         }
 
-        var pic = new Picture(filePath, Db, Items.Count, WbThumbs, item) {
+        var pic = new Picture(filePath, Items.Count, item) {
           DirId = dirId,
           FolderKeyword = fk
         };
@@ -125,11 +123,11 @@ namespace PictureManager.ViewModel {
       }
 
       //Load People and Keywords for thous that are already in DB
-      var mips = (from mip in Db.MediaItemPeople
+      var mips = (from mip in ACore.Db.MediaItemPeople
                   join mi in dbItems on mip.MediaItemId equals mi.Id
                   select mip).ToArray();
 
-      var miks = (from mik in Db.MediaItemKeywords
+      var miks = (from mik in ACore.Db.MediaItemKeywords
                   join mi in dbItems on mik.MediaItemId equals mi.Id
                   select mik).ToArray();
 
@@ -158,22 +156,22 @@ namespace PictureManager.ViewModel {
         case nameof(Keyword): {
             var keyword = (Keyword)tag;
             if (recursive) {
-              items = (from k in Db.Keywords.Where(x => x.Name.StartsWith(keyword.FullPath))
-                       join mik in Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
+              items = (from k in ACore.Db.Keywords.Where(x => x.Name.StartsWith(keyword.FullPath))
+                       join mik in ACore.Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
                        from k2 in keywords
-                       join mi in Db.MediaItems on k2.MediaItemId equals mi.Id
+                       join mi in ACore.Db.MediaItems on k2.MediaItemId equals mi.Id
                        select mi).ToList().Distinct().ToArray();
             } else {
-              items = (from mi in Db.MediaItems
-                       join mik in Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
+              items = (from mi in ACore.Db.MediaItems
+                       join mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id) on mi.Id equals mik.MediaItemId
                        select mi).ToArray();
             }
             break;
           }
         case nameof(Person): {
             var person = (Person)tag;
-            items = (from mi in Db.MediaItems
-                     join mip in Db.MediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
+            items = (from mi in ACore.Db.MediaItems
+                     join mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Id) on mi.Id equals mip.MediaItemId
                      select mi).ToArray();
             break;
           }
@@ -181,16 +179,16 @@ namespace PictureManager.ViewModel {
             var folderKeyword = (FolderKeyword)tag;
             if (recursive) {
               var itemss = new List<DataModel.MediaItem>();
-              foreach (var fkDir in Db.Directories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
-                foreach (var dir in Db.Directories.Where(x => x.Path.StartsWith(fkDir.Path))) {
-                  foreach (var mi in Db.MediaItems.Where(x => x.DirectoryId == dir.Id)) {
+              foreach (var fkDir in ACore.Db.Directories.Where(x => folderKeyword.FolderIdList.Contains(x.Id))) {
+                foreach (var dir in ACore.Db.Directories.Where(x => x.Path.StartsWith(fkDir.Path))) {
+                  foreach (var mi in ACore.Db.MediaItems.Where(x => x.DirectoryId == dir.Id)) {
                     itemss.Add(mi);
                   }
                 }
               }
               items = itemss.OrderBy(x => x.FileName).ToArray();
             } else {
-              items = Db.MediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
+              items = ACore.Db.MediaItems.Where(x => folderKeyword.FolderIdList.Contains(x.DirectoryId)).ToArray();
             }
             break;
           }
@@ -201,16 +199,16 @@ namespace PictureManager.ViewModel {
         if (chosenRatings.Any())
           items = items.Where(i => chosenRatings.Any(x => x.Value.Equals(i.Rating))).ToArray();
 
-        var allDirs = (from d in Db.Directories
+        var allDirs = (from d in ACore.Db.Directories
                        join mi in items on d.Id equals mi.DirectoryId
                        select d).Distinct().ToArray();
         var dirs = allDirs.Where(dir => Directory.Exists(dir.Path)).ToDictionary(dir => dir.Id);
 
-        var mips = (from mip in Db.MediaItemPeople
+        var mips = (from mip in ACore.Db.MediaItemPeople
                     join mi in items on mip.MediaItemId equals mi.Id
                     select mip).ToArray();
 
-        var miks = (from mik in Db.MediaItemKeywords
+        var miks = (from mik in ACore.Db.MediaItemKeywords
                     join mi in items on mik.MediaItemId equals mi.Id
                     select mik).ToArray();
 
@@ -222,7 +220,7 @@ namespace PictureManager.ViewModel {
           //Filter by Viewer
           if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
-          Picture pic = new Picture(filePath, Db, Items.Count, WbThumbs, item);
+          Picture pic = new Picture(filePath, Items.Count, item);
           //Load People
           foreach (var mip in mips.Where(x => x.MediaItemId == item.Id)) {
             pic.People.Add(ACore.People.GetPerson(mip.PersonId));
@@ -247,7 +245,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void ScrollTo(int index) {
-      WbThumbs.Document?.GetElementById(index.ToString())?.ScrollIntoView(true);
+      ACore.WbThumbs.Document?.GetElementById(index.ToString())?.ScrollIntoView(true);
     }
 
     public void LoadSiblings() {
@@ -260,7 +258,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void RemoveSelectedFromWeb() {
-      var doc = WbThumbs.Document;
+      var doc = ACore.WbThumbs.Document;
       if (doc == null) return;
       var items = Items.Where(x => x.IsSelected).ToList();
       if (items.Count == 0) return;
