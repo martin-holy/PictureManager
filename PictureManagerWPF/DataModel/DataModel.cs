@@ -200,6 +200,13 @@ namespace PictureManager.DataModel {
       return true;
     }
 
+    public void RollbackChanges() {
+      _toInsert.Clear();
+      //TODO _toUpdate => projit a nacist z db
+      _toUpdate.Clear();
+      _toDelete.Clear();
+    }
+
     private Dictionary<string, object> GetColumnValues(object o) {
       return TableInfos[o.GetType()].Columns.ToDictionary(c => c.Key, c => c.Value.GetValue(o));
     }
@@ -259,7 +266,6 @@ namespace PictureManager.DataModel {
           QueryUpdate = qUpdate,
           QueryDelete = qDelete,
           Items = data,
-          //MaxId = SQLiteSequences?.SingleOrDefault(s => s.Name == tableName)?.Seq ?? 0
           MaxId = maxId
         });
 

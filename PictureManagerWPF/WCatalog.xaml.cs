@@ -125,7 +125,7 @@ namespace PictureManager {
         }
         //worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100), true);
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
     }

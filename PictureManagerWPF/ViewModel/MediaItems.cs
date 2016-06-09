@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using PictureManager.Properties;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.ViewModel {
@@ -231,6 +232,12 @@ namespace PictureManager.ViewModel {
           }
           //Folder Keyword
           pic.FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath(Path.GetDirectoryName(filePath));
+
+          //TODO docasne, pak odstranit
+          var viewer = ACore.Viewers.Items.Cast<Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+          if (viewer != null && viewer.Title.Equals("Prezentace")) {
+            if (pic.Keywords.Any(x => x.FullPath.StartsWith("#CoSpi/Weed"))) continue;
+          }
 
           Items.Add(pic);
         }

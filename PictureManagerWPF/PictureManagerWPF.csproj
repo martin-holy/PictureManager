@@ -235,6 +235,7 @@
     <Resource Include="Resources\WindowsIcons-license.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="SQL.sql" />
     <Content Include="ThumbnailCreator.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -36,6 +36,7 @@ namespace PictureManager.ViewModel {
           aCore.WMain.StatBarOkCancelPanel.Visibility = _appMode == AppModes.KeywordsEdit || _appMode == AppModes.ViewerEdit
             ? Visibility.Visible
             : Visibility.Collapsed;
+          aCore.UpdateStatusBarInfo();
         }
       }
     }

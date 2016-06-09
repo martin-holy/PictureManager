@@ -27,6 +27,11 @@ namespace PictureManager.ViewModel {
       LoadFolders(false);
     }
 
+    public void ReLoad() {
+      LoadFolders(true);
+      LoadFolders(false);
+    }
+
     private void LoadFolders(bool included) {
       (included ? IncludedFolders : ExcludedFolders).Items.Clear();
       

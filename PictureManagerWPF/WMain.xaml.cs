@@ -156,7 +156,6 @@ namespace PictureManager {
     public void InitUi() {
       ACore.Init();
       ACore.Folders.IsExpanded = true;
-      ACore.Keywords.IsExpanded = true;
       TvFolders.ItemsSource = ACore.FoldersRoot;
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
       TvFilters.ItemsSource = ACore.FiltersRoot;
@@ -1010,6 +1009,9 @@ namespace PictureManager {
           break;
         }
         case AppModes.ViewerEdit:
+          ACore.Db.RollbackChanges();
+          ((ViewModel.Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)])?.ReLoad();
+          ACore.AppInfo.AppMode = AppModes.Browser;
           break;
         default:
           throw new ArgumentOutOfRangeException();

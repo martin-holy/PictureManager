@@ -114,7 +114,11 @@ namespace PictureManager {
     }
 
     public void UpdateStatusBarInfo() {
-      AppInfo.ViewBaseInfo = $"{MediaItems.Items.Count} object(s) / {MediaItems.Items.Count(x => x.IsSelected)} selected";
+      var flag = AppInfo.AppMode == AppModes.KeywordsEdit;
+      var iTotal = MediaItems.Items.Count;
+      var iSelected = MediaItems.Items.Count(x => x.IsSelected);
+      var iModifed = flag ? MediaItems.Items.Count(p => p.IsModifed) : 0;
+      AppInfo.ViewBaseInfo = $"{iTotal} object(s) / {iSelected} selected{(flag ? $" / {iModifed} modifed" : string.Empty)}";
       AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
     }
 
@@ -142,6 +146,7 @@ namespace PictureManager {
             MediaItems.EditMetadata(item);
 
             MarkUsedKeywordsAndPeople();
+            UpdateStatusBarInfo();
           } else {
             //not KeywordsEditMode
             var baseTagItem = (ViewModel.BaseTreeViewTagItem) item;
@@ -448,7 +453,7 @@ namespace PictureManager {
               var destDirId = dirs.SingleOrDefault(x => x.Path.Equals(dirPath))?.Id;
               if (destDirId == null) {
                 destDirId = Db.GetNextIdFor<DataModel.Directory>();
-                Db.InsertOnSubmit(new DataModel.Directory {Id = (int) destDirId, Path = dirPath});
+                Db.Insert(new DataModel.Directory {Id = (int) destDirId, Path = dirPath});
               }
 
               #region Copy files

@@ -131,8 +131,13 @@ namespace PictureManager.ViewModel {
       var vmKeyword = new Keyword(dmKeyword) {Parent = root};
       AllKeywords.Add(vmKeyword);
 
-      Keyword keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
-      root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
+      try {
+        Keyword keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+        root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
+      }
+      catch (Exception ex) {
+        //BUG This type of CollectionView does not support changes to its SourceCollection from a thread different from the Dispatcher thread.
+      }
 
       return vmKeyword;
     }
