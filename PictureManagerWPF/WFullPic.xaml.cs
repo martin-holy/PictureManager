@@ -116,5 +116,13 @@ namespace PictureManager {
         }
       }
     }
+
+    private void MetroWindow_Activated(object sender, System.EventArgs e) {
+      Topmost = true;
+    }
+
+    private void MetroWindow_Deactivated(object sender, System.EventArgs e) {
+      Topmost = false;
+    }
   }
 }

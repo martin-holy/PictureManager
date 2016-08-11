@@ -306,8 +306,7 @@ namespace PictureManager.DataModel {
     }
 
     public int? GetDirectoryIdByPath(string path) {
-      var dir = Directories.SingleOrDefault(x => x.Path.Equals(path));
-      return dir?.Id;
+      return Directories.SingleOrDefault(x => x.Path.Equals(path))?.Id;
     }
 
     public int InsertDirecotryInToDb(string path) {

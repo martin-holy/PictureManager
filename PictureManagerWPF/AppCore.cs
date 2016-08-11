@@ -450,11 +450,7 @@ namespace PictureManager {
 
               //get destination directory or create it if doesn't exists
               var dirPath = Path.GetDirectoryName(item.Value);
-              var destDirId = dirs.SingleOrDefault(x => x.Path.Equals(dirPath))?.Id;
-              if (destDirId == null) {
-                destDirId = Db.GetNextIdFor<DataModel.Directory>();
-                Db.Insert(new DataModel.Directory {Id = (int) destDirId, Path = dirPath});
-              }
+              var destDirId = Db.InsertDirecotryInToDb(dirPath);
 
               #region Copy files
 
@@ -464,7 +460,7 @@ namespace PictureManager {
 
                 Db.InsertOnSubmit(new DataModel.MediaItem {
                   Id = destPicId,
-                  DirectoryId = (int) destDirId,
+                  DirectoryId = destDirId,
                   FileName = Path.GetFileName(item.Value),
                   Rating = srcPic.Rating,
                   Comment = srcPic.Comment,
@@ -499,7 +495,7 @@ namespace PictureManager {
               #region Move files
               if (mode == FileOperations.Move) {
                 //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
-                srcPic.DirectoryId = (int) destDirId;
+                srcPic.DirectoryId = destDirId;
                 srcPic.FileName = Path.GetFileName(item.Value);
                 Db.UpdateOnSubmit(srcPic);
 
@@ -530,8 +526,9 @@ namespace PictureManager {
 
                 //move thumbnails
                 var destPath = Path.GetDirectoryName(item.Value);
-                fo.MoveItem(item.Key.Replace(":\\", cachePath), destPath.Replace(":\\", cachePath),
-                  item.Value.Substring(destPath.Length + 1));
+                if (destPath != null)
+                  fo.MoveItem(item.Key.Replace(":\\", cachePath), destPath.Replace(":\\", cachePath),
+                    item.Value.Substring(destPath.Length + 1));
               }
               #endregion
             }
