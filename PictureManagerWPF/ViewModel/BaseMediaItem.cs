@@ -123,6 +123,7 @@ namespace PictureManager.ViewModel {
       Orientation = Data.Orientation;
       LoadKeywordsFromDb();
       LoadPeopleFromDb();
+      IsModifed = false;
     }
 
     public void SaveMediaItemInToDb(bool update, bool isNew) {

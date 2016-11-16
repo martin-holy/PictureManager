@@ -471,6 +471,9 @@ namespace PictureManager {
           TabFolders.IsSelected = true;
         }
         ACore.Db.SubmitChanges();
+        foreach (var mi in ACore.MediaItems.Items.Where(mi => mi.IsModifed)) {
+          mi.IsModifed = false;
+        }
         ACore.AppInfo.AppMode = AppModes.Browser;
       };
 
@@ -609,8 +612,12 @@ namespace PictureManager {
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
 
-
-
+      /*foreach (var item in ACore.MediaItems.Items) {
+        var destFilePath = item.FilePath.Replace(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2016\", @"K:\Fotky\Pongo\");
+        Directory.CreateDirectory(Path.GetDirectoryName(destFilePath));
+        File.Copy(item.FilePath, destFilePath);
+      }
+      MessageBox.Show("Done");*/
 
       //var dir = new DataModel.Directory {Path = "ds"};
 
