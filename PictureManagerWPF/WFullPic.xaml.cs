@@ -62,7 +62,7 @@ namespace PictureManager {
       }
 
       WbFullPic.Document?.InvokeScript("SetPicture", new object[] {filePath, o});
-      WbFullPic.Document?.InvokeScript("SetInfo", new object[] {current?.Rating, current?.CommentEscaped});
+      WbFullPic.Document?.InvokeScript("SetInfo", new object[] {current?.GetKeywordsAsString(true)});
     }
 
     private void SwitchToBrowser() {
@@ -130,7 +130,7 @@ namespace PictureManager {
               mi.IsModifed = true;
               mi.Rating = (int) e.Key - 34;
               mi.WbUpdateInfo();
-              WbFullPic.Document?.InvokeScript("SetInfo", new object[] {mi.Rating, mi.CommentEscaped});
+              WbFullPic.Document?.InvokeScript("SetInfo", new object[] {mi.GetKeywordsAsString(true)});
             }
             break;
           }

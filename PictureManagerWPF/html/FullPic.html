@@ -141,10 +141,10 @@
         pic.src = src;
       }
 
-      function SetInfo(rating, comment) {
+      function SetInfo(infoText) {
         var info = document.getElementById("info");
         if (info === undefined || info === null) return;
-        info.innerHTML = rating + " " + comment;
+        info.innerHTML = infoText;
       }
     </script>
 
@@ -178,12 +178,15 @@
         position: absolute;
         color: white;
         font-size: 18px;
+        z-index: 1;
+      }
+
+      #info div {
         margin: 2px;
         padding: 2px;
         background-color: rgba(0, 0, 0, 0.4);
         display: inline-block;
         border: 1px solid black;
-        z-index: 1;
       }
     </style>
   </head>

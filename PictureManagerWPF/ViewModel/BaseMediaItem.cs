@@ -64,7 +64,7 @@ namespace PictureManager.ViewModel {
       Data = data;
     }
 
-    public string GetKeywordsAsString() {
+    public string GetKeywordsAsString(bool withComment) {
       StringBuilder sb = new StringBuilder();
 
       foreach (Person p in People.OrderBy(x => x.Title)) {
@@ -91,7 +91,9 @@ namespace PictureManager.ViewModel {
       sb.Append("</div>");
 
       if (Comment != string.Empty) {
-        sb.Append("<div>C</div>");
+        sb.Append("<div>");
+        sb.Append(withComment ? CommentEscaped : "C");
+        sb.Append("</div>");
       }
 
       return sb.ToString();
@@ -362,7 +364,7 @@ namespace PictureManager.ViewModel {
       if (thumb == null) return;
       foreach (HtmlElement element in thumb.Children) {
         if (!element.GetAttribute("className").Equals("keywords")) continue;
-        element.InnerHtml = GetKeywordsAsString();
+        element.InnerHtml = GetKeywordsAsString(false);
         break;
       }
     }

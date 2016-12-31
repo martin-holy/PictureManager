@@ -291,7 +291,7 @@ namespace PictureManager {
         if (thumb == null || keywords == null || img == null) return;
 
         keywords.SetAttribute("className", "keywords");
-        keywords.InnerHtml = mi.GetKeywordsAsString();
+        keywords.InnerHtml = mi.GetKeywordsAsString(false);
 
         img.SetAttribute("src", mi.FilePathCache);
 
