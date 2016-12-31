@@ -73,30 +73,30 @@ namespace PictureManager {
       switch (e.Key) {
         case Key.Right:
         case Key.PageDown: {
-            if (ACore.MediaItems.CurrentItemMove(true))
-              SetCurrentImage();
-            break;
-          }
+          if (ACore.MediaItems.CurrentItemMove(true))
+            SetCurrentImage();
+          break;
+        }
         case Key.Left:
         case Key.PageUp: {
-            if (ACore.MediaItems.CurrentItemMove(false))
-              SetCurrentImage();
-            break;
-          }
+          if (ACore.MediaItems.CurrentItemMove(false))
+            SetCurrentImage();
+          break;
+        }
         case Key.Escape: {
-            if (ACore.ViewerOnly) {
-              Application.Current.Shutdown();
-            } else {
-              SwitchToBrowser();
-              Hide();
-            }
-            break;
-          }
-        case Key.Enter: {
+          if (ACore.ViewerOnly) {
+            Application.Current.Shutdown();
+          } else {
             SwitchToBrowser();
             Hide();
-            break;
           }
+          break;
+        }
+        case Key.Enter: {
+          SwitchToBrowser();
+          Hide();
+          break;
+        }
         case Key.Delete: {
           if (ACore.MediaItems.Items.Count(x => x.IsSelected) != 1) return;
           var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -113,6 +113,24 @@ namespace PictureManager {
               SetCurrentImage();
             }
           break;
+        }
+      }
+
+      if (ACore.KeywordsEditMode) {
+        switch (e.Key) {
+          case Key.D0:
+          case Key.D1:
+          case Key.D2:
+          case Key.D3:
+          case Key.D4:
+          case Key.D5: {
+            if (ACore.MediaItems.Current != null) {
+              ACore.MediaItems.Current.IsModifed = true;
+              ACore.MediaItems.Current.Rating = (int) e.Key - 34;
+              ACore.MediaItems.Current.WbUpdateInfo();
+            }
+            break;
+          }
         }
       }
     }
