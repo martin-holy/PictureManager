@@ -62,6 +62,7 @@ namespace PictureManager {
       }
 
       WbFullPic.Document?.InvokeScript("SetPicture", new object[] {filePath, o});
+      WbFullPic.Document?.InvokeScript("SetInfo", new object[] {current?.Rating, current?.CommentEscaped});
     }
 
     private void SwitchToBrowser() {
@@ -124,10 +125,12 @@ namespace PictureManager {
           case Key.D3:
           case Key.D4:
           case Key.D5: {
-            if (ACore.MediaItems.Current != null) {
-              ACore.MediaItems.Current.IsModifed = true;
-              ACore.MediaItems.Current.Rating = (int) e.Key - 34;
-              ACore.MediaItems.Current.WbUpdateInfo();
+            var mi = ACore.MediaItems.Current;
+            if (mi != null) {
+              mi.IsModifed = true;
+              mi.Rating = (int) e.Key - 34;
+              mi.WbUpdateInfo();
+              WbFullPic.Document?.InvokeScript("SetInfo", new object[] {mi.Rating, mi.CommentEscaped});
             }
             break;
           }

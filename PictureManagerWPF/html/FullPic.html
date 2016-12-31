@@ -140,6 +140,12 @@
         pic.style.transform = "rotate(" + orientation + "deg)";
         pic.src = src;
       }
+
+      function SetInfo(rating, comment) {
+        var info = document.getElementById("info");
+        if (info === undefined || info === null) return;
+        info.innerHTML = rating + " " + comment;
+      }
     </script>
 
     <style>
@@ -167,9 +173,22 @@
         background-size: contain;
         background-repeat: no-repeat;
       }
+
+      #info {
+        position: absolute;
+        color: white;
+        font-size: 18px;
+        margin: 2px;
+        padding: 2px;
+        background-color: rgba(0, 0, 0, 0.4);
+        display: inline-block;
+        border: 1px solid black;
+        z-index: 1;
+      }
     </style>
   </head>
   <body OnMouseWheel="Body_OnMouseWheel(event);" OnResize="FitPicture();">
+    <div id="info"></div>
     <div id="content">
       <div id="fullPicBox">
         <img id="fullPic" draggable="false"
