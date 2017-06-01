@@ -90,14 +90,14 @@ namespace PictureManager {
     }
 
     public void Init() {
-      People = new ViewModel.People();
-      Keywords = new ViewModel.Keywords();
+      People = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};
+      Keywords = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
       FolderKeywords = new ViewModel.FolderKeywords();
       Folders = new ViewModel.Folders();
       FavoriteFolders = new ViewModel.FavoriteFolders();
       Ratings = new ViewModel.Ratings();
       Filters = new ViewModel.Filters();
-      Viewers = new ViewModel.Viewers();
+      Viewers = new ViewModel.Viewers {CanHaveGroups = false, CanModifyItems = true};
 
       People.Load();
       Keywords.Load();
@@ -123,7 +123,7 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.PeopleGroup) return;
+      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {
@@ -250,9 +250,14 @@ namespace PictureManager {
         }
       }
 
-      foreach (var pg in People.Items.Where(x => x is ViewModel.PeopleGroup).Cast<ViewModel.PeopleGroup>()) {
+      foreach (var pg in People.Items.Where(x => x is ViewModel.CategoryGroup).Cast<ViewModel.CategoryGroup>()) {
         pg.PicCount = pg.Items.Cast<ViewModel.Person>().Sum(x => x.PicCount);
         pg.IsMarked = pg.PicCount > 0;
+      }
+
+      foreach (var kg in Keywords.Items.Where(x => x is ViewModel.CategoryGroup).Cast<ViewModel.CategoryGroup>()) {
+        kg.PicCount = kg.Items.Cast<ViewModel.Keyword>().Sum(x => x.PicCount);
+        kg.IsMarked = kg.PicCount > 0;
       }
     }
 

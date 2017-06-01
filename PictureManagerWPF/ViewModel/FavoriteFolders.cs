@@ -3,9 +3,9 @@ using System.Linq;
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModel {
-  public class FavoriteFolders : BaseTreeViewItem {
+  public class FavoriteFolders : BaseCategoryItem {
 
-    public FavoriteFolders() {
+    public FavoriteFolders() : base(Categories.FavoriteFolders) {
       Title = "Favorites";
       IconName = "appbar_folder_star";
     }

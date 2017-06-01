@@ -5,11 +5,11 @@ using System.Threading;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
-  public class Keywords: BaseTreeViewItem {
+  public class Keywords: BaseCategoryItem {
     public List<Keyword> AllKeywords; 
     private static readonly Mutex Mut = new Mutex();
 
-    public Keywords() {
+    public Keywords() : base(Categories.Keywords) {
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
       IconName = "appbar_tag";
@@ -22,6 +22,8 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
       AllKeywords.Clear();
+
+      LoadGroups();
 
       foreach (Keyword newItem in ACore.Db.Keywords.OrderBy(x => x.Name).Select(x => new Keyword(x))) {
         var lioSlash = newItem.FullPath.LastIndexOf('/');
@@ -44,10 +46,15 @@ namespace PictureManager.ViewModel {
     }
 
     public void Sort() {
+      //BUG: asi bug, takhle to asi srovnavat nejde, kdyz dam move tak se prepisou indexy a tak "i" bude odkazovat na neco jineho
       var sorted = Items.Cast<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
       for (var i = 0; i < Items.Count; i++) {
         Items.Move(Items.IndexOf(Items[i]), sorted.IndexOf((Keyword)Items[i]));
       }
+    }
+
+    public Keyword GetKeyword(int id) {
+      return AllKeywords.SingleOrDefault(x => x.Id == id);
     }
 
     public Keyword GetKeywordByFullPath(string fullPath, bool create) {
@@ -71,35 +78,33 @@ namespace PictureManager.ViewModel {
       return root as Keyword;
     }
 
-    public Keyword GetKeyword(int id) {
-      return AllKeywords.SingleOrDefault(x => x.Id == id);
+    public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
+      if (root == null) return null;
+
+      var parent = root as Keyword;
+      var dmKeyword = new DataModel.Keyword {
+        Id = ACore.Db.GetNextIdFor<DataModel.Keyword>(),
+        Name = parent == null ? name : $"{parent.FullPath}/{name}"
+      };
+      ACore.Db.Insert(dmKeyword);
+
+      InsertCategoryGroupItem(root, dmKeyword.Id);
+
+      var vmKeyword = new Keyword(dmKeyword) { Parent = root };
+      AllKeywords.Add(vmKeyword);
+
+      try {
+        Keyword keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+        root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
+      } catch (Exception ex) {
+        //BUG This type of CollectionView does not support changes to its SourceCollection from a thread different from the Dispatcher thread.
+      }
+
+      return vmKeyword;
     }
 
-    public void NewOrRename(BaseTreeViewItem item, bool rename) {
-      InputDialog inputDialog = new InputDialog {
-        Owner = ACore.WMain,
-        IconName = "appbar_tag",
-        Title = rename ? "Rename Keyword" : "New Keyword",
-        Question = rename ? "Enter the new name for the keyword." : "Enter the name of the new keyword.",
-        Answer = rename ? ((Keyword) item).Title : string.Empty
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.Answer, ((Keyword) item).Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        var root = rename ? item.Parent : item;
-        if (root.Items.Cast<Keyword>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
-          inputDialog.ShowErrorMessage("Keyword name already exists!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
+      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_tag", "Keyword", rename);
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
@@ -118,42 +123,26 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
-      if (root == null) return null;
-
-      var parent = root as Keyword;
-      var dmKeyword = new DataModel.Keyword {
-        Id = ACore.Db.GetNextIdFor<DataModel.Keyword>(),
-        Name = parent == null ? name : $"{parent.FullPath}/{name}"
-      };
-      ACore.Db.Insert(dmKeyword);
-
-      var vmKeyword = new Keyword(dmKeyword) {Parent = root};
-      AllKeywords.Add(vmKeyword);
-
-      try {
-        Keyword keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
-        root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
-      }
-      catch (Exception ex) {
-        //BUG This type of CollectionView does not support changes to its SourceCollection from a thread different from the Dispatcher thread.
-      }
-
-      return vmKeyword;
-    }
-
-    public void DeleteKeyword(Keyword keyword) {
+    public override void ItemDelete(BaseTreeViewTagItem item) {
       //TODO: SubmitChanges can submit other not commited changes as well!!
+      var keyword = item as Keyword;
+      if (keyword == null) return;
+
       foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
         ACore.Db.DeleteOnSubmit(mik);
       }
 
+      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
+            x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+      if (cgi != null) {
+        ACore.Db.DeleteOnSubmit(cgi);
+      }
+
       ACore.Db.DeleteOnSubmit(keyword.Data);
       ACore.Db.SubmitChanges();
-      AllKeywords.Remove(keyword);
 
-      var items = keyword.Parent == null ? Items : keyword.Parent.Items;
-      items.Remove(keyword);
+      item.Parent.Items.Remove(keyword);
+      AllKeywords.Remove(keyword); 
     }
   }
 }

@@ -4,9 +4,9 @@ using System.Windows;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
-  public class Viewers : BaseTreeViewItem {
+  public class Viewers : BaseCategoryItem {
 
-    public Viewers() {
+    public Viewers() : base(Categories.Viewers) {
       Title = "Viewers";
       IconName = "appbar_eye";
     }
@@ -21,62 +21,46 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
     }
 
-    public void NewOrRenameViewer(Viewer viewer, bool rename) {
-      InputDialog inputDialog = new InputDialog {
-        Owner = ACore.WMain,
-        IconName = "appbar_eye",
-        Title = rename ? "Rename Viewer" : "New Viewer",
-        Question = rename ? "Enter the new name of the viewer." : "Enter the name of the new viewer.",
-        Answer = rename ? viewer.Title : string.Empty
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.Answer, viewer.Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        if (ACore.Db.Viewers.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
-          inputDialog.ShowErrorMessage("Viewer's name already exists!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          viewer.Title = inputDialog.Answer;
-          (viewer.Data).Name = inputDialog.Answer;
-          ACore.Db.UpdateOnSubmit(viewer.Data);
-          ACore.Db.SubmitChanges();
-          SetInPalce(viewer, false);
-        } else CreateViewer(inputDialog.Answer);
-      }
-    }
-
-    public void SetInPalce(Viewer viewer, bool isNew) {
-      var idx = ACore.Db.Viewers.OrderBy(x => x.Name).ToList().IndexOf(viewer.Data);
-      if (isNew)
-        Items.Insert(idx, viewer);
-      else
-        Items.Move(Items.IndexOf(viewer), idx);
-    }
-
     public Viewer CreateViewer(string name) {
       var dmViewer = new DataModel.Viewer {
         Id = ACore.Db.GetNextIdFor<DataModel.Viewer>(),
         Name = name
       };
 
-      ACore.Db.InsertOnSubmit(dmViewer);
-      ACore.Db.SubmitChanges();
+      ACore.Db.Insert(dmViewer);
 
       var vmViewer = new Viewer(dmViewer);
-      SetInPalce(vmViewer, true);
+      ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
       return vmViewer;
+    }
+
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
+      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_eye", "Viewer", rename);
+
+      if (inputDialog.ShowDialog() ?? true) {
+        if (rename) {
+          var viewer = (Viewer)item;
+          viewer.Title = inputDialog.Answer;
+          viewer.Data.Name = inputDialog.Answer;
+          ACore.Db.Update(viewer.Data);
+          ACore.Viewers.ItemSetInPlace(viewer.Parent, false, viewer);
+        } else CreateViewer(inputDialog.Answer);
+      }
+    }
+
+    public override void ItemDelete(BaseTreeViewTagItem item) {
+      //TODO: SubmitChanges can submit other not commited changes as well!!
+      var viewer = item as Viewer;
+      if (viewer == null) return;
+
+      foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Id)) {
+        ACore.Db.DeleteOnSubmit(v);
+      }
+
+      ACore.Db.DeleteOnSubmit(viewer.Data);
+      ACore.Db.SubmitChanges();
+
+      item.Parent.Items.Remove(viewer);
     }
 
     public void AddFolder(bool included, string path) {

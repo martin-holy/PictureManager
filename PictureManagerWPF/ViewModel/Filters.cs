@@ -1,7 +1,7 @@
 ﻿namespace PictureManager.ViewModel {
-  public class Filters: BaseTreeViewItem {
+  public class Filters: BaseCategoryItem {
 
-    public Filters() {
+    public Filters() : base (Categories.Filters) {
       Title = "Filters";
       IconName = "appbar_filter";
     }

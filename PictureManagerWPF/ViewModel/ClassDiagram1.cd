@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="PictureManager.ViewModel.AppInfo">
-    <Position X="8" Y="1.75" Width="2" />
+    <Position X="3.25" Y="1.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAEAAAAAAAAAAIAAAIgAAoAAAAAAAAAAIAAAgAAA=</HashCode>
+      <HashCode>AABAAEAAAAAAAAAAIAAAIgAApAAAAAAAAAAIAAAgAAA=</HashCode>
       <FileName>ViewModel\AppInfo.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -11,7 +11,7 @@
   <Class Name="PictureManager.ViewModel.BaseMediaItem">
     <Position X="34.5" Y="0.75" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>BACDgAAEAYAkEAABOAAAAQCCgAAAABEBCgFgAAACgBA=</HashCode>
+      <HashCode>BACDgAAEAYAEEAABKAAAEQCCgAAAABEBAgFgBCACgBg=</HashCode>
       <FileName>ViewModel\BaseMediaItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -19,7 +19,7 @@
   <Class Name="PictureManager.ViewModel.BaseTreeViewItem">
     <Position X="19.25" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAQAAAIAAEEIAIAAAgACAgQAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>CAAAAQAAAIAgGEIAIAAAwBiQgQAAAAAAAAABAAAAACg=</HashCode>
       <FileName>ViewModel\BaseTreeViewItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -32,94 +32,87 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FavoriteFolder">
-    <Position X="6.75" Y="6.75" Width="1.5" />
+    <Position X="19" Y="10.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FavoriteFolder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FavoriteFolders">
-    <Position X="5" Y="6.75" Width="1.5" />
+    <Position X="2" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAIAgAAAAAAACAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAIAgAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FavoriteFolders.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Filter">
     <Position X="29.5" Y="6.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAIAQAAACAACAAAcAEAQAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAIAQAAACAAAAAAYAEAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Filter.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Filters">
-    <Position X="15.75" Y="6.75" Width="1.25" />
+    <Position X="8.25" Y="6" Width="1.25" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Filters.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Folder">
-    <Position X="2.75" Y="6.75" Width="2" />
+    <Position X="16.75" Y="10.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>CAAAAQACAQAACCAAAAAAQCAAAAEEAAAAAAAAAAABoAA=</HashCode>
+      <HashCode>CAAAAQACAQAAACAAAAAAACAAAAEEAAAAAAAAAAABoAA=</HashCode>
       <FileName>ViewModel\Folder.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FolderKeyword">
     <Position X="26" Y="6.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAIAACAAAAAAAQAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <HashCode>CAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FolderKeyword.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FolderKeywords">
-    <Position X="8.5" Y="6.75" Width="2.25" />
+    <Position X="9.75" Y="6" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACgAAEIAQAAEAEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAgAAAIAQAAEAEAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FolderKeywords.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Folders">
-    <Position X="0.5" Y="6.75" Width="2" />
+    <Position X="3.75" Y="6" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAACAAAAAAAABAAAgAAAAAAAAAAAAAAAIA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAAAAIA=</HashCode>
       <FileName>ViewModel\Folders.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Keyword">
     <Position X="31.5" Y="6.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAACAAAAAAAQAAAAAAAABAAAAEAAAAAAAA=</HashCode>
+      <HashCode>CAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAEAAAAAAAA=</HashCode>
       <FileName>ViewModel\Keyword.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Keywords">
-    <Position X="13.5" Y="6.75" Width="2" />
+    <Position X="16.75" Y="6" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAgAACAAAACAAgEAAEAAAQAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAEAgAAAAAAAAAAgABAQAQAQAAAAAAAgAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Keywords.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.MediaItems">
     <Position X="32" Y="0.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAgACQQCAAAEACCQkAAAAAMAAAACAAAAEQAAAg=</HashCode>
+      <HashCode>AAAAAAAgACQQCAAAAACCQkAAAAAMAAAAAAAAAEQAAAg=</HashCode>
       <FileName>ViewModel\MediaItems.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.People">
-    <Position X="11" Y="6.75" Width="2.25" />
+    <Position X="14.25" Y="6" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAFAACACAEIAAAAAAAAAAIAAAAAAAACiAAAQ=</HashCode>
+      <HashCode>AAEAgAAAAAAAAAAAAAAAAQAAAAAQIAAgAAAAAACAAAA=</HashCode>
       <FileName>ViewModel\People.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="PictureManager.ViewModel.PeopleGroup">
-    <Position X="21.5" Y="6.75" Width="2.25" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAACAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\PeopleGroup.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Person">
@@ -144,10 +137,47 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Ratings">
-    <Position X="17.25" Y="6.75" Width="1.75" />
+    <Position X="12.25" Y="6" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAACACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Ratings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.CategoryGroup">
+    <Position X="25.25" Y="1.25" Width="1.5" />
+    <InheritanceLine Type="PictureManager.ViewModel.BaseTreeViewTagItem" FixedToPoint="true">
+      <Path>
+        <Point X="23.25" Y="1.631" />
+        <Point X="23.625" Y="1.631" />
+        <Point X="23.625" Y="0.875" />
+        <Point X="26" Y="0.875" />
+        <Point X="26" Y="1.25" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAACAA=</HashCode>
+      <FileName>ViewModel\CategoryGroup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.BaseCategoryItem">
+    <Position X="16.5" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEQAwABAAAAEBAUAQAABAAAAhAAIAAAAGCAA=</HashCode>
+      <FileName>ViewModel\BaseCategoryItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.Viewer">
+    <Position X="21.75" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAEAAAAAAAAAIBAABAACAAAAAAAACA=</HashCode>
+      <FileName>ViewModel\Viewer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.Viewers">
+    <Position X="6" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAQAAAAAAAAIgAAAABAAAACA=</HashCode>
+      <FileName>ViewModel\Viewers.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

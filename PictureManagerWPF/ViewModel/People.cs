@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
-  public class People : BaseTreeViewItem {
+  public class People : BaseCategoryItem {
     public List<Person> AllPeople; 
     private static readonly Mutex Mut = new Mutex();
 
-    public People() {
+    public People() : base(Categories.People) {
       AllPeople = new List<Person>();
       Title = "People";
       IconName = "appbar_people_multiple";
@@ -22,20 +21,25 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
       AllPeople.Clear();
-      //Add PeopleGroups
-      foreach (var pg in ACore.Db.PeopleGroups.OrderBy(x => x.Name).Select(x => new PeopleGroup(x))) {
-        //Add People to the PeopleGroup
-        foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == pg.Id).OrderBy(x => x.Name).Select(x => new Person(x))) {
-          pg.Items.Add(p);
-          AllPeople.Add(p);
+
+      LoadGroups();
+
+      //Add People in Group
+      foreach (var g in Items.Cast<CategoryGroup>()) {
+        foreach (var person in (from p in ACore.Db.People
+                                join cgi in ACore.Db.CategoryGroupsItems 
+                                on new { pid = p.Id, gid = g.Id } equals new { pid = cgi.ItemId, gid = cgi.CategoryGroupId }
+                                select p).OrderBy(x => x.Name).Select(x => new Person(x) {Parent = g})) {
+          g.Items.Add(person);
+          AllPeople.Add(person);
         }
-        Items.Add(pg);
       }
 
-      //Add People without group
-      foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == null).OrderBy(x => x.Name).Select(x => new Person(x))) {
-        Items.Add(p);
-        AllPeople.Add(p);
+      //Add People without Group
+      foreach (var person in (from p in ACore.Db.People where AllPeople.All(ap => ap.Id != p.Id) select p)
+          .OrderBy(x => x.Name).Select(x => new Person(x))) {
+        Items.Add(person);
+        AllPeople.Add(person);
       }
     }
 
@@ -43,203 +47,71 @@ namespace PictureManager.ViewModel {
       return AllPeople.SingleOrDefault(x => x.Id == id);
     }
 
-    public Person GetPerson(int id, int? peopleGroupId) {
-      if (peopleGroupId != null) {
-        var g = Items.OfType<PeopleGroup>().Single(x => x.Id == peopleGroupId);
-        return g.Items.Cast<Person>().Single(x => x.Id == id);
-      }
-      return Items.OfType<Person>().Single(x => x.Id == id);
-    }
-
     public Person GetPerson(string name, bool create) {
       if (create) Mut.WaitOne();
       var dmPerson = ACore.Db.People.SingleOrDefault(x => x.Name.Equals(name));
       if (dmPerson != null) {
         Mut.ReleaseMutex();
-        return GetPerson(dmPerson.Id, dmPerson.PeopleGroupId);
+        return GetPerson(dmPerson.Id);
       }
       if (!create) return null;
-      var newPerson = CreatePerson(name, null);
+      var newPerson = CreatePerson(this, name);
       Mut.ReleaseMutex();
       return newPerson;
     }
 
-    public Person CreatePerson(string name, PeopleGroup peopleGroup) {
+    public Person CreatePerson(BaseTreeViewItem root, string name) {
+      if (root == null) return null;
+
       var dmPerson = new DataModel.Person {
         Id = ACore.Db.GetNextIdFor<DataModel.Person>(),
-        Name = name,
-        PeopleGroupId = peopleGroup?.Id
+        Name = name
       };
 
       ACore.Db.Insert(dmPerson);
 
-      var vmPerson = new Person(dmPerson);
+      InsertCategoryGroupItem(root, dmPerson.Id);
+
+      var vmPerson = new Person(dmPerson) {Parent = root};
       AllPeople.Add(vmPerson);
-      SetInPalce(vmPerson, true);
+      ACore.People.ItemSetInPlace(root, true, vmPerson);
       return vmPerson;
     }
 
-    public PeopleGroup CreateGroup(string name) {
-      var dmPeopleGroup = new DataModel.PeopleGroup {
-        Id = ACore.Db.GetNextIdFor<DataModel.PeopleGroup>(),
-        Name = name
-      };
-
-      ACore.Db.InsertOnSubmit(dmPeopleGroup);
-      ACore.Db.SubmitChanges();
-
-      var vmPeopleGroup = new PeopleGroup(dmPeopleGroup);
-      SetInPalce(vmPeopleGroup, true);
-      return vmPeopleGroup;
-    }
-
-    public void NewOrRenamePerson(Person person, PeopleGroup peopleGroup, bool rename) {
-      InputDialog inputDialog = new InputDialog {
-        Owner = ACore.WMain,
-        IconName = "appbar_people",
-        Title = rename ? "Rename Person" : "New Person",
-        Question = rename ? "Enter the new name of the person." : "Enter the name of the new person.",
-        Answer = rename ? person.Title : string.Empty
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.Answer, person.Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        if (ACore.Db.People.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
-          inputDialog.ShowErrorMessage("Person's name already exists!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
+      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_people", "Person", rename);
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
+          var person = (Person)item;
           person.Title = inputDialog.Answer;
           person.Data.Name = inputDialog.Answer;
-          ACore.Db.UpdateOnSubmit(person.Data);
-          ACore.Db.SubmitChanges();
-          SetInPalce(person, false);
-        } else CreatePerson(inputDialog.Answer, peopleGroup);
+          ACore.Db.Update(person.Data);
+          ACore.People.ItemSetInPlace(person.Parent, false, person);
+        } else CreatePerson(item, inputDialog.Answer);
       }
     }
 
-    public void NewOrRenameGroup(PeopleGroup peopleGroup, bool rename) {
-      InputDialog inputDialog = new InputDialog {
-        Owner = ACore.WMain,
-        IconName = "appbar_people_multiple",
-        Title = rename ? "Rename Group" : "New Group",
-        Question = rename ? "Enter the new name for the group." : "Enter the name of the new group.",
-        Answer = rename ? peopleGroup.Title : string.Empty
-      };
+    public override void ItemDelete(BaseTreeViewTagItem item) {
+      //TODO: SubmitChanges can submit other not commited changes as well!!
+      var person = item as Person;
+      if (person == null) return;
 
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.TxtAnswer.Text, peopleGroup.Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        if (ACore.Db.PeopleGroups.SingleOrDefault(x => x.Name.Equals(inputDialog.TxtAnswer.Text)) != null) {
-          inputDialog.ShowErrorMessage("Group's name already exists!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          peopleGroup.Title = inputDialog.Answer;
-          peopleGroup.Data.Name = inputDialog.Answer;
-          ACore.Db.UpdateOnSubmit(peopleGroup.Data);
-          ACore.Db.SubmitChanges();
-          SetInPalce(peopleGroup, false);
-        } else CreateGroup(inputDialog.Answer);
-      }
-    }
-
-    public void SetInPalce(Person person, bool isNew) {
-      var idx = ACore.Db.People.Where(x => x.PeopleGroupId == person.PeopleGroupId).OrderBy(x => x.Name).ToList().IndexOf(person.Data);
-      if (person.PeopleGroupId == null) {
-        idx += Items.OfType<PeopleGroup>().Count();
-        if (isNew)
-          Items.Insert(idx, person);
-        else
-          Items.Move(Items.IndexOf(person), idx);
-      } else {
-        var g = Items.OfType<PeopleGroup>().Single(x => x.Id == person.PeopleGroupId);
-        if (isNew)
-          g.Items.Insert(idx, person);
-        else 
-          g.Items.Move(g.Items.IndexOf(person), idx);
-      }
-    }
-
-    public void SetInPalce(PeopleGroup peopleGroup, bool isNew) {
-      var idx = ACore.Db.PeopleGroups.OrderBy(x => x.Name).ToList().IndexOf(peopleGroup.Data);
-      if (isNew)
-        Items.Insert(idx, peopleGroup);
-      else 
-        Items.Move(Items.IndexOf(peopleGroup), idx);
-    }
-
-    public void DeletePerson(Person person) {
       foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
         ACore.Db.DeleteOnSubmit(mip);
+      }
+
+      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
+            x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+      if (cgi != null) {
+        ACore.Db.DeleteOnSubmit(cgi);
       }
 
       ACore.Db.DeleteOnSubmit(person.Data);
       ACore.Db.SubmitChanges();
 
-      if (person.PeopleGroupId == null) {
-        Items.Remove(person);
-      } else {
-        Items.OfType<PeopleGroup>().Single(x => x.Id == person.PeopleGroupId).Items.Remove(person);
-      }
-
+      item.Parent.Items.Remove(person);
       AllPeople.Remove(person);
-    }
-
-    public void DeletePeopleGroup(PeopleGroup group) {
-      foreach (var p in ACore.Db.People.Where(x => x.PeopleGroupId == group.Id)) {
-        p.PeopleGroupId = null;
-      }
-
-      ACore.Db.DeleteOnSubmit(group.Data);
-      ACore.Db.SubmitChanges();
-
-      foreach (var person in group.Items.Cast<Person>()) {
-        person.PeopleGroupId = null;
-        Items.Add(person);
-      }
-
-      foreach (var person in group.Items.Cast<Person>()) {
-        SetInPalce(person, false);
-      }
-      
-      group.Items.Clear();
-      Items.Remove(group);
-    }
-
-    public void MovePerson(Person person, PeopleGroup peopleGroup) {
-      if (person.PeopleGroupId == null) {
-        Items.Remove(person);
-      } else {
-        Items.OfType<PeopleGroup>().Single(x => x.Id == person.PeopleGroupId).Items.Remove(person);
-      }
-      var newGroupId = peopleGroup?.Id;
-      person.PeopleGroupId = newGroupId;
-      person.Data.PeopleGroupId = newGroupId;
-      ACore.Db.UpdateOnSubmit(person.Data);
-      ACore.Db.SubmitChanges();
-      SetInPalce(person, true); //person is new in the group
     }
   }
 }

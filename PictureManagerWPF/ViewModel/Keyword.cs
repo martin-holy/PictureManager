@@ -20,6 +20,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void Sort() {
+      //BUG: asi bug, takhle to asi srovnavat nejde, kdyz dam move tak se prepisou indexy a tak "i" bude odkazovat na neco jineho
       var sorted = Items.Cast<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
       for (var i = 0; i < Items.Count; i++) {
         Items.Move(Items.IndexOf(Items[i]), sorted.IndexOf((Keyword) Items[i]));

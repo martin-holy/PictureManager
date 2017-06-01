@@ -6,10 +6,10 @@ using System.Linq;
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModel {
-  public class FolderKeywords: BaseTreeViewItem {
+  public class FolderKeywords: BaseCategoryItem {
     public List<FolderKeyword> AllFolderKeywords;
 
-    public FolderKeywords() {
+    public FolderKeywords() : base (Categories.FolderKeywords) {
       AllFolderKeywords = new List<FolderKeyword>();
       Title = "Folder Keywords";
       IconName = "appbar_folder";

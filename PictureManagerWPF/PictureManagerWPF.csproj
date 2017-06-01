@@ -75,7 +75,9 @@
     <Compile Include="Info.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
+    <Compile Include="ViewModel\BaseCategoryItem.cs" />
     <Compile Include="ViewModel\BaseMediaItem.cs" />
+    <Compile Include="ViewModel\CategoryGroup.cs" />
     <Compile Include="ViewModel\FavoriteFolder.cs" />
     <Compile Include="ViewModel\FavoriteFolders.cs" />
     <Compile Include="ViewModel\Filter.cs" />
@@ -113,7 +115,6 @@
     <Compile Include="ViewModel\Keyword.cs" />
     <Compile Include="ViewModel\Keywords.cs" />
     <Compile Include="ViewModel\People.cs" />
-    <Compile Include="ViewModel\PeopleGroup.cs" />
     <Compile Include="ViewModel\Person.cs" />
     <Compile Include="ViewModel\Rating.cs" />
     <Compile Include="ViewModel\Ratings.cs" />
@@ -136,6 +137,9 @@
     </Compile>
     <Compile Include="WFullPic.xaml.cs">
       <DependentUpon>WFullPic.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WPicTransform.xaml.cs">
+      <DependentUpon>WPicTransform.xaml</DependentUpon>
     </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
@@ -189,6 +193,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="WFullPic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WPicTransform.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

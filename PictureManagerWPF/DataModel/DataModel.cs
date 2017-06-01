@@ -19,6 +19,8 @@ namespace PictureManager.DataModel {
     private readonly List<BaseTable> _toDelete = new List<BaseTable>();
     private static readonly Mutex Mut = new Mutex();
 
+    public List<CategoryGroup> CategoryGroups;
+    public List<CategoryGroupItem> CategoryGroupsItems; 
     public List<Directory> Directories;
     public List<Filter> Filters;
     public List<Keyword> Keywords;
@@ -26,7 +28,6 @@ namespace PictureManager.DataModel {
     public List<MediaItemPerson> MediaItemPeople;
     public List<MediaItem> MediaItems;
     public List<Person> People;
-    public List<PeopleGroup> PeopleGroups;
     public List<Viewer> Viewers;
     public List<ViewerAccess> ViewersAccess;
     public List<SQLiteSequence> SQLiteSequences;
@@ -63,6 +64,8 @@ namespace PictureManager.DataModel {
 
       TableInfos.Clear();
 
+      CategoryGroups = GetTableData<CategoryGroup>();
+      CategoryGroupsItems = GetTableData<CategoryGroupItem>();
       Directories = GetTableData<Directory>();
       Filters = GetTableData<Filter>();
       Keywords = GetTableData<Keyword>();
@@ -70,7 +73,6 @@ namespace PictureManager.DataModel {
       MediaItemPeople = GetTableData<MediaItemPerson>();
       MediaItems = GetTableData<MediaItem>();
       People = GetTableData<Person>();
-      PeopleGroups = GetTableData<PeopleGroup>();
       Viewers = GetTableData<Viewer>();
       ViewersAccess = GetTableData<ViewerAccess>();
 
@@ -143,6 +145,12 @@ namespace PictureManager.DataModel {
       if (!Mut.WaitOne()) return;
 
       switch (data.GetType().Name) {
+        case nameof(CategoryGroup): {
+            if (addIt) CategoryGroups.Add((CategoryGroup)data); else CategoryGroups.Remove((CategoryGroup)data); break;
+          }
+        case nameof(CategoryGroupItem): {
+            if (addIt) CategoryGroupsItems.Add((CategoryGroupItem)data); else CategoryGroupsItems.Remove((CategoryGroupItem)data); break;
+          }
         case nameof(Directory): {
             if (addIt) Directories.Add((Directory) data); else Directories.Remove((Directory)data); break;
           }
@@ -163,9 +171,6 @@ namespace PictureManager.DataModel {
           }
         case nameof(Person): {
             if (addIt) People.Add((Person)data); else People.Remove((Person)data); break;
-          }
-        case nameof(PeopleGroup): {
-            if (addIt) PeopleGroups.Add((PeopleGroup)data); else PeopleGroups.Remove((PeopleGroup)data); break;
           }
         case nameof(Viewer): {
             if (addIt) Viewers.Add((Viewer)data); else Viewers.Remove((Viewer)data); break;
@@ -367,6 +372,24 @@ namespace PictureManager.DataModel {
     public int Idx { get; set; }
   }
 
+  [Table(Name = "CategoryGroups")]
+  public class CategoryGroup : BaseTable {
+    [Column(Name = "Name", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
+    public string Name { get; set; }
+
+    [Column(Name = "Category", DbType = "integer", CanBeNull = false)]
+    public int Category { get; set; }
+  }
+
+  [Table(Name = "CategoryGroupsItems")]
+  public class CategoryGroupItem : BaseTable {
+    [Column(Name = "CategoryGroupId", DbType = "integer", CanBeNull = false)]
+    public int CategoryGroupId { get; set; }
+
+    [Column(Name = "ItemId", DbType = "integer", CanBeNull = false)]
+    public int ItemId { get; set; }
+  }
+
   [Table(Name = "MediaItemKeyword")]
   public class MediaItemKeyword : BaseTable {
     [Column(Name = "MediaItemId", DbType = "integer", CanBeNull = false)]
@@ -405,15 +428,6 @@ namespace PictureManager.DataModel {
 
   [Table(Name = "People")]
   public class Person : BaseTable {
-    [Column(Name = "Name", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
-    public string Name { get; set; }
-
-    [Column(Name = "PeopleGroupId", DbType = "integer", CanBeNull = true)]
-    public int? PeopleGroupId { get; set; }
-  }
-
-  [Table(Name = "PeopleGroups")]
-  public class PeopleGroup : BaseTable {
     [Column(Name = "Name", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
     public string Name { get; set; }
   }

@@ -115,7 +115,7 @@ namespace PictureManager.ViewModel {
         join p in ACore.Db.People on mip.PersonId equals p.Id
         select p;
       foreach (var p in ps) {
-        People.Add(ACore.People.GetPerson(p.Id, p.PeopleGroupId));
+        People.Add(ACore.People.GetPerson(p.Id));
       }
     }
 

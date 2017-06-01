@@ -35,5 +35,9 @@ namespace PictureManager.ViewModel {
       Items = new ObservableCollection<BaseTreeViewItem>();
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
     }
+
+    public BaseTreeViewItem GetTopParent() {
+      return Parent == null ? this : Parent.GetTopParent();
+    }
   }
 }

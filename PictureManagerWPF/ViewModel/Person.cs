@@ -10,7 +10,6 @@
       Id = data.Id;
       Title = data.Name;
       IconName = "appbar_people";
-      PeopleGroupId = data.PeopleGroupId;
     }
   }
 }

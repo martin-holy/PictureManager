@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 
 namespace PictureManager.ViewModel {
-  public class Ratings : BaseTreeViewItem {
+  public class Ratings : BaseCategoryItem {
 
-    public Ratings() {
+    public Ratings() : base(Categories.Ratings) {
       Title = "Ratings";
       IconName = "appbar_star";
     }

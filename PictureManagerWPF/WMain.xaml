@@ -90,16 +90,13 @@
       <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
     </Style>
 
+    <RoutedUICommand x:Key="CategoryGroupNew" Text="New Group" />
+    <RoutedUICommand x:Key="CategoryGroupRename" Text="Rename Group" />
+    <RoutedUICommand x:Key="CategoryGroupDelete" Text="Delete Group" />
+    <RoutedUICommand x:Key="TagItemNew" Text="New" />
+    <RoutedUICommand x:Key="TagItemRename" Text="Rename" />
+    <RoutedUICommand x:Key="TagItemDelete" Text="Delete" />
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
-    <RoutedUICommand x:Key="KeywordNew" Text="New" />
-    <RoutedUICommand x:Key="KeywordRename" Text="Rename" />
-    <RoutedUICommand x:Key="KeywordDelete" Text="Delete" />
-    <RoutedUICommand x:Key="PersonNew" Text="New" />
-    <RoutedUICommand x:Key="PersonRename" Text="Rename" />
-    <RoutedUICommand x:Key="PersonDelete" Text="Delete" />
-    <RoutedUICommand x:Key="PeopleGroupNew" Text="New Group" />
-    <RoutedUICommand x:Key="PeopleGroupRename" Text="Rename" />
-    <RoutedUICommand x:Key="PeopleGroupDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderNew" Text="New folder" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
@@ -109,26 +106,20 @@
     <RoutedUICommand x:Key="FilterNew" Text="New" />
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
     <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
-    <RoutedUICommand x:Key="ViewerNew" Text="New" />
-    <RoutedUICommand x:Key="ViewerRename" Text="Rename" />
     <RoutedUICommand x:Key="ViewerEdit" Text="Edit" />
-    <RoutedUICommand x:Key="ViewerDelete" Text="Delete" />
     <RoutedUICommand x:Key="ViewerIncludeFolder" Text="Include for Viewer" />
     <RoutedUICommand x:Key="ViewerExcludeFolder" Text="Exclude for Viewer" />
     <RoutedUICommand x:Key="ViewerRemoveFolder" Text="Remove" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
+    <CommandBinding Command="{StaticResource CategoryGroupNew}" Executed="CmdCategoryGroupNew" />
+    <CommandBinding Command="{StaticResource CategoryGroupRename}" Executed="CmdCategoryGroupRename" />
+    <CommandBinding Command="{StaticResource CategoryGroupDelete}" Executed="CmdCategoryGroupDelete" />
+    <CommandBinding Command="{StaticResource TagItemNew}" Executed="CmdTagItemNew" />
+    <CommandBinding Command="{StaticResource TagItemRename}" Executed="CmdTagItemRename" />
+    <CommandBinding Command="{StaticResource TagItemDelete}" Executed="CmdTagItemDelete" />
     <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdKeywordShowAll" />
-    <CommandBinding Command="{StaticResource KeywordNew}" Executed="CmdKeywordNew" />
-    <CommandBinding Command="{StaticResource KeywordRename}" Executed="CmdKeywordRename" />
-    <CommandBinding Command="{StaticResource KeywordDelete}" Executed="CmdKeywordDelete" />
-    <CommandBinding Command="{StaticResource PersonNew}" Executed="CmdPersonNew" />
-    <CommandBinding Command="{StaticResource PersonRename}" Executed="CmdPersonRename" />
-    <CommandBinding Command="{StaticResource PersonDelete}" Executed="CmdPersonDelete" />
-    <CommandBinding Command="{StaticResource PeopleGroupNew}" Executed="CmdPeopleGroupNew" />
-    <CommandBinding Command="{StaticResource PeopleGroupRename}" Executed="CmdPeopleGroupRename" />
-    <CommandBinding Command="{StaticResource PeopleGroupDelete}" Executed="CmdPeopleGroupDelete" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
@@ -138,10 +129,7 @@
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
-    <CommandBinding Command="{StaticResource ViewerNew}" Executed="CmdViewerNew" />
-    <CommandBinding Command="{StaticResource ViewerRename}" Executed="CmdViewerRename" />
     <CommandBinding Command="{StaticResource ViewerEdit}" Executed="CmdViewerEdit" />
-    <CommandBinding Command="{StaticResource ViewerDelete}" Executed="CmdViewerDelete" />
     <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
     <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
     <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
@@ -313,8 +301,8 @@
                 </StackPanel>
               </HierarchicalDataTemplate>
 
-              <!-- TreeView Keywords - PeopleGroup -->
-              <HierarchicalDataTemplate DataType="{x:Type viewModel:PeopleGroup}" ItemsSource="{Binding Items}">
+              <!-- TreeView Keywords - CategoryGroup -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:CategoryGroup}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
