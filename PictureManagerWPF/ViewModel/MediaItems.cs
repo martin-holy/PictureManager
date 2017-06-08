@@ -258,7 +258,10 @@ namespace PictureManager.ViewModel {
     public void LoadSiblings() {
       if (!ACore.OneFileOnly) return;
       var filePath = Items[0].FilePath;
+
       LoadByFolder(Path.GetDirectoryName(filePath));
+      Current = Items.FirstOrDefault(x => x.FilePath.Equals(filePath));
+
       var mi = Items.FirstOrDefault(p => p.FilePath == filePath);
       if (mi != null) mi.IsSelected = true;
       ACore.OneFileOnly = false;
@@ -294,6 +297,10 @@ namespace PictureManager.ViewModel {
     public void SetCurrent() {
       var mis = Items.Where(x => x.IsSelected).ToList();
       Current = mis.Count == 1 ? mis[0] : null;
+    }
+
+    public string GetFullScreenInfo() {
+      return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div>{Current?.GetKeywordsAsString(true)}";
     }
   }
 }

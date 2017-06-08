@@ -11,7 +11,7 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
       for (int i = 0; i < 6; i++) {
-        Items.Add(new Rating { Value = i, IconName = "appbar_star" });
+        Items.Add(new Rating {Value = i});
       }
     }
 

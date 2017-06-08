@@ -16,3 +16,7 @@
 --delete from MediaItemKeyword where Id in (select MIK.Id from MediaItemKeyword as MIK where not exists (select MI.Id from MediaItems as MI where MI.Id = MIK.MediaItemId))
 
 --delete from MediaItemPerson where Id in (select MIP.Id from MediaItemPerson as MIP where not exists (select MI.Id from MediaItems as MI where MI.Id = MIP.MediaItemId))
+
+
+-- smazani nepouzitych Keywords
+--delete from Keywords where Name not like "%/%" and Id not in (select KeywordId from MediaItemKeyword)

@@ -6,7 +6,8 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class Folder : BaseTreeViewItem {
     private bool _isAccessible;
-
+    public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
+    public string FullPath { get; set; }
     public override bool IsExpanded {
       get { return base.IsExpanded; }
       set {
@@ -17,8 +18,9 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
-    public string FullPath { get; set; }
+    public Folder() {
+      IconName = "appbar_folder";
+    }
 
     public void Rename(string newName) {
       if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
@@ -40,7 +42,6 @@ namespace PictureManager.ViewModel {
         Folder item = new Folder {
           Title = di.Name,
           FullPath = dir,
-          IconName = "appbar_folder",
           Parent = this,
           IsAccessible = true
         };
@@ -74,7 +75,6 @@ namespace PictureManager.ViewModel {
       var newFolder = new Folder {
         Title = folderName,
         FullPath = newFullPath,
-        IconName = "appbar_folder",
         Parent = this,
         IsAccessible = true
       };

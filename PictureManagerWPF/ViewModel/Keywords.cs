@@ -25,31 +25,45 @@ namespace PictureManager.ViewModel {
 
       LoadGroups();
 
-      foreach (Keyword newItem in ACore.Db.Keywords.OrderBy(x => x.Name).Select(x => new Keyword(x))) {
-        var lioSlash = newItem.FullPath.LastIndexOf('/');
-        if (lioSlash == -1) {
-          newItem.Title = newItem.FullPath;
-          newItem.Parent = this;
-          Items.Add(newItem);
-          AllKeywords.Add(newItem);
-        } else {
-          newItem.Title = newItem.FullPath.Substring(lioSlash + 1);
-          Keyword parentKeyword = GetKeywordByFullPath(newItem.FullPath.Substring(0, lioSlash), false);
-          if (parentKeyword == null) continue;
-          newItem.Parent = parentKeyword;
-          parentKeyword.Items.Add(newItem);
-          AllKeywords.Add(newItem);
+      //Add top level Keywords in Group
+      foreach (var g in Items.OfType<CategoryGroup>()) {
+        foreach (var keyword in (from k in ACore.Db.Keywords
+                                 join cgi in ACore.Db.CategoryGroupsItems
+                                 on new {kid = k.Id, gid = g.Id} equals new {kid = cgi.ItemId, gid = cgi.CategoryGroupId}
+                                 select k).OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x) {Parent = g})) {
+          g.Items.Add(keyword);
+          AllKeywords.Add(keyword);
         }
       }
 
+      //Add rest of Keywords
+      foreach (var keyword in (from k in ACore.Db.Keywords where AllKeywords.All(ak => ak.Id != k.Id) select k)
+          .OrderBy(x => x.Name).Select(x => new Keyword(x))) {
+        var lioSlash = keyword.FullPath.LastIndexOf('/');
+        if (lioSlash == -1) {
+          keyword.Title = keyword.FullPath;
+          keyword.Parent = this;
+          Items.Add(keyword);
+          AllKeywords.Add(keyword);
+        } else {
+          keyword.Title = keyword.FullPath.Substring(lioSlash + 1);
+          Keyword parentKeyword = GetKeywordByFullPath(keyword.FullPath.Substring(0, lioSlash), false);
+          if (parentKeyword == null) continue;
+          keyword.Parent = parentKeyword;
+          parentKeyword.Items.Add(keyword);
+          AllKeywords.Add(keyword);
+        }
+      }
+
+      Sort();
       AllKeywords.ForEach(x => x.Sort());
     }
 
     public void Sort() {
-      //BUG: asi bug, takhle to asi srovnavat nejde, kdyz dam move tak se prepisou indexy a tak "i" bude odkazovat na neco jineho
-      var sorted = Items.Cast<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
-      for (var i = 0; i < Items.Count; i++) {
-        Items.Move(Items.IndexOf(Items[i]), sorted.IndexOf((Keyword)Items[i]));
+      var sorted = Items.OfType<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
+      var groupsCount = Items.Count - sorted.Count;
+      foreach (var k in sorted) {
+        Items.Move(Items.IndexOf(k), sorted.IndexOf(k) + groupsCount);
       }
     }
 
@@ -143,6 +157,41 @@ namespace PictureManager.ViewModel {
 
       item.Parent.Items.Remove(keyword);
       AllKeywords.Remove(keyword); 
+    }
+
+    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
+      //if (item.Parent == dest.Parent) => postun ve skupine, tzn. zmenit keyword.index
+      //if (item.Parent != dest.Parent) => posun mezi skupinama, tzn. resetovat keyword.index a zaradit podle jmena
+      if (dest is Keyword && item.Parent == dest.Parent) {
+        var items = item.Parent.Items;
+        var srcIndex = items.IndexOf(item);
+        var destIndex = items.IndexOf(dest);
+        var newIndex = srcIndex > destIndex ? (dropOnTop ? destIndex : destIndex + 1) : (dropOnTop ? destIndex - 1 : destIndex);
+
+        items.Move(srcIndex, newIndex);
+
+        var i = 0;
+        foreach (var itm in items.Where(x => x is Keyword).OfType<Keyword>()) {
+          itm.Index = i;
+          itm.Data.Idx = i;
+          ACore.Db.UpdateOnSubmit(itm.Data);
+          i++;
+        }
+
+        ACore.Db.SubmitChanges();
+      } else {
+        var keyword = item as Keyword;
+        if (keyword == null) return;
+        var path = dest is Keyword ? $"{((Keyword) dest).FullPath}/{keyword.Title}" : keyword.Title;
+
+        keyword.Index = 0;
+        keyword.Data.Idx = 0;
+        keyword.FullPath = path;
+        keyword.Data.Name = path;
+        ACore.Db.Update(keyword.Data);
+        ItemMove(item, dest);
+
+      }
     }
   }
 }

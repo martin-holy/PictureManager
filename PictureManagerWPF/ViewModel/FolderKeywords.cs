@@ -30,7 +30,6 @@ namespace PictureManager.ViewModel {
 
       foreach (var keyPath in paths.Select(p => p.Value).Distinct().OrderBy(p => p)) {
         FolderKeyword newItem = new FolderKeyword {
-          IconName = "appbar_folder",
           FullPath = keyPath, 
           FolderIdList = paths.Where(p => p.Value.Equals(keyPath)).Select(p => p.Key).ToList()
         };
@@ -100,7 +99,6 @@ namespace PictureManager.ViewModel {
     public FolderKeyword CreateFolderKeyword(ObservableCollection<BaseTreeViewItem> root, FolderKeyword parent, string name) {
       string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
       FolderKeyword newFolderKeyword = new FolderKeyword {
-        IconName = "appbar_folder",
         FullPath = kFullPath,
         Title = name,
         Parent = parent

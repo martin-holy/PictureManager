@@ -138,6 +138,7 @@ namespace PictureManager {
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
+      InitUi();
       //app opened with argument
       if (File.Exists(_argPicFile)) {
         ACore.AppInfo.AppMode = AppModes.Viewer;
@@ -149,7 +150,7 @@ namespace PictureManager {
         ShowFullPicture();
       } else {
         ACore.AppInfo.AppMode = AppModes.Browser;
-        InitUi();
+        //InitUi();
       }
     }
 
@@ -160,14 +161,18 @@ namespace PictureManager {
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
       TvFilters.ItemsSource = ACore.FiltersRoot;
       CmbViewers.ItemsSource = ACore.Viewers.Items;
-      CmbViewers.SelectedItem = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer);
+      ACore.CurrentViewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
+      CmbViewers.SelectedItem = ACore.CurrentViewer;
     }
 
     public void ShowFullPicture() {
       if (ACore.MediaItems.Current == null) return;
       _wFullPic.SetCurrentImage();
-      if (!_wFullPic.IsActive)
+      if (!_wFullPic.IsActive) {
+        Hide();
+        ShowInTaskbar = false;
         _wFullPic.Show();
+      }
     }
 
     private void Window_Closing(object sender, CancelEventArgs e) {
@@ -176,10 +181,12 @@ namespace PictureManager {
 
     public void SwitchToBrowser() {
       if (ACore.ViewerOnly) {
-        //App is first time loaded to main window
         ACore.ViewerOnly = false;
-        InitUi();
-        ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile));
+        var dirPath = Path.GetDirectoryName(_argPicFile);
+        ACore.Folders.ExpandTo(dirPath);
+        ACore.MediaItems.LoadByFolder(dirPath);
+        ACore.InitThumbsPagesControl();
+        ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
       }
       if (ACore.MediaItems.Current != null) {
         CmbThumbPage.SelectedIndex = ACore.MediaItems.Current.Index / ACore.ThumbsPerPage;
@@ -187,6 +194,8 @@ namespace PictureManager {
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
+      ShowInTaskbar = true;
+      Show();
     }
 
     private void TvKeywords_Select(object sender, MouseButtonEventArgs e) {
@@ -720,9 +729,14 @@ namespace PictureManager {
 
       var dest = ((StackPanel) sender).DataContext;
       if (e.Data.GetDataPresent(typeof (ViewModel.Keyword))) {
-        var srcData = (ViewModel.Keyword) e.Data.GetData(typeof (ViewModel.Keyword));
-        var destData = (ViewModel.Keyword) dest;
-        if (srcData != null && destData != null && srcData != destData && srcData.Parent == destData.Parent) return;
+
+        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as ViewModel.CategoryGroup)?.Category) == Categories.Keywords)
+          return;
+
+        var srcData = e.Data.GetData(typeof(ViewModel.Keyword)) as ViewModel.Keyword;
+        var destData = dest as ViewModel.Keyword;
+        if (destData?.Parent == srcData?.Parent) return;
+
         e.Effects = DragDropEffects.None;
         e.Handled = true;
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
@@ -739,28 +753,11 @@ namespace PictureManager {
       var panel = (StackPanel)sender;
 
       if (e.Data.GetDataPresent(typeof (ViewModel.Keyword))) {
-        var srcData = (ViewModel.Keyword) e.Data.GetData(typeof (ViewModel.Keyword));
-        var destData = (ViewModel.Keyword) panel.DataContext;
+        var srcData = (ViewModel.Keyword)e.Data.GetData(typeof(ViewModel.Keyword));
+        var destData = (ViewModel.BaseTreeViewItem)panel.DataContext;
+        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
         if (srcData == null || destData == null) return;
-        var items = destData.Parent.Items;
-        var destIndex = items.IndexOf(destData);
-        var srcIndex = items.IndexOf(srcData);
-        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight/2;
-        int newIndex;
-        if (srcIndex > destIndex) {
-          newIndex = dropOnTop ? destIndex : destIndex + 1;
-        } else {
-          newIndex = dropOnTop ? destIndex - 1 : destIndex;
-        }
-        items.Move(items.IndexOf(srcData), newIndex);
-
-        for (var i = 0; i < items.Count; i++) {
-          ((ViewModel.Keyword) items[i]).Index = i;
-          ((ViewModel.Keyword) items[i]).Data.Idx = i;
-          ACore.Db.UpdateOnSubmit(((ViewModel.Keyword) items[i]).Data);
-        }
-
-        ACore.Db.SubmitChanges();
+        ACore.Keywords.ItemMove(srcData, destData, dropOnTop);
       } else if (e.Data.GetDataPresent(typeof (ViewModel.Person))) {
         var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
         if (srcData == null) return;
@@ -836,6 +833,10 @@ namespace PictureManager {
       }
     }
 
+    private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
+      menu.Items.Add(new MenuItem { Command = (ICommand)Resources[resourceName], CommandParameter = item });
+    }
+
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
@@ -852,74 +853,73 @@ namespace PictureManager {
           var group = item as ViewModel.CategoryGroup;
 
           if (cat != null || group != null || category.CanHaveSubItems) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["TagItemNew"], CommandParameter = item });
+            MenuAddItem(menu, "TagItemNew", item);
           }
 
           if (item is ViewModel.BaseTreeViewTagItem && group == null) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["TagItemRename"], CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["TagItemDelete"], CommandParameter = item });
+            MenuAddItem(menu, "TagItemRename", item);
+            MenuAddItem(menu, "TagItemDelete", item);
           }
 
           if (category.CanHaveGroups && cat != null) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["CategoryGroupNew"], CommandParameter = item });
+            MenuAddItem(menu, "CategoryGroupNew", item);
           }
 
           if (group != null) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["CategoryGroupRename"], CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["CategoryGroupDelete"], CommandParameter = item });
+            MenuAddItem(menu, "CategoryGroupRename", item);
+            MenuAddItem(menu, "CategoryGroupDelete", item);
           }
         }
       }
 
 
       switch (item.GetType().Name) {
-
         case nameof(ViewModel.Folder): {
-          menu.Items.Add(new MenuItem {Command = (ICommand)Resources["FolderNew"], CommandParameter = item});
+          MenuAddItem(menu, "FolderNew", item);
           if (((ViewModel.Folder) item).Parent != null) {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRename"], CommandParameter = item});
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderDelete"], CommandParameter = item});
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAddToFavorites"], CommandParameter = item});
+            MenuAddItem(menu, "FolderRename", item);
+            MenuAddItem(menu, "FolderDelete", item);
+            MenuAddItem(menu, "FolderAddToFavorites", item);
           }
           if (ACore.AppInfo.AppMode == AppModes.ViewerEdit) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerIncludeFolder"], CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerExcludeFolder"], CommandParameter = item });
+            MenuAddItem(menu, "ViewerIncludeFolder", item);
+            MenuAddItem(menu, "ViewerExcludeFolder", item);
           }
           break;
         }
         case nameof(ViewModel.FavoriteFolder): {
-          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemoveFromFavorites"], CommandParameter = item});
+          MenuAddItem(menu, "FolderRemoveFromFavorites", item);
           break;
         }
         case nameof(ViewModel.FolderKeyword): {
           if (!ACore.KeywordsEditMode) {
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FolderKeywordShowAll"], CommandParameter = item });
+            MenuAddItem(menu, "FolderKeywordShowAll", item);
           }
           break;
         }
         case nameof(ViewModel.Keyword): {
           if (!ACore.KeywordsEditMode) {
-            menu.Items.Add(new MenuItem {Command = (ICommand) Resources["KeywordShowAll"], CommandParameter = item});
+            MenuAddItem(menu, "KeywordShowAll", item);
           }
           break;
         }
         case nameof(ViewModel.Filters): {
-          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
+          MenuAddItem(menu, "FilterNew", item);
           break;
         }
         case nameof(ViewModel.Filter): {
-          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterNew"], CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterEdit"], CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = (ICommand)Resources["FilterDelete"], CommandParameter = item });
+          MenuAddItem(menu, "FilterNew", item);
+          MenuAddItem(menu, "FilterEdit", item);
+          MenuAddItem(menu, "FilterDelete", item);
           break;
         }
         case nameof(ViewModel.Viewer): {
-          menu.Items.Add(new MenuItem {Command = (ICommand) Resources["ViewerEdit"], CommandParameter = item});
+          MenuAddItem(menu, "ViewerEdit", item);
           break;
         }
         case nameof(ViewModel.BaseTreeViewItem): {
-          if (((ViewModel.BaseTreeViewItem)item).Tag is DataModel.ViewerAccess)
-            menu.Items.Add(new MenuItem { Command = (ICommand)Resources["ViewerRemoveFolder"], CommandParameter = item });
+          if (((ViewModel.BaseTreeViewItem) item).Tag is DataModel.ViewerAccess)
+            MenuAddItem(menu, "ViewerRemoveFolder", item);
           break;
         }
       }
@@ -937,6 +937,7 @@ namespace PictureManager {
     private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
       var viewer = CmbViewers.SelectedItem as ViewModel.Viewer;
       if (viewer == null) return;
+      ACore.CurrentViewer = viewer;
       Settings.Default.Viewer = viewer.Title;
       Settings.Default.Save();
       ACore.FolderKeywords.Load();

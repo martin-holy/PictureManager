@@ -16,7 +16,7 @@ namespace PictureManager.ViewModel {
         var p = path.EndsWith("\\") ? path.Substring(0, path.Length - 1) : path;
         int lio = p.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase);
         string label = p.Substring(lio + 1, p.Length - lio - 1);
-        Items.Add(new FavoriteFolder {Title = label, FullPath = p, IconName = "appbar_folder"});
+        Items.Add(new FavoriteFolder {Title = label, FullPath = p});
       }
     }
 

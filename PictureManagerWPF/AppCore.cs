@@ -40,6 +40,7 @@ namespace PictureManager {
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
     public int ThumbsPageIndex;
     public int ThumbsPerPage = 300;
+    public ViewModel.Viewer CurrentViewer;
 
     private bool _keywordsEditMode;
 
@@ -97,7 +98,7 @@ namespace PictureManager {
       FavoriteFolders = new ViewModel.FavoriteFolders();
       Ratings = new ViewModel.Ratings();
       Filters = new ViewModel.Filters();
-      Viewers = new ViewModel.Viewers {CanHaveGroups = false, CanModifyItems = true};
+      Viewers = new ViewModel.Viewers {CanModifyItems = true};
 
       People.Load();
       Keywords.Load();
@@ -549,11 +550,10 @@ namespace PictureManager {
 
     public bool CanViewerSeeThisFile(string filePath) {
       bool ok;
-      var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer == null) return true;
+      if (CurrentViewer == null) return true;
 
-      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFo = CurrentViewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = CurrentViewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var incFi = new string[0];
       var excFi = new string[0];
 
@@ -572,11 +572,10 @@ namespace PictureManager {
 
     public bool CanViewerSeeThisDirectory(string dirPath) {
       bool ok;
-      var viewer = Viewers.Items.Cast<ViewModel.Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
-      if (viewer == null) return true;
+      if (CurrentViewer == null) return true;
 
-      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFo = CurrentViewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = CurrentViewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var incFi = new string[0];
       var excFi = new string[0];
 
@@ -594,8 +593,8 @@ namespace PictureManager {
     }
 
     public static void CreateThumbnail(string origPath, string newPath) {
-      int size = Settings.Default.ThumbnailSize;
-      string dir = Path.GetDirectoryName(newPath);
+      var size = Settings.Default.ThumbnailSize;
+      var dir = Path.GetDirectoryName(newPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
 
