@@ -24,6 +24,7 @@ namespace PictureManager {
         case "appbar_folder_lock":
         case "appbar_folder_open": return new SolidColorBrush(Color.FromRgb(249, 218, 119));
         case "appbar_tag": return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case "appbar_tag_label": return new SolidColorBrush(Color.FromRgb(142, 193, 99));
         case "appbar_people_multiple":
         case "appbar_people": return new SolidColorBrush(Color.FromRgb(19, 122, 166));
         case "appbar_drive":

@@ -119,7 +119,7 @@ namespace PictureManager.ViewModel {
         case Categories.FolderKeywords:
           return "appbar_folder";
         case Categories.Keywords:
-          return "appbar_tag";
+          return "appbar_tag_label";
         case Categories.Filters:
           return "appbar_filter";
         case Categories.Viewers:

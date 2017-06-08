@@ -12,7 +12,7 @@ namespace PictureManager.ViewModel {
     public Keywords() : base(Categories.Keywords) {
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
-      IconName = "appbar_tag";
+      IconName = "appbar_tag_label";
     }
 
     ~Keywords() {
