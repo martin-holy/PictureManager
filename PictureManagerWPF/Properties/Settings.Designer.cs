@@ -118,5 +118,17 @@ namespace PictureManager.Properties {
                 this["Viewer"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DirectorySelectFolders {
+            get {
+                return ((string)(this["DirectorySelectFolders"]));
+            }
+            set {
+                this["DirectorySelectFolders"] = value;
+            }
+        }
     }
 }

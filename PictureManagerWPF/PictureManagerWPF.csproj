@@ -71,6 +71,9 @@
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomCommands.cs" />
     <Compile Include="DataModel\DataModel.cs" />
+    <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
+      <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
@@ -147,6 +150,10 @@
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\DirectorySelectDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\InputDialog.xaml">
       <SubType>Designer</SubType>

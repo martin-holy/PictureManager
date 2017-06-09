@@ -584,6 +584,9 @@ namespace PictureManager {
     }
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+      /*DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
+      dsd.ShowDialog();*/
+
 
       /*foreach (var item in ACore.MediaItems.Items) {
         var destFilePath = item.FilePath.Replace(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2016\", @"K:\Fotky\Pongo\");

@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
+using PictureManager.Dialogs;
 using Application = System.Windows.Application;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
@@ -39,6 +40,7 @@ namespace PictureManager {
     private void WbFullPicOnDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs webBrowserDocumentCompletedEventArgs) {
       if (WbFullPic.Document?.Body == null) return;
       WbFullPic.Document.Body.DoubleClick += WbFullPic_DblClick;
+      WbFullPic.Document.Body.KeyDown += WbFullPic_KeyDown;
       SetCurrentImage();
     }
 
@@ -68,6 +70,17 @@ namespace PictureManager {
     private void SwitchToBrowser() {
       WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", "");
       ACore.WMain.SwitchToBrowser();
+    }
+
+    private void WbFullPic_KeyDown(object sender, HtmlElementEventArgs e) {
+      if (e.AltKeyPressed && e.KeyPressedCode == 77) {
+        DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
+        if (dsd.ShowDialog() ?? true) {
+          if (ACore.FileOperation(FileOperations.Move, dsd.Answer))
+            SetNewMediaItemAfterDeleteOrMove();
+        }
+        e.ReturnValue = false;
+      }
     }
 
     private void Window_KeyDown(object sender, KeyEventArgs e) {
@@ -103,15 +116,7 @@ namespace PictureManager {
           var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
           if (result == MessageBoxResult.Yes)
             if (ACore.FileOperation(FileOperations.Delete, true)) {
-              var index = ACore.MediaItems.Current.Index;
-              ACore.MediaItems.RemoveSelectedFromWeb();
-              var itemsCount = ACore.MediaItems.Items.Count;
-              if (itemsCount > index)
-                ACore.MediaItems.Items[index].IsSelected = true;
-              if (itemsCount <= index && itemsCount != 0)
-                ACore.MediaItems.Items[index - 1].IsSelected = true;
-              ACore.MediaItems.SetCurrent();
-              SetCurrentImage();
+              SetNewMediaItemAfterDeleteOrMove();
             }
           break;
         }
@@ -136,6 +141,18 @@ namespace PictureManager {
           }
         }
       }
+    }
+
+    private void SetNewMediaItemAfterDeleteOrMove() {
+      var index = ACore.MediaItems.Current.Index;
+      ACore.MediaItems.RemoveSelectedFromWeb();
+      var itemsCount = ACore.MediaItems.Items.Count;
+      if (itemsCount > index)
+        ACore.MediaItems.Items[index].IsSelected = true;
+      if (itemsCount <= index && itemsCount != 0)
+        ACore.MediaItems.Items[index - 1].IsSelected = true;
+      ACore.MediaItems.SetCurrent();
+      SetCurrentImage();
     }
 
     private void MetroWindow_Activated(object sender, System.EventArgs e) {

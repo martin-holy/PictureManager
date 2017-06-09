@@ -366,6 +366,16 @@ namespace PictureManager {
       return FileOperation(mode, from, to, newName, true);
     }
 
+    /// <summary>
+    /// Operates only with selected MediaItems
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <param name="to"></param>
+    /// <returns></returns>
+    public bool FileOperation(FileOperations mode, string to) {
+      return FileOperation(mode, null, to, null, true);
+    }
+
     public bool FileOperation(FileOperations mode, string from, string to, string newName, bool recycle) {
       Application.Current.Properties[nameof(AppProps.FileOperationResult)] = new Dictionary<string, string>();
       //Copy, Move or delete selected MediaItems or folder
