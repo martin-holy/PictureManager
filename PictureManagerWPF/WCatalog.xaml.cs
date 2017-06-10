@@ -148,7 +148,7 @@ namespace PictureManager {
     }
 
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
-      _update.CancelAsync();
+      _update?.CancelAsync();
       Close();
     }
 
