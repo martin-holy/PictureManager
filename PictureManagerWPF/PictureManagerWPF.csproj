@@ -74,6 +74,9 @@
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ProgressBarDialog.xaml.cs">
+      <DependentUpon>ProgressBarDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
@@ -156,6 +159,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ProgressBarDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
