@@ -207,9 +207,22 @@ namespace PictureManager.DataModel {
 
     public void RollbackChanges() {
       _toInsert.Clear();
-      //TODO _toUpdate => projit a nacist z db
+      _toUpdate.ForEach(ReloadItem);
       _toUpdate.Clear();
       _toDelete.Clear();
+    }
+
+    public void ReloadItem(BaseTable item) {
+      var tableInfo = TableInfos[item.GetType()];
+      var dbItem = Select($"{tableInfo.QuerySelect} where Id = {item.Id}");
+      var i = 0;
+      foreach (var column in tableInfo.Columns) {
+        var val = dbItem[0].ItemArray[i];
+        var type = column.Value.PropertyType;
+        type = Nullable.GetUnderlyingType(type) ?? type;
+        column.Value.SetValue(item, val is DBNull ? null : Convert.ChangeType(val, type));
+        i++;
+      }
     }
 
     private Dictionary<string, object> GetColumnValues(object o) {

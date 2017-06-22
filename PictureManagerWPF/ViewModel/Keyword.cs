@@ -5,7 +5,7 @@ namespace PictureManager.ViewModel {
   public class Keyword: BaseTreeViewTagItem {
     public int Index;
     //public int Index { get { return Data?.Idx ?? 0; } set { Data.Idx = value; } }
-    public string FullPath;
+    public string FullPath { get { return Data.Name; } set { Data.Name = value; } }
     public DataModel.Keyword Data;
 
     public Keyword(DataModel.Keyword data) {
@@ -13,7 +13,6 @@ namespace PictureManager.ViewModel {
       Id = data.Id;
       Index = data.Idx;
       IconName = "appbar_tag";
-      FullPath = data.Name;
       Title = data.Name.Contains("/")
         ? data.Name.Substring(data.Name.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1)
         : data.Name;

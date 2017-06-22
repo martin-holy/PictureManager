@@ -128,7 +128,6 @@ namespace PictureManager.ViewModel {
             ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
             : inputDialog.Answer;
           keyword.FullPath = path;
-          keyword.Data.Name = path;
           keyword.Title = inputDialog.Answer;
           (keyword.Parent as Keywords)?.Sort();
           (keyword.Parent as Keyword)?.Sort();
@@ -187,7 +186,6 @@ namespace PictureManager.ViewModel {
         keyword.Index = 0;
         keyword.Data.Idx = 0;
         keyword.FullPath = path;
-        keyword.Data.Name = path;
         ACore.Db.Update(keyword.Data);
         ItemMove(item, dest);
 
