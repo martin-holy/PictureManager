@@ -15,10 +15,16 @@ namespace PictureManager {
   /// </summary>
   public partial class WFullPic {
     public AppCore ACore;
+    private static System.Timers.Timer _tmrPresentation;
 
     public WFullPic() {
       InitializeComponent();
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+      _tmrPresentation = new System.Timers.Timer(2000);
+      _tmrPresentation.Elapsed += delegate {
+        if (ACore.MediaItems.CurrentItemMove(true))
+          SetCurrentImage();
+      };
       WbFullPic.ObjectForScripting = new ScriptManager(ACore);
       WbFullPic.DocumentCompleted += WbFullPicOnDocumentCompleted;
 
@@ -118,6 +124,10 @@ namespace PictureManager {
             if (ACore.FileOperation(FileOperations.Delete, true)) {
               SetNewMediaItemAfterDeleteOrMove();
             }
+          break;
+        }
+        case Key.P: {
+          _tmrPresentation.Enabled = !_tmrPresentation.Enabled;
           break;
         }
       }

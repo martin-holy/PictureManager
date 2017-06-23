@@ -27,7 +27,7 @@ namespace PictureManager.ViewModel {
       }
       set {
         _isSelected = value;
-
+        //BUG: pri slideshow nenacte Document
         ACore.WbThumbs.Document?.GetElementById(Index.ToString())?.SetAttribute("className", value ? "thumbBox selected" : "thumbBox");
         OnPropertyChanged();
       }
