@@ -36,13 +36,13 @@ namespace PictureManager.ViewModel {
     public string FilePath;
     public string FilePathCache => FilePath.Replace(":\\", @Settings.Default.CachePath);
     public string FileNameWithExt => Path.GetFileName(FilePath);
-    public string Comment { get { return Data.Comment; } set { Data.Comment = value; } }
+    public string Comment;
     public string CommentEscaped => Comment?.Replace("'", "''");
     public int Index;
-    public int Id { get { return Data.Id; } set { Data.Id = value; } }
-    public int DirId { get { return Data.DirectoryId; } set { Data.DirectoryId = value; } }
-    public int Rating { get { return Data.Rating; } set { Data.Rating = value; } }
-    public int Orientation { get { return Data.Orientation; } set { Data.Orientation = value; } }
+    public int Id;
+    public int DirId;
+    public int Rating;
+    public int Orientation;
     public bool IsModifed;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -54,6 +54,13 @@ namespace PictureManager.ViewModel {
       ACore = ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
       Index = index;
+
+      if (data == null) return;
+      Id = data.Id;
+      DirId = data.DirectoryId;
+      Comment = data.Comment;
+      Rating = data.Rating;
+      Orientation = data.Orientation;
       Data = data;
     }
 
