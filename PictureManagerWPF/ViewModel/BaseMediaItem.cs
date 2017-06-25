@@ -121,6 +121,9 @@ namespace PictureManager.ViewModel {
 
     public void ReLoadFromDb() {
       ACore.Db.ReloadItem(Data);
+      Rating = Data.Rating;
+      Comment = Data.Comment;
+      Orientation = Data.Orientation;
       LoadKeywordsFromDb();
       LoadPeopleFromDb();
       IsModifed = false;
@@ -141,6 +144,9 @@ namespace PictureManager.ViewModel {
         ACore.Db.InsertOnSubmit(Data);
       } else {
         if (update) ReadMetadata();
+        Data.Rating = Rating;
+        Data.Comment = CommentEscaped;
+        Data.Orientation = Orientation;
         ACore.Db.UpdateOnSubmit(Data);
       }
 
