@@ -252,6 +252,12 @@ namespace PictureManager {
       }
     }
 
+    private void CmbThumbPage_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+      if (CmbThumbPage.SelectedIndex == -1) return;
+      ACore.ThumbsPageIndex = CmbThumbPage.SelectedIndex;
+      ACore.CreateThumbnailsWebPage();
+    }
+
     #region Commands
     private void CmdKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
       ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
@@ -775,7 +781,7 @@ namespace PictureManager {
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
-      if (stackPanel == null) return;
+      if (stackPanel == null || _dragDropObject == null) return;
       DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.All);
     }
 
@@ -929,12 +935,6 @@ namespace PictureManager {
 
       if (menu.Items.Count > 0)
         stackPanel.ContextMenu = menu;
-    }
-
-    private void CmbThumbPage_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (CmbThumbPage.SelectedIndex == -1) return;
-      ACore.ThumbsPageIndex = CmbThumbPage.SelectedIndex;
-      ACore.CreateThumbnailsWebPage();
     }
 
     private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {

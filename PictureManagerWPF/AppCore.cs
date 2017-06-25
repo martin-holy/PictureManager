@@ -270,6 +270,7 @@ namespace PictureManager {
       for (int i = 0; i < iPageCount; i++) {
         WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
       }
+      //this will start ACore.CreateThumbnailsWebPage()
       WMain.CmbThumbPage.SelectedIndex = 0;
     }
 
@@ -544,7 +545,7 @@ namespace PictureManager {
                 var destPath = Path.GetDirectoryName(item.Value);
                 if (destPath != null)
                   fo.MoveItem(item.Key.Replace(":\\", cachePath), destPath.Replace(":\\", cachePath),
-                    item.Value.Substring(destPath.Length + 1));
+                    item.Value.Substring(destPath.EndsWith("\\") ? destPath.Length : destPath.Length + 1));
               }
               #endregion
             }
