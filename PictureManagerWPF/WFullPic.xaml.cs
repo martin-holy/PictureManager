@@ -74,7 +74,8 @@ namespace PictureManager {
     }
 
     private void SwitchToBrowser() {
-      WbFullPic.Document?.GetElementById("fullPic")?.SetAttribute("src", "");
+      WbFullPic.Document?.GetElementById("fullPicA")?.SetAttribute("src", "");
+      WbFullPic.Document?.GetElementById("fullPicB")?.SetAttribute("src", "");
       ACore.WMain.SwitchToBrowser();
     }
 

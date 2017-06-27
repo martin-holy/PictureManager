@@ -13,6 +13,7 @@
       var picMarginLeft;
       var picMouseIsDown;
       var picIsRotated;
+      var currentFullPicId = "fullPicA";
 
       //to enable ScriptErrorsSuppressed = true
       function noError() { return true; }
@@ -49,33 +50,31 @@
         }
       }
 
-      function FullPic_OnMouseUp() {
+      function FullPic_OnMouseUp(sender) {
         picMouseIsDown = false;
         if (picBiggerThanScreen) {
-          var pic = document.getElementById("fullPic");
-          if (pic !== undefined && pic !== null) {
-            pic.style.marginTop = "";
-            pic.style.marginLeft = "";
-          }
-          FitPicture();
+          sender.style.marginTop = "";
+          sender.style.marginLeft = "";
+          FitPicture(sender);
         }
       }
 
       function FullPic_OnMouseMove(event) {
         if (picMouseIsDown && picBiggerThanScreen) {
-          var pic = document.getElementById("fullPic");
-          if (pic !== undefined && pic !== null) {
-            var yDiff = clientMouseDownY - event.clientY;
-            var xDiff = clientMouseDownX - event.clientX;
+          var yDiff = clientMouseDownY - event.clientY;
+          var xDiff = clientMouseDownX - event.clientX;
 
-            pic.style.marginTop = (picMarginTop - yDiff) + "px";
-            pic.style.marginLeft = (picMarginLeft - xDiff) + "px";
-          }
+          event.currentTarget.style.marginTop = (picMarginTop - yDiff) + "px";
+          event.currentTarget.style.marginLeft = (picMarginLeft - xDiff) + "px";
         }
       }
 
-      function FitPicture() {
-        var pic = document.getElementById("fullPic");
+      function FullPic_OnLoad(pic) {
+        FitPicture(pic);
+        SwitchCurrentFullPicId();
+      }
+
+      function FitPicture(pic) {
         if (pic === undefined || pic === null) return;
         pic.removeAttribute("height");
         pic.removeAttribute("width");
@@ -127,18 +126,33 @@
           pic.height = pnh;
           pic.width = pnw;
         }
-
-        pic.style.display = "block";
       }
 
       function SetPicture(src, orientation) {
-        var pic = document.getElementById("fullPic");
+        var pic = document.getElementById(GetTempFullPicId());
         if (pic === undefined || pic === null) return;
         pic.style.marginTop = null;
         pic.style.marginLeft = null;
-        pic.style.display = "none";
         pic.style.transform = "rotate(" + orientation + "deg)";
         pic.src = src;
+      }
+
+      function SwitchCurrentFullPicId() {
+        var currentPic = GetFullPic(true);
+        var tempPic = GetFullPic(false);
+        currentPic.style.display = "none";
+        currentPic.src = "";
+        tempPic.style.display = "block";
+
+        currentFullPicId = currentFullPicId === "fullPicA" ? "fullPicB" : "fullPicA";
+      }
+
+      function GetFullPic(current) {
+        return document.getElementById(current ? currentFullPicId : GetTempFullPicId());
+      }
+
+      function GetTempFullPicId() {
+        return currentFullPicId === "fullPicA" ? "fullPicB" : "fullPicA";
       }
 
       function SetInfo(infoText) {
@@ -196,12 +210,18 @@
     <div id="info"></div>
     <div id="content">
       <div id="fullPicBox">
-        <img id="fullPic" draggable="false"
-          OnMouseDown="FullPic_OnMouseDown(event);"
-          OnMouseUp="FullPic_OnMouseUp();"
-          OnMouseMove="FullPic_OnMouseMove(event);"
-          OnLoad="FitPicture();"
-          src="">
+        <img id="fullPicA" draggable="false"
+             OnMouseDown="FullPic_OnMouseDown(event);"
+             OnMouseUp="FullPic_OnMouseUp(this);"
+             OnMouseMove="FullPic_OnMouseMove(event);"
+             OnLoad="FullPic_OnLoad(this);"
+             src="">
+        <img id="fullPicB" draggable="false"
+             OnMouseDown="FullPic_OnMouseDown(event);"
+             OnMouseUp="FullPic_OnMouseUp(this);"
+             OnMouseMove="FullPic_OnMouseMove(event);"
+             OnLoad="FullPic_OnLoad(this);"
+             src="">
       </div>
     </div>
   </body>
