@@ -43,6 +43,8 @@ namespace PictureManager.ViewModel {
     public int DirId;
     public int Rating;
     public int Orientation;
+    public int Width { get { return Data.Width; } set { Data.Width = value; } }
+    public int Height { get { return Data.Height; } set { Data.Height = value; } }
     public bool IsModifed;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -310,7 +312,10 @@ namespace PictureManager.ViewModel {
         using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
           if (imageFileStream.Length == 0) return;
           BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-          BitmapMetadata bm = (BitmapMetadata)decoder.Frames[0].Metadata;
+          BitmapFrame frame = decoder.Frames[0];
+          Width = frame.PixelWidth;
+          Height = frame.PixelHeight;
+          BitmapMetadata bm = (BitmapMetadata)frame.Metadata;
           if (bm == null) return;
 
           //People

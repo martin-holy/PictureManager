@@ -437,6 +437,12 @@ namespace PictureManager.DataModel {
 
     [Column(Name = "Orientation", DbType = "integer DEFAULT 1", CanBeNull = false)]
     public int Orientation { get; set; }
+
+    [Column(Name = "Width", DbType = "integer DEFAULT 0", CanBeNull = false)]
+    public int Width { get; set; }
+
+    [Column(Name = "Height", DbType = "integer DEFAULT 0", CanBeNull = false)]
+    public int Height { get; set; }
   }
 
   [Table(Name = "People")]
