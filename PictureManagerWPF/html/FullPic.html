@@ -138,13 +138,9 @@
       }
 
       function SwitchCurrentFullPicId() {
-        var currentPic = GetFullPic(true);
-        var tempPic = GetFullPic(false);
-        currentPic.style.display = "none";
-        currentPic.src = "";
-        tempPic.style.display = "block";
-
-        currentFullPicId = currentFullPicId === "fullPicA" ? "fullPicB" : "fullPicA";
+        GetFullPic(true).style.display = "none";
+        GetFullPic(false).style.display = "block";
+        currentFullPicId = GetTempFullPicId();
       }
 
       function GetFullPic(current) {
