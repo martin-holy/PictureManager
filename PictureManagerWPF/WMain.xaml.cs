@@ -198,6 +198,15 @@ namespace PictureManager {
       Show();
     }
 
+    private void TvFilters_Select(object sender, MouseButtonEventArgs e) {
+      //this is PreviewMouseUp on StackPanel in TreeView
+      StackPanel stackPanel = (StackPanel)sender;
+
+      if (e.ChangedButton != MouseButton.Right) {
+        ACore.TreeView_FiltersStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton);
+      }
+    }
+
     private void TvKeywords_Select(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;

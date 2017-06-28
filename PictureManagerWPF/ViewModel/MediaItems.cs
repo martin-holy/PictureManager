@@ -246,6 +246,15 @@ namespace PictureManager.ViewModel {
       ACore.UpdateStatusBarInfo();
     }
 
+    public void LoadByFilter(Filter filter) {
+      Current = null;
+      Items.Clear();
+
+      //TODO zjistit jak číst filter.FilterData :D
+
+      ACore.UpdateStatusBarInfo();
+    }
+
     public void ScrollToCurrent() {
       if (Current == null || Current.Index == 0) return;
       ScrollTo(Current.Index);

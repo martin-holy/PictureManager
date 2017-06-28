@@ -123,6 +123,24 @@ namespace PictureManager {
       AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
     }
 
+    public void TreeView_FiltersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton) {
+      if (KeywordsEditMode) return;
+      if (mouseButton != MouseButton.Left) return;
+
+      var filter = item as ViewModel.Filter;
+      if (filter == null) return;
+      filter.IsSelected = true;
+      LastSelectedSource = filter;
+
+      if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
+        ThumbsWebWorker.CancelAsync();
+        ThumbsResetEvent.WaitOne();
+      }
+
+      MediaItems.LoadByFilter(filter);
+      InitThumbsPagesControl();
+    }
+
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
       if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup) return;
 

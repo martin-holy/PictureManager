@@ -73,6 +73,11 @@
       <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
     </Style>
 
+    <!-- TreeViewFiltersStackPanel -->
+    <Style x:Key="TreeViewFiltersStackPanel" TargetType="StackPanel" BasedOn="{StaticResource TreeViewStackPanel}">
+      <EventSetter Event="PreviewMouseUp" Handler="TvFilters_Select" />
+    </Style>
+
     <!-- TreeViewKeywordsStackPanel -->
     <Style x:Key="TreeViewKeywordsStackPanel" TargetType="StackPanel" BasedOn="{StaticResource TreeViewStackPanel}">
       <EventSetter Event="PreviewMouseUp" Handler="TvKeywords_Select" />
@@ -367,7 +372,7 @@
 
               <!-- TreeView Filters - Filter -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:Filter}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewFiltersStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
