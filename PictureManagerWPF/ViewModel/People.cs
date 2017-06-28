@@ -37,7 +37,7 @@ namespace PictureManager.ViewModel {
 
       //Add People without Group
       foreach (var person in (from p in ACore.Db.People where AllPeople.All(ap => ap.Id != p.Id) select p)
-          .OrderBy(x => x.Name).Select(x => new Person(x))) {
+          .OrderBy(x => x.Name).Select(x => new Person(x) {Parent = this})) {
         Items.Add(person);
         AllPeople.Add(person);
       }
