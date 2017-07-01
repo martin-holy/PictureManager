@@ -43,8 +43,8 @@ namespace PictureManager.ViewModel {
     public int DirId;
     public int Rating;
     public int Orientation;
-    public int Width { get { return Data.Width; } set { Data.Width = value; } }
-    public int Height { get { return Data.Height; } set { Data.Height = value; } }
+    public int Width;
+    public int Height;
     public bool IsModifed;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -63,6 +63,8 @@ namespace PictureManager.ViewModel {
       Comment = data.Comment;
       Rating = data.Rating;
       Orientation = data.Orientation;
+      Width = data.Width;
+      Height = data.Height;
       Data = data;
     }
 
@@ -141,7 +143,9 @@ namespace PictureManager.ViewModel {
           FileName = FileNameWithExt,
           Rating = Rating,
           Comment = Comment,
-          Orientation = Orientation
+          Orientation = Orientation,
+          Width = Width,
+          Height = Height
         };
         ACore.Db.InsertOnSubmit(Data);
       } else {
