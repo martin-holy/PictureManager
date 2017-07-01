@@ -309,7 +309,7 @@ namespace PictureManager.ViewModel {
     }
 
     public string GetFullScreenInfo() {
-      return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div><div>{Current?.Width}x{Current?.Height}</div>{Current?.GetKeywordsAsString(true)}";
+      return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div><div>{Current?.Width}x{Current?.Height}</div>{Current?.GetKeywordsAsString(true)}<div>{Current?.FileNameWithExt}</div>";
     }
   }
 }
