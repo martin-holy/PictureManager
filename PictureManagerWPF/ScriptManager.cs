@@ -25,5 +25,9 @@ namespace PictureManager {
       dob.SetData(DataFormats.FileDrop, ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray());
       DragDrop.DoDragDrop(ACore.WMain, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
+
+    public void ScrollToCurrent() {
+      ACore.MediaItems.ScrollToCurrent();
+    }
   }
 }

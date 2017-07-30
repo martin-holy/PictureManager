@@ -407,6 +407,17 @@ namespace PictureManager {
       about.ShowDialog();
     }
 
+    private void CmdShowHideTabMain_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var col = GridMain.ColumnDefinitions[0];
+      if (col.ActualWidth > 0) {
+        col.Tag = col.ActualWidth;
+        col.Width = new GridLength(0);
+      }
+      else {
+        col.Width = new GridLength((double?) col.Tag ?? 350);
+      }
+    }
+
     private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {
       var catalog = new WCatalog(ACore) { Owner = this };
       catalog.Show();
@@ -598,7 +609,11 @@ namespace PictureManager {
       }
     }
 
-    private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e)
+    {
+      
+
+      //FlyoutTabs.IsOpen = !FlyoutTabs.IsOpen;
       /*DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
       dsd.ShowDialog();*/
 

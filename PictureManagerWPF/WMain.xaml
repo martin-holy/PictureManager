@@ -12,8 +12,9 @@
         Loaded="Window_Loaded" 
         Closing="Window_Closing" 
         FontSize="13.333" 
-        SaveWindowPosition="True" TitleCaps="False">
-  
+        SaveWindowPosition="True"
+        TitleCharacterCasing="Normal">
+
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
       <Menu Background="Transparent">
@@ -31,6 +32,7 @@
           <MenuItem Command="pm:CustomCommands.CmdKeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
         <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
+        <MenuItem Command="pm:CustomCommands.CmdShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
       <ComboBox x:Name="CmbViewers" SelectionChanged="CmbViewers_OnSelectionChanged">
         <ComboBox.ItemTemplate>
@@ -149,7 +151,78 @@
     <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdAlways_CanExecute" Executed="CmdOpenSettings_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
   </controls:MetroWindow.CommandBindings>
+
+  <!--<controls:MetroWindow.Flyouts>
+    <controls:FlyoutsControl>
+      <controls:Flyout Position="Left" Width="350" x:Name="FlyoutTabs" CloseButtonVisibility="Collapsed" TitleVisibility="Collapsed" IsPinned="False" Margin="0,31,0,22">
+        
+      </controls:Flyout>
+    </controls:FlyoutsControl>
+  </controls:MetroWindow.Flyouts>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <WindowsFormsHost Grid.Row="0" Margin="340,0,0,0">
+      <wf:WebBrowser x:Name="WbThumbs" Margin="0,0,2,2"/>
+    </WindowsFormsHost>
+
+    <StatusBar Grid.Row="1" x:Name="MainStatusBar">
+      <StatusBar.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="100" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+          </Grid>
+        </ItemsPanelTemplate>
+      </StatusBar.ItemsPanel>
+      <StatusBarItem>
+        <TextBlock Text="{Binding ViewBaseInfo}" />
+      </StatusBarItem>
+      <Separator Grid.Column="1" />
+      <StatusBarItem Grid.Column="2">
+        <TextBlock Text="{Binding CurrentPictureFilePath}" />
+      </StatusBarItem>
+      <Separator Grid.Column="3" />
+      <StatusBarItem Grid.Column="4">
+        <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
+      </StatusBarItem>
+      <StatusBarItem Grid.Column="5">
+        <ComboBox x:Name="CmbThumbPage" Visibility="Collapsed" SelectionChanged="CmbThumbPage_OnSelectionChanged" />
+      </StatusBarItem>
+      <StatusBarItem Grid.Column="6">
+        <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
+          <Button Margin="0,0,0,0" Content="Ok" Click="BtnStatBarOk_OnClick" MinWidth="60" />
+          <Button Margin="3,0,0,0" Content="Cancel" Click="BtnStatBarCancel_OnClick" MinWidth="60" />
+        </StackPanel>
+      </StatusBarItem>
+      <StatusBar.Style>
+        <Style>
+          <Setter Property="StatusBar.Background" Value="{DynamicResource AccentColorBrush}" />
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding AppMode}" Value="2">
+              <Setter Property="StatusBar.Background" Value="#CA5100" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding AppMode}" Value="3">
+              <Setter Property="StatusBar.Background" Value="#CA5100" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </StatusBar.Style>
+    </StatusBar>
+  </Grid>-->
 
   <DockPanel>
 
@@ -203,17 +276,15 @@
         </Style>
       </StatusBar.Style>
     </StatusBar>
-    
-    <Grid>
-      
+
+    <Grid x:Name="GridMain">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
         <ColumnDefinition Width="3" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      
-      <TabControl x:Name="TcMain">
-        
+
+      <TabControl x:Name="TcMain" Grid.Row="0">
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders">
@@ -257,11 +328,11 @@
             </TreeView.Resources>
           </TreeView>
         </TabItem>
-        
+
         <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
           <!-- TreeView Keywords -->
           <TreeView x:Name="TvKeywords">
-            
+
             <TreeView.ItemContainerStyle>
               <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -272,7 +343,8 @@
                   <DataTrigger Binding="{Binding IsMarked}" Value="True">
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding BgBrush}" Value="2"> <!-- IsChosen -->
+                  <DataTrigger Binding="{Binding BgBrush}" Value="2">
+                    <!-- IsChosen -->
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -396,7 +468,6 @@
       <WindowsFormsHost Grid.Column="2">
         <wf:WebBrowser x:Name="WbThumbs" Margin="0,0,2,2"/>
       </WindowsFormsHost>
-
     </Grid>
   </DockPanel>
 </controls:MetroWindow>
