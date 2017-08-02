@@ -6,17 +6,18 @@ namespace PictureManager.Dialogs {
   /// Interaction logic for ProgressBarDialog.xaml
   /// </summary>
   public partial class ProgressBarDialog {
-    public BackgroundWorker worker;
+    public BackgroundWorker Worker;
 
     public ProgressBarDialog() {
       InitializeComponent();
-      worker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
-      worker.ProgressChanged += worker_ProgressChanged;
-      worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+      Worker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      Worker.ProgressChanged += worker_ProgressChanged;
+      Worker.RunWorkerCompleted += worker_RunWorkerCompleted;
     }
 
     private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbWorkerProgress.Value = e.ProgressPercentage;
+      LblProgress.Content = e.UserState;
     }
 
     private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -24,7 +25,7 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
-      worker.CancelAsync();
+      Worker.CancelAsync();
       Close();
     }
   }

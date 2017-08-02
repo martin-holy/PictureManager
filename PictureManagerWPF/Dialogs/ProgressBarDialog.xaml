@@ -5,20 +5,22 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="ProgressBarDialog" Height="90" Width="360" 
+        Title="ProgressBarDialog" Height="122" Width="444.8" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
         ShowInTaskbar="False" 
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
-        ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner" TitleCaps="False">
+        ShowMinButton="False" ShowCloseButton="False"
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"></RowDefinition>
+      <RowDefinition Height="Auto"></RowDefinition>
       <RowDefinition Height="*"></RowDefinition>
     </Grid.RowDefinitions>
-    <ProgressBar Grid.Row="0" Height="20" Margin="5" x:Name="PbWorkerProgress"></ProgressBar>
-    <Button Grid.Row="1" Margin="3,0,3,3" Content="Cancel" VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
+    <Label Grid.Row="0" x:Name="LblProgress" Content="" />
+    <ProgressBar Grid.Row="1" Height="20" Margin="5" x:Name="PbWorkerProgress"></ProgressBar>
+    <Button Grid.Row="2" Margin="3,0,3,3" Content="Cancel" VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
   </Grid>
 </controls:MetroWindow>
