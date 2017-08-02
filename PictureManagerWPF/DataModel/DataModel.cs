@@ -30,6 +30,7 @@ namespace PictureManager.DataModel {
     public List<Person> People;
     public List<Viewer> Viewers;
     public List<ViewerAccess> ViewersAccess;
+    public List<GeoName> GeoNames;
     public List<SQLiteSequence> SQLiteSequences;
 
     public PmDataContext(string connectionString) {
@@ -75,6 +76,7 @@ namespace PictureManager.DataModel {
       People = GetTableData<Person>();
       Viewers = GetTableData<Viewer>();
       ViewersAccess = GetTableData<ViewerAccess>();
+      GeoNames = GetTableData<GeoName>();
 
       return true;
     }
@@ -178,6 +180,9 @@ namespace PictureManager.DataModel {
         case nameof(ViewerAccess): {
             if (addIt) ViewersAccess.Add((ViewerAccess)data); else ViewersAccess.Remove((ViewerAccess)data); break;
           }
+        case nameof(GeoName): {
+          if (addIt) GeoNames.Add((GeoName)data); else GeoNames.Remove((GeoName)data); break;
+        }
       }
 
       Mut.ReleaseMutex();
@@ -443,6 +448,9 @@ namespace PictureManager.DataModel {
 
     [Column(Name = "Height", DbType = "integer DEFAULT 0", CanBeNull = false)]
     public int Height { get; set; }
+
+    [Column(Name = "GeoNameId", DbType = "integer", CanBeNull = true)]
+    public int? GeoNameId { get; set; }
   }
 
   [Table(Name = "People")]
@@ -470,6 +478,25 @@ namespace PictureManager.DataModel {
 
     [Column(Name = "MediaItemId", DbType = "integer", CanBeNull = true)]
     public int? MediaItemId { get; set; }
+  }
+
+  [Table(Name = "GeoNames")]
+  public class GeoName : BaseTable
+  {
+    [Column(Name = "ParentGeoNameId", DbType = "integer", CanBeNull = true)]
+    public int? ParentGeoNameId { get; set; }
+
+    [Column(Name = "ToponymName", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
+    public string ToponymName { get; set; }
+
+    [Column(Name = "Name", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
+    public string Name { get; set; }
+
+    [Column(Name = "GeoNameId", DbType = "integer", CanBeNull = false)]
+    public int GeoNameId { get; set; }
+
+    [Column(Name = "Fcode", DbType = "nvarchar(5)", CanBeNull = false)]
+    public string Fcode { get; set; }
   }
 
   [Table(Name = "sqlite_sequence")]

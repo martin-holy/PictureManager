@@ -94,6 +94,8 @@
     <Compile Include="ViewModel\FolderKeyword.cs" />
     <Compile Include="ViewModel\FolderKeywords.cs" />
     <Compile Include="ViewModel\Folders.cs" />
+    <Compile Include="ViewModel\GeoName.cs" />
+    <Compile Include="ViewModel\GeoNames.cs" />
     <Compile Include="ViewModel\MediaItems.cs" />
     <Compile Include="ViewModel\Picture.cs" />
     <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">

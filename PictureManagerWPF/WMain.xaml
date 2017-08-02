@@ -23,6 +23,7 @@
           <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
           <MenuItem Command="pm:CustomCommands.CmdCatalog" />
           <MenuItem Command="pm:CustomCommands.CmdOpenSettings" Tag="appbar_settings" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:CustomCommands.CmdGeoNames" Tag="appbar_location_checkin" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:CustomCommands.CmdTestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
@@ -117,6 +118,7 @@
     <RoutedUICommand x:Key="ViewerIncludeFolder" Text="Include for Viewer" />
     <RoutedUICommand x:Key="ViewerExcludeFolder" Text="Exclude for Viewer" />
     <RoutedUICommand x:Key="ViewerRemoveFolder" Text="Remove" />
+    <RoutedUICommand x:Key="GeoNameShowAll" Text="Show all (recursive)" />
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.CommandBindings>
@@ -140,6 +142,7 @@
     <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
     <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
     <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
+    <CommandBinding Command="{StaticResource GeoNameShowAll}" Executed="CmdGeoNameShowAll" />
 
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
@@ -149,6 +152,7 @@
     <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdAlways_CanExecute" Executed="CmdTestButton_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdAlways_CanExecute" Executed="CmdOpenSettings_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdGeoNames" CanExecute="CmdGeoNames_CanExecute" Executed="CmdGeoNames_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
@@ -371,6 +375,15 @@
 
               <!-- TreeView Keywords - FolderKeyword -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderKeyword}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Keywords - GeoName -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:GeoName}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />

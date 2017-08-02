@@ -42,5 +42,8 @@ namespace PictureManager {
 
     public static readonly RoutedUICommand CmdShowHideTabMain = new RoutedUICommand(
       "S/H", "CmdShowHideTabMain", typeof(CustomCommands));
+
+    public static readonly RoutedUICommand CmdGeoNames = new RoutedUICommand(
+      "GeoNames", "CmdGeoNames", typeof(CustomCommands));
   }
 }

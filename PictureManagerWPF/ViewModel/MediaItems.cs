@@ -80,6 +80,10 @@ namespace PictureManager.ViewModel {
             mi.Rating = rating.Value;
             break;
           }
+          case nameof(GeoName): {
+            mi.GeoNameId = ((GeoName) item).GeoNameId;
+            break;
+          }
         }
         mi.WbUpdateInfo();
       }
@@ -193,6 +197,18 @@ namespace PictureManager.ViewModel {
             }
             break;
           }
+        case nameof(GeoName): {
+          var geoName = (GeoName) tag;
+          if (recursive) {
+            var geoNames = new List<GeoName>();
+            geoName.GetThisAndSubGeoNames(ref geoNames);
+            items = ACore.Db.MediaItems.Where(x => geoNames.Select(gn => (int?) gn.GeoNameId).Contains(x.GeoNameId)).ToArray();
+          }
+          else {
+            items = ACore.Db.MediaItems.Where(x => x.GeoNameId == geoName.GeoNameId).ToArray();
+          }
+          break;
+        }
       }
 
       if (items != null) {

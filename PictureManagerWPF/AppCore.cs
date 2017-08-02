@@ -26,6 +26,7 @@ namespace PictureManager {
     public ViewModel.Ratings Ratings;
     public ViewModel.Filters Filters;
     public ViewModel.Viewers Viewers;
+    public ViewModel.GeoNames GeoNames;
 
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
@@ -99,6 +100,7 @@ namespace PictureManager {
       Ratings = new ViewModel.Ratings();
       Filters = new ViewModel.Filters();
       Viewers = new ViewModel.Viewers {CanModifyItems = true};
+      GeoNames = new ViewModel.GeoNames();
 
       People.Load();
       Keywords.Load();
@@ -108,9 +110,10 @@ namespace PictureManager {
       Ratings.Load();
       Filters.Load();
       Viewers.Load();
+      GeoNames.Load();
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
-      KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords};
+      KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords, GeoNames};
       FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters, Viewers};
     }
 
@@ -142,7 +145,7 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup) return;
+      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup || item is ViewModel.GeoNames) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {
@@ -201,7 +204,7 @@ namespace PictureManager {
     }
 
     public void MarkUsedKeywordsAndPeople() {
-      //can by Person, Keyword, FolderKeyword or Rating
+      //can by Person, Keyword, FolderKeyword, Rating or GeoName
       foreach (var item in MarkedTags) {
         item.IsMarked = false;
         item.PicCount = 0;
@@ -236,6 +239,17 @@ namespace PictureManager {
             fk = (ViewModel.FolderKeyword) fk.Parent;
           } while (fk != null);
         }
+
+        var geoName = GeoNames.AllGeoNames.SingleOrDefault(x => x.GeoNameId == mi.GeoNameId);
+        if (geoName != null && !geoName.IsMarked) {
+          var gn = geoName;
+          do {
+            if (gn.IsMarked) break;
+            gn.IsMarked = true;
+            MarkedTags.Add(gn);
+            gn = (ViewModel.GeoName) gn.Parent;
+          } while (gn != null);
+        }
       }
 
       foreach (var rating in mediaItems.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
@@ -264,6 +278,22 @@ namespace PictureManager {
           case nameof(ViewModel.Rating): {
             var rating = (ViewModel.Rating) item;
             rating.PicCount = mediaItems.Count(p => p.Rating == rating.Value);
+            break;
+          }
+          case nameof(ViewModel.GeoName): {
+              //TODO C# how to count files in subdirectories
+            var geoName = (ViewModel.GeoName) item;
+
+            var geoNames = new List<ViewModel.GeoName>();
+            geoName.GetThisAndSubGeoNames(ref geoNames);
+            geoName.PicCount = mediaItems.Count(x => geoNames.Select(gn => (int?) gn.GeoNameId).Contains(x.GeoNameId));
+
+
+
+            /*  var picCount = mediaItems.Count(x => x.GeoNameId == geoName.GeoNameId);
+            if (picCount != 0) geoName.PicCount = picCount;
+            var parent = geoName.Parent as ViewModel.BaseTreeViewTagItem;
+            if (parent != null) parent.PicCount += geoName.PicCount;*/
             break;
           }
         }

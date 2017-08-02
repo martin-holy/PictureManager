@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,9 +9,11 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
+using InputDialog = PictureManager.Dialogs.InputDialog;
 
 namespace PictureManager {
   /// <summary>
@@ -379,6 +382,10 @@ namespace PictureManager {
       ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
+    private void CmdGeoNameShowAll(object sender, ExecutedRoutedEventArgs e) {
+      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
+    }
+
     private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = true;
     }
@@ -546,6 +553,74 @@ namespace PictureManager {
       }
       ACore.Db.SubmitChanges();
     }
+
+    private void CmdGeoNames_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.MediaItems.Items.Count(x => x.IsSelected) > 0;
+    }
+
+    private void CmdGeoNames_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var progress = new ProgressBarDialog { Owner = this };
+
+      progress.Worker.DoWork += delegate(object o, DoWorkEventArgs args) {
+        var worker = (BackgroundWorker) o;
+        var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
+        var count = mis.Count;
+        var done = 0;
+        const string url = "http://api.geonames.org/extendedFindNearby?lat={0}&lng={1}&username=cospi";
+
+        foreach (var mi in mis) {
+          if (worker.CancellationPending) {
+            args.Cancel = true;
+            break;
+          }
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileNameWithExt})");
+
+          if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata();
+          if (mi.Lat == null || mi.Lng == null) continue;
+
+          var xml = new XmlDocument();
+          xml.Load(string.Format(url, mi.Lat, mi.Lng).Replace(',', '.'));
+          var geonames = xml.SelectNodes("/geonames/geoname");
+          if (geonames == null) continue;
+
+          DataModel.GeoName parentGeoName = null;
+          foreach (XmlNode geoname in geonames) {
+            var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
+            var dbGeoName = ACore.Db.GeoNames.SingleOrDefault(x => x.GeoNameId == geoNameId);
+
+            if (dbGeoName == null) {
+              dbGeoName = new DataModel.GeoName {
+                Id = ACore.Db.GetNextIdFor<DataModel.GeoName>(),
+                GeoNameId = geoNameId,
+                ToponymName = geoname.SelectSingleNode("toponymName")?.InnerText,
+                Name = geoname.SelectSingleNode("name")?.InnerText,
+                Fcode = geoname.SelectSingleNode("fcode")?.InnerText,
+                ParentGeoNameId = parentGeoName?.GeoNameId
+              };
+
+              ACore.Db.InsertOnSubmit(dbGeoName);
+            }
+
+            parentGeoName = dbGeoName;
+          }
+
+          if (parentGeoName == null) continue;
+
+          mi.GeoNameId = parentGeoName.GeoNameId;
+          mi.Data.GeoNameId = parentGeoName.GeoNameId;
+          ACore.Db.UpdateOnSubmit(mi.Data);
+          ACore.Db.SubmitChanges();
+          mi.TryWriteMetadata();
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.ShowDialog();
+    }
+
 
     public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
       var original = new FileInfo(filePath);
@@ -948,6 +1023,12 @@ namespace PictureManager {
         }
         case nameof(ViewModel.Viewer): {
           MenuAddItem(menu, "ViewerEdit", item);
+          break;
+        }
+        case nameof(ViewModel.GeoName): {
+          if (!ACore.KeywordsEditMode) {
+            MenuAddItem(menu, "GeoNameShowAll", item);
+          }
           break;
         }
         case nameof(ViewModel.BaseTreeViewItem): {

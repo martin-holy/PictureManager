@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing.Imaging;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -45,6 +46,9 @@ namespace PictureManager.ViewModel {
     public int Orientation;
     public int Width;
     public int Height;
+    public int? GeoNameId;
+    public double? Lat;
+    public double? Lng;
     public bool IsModifed;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -65,6 +69,7 @@ namespace PictureManager.ViewModel {
       Orientation = data.Orientation;
       Width = data.Width;
       Height = data.Height;
+      GeoNameId = data.GeoNameId;
       Data = data;
     }
 
@@ -99,6 +104,8 @@ namespace PictureManager.ViewModel {
         sb.Append(withComment ? CommentEscaped : "C");
         sb.Append("</div>");
       }
+
+      if (GeoNameId != null) sb.Append("<div>G</div>");
 
       return sb.ToString();
     }
@@ -153,6 +160,7 @@ namespace PictureManager.ViewModel {
         Data.Rating = Rating;
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
+        Data.GeoNameId = GeoNameId;
         ACore.Db.UpdateOnSubmit(Data);
       }
 
@@ -286,6 +294,12 @@ namespace PictureManager.ViewModel {
             metadata.Comment = Comment ?? string.Empty;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
 
+            //GeoNameId
+            if (GeoNameId == null)
+              metadata.RemoveQuery(@"/xmp/GeoNames:GeoNameId");
+            else
+              metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", GeoNameId.ToString());
+
             JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
             encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
               decoder.Frames[0].ColorContexts));
@@ -354,14 +368,31 @@ namespace PictureManager.ViewModel {
 
           //Keywords
           Keywords.Clear();
-          if (bm.Keywords == null) return;
-          //Filter out duplicities
-          foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-            if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-              var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
-              if (keyword != null)
-                Keywords.Add(keyword);
+          if (bm.Keywords != null) {
+            //Filter out duplicities
+            foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+              if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
+                var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
+                if (keyword != null)
+                  Keywords.Add(keyword);
+              }
             }
+          }
+
+          //GeoNameId
+          GeoNameId = (int?) bm.GetQuery("/xmp/GeoNames:GeoNameId");
+
+          //Lat Lng
+          var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
+          if (tmpLat != null) {
+            var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
+            Lat = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) * (tmpLat.EndsWith("S") ? -1 : 1);
+          }
+
+          var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
+          if (tmpLng != null) {
+            var vals = tmpLng.Substring(0, tmpLng.Length - 1).Split(',');
+            Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) * (tmpLng.EndsWith("W") ? -1 : 1);
           }
         }
       } catch (Exception) {
