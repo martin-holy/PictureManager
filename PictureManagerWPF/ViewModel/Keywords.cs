@@ -82,7 +82,12 @@ namespace PictureManager.ViewModel {
 
       if (!create) return null;
 
-      BaseTreeViewItem root = this;
+      var ioSlash = fullPath.IndexOf('/');
+      var keyFirstTitle = fullPath.Substring(0, ioSlash == -1 ? fullPath.Length : ioSlash);
+      BaseTreeViewItem root = AllKeywords.SingleOrDefault(x => x.Title.Equals(keyFirstTitle));
+      if (root == null)
+        root = Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ?? GroupCreate("Auto Added");
+
       foreach (var keyPart in fullPath.Split('/')) {
         var k = root.Items.Cast<Keyword>().SingleOrDefault(x => x.Title.Equals(keyPart));
         root = k ?? CreateKeyword(root, keyPart);
