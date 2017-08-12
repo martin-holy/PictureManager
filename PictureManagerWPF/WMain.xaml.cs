@@ -386,6 +386,26 @@ namespace PictureManager {
       ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
+    private void CmdGeoNameNew(object sender, ExecutedRoutedEventArgs e) {
+      InputDialog inputDialog = new InputDialog {
+        Owner = this,
+        IconName = "appbar_location_checkin",
+        Title = "GeoName latitude and longitude",
+        Question = "Enter in format: N36.75847,W3.84609",
+        Answer = ""
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (inputDialog.ShowDialog() ?? true) {
+        ((ViewModel.GeoNames)e.Parameter).New(inputDialog.Answer);
+      }
+    }
+
     private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = true;
     }
@@ -619,6 +639,7 @@ namespace PictureManager {
 
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
+      ACore.GeoNames.Load();
     }
 
 
@@ -948,14 +969,19 @@ namespace PictureManager {
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
-      StackPanel stackPanel = (StackPanel) sender;
-      object item = stackPanel.DataContext;
+      var stackPanel = (StackPanel) sender;
+      var item = stackPanel.DataContext;
 
       //if (stackPanel.ContextMenu != null) return;
-      ContextMenu menu = new ContextMenu {Tag = item};
+      var menu = new ContextMenu {Tag = item};
 
       var category = (item as ViewModel.BaseTreeViewItem)?.GetTopParent() as ViewModel.BaseCategoryItem;
       if (category != null) {
+
+        if (item is ViewModel.BaseCategoryItem && category.Category == Categories.GeoNames) {
+          MenuAddItem(menu, "GeoNameNew", item);
+        }
+
         if (category.CanModifyItems) {
           var cat = item as ViewModel.BaseCategoryItem;
           var group = item as ViewModel.CategoryGroup;
