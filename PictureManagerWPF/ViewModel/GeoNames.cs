@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Xml;
 
@@ -33,16 +34,15 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public void New(string latLng) {
+    public DataModel.GeoName InsertGeoNameHierarchy(double lat, double lng) {
       const string url = "http://api.geonames.org/extendedFindNearby?lat={0}&lng={1}&username=cospi";
-      var lat = latLng.Split(',')[0].Replace("N", "").Replace("S", "-");
-      var lng = latLng.Split(',')[1].Replace("E", "").Replace("W", "-");
 
       var xml = new XmlDocument();
       xml.Load(string.Format(url, lat, lng));
       var geonames = xml.SelectNodes("/geonames/geoname");
-      if (geonames == null) return;
+      if (geonames == null) return null;
 
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
       DataModel.GeoName parentGeoName = null;
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
@@ -58,13 +58,21 @@ namespace PictureManager.ViewModel {
             ParentGeoNameId = parentGeoName?.GeoNameId
           };
 
-          ACore.Db.InsertOnSubmit(dbGeoName);
+          ACore.Db.InsertOnSubmit(dbGeoName, lists);
         }
 
         parentGeoName = dbGeoName;
       }
 
-      ACore.Db.SubmitChanges();
+      ACore.Db.SubmitChanges(lists);
+      return parentGeoName;
+    }
+
+    public void New(string latLng) {
+      var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-").Replace(",", "."), CultureInfo.InvariantCulture);
+      var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
+
+      InsertGeoNameHierarchy(lat, lng);
 
       Load();
     }

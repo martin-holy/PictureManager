@@ -7,6 +7,7 @@ namespace PictureManager.ViewModel {
     public BaseTreeViewItem IncludedFolders;
     public BaseTreeViewItem ExcludedFolders;
     public DataModel.Viewer Data;
+    public List<DataModel.BaseTable>[] Lists;
 
     public Viewer() {
       IncludedFolders = new BaseTreeViewItem {Title = "Included Folders", IconName = "appbar_folder_star", Parent = this};
@@ -16,6 +17,7 @@ namespace PictureManager.ViewModel {
       Items.Add(ExcludedFolders);
 
       IconName = "appbar_eye";
+      Lists = ACore.Db.GetInsertUpdateDeleteLists();
     }
 
     public Viewer(DataModel.Viewer data) : this() {
@@ -65,7 +67,7 @@ namespace PictureManager.ViewModel {
         DirectoryId = ACore.Db.InsertDirecotryInToDb(path)
       };
 
-      ACore.Db.InsertOnSubmit(dmViewerAccess);
+      ACore.Db.InsertOnSubmit(dmViewerAccess, Lists);
       SetInPlace(InitFolder(dmViewerAccess, included, path));
     }
 

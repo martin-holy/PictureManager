@@ -27,6 +27,7 @@ namespace PictureManager {
     public ViewModel.Filters Filters;
     public ViewModel.Viewers Viewers;
     public ViewModel.GeoNames GeoNames;
+    public ViewModel.SqlQueries SqlQueries;
 
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
@@ -101,6 +102,7 @@ namespace PictureManager {
       Filters = new ViewModel.Filters();
       Viewers = new ViewModel.Viewers {CanModifyItems = true};
       GeoNames = new ViewModel.GeoNames();
+      SqlQueries = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
 
       People.Load();
       Keywords.Load();
@@ -111,10 +113,11 @@ namespace PictureManager {
       Filters.Load();
       Viewers.Load();
       GeoNames.Load();
+      SqlQueries.Load();
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
       KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords, GeoNames};
-      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters, Viewers};
+      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters, Viewers, SqlQueries};
     }
 
     public void UpdateStatusBarInfo() {
@@ -129,6 +132,12 @@ namespace PictureManager {
     public void TreeView_FiltersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton) {
       if (KeywordsEditMode) return;
       if (mouseButton != MouseButton.Left) return;
+
+      var sqlQuery = item as ViewModel.SqlQuery;
+      if (sqlQuery != null) {
+        TreeView_KeywordsStackPanel_PreviewMouseUp(item, mouseButton, false);
+        return;
+      }
 
       var filter = item as ViewModel.Filter;
       if (filter == null) return;
@@ -145,7 +154,7 @@ namespace PictureManager {
     }
 
     public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup || item is ViewModel.GeoNames) return;
+      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup || item is ViewModel.GeoNames || item is ViewModel.SqlQueries) return;
 
       switch (mouseButton) {
         case MouseButton.Left: {
@@ -365,8 +374,9 @@ namespace PictureManager {
         var iFrom = ThumbsPageIndex == 0 ? 0 : ThumbsPageIndex * ThumbsPerPage;
         var iTo = count > iFrom + ThumbsPerPage ? iFrom + ThumbsPerPage : count;
         var done = 0;
+        e.Result = e.Argument;
 
-        for (int i = iFrom; i < iTo; i++) {
+        for (var i = iFrom; i < iTo; i++) {
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
@@ -374,11 +384,11 @@ namespace PictureManager {
           }
           var mi = MediaItems.Items[i];
           var thumbPath = mi.FilePathCache;
-          bool flag = File.Exists(thumbPath);
+          var flag = File.Exists(thumbPath);
           if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
 
           if (mi.Data == null) {
-            mi.SaveMediaItemInToDb(false, true);
+            mi.SaveMediaItemInToDb(false, true, (List<DataModel.BaseTable>[]) e.Argument);
             Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
           }
 
@@ -389,8 +399,8 @@ namespace PictureManager {
 
       ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
-        if ((bool)Application.Current.Properties[nameof(AppProps.SubmitChanges)])
-          Db.SubmitChanges();
+        if ((bool) Application.Current.Properties[nameof(AppProps.SubmitChanges)])
+          Db.SubmitChanges((List<DataModel.BaseTable>[]) e.Result);
         MediaItems.ScrollToCurrent();
         if (MediaItems.Current != null) {
           MediaItems.Current.IsSelected = false;
@@ -400,7 +410,7 @@ namespace PictureManager {
       };
 
       Application.Current.Properties[nameof(AppProps.SubmitChanges)] = false;
-      ThumbsWebWorker.RunWorkerAsync();
+      ThumbsWebWorker.RunWorkerAsync(Db.GetInsertUpdateDeleteLists());
     }
 
     public bool FileOperation(FileOperations mode, bool recycle) {
@@ -462,6 +472,7 @@ namespace PictureManager {
         var cachePath = @Settings.Default.CachePath;
         var mItems = Db.MediaItems;
         var dirs = Db.Directories;
+        var lists = Db.GetInsertUpdateDeleteLists();
 
         if (mode == FileOperations.Delete) {
           var itemsToDel = new List<DataModel.MediaItem>();
@@ -491,14 +502,14 @@ namespace PictureManager {
 
           foreach (var mi in itemsToDel) {
             foreach(var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == mi.Id)) {
-              Db.DeleteOnSubmit(mik);
+              Db.DeleteOnSubmit(mik, lists);
             }
 
             foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == mi.Id)) {
-              Db.DeleteOnSubmit(mip);
+              Db.DeleteOnSubmit(mip, lists);
             }
 
-            Db.DeleteOnSubmit(mi);
+            Db.DeleteOnSubmit(mi, lists);
           }
         }
 
@@ -530,7 +541,7 @@ namespace PictureManager {
                   Rating = srcPic.Rating,
                   Comment = srcPic.Comment,
                   Orientation = srcPic.Orientation
-                });
+                }, lists);
 
                 //duplicate Picture Keywords
                 foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
@@ -538,7 +549,7 @@ namespace PictureManager {
                     Id = Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
                     KeywordId = mik.KeywordId,
                     MediaItemId = destPicId
-                  });
+                  }, lists);
                 }
 
                 //duplicate Picture People
@@ -547,7 +558,7 @@ namespace PictureManager {
                     Id = Db.GetNextIdFor<DataModel.MediaItemPerson>(),
                     PersonId = mip.PersonId,
                     MediaItemId = destPicId
-                  });
+                  }, lists);
                 }
 
                 //duplicate thumbnail
@@ -562,13 +573,13 @@ namespace PictureManager {
                 //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
                 srcPic.DirectoryId = destDirId;
                 srcPic.FileName = Path.GetFileName(item.Value);
-                Db.UpdateOnSubmit(srcPic);
+                Db.UpdateOnSubmit(srcPic, lists);
 
                 //delete empty directory
                 if (mItems.Count(x => x.DirectoryId.Equals(srcDirId)) == 0) {
                   var emptyDir = dirs.SingleOrDefault(x => x.Id.Equals(srcDirId));
                   if (emptyDir != null) {
-                    Db.DeleteOnSubmit(emptyDir);
+                    Db.DeleteOnSubmit(emptyDir, lists);
                   }
                 }
 
@@ -586,7 +597,7 @@ namespace PictureManager {
 
                 foreach (var dir in dirs.Where(x => x.Path.Equals(item.Key) || x.Path.StartsWith(item.Key + "\\"))) {
                   dir.Path = dir.Path.Replace(item.Key, item.Value);
-                  Db.UpdateOnSubmit(dir);
+                  Db.UpdateOnSubmit(dir, lists);
                 }
 
                 //move thumbnails
@@ -601,7 +612,7 @@ namespace PictureManager {
         }
 
         fo.PerformOperations();
-        Db.SubmitChanges();
+        Db.SubmitChanges(lists);
       }
 
       return true;

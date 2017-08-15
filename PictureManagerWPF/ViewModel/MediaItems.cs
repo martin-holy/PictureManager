@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -207,6 +208,12 @@ namespace PictureManager.ViewModel {
           else {
             items = ACore.Db.MediaItems.Where(x => x.GeoNameId == geoName.GeoNameId).ToArray();
           }
+          break;
+        }
+        case nameof(SqlQuery): {
+          var sqlQuery = (SqlQuery) tag;
+          var miids = (from DataRow dataRow in ACore.Db.Select(sqlQuery.Query) select (long) dataRow["Id"]).ToList();
+          items = ACore.Db.MediaItems.Where(x => miids.Contains(x.Id)).ToArray();
           break;
         }
       }

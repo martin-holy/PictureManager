@@ -24,8 +24,7 @@ namespace PictureManager.ViewModel {
         Category = (int) Category
       };
 
-      ACore.Db.InsertOnSubmit(dmCategoryGroup);
-      ACore.Db.SubmitChanges();
+      ACore.Db.Insert(dmCategoryGroup);
 
       var vmCategoryGroup = new CategoryGroup(dmCategoryGroup) {IconName = CategoryGroupIconName, Parent = this};
       GroupSetInPalce(vmCategoryGroup, true);
@@ -70,8 +69,7 @@ namespace PictureManager.ViewModel {
         if (rename) {
           group.Title = inputDialog.Answer;
           group.Data.Name = inputDialog.Answer;
-          ACore.Db.UpdateOnSubmit(group.Data);
-          ACore.Db.SubmitChanges();
+          ACore.Db.Update(group.Data);
           GroupSetInPalce(group, false);
         } else GroupCreate(inputDialog.Answer);
       }
@@ -80,13 +78,14 @@ namespace PictureManager.ViewModel {
     public void GroupDelete(CategoryGroup group) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result != MessageBoxResult.Yes) return;
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
       foreach (var cgi in ACore.Db.CategoryGroupsItems.Where(x => x.CategoryGroupId == group.Id)) {
-        ACore.Db.DeleteOnSubmit(cgi);
+        ACore.Db.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(group.Data);
-      ACore.Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(group.Data, lists);
+      ACore.Db.SubmitChanges(lists);
 
       foreach (var item in group.Items) {
         Items.Add(item);

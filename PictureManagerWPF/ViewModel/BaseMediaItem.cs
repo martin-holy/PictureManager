@@ -35,7 +35,7 @@ namespace PictureManager.ViewModel {
     }
     
     public string FilePath;
-    public string FilePathCache => FilePath.Replace(":\\", @Settings.Default.CachePath);
+    public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public string FileNameWithExt => Path.GetFileName(FilePath);
     public string Comment;
     public string CommentEscaped => Comment?.Replace("'", "''");
@@ -140,7 +140,7 @@ namespace PictureManager.ViewModel {
       IsModifed = false;
     }
 
-    public void SaveMediaItemInToDb(bool update, bool isNew) {
+    public void SaveMediaItemInToDb(bool update, bool isNew, List<DataModel.BaseTable>[] lists) {
       if (isNew) {
         ReadMetadata();
         Id = ACore.Db.GetNextIdFor<DataModel.MediaItem>();
@@ -154,26 +154,26 @@ namespace PictureManager.ViewModel {
           Width = Width,
           Height = Height
         };
-        ACore.Db.InsertOnSubmit(Data);
+        ACore.Db.InsertOnSubmit(Data, lists);
       } else {
         if (update) ReadMetadata();
         Data.Rating = Rating;
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
         Data.GeoNameId = GeoNameId;
-        ACore.Db.UpdateOnSubmit(Data);
+        ACore.Db.UpdateOnSubmit(Data, lists);
       }
 
-      SaveMediaItemKeywordsToDb();
-      SaveMediaItemPeopleInToDb();
+      SaveMediaItemKeywordsToDb(lists);
+      SaveMediaItemPeopleInToDb(lists);
     }
 
-    public void SaveMediaItemKeywordsToDb() {
+    public void SaveMediaItemKeywordsToDb(List<DataModel.BaseTable>[] lists) {
       //Update connection between Keywords and MediaItem
       var keyIds = Keywords.Select(k => k.Id).ToList();
       foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
         if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
-          ACore.Db.DeleteOnSubmit(mik);
+          ACore.Db.DeleteOnSubmit(mik, lists);
         else
           keyIds.Remove(mik.KeywordId);
       }
@@ -183,16 +183,16 @@ namespace PictureManager.ViewModel {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
           KeywordId = keyId,
           MediaItemId = Id
-        });
+        }, lists);
       }
     }
 
-    public void SaveMediaItemPeopleInToDb() {
+    public void SaveMediaItemPeopleInToDb(List<DataModel.BaseTable>[] lists) {
       //Update connection between People and MediaItem
       var ids = People.Select(p => p.Id).ToList();
       foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
         if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null)
-          ACore.Db.DeleteOnSubmit(mip);
+          ACore.Db.DeleteOnSubmit(mip, lists);
          else
           ids.Remove(mip.PersonId);
       }
@@ -202,7 +202,7 @@ namespace PictureManager.ViewModel {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemPerson>(),
           PersonId = id,
           MediaItemId = Id
-        });
+        }, lists);
       }
     }
 

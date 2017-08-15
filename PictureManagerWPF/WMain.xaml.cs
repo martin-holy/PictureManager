@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
@@ -44,7 +43,7 @@ namespace PictureManager {
       try {
         stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.Thumbs.html");
         if (stream != null)
-          using (StreamReader reader = new StreamReader(stream)) {
+          using (var reader = new StreamReader(stream)) {
             stream = null;
             WbThumbs.DocumentText = reader.ReadToEnd();
           }
@@ -482,28 +481,29 @@ namespace PictureManager {
         var worker = (BackgroundWorker)bwsender;
         var count = pictures.Count;
         var done = 0;
+        bwe.Result = bwe.Argument;
 
         foreach (var picture in pictures) {
-          picture.SaveMediaItemInToDb(false, false);
+          picture.SaveMediaItemInToDb(false, false, (List<DataModel.BaseTable>[]) bwe.Argument);
           picture.TryWriteMetadata();
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
         }
       };
 
-      bw.RunWorkerCompleted += delegate {
+      bw.RunWorkerCompleted += delegate (object bwsender, RunWorkerCompletedEventArgs bwe) {
         ACore.KeywordsEditMode = false;
         if ((bool) Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
           TabFolders.IsSelected = true;
         }
-        ACore.Db.SubmitChanges();
+        ACore.Db.SubmitChanges((List<DataModel.BaseTable>[]) bwe.Result);
         foreach (var mi in ACore.MediaItems.Items.Where(mi => mi.IsModifed)) {
           mi.IsModifed = false;
         }
         ACore.AppInfo.AppMode = AppModes.Browser;
       };
 
-      bw.RunWorkerAsync();
+      bw.RunWorkerAsync(ACore.Db.GetInsertUpdateDeleteLists());
     }
 
     private void CmdKeywordsCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -554,10 +554,11 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
+        var lists = ACore.Db.GetInsertUpdateDeleteLists();
         current.Comment = inputDialog.TxtAnswer.Text;
-        current.SaveMediaItemInToDb(false, false);
+        current.SaveMediaItemInToDb(false, false, lists);
         current.TryWriteMetadata();
-        ACore.Db.SubmitChanges();
+        ACore.Db.SubmitChanges(lists);
       }
     }
 
@@ -567,11 +568,12 @@ namespace PictureManager {
 
     private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
       var mediaItems = ACore.MediaItems.GetSelectedOrAll();
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
       foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(true, false);
+        mi.SaveMediaItemInToDb(true, false, lists);
         mi.WbUpdateInfo();
       }
-      ACore.Db.SubmitChanges();
+      ACore.Db.SubmitChanges(lists);
     }
 
     private void CmdGeoNames_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -586,7 +588,7 @@ namespace PictureManager {
         var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
         var count = mis.Count;
         var done = 0;
-        const string url = "http://api.geonames.org/extendedFindNearby?lat={0}&lng={1}&username=cospi";
+        var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
         foreach (var mi in mis) {
           if (worker.CancellationPending) {
@@ -601,40 +603,16 @@ namespace PictureManager {
           if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata();
           if (mi.Lat == null || mi.Lng == null) continue;
 
-          var xml = new XmlDocument();
-          xml.Load(string.Format(url, mi.Lat, mi.Lng).Replace(',', '.'));
-          var geonames = xml.SelectNodes("/geonames/geoname");
-          if (geonames == null) continue;
+          var lastGeoName = ACore.GeoNames.InsertGeoNameHierarchy((double) mi.Lat, (double) mi.Lng);
+          if (lastGeoName == null) continue;
 
-          DataModel.GeoName parentGeoName = null;
-          foreach (XmlNode geoname in geonames) {
-            var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-            var dbGeoName = ACore.Db.GeoNames.SingleOrDefault(x => x.GeoNameId == geoNameId);
-
-            if (dbGeoName == null) {
-              dbGeoName = new DataModel.GeoName {
-                Id = ACore.Db.GetNextIdFor<DataModel.GeoName>(),
-                GeoNameId = geoNameId,
-                ToponymName = geoname.SelectSingleNode("toponymName")?.InnerText,
-                Name = geoname.SelectSingleNode("name")?.InnerText,
-                Fcode = geoname.SelectSingleNode("fcode")?.InnerText,
-                ParentGeoNameId = parentGeoName?.GeoNameId
-              };
-
-              ACore.Db.InsertOnSubmit(dbGeoName);
-            }
-
-            parentGeoName = dbGeoName;
-          }
-
-          if (parentGeoName == null) continue;
-
-          mi.GeoNameId = parentGeoName.GeoNameId;
-          mi.Data.GeoNameId = parentGeoName.GeoNameId;
-          ACore.Db.UpdateOnSubmit(mi.Data);
-          ACore.Db.SubmitChanges();
+          mi.GeoNameId = lastGeoName.GeoNameId;
+          mi.Data.GeoNameId = lastGeoName.GeoNameId;
+          ACore.Db.UpdateOnSubmit(mi.Data, lists);
           mi.TryWriteMetadata();
         }
+
+        ACore.Db.SubmitChanges(lists);
       };
 
       progress.Worker.RunWorkerAsync();
@@ -708,6 +686,7 @@ namespace PictureManager {
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e)
     {
       
+
 
       //FlyoutTabs.IsOpen = !FlyoutTabs.IsOpen;
       /*DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
@@ -1089,7 +1068,8 @@ namespace PictureManager {
           break;
         }
         case AppModes.ViewerEdit:
-          ACore.Db.SubmitChanges();
+          var editedViewer = (ViewModel.Viewer)Application.Current.Properties[nameof(AppProps.EditedViewer)];
+          ACore.Db.SubmitChanges(editedViewer?.Lists);
           ACore.AppInfo.AppMode = AppModes.Browser;
           break;
         default:
@@ -1108,8 +1088,9 @@ namespace PictureManager {
           break;
         }
         case AppModes.ViewerEdit:
-          ACore.Db.RollbackChanges();
-          ((ViewModel.Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)])?.ReLoad();
+          var editedViewer = (ViewModel.Viewer)Application.Current.Properties[nameof(AppProps.EditedViewer)];
+          ACore.Db.RollbackChanges(editedViewer?.Lists);
+          editedViewer?.ReLoad();
           ACore.AppInfo.AppMode = AppModes.Browser;
           break;
         default:

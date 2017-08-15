@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class People : BaseCategoryItem {
@@ -79,7 +78,7 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_people", "Person", rename);
+      var inputDialog = ItemGetInputDialog(item, "appbar_people", "Person", rename);
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
@@ -93,22 +92,22 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemDelete(BaseTreeViewTagItem item) {
-      //TODO: SubmitChanges can submit other not commited changes as well!!
       var person = item as Person;
       if (person == null) return;
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
       foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
-        ACore.Db.DeleteOnSubmit(mip);
+        ACore.Db.DeleteOnSubmit(mip, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
             x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
       if (cgi != null) {
-        ACore.Db.DeleteOnSubmit(cgi);
+        ACore.Db.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(person.Data);
-      ACore.Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(person.Data, lists);
+      ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(person);
       AllPeople.Remove(person);

@@ -113,15 +113,13 @@ namespace PictureManager.ViewModel {
           ParentId = (Parent as Filter)?.Id
         };
 
-        ACore.Db.InsertOnSubmit(dmFilter);
-        ACore.Db.SubmitChanges();
+        ACore.Db.Insert(dmFilter);
 
         Id = dmFilter.Id;
       } else {
         Data.Data = biteArray;
         Data.Name = Title;
-        ACore.Db.UpdateOnSubmit(Data);
-        ACore.Db.SubmitChanges();
+        ACore.Db.Update(Data);
       }
     }
   }

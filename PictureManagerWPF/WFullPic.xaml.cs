@@ -131,6 +131,14 @@ namespace PictureManager {
           _tmrPresentation.Enabled = !_tmrPresentation.Enabled;
           break;
         }
+        case Key.Add: {
+          WbFullPic.Document?.InvokeScript("Zoom", new object[] {true});
+          break;
+        }
+        case Key.Subtract: {
+          WbFullPic.Document?.InvokeScript("Zoom", new object[] {false});
+          break;
+        }
       }
 
       if (ACore.KeywordsEditMode) {

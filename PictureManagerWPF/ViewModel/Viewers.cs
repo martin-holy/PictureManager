@@ -48,16 +48,16 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemDelete(BaseTreeViewTagItem item) {
-      //TODO: SubmitChanges can submit other not commited changes as well!!
       var viewer = item as Viewer;
       if (viewer == null) return;
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
       foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Id)) {
-        ACore.Db.DeleteOnSubmit(v);
+        ACore.Db.DeleteOnSubmit(v, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(viewer.Data);
-      ACore.Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(viewer.Data, lists);
+      ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(viewer);
     }
@@ -74,9 +74,8 @@ namespace PictureManager.ViewModel {
       var viewer = Items.Cast<Viewer>().SingleOrDefault(x => x.Id == data.ViewerId);
       if (viewer == null) return;
 
-      ACore.Db.DeleteOnSubmit(data);
+      ACore.Db.Delete(data);
       (data.IsIncluded ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Remove(folder);
-      ACore.Db.SubmitChanges();
     }
   }
 }

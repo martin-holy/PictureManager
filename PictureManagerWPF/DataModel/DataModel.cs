@@ -14,9 +14,6 @@ namespace PictureManager.DataModel {
     public string ConnectionString;
     public Dictionary<Type, TableInfo> TableInfos = new Dictionary<Type, TableInfo>(); 
 
-    private readonly List<BaseTable> _toInsert = new List<BaseTable>();
-    private readonly List<BaseTable> _toUpdate = new List<BaseTable>();
-    private readonly List<BaseTable> _toDelete = new List<BaseTable>();
     private static readonly Mutex Mut = new Mutex();
 
     public List<CategoryGroup> CategoryGroups;
@@ -31,6 +28,7 @@ namespace PictureManager.DataModel {
     public List<Viewer> Viewers;
     public List<ViewerAccess> ViewersAccess;
     public List<GeoName> GeoNames;
+    public List<SqlQuery> SqlQueries;
     public List<SQLiteSequence> SQLiteSequences;
 
     public PmDataContext(string connectionString) {
@@ -77,8 +75,13 @@ namespace PictureManager.DataModel {
       Viewers = GetTableData<Viewer>();
       ViewersAccess = GetTableData<ViewerAccess>();
       GeoNames = GetTableData<GeoName>();
+      SqlQueries = GetTableData<SqlQuery>();
 
       return true;
+    }
+
+    public List<BaseTable>[] GetInsertUpdateDeleteLists() {
+      return new[] {new List<BaseTable>(), new List<BaseTable>(), new List<BaseTable>()};
     }
 
     public void Insert(BaseTable o) {
@@ -95,8 +98,10 @@ namespace PictureManager.DataModel {
       foreach (var column in columns) {
         cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
       }
+      if (!Mut.WaitOne()) return;
       cmd.ExecuteNonQuery();
       UpdateInList(o, true);
+      Mut.ReleaseMutex();
     }
 
     public void Update(BaseTable o) {
@@ -113,7 +118,9 @@ namespace PictureManager.DataModel {
       foreach (var column in columns) {
         cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
       }
+      if (!Mut.WaitOne()) return;
       cmd.ExecuteNonQuery();
+      Mut.ReleaseMutex();
     }
 
     public void Delete(BaseTable o) {
@@ -127,25 +134,25 @@ namespace PictureManager.DataModel {
       cmd.CommandText = TableInfos[o.GetType()].QueryDelete;
       cmd.Parameters.Clear();
       cmd.Parameters.Add(new SQLiteParameter("@Id", o.Id));
+      if (!Mut.WaitOne()) return;
       cmd.ExecuteNonQuery();
       UpdateInList(o, false);
+      Mut.ReleaseMutex();
     }
 
-    public void InsertOnSubmit(BaseTable data) {
-      _toInsert.Add(data);
+    public void InsertOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists[0].Add(data);
     }
 
-    public void UpdateOnSubmit(BaseTable data) {
-      _toUpdate.Add(data);
+    public void UpdateOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists[1].Add(data);
     }
 
-    public void DeleteOnSubmit(BaseTable data) {
-      _toDelete.Add(data);
+    public void DeleteOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists[2].Add(data);
     }
 
     private void UpdateInList(BaseTable data, bool addIt) {
-      if (!Mut.WaitOne()) return;
-
       switch (data.GetType().Name) {
         case nameof(CategoryGroup): {
             if (addIt) CategoryGroups.Add((CategoryGroup)data); else CategoryGroups.Remove((CategoryGroup)data); break;
@@ -183,38 +190,41 @@ namespace PictureManager.DataModel {
         case nameof(GeoName): {
           if (addIt) GeoNames.Add((GeoName)data); else GeoNames.Remove((GeoName)data); break;
         }
+        case nameof(SqlQuery): {
+          if (addIt) SqlQueries.Add((SqlQuery)data); else SqlQueries.Remove((SqlQuery)data); break;
+        }
       }
-
-      Mut.ReleaseMutex();
     }
 
-    public bool SubmitChanges() {
+    public bool SubmitChanges(List<BaseTable>[] lists) {
       if (!OpenDbConnection()) return false;
+      if (!Mut.WaitOne()) return false;
 
-      using (SQLiteTransaction tr = DbConn.BeginTransaction()) {
-        using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var tr = DbConn.BeginTransaction()) {
+        using (var cmd = DbConn.CreateCommand()) {
           cmd.Transaction = tr;
 
-          _toInsert.ForEach(o => Insert(cmd, o));
-          _toInsert.Clear();
+          lists[0].ForEach(o => Insert(cmd, o));
+          lists[0].Clear();
 
-          _toUpdate.ForEach(o => Update(cmd, o));
-          _toUpdate.Clear();
+          lists[1].ForEach(o => Update(cmd, o));
+          lists[1].Clear();
 
-          _toDelete.ForEach(o => Delete(cmd, o));
-          _toDelete.Clear();
+          lists[2].ForEach(o => Delete(cmd, o));
+          lists[2].Clear();
         }
         tr.Commit();
       }
 
+      Mut.ReleaseMutex();
       return true;
     }
 
-    public void RollbackChanges() {
-      _toInsert.Clear();
-      _toUpdate.ForEach(ReloadItem);
-      _toUpdate.Clear();
-      _toDelete.Clear();
+    public void RollbackChanges(List<BaseTable>[] lists) {
+      lists[0].Clear();
+      lists[1].ForEach(ReloadItem);
+      lists[1].Clear();
+      lists[2].Clear();
     }
 
     public void ReloadItem(BaseTable item) {
@@ -497,6 +507,15 @@ namespace PictureManager.DataModel {
 
     [Column(Name = "Fcode", DbType = "nvarchar(5)", CanBeNull = false)]
     public string Fcode { get; set; }
+  }
+
+  [Table(Name = "SqlQueries")]
+  public class SqlQuery : BaseTable {
+    [Column(Name = "Name", DbType = "nvarchar(64) COLLATE NOCASE", CanBeNull = false)]
+    public string Name { get; set; }
+
+    [Column(Name = "Query", DbType = "ntext", CanBeNull = false)]
+    public string Query { get; set; }
   }
 
   [Table(Name = "sqlite_sequence")]

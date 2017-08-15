@@ -6,13 +6,15 @@
     <title>Picture Manager - Full Picture Size</title>
 
     <script>
-      var picBiggerThanScreen;
+      var picIsBiggerThanScreen;
       var clientMouseDownX;
       var clientMouseDownY;
       var picMarginTop;
       var picMarginLeft;
       var picMouseIsDown;
       var picIsRotated;
+      var picIsZoomed;
+      var picZoomLevel;
       var currentFullPicId = "fullPicA";
 
       //to enable ScriptErrorsSuppressed = true
@@ -23,46 +25,106 @@
         window.external.FullPicMouseWheel(event.wheelDelta);
       }
 
+      function Zoom(zoomIn) {
+        if (!zoomIn && picZoomLevel <= 10) return;
+        var pic = document.getElementById(currentFullPicId);
+        var halfBh = Math.round(window.document.body.clientHeight / 2);
+        var halfBw = Math.round(window.document.body.clientWidth / 2);
+        picIsZoomed = true;
+        //SetPic(pic, zoomIn ? picZoomLevel + 10 : picZoomLevel - 10, halfBh - pic.offsetTop, halfBw - pic.offsetLeft, halfBh, halfBw);
+
+        
+        picZoomLevel += zoomIn ? 10 : -10;
+
+        SetPicture2(pic, halfBw, 0);
+        SetZoomInfo();
+      }
+
+      function SetPicture2(pic, scrX, scrY) {
+        var oldH = pic.height;
+        var oldW = pic.width;
+        var halfBh = Math.round(window.document.body.clientHeight / 2);
+        var halfBw = Math.round(window.document.body.clientWidth / 2);
+
+        pic.height = Math.round((pic.naturalHeight / 100) * picZoomLevel);
+        pic.width = Math.round((pic.naturalWidth / 100) * picZoomLevel);
+
+        pic.style.marginTop = Math.round(pic.offsetTop - ((pic.height - oldH) / 2) + (halfBh - scrY)) + "px";
+        pic.style.marginLeft = Math.round(pic.offsetLeft - ((pic.width - oldW) / 2) - (halfBw - scrX)) + "px";
+      }
+
+      /*function Zoom(zoomIn) {
+        var pic = document.getElementById(currentFullPicId);
+        var oldH = pic.height;
+        var oldW = pic.width;
+
+        picIsZoomed = true;
+
+        SetPicZoom(zoomIn ? picZoomLevel + 10 : picZoomLevel - 10);
+
+        picMarginTop = pic.offsetTop - ((pic.height - oldH) / 2);
+        picMarginLeft = pic.offsetLeft - ((pic.width - oldW) / 2);
+
+        pic.style.marginTop = picMarginTop + "px";
+        pic.style.marginLeft = picMarginLeft + "px";
+
+        SetZoomInfo();
+      }*/
+
+      function SetPic(pic, zoom, picT, picL, scrT, scrL) {
+        //alert("zoom: " + zoom + ", picT: " + picT + ", picL: " + picL + ", scrT: " + scrT + ", scrL: " + scrL);
+        var oZoom = picZoomLevel;
+        picT = (zoom / oZoom) * picT;
+        picL = (zoom / oZoom) * picL;
+        picZoomLevel = zoom;
+        pic.height = (pic.naturalHeight / 100) * picZoomLevel;
+        pic.width = (pic.naturalWidth / 100) * picZoomLevel;
+
+        if (picIsRotated) {
+          var offset = ((pic.naturalWidth - pic.naturalHeight) / 2);
+          picMarginTop = Math.round(offset + scrL - ((pic.naturalWidth / pic.width) * picL));
+          picMarginLeft = Math.round((offset * -1) + scrT - ((pic.naturalHeight / pic.height) * picT));
+        } else {
+          picMarginTop = Math.round(scrL - ((pic.naturalHeight / pic.height) * picL));
+          picMarginLeft = Math.round(scrT - ((pic.naturalWidth / pic.width) * picT));
+        }
+
+        pic.style.marginTop = picMarginTop + "px";
+        pic.style.marginLeft = picMarginLeft + "px";
+      }
+
+      function SetPicZoom(pic, zoom) {
+        picZoomLevel = zoom;
+        pic.height = (pic.naturalHeight / 100) * picZoomLevel;
+        pic.width = (pic.naturalWidth / 100) * picZoomLevel;
+      }
+
       function FullPic_OnMouseDown(event) {
         picMouseIsDown = true;
-        if (picBiggerThanScreen) {
-          var pic = event.currentTarget;
-          var picMouseDownX = event.x;
-          var picMouseDownY = event.y;
+        clientMouseDownX = event.clientX;
+        clientMouseDownY = event.clientY;
 
-          clientMouseDownX = event.clientX;
-          clientMouseDownY = event.clientY;
-
-          if (picIsRotated) {
-            var offset = ((pic.naturalWidth - pic.naturalHeight) / 2);
-            picMarginTop = Math.round(offset + event.clientY - ((pic.naturalWidth / pic.width) * picMouseDownY));
-            picMarginLeft = Math.round((offset * -1) + event.clientX - ((pic.naturalHeight / pic.height) * picMouseDownX));
-          } else {
-            picMarginTop = Math.round(event.clientY - ((pic.naturalHeight / pic.height) * picMouseDownY));
-            picMarginLeft = Math.round(event.clientX - ((pic.naturalWidth / pic.width) * picMouseDownX));
-          }
-
-          pic.style.marginTop = picMarginTop + "px";
-          pic.style.marginLeft = picMarginLeft + "px";
-
-          pic.width = pic.naturalWidth;
-          pic.height = pic.naturalHeight;
+        if (picIsBiggerThanScreen && !picIsZoomed) {
+          SetPic(event.currentTarget, 100, event.x, event.y, event.clientX, event.clientY);
         }
       }
 
       function FullPic_OnMouseUp(sender) {
         picMouseIsDown = false;
-        if (picBiggerThanScreen) {
-          sender.style.marginTop = "";
-          sender.style.marginLeft = "";
+        if (!picIsZoomed) {
           FitPicture(sender);
         }
       }
 
       function FullPic_OnMouseMove(event) {
-        if (picMouseIsDown && picBiggerThanScreen) {
+        if (picMouseIsDown && (picIsBiggerThanScreen || picIsZoomed)) {
           var yDiff = clientMouseDownY - event.clientY;
           var xDiff = clientMouseDownX - event.clientX;
+
+          /*picMarginTop = picMarginTop - yDiff;
+          picMarginLeft = picMarginLeft - xDiff;
+          event.currentTarget.style.marginTop = (picMarginTop) + "px";
+          event.currentTarget.style.marginLeft = (picMarginLeft) + "px";*/
 
           event.currentTarget.style.marginTop = (picMarginTop - yDiff) + "px";
           event.currentTarget.style.marginLeft = (picMarginLeft - xDiff) + "px";
@@ -76,6 +138,7 @@
 
       function FitPicture(pic) {
         if (pic === undefined || pic === null) return;
+        picIsZoomed = false;
         pic.removeAttribute("height");
         pic.removeAttribute("width");
 
@@ -95,12 +158,12 @@
           pnw = pic.naturalWidth;
         }
 
-        if ((pnh > bh) || (pnw > bw)) { //picture is bigger than window  
-          picBiggerThanScreen = true;
-          pic.className = "";
+        picIsBiggerThanScreen = (pnh > bh) || (pnw > bw);
 
-          var ph;
-          var pw;
+        var ph;
+        var pw;
+
+        if (picIsBiggerThanScreen) { //picture is bigger than window  
           if (bh / pnh > bw / pnw) { //landscape
             pw = bw;
             ph = pnh * (bw / pnw);
@@ -114,18 +177,22 @@
             pw = ph;
             ph = tmp;
           }
-
-          pic.height = ph;
-          pic.width = pw;
-          pic.style.marginTop = ((bh - ph) / 2) + "px";
-          pic.style.marginLeft = ((bw - pw) / 2) + "px";
-
         } else {
-          picBiggerThanScreen = false;
-          pic.className = "centerFullPic";
-          pic.height = pnh;
-          pic.width = pnw;
+          ph = pnh;
+          pw = pnw;
         }
+
+        pic.height = ph;
+        pic.width = pw;
+        pic.style.marginTop = ((bh - ph) / 2) + "px";
+        pic.style.marginLeft = ((bw - pw) / 2) + "px";
+
+        picZoomLevel = Math.round((pic.height / pic.naturalHeight) * 100);
+        SetZoomInfo();
+      }
+
+      function SetZoomInfo() {
+        document.getElementById("zoomInfo").innerHTML = "<div>Zoom: " + picZoomLevel + "</div>";
       }
 
       function SetPicture(src, orientation) {
@@ -170,14 +237,6 @@
         overflow: hidden;
       }
 
-      .centerFullPic {
-        position: absolute;
-        margin: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-      }
-
       #fullPicBox {
         height: 100%;
         background-position-x: center;
@@ -186,24 +245,29 @@
         background-repeat: no-repeat;
       }
 
-      #info {
+      #info, #zoomInfo {
         position: absolute;
         color: white;
         font-size: 18px;
         z-index: 1;
       }
 
-      #info div {
+      #info div, #zoomInfo div {
         margin: 2px;
         padding: 2px;
         background-color: rgba(0, 0, 0, 0.4);
         display: inline-block;
         border: 1px solid black;
       }
+
+      #zoomInfo {
+        margin-top: 31px;
+      }
     </style>
   </head>
   <body OnMouseWheel="Body_OnMouseWheel(event);" OnResize="FitPicture();">
     <div id="info"></div>
+    <div id="zoomInfo"></div>
     <div id="content">
       <div id="fullPicBox">
         <img id="fullPicA" draggable="false"

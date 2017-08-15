@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class Keywords: BaseCategoryItem {
@@ -112,18 +111,16 @@ namespace PictureManager.ViewModel {
       var vmKeyword = new Keyword(dmKeyword) { Parent = root };
       AllKeywords.Add(vmKeyword);
 
-      try {
-        Keyword keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
-        root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
-      } catch (Exception ex) {
-        //BUG This type of CollectionView does not support changes to its SourceCollection from a thread different from the Dispatcher thread.
-      }
+      Mut.WaitOne();
+      var keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+      root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
+      Mut.ReleaseMutex();
 
       return vmKeyword;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_tag", "Keyword", rename);
+      var inputDialog = ItemGetInputDialog(item, "appbar_tag", "Keyword", rename);
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
@@ -142,22 +139,22 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemDelete(BaseTreeViewTagItem item) {
-      //TODO: SubmitChanges can submit other not commited changes as well!!
       var keyword = item as Keyword;
       if (keyword == null) return;
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
       foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
-        ACore.Db.DeleteOnSubmit(mik);
+        ACore.Db.DeleteOnSubmit(mik, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
             x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
       if (cgi != null) {
-        ACore.Db.DeleteOnSubmit(cgi);
+        ACore.Db.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(keyword.Data);
-      ACore.Db.SubmitChanges();
+      ACore.Db.DeleteOnSubmit(keyword.Data, lists);
+      ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(keyword);
       AllKeywords.Remove(keyword); 
@@ -174,15 +171,16 @@ namespace PictureManager.ViewModel {
 
         items.Move(srcIndex, newIndex);
 
+        var lists = ACore.Db.GetInsertUpdateDeleteLists();
         var i = 0;
         foreach (var itm in items.Where(x => x is Keyword).OfType<Keyword>()) {
           itm.Index = i;
           itm.Data.Idx = i;
-          ACore.Db.UpdateOnSubmit(itm.Data);
+          ACore.Db.UpdateOnSubmit(itm.Data, lists);
           i++;
         }
 
-        ACore.Db.SubmitChanges();
+        ACore.Db.SubmitChanges(lists);
       } else {
         var keyword = item as Keyword;
         if (keyword == null) return;
@@ -193,7 +191,6 @@ namespace PictureManager.ViewModel {
         keyword.FullPath = path;
         ACore.Db.Update(keyword.Data);
         ItemMove(item, dest);
-
       }
     }
   }

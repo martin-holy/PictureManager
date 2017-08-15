@@ -160,76 +160,6 @@
     <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
   </controls:MetroWindow.CommandBindings>
 
-  <!--<controls:MetroWindow.Flyouts>
-    <controls:FlyoutsControl>
-      <controls:Flyout Position="Left" Width="350" x:Name="FlyoutTabs" CloseButtonVisibility="Collapsed" TitleVisibility="Collapsed" IsPinned="False" Margin="0,31,0,22">
-        
-      </controls:Flyout>
-    </controls:FlyoutsControl>
-  </controls:MetroWindow.Flyouts>
-
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
-
-    <WindowsFormsHost Grid.Row="0" Margin="340,0,0,0">
-      <wf:WebBrowser x:Name="WbThumbs" Margin="0,0,2,2"/>
-    </WindowsFormsHost>
-
-    <StatusBar Grid.Row="1" x:Name="MainStatusBar">
-      <StatusBar.ItemsPanel>
-        <ItemsPanelTemplate>
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="100" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-          </Grid>
-        </ItemsPanelTemplate>
-      </StatusBar.ItemsPanel>
-      <StatusBarItem>
-        <TextBlock Text="{Binding ViewBaseInfo}" />
-      </StatusBarItem>
-      <Separator Grid.Column="1" />
-      <StatusBarItem Grid.Column="2">
-        <TextBlock Text="{Binding CurrentPictureFilePath}" />
-      </StatusBarItem>
-      <Separator Grid.Column="3" />
-      <StatusBarItem Grid.Column="4">
-        <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
-      </StatusBarItem>
-      <StatusBarItem Grid.Column="5">
-        <ComboBox x:Name="CmbThumbPage" Visibility="Collapsed" SelectionChanged="CmbThumbPage_OnSelectionChanged" />
-      </StatusBarItem>
-      <StatusBarItem Grid.Column="6">
-        <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
-          <Button Margin="0,0,0,0" Content="Ok" Click="BtnStatBarOk_OnClick" MinWidth="60" />
-          <Button Margin="3,0,0,0" Content="Cancel" Click="BtnStatBarCancel_OnClick" MinWidth="60" />
-        </StackPanel>
-      </StatusBarItem>
-      <StatusBar.Style>
-        <Style>
-          <Setter Property="StatusBar.Background" Value="{DynamicResource AccentColorBrush}" />
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding AppMode}" Value="2">
-              <Setter Property="StatusBar.Background" Value="#CA5100" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding AppMode}" Value="3">
-              <Setter Property="StatusBar.Background" Value="#CA5100" />
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </StatusBar.Style>
-    </StatusBar>
-  </Grid>-->
-
   <DockPanel>
 
     <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
@@ -469,6 +399,14 @@
               <!-- TreeView Filters - Viewer -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:Viewer}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{StaticResource TreeViewStackPanel}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- TreeView Filters - SqlQuery -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:SqlQuery}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{StaticResource TreeViewFiltersStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>

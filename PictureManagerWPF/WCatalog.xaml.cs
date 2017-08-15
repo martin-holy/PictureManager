@@ -35,6 +35,7 @@ namespace PictureManager {
     private string _selectedFolderPath;
     private bool _newOnly;
     private bool _rebuildThumbnails;
+    private List<DataModel.BaseTable>[] _lists;
 
     private string _filesProgress;
     public string FilesProgress { get { return _filesProgress; } set { _filesProgress = value; OnPropertyChanged(); } }
@@ -43,6 +44,7 @@ namespace PictureManager {
       InitializeComponent();
 
       _aCore = appCore;
+      _lists = _aCore.Db.GetInsertUpdateDeleteLists();
       Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
@@ -114,7 +116,7 @@ namespace PictureManager {
           var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
           var mi = new ViewModel.BaseMediaItem(file, 0, miInDb) {DirId = dirId};
           if (!_newOnly || miInDb == null)
-            mi.SaveMediaItemInToDb(true, miInDb == null);
+            mi.SaveMediaItemInToDb(true, miInDb == null, _lists);
 
           if (_rebuildThumbnails || !File.Exists(mi.FilePathCache))
             AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
@@ -143,7 +145,7 @@ namespace PictureManager {
         _update.RunWorkerAsync();
         return;
       }
-      _aCore.Db.SubmitChanges();
+      _aCore.Db.SubmitChanges(_lists);
       BtnUpdate.IsEnabled = true;
     }
 
