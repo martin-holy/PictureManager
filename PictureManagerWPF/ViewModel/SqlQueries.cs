@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PictureManager.Dialogs;
 
@@ -72,6 +73,11 @@ namespace PictureManager.ViewModel {
           return;
         }
 
+        if (sqlQueryDialog.SqlQueryName == string.Empty) {
+          sqlQueryDialog.ShowErrorMessage("Enter name of SQL Query!");
+          return;
+        }
+
         sqlQueryDialog.DialogResult = true;
       };
 
@@ -89,6 +95,24 @@ namespace PictureManager.ViewModel {
         }
         else CreateSqlQuery(item, sqlQueryDialog.SqlQueryName, sqlQueryDialog.SqlQueryQuery);
       }
+    }
+
+    public override void ItemDelete(BaseTreeViewTagItem item) {
+      var sqlQuery = item as SqlQuery;
+      if (sqlQuery == null) return;
+      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+
+      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
+        x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+      if (cgi != null) {
+        ACore.Db.DeleteOnSubmit(cgi, lists);
+      }
+
+      ACore.Db.DeleteOnSubmit(sqlQuery.Data, lists);
+      ACore.Db.SubmitChanges(lists);
+
+      item.Parent.Items.Remove(sqlQuery);
+      AllSqlQueries.Remove(sqlQuery);
     }
   }
 }

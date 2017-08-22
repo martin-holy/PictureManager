@@ -35,7 +35,7 @@ namespace PictureManager.ViewModel {
     }
 
     public DataModel.GeoName InsertGeoNameHierarchy(double lat, double lng) {
-      const string url = "http://api.geonames.org/extendedFindNearby?lat={0}&lng={1}&username=cospi";
+      var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username=cospi".Replace(",", ".");
 
       var xml = new XmlDocument();
       xml.Load(string.Format(url, lat, lng));

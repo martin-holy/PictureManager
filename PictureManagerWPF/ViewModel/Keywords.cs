@@ -112,7 +112,7 @@ namespace PictureManager.ViewModel {
       AllKeywords.Add(vmKeyword);
 
       Mut.WaitOne();
-      var keyword = root.Items.Cast<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+      var keyword = root.Items.OfType<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
       root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
       Mut.ReleaseMutex();
 

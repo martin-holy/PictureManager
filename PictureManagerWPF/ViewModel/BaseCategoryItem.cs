@@ -54,7 +54,7 @@ namespace PictureManager.ViewModel {
           return;
         }
 
-        var root = rename ? group.Parent : group;
+        var root = rename ? group.Parent : this;
         if (root.Items.Where(x => x is CategoryGroup).SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;

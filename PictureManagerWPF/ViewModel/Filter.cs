@@ -58,6 +58,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void LoadFilterData(byte[] biteArray) {
+      //TODO: udelat bez ukladani na disk!!!
       FileInfo filterFile = new FileInfo("TempFilter.dat");
 
       using (FileStream writeFileStream = new FileStream(filterFile.Name, FileMode.Create)) {
