@@ -129,6 +129,47 @@ namespace PictureManager {
       AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
     }
 
+    public void TreeView_FoldersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
+      if (mouseButton == MouseButton.Left) {
+        switch (item.GetType().Name) {
+          case nameof(ViewModel.Folders):
+          case nameof(ViewModel.FavoriteFolders): {
+            ((ViewModel.BaseTreeViewItem)item).IsSelected = false;
+            break;
+          }
+          case nameof(ViewModel.Folder): {
+            var folder = (ViewModel.Folder)item;
+            if (!folder.IsAccessible) {
+              folder.IsSelected = false;
+              return;
+            }
+
+            folder.IsSelected = true;
+            LastSelectedSource = folder;
+
+            if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
+              ThumbsWebWorker.CancelAsync();
+              ThumbsResetEvent.WaitOne();
+            }
+
+            MediaItems.LoadByFolder(folder.FullPath, recursive);
+            InitThumbsPagesControl();
+            break;
+          }
+          case nameof(ViewModel.FavoriteFolder): {
+            var folder = Folders.ExpandTo(((ViewModel.FavoriteFolder)item).FullPath);
+            if (folder != null) {
+              var visibleTreeIndex = 0;
+              Folders.GetVisibleTreeIndexFor(Folders.Items, folder, ref visibleTreeIndex);
+              var offset = (FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
+              WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
+            }
+            break;
+          }
+        }
+      }
+    }
+
     public void TreeView_FiltersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton) {
       if (KeywordsEditMode) return;
       if (mouseButton != MouseButton.Left) return;
@@ -199,7 +240,7 @@ namespace PictureManager {
 
             var folder = LastSelectedSource as ViewModel.Folder;
             if (folder != null) {
-              MediaItems.LoadByFolder(folder.FullPath);
+              MediaItems.LoadByFolder(folder.FullPath, false);
               InitThumbsPagesControl();
               return;
             }

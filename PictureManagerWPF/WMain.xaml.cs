@@ -186,7 +186,7 @@ namespace PictureManager {
         ACore.ViewerOnly = false;
         var dirPath = Path.GetDirectoryName(_argPicFile);
         ACore.Folders.ExpandTo(dirPath);
-        ACore.MediaItems.LoadByFolder(dirPath);
+        ACore.MediaItems.LoadByFolder(dirPath, false);
         ACore.InitThumbsPagesControl();
         ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
       }
@@ -221,45 +221,9 @@ namespace PictureManager {
     private void TvFolders_Select(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseUp on StackPanel in TreeView
       StackPanel stackPanel = (StackPanel)sender;
-      object item = stackPanel.DataContext;
 
-      if (e.ChangedButton == MouseButton.Left) {
-        switch (item.GetType().Name) {
-          case nameof(ViewModel.Folders):
-          case nameof(ViewModel.FavoriteFolders): {
-            ((ViewModel.BaseTreeViewItem) item).IsSelected = false;
-            break;
-          }
-          case nameof(ViewModel.Folder): {
-            var folder = (ViewModel.Folder) item;
-            if (!folder.IsAccessible) {
-              folder.IsSelected = false;
-              return;
-            }
-
-            folder.IsSelected = true;
-            ACore.LastSelectedSource = folder;
-
-            if (ACore.ThumbsWebWorker != null && ACore.ThumbsWebWorker.IsBusy) {
-              ACore.ThumbsWebWorker.CancelAsync();
-              ACore.ThumbsResetEvent.WaitOne();
-            }
-
-            ACore.MediaItems.LoadByFolder(folder.FullPath);
-            ACore.InitThumbsPagesControl();
-            break;
-          }
-          case nameof(ViewModel.FavoriteFolder): {
-            var folder = ACore.Folders.ExpandTo(((ViewModel.FavoriteFolder) item).FullPath);
-            if (folder != null) {
-              var visibleTreeIndex = 0;
-              ACore.Folders.GetVisibleTreeIndexFor(ACore.Folders.Items, folder, ref visibleTreeIndex);
-              var offset = (ACore.FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
-              TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
-            }
-            break;
-          }
-        }
+      if (e.ChangedButton != MouseButton.Right) {
+        ACore.TreeView_FoldersStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
       }
     }
 
@@ -375,6 +339,10 @@ namespace PictureManager {
     private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
       ACore.FavoriteFolders.Remove(((ViewModel.FavoriteFolder)e.Parameter).FullPath);
       ACore.FavoriteFolders.Load();
+    }
+
+    private void CmdFolderShowAll(object sender, ExecutedRoutedEventArgs e) {
+      ACore.TreeView_FoldersStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
     private void CmdFolderKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
@@ -658,7 +626,7 @@ namespace PictureManager {
     }
 
     private ScrollViewer _tvFoldersScrollViewer;
-    private ScrollViewer TvFoldersScrollViewer {
+    public ScrollViewer TvFoldersScrollViewer {
       get {
         if (_tvFoldersScrollViewer != null) return _tvFoldersScrollViewer;
         DependencyObject border = VisualTreeHelper.GetChild(TvFolders, 0);
@@ -989,6 +957,7 @@ namespace PictureManager {
       switch (item.GetType().Name) {
         case nameof(ViewModel.Folder): {
           MenuAddItem(menu, "FolderNew", item);
+          MenuAddItem(menu, "FolderShowAll", item);
           if (((ViewModel.Folder) item).Parent != null) {
             MenuAddItem(menu, "FolderRename", item);
             MenuAddItem(menu, "FolderDelete", item);

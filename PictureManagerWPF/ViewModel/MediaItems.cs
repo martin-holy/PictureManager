@@ -90,31 +90,44 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public void LoadByFolder(string path) {
+    public void LoadByFolder(string path, bool recursive) {
       if (!Directory.Exists(path)) return;
-      var maxDirId = ACore.Db.GetMaxIdFor<DataModel.Directory>();
-      var dirId = ACore.Db.InsertDirecotryInToDb(path);
-      if (dirId > maxDirId) ACore.FolderKeywords.Load();
-      FolderKeyword fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(path);
-
       Current = null;
       Items.Clear();
 
+      var dirs = new Dictionary<string, object[]> {{path, new object[] {null, null}}};
+      if (recursive) {
+        foreach (var d in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories)) {
+          dirs.Add(d, new object[] {null, null});
+        }
+      }
+
+      foreach (var d in dirs) {
+        //TODO predelat tak aby se nemuselo davat FK.Load
+        var maxDirId = ACore.Db.GetMaxIdFor<DataModel.Directory>();
+        var dirId = ACore.Db.InsertDirecotryInToDb(d.Key);
+        if (dirId > maxDirId) ACore.FolderKeywords.Load();
+        d.Value[0] = dirId;
+        d.Value[1] = ACore.FolderKeywords.GetFolderKeywordByFullPath(d.Key);
+      }
+
       var dbItems = new List<DataModel.MediaItem>();
-      var dbItemsByDir = ACore.Db.MediaItems.Where(x => x.DirectoryId == dirId).ToDictionary(x => x.FileName);
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Rating>().ToArray();
 
-      foreach (var file in Directory.EnumerateFiles(path)
+
+      foreach (var file in Directory.EnumerateFiles(path, "*.*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
-        .OrderBy(x => x)) {
+        .OrderBy(Path.GetFileName)) {
 
         var filePath = file.Replace(":\\\\", ":\\");
 
         //Filter by Viewer
         if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
-        DataModel.MediaItem item;
-        if (dbItemsByDir.TryGetValue(Path.GetFileName(file), out item)) {
+        var dir = dirs.SingleOrDefault(x => x.Key == Path.GetDirectoryName(file));
+        var item = ACore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == (int) dir.Value[0] &&
+                                                            x.FileName.Equals(Path.GetFileName(file)));
+        if (item != null) {
           //Filter by Rating
           if (chosenRatings.Any() && !chosenRatings.Any(x => x.Value.Equals(item.Rating))) continue;
 
@@ -122,8 +135,8 @@ namespace PictureManager.ViewModel {
         }
 
         var pic = new Picture(filePath, Items.Count, item) {
-          DirId = dirId,
-          FolderKeyword = fk
+          DirId = (int) dir.Value[0],
+          FolderKeyword = (FolderKeyword) dir.Value[1]
         };
         Items.Add(pic);
       }
@@ -291,7 +304,7 @@ namespace PictureManager.ViewModel {
       if (!ACore.OneFileOnly) return;
       var filePath = Items[0].FilePath;
 
-      LoadByFolder(Path.GetDirectoryName(filePath));
+      LoadByFolder(Path.GetDirectoryName(filePath), false);
       Current = Items.FirstOrDefault(x => x.FilePath.Equals(filePath));
 
       var mi = Items.FirstOrDefault(p => p.FilePath == filePath);

@@ -110,6 +110,7 @@
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
+    <RoutedUICommand x:Key="FolderShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FolderKeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FilterNew" Text="New" />
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
@@ -135,6 +136,7 @@
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
+    <CommandBinding Command="{StaticResource FolderShowAll}" Executed="CmdFolderShowAll" />
     <CommandBinding Command="{StaticResource FolderKeywordShowAll}" Executed="CmdFolderKeywordShowAll" />
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
