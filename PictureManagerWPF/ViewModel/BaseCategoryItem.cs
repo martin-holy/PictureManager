@@ -123,6 +123,8 @@ namespace PictureManager.ViewModel {
           return "appbar_filter";
         case Categories.Viewers:
           return "appbar_eye";
+        case Categories.SqlQueries:
+          return "appbar_database_sql";
         default:
           return "appbar_bug";
       }

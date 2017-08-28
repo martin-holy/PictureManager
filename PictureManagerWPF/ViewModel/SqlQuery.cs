@@ -8,7 +8,7 @@
       Id = data.Id;
       Title = data.Name;
       Query = data.Query;
-      IconName = "appbar_location_checkin";
+      IconName = "appbar_database_sql";
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using PictureManager.Dialogs;
 
@@ -10,7 +9,7 @@ namespace PictureManager.ViewModel {
     public SqlQueries() : base(Categories.SqlQueries) {
       AllSqlQueries = new List<SqlQuery>();
       Title = "SQL Queries";
-      IconName = "appbar_location_checkin";
+      IconName = "appbar_database_sql";
     }
 
     public void Load() {
