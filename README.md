@@ -1,2 +1,2 @@
 # PictureManager
-Work in progress
+Usable but not tested by others!
