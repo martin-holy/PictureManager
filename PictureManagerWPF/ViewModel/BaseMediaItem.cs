@@ -161,6 +161,8 @@ namespace PictureManager.ViewModel {
         Data.Comment = CommentEscaped;
         Data.Orientation = Orientation;
         Data.GeoNameId = GeoNameId;
+        Data.Width = Width;
+        Data.Height = Height;
         ACore.Db.UpdateOnSubmit(Data, lists);
       }
 
