@@ -152,7 +152,8 @@ namespace PictureManager.ViewModel {
           Comment = Comment,
           Orientation = Orientation,
           Width = Width,
-          Height = Height
+          Height = Height,
+          GeoNameId = GeoNameId
         };
         ACore.Db.InsertOnSubmit(Data, lists);
       } else {
@@ -163,6 +164,7 @@ namespace PictureManager.ViewModel {
         Data.GeoNameId = GeoNameId;
         Data.Width = Width;
         Data.Height = Height;
+        Data.GeoNameId = GeoNameId;
         ACore.Db.UpdateOnSubmit(Data, lists);
       }
 
@@ -382,7 +384,9 @@ namespace PictureManager.ViewModel {
           }
 
           //GeoNameId
-          GeoNameId = (int?) bm.GetQuery("/xmp/GeoNames:GeoNameId");
+          var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
+          if (tmpGId != null)
+            GeoNameId = int.Parse(tmpGId.ToString());
 
           //Lat Lng
           var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
@@ -397,7 +401,7 @@ namespace PictureManager.ViewModel {
             Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) * (tmpLng.EndsWith("W") ? -1 : 1);
           }
         }
-      } catch (Exception) {
+      } catch (Exception ex) {
         // ignored
       }
     }
