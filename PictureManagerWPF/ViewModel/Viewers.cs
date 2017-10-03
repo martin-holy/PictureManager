@@ -63,8 +63,10 @@ namespace PictureManager.ViewModel {
     }
 
     public void AddFolder(bool included, string path) {
-      var editedViewer = (Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)];
-      editedViewer?.AddFolder(included, path);
+      var viewer = (Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)];
+      if (viewer == null) return;
+      if ((included ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Any(x => x.ToolTip.Equals(path))) return;
+      viewer.AddFolder(included, path);
     }
 
     public void RemoveFolder(BaseTreeViewItem folder) {
