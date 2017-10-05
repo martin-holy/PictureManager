@@ -539,6 +539,7 @@ namespace PictureManager {
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
       foreach (var mi in mediaItems) {
         mi.SaveMediaItemInToDb(true, false, lists);
+        AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
         mi.WbUpdateInfo();
       }
       ACore.Db.SubmitChanges(lists);
@@ -862,7 +863,7 @@ namespace PictureManager {
 
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       if (thumbs) {
-        var dragged = (string[]) e.Data.GetData(DataFormats.FileDrop);
+        var dragged = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
         var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
         thumbs = selected.SequenceEqual(dragged);
       }
