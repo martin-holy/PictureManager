@@ -113,7 +113,7 @@ namespace PictureManager.ViewModel {
 
       var dbItems = new List<DataModel.MediaItem>();
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Rating>().ToArray();
-
+      var chosenPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Person>().ToArray();
 
       foreach (var file in Directory.EnumerateFiles(path, "*.*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
@@ -130,6 +130,9 @@ namespace PictureManager.ViewModel {
         if (item != null) {
           //Filter by Rating
           if (chosenRatings.Any() && !chosenRatings.Any(x => x.Value.Equals(item.Rating))) continue;
+          //Filter by People
+          if (chosenPeople.Any() && ACore.Db.MediaItemPeople.Count(
+            mip => mip.MediaItemId == item.Id && chosenPeople.Any(p => p.Id == mip.PersonId)) == 0) continue;
 
           dbItems.Add(item);
         }
@@ -232,9 +235,15 @@ namespace PictureManager.ViewModel {
       }
 
       if (items != null) {
+        //Filter by Rating
         var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Rating>().ToArray();
         if (chosenRatings.Any())
           items = items.Where(i => chosenRatings.Any(x => x.Value.Equals(i.Rating))).ToArray();
+        //Filter by People
+        var chosenPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Chosen).ToArray();
+        if (chosenPeople.Any())
+          items = items.Where(mi => chosenPeople.Any(
+            p => ACore.Db.MediaItemPeople.Exists(mip => mip.MediaItemId == mi.Id && mip.PersonId == p.Id))).ToArray();
 
         var allDirs = (from d in ACore.Db.Directories
                        join mi in items on d.Id equals mi.DirectoryId

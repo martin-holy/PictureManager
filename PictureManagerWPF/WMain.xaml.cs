@@ -234,7 +234,7 @@ namespace PictureManager {
     }
 
     #region Commands
-    private void CmdKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
+    private void CmdTreeViewKeywordsRecursiveSelect(object sender, ExecutedRoutedEventArgs e) {
       ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
@@ -343,14 +343,6 @@ namespace PictureManager {
 
     private void CmdFolderShowAll(object sender, ExecutedRoutedEventArgs e) {
       ACore.TreeView_FoldersStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
-    }
-
-    private void CmdFolderKeywordShowAll(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
-    }
-
-    private void CmdGeoNameShowAll(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
     }
 
     private void CmdGeoNameNew(object sender, ExecutedRoutedEventArgs e) {
@@ -983,6 +975,12 @@ namespace PictureManager {
         case nameof(ViewModel.Keyword): {
           if (!ACore.KeywordsEditMode) {
             MenuAddItem(menu, "KeywordShowAll", item);
+          }
+          break;
+        }
+        case nameof(ViewModel.Person): {
+          if (!ACore.KeywordsEditMode) {
+            MenuAddItem(menu, "PeopleShowAll", item);
           }
           break;
         }

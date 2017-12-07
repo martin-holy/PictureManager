@@ -223,12 +223,12 @@ namespace PictureManager {
             //not KeywordsEditMode
             var baseTagItem = (ViewModel.BaseTreeViewTagItem) item;
 
-            var rating = item as ViewModel.Rating;
-            if (rating != null) {
+            if (baseTagItem is ViewModel.Rating || (!recursive && baseTagItem is ViewModel.Person)) {
               if (LastSelectedSource != null) LastSelectedSource.IsSelected = true;
-              rating.BgBrush = rating.BgBrush == BgBrushes.Chosen ? BgBrushes.Default : BgBrushes.Chosen;
-              rating.IsSelected = false;
-            } else {
+              baseTagItem.BgBrush = baseTagItem.BgBrush == BgBrushes.Chosen ? BgBrushes.Default : BgBrushes.Chosen;
+              baseTagItem.IsSelected = false;
+            }
+            else {
               baseTagItem.IsSelected = true;
               LastSelectedSource = baseTagItem;
             }

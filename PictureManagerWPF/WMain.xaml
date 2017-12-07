@@ -105,6 +105,7 @@
     <RoutedUICommand x:Key="TagItemRename" Text="Rename" />
     <RoutedUICommand x:Key="TagItemDelete" Text="Delete" />
     <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
+    <RoutedUICommand x:Key="PeopleShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FolderNew" Text="New folder" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
@@ -130,14 +131,15 @@
     <CommandBinding Command="{StaticResource TagItemNew}" Executed="CmdTagItemNew" />
     <CommandBinding Command="{StaticResource TagItemRename}" Executed="CmdTagItemRename" />
     <CommandBinding Command="{StaticResource TagItemDelete}" Executed="CmdTagItemDelete" />
-    <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdKeywordShowAll" />
+    <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
+    <CommandBinding Command="{StaticResource PeopleShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
     <CommandBinding Command="{StaticResource FolderShowAll}" Executed="CmdFolderShowAll" />
-    <CommandBinding Command="{StaticResource FolderKeywordShowAll}" Executed="CmdFolderKeywordShowAll" />
+    <CommandBinding Command="{StaticResource FolderKeywordShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
@@ -145,7 +147,7 @@
     <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
     <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
     <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
-    <CommandBinding Command="{StaticResource GeoNameShowAll}" Executed="CmdGeoNameShowAll" />
+    <CommandBinding Command="{StaticResource GeoNameShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource GeoNameNew}" Executed="CmdGeoNameNew" />
 
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
