@@ -141,7 +141,7 @@
   }
 
   function SetZoomInfo() {
-    document.getElementById("zoomInfo").innerHTML = "<div>Zoom: " + picZoomLevel + "</div>";
+    document.getElementById("zoomInfo").innerHTML = "<div>Zoom: " + Math.round(picZoomLevel) + "</div>";
   }
 
   function SetPicture(src, orientation) {
@@ -176,7 +176,8 @@
   }
 
   function DocReady() {
-    SetPicture("d:/Pictures/01 Digital_Foto/-=Hotovo/2017/2017_05_15+ - Embalse de Zahara/20170515_202305_Martin.jpg", 0);
+    //SetPicture("d:/Pictures/01 Digital_Foto/-=Hotovo/2017/2017_05_15+ - Embalse de Zahara/20170515_202305_Martin.jpg", 0);
+    //SetPicture("d:/Pictures/01 Digital_Foto/-=Sklad/!/20170913_181620_Martin.jpg", 90);
 
     window.addEventListener("keydown", WindowKeyDown);
   }
@@ -184,17 +185,21 @@
   function AnimatePic() {
     if (!picIsBiggerThanScreen || picIsZoomed) return;
     var pic = GetFullPic(true);
-    if ((pic.naturalHeight / pic.naturalWidth) > (9 / 24)) return;
+    var pnh = picIsRotated ? pic.naturalWidth : pic.naturalHeight;
+    var pnw = picIsRotated ? pic.naturalHeight : pic.naturalWidth;
+    if ((pnh / pnw) > (9 / 24)) return;
 
     var bh = window.document.body.clientHeight;
-    var zoom = (bh / pic.naturalHeight) * 100;
-    SetPic(pic, zoom, 0, 0, 0, 0, false);
-    var toLeft = window.document.body.clientWidth - pic.width;
+    var bw = window.document.body.clientWidth;
+    var zoom = (bh / pnh) * 100;
+    SetPic(pic, zoom, pic.height / 2, pic.width / 2, bh / 2, bw / 2, false);
+    var fromLeft = picIsRotated ? (pic.height - bw) / 2 : 0;
+    var toLeft = picIsRotated ? (bw - pic.height) / 2 : bw - pic.width;// bw - (picIsRotated ? pic.height : pic.width);
     var animationSpeed = Math.round(toLeft / 100) * -1;
 
     var animatePicRule = document.styleSheets[0].cssRules[0];
     animatePicRule.deleteRule(1);
-    animatePicRule.appendRule("from { left: 0px;}", 0);
+    animatePicRule.appendRule("from { left: " + fromLeft + "px;}", 0);
     animatePicRule.appendRule("to { left: " + toLeft + "px;}", 1);
     pic.style.animation = "animatePic " + animationSpeed + "s ease-in-out 0s infinite alternate";
   }
