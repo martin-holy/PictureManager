@@ -84,7 +84,7 @@
 
   function FullPic_OnLoad(pic) {
     FitPicture(pic);
-    SwitchCurrentFullPicId();
+    SwitchToCurrentMediaItem("image");
   }
 
   function FitPicture(pic) {
@@ -144,7 +144,14 @@
     document.getElementById("zoomInfo").innerHTML = "<div>Zoom: " + Math.round(picZoomLevel) + "</div>";
   }
 
-  function SetPicture(src, orientation) {
+  function SetVideo(src) {
+    var vid = document.getElementById("vid");
+    vid.src = src;
+    //vid.requestFullscreen();
+    SwitchToCurrentMediaItem("video");
+  }
+
+  function SetImage(src, orientation) {
     var pic = GetFullPic(false);
     if (pic === undefined || pic === null) return;
     pic.style.top = null;
@@ -153,12 +160,25 @@
     pic.src = src;
   }
 
-  function SwitchCurrentFullPicId() {
-    var currentPic = GetFullPic(true);
-    currentPic.style.display = "none";
-    currentPic.style.animation = "";
-    GetFullPic(false).style.display = "block";
-    currentFullPicId = GetTempFullPicId();
+  function SwitchToCurrentMediaItem(mediaType) {
+    switch (mediaType) {
+      case "image": {
+        document.getElementById("videoBox").style.display = "none";
+        document.getElementById("vid").src = "";
+        document.getElementById("imageBox").style.display = "block";
+        var currentPic = GetFullPic(true);
+        currentPic.style.display = "none";
+        currentPic.style.animation = "";
+        GetFullPic(false).style.display = "block";
+        currentFullPicId = GetTempFullPicId();
+        break;
+      }
+      case "video": {
+        document.getElementById("videoBox").style.display = "block";
+        document.getElementById("imageBox").style.display = "none";
+        break;
+      }
+    }
   }
 
   function GetFullPic(current) {
@@ -260,13 +280,17 @@
   #zoomInfo {
     margin-top: 31px;
   }
+
+  #vid {
+    margin: 0 auto;
+  }
 </style>
 </head>
 <body OnLoad="DocReady();" OnMouseWheel="Body_OnMouseWheel(event);" OnResize="FitPicture(GetFullPic(true));">
 <div id="info"></div>
 <div id="zoomInfo"></div>
 <div id="content">
-  <div id="fullPicBox">
+  <div id="imageBox">
     <img id="fullPicA" draggable="false"
          OnMouseDown="FullPic_OnMouseDown(event);"
          OnMouseUp="FullPic_OnMouseUp(this);"
@@ -279,6 +303,9 @@
          OnMouseMove="FullPic_OnMouseMove(event);"
          OnLoad="FullPic_OnLoad(this);"
          src="">
+  </div>
+  <div id="videoBox">
+    <video id="vid" controls autoplay loop src=""></video>
   </div>
 </div>
 </body>

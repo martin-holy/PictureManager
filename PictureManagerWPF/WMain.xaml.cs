@@ -92,7 +92,7 @@ namespace PictureManager {
       ACore.MediaItems.DeselectAll();
       ACore.MediaItems.Current = ACore.MediaItems.Items[int.Parse(thumb.Id)];
       ACore.MediaItems.Current.IsSelected = true;
-      ShowFullPicture();
+      SwitchToFullScreen();
     }
 
     private void WbThumbs_MouseDown(object sender, HtmlElementEventArgs e) {
@@ -146,10 +146,10 @@ namespace PictureManager {
         ACore.AppInfo.AppMode = AppModes.Viewer;
         ACore.ViewerOnly = true;
         ACore.OneFileOnly = true;
-        ACore.MediaItems.Items.Add(new ViewModel.Picture(_argPicFile, 0, null));
+        ACore.MediaItems.Items.Add(new ViewModel.BaseMediaItem(_argPicFile, 0, null));
         ACore.MediaItems.Items[0].IsSelected = true;
         ACore.MediaItems.Current = ACore.MediaItems.Items[0];
-        ShowFullPicture();
+        SwitchToFullScreen();
       } else {
         ACore.AppInfo.AppMode = AppModes.Browser;
         //InitUi();
@@ -167,9 +167,9 @@ namespace PictureManager {
       CmbViewers.SelectedItem = ACore.CurrentViewer;
     }
 
-    public void ShowFullPicture() {
+    public void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
-      _wFullPic.SetCurrentImage();
+      _wFullPic.SetCurrentMediaItem();
       if (!_wFullPic.IsActive) {
         Hide();
         ShowInTaskbar = false;
@@ -635,116 +635,44 @@ namespace PictureManager {
     private ScrollViewer TvKeywordsScrollViewer {
       get {
         if (_tvKeywordsScrollViewer != null) return _tvKeywordsScrollViewer;
-        DependencyObject border = VisualTreeHelper.GetChild(TvKeywords, 0);
-        if (border != null) {
-          _tvKeywordsScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-        }
+        var border = VisualTreeHelper.GetChild(TvKeywords, 0);
+        _tvKeywordsScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
 
         return _tvKeywordsScrollViewer;
       }
     }
 
+    private Dictionary<int, KeyValuePair<string, string>> GetFileProps(string filename) {
+      Shell32.Shell shl = new Shell32.Shell();
+      Shell32.Folder fldr = shl.NameSpace(Path.GetDirectoryName(filename));
+      Shell32.FolderItem itm = fldr.ParseName(Path.GetFileName(filename));
+      Dictionary<int, KeyValuePair<string, string>> fileProps = new Dictionary<int, KeyValuePair<string, string>>();
+      for (int i = 0; i < 1000; i++) {
+        string propValue = fldr.GetDetailsOf(itm, i);
+        if (propValue != "") {
+          fileProps.Add(i, new KeyValuePair<string, string>(fldr.GetDetailsOf(null, i), propValue));
+        }
+      }
+      return fileProps;
+    }
+
+
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e)
     {
-      
+      //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
+      var x = GetFileProps(@"d:\video.mp4");
+      var xx = ShellStuff.FileInformation.GetVideoDimensions(@"d:\video.mp4");
+      var doc = WbThumbs.Document.All;
+      AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");
 
-
-      //FlyoutTabs.IsOpen = !FlyoutTabs.IsOpen;
-      /*DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
-      dsd.ShowDialog();*/
-
-
-      /*foreach (var item in ACore.MediaItems.Items) {
-        var destFilePath = item.FilePath.Replace(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2016\", @"K:\Fotky\Pongo\");
-        Directory.CreateDirectory(Path.GetDirectoryName(destFilePath));
-        File.Copy(item.FilePath, destFilePath);
-      }
-      MessageBox.Show("Done");*/
-
-      //var dir = new DataModel.Directory {Path = "ds"};
-
-      /*var db = new DataModel.PmDataContext("Data Source = data.db");
-      db.Load();
-      var dir = new DataModel.Directory {Id = db.GetNextIdFor("Directories"), Path = "aaa"};
-      db.InsertOnSubmit(dir);
-      db.SubmitChanges();
-
-      dir.Path = "www";
-      db.UpdateOnSubmit(dir);
-      db.SubmitChanges();
-
-      db.DeleteOnSubmit(dir);
-      db.SubmitChanges();*/
-
+      //height 309, width 311
 
       /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
       var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
       var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
       //3659174697441353
       var filePath = @"d:\!test\20150831_114319_Martin.jpg";
-      var fileInfo = new FileInfo(filePath);
-
-      foreach (var file in Directory.EnumerateFiles(@"d:\Pictures\01 Digital_Foto\-=Hotovo\2016\2016_04_07+ - Penedo Furado\")) {
-        var x = ShellStuff.FileInformation.GetFileIdInfo(file);
-      }
-
-      var xx = ShellStuff.FileInformation.GetFileIdInfo(filePath);*/
-
-      //var dirs = ACore.Db.ListDirectories.Where(x => !Directory.Exists(x.Path)).Select(x => x.Path);
-
-      //var people = ACore.Db.DataContext.GetTable<DataModel.Person>();
-
-      //PmDbContext context = new PmDbContext();
-      //var data = context.Directories.ToList();
-
-
-      //var list = TestGetDirectories();
-
-      /*var cont = new DataContext(ACore.Db.DbConn);
-      var dirs = cont.GetTable<DataModel.Directory>().ToList();
-      var mitems = cont.GetTable<DataModel.MediaItem>().ToList();
-      var dd = mitems.Where(x => x.FileName.StartsWith("2015"));
-      var mip = cont.GetTable<DataModel.MediaItemPerson>();
-
-      var testt =
-        from dir in dirs
-        join mitem in mitems on dir.Id equals mitem.DirectoryId
-        where dir.Path.StartsWith("P:")
-        select new {FileName = mitem.FileName, DirPath = dir.Path};*/
-
-
-
-
-
-
-
-      /*DirectoryListDialog dld = new DirectoryListDialog {
-        Title = "Catalog Folders",
-        DirList = {SettingsPropertyName = "CatalogFolders" }
-      };
-      dld.ShowDialog();*/
-
-
-      //var path = @"d:\Download\New\!iya";
-      //var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
-
-      //var count = ACore.MediaItems.SuportedExts.Sum(ext => Directory.GetFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
-
-      //JpegTest();
-
-      //RotateJpeg(@"d:\!test\TestInTest\20160209_143609.jpg", 80, Rotation.Rotate90);
-
-      /*//cause blue screen :-(
-      var filePath = @"d:\!test\TestInTest\20160209_143609.jpg";
-      if (File.Exists(filePath)) {
-        Process.Start("rundll32.exe", "shell32.dll, OpenAs_RunDLL " + filePath);
-      }*/
-
-      //MessageBox.Show((GC.GetTotalMemory(true) / 1024 / 1024).ToString());
-
-      /*WTestThumbnailGallery ttg = new WTestThumbnailGallery();
-      ttg.Show();
-      ttg.AddPhotosInFolder(ACore.Pictures);*/
+      var fileInfo = new FileInfo(filePath);*/
     }
 
     #endregion

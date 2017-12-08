@@ -49,6 +49,7 @@ namespace PictureManager.ViewModel {
     public int? GeoNameId;
     public double? Lat;
     public double? Lng;
+    public MediaTypes MediaType;
     public bool IsModifed;
     public DataModel.MediaItem Data;
     public List<Keyword> Keywords = new List<Keyword>();
@@ -60,6 +61,7 @@ namespace PictureManager.ViewModel {
       ACore = ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
       Index = index;
+      MediaType = ACore.MediaItems.SuportedImageExts.Any(e => e == Path.GetExtension(filePath)) ? MediaTypes.Image : MediaTypes.Video; 
 
       if (data == null) return;
       Id = data.Id;
@@ -245,6 +247,7 @@ namespace PictureManager.ViewModel {
     }
 
     public bool WriteMetadata() {
+      if (MediaType == MediaTypes.Video) return true;
       FileInfo original = new FileInfo(FilePath);
       FileInfo newFile = new FileInfo(FilePath + "_newFile");
       bool bSuccess = false;
@@ -331,74 +334,85 @@ namespace PictureManager.ViewModel {
 
     public void ReadMetadata() {
       try {
-        using (FileStream imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-          if (imageFileStream.Length == 0) return;
-          BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-          BitmapFrame frame = decoder.Frames[0];
-          Width = frame.PixelWidth;
-          Height = frame.PixelHeight;
-          BitmapMetadata bm = (BitmapMetadata)frame.Metadata;
-          if (bm == null) return;
+        if (MediaType == MediaTypes.Video) {
+          var size = ShellStuff.FileInformation.GetVideoDimensions(FilePath);
+          Height = size[0];
+          Width = size[1];
+        }
+        else { //MediaTypes.Image
+          using (FileStream imageFileStream =
+            new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+            if (imageFileStream.Length == 0) return;
+            BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None,
+              BitmapCacheOption.None);
+            BitmapFrame frame = decoder.Frames[0];
+            Width = frame.PixelWidth;
+            Height = frame.PixelHeight;
+            BitmapMetadata bm = (BitmapMetadata) frame.Metadata;
+            if (bm == null) return;
 
-          //People
-          People.Clear();
-          const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-          const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+            //People
+            People.Clear();
+            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
 
-          var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
-          if (regions != null) {
-            foreach (string region in regions) {
-              var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-              if (personDisplayName != null) {
-                People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+            var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
+            if (regions != null) {
+              foreach (string region in regions) {
+                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+                if (personDisplayName != null) {
+                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+                }
               }
             }
-          }
 
-          //Rating
-          Rating = bm.Rating;
+            //Rating
+            Rating = bm.Rating;
 
-          //Comment
-          Comment = bm.Comment == null
-            ? string.Empty
-            : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+            //Comment
+            Comment = bm.Comment == null
+              ? string.Empty
+              : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
 
-          //Orientation
-          var orientation = bm.GetQuery("System.Photo.Orientation");
-          if (orientation != null) {
-            //3: 180, 6: 270, 8: 90
-            Orientation = (ushort) orientation;
-          }
+            //Orientation
+            var orientation = bm.GetQuery("System.Photo.Orientation");
+            if (orientation != null) {
+              //3: 180, 6: 270, 8: 90
+              Orientation = (ushort) orientation;
+            }
 
-          //Keywords
-          Keywords.Clear();
-          if (bm.Keywords != null) {
-            //Filter out duplicities
-            foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-              if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-                var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
-                if (keyword != null)
-                  Keywords.Add(keyword);
+            //Keywords
+            Keywords.Clear();
+            if (bm.Keywords != null) {
+              //Filter out duplicities
+              foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+                if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
+                  var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
+                  if (keyword != null)
+                    Keywords.Add(keyword);
+                }
               }
             }
-          }
 
-          //GeoNameId
-          var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
-          if (tmpGId != null)
-            GeoNameId = int.Parse(tmpGId.ToString());
+            //GeoNameId
+            var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
+            if (tmpGId != null)
+              GeoNameId = int.Parse(tmpGId.ToString());
 
-          //Lat Lng
-          var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
-          if (tmpLat != null) {
-            var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
-            Lat = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) * (tmpLat.EndsWith("S") ? -1 : 1);
-          }
+            //Lat Lng
+            var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
+            if (tmpLat != null) {
+              var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
+              Lat = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
+                    (tmpLat.EndsWith("S") ? -1 : 1);
+            }
 
-          var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
-          if (tmpLng != null) {
-            var vals = tmpLng.Substring(0, tmpLng.Length - 1).Split(',');
-            Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) * (tmpLng.EndsWith("W") ? -1 : 1);
+            var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
+            if (tmpLng != null) {
+              var vals = tmpLng.Substring(0, tmpLng.Length - 1).Split(',');
+              Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
+                    (tmpLng.EndsWith("W") ? -1 : 1);
+            }
           }
         }
       } catch (Exception ex) {

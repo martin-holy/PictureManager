@@ -13,7 +13,7 @@ namespace PictureManager {
 
     public void FullPicMouseWheel(int delta) {
       ACore.MediaItems.CurrentItemMove(delta < 0);
-      ACore.WMain.ShowFullPicture();
+      ACore.WMain.SwitchToFullScreen();
     }
 
     public void OnContextMenu() {

@@ -13,7 +13,9 @@ namespace PictureManager.ViewModel {
     public ObservableCollection<BaseMediaItem> Items;
     public BaseMediaItem Current;
     public AppCore ACore;
-    public string[] SuportedExts = { ".jpg", ".jpeg" };
+    public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
+    public string[] SuportedImageExts = { ".jpg", ".jpeg" };
+    public string[] SuportedVideoExts = { ".mp4", ".mkv" };
 
     public MediaItems() {
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
@@ -113,7 +115,7 @@ namespace PictureManager.ViewModel {
 
       var dbItems = new List<DataModel.MediaItem>();
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Rating>().ToArray();
-      var chosenPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Chosen).Cast<Person>().ToArray();
+      var chosenPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Chosen).ToArray();
 
       foreach (var file in Directory.EnumerateFiles(path, "*.*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
         .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
@@ -137,11 +139,11 @@ namespace PictureManager.ViewModel {
           dbItems.Add(item);
         }
 
-        var pic = new Picture(filePath, Items.Count, item) {
+        var bmi = new BaseMediaItem(filePath, Items.Count, item) {
           DirId = (int) dir.Value[0],
           FolderKeyword = (FolderKeyword) dir.Value[1]
         };
-        Items.Add(pic);
+        Items.Add(bmi);
       }
 
       //Load People and Keywords for thous that are already in DB
@@ -266,25 +268,25 @@ namespace PictureManager.ViewModel {
           //Filter by Viewer
           if (!ACore.CanViewerSeeThisFile(filePath)) continue;
 
-          Picture pic = new Picture(filePath, Items.Count, item);
+          var bmi = new BaseMediaItem(filePath, Items.Count, item);
           //Load People
           foreach (var mip in mips.Where(x => x.MediaItemId == item.Id)) {
-            pic.People.Add(ACore.People.GetPerson(mip.PersonId));
+            bmi.People.Add(ACore.People.GetPerson(mip.PersonId));
           }
           //Load Keywords
           foreach (var mik in miks.Where(x => x.MediaItemId == item.Id)) {
-            pic.Keywords.Add(ACore.Keywords.GetKeyword(mik.KeywordId));
+            bmi.Keywords.Add(ACore.Keywords.GetKeyword(mik.KeywordId));
           }
           //Folder Keyword
-          pic.FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath(Path.GetDirectoryName(filePath));
+          bmi.FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath(Path.GetDirectoryName(filePath));
 
           //TODO docasne, pak odstranit
           var viewer = ACore.Viewers.Items.Cast<Viewer>().SingleOrDefault(x => x.Title == Settings.Default.Viewer);
           if (viewer != null && viewer.Title.Equals("Prezentace")) {
-            if (pic.Keywords.Any(x => x.FullPath.StartsWith("#CoSpi/Weed"))) continue;
+            if (bmi.Keywords.Any(x => x.FullPath.StartsWith("#CoSpi/Weed"))) continue;
           }
 
-          Items.Add(pic);
+          Items.Add(bmi);
         }
       }
 

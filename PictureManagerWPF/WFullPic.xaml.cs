@@ -23,7 +23,7 @@ namespace PictureManager {
       _tmrPresentation = new System.Timers.Timer(2000);
       _tmrPresentation.Elapsed += delegate {
         if (ACore.MediaItems.CurrentItemMove(true))
-          SetCurrentImage();
+          SetCurrentMediaItem();
       };
       WbFullPic.ObjectForScripting = new ScriptManager(ACore);
       WbFullPic.DocumentCompleted += WbFullPicOnDocumentCompleted;
@@ -47,7 +47,7 @@ namespace PictureManager {
       if (WbFullPic.Document?.Body == null) return;
       WbFullPic.Document.Body.DoubleClick += WbFullPic_DblClick;
       WbFullPic.Document.Body.KeyDown += WbFullPic_KeyDown;
-      SetCurrentImage();
+      SetCurrentMediaItem();
     }
 
     private void WbFullPic_DblClick(object sender, HtmlElementEventArgs e) {
@@ -55,21 +55,27 @@ namespace PictureManager {
       Hide();
     }
 
-    public void SetCurrentImage() {
+    public void SetCurrentMediaItem() {
+      if (ACore.MediaItems.Current == null) return;
       var current = ACore.MediaItems.Current;
       var filePath = current == null ? string.Empty : current.FilePath;
 
-      var o = 0;
-      if (current != null) {
+      if (current.MediaType == MediaTypes.Image) {
+        var o = 0;
         switch (current.Orientation) {
           case 1: o = 0; break;
           case 3: o = 180; break;
           case 6: o = 90; break;
           case 8: o = 270; break;
         }
+
+        WbFullPic.Document?.InvokeScript("SetImage", new object[] {filePath, o});
       }
 
-      WbFullPic.Document?.InvokeScript("SetPicture", new object[] {filePath, o});
+      if (current.MediaType == MediaTypes.Video) {
+        WbFullPic.Document?.InvokeScript("SetVideo", new object[] { filePath });
+      }
+
       WbFullPic.Document?.InvokeScript("SetInfo", new object[] {ACore.MediaItems.GetFullScreenInfo()});
     }
 
@@ -95,13 +101,13 @@ namespace PictureManager {
         case Key.Right:
         case Key.PageDown: {
           if (ACore.MediaItems.CurrentItemMove(true))
-            SetCurrentImage();
+            SetCurrentMediaItem();
           break;
         }
         case Key.Left:
         case Key.PageUp: {
           if (ACore.MediaItems.CurrentItemMove(false))
-            SetCurrentImage();
+            SetCurrentMediaItem();
           break;
         }
         case Key.Escape: {
@@ -171,7 +177,7 @@ namespace PictureManager {
       if (itemsCount <= index && itemsCount != 0)
         ACore.MediaItems.Items[index - 1].IsSelected = true;
       ACore.MediaItems.SetCurrent();
-      SetCurrentImage();
+      SetCurrentMediaItem();
     }
 
     private void MetroWindow_Activated(object sender, System.EventArgs e) {

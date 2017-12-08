@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.IO;
 using System.Threading;
@@ -365,7 +366,7 @@ namespace PictureManager {
       WMain.CmbThumbPage.Items.Clear();
       var iPageCount = MediaItems.Items.Count / ThumbsPerPage;
       if (iPageCount == 0 || MediaItems.Items.Count > ThumbsPerPage) iPageCount++;
-      for (int i = 0; i < iPageCount; i++) {
+      for (var i = 0; i < iPageCount; i++) {
         WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
       }
       //this will start ACore.CreateThumbnailsWebPage()
@@ -391,19 +392,29 @@ namespace PictureManager {
         var mi = MediaItems.Items[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
-        var img = doc.CreateElement("img");
+        //var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
+        var bmi = doc.CreateElement("img");
 
-        if (thumb == null || keywords == null || img == null) return;
+        if (thumb == null || keywords == null || bmi == null) return;
 
         keywords.SetAttribute("className", "keywords");
         keywords.InnerHtml = mi.GetKeywordsAsString(false);
 
-        img.SetAttribute("src", mi.FilePathCache);
+        /*bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
 
+        if (mi.MediaType == MediaTypes.Video) {
+          bmi.SetAttribute("autoplay", "true");
+          bmi.SetAttribute("loop", "true");
+          bmi.SetAttribute("muted", "true");
+          bmi.SetAttribute("controls", "true");
+          bmi.SetAttribute(mi.Width > mi.Height ? "width" : "height", Settings.Default.ThumbnailSize.ToString());
+        }*/
+
+        bmi.SetAttribute("src", mi.FilePathCache);
         thumb.SetAttribute("className", "thumbBox");
         thumb.SetAttribute("id", mi.Index.ToString());
         thumb.AppendChild(keywords);
-        thumb.AppendChild(img);
+        thumb.AppendChild(bmi);
         thumbs.AppendChild(thumb);
 
         WMain.StatusProgressBar.Value = e.ProgressPercentage;
