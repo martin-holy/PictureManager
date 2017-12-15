@@ -56,9 +56,8 @@ namespace PictureManager {
     }
 
     public void SetCurrentMediaItem() {
-      if (ACore.MediaItems.Current == null) return;
       var current = ACore.MediaItems.Current;
-      var filePath = current == null ? string.Empty : current.FilePath;
+      if (current == null) return;
 
       if (current.MediaType == MediaTypes.Image) {
         var o = 0;
@@ -69,11 +68,11 @@ namespace PictureManager {
           case 8: o = 270; break;
         }
 
-        WbFullPic.Document?.InvokeScript("SetImage", new object[] {filePath, o});
+        WbFullPic.Document?.InvokeScript("SetImage", new object[] {current.FilePath, o});
       }
 
       if (current.MediaType == MediaTypes.Video) {
-        WbFullPic.Document?.InvokeScript("SetVideo", new object[] { filePath });
+        WbFullPic.Document?.InvokeScript("SetVideo", new object[] { current.FilePath });
       }
 
       WbFullPic.Document?.InvokeScript("SetInfo", new object[] {ACore.MediaItems.GetFullScreenInfo()});
