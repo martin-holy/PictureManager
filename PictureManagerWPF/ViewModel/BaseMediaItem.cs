@@ -111,6 +111,7 @@ namespace PictureManager.ViewModel {
       }
 
       if (GeoNameId != null) sb.Append("<div>G</div>");
+      if (MediaType == MediaTypes.Video) sb.Append("<div>V</div>");
 
       return sb.ToString();
     }

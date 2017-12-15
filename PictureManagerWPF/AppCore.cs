@@ -392,25 +392,28 @@ namespace PictureManager {
         var mi = MediaItems.Items[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
-        //var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
-        var bmi = doc.CreateElement("img");
+        var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
+        //var bmi = doc.CreateElement("img");
 
         if (thumb == null || keywords == null || bmi == null) return;
 
         keywords.SetAttribute("className", "keywords");
         keywords.InnerHtml = mi.GetKeywordsAsString(false);
 
-        /*bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
+        bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
 
         if (mi.MediaType == MediaTypes.Video) {
-          bmi.SetAttribute("autoplay", "true");
+          //bmi.SetAttribute("autoplay", "true");
           bmi.SetAttribute("loop", "true");
-          bmi.SetAttribute("muted", "true");
+          //bmi.SetAttribute("muted", "true");
+          bmi.SetAttribute("poster", mi.FilePathCache);
           bmi.SetAttribute("controls", "true");
-          bmi.SetAttribute(mi.Width > mi.Height ? "width" : "height", Settings.Default.ThumbnailSize.ToString());
-        }*/
+          //bmi.SetAttribute(mi.Width > mi.Height ? "width" : "height", Settings.Default.ThumbnailSize.ToString());
+          //TODO get dimensions for video's
+          bmi.SetAttribute("width", Settings.Default.ThumbnailSize.ToString());
+        }
 
-        bmi.SetAttribute("src", mi.FilePathCache);
+        //bmi.SetAttribute("src", mi.FilePathCache);
         thumb.SetAttribute("className", "thumbBox");
         thumb.SetAttribute("id", mi.Index.ToString());
         thumb.AppendChild(keywords);
