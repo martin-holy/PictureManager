@@ -61,7 +61,10 @@ namespace PictureManager.ViewModel {
       ACore = ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
       Index = index;
-      MediaType = ACore.MediaItems.SuportedImageExts.Any(e => e == Path.GetExtension(filePath)) ? MediaTypes.Image : MediaTypes.Video; 
+      MediaType = ACore.MediaItems.SuportedImageExts.Any(
+        e => filePath.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
+        ? MediaTypes.Image
+        : MediaTypes.Video;
 
       if (data == null) return;
       Id = data.Id;
