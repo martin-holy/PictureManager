@@ -17,6 +17,7 @@
       <pm:StaticResourceConverter x:Key="StaticResourceConverter"/>
       <pm:IconNameToBrush x:Key="IconNameToBrush" />
       <pm:RatingConverter x:Key="RatingConverter" />
+      <pm:BgColorConverter x:Key="BgColorConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />

@@ -40,7 +40,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void GroupNewOrRename(CategoryGroup group, bool rename) {
-      InputDialog inputDialog = new InputDialog {
+      var inputDialog = new InputDialog {
         Owner = ACore.WMain,
         IconName = CategoryGroupIconName,
         Title = rename ? "Rename Group" : "New Group",
@@ -107,26 +107,16 @@ namespace PictureManager.ViewModel {
 
     private string GetCategoryGroupIconName() {
       switch (Category) {
-        case Categories.FavoriteFolders:
-          return "appbar_folder_star";
-        case Categories.Folders:
-          return "appbar_folder";
-        case Categories.Ratings:
-          return "appbar_star";
-        case Categories.People:
-          return "appbar_people_multiple";
-        case Categories.FolderKeywords:
-          return "appbar_folder";
-        case Categories.Keywords:
-          return "appbar_tag_label";
-        case Categories.Filters:
-          return "appbar_filter";
-        case Categories.Viewers:
-          return "appbar_eye";
-        case Categories.SqlQueries:
-          return "appbar_database_sql";
-        default:
-          return "appbar_bug";
+        case Categories.FavoriteFolders: return "appbar_folder_star";
+        case Categories.Folders: return "appbar_folder";
+        case Categories.Ratings: return "appbar_star";
+        case Categories.People: return "appbar_people_multiple";
+        case Categories.FolderKeywords: return "appbar_folder";
+        case Categories.Keywords: return "appbar_tag_label";
+        case Categories.Filters: return "appbar_filter";
+        case Categories.Viewers: return "appbar_eye";
+        case Categories.SqlQueries: return "appbar_database_sql";
+        default: return "appbar_bug";
       }
     }
     #endregion
@@ -176,9 +166,9 @@ namespace PictureManager.ViewModel {
     public InputDialog ItemGetInputDialog(BaseTreeViewItem item, string iconName, string itemName, bool rename) {
       var title = rename ? $"Rename {itemName}" : $"New {itemName}";
       var question = rename ? $"Enter the new name for the {itemName.ToLower()}." : $"Enter the name of the new {itemName.ToLower()}.";
-      string error = $"{itemName}'s name already exists!";
+      var error = $"{itemName}'s name already exists!";
 
-      InputDialog inputDialog = new InputDialog {
+      var inputDialog = new InputDialog {
         Owner = ACore.WMain,
         IconName = iconName,
         Title = title,

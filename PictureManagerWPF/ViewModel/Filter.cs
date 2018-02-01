@@ -11,7 +11,7 @@ namespace PictureManager.ViewModel {
 
     public override bool IsExpanded
     {
-      get { return base.IsExpanded; }
+      get => base.IsExpanded;
       set
       {
         base.IsExpanded = value;
@@ -41,7 +41,7 @@ namespace PictureManager.ViewModel {
       var parentId = parent?.Id;
 
       foreach (var f in ACore.Db.Filters.Where(x => x.ParentId.Equals(parentId))) {
-        Filter item = new Filter(f, parent);
+        var item = new Filter(f, parent);
         item.LoadFilterData(f.Data);
 
         if (ACore.Db.Filters.Count(x => x.ParentId == f.Id) != 0) {
@@ -59,9 +59,9 @@ namespace PictureManager.ViewModel {
 
     public void LoadFilterData(byte[] biteArray) {
       //TODO: udelat bez ukladani na disk!!!
-      FileInfo filterFile = new FileInfo("TempFilter.dat");
+      var filterFile = new FileInfo("TempFilter.dat");
 
-      using (FileStream writeFileStream = new FileStream(filterFile.Name, FileMode.Create)) {
+      using (var writeFileStream = new FileStream(filterFile.Name, FileMode.Create)) {
         try {
           writeFileStream.Write(biteArray, 0, biteArray.Length);
         } catch (Exception) {
@@ -71,8 +71,8 @@ namespace PictureManager.ViewModel {
 
       if (!filterFile.Exists) return;
 
-      using (FileStream readFileStream = new FileStream(filterFile.Name, FileMode.Open)) {
-        BinaryFormatter formatter = new BinaryFormatter();
+      using (var readFileStream = new FileStream(filterFile.Name, FileMode.Open)) {
+        var formatter = new BinaryFormatter();
         try {
           FilterData = (ObservableCollection<BaseFilterItem>) formatter.Deserialize(readFileStream);
         } catch (System.Runtime.Serialization.SerializationException) {
@@ -84,10 +84,10 @@ namespace PictureManager.ViewModel {
     }
 
     public void SaveFilter() {
-      FileInfo filterFile = new FileInfo("TempFilter.dat");
+      var filterFile = new FileInfo("TempFilter.dat");
 
-      using (FileStream writeFileStream = new FileStream(filterFile.Name, FileMode.Create)) {
-        BinaryFormatter formatter = new BinaryFormatter();
+      using (var writeFileStream = new FileStream(filterFile.Name, FileMode.Create)) {
+        var formatter = new BinaryFormatter();
         try {
           formatter.Serialize(writeFileStream, FilterData);
         } catch (System.Runtime.Serialization.SerializationException) {
@@ -98,7 +98,7 @@ namespace PictureManager.ViewModel {
       if (!filterFile.Exists) return;
       byte[] biteArray;
       //read filder data from stream to biteArray
-      using (FileStream readFileStream = new FileStream(filterFile.Name, FileMode.Open)) {
+      using (var readFileStream = new FileStream(filterFile.Name, FileMode.Open)) {
         biteArray = new byte[readFileStream.Length];
         readFileStream.Position = 0;
         readFileStream.Read(biteArray, 0, (int)readFileStream.Length);

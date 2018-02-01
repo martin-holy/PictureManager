@@ -34,7 +34,7 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      InputDialog inputDialog = ItemGetInputDialog(item, "appbar_eye", "Viewer", rename);
+      var inputDialog = ItemGetInputDialog(item, "appbar_eye", "Viewer", rename);
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {

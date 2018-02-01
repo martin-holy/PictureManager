@@ -18,10 +18,10 @@ namespace PictureManager.Dialogs {
     private string _answer;
     private bool _error;
 
-    public string IconName { get { return _iconName;} set { _iconName = value; OnPropertyChanged(); } }
-    public string Question { get { return _question; } set { _question = value; OnPropertyChanged(); } }
-    public string Answer { get { return _answer; } set { _answer = value; OnPropertyChanged(); } }
-    public bool Error { get { return _error; } set { _error = value; OnPropertyChanged(); } }
+    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public string Question { get => _question; set { _question = value; OnPropertyChanged(); } }
+    public string Answer { get => _answer; set { _answer = value; OnPropertyChanged(); } }
+    public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
 
     public InputDialog() {
       InitializeComponent();

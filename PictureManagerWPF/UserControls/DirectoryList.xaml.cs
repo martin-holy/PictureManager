@@ -29,9 +29,7 @@ namespace PictureManager.UserControls {
 
     private string _settingsPropertyName;
     public string SettingsPropertyName {
-      get {
-        return _settingsPropertyName;
-      }
+      get => _settingsPropertyName;
       set {
         _settingsPropertyName = value;
         LoadPathsFromSettings();
@@ -73,11 +71,11 @@ namespace PictureManager.UserControls {
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
-      StackPanel stackPanel = (StackPanel) sender;
-      object item = stackPanel.DataContext;
+      var stackPanel = (StackPanel) sender;
+      var item = stackPanel.DataContext;
 
       if (stackPanel.ContextMenu != null) return;
-      ContextMenu menu = new ContextMenu {Tag = item};
+      var menu = new ContextMenu {Tag = item};
 
       switch (item.GetType().Name) {
         case nameof(ViewModel.Folders): {
@@ -99,8 +97,8 @@ namespace PictureManager.UserControls {
     private void LoadFolders() {
       Folders.Items.Clear();
       foreach (var path in Paths.OrderBy(x => x)) {
-        DirectoryInfo di = new DirectoryInfo(path);
-        ViewModel.Folder item = new ViewModel.Folder {
+        var di = new DirectoryInfo(path);
+        var item = new ViewModel.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = "appbar_folder",
@@ -122,14 +120,12 @@ namespace PictureManager.UserControls {
     }
 
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
-      FolderBrowserDialog dir = new FolderBrowserDialog();
-      if (dir.ShowDialog() == DialogResult.OK) {
-        var path = $"{dir.SelectedPath}{(dir.SelectedPath.EndsWith("\\") ? string.Empty : "\\")}";
-        if (!Paths.Contains(path)) {
-          Paths.Add(path);
-          LoadFolders();
-        }
-      }
+      var dir = new FolderBrowserDialog();
+      if (dir.ShowDialog() != DialogResult.OK) return;
+      var path = $"{dir.SelectedPath}{(dir.SelectedPath.EndsWith("\\") ? string.Empty : "\\")}";
+      if (Paths.Contains(path)) return;
+      Paths.Add(path);
+      LoadFolders();
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {

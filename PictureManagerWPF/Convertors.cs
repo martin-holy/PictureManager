@@ -52,4 +52,20 @@ namespace PictureManager {
       throw new NotSupportedException();
     }
   }
+
+  public class BgColorConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) value = parameter;
+      switch ((BgBrushes)value) {
+        case BgBrushes.AndThis: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case BgBrushes.OrThis: return new SolidColorBrush(Color.FromRgb(21, 133, 181));
+        case BgBrushes.Hidden: return new SolidColorBrush(Color.FromRgb(222, 87, 58));
+        default: return new SolidColorBrush(Color.FromRgb(37, 37, 37));
+      }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
 }

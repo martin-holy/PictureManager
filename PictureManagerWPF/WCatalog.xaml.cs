@@ -35,10 +35,10 @@ namespace PictureManager {
     private string _selectedFolderPath;
     private bool _newOnly;
     private bool _rebuildThumbnails;
-    private List<DataModel.BaseTable>[] _lists;
+    private readonly List<DataModel.BaseTable>[] _lists;
 
     private string _filesProgress;
-    public string FilesProgress { get { return _filesProgress; } set { _filesProgress = value; OnPropertyChanged(); } }
+    public string FilesProgress { get => _filesProgress; set { _filesProgress = value; OnPropertyChanged(); } }
 
     public WCatalog(AppCore appCore) {
       InitializeComponent();
@@ -157,11 +157,11 @@ namespace PictureManager {
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
-      StackPanel stackPanel = (StackPanel)sender;
-      object item = stackPanel.DataContext;
+      var stackPanel = (StackPanel)sender;
+      var item = stackPanel.DataContext;
 
       if (stackPanel.ContextMenu != null) return;
-      ContextMenu menu = new ContextMenu { Tag = item };
+      var menu = new ContextMenu { Tag = item };
 
       switch (item.GetType().Name) {
         case nameof(ViewModel.Folders): {
@@ -185,8 +185,8 @@ namespace PictureManager {
           .OrderBy(x => x).ToList();
       Folders.Items.Clear();
       foreach (var path in paths) {
-        DirectoryInfo di = new DirectoryInfo(path);
-        ViewModel.Folder item = new ViewModel.Folder {
+        var di = new DirectoryInfo(path);
+        var item = new ViewModel.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = "appbar_folder",
@@ -210,7 +210,7 @@ namespace PictureManager {
     }
 
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
-      FolderBrowserDialog dir = new FolderBrowserDialog();
+      var dir = new FolderBrowserDialog();
       if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
         var paths = Settings.Default.CatalogFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
         paths.Add(dir.SelectedPath);

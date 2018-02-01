@@ -6,10 +6,10 @@ using PictureManager.Dialogs;
 namespace PictureManager.ViewModel {
   public class Folder : BaseTreeViewItem {
     private bool _isAccessible;
-    public bool IsAccessible { get { return _isAccessible; } set { _isAccessible = value; OnPropertyChanged(); } }
+    public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath { get; set; }
     public override bool IsExpanded {
-      get { return base.IsExpanded; }
+      get => base.IsExpanded;
       set {
         base.IsExpanded = value;
         if (value) GetSubFolders(false);
@@ -36,10 +36,10 @@ namespace PictureManager.ViewModel {
       }
       Items.Clear();
 
-      foreach (string dir in Directory.GetDirectories(FullPath).OrderBy(x => x)) {
+      foreach (var dir in Directory.GetDirectories(FullPath).OrderBy(x => x)) {
         if (!ACore.CanViewerSeeThisDirectory(dir)) continue;
-        DirectoryInfo di = new DirectoryInfo(dir);
-        Folder item = new Folder {
+        var di = new DirectoryInfo(dir);
+        var item = new Folder {
           Title = di.Name,
           FullPath = dir,
           Parent = this,
@@ -79,7 +79,7 @@ namespace PictureManager.ViewModel {
         IsAccessible = true
       };
 
-      Folder folder = Items.Cast<Folder>().FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
+      var folder = Items.Cast<Folder>().FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
       Items.Insert(folder == null ? Items.Count : Items.IndexOf(folder), newFolder);
 
       return newFolder;
@@ -96,7 +96,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void NewOrRename(bool rename) {
-      InputDialog inputDialog = new InputDialog {
+      var inputDialog = new InputDialog {
         Owner = ACore.WMain,
         IconName = "appbar_folder",
         Title = rename ? "Rename Folder" : "New Folder",

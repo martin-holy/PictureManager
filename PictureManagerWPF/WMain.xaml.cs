@@ -186,7 +186,7 @@ namespace PictureManager {
         ACore.ViewerOnly = false;
         var dirPath = Path.GetDirectoryName(_argPicFile);
         ACore.Folders.ExpandTo(dirPath);
-        ACore.MediaItems.LoadByFolder(dirPath, false);
+        ACore.MediaItems.Load(new ViewModel.Folder {FullPath = dirPath}, false);
         ACore.InitThumbsPagesControl();
         ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
       }
@@ -200,31 +200,20 @@ namespace PictureManager {
       Show();
     }
 
-    private void TvFilters_Select(object sender, MouseButtonEventArgs e) {
-      //this is PreviewMouseUp on StackPanel in TreeView
-      StackPanel stackPanel = (StackPanel)sender;
+    //this is PreviewMouseUp on StackPanel in TreeView Folders, Keywords and Filters
+    private void TreeView_Select(object sender, MouseButtonEventArgs e) {
+      /*
+       SHIFT key => recursive
+       (Folder, FolderKeyword) => MBL => show, MBL+ctrl => and, MBL+alt => hide
+       (Person, Keyword, GeoName)(filters) => MBL => or, MBL+ctrl => and, MBL+alt => hide
+       (Rating)(filter) => MBL => OR between ratings, AND in files
+       */
+      if (e.ChangedButton != MouseButton.Left) return;
 
-      if (e.ChangedButton != MouseButton.Right) {
-        ACore.TreeView_FiltersStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton);
-      }
-    }
-
-    private void TvKeywords_Select(object sender, MouseButtonEventArgs e) {
-      //this is PreviewMouseUp on StackPanel in TreeView
-      StackPanel stackPanel = (StackPanel)sender;
-
-      if (e.ChangedButton != MouseButton.Right) {
-        ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
-      }
-    }
-
-    private void TvFolders_Select(object sender, MouseButtonEventArgs e) {
-      //this is PreviewMouseUp on StackPanel in TreeView
-      StackPanel stackPanel = (StackPanel)sender;
-
-      if (e.ChangedButton != MouseButton.Right) {
-        ACore.TreeView_FoldersStackPanel_PreviewMouseUp(stackPanel.DataContext, e.ChangedButton, false);
-      }
+      ACore.TreeView_Select(((StackPanel) sender).DataContext, 
+        Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl), 
+        Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt), 
+        Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
     }
 
     private void CmbThumbPage_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -234,10 +223,6 @@ namespace PictureManager {
     }
 
     #region Commands
-    private void CmdTreeViewKeywordsRecursiveSelect(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_KeywordsStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
-    }
-
     private void CmdCategoryGroupNew(object sender, ExecutedRoutedEventArgs e) {
       (e.Parameter as ViewModel.BaseCategoryItem)?.GroupNewOrRename(null, false);
     }
@@ -341,12 +326,8 @@ namespace PictureManager {
       ACore.FavoriteFolders.Load();
     }
 
-    private void CmdFolderShowAll(object sender, ExecutedRoutedEventArgs e) {
-      ACore.TreeView_FoldersStackPanel_PreviewMouseUp(e.Parameter, MouseButton.Left, true);
-    }
-
     private void CmdGeoNameNew(object sender, ExecutedRoutedEventArgs e) {
-      InputDialog inputDialog = new InputDialog {
+      var inputDialog = new InputDialog {
         Owner = this,
         IconName = "appbar_location_checkin",
         Title = "GeoName latitude and longitude",
@@ -431,7 +412,7 @@ namespace PictureManager {
       StatusProgressBar.Value = 0;
       StatusProgressBar.Maximum = 100;
 
-      BackgroundWorker bw = new BackgroundWorker { WorkerReportsProgress = true };
+      var bw = new BackgroundWorker { WorkerReportsProgress = true };
 
       bw.ProgressChanged += delegate (object bwsender, ProgressChangedEventArgs bwe) {
         StatusProgressBar.Value = bwe.ProgressPercentage;
@@ -471,7 +452,7 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
-      foreach (ViewModel.BaseMediaItem mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
+      foreach (var mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
         mi.ReLoadFromDb();
         mi.WbUpdateInfo();
       }
@@ -489,7 +470,7 @@ namespace PictureManager {
 
     private void CmdKeywordsComment_Executed(object sender, ExecutedRoutedEventArgs e) {
       var current = ACore.MediaItems.Current;
-      InputDialog inputDialog = new InputDialog {
+      var inputDialog = new InputDialog {
         Owner = this,
         IconName = "appbar_notification",
         Title = "Comment",
@@ -622,10 +603,8 @@ namespace PictureManager {
     public ScrollViewer TvFoldersScrollViewer {
       get {
         if (_tvFoldersScrollViewer != null) return _tvFoldersScrollViewer;
-        DependencyObject border = VisualTreeHelper.GetChild(TvFolders, 0);
-        if (border != null) {
-          _tvFoldersScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-        }
+        var border = VisualTreeHelper.GetChild(TvFolders, 0);
+        _tvFoldersScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
 
         return _tvFoldersScrollViewer;
       }
@@ -643,12 +622,12 @@ namespace PictureManager {
     }
 
     private Dictionary<int, KeyValuePair<string, string>> GetFileProps(string filename) {
-      Shell32.Shell shl = new Shell32.Shell();
-      Shell32.Folder fldr = shl.NameSpace(Path.GetDirectoryName(filename));
-      Shell32.FolderItem itm = fldr.ParseName(Path.GetFileName(filename));
-      Dictionary<int, KeyValuePair<string, string>> fileProps = new Dictionary<int, KeyValuePair<string, string>>();
-      for (int i = 0; i < 1000; i++) {
-        string propValue = fldr.GetDetailsOf(itm, i);
+      var shl = new Shell32.Shell();
+      var fldr = shl.NameSpace(Path.GetDirectoryName(filename));
+      var itm = fldr.ParseName(Path.GetFileName(filename));
+      var fileProps = new Dictionary<int, KeyValuePair<string, string>>();
+      for (var i = 0; i < 1000; i++) {
+        var propValue = fldr.GetDetailsOf(itm, i);
         if (propValue != "") {
           fileProps.Add(i, new KeyValuePair<string, string>(fldr.GetDetailsOf(null, i), propValue));
         }
@@ -657,13 +636,20 @@ namespace PictureManager {
     }
 
 
-    private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e)
-    {
+    private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+      
+      var folder = new ViewModel.Folder {FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
+      var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
+      ACore.MediaItems.Load(folder, true);
+      ACore.MediaItems.Load(fk, true);
+      ACore.MediaItems.LoadByTag(fk, true);
+      //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
+      ACore.InitThumbsPagesControl();
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
-      var x = GetFileProps(@"d:\video.mp4");
+      /*var x = GetFileProps(@"d:\video.mp4");
       var xx = ShellStuff.FileInformation.GetVideoDimensions(@"d:\video.mp4");
       var doc = WbThumbs.Document.All;
-      AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");
+      AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");*/
 
       //height 309, width 311
 
@@ -708,7 +694,7 @@ namespace PictureManager {
 
     private void TvKeywords_OnMouseMove(object sender, MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed) return;
-      Vector diff = _dragDropStartPosition - e.GetPosition(null);
+      var diff = _dragDropStartPosition - e.GetPosition(null);
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
@@ -765,7 +751,7 @@ namespace PictureManager {
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed) return;
-      Vector diff = _dragDropStartPosition - e.GetPosition(null);
+      var diff = _dragDropStartPosition - e.GetPosition(null);
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
@@ -823,7 +809,7 @@ namespace PictureManager {
         if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
 
         srcData.Parent = destData;
-        ViewModel.Folder folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
+        var folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
         destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
       } else {
         destData.GetSubFolders(true);
@@ -878,7 +864,6 @@ namespace PictureManager {
       switch (item.GetType().Name) {
         case nameof(ViewModel.Folder): {
           MenuAddItem(menu, "FolderNew", item);
-          MenuAddItem(menu, "FolderShowAll", item);
           if (((ViewModel.Folder) item).Parent != null) {
             MenuAddItem(menu, "FolderRename", item);
             MenuAddItem(menu, "FolderDelete", item);
@@ -894,24 +879,6 @@ namespace PictureManager {
           MenuAddItem(menu, "FolderRemoveFromFavorites", item);
           break;
         }
-        case nameof(ViewModel.FolderKeyword): {
-          if (!ACore.KeywordsEditMode) {
-            MenuAddItem(menu, "FolderKeywordShowAll", item);
-          }
-          break;
-        }
-        case nameof(ViewModel.Keyword): {
-          if (!ACore.KeywordsEditMode) {
-            MenuAddItem(menu, "KeywordShowAll", item);
-          }
-          break;
-        }
-        case nameof(ViewModel.Person): {
-          if (!ACore.KeywordsEditMode) {
-            MenuAddItem(menu, "PeopleShowAll", item);
-          }
-          break;
-        }
         case nameof(ViewModel.Filters): {
           MenuAddItem(menu, "FilterNew", item);
           break;
@@ -924,12 +891,6 @@ namespace PictureManager {
         }
         case nameof(ViewModel.Viewer): {
           MenuAddItem(menu, "ViewerEdit", item);
-          break;
-        }
-        case nameof(ViewModel.GeoName): {
-          if (!ACore.KeywordsEditMode) {
-            MenuAddItem(menu, "GeoNameShowAll", item);
-          }
           break;
         }
         case nameof(ViewModel.BaseTreeViewItem): {

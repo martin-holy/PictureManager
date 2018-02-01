@@ -23,9 +23,7 @@ namespace PictureManager.ViewModel {
 
     private bool _isSelected;
     public bool IsSelected {
-      get {
-        return _isSelected;
-      }
+      get => _isSelected;
       set {
         _isSelected = value;
         //BUG: pri slideshow nenacte Document
@@ -79,17 +77,17 @@ namespace PictureManager.ViewModel {
     }
 
     public string GetKeywordsAsString(bool withComment) {
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
 
-      foreach (Person p in People.OrderBy(x => x.Title)) {
+      foreach (var p in People.OrderBy(x => x.Title)) {
         sb.Append("<div>");
         sb.Append(p.Title);
         sb.Append("</div>");
       }
 
-      List<string> keywordsList = new List<string>();
-      foreach (Keyword keyword in Keywords.OrderBy(x => x.FullPath)) {
-        foreach (string k in keyword.FullPath.Split('/')) {
+      var keywordsList = new List<string>();
+      foreach (var keyword in Keywords.OrderBy(x => x.FullPath)) {
+        foreach (var k in keyword.FullPath.Split('/')) {
           if (!keywordsList.Contains(k)) keywordsList.Add(k);
         }
       }
@@ -218,15 +216,15 @@ namespace PictureManager.ViewModel {
 
     public void ReSave() {
       //TODO: try to preserve EXIF information
-      FileInfo original = new FileInfo(FilePath);
-      FileInfo newFile = new FileInfo(FilePath + "_newFile");
+      var original = new FileInfo(FilePath);
+      var newFile = new FileInfo(FilePath + "_newFile");
       try {
         using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          using (System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(originalFileStream)) {
+          using (var bmp = new System.Drawing.Bitmap(originalFileStream)) {
             using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-              ImageCodecInfo encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
+              var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
               if (encoder == null) return;
-              EncoderParameters encParams = new EncoderParameters(1) {
+              var encParams = new EncoderParameters(1) {
                 Param = {[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.JpegQualityLevel)}
               };
               bmp.Save(newFileStream, encoder, encParams);
@@ -252,15 +250,15 @@ namespace PictureManager.ViewModel {
 
     public bool WriteMetadata() {
       if (MediaType == MediaTypes.Video) return true;
-      FileInfo original = new FileInfo(FilePath);
-      FileInfo newFile = new FileInfo(FilePath + "_newFile");
-      bool bSuccess = false;
+      var original = new FileInfo(FilePath);
+      var newFile = new FileInfo(FilePath + "_newFile");
+      var bSuccess = false;
       const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
       using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-        BitmapDecoder decoder = BitmapDecoder.Create(originalFileStream, createOptions, BitmapCacheOption.None);
+        var decoder = BitmapDecoder.Create(originalFileStream, createOptions, BitmapCacheOption.None);
         if (decoder.CodecInfo != null && decoder.CodecInfo.FileExtensions.Contains("jpg") && decoder.Frames[0] != null) {
-          BitmapMetadata metadata = decoder.Frames[0].Metadata == null
+          var metadata = decoder.Frames[0].Metadata == null
             ? new BitmapMetadata("jpg")
             : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
 
@@ -270,16 +268,16 @@ namespace PictureManager.ViewModel {
             const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
             const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
             const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
-            int peopleIdx = -1;
-            List<string> addedPeople = new List<string>();
+            var peopleIdx = -1;
+            var addedPeople = new List<string>();
             //New metadata just for People
-            BitmapMetadata people = new BitmapMetadata("jpg");
+            var people = new BitmapMetadata("jpg");
             people.SetQuery(microsoftRegionInfo, new BitmapMetadata("xmpstruct"));
             people.SetQuery(microsoftRegions, new BitmapMetadata("xmpbag"));
             //Adding existing people
-            BitmapMetadata existingPeople = metadata.GetQuery(microsoftRegions) as BitmapMetadata;
+            var existingPeople = metadata.GetQuery(microsoftRegions) as BitmapMetadata;
             if (existingPeople != null) {
-              foreach (string idx in existingPeople) {
+              foreach (var idx in existingPeople) {
                 var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
                 var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
                 if (personDisplayName == null) continue;
@@ -290,7 +288,7 @@ namespace PictureManager.ViewModel {
               }
             }
             //Adding new people
-            foreach (Person person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
+            foreach (var person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
               peopleIdx++;
               people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", new BitmapMetadata("xmpstruct"));
               people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
@@ -311,7 +309,7 @@ namespace PictureManager.ViewModel {
             else
               metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", GeoNameId.ToString());
 
-            JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+            var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
             encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
               decoder.Frames[0].ColorContexts));
 
@@ -344,15 +342,13 @@ namespace PictureManager.ViewModel {
           Width = size[1];
         }
         else { //MediaTypes.Image
-          using (FileStream imageFileStream =
-            new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+          using (var imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
             if (imageFileStream.Length == 0) return;
-            BitmapDecoder decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None,
-              BitmapCacheOption.None);
-            BitmapFrame frame = decoder.Frames[0];
+            var decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+            var frame = decoder.Frames[0];
             Width = frame.PixelWidth;
             Height = frame.PixelHeight;
-            BitmapMetadata bm = (BitmapMetadata) frame.Metadata;
+            var bm = (BitmapMetadata) frame.Metadata;
             if (bm == null) return;
 
             //People
@@ -362,7 +358,7 @@ namespace PictureManager.ViewModel {
 
             var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
             if (regions != null) {
-              foreach (string region in regions) {
+              foreach (var region in regions) {
                 var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
                 if (personDisplayName != null) {
                   People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));

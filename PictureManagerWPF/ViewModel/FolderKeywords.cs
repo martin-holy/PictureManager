@@ -18,7 +18,7 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
       AllFolderKeywords.Clear();
-      Dictionary<int, string> paths = new Dictionary<int, string>();
+      var paths = new Dictionary<int, string>();
       foreach (var dir in ACore.Db.Directories.OrderBy(x => x.Path)) {
         if (!Directory.Exists(dir.Path)) continue;
         if (!ACore.CanViewerSeeThisDirectory(dir.Path)) continue;
@@ -29,7 +29,7 @@ namespace PictureManager.ViewModel {
       }
 
       foreach (var keyPath in paths.Select(p => p.Value).Distinct().OrderBy(p => p)) {
-        FolderKeyword newItem = new FolderKeyword {
+        var newItem = new FolderKeyword {
           FullPath = keyPath, 
           FolderIdList = paths.Where(p => p.Value.Equals(keyPath)).Select(p => p.Key).ToList()
         };
@@ -40,7 +40,7 @@ namespace PictureManager.ViewModel {
           AllFolderKeywords.Add(newItem);
         } else {
           newItem.Title = newItem.FullPath.Substring(newItem.FullPath.LastIndexOf('\\') + 1);
-          FolderKeyword parentFolderKeyword = GetFolderKeywordByKeyPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('\\')), true);
+          var parentFolderKeyword = GetFolderKeywordByKeyPath(newItem.FullPath.Substring(0, newItem.FullPath.LastIndexOf('\\')), true);
           if (parentFolderKeyword == null) continue;
           newItem.Parent = parentFolderKeyword;
           parentFolderKeyword.Items.Add(newItem);
@@ -82,8 +82,8 @@ namespace PictureManager.ViewModel {
       while (true) {
         if (root.Count == 0 || string.IsNullOrEmpty(keyPath)) return null;
 
-        string[] keyParts = keyPath.Split('\\');
-        FolderKeyword folderKeyword = root.Cast<FolderKeyword>().FirstOrDefault(fk => fk.Title.Equals(keyParts[0]));
+        var keyParts = keyPath.Split('\\');
+        var folderKeyword = root.Cast<FolderKeyword>().FirstOrDefault(fk => fk.Title.Equals(keyParts[0]));
         if (folderKeyword == null) {
           if (!create) return null;
           folderKeyword = CreateFolderKeyword(root, parent, keyParts[0]);
@@ -97,8 +97,8 @@ namespace PictureManager.ViewModel {
     }
 
     public FolderKeyword CreateFolderKeyword(ObservableCollection<BaseTreeViewItem> root, FolderKeyword parent, string name) {
-      string kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
-      FolderKeyword newFolderKeyword = new FolderKeyword {
+      var kFullPath = parent == null ? name : $"{parent.FullPath}/{name}";
+      var newFolderKeyword = new FolderKeyword {
         FullPath = kFullPath,
         Title = name,
         Parent = parent

@@ -32,7 +32,7 @@ namespace PictureManager {
       try {
         stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.FullPic.html");
         if (stream != null)
-          using (StreamReader reader = new StreamReader(stream)) {
+          using (var reader = new StreamReader(stream)) {
             stream = null;
             WbFullPic.DocumentText = reader.ReadToEnd();
           }
@@ -86,7 +86,7 @@ namespace PictureManager {
 
     private void WbFullPic_KeyDown(object sender, HtmlElementEventArgs e) {
       if (e.AltKeyPressed && e.KeyPressedCode == 77) {
-        DirectorySelectDialog dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
+        var dsd = new DirectorySelectDialog { Owner = this, Title = "Move to" };
         if (dsd.ShowDialog() ?? true) {
           if (ACore.FileOperation(FileOperations.Move, dsd.Answer))
             SetNewMediaItemAfterDeleteOrMove();

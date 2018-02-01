@@ -46,7 +46,7 @@ namespace PictureManager.ViewModel {
           AllKeywords.Add(keyword);
         } else {
           keyword.Title = keyword.FullPath.Substring(lioSlash + 1);
-          Keyword parentKeyword = GetKeywordByFullPath(keyword.FullPath.Substring(0, lioSlash), false);
+          var parentKeyword = GetKeywordByFullPath(keyword.FullPath.Substring(0, lioSlash), false);
           if (parentKeyword == null) continue;
           keyword.Parent = parentKeyword;
           parentKeyword.Items.Add(keyword);

@@ -24,10 +24,10 @@ namespace PictureManager.Dialogs {
     private bool _error;
     private List<string> _paths;
 
-    public string IconName { get { return _iconName;} set { _iconName = value; OnPropertyChanged(); } }
-    public string Answer { get { return _answer; } set { _answer = value; OnPropertyChanged(); } }
-    public List<string> Paths { get { return _paths; } set { _paths = value; OnPropertyChanged(); } }
-    public bool Error { get { return _error; } set { _error = value; OnPropertyChanged(); } }
+    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public string Answer { get => _answer; set { _answer = value; OnPropertyChanged(); } }
+    public List<string> Paths { get => _paths; set { _paths = value; OnPropertyChanged(); } }
+    public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
 
     public DirectorySelectDialog() {
       InitializeComponent();
@@ -41,7 +41,7 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnBrowseDir_OnClick(object sender, RoutedEventArgs e) {
-      FolderBrowserDialog dir = new FolderBrowserDialog();
+      var dir = new FolderBrowserDialog();
       if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
         var paths = Settings.Default.DirectorySelectFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
         if (!paths.Contains(dir.SelectedPath)) {

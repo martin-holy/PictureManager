@@ -13,10 +13,10 @@ namespace PictureManager.ViewModel {
 
     public void AddDrives() {
       Items.Clear();
-      string[] drives = Environment.GetLogicalDrives();
+      var drives = Environment.GetLogicalDrives();
 
-      foreach (string drive in drives) {
-        DriveInfo di = new DriveInfo(drive);
+      foreach (var drive in drives) {
+        var di = new DriveInfo(drive);
         string driveImage;
 
         switch (di.DriveType) {
@@ -34,7 +34,7 @@ namespace PictureManager.ViewModel {
             driveImage = "appbar_drive";
             break;
         }
-        Folder item = new Folder {
+        var item = new Folder {
           Title = $"{(di.IsReady ? di.VolumeLabel : di.DriveType.ToString())} ({di.Name})",
           FullPath = drive,
           IconName = driveImage,

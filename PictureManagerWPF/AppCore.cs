@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Windows;
-using System.Windows.Input;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using Directory = System.IO.Directory;
@@ -48,7 +46,7 @@ namespace PictureManager {
     private bool _keywordsEditMode;
 
     public bool KeywordsEditMode {
-      get { return _keywordsEditMode; }
+      get => _keywordsEditMode;
       set {
         _keywordsEditMode = value;
         AppInfo.KeywordsEditMode = value;
@@ -56,7 +54,7 @@ namespace PictureManager {
     }
 
     public ViewModel.BaseTreeViewItem LastSelectedSource {
-      get { return _lastSelectedSource; }
+      get => _lastSelectedSource;
       set {
         if (_lastSelectedSource == value) return;
         if (_lastSelectedSource != null)
@@ -130,35 +128,39 @@ namespace PictureManager {
       AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
     }
 
-    public void TreeView_FoldersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (mouseButton == MouseButton.Left) {
+    public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
+      if (item is ViewModel.BaseCategoryItem || item is ViewModel.CategoryGroup) return;
+
+      if (KeywordsEditMode) {
+        var bti = item as ViewModel.BaseTreeViewTagItem;
+        if (bti == null) return;
         switch (item.GetType().Name) {
-          case nameof(ViewModel.Folders):
-          case nameof(ViewModel.FavoriteFolders): {
-            ((ViewModel.BaseTreeViewItem)item).IsSelected = false;
+          case nameof(ViewModel.Rating):
+          case nameof(ViewModel.Person):
+          case nameof(ViewModel.Keyword):
+          case nameof(ViewModel.GeoName): {
+            bti.IsMarked = !bti.IsMarked;
+            if (bti.IsMarked)
+              MarkedTags.Add(bti);
+            else
+              MarkedTags.Remove(bti);
+
+            MediaItems.EditMetadata(item);
+
+            MarkUsedKeywordsAndPeople();
+            UpdateStatusBarInfo();
             break;
           }
-          case nameof(ViewModel.Folder): {
-            var folder = (ViewModel.Folder)item;
-            if (!folder.IsAccessible) {
-              folder.IsSelected = false;
-              return;
-            }
-
-            folder.IsSelected = true;
-            LastSelectedSource = folder;
-
-            if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
-              ThumbsWebWorker.CancelAsync();
-              ThumbsResetEvent.WaitOne();
-            }
-
-            MediaItems.LoadByFolder(folder.FullPath, recursive);
-            InitThumbsPagesControl();
+          default: {
+            bti.IsSelected = false;
             break;
           }
+        }
+      }
+      else {
+        switch (item.GetType().Name) {
           case nameof(ViewModel.FavoriteFolder): {
-            var folder = Folders.ExpandTo(((ViewModel.FavoriteFolder)item).FullPath);
+            var folder = Folders.ExpandTo(((ViewModel.FavoriteFolder) item).FullPath);
             if (folder != null) {
               var visibleTreeIndex = 0;
               Folders.GetVisibleTreeIndexFor(Folders.Items, folder, ref visibleTreeIndex);
@@ -167,89 +169,64 @@ namespace PictureManager {
             }
             break;
           }
+          case nameof(ViewModel.Rating):
+          case nameof(ViewModel.Person):
+          case nameof(ViewModel.Keyword):
+          case nameof(ViewModel.GeoName): {
+            var bti = (ViewModel.BaseTreeViewItem) item;
+
+            if (bti.BgBrush != BgBrushes.Default)
+              bti.BgBrush = BgBrushes.Default;
+            else {
+              if (item is ViewModel.Rating && !and && !hide)
+                bti.BgBrush = BgBrushes.OrThis;
+              else {
+                if (!and && !hide) bti.BgBrush = BgBrushes.OrThis;
+                if (and && !hide) bti.BgBrush = BgBrushes.AndThis;
+                if (!and && hide) bti.BgBrush = BgBrushes.Hidden;
+              }
+            }
+
+            bti.IsSelected = false;
+            if (LastSelectedSource != null) {
+              LastSelectedSource.IsSelected = true;
+              item = LastSelectedSource;
+            }
+            break;
+          }
         }
-      }
-    }
 
-    public void TreeView_FiltersStackPanel_PreviewMouseUp(object item, MouseButton mouseButton) {
-      if (KeywordsEditMode) return;
-      if (mouseButton != MouseButton.Left) return;
-
-      var sqlQuery = item as ViewModel.SqlQuery;
-      if (sqlQuery != null) {
-        TreeView_KeywordsStackPanel_PreviewMouseUp(item, mouseButton, false);
-        return;
-      }
-
-      var filter = item as ViewModel.Filter;
-      if (filter == null) return;
-      filter.IsSelected = true;
-      LastSelectedSource = filter;
-
-      if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
-        ThumbsWebWorker.CancelAsync();
-        ThumbsResetEvent.WaitOne();
-      }
-
-      MediaItems.LoadByFilter(filter);
-      InitThumbsPagesControl();
-    }
-
-    public void TreeView_KeywordsStackPanel_PreviewMouseUp(object item, MouseButton mouseButton, bool recursive) {
-      if (item is ViewModel.Keywords || item is ViewModel.People || item is ViewModel.FolderKeywords || item is ViewModel.Ratings || item is ViewModel.CategoryGroup || item is ViewModel.GeoNames || item is ViewModel.SqlQueries) return;
-
-      switch (mouseButton) {
-        case MouseButton.Left: {
-          if (KeywordsEditMode) {
-            var fk = item as ViewModel.FolderKeyword;
-            if (fk != null) {
-              fk.IsSelected = false;
+        switch (item.GetType().Name) {
+          case nameof(ViewModel.Folder):
+          case nameof(ViewModel.FolderKeyword):
+          case nameof(ViewModel.SqlQuery): {
+            var folder = item as ViewModel.Folder;
+            if (folder != null && !folder.IsAccessible) {
+              folder.IsSelected = false;
               return;
             }
 
-            var bti = item as ViewModel.BaseTreeViewTagItem;
-            if (bti != null) {
-                bti.IsMarked = !bti.IsMarked;
-              if (bti.IsMarked)
-                MarkedTags.Add(bti);
-              else
-                MarkedTags.Remove(bti);
-            }
-
-            MediaItems.EditMetadata(item);
-
-            MarkUsedKeywordsAndPeople();
-            UpdateStatusBarInfo();
-          } else {
-            //not KeywordsEditMode
-            var baseTagItem = (ViewModel.BaseTreeViewTagItem) item;
-
-            if (baseTagItem is ViewModel.Rating || (!recursive && baseTagItem is ViewModel.Person)) {
-              if (LastSelectedSource != null) LastSelectedSource.IsSelected = true;
-              baseTagItem.BgBrush = baseTagItem.BgBrush == BgBrushes.Chosen ? BgBrushes.Default : BgBrushes.Chosen;
-              baseTagItem.IsSelected = false;
-            }
-            else {
-              baseTagItem.IsSelected = true;
-              LastSelectedSource = baseTagItem;
-            }
+            var bti = (ViewModel.BaseTreeViewItem) item;
+            bti.IsSelected = true;
+            LastSelectedSource = bti;
 
             if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
               ThumbsWebWorker.CancelAsync();
               ThumbsResetEvent.WaitOne();
             }
 
-            var folder = LastSelectedSource as ViewModel.Folder;
-            if (folder != null) {
-              MediaItems.LoadByFolder(folder.FullPath, false);
-              InitThumbsPagesControl();
-              return;
-            }
-
-            MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) LastSelectedSource, recursive);
+            if (folder != null)
+              MediaItems.Load(folder, recursive);
+            else
+              MediaItems.LoadByTag(LastSelectedSource, recursive);
             InitThumbsPagesControl();
+
+            break;
           }
-          break;
+          default: {
+            ((ViewModel.BaseTreeViewItem) item).IsSelected = false;
+            break;
+          }
         }
       }
     }
@@ -309,35 +286,28 @@ namespace PictureManager {
       }
 
       foreach (var item in MarkedTags) {
-        switch (item.GetType().Name) {
-          case nameof(ViewModel.Person): {
-            var pesron = (ViewModel.Person) item;
-            pesron.PicCount = mediaItems.Count(p => p.People.Contains(pesron));
+        switch (item) {
+          case ViewModel.Person p: {
+            p.PicCount = mediaItems.Count(mi => mi.People.Contains(p));
             break;
           }
-          case nameof(ViewModel.Keyword): {
-            var keyword = (ViewModel.Keyword) item;
-            keyword.PicCount = mediaItems.Count(p => p.Keywords.Any(k => k.FullPath.StartsWith(keyword.FullPath)));
+          case ViewModel.Keyword k: {
+            k.PicCount = mediaItems.Count(mi => mi.Keywords.Any(x => x.FullPath.StartsWith(k.FullPath)));
             break;
           }
-          case nameof(ViewModel.FolderKeyword): {
-            var folderKeyword = (ViewModel.FolderKeyword) item;
-            folderKeyword.PicCount =
-              mediaItems.Count(p => p.FolderKeyword != null && p.FolderKeyword.FullPath.StartsWith(folderKeyword.FullPath));
+          case ViewModel.FolderKeyword fk: {
+            fk.PicCount = mediaItems.Count(mi => mi.FolderKeyword != null && mi.FolderKeyword.FullPath.StartsWith(fk.FullPath));
             break;
           }
-          case nameof(ViewModel.Rating): {
-            var rating = (ViewModel.Rating) item;
-            rating.PicCount = mediaItems.Count(p => p.Rating == rating.Value);
+          case ViewModel.Rating r: {
+            r.PicCount = mediaItems.Count(mi => mi.Rating == r.Value);
             break;
           }
-          case nameof(ViewModel.GeoName): {
-              //TODO C# how to count files in subdirectories
-            var geoName = (ViewModel.GeoName) item;
-
+          case ViewModel.GeoName g: {
+            //TODO C# how to count files in subdirectories
             var geoNames = new List<ViewModel.GeoName>();
-            geoName.GetThisAndSubGeoNames(ref geoNames);
-            geoName.PicCount = mediaItems.Count(x => geoNames.Select(gn => (int?) gn.GeoNameId).Contains(x.GeoNameId));
+            g.GetThisAndSubGeoNames(ref geoNames);
+            g.PicCount = mediaItems.Count(mi => geoNames.Select(gn => (int?) gn.GeoNameId).Contains(mi.GeoNameId));
 
 
 
@@ -493,7 +463,7 @@ namespace PictureManager {
     public bool FileOperation(FileOperations mode, string from, string to, string newName, bool recycle) {
       Application.Current.Properties[nameof(AppProps.FileOperationResult)] = new Dictionary<string, string>();
       //Copy, Move or delete selected MediaItems or folder
-      using (FileOperation fo = new FileOperation(new PicFileOperationProgressSink())) {
+      using (var fo = new FileOperation(new PicFileOperationProgressSink())) {
         var flags = FileOperationFlags.FOF_NOCONFIRMMKDIR | (recycle
           ? FileOperationFlags.FOFX_RECYCLEONDELETE
           : FileOperationFlags.FOF_WANTNUKEWARNING);
@@ -521,10 +491,10 @@ namespace PictureManager {
       if (foResult.Count == 0) return false;
 
       //update DB and thumbnail cache
-      using (FileOperation fo = new FileOperation()) {
+      using (var fo = new FileOperation()) {
         fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
                              FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE);
-        var cachePath = @Settings.Default.CachePath;
+        var cachePath = Settings.Default.CachePath;
         var mItems = Db.MediaItems;
         var dirs = Db.Directories;
         var lists = Db.GetInsertUpdateDeleteLists();

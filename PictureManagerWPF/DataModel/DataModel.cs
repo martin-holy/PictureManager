@@ -86,7 +86,7 @@ namespace PictureManager.DataModel {
 
     public void Insert(BaseTable o) {
       if (!OpenDbConnection()) return;
-      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var cmd = DbConn.CreateCommand()) {
         Insert(cmd, o);
       }
     }
@@ -106,7 +106,7 @@ namespace PictureManager.DataModel {
 
     public void Update(BaseTable o) {
       if (!OpenDbConnection()) return;
-      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var cmd = DbConn.CreateCommand()) {
         Update(cmd, o);
       }
     }
@@ -125,7 +125,7 @@ namespace PictureManager.DataModel {
 
     public void Delete(BaseTable o) {
       if (!OpenDbConnection()) return;
-      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var cmd = DbConn.CreateCommand()) {
         Delete(cmd, o);
       }
     }
@@ -153,46 +153,20 @@ namespace PictureManager.DataModel {
     }
 
     private void UpdateInList(BaseTable data, bool addIt) {
-      switch (data.GetType().Name) {
-        case nameof(CategoryGroup): {
-            if (addIt) CategoryGroups.Add((CategoryGroup)data); else CategoryGroups.Remove((CategoryGroup)data); break;
-          }
-        case nameof(CategoryGroupItem): {
-            if (addIt) CategoryGroupsItems.Add((CategoryGroupItem)data); else CategoryGroupsItems.Remove((CategoryGroupItem)data); break;
-          }
-        case nameof(Directory): {
-            if (addIt) Directories.Add((Directory) data); else Directories.Remove((Directory)data); break;
-          }
-        case nameof(Filter): {
-            if (addIt) Filters.Add((Filter)data); else Filters.Remove((Filter)data); break;
-          }
-        case nameof(Keyword): {
-            if (addIt) Keywords.Add((Keyword)data); else Keywords.Remove((Keyword)data); break;
-          }
-        case nameof(MediaItemKeyword): {
-            if (addIt) MediaItemKeywords.Add((MediaItemKeyword)data); else MediaItemKeywords.Remove((MediaItemKeyword)data); break;
-          }
-        case nameof(MediaItemPerson): {
-            if (addIt) MediaItemPeople.Add((MediaItemPerson)data); else MediaItemPeople.Remove((MediaItemPerson)data); break;
-          }
-        case nameof(MediaItem): {
-            if (addIt) MediaItems.Add((MediaItem)data); else MediaItems.Remove((MediaItem)data); break;
-          }
-        case nameof(Person): {
-            if (addIt) People.Add((Person)data); else People.Remove((Person)data); break;
-          }
-        case nameof(Viewer): {
-            if (addIt) Viewers.Add((Viewer)data); else Viewers.Remove((Viewer)data); break;
-          }
-        case nameof(ViewerAccess): {
-            if (addIt) ViewersAccess.Add((ViewerAccess)data); else ViewersAccess.Remove((ViewerAccess)data); break;
-          }
-        case nameof(GeoName): {
-          if (addIt) GeoNames.Add((GeoName)data); else GeoNames.Remove((GeoName)data); break;
-        }
-        case nameof(SqlQuery): {
-          if (addIt) SqlQueries.Add((SqlQuery)data); else SqlQueries.Remove((SqlQuery)data); break;
-        }
+      switch (data) {
+        case CategoryGroup x: { if (addIt) CategoryGroups.Add(x); else CategoryGroups.Remove(x); break; }
+        case CategoryGroupItem x: { if (addIt) CategoryGroupsItems.Add(x); else CategoryGroupsItems.Remove(x); break; }
+        case Directory x: { if (addIt) Directories.Add(x); else Directories.Remove(x); break; }
+        case Filter x: { if (addIt) Filters.Add(x); else Filters.Remove(x); break; }
+        case Keyword x: { if (addIt) Keywords.Add(x); else Keywords.Remove(x); break; }
+        case MediaItemKeyword x: { if (addIt) MediaItemKeywords.Add(x); else MediaItemKeywords.Remove(x); break; }
+        case MediaItemPerson x: { if (addIt) MediaItemPeople.Add(x); else MediaItemPeople.Remove(x); break; }
+        case MediaItem x: { if (addIt) MediaItems.Add(x); else MediaItems.Remove(x); break; }
+        case Person x: { if (addIt) People.Add(x); else People.Remove(x); break; }
+        case Viewer x: { if (addIt) Viewers.Add(x); else Viewers.Remove(x); break; }
+        case ViewerAccess x: { if (addIt) ViewersAccess.Add(x); else ViewersAccess.Remove(x); break; }
+        case GeoName x: { if (addIt) GeoNames.Add(x); else GeoNames.Remove(x); break; }
+        case SqlQuery x: { if (addIt) SqlQueries.Add(x); else SqlQueries.Remove(x); break; }
       }
     }
 
@@ -307,10 +281,10 @@ namespace PictureManager.DataModel {
 
     public DataRowCollection Select(string sql) {
       if (!OpenDbConnection()) return null;
-      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var cmd = DbConn.CreateCommand()) {
         cmd.CommandText = sql;
-        using (SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd)) {
-          DataSet ds = new DataSet();
+        using (var adapter = new SQLiteDataAdapter(cmd)) {
+          var ds = new DataSet();
           adapter.Fill(ds);
           return ds.Tables[0].Rows;
         }
@@ -319,7 +293,7 @@ namespace PictureManager.DataModel {
 
     public bool Execute(string sql) {
       if (!OpenDbConnection()) return false;
-      using (SQLiteCommand cmd = DbConn.CreateCommand()) {
+      using (var cmd = DbConn.CreateCommand()) {
         cmd.CommandText = sql;
         cmd.ExecuteNonQuery();
       }
@@ -339,7 +313,7 @@ namespace PictureManager.DataModel {
     }
 
     public int? GetDirectoryIdByPath(string path) {
-      return Directories.SingleOrDefault(x => x.Path.Equals(path))?.Id;
+      return Directories.SingleOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase))?.Id;
     }
 
     public int InsertDirecotryInToDb(string path) {
@@ -528,5 +502,4 @@ namespace PictureManager.DataModel {
   }
 
   #endregion
-
 }

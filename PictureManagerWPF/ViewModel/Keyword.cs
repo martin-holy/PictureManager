@@ -5,7 +5,7 @@ namespace PictureManager.ViewModel {
   public class Keyword: BaseTreeViewTagItem {
     public int Index;
     //public int Index { get { return Data?.Idx ?? 0; } set { Data.Idx = value; } }
-    public string FullPath { get { return Data.Name; } set { Data.Name = value; } }
+    public string FullPath { get => Data.Name; set => Data.Name = value; }
     public DataModel.Keyword Data;
 
     public Keyword(DataModel.Keyword data) {

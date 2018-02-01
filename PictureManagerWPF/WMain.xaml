@@ -74,20 +74,11 @@
       <Setter Property="Orientation" Value="Horizontal" />
       <Setter Property="Background" Value="Transparent" />
       <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
-    </Style>
-
-    <!-- TreeViewFiltersStackPanel -->
-    <Style x:Key="TreeViewFiltersStackPanel" TargetType="StackPanel" BasedOn="{StaticResource TreeViewStackPanel}">
-      <EventSetter Event="PreviewMouseUp" Handler="TvFilters_Select" />
-    </Style>
-
-    <!-- TreeViewKeywordsStackPanel -->
-    <Style x:Key="TreeViewKeywordsStackPanel" TargetType="StackPanel" BasedOn="{StaticResource TreeViewStackPanel}">
-      <EventSetter Event="PreviewMouseUp" Handler="TvKeywords_Select" />
+      <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
     </Style>
 
     <!-- TreeViewKeywordsStackPanelWithDragDrop -->
-    <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewKeywordsStackPanel}" TargetType="StackPanel">
+    <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewStackPanel}" TargetType="StackPanel">
       <Setter Property="AllowDrop" Value="True" />
       <EventSetter Event="Drop" Handler="TvKeywords_OnDrop" />
       <EventSetter Event="MouseLeftButtonDown" Handler="TvKeywords_OnMouseLeftButtonDown" />
@@ -104,15 +95,11 @@
     <RoutedUICommand x:Key="TagItemNew" Text="New" />
     <RoutedUICommand x:Key="TagItemRename" Text="Rename" />
     <RoutedUICommand x:Key="TagItemDelete" Text="Delete" />
-    <RoutedUICommand x:Key="KeywordShowAll" Text="Show all (recursive)" />
-    <RoutedUICommand x:Key="PeopleShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FolderNew" Text="New folder" />
     <RoutedUICommand x:Key="FolderRename" Text="Rename" />
     <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
     <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
     <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
-    <RoutedUICommand x:Key="FolderShowAll" Text="Show all (recursive)" />
-    <RoutedUICommand x:Key="FolderKeywordShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="FilterNew" Text="New" />
     <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
     <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
@@ -120,7 +107,6 @@
     <RoutedUICommand x:Key="ViewerIncludeFolder" Text="Include for Viewer" />
     <RoutedUICommand x:Key="ViewerExcludeFolder" Text="Exclude for Viewer" />
     <RoutedUICommand x:Key="ViewerRemoveFolder" Text="Remove" />
-    <RoutedUICommand x:Key="GeoNameShowAll" Text="Show all (recursive)" />
     <RoutedUICommand x:Key="GeoNameNew" Text="New" />
   </controls:MetroWindow.Resources>
 
@@ -131,15 +117,11 @@
     <CommandBinding Command="{StaticResource TagItemNew}" Executed="CmdTagItemNew" />
     <CommandBinding Command="{StaticResource TagItemRename}" Executed="CmdTagItemRename" />
     <CommandBinding Command="{StaticResource TagItemDelete}" Executed="CmdTagItemDelete" />
-    <CommandBinding Command="{StaticResource KeywordShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
-    <CommandBinding Command="{StaticResource PeopleShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
     <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
     <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
     <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
     <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
-    <CommandBinding Command="{StaticResource FolderShowAll}" Executed="CmdFolderShowAll" />
-    <CommandBinding Command="{StaticResource FolderKeywordShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
@@ -147,7 +129,6 @@
     <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
     <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
     <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
-    <CommandBinding Command="{StaticResource GeoNameShowAll}" Executed="CmdTreeViewKeywordsRecursiveSelect" />
     <CommandBinding Command="{StaticResource GeoNameNew}" Executed="CmdGeoNameNew" />
 
     <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
@@ -243,7 +224,7 @@
               <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Orientation="Horizontal" Background="Transparent" 
                             PreviewMouseRightButtonDown="AttachContextMenu" 
-                            PreviewMouseUp="TvFolders_Select">
+                            PreviewMouseUp="TreeView_Select">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>
@@ -255,7 +236,7 @@
                             MouseLeftButtonUp="TvFolders_OnMouseLeftButtonUp"
                             MouseLeftButtonDown="TvFolders_OnMouseLeftButtonDown"
                             PreviewMouseRightButtonDown="AttachContextMenu"
-                            PreviewMouseUp="TvFolders_Select" 
+                            PreviewMouseUp="TreeView_Select" 
                             Drop="TvFolders_OnDrop" 
                             MouseMove="TvFolders_OnMouseMove" 
                             DragEnter="TvFolders_AllowDropCheck" 
@@ -279,14 +260,15 @@
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="{Binding BgBrush, Converter={StaticResource BgColorConverter}}" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsMarked}" Value="True">
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding IsMarked}" Value="True" />
+                      <Condition Binding="{Binding BgBrush}" Value="0" />
+                    </MultiDataTrigger.Conditions>
                     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding BgBrush}" Value="2">
-                    <!-- IsChosen -->
-                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-                  </DataTrigger>
+                  </MultiDataTrigger>
                 </Style.Triggers>
               </Style>
             </TreeView.ItemContainerStyle>
@@ -311,7 +293,7 @@
 
               <!-- TreeView Keywords - FolderKeyword -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderKeyword}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
@@ -320,7 +302,7 @@
 
               <!-- TreeView Keywords - GeoName -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:GeoName}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
@@ -347,7 +329,7 @@
 
               <!-- TreeView Keywords - Rating -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:Rating}">
-                <StackPanel Style="{StaticResource TreeViewKeywordsStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <StackPanel Orientation="Horizontal">
                     <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
                     <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
@@ -393,7 +375,7 @@
 
               <!-- TreeView Filters - Filter -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:Filter}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewFiltersStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
@@ -410,7 +392,7 @@
 
               <!-- TreeView Filters - SqlQuery -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:SqlQuery}" ItemsSource="{Binding Items}">
-                <StackPanel Style="{StaticResource TreeViewFiltersStackPanel}">
+                <StackPanel Style="{StaticResource TreeViewStackPanel}">
                   <Rectangle Style="{StaticResource IconRect}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>

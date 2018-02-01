@@ -19,7 +19,7 @@ namespace PictureManager {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    private AppCore _appCore;
+    private readonly AppCore _appCore;
     private BackgroundWorker _compress;
 
     private int _jpegQualityLevel;
@@ -27,7 +27,7 @@ namespace PictureManager {
     private long _totalCompressedSize;
 
     public int JpegQualityLevel {
-      get { return _jpegQualityLevel; }
+      get => _jpegQualityLevel;
       set {
         _jpegQualityLevel = value;
         OnPropertyChanged();
@@ -45,7 +45,7 @@ namespace PictureManager {
 
     public string FormatSize(long size) {
       string[] sizes = { "B", "KB", "MB", "GB" };
-      int order = 0;
+      var order = 0;
       while (size >= 1024 && order + 1 < sizes.Length) {
         order++;
         size = size / 1024;
@@ -87,13 +87,13 @@ namespace PictureManager {
           break;
         }
 
-        FileInfo original = new FileInfo(mi.FilePath);
-        FileInfo newFile = new FileInfo(mi.FilePath.Replace(".", "_newFile."));
-        bool bSuccess = false;
+        var original = new FileInfo(mi.FilePath);
+        var newFile = new FileInfo(mi.FilePath.Replace(".", "_newFile."));
+        var bSuccess = false;
 
         try {
           using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-            JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = _jpegQualityLevel };
+            var encoder = new JpegBitmapEncoder { QualityLevel = _jpegQualityLevel };
             //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
             //is a KEY to lossless jpeg edit if the QualityLevel is the same
             encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
@@ -116,8 +116,8 @@ namespace PictureManager {
 
             newFile.CreationTime = original.CreationTime;
 
-            using (FileOperation fo = new FileOperation()) {
-              var flags = FileOperationFlags.FOF_SILENT | FileOperationFlags.FOFX_RECYCLEONDELETE | FileOperationFlags.FOF_NOERRORUI;
+            using (var fo = new FileOperation()) {
+              const FileOperationFlags flags = FileOperationFlags.FOF_SILENT | FileOperationFlags.FOFX_RECYCLEONDELETE | FileOperationFlags.FOF_NOERRORUI;
               fo.SetOperationFlags(flags);
               fo.DeleteItem(original.FullName);
               fo.PerformOperations();

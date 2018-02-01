@@ -12,10 +12,10 @@ namespace PictureManager.ViewModel {
 
     public void Load() {
       Items.Clear();
-      foreach (string path in Settings.Default.FolderFavorites.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x)) {
+      foreach (var path in Settings.Default.FolderFavorites.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).OrderBy(x => x)) {
         var p = path.EndsWith("\\") ? path.Substring(0, path.Length - 1) : path;
-        int lio = p.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase);
-        string label = p.Substring(lio + 1, p.Length - lio - 1);
+        var lio = p.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase);
+        var label = p.Substring(lio + 1, p.Length - lio - 1);
         Items.Add(new FavoriteFolder {Title = label, FullPath = p});
       }
     }
@@ -28,14 +28,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void Add(string path) {
-      bool found = Settings.Default.FolderFavorites.IndexOf(path, StringComparison.OrdinalIgnoreCase) >= 0;
-      if (!found) {
-        if (!Settings.Default.FolderFavorites.EndsWith(Environment.NewLine)) {
-          Settings.Default.FolderFavorites += Environment.NewLine;
-        }
-        Settings.Default.FolderFavorites += path;
-        Settings.Default.Save();
+      if (Settings.Default.FolderFavorites.IndexOf(path, StringComparison.OrdinalIgnoreCase) >= 0) return;
+      if (!Settings.Default.FolderFavorites.EndsWith(Environment.NewLine)) {
+        Settings.Default.FolderFavorites += Environment.NewLine;
       }
+      Settings.Default.FolderFavorites += path;
+      Settings.Default.Save();
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
@@ -25,7 +26,7 @@ namespace PictureManager {
     }
 
     public ViewModel.Filter FiltersTreeItem { get; set; }
-    public string FilterTitle { get { return FiltersTreeItem.Title; } set { FiltersTreeItem.Title = value; OnPropertyChanged(); } }
+    public string FilterTitle { get => FiltersTreeItem.Title; set { FiltersTreeItem.Title = value; OnPropertyChanged(); } }
     public ContextMenu MnuFilterGroupOps;
     public ContextMenu MnuFilterConditionProperties;
     public ContextMenu MnuFilterConditionOps;
@@ -159,13 +160,13 @@ namespace PictureManager {
       if (x == null) return;
       var fc = (FilterCondition) x.DataContext;
       if (fc.Property == FilterConditionProperties.FileDirectory) {
-        FolderBrowserDialog dir = new FolderBrowserDialog();
+        var dir = new FolderBrowserDialog();
         if (Directory.Exists(fc.Value)) dir.SelectedPath = fc.Value;
         if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
           fc.Value = dir.SelectedPath;
         }
       } else if (fc.Property == FilterConditionProperties.FilePath) {
-        OpenFileDialog fd = new OpenFileDialog {
+        var fd = new OpenFileDialog {
           Multiselect = true,
           Filter = "JPG|*.jpg"
         };
@@ -182,7 +183,7 @@ namespace PictureManager {
           }
         }
       } else {
-        InputDialog inputDialog = new InputDialog {
+        var inputDialog = new InputDialog {
           Owner = this,
           IconName = "appbar_filter",
           Title = "Filter condition value",
@@ -208,7 +209,7 @@ namespace PictureManager {
       item.IsSelected = false;
     }
 
-    private void ExpandAll(ObservableCollection<BaseFilterItem> items) {
+    private static void ExpandAll(IEnumerable<BaseFilterItem> items) {
       foreach (var item in items) {
         var group = item as FilterGroup;
         if (group == null) continue;
@@ -270,7 +271,7 @@ namespace PictureManager {
 
     [NonSerialized]
     private bool _isSelected;
-    public bool IsSelected { get { return _isSelected; } set { _isSelected = value; OnPropertyChanged(); } }
+    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
   }
 
   [Serializable]
@@ -279,10 +280,10 @@ namespace PictureManager {
 
     [NonSerialized]
     private bool _isExpanded;
-    public bool IsExpanded { get { return _isExpanded; } set { _isExpanded = value; OnPropertyChanged(); } }
+    public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
 
     private FilterGroupOps _operator;
-    public FilterGroupOps Operator { get { return _operator; } set { _operator = value; OnPropertyChanged(); } }
+    public FilterGroupOps Operator { get => _operator; set { _operator = value; OnPropertyChanged(); } }
 
     public FilterGroup() {
       Items = new ObservableCollection<BaseFilterItem>();
@@ -314,13 +315,13 @@ namespace PictureManager {
   [Serializable]
   public class FilterCondition : BaseFilterItem {
     private FilterConditionProperties _property;
-    public FilterConditionProperties Property { get { return _property; } set { _property = value; OnPropertyChanged(); } }
+    public FilterConditionProperties Property { get => _property; set { _property = value; OnPropertyChanged(); } }
 
     private FilterConditionOps _operator;
-    public FilterConditionOps Operator { get { return _operator; } set { _operator = value; OnPropertyChanged(); } }
+    public FilterConditionOps Operator { get => _operator; set { _operator = value; OnPropertyChanged(); } }
 
     private string _value;
-    public string Value { get { return _value; } set { _value = value; OnPropertyChanged(); } }
+    public string Value { get => _value; set { _value = value; OnPropertyChanged(); } }
   }
 
   public class FilterGroupOpsConverter : IValueConverter {
