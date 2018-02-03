@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using PictureManager.ViewModel;
 using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
 using InputDialog = PictureManager.Dialogs.InputDialog;
 
@@ -637,14 +638,27 @@ namespace PictureManager {
 
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
+
       
-      var folder = new ViewModel.Folder {FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
+
+
+
+
+
+ 
+
+      var t = 0;
+
+
+      /*var folder = new ViewModel.Folder {FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
       var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
-      ACore.MediaItems.Load(folder, true);
-      ACore.MediaItems.Load(fk, true);
-      ACore.MediaItems.LoadByTag(fk, true);
+      ACore.MediaItems.Load(folder, true);*/
+      //ACore.MediaItems.Load(fk, true);
+      //ACore.MediaItems.LoadByTag(fk, true);
       //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
-      ACore.InitThumbsPagesControl();
+      //ACore.InitThumbsPagesControl();
+
+
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
       /*var x = GetFileProps(@"d:\video.mp4");
       var xx = ShellStuff.FileInformation.GetVideoDimensions(@"d:\video.mp4");
@@ -698,7 +712,7 @@ namespace PictureManager {
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
       var stackPanel = e.OriginalSource as StackPanel;
-      if (stackPanel == null) return;
+      if (stackPanel == null || _dragDropObject == null) return;
       DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move);
     }
 

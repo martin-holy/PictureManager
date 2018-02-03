@@ -56,7 +56,7 @@ namespace PictureManager.ViewModel {
     public AppCore ACore;
 
     public BaseMediaItem(string filePath, int index, DataModel.MediaItem data) {
-      ACore = ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
       Index = index;
       MediaType = ACore.MediaItems.SuportedImageExts.Any(

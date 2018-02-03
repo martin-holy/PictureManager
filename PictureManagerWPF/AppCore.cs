@@ -13,7 +13,6 @@ using Directory = System.IO.Directory;
 
 namespace PictureManager {
   public class AppCore : IDisposable {
-    private ViewModel.BaseTreeViewItem _lastSelectedSource;
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot;
     public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot;
@@ -43,6 +42,7 @@ namespace PictureManager {
     public int ThumbsPerPage = 300;
     public ViewModel.Viewer CurrentViewer;
 
+    private ViewModel.BaseTreeViewItem _lastSelectedSource;
     private bool _keywordsEditMode;
 
     public bool KeywordsEditMode {
@@ -53,6 +53,7 @@ namespace PictureManager {
       }
     }
 
+    public bool LastSelectedSourceRecursive;
     public ViewModel.BaseTreeViewItem LastSelectedSource {
       get => _lastSelectedSource;
       set {
@@ -113,6 +114,20 @@ namespace PictureManager {
       Viewers.Load();
       GeoNames.Load();
       SqlQueries.Load();
+
+      MediaItems.AllItems.AddRange(
+        Db.MediaItems.Join(Db.Directories, mi => mi.DirectoryId, dir => dir.Id,
+        (mi, dir) => new ViewModel.BaseMediaItem(Path.Combine(dir.Path, mi.FileName), 0, mi)));
+
+      Db.MediaItemPeople.Join(
+        People.AllPeople, mip => mip.PersonId, p => p.Id, (mip, p) => new { mip.MediaItemId, p })
+        .Join(MediaItems.AllItems, mip => mip.MediaItemId, mi => mi.Id, (mip, mi) => new { mi, mip.p })
+        .ToList().ForEach(x => x.mi.People.Add(x.p));
+
+      Db.MediaItemKeywords.Join(
+        Keywords.AllKeywords, mik => mik.KeywordId, k => k.Id, (mik, k) => new { mik.MediaItemId, k })
+        .Join(MediaItems.AllItems, mik => mik.MediaItemId, mi => mi.Id, (mik, mi) => new { mi, mik.k })
+        .ToList().ForEach(x => x.mi.Keywords.Add(x.k));
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
       KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords, GeoNames};
@@ -191,6 +206,7 @@ namespace PictureManager {
             if (LastSelectedSource != null) {
               LastSelectedSource.IsSelected = true;
               item = LastSelectedSource;
+              recursive = LastSelectedSourceRecursive;
             }
             break;
           }
@@ -209,6 +225,7 @@ namespace PictureManager {
             var bti = (ViewModel.BaseTreeViewItem) item;
             bti.IsSelected = true;
             LastSelectedSource = bti;
+            LastSelectedSourceRecursive = recursive;
 
             if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
               ThumbsWebWorker.CancelAsync();

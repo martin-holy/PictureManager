@@ -15,11 +15,12 @@ namespace PictureManager.ViewModel {
     public int? DirId;
     public string DirPath;
     public FolderKeyword FolderKeyword;
-    public DataModel.MediaItem MediaItem;
+    public BaseMediaItem MediaItem;
   }
 
   public class MediaItems {
     public ObservableCollection<BaseMediaItem> Items;
+    public List<BaseMediaItem> AllItems;
     public BaseMediaItem Current;
     public AppCore ACore;
     public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
@@ -29,6 +30,7 @@ namespace PictureManager.ViewModel {
     public MediaItems() {
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       Items = new ObservableCollection<BaseMediaItem>();
+      AllItems = new List<BaseMediaItem>();
     }
 
     public List<BaseMediaItem> GetSelectedOrAll() {
@@ -150,9 +152,8 @@ namespace PictureManager.ViewModel {
 
       //pairing files with DB
       files = (from f in files
-        join mi in ACore.Db.MediaItems on
-        new {fileName = f.FileName, dirId = f.DirId}
-        equals new {fileName = mi.FileName, dirId = (int?) mi.DirectoryId} into tmp
+        join mi in ACore.MediaItems.AllItems on
+        f.FilePath.ToLowerInvariant() equals mi.FilePath.ToLowerInvariant() into tmp
         from mi in tmp.DefaultIfEmpty()
         select new MediaItemsLoad {
           FilePath = f.FilePath,
@@ -163,35 +164,57 @@ namespace PictureManager.ViewModel {
           MediaItem = mi
         }).ToList();
 
-      //filtering
+      #region Filtering
+      //Ratings
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
+        files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Rating))).ToList();
+      //People
+      var orPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
+      var andPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
+      var notPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Hidden).ToArray();
+      var andPeopleAny = andPeople.Any();
+      var orPeopleAny = orPeople.Any();
+      if (orPeopleAny || andPeopleAny || notPeople.Any())
+        files = files.Where(f => {
+          if (f.MediaItem == null)
+            return true;
+          if (notPeople.Any(p => f.MediaItem.People.Any(x => x == p)))
+            return false;
+          if (!andPeopleAny && !orPeopleAny)
+            return true;
+          if (andPeopleAny && andPeople.All(p => f.MediaItem.People.Any(x => x == p)))
+            return true;
+          if (orPeople.Any(p => f.MediaItem.People.Any(x => x == p)))
+            return true;
+
+          return false;
+        }).ToList();
+
+      //Keywords
+      /*var orKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
+      var andKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
+      var notKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.Hidden).ToArray();
+      if (orKeywords.Any() || andKeywords.Any() || notKeywords.Any())
         files = files.Where(f => f.MediaItem == null ||
-                                 f.MediaItem != null && chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Rating))).ToList();
+          !(notKeywords.Any() && notKeywords.Any(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id))) &&
+          (andKeywords.Any() && andKeywords.All(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id)) ||
+          orKeywords.Any(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id)))).ToList();*/
 
-      //adding People and Keywords
-      var mips = (from mip in ACore.Db.MediaItemPeople
-        join f in files on mip.MediaItemId equals f.MediaItem?.Id
-        select mip).ToArray();
+      #endregion
 
-      var miks = (from mik in ACore.Db.MediaItemKeywords
-        join f in files on mik.MediaItemId equals f.MediaItem?.Id
-        select mik).ToArray();
-
+      var i = 0;
       foreach (var file in files.OrderBy(f => f.FileName)) {
-        var bmi = new BaseMediaItem(file.FilePath, Items.Count, file.MediaItem);
-
-        if (file.MediaItem != null) {
-          foreach (var mip in mips.Where(x => x.MediaItemId == file.MediaItem.Id)) {
-            bmi.People.Add(ACore.People.GetPerson(mip.PersonId));
-          }
-          foreach (var mik in miks.Where(x => x.MediaItemId == file.MediaItem.Id)) {
-            bmi.Keywords.Add(ACore.Keywords.GetKeyword(mik.KeywordId));
-          }
+        if (file.MediaItem == null) {
+          var bmi = new BaseMediaItem(file.FilePath, i, null) {FolderKeyword = file.FolderKeyword};
+          Items.Add(bmi);
+          AllItems.Add(bmi);
         }
-
-        bmi.FolderKeyword = file.FolderKeyword;
-        Items.Add(bmi);
+        else {
+          file.MediaItem.Index = i;
+          Items.Add(file.MediaItem);
+        }
+        i++;
       }
 
       ACore.UpdateStatusBarInfo();
