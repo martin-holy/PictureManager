@@ -232,10 +232,12 @@ namespace PictureManager {
               ThumbsResetEvent.WaitOne();
             }
 
-            if (folder != null)
+            MediaItems.Load(LastSelectedSource, recursive);
+
+            /*if (folder != null)
               MediaItems.Load(folder, recursive);
             else
-              MediaItems.LoadByTag(LastSelectedSource, recursive);
+              MediaItems.LoadByTag(LastSelectedSource, recursive);*/
             InitThumbsPagesControl();
 
             break;

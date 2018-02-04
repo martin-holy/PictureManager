@@ -647,16 +647,16 @@ namespace PictureManager {
 
  
 
-      var t = 0;
+     
 
 
-      /*var folder = new ViewModel.Folder {FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
-      var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
-      ACore.MediaItems.Load(folder, true);*/
+      var folder = new ViewModel.Folder {FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
+      //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
+      ACore.MediaItems.Load(folder, true);
       //ACore.MediaItems.Load(fk, true);
       //ACore.MediaItems.LoadByTag(fk, true);
       //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
-      //ACore.InitThumbsPagesControl();
+      ACore.InitThumbsPagesControl();
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");

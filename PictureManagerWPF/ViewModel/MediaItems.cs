@@ -103,7 +103,7 @@ namespace PictureManager.ViewModel {
           break;
         }
         case FolderKeyword fk: {
-          topDirs.AddRange(ACore.Db.Directories.Where(d => fk.FolderIds.Any(id => d.Id == id)).Select(d => d.Path));
+          topDirs.AddRange(ACore.Db.Directories.Where(d => fk.FolderIdList.Contains(d.Id)).Select(d => d.Path));
           break;
         }
       }
@@ -164,11 +164,17 @@ namespace PictureManager.ViewModel {
           MediaItem = mi
         }).ToList();
 
+      files.ForEach(x => {
+        if (x.MediaItem != null)
+          x.MediaItem.FolderKeyword = x.FolderKeyword;
+      });
+
       #region Filtering
       //Ratings
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
         files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Rating))).ToList();
+      
       //People
       var orPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
       var andPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
@@ -192,15 +198,25 @@ namespace PictureManager.ViewModel {
         }).ToList();
 
       //Keywords
-      /*var orKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
+      var orKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
       var andKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
       var notKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.Hidden).ToArray();
-      if (orKeywords.Any() || andKeywords.Any() || notKeywords.Any())
-        files = files.Where(f => f.MediaItem == null ||
-          !(notKeywords.Any() && notKeywords.Any(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id))) &&
-          (andKeywords.Any() && andKeywords.All(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id)) ||
-          orKeywords.Any(k => miks.Exists(mik => mik.MediaItemId == f.MediaItem.Id && mik.KeywordId == k.Id)))).ToList();*/
-
+      var andKeywordsAny = andKeywords.Any();
+      var orKeywordsAny = orKeywords.Any();
+      if (orKeywordsAny || andKeywordsAny || notKeywords.Any())
+        files = files.Where(f => {
+          if (f.MediaItem == null)
+            return true;
+          if (notKeywords.Any(k => f.MediaItem.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return false;
+          if (!andKeywordsAny && !orKeywordsAny)
+            return true;
+          if (andKeywordsAny && andKeywords.All(k => f.MediaItem.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return true;
+          if (orKeywords.Any(k => f.MediaItem.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return true;
+          return false;
+        }).ToList();
       #endregion
 
       var i = 0;
