@@ -5,8 +5,9 @@ using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace PictureManager.ViewModel {
-  public class Filter: BaseTreeViewTagItem {
+  public class Filter: BaseTreeViewItem, IDbItem {
     public DataModel.Filter Data;
+    public override string Title { get => Data.Name; set { Data.Name = value; OnPropertyChanged(); } }
     public ObservableCollection<BaseFilterItem> FilterData;
 
     public override bool IsExpanded
@@ -21,15 +22,13 @@ namespace PictureManager.ViewModel {
 
     public Filter() {
       FilterData = new ObservableCollection<BaseFilterItem>();
-      Id = -1;
+      Data.Id = -1;
       IconName = "appbar_filter";
     }
 
     public Filter(DataModel.Filter data, Filter parent) : this() {
       Data = data;
       Parent = parent;
-      Id = data.Id;
-      Title = data.Name;
     }
 
     public void GetSubFilters(bool refresh, ObservableCollection<BaseTreeViewItem> items, Filter parent) {
@@ -38,7 +37,7 @@ namespace PictureManager.ViewModel {
         if (items[0].Title != @"...") return;
       }
       items.Clear();
-      var parentId = parent?.Id;
+      var parentId = parent?.Data.Id;
 
       foreach (var f in ACore.Db.Filters.Where(x => x.ParentId.Equals(parentId))) {
         var item = new Filter(f, parent);
@@ -53,8 +52,8 @@ namespace PictureManager.ViewModel {
     }
 
     public void ReloadData() {
-      if (Id == -1) return;
-      LoadFilterData(ACore.Db.Filters.Single(x => x.Id == Id).Data);
+      if (Data.Id == -1) return;
+      LoadFilterData(ACore.Db.Filters.Single(x => x.Id == Data.Id).Data);
     }
 
     public void LoadFilterData(byte[] biteArray) {
@@ -106,17 +105,17 @@ namespace PictureManager.ViewModel {
       filterFile.Delete();
 
       //insert or update filter to DB
-      if (Id == -1) {
+      if (Data.Id == -1) {
         var dmFilter = new DataModel.Filter {
           Id = ACore.Db.GetNextIdFor<DataModel.Filter>(),
           Name = Title,
           Data = biteArray,
-          ParentId = (Parent as Filter)?.Id
+          ParentId = (Parent as Filter)?.Data.Id
         };
 
         ACore.Db.Insert(dmFilter);
 
-        Id = dmFilter.Id;
+        Data.Id = dmFilter.Id;
       } else {
         Data.Data = biteArray;
         Data.Name = Title;

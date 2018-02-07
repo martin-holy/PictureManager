@@ -99,8 +99,8 @@
     <Compile Include="ViewModel\Folders.cs" />
     <Compile Include="ViewModel\GeoName.cs" />
     <Compile Include="ViewModel\GeoNames.cs" />
+    <Compile Include="ViewModel\IDbItem.cs" />
     <Compile Include="ViewModel\MediaItems.cs" />
-    <Compile Include="ViewModel\Picture.cs" />
     <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
       <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
     </Compile>

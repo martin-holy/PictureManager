@@ -65,8 +65,8 @@ namespace PictureManager {
       BtnUpdate.IsEnabled = false;
       _update = new BackgroundWorker { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
       _update.DoWork += update_DoWork;
-      _update.ProgressChanged += update_ProgressChanged;
-      _update.RunWorkerCompleted += update_RunWorkerCompleted;
+      _update.ProgressChanged += Update_ProgressChanged;
+      _update.RunWorkerCompleted += Update_RunWorkerCompleted;
       _justFilesCount = true;
       _update.RunWorkerAsync(_selectedFolderPath);
     }
@@ -114,9 +114,16 @@ namespace PictureManager {
           .OrderBy(x => x)) {
 
           var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
-          var mi = new ViewModel.BaseMediaItem(file, 0, miInDb) {DirId = dirId};
-          if (!_newOnly || miInDb == null)
-            mi.SaveMediaItemInToDb(true, miInDb == null, _lists);
+          var mi = miInDb != null
+            ? new ViewModel.BaseMediaItem(file, miInDb)
+            : new ViewModel.BaseMediaItem(file, new DataModel.MediaItem {
+              Id = _aCore.Db.GetNextIdFor<DataModel.MediaItem>(),
+              FileName = Path.GetFileName(file),
+              DirectoryId = dirId
+            }, true);
+
+          if (!_newOnly || mi.IsNew)
+            mi.SaveMediaItemInToDb(!mi.IsNew, _lists);
 
           if (_rebuildThumbnails || !File.Exists(mi.FilePathCache))
             AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
@@ -125,27 +132,25 @@ namespace PictureManager {
 
           worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100));
         }
-        //worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100), true);
       }
-      catch (Exception ex) {
+      catch (Exception) {
         // ignored
       }
     }
 
-    private void update_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+    private void Update_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbUpdateProgress.Value = e.ProgressPercentage;
       FilesProgress = $"{_filesDone} / {_filesCount}";
-      //if (e.UserState != null)
-        //_aCore.Db.SubmitChanges();
     }
 
-    private void update_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+    private void Update_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
       if (_justFilesCount) {
         _justFilesCount = false;
         _update.RunWorkerAsync();
         return;
       }
       _aCore.Db.SubmitChanges(_lists);
+      _aCore.MediaItems.LoadAllItems();
       BtnUpdate.IsEnabled = true;
     }
 
@@ -163,13 +168,13 @@ namespace PictureManager {
       if (stackPanel.ContextMenu != null) return;
       var menu = new ContextMenu { Tag = item };
 
-      switch (item.GetType().Name) {
-        case nameof(ViewModel.Folders): {
+      switch (item) {
+        case ViewModel.Folders _: {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAdd"], CommandParameter = item});
           break;
         }
-        case nameof(ViewModel.Folder): {
-          if (((ViewModel.Folder) item).Parent == null) {
+        case ViewModel.Folder f: {
+          if (f.Parent == null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemove"], CommandParameter = item});
           }
           break;
@@ -211,13 +216,12 @@ namespace PictureManager {
 
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
       var dir = new FolderBrowserDialog();
-      if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-        var paths = Settings.Default.CatalogFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
-        paths.Add(dir.SelectedPath);
-        Settings.Default.CatalogFolders = string.Join(Environment.NewLine, paths);
-        Settings.Default.Save();
-        LoadFolders();
-      }
+      if (dir.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+      var paths = Settings.Default.CatalogFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+      paths.Add(dir.SelectedPath);
+      Settings.Default.CatalogFolders = string.Join(Environment.NewLine, paths);
+      Settings.Default.Save();
+      LoadFolders();
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml;
 
 namespace PictureManager.ViewModel {
-  public class GeoNames: BaseCategoryItem {
+  public sealed class GeoNames: BaseCategoryItem {
     public List<GeoName> AllGeoNames;
 
     public GeoNames() : base (Categories.GeoNames) {
@@ -26,7 +26,7 @@ namespace PictureManager.ViewModel {
     }
 
     private void LoadChilds(GeoName parent) {
-      foreach (var geoName in ACore.Db.GeoNames.Where(x => x.ParentGeoNameId == parent.GeoNameId)
+      foreach (var geoName in ACore.Db.GeoNames.Where(x => x.ParentGeoNameId == parent.Data.GeoNameId)
         .Select(x => new GeoName(x) {Parent = parent})) {
         parent.Items.Add(geoName);
         AllGeoNames.Add(geoName);

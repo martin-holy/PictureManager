@@ -1,5 +1,5 @@
 ﻿namespace PictureManager.ViewModel {
-  public class Filters: BaseCategoryItem {
+  public sealed class Filters: BaseCategoryItem {
 
     public Filters() : base (Categories.Filters) {
       Title = "Filters";

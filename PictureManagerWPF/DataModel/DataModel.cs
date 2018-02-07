@@ -29,7 +29,6 @@ namespace PictureManager.DataModel {
     public List<ViewerAccess> ViewersAccess;
     public List<GeoName> GeoNames;
     public List<SqlQuery> SqlQueries;
-    public List<SQLiteSequence> SQLiteSequences;
 
     public PmDataContext(string connectionString) {
       ConnectionString = connectionString;
@@ -491,15 +490,5 @@ namespace PictureManager.DataModel {
     [Column(Name = "Query", DbType = "ntext", CanBeNull = false)]
     public string Query { get; set; }
   }
-
-  [Table(Name = "sqlite_sequence")]
-  public class SQLiteSequence {
-    [Column(Name = "name")]
-    public string Name { get; set; }
-
-    [Column(Name = "seq")]
-    public int Seq { get; set; }
-  }
-
   #endregion
 }

@@ -67,7 +67,6 @@ namespace PictureManager.ViewModel {
 
       if (inputDialog.ShowDialog() ?? true) {
         if (rename) {
-          group.Title = inputDialog.Answer;
           group.Data.Name = inputDialog.Answer;
           ACore.Db.Update(group.Data);
           GroupSetInPalce(group, false);
@@ -80,7 +79,7 @@ namespace PictureManager.ViewModel {
       if (result != MessageBoxResult.Yes) return;
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
-      foreach (var cgi in ACore.Db.CategoryGroupsItems.Where(x => x.CategoryGroupId == group.Id)) {
+      foreach (var cgi in ACore.Db.CategoryGroupsItems.Where(x => x.CategoryGroupId == group.Data.Id)) {
         ACore.Db.DeleteOnSubmit(cgi, lists);
       }
 
@@ -96,11 +95,8 @@ namespace PictureManager.ViewModel {
     }
 
     public void LoadGroups() {
-      foreach (
-        var g in
-          ACore.Db.CategoryGroups.Where(x => x.Category == (int) Category)
-            .OrderBy(x => x.Name)
-            .Select(x => new CategoryGroup(x) {IconName = GetCategoryGroupIconName(), Parent = this})) {
+      foreach (var g in ACore.Db.CategoryGroups.Where(x => x.Category == (int) Category).OrderBy(x => x.Name)
+        .Select(x => new CategoryGroup(x) {IconName = GetCategoryGroupIconName(), Parent = this})) {
         Items.Add(g);
       }
     }
@@ -127,24 +123,24 @@ namespace PictureManager.ViewModel {
       //implemented in inherited class
     }
 
-    public virtual void ItemDelete(BaseTreeViewTagItem item) {
+    public virtual void ItemDelete(BaseTreeViewItem item) {
       //implemented in inherited class
     }
 
-    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest) {
+    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, int itemId) {
       var srcGroup = item.Parent as CategoryGroup;
       var destGroup = dest as CategoryGroup;
-      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(x => x.ItemId == item.Id && x.CategoryGroupId == srcGroup?.Id);
+      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(x => x.ItemId == itemId && x.CategoryGroupId == srcGroup?.Data.Id);
       if (cgi != null) {
         if (destGroup != null) {
-          cgi.CategoryGroupId = destGroup.Id;
+          cgi.CategoryGroupId = destGroup.Data.Id;
           ACore.Db.Update(cgi);
         } else {
           ACore.Db.Delete(cgi);
         }
       } else {
         if (destGroup != null) {
-          InsertCategoryGroupItem(destGroup, item.Id);
+          InsertCategoryGroupItem(destGroup, itemId);
         }
       }
 
@@ -203,7 +199,7 @@ namespace PictureManager.ViewModel {
       if (cg == null) return;
       var dmCategoryGroupItem = new DataModel.CategoryGroupItem {
         Id = ACore.Db.GetNextIdFor<DataModel.CategoryGroupItem>(),
-        CategoryGroupId = cg.Id,
+        CategoryGroupId = cg.Data.Id,
         ItemId = itemId
       };
       ACore.Db.Insert(dmCategoryGroupItem);

@@ -6,7 +6,7 @@ using System.Linq;
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModel {
-  public class FolderKeywords: BaseCategoryItem {
+  public sealed class FolderKeywords: BaseCategoryItem {
     public List<FolderKeyword> AllFolderKeywords;
 
     public FolderKeywords() : base (Categories.FolderKeywords) {

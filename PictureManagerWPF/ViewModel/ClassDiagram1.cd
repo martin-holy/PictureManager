@@ -11,7 +11,7 @@
   <Class Name="PictureManager.ViewModel.BaseMediaItem">
     <Position X="22.25" Y="1.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>BQCDgAAEBaAEEAgBKAAAEUCCgAAAABEBAoFgBCACgBg=</HashCode>
+      <HashCode>AQCBgAAAACAEEAAAKAAAEACCgAAAABABAEBgACACAAA=</HashCode>
       <FileName>ViewModel\BaseMediaItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -25,20 +25,20 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.BaseTreeViewTagItem">
-    <Position X="18.75" Y="8.5" Width="1.75" />
+    <Position X="19.75" Y="8.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>EAACAAAAAAEAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>EAAAAAAAAAEAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\BaseTreeViewTagItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FavoriteFolder">
-    <Position X="16.25" Y="8.5" Width="1.5" />
+    <Position X="18" Y="8.5" Width="1.5" />
     <InheritanceLine Type="PictureManager.ViewModel.BaseTreeViewItem" FixedToPoint="true">
       <Path>
         <Point X="14.375" Y="6.978" />
         <Point X="14.375" Y="8.125" />
-        <Point X="17" Y="8.125" />
-        <Point X="17" Y="8.5" />
+        <Point X="18.75" Y="8.125" />
+        <Point X="18.75" Y="8.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -47,28 +47,29 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FavoriteFolders">
-    <Position X="21.25" Y="15.75" Width="1.5" />
+    <Position X="27" Y="15.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAgAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FavoriteFolders.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Filter">
-    <Position X="29.25" Y="11.5" Width="1.75" />
+    <Position X="14.25" Y="8.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAIAQAAACAAAAAAYAEAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAIAQAAACAAAEAAYAEAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Filter.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.Filters">
-    <Position X="8.75" Y="15.75" Width="1.25" />
+    <Position X="14.5" Y="15.75" Width="1.25" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Filters.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Folder">
-    <Position X="13.25" Y="8.5" Width="2" />
+    <Position X="12" Y="8.5" Width="2" />
     <TypeIdentifier>
       <HashCode>CAAAAQACAQAAACAAAAAAACAAAAEEAAAAAAAAAAABoAA=</HashCode>
       <FileName>ViewModel\Folder.cs</FileName>
@@ -82,28 +83,29 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.FolderKeywords">
-    <Position X="10.25" Y="15.75" Width="2.25" />
+    <Position X="16" Y="15.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAgAAAIAQAAEAEAAAAAAAAQAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FolderKeywords.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Folders">
-    <Position X="4.25" Y="15.75" Width="2" />
+    <Position X="10" Y="15.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAgAAAAAAAAAAAAAAAIA=</HashCode>
       <FileName>ViewModel\Folders.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Keyword">
-    <Position X="18.25" Y="11.5" Width="2" />
+    <Position X="16.25" Y="11.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAAAAAAAAAQAAAAAAAAABAAAAEAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAEAAAAAQAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Keyword.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.Keywords">
-    <Position X="17.25" Y="15.75" Width="2" />
+    <Position X="23" Y="15.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAEAgAAAAAAAAAAgABAQAQAQAAAAAAAgAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Keywords.cs</FileName>
@@ -112,30 +114,24 @@
   <Class Name="PictureManager.ViewModel.MediaItems">
     <Position X="16.5" Y="1.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAgoAAAgACQQCAAAAACCQkAABAAMAAAAAAAAAEQAAAg=</HashCode>
+      <HashCode>AAgggAAgACQQCAAAQACCQEAABAAMAAAACQAAAMQAAAg=</HashCode>
       <FileName>ViewModel\MediaItems.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.People">
-    <Position X="14.75" Y="15.75" Width="2.25" />
+    <Position X="20.5" Y="15.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAEAgAAAAAAAAAAAAAAAAQAAAAAQIAAgAAAAAACAAAA=</HashCode>
       <FileName>ViewModel\People.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Person">
-    <Position X="16.25" Y="11.5" Width="1.75" />
+    <Position X="18.5" Y="11.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Person.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="PictureManager.ViewModel.Picture">
-    <Position X="25.25" Y="1.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>ViewModel\Picture.cs</FileName>
-    </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.Rating">
     <Position X="20.5" Y="11.5" Width="1.5" />
@@ -145,7 +141,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Ratings">
-    <Position X="12.75" Y="15.75" Width="1.75" />
+    <Position X="18.5" Y="15.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Ratings.cs</FileName>
@@ -155,33 +151,35 @@
     <Position X="25.75" Y="11.5" Width="1.5" />
     <InheritanceLine Type="PictureManager.ViewModel.BaseTreeViewTagItem" FixedToPoint="true">
       <Path>
-        <Point X="19.625" Y="10.761" />
-        <Point X="19.625" Y="11.125" />
+        <Point X="20.625" Y="10.569" />
+        <Point X="20.625" Y="11.125" />
         <Point X="26.5" Y="11.125" />
         <Point X="26.5" Y="11.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAACAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAAACAA=</HashCode>
       <FileName>ViewModel\CategoryGroup.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.BaseCategoryItem">
-    <Position X="10" Y="8.5" Width="2.25" />
+    <Position X="7.25" Y="8.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAEQAwABAAAAEBAUAQAABAAAAhAAIAAAAGCAA=</HashCode>
       <FileName>ViewModel\BaseCategoryItem.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.Viewer">
-    <Position X="31.25" Y="11.5" Width="2" />
+    <Position X="9.75" Y="8.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAAAEAAAAAAAAAIBAARAACAAAAAAAACA=</HashCode>
+      <HashCode>ACAAAAAAAAAAAEAEAAAAAAAAAIBAARAACAAAAAAAACA=</HashCode>
       <FileName>ViewModel\Viewer.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.Viewers">
-    <Position X="6.5" Y="15.75" Width="2" />
+    <Position X="12.25" Y="15.75" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAAAAAAAAQAAAAAAAAIgAAAABAAAACA=</HashCode>
       <FileName>ViewModel\Viewers.cs</FileName>
@@ -190,29 +188,144 @@
   <Class Name="PictureManager.ViewModel.GeoName">
     <Position X="22.25" Y="11.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAABAAAIAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEIAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\GeoName.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.GeoNames">
-    <Position X="23" Y="15.75" Width="1.5" />
+    <Position X="28.75" Y="15.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAEACAAAAABAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\GeoNames.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.SqlQueries">
-    <Position X="19.5" Y="15.75" Width="1.5" />
+    <Position X="25.25" Y="15.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAgAAAAAAAAAAAAAAACQAAAAAAIAAgAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\SqlQueries.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.SqlQuery">
-    <Position X="27.5" Y="11.5" Width="1.5" />
+    <Position X="16.25" Y="8.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEAAAAAAAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\SqlQuery.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PictureManager.DataModel.PmDataContext" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="14.5" Y="23" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIUAiEggIKBgAARQAIAoABIACKEEAAAACKBARQBAkDA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.DataModel.TableInfo">
+    <Position X="16.25" Y="23" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAEAAAACCAAAAAAAAAAAAAAAACAAAAQAAAgCAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.BaseTable">
+    <Position X="11.5" Y="19.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.Directory">
+    <Position X="22.5" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.Filter">
+    <Position X="28" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAABAAAgAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.Keyword">
+    <Position X="10" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.CategoryGroup">
+    <Position X="15.25" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.CategoryGroupItem">
+    <Position X="18.75" Y="21.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.MediaItemKeyword">
+    <Position X="24.25" Y="21.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAABAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.MediaItemPerson">
+    <Position X="29.75" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAABAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.MediaItem">
+    <Position X="11.75" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEBQAAAACAAAAAAEAAAAAAAAEAAIAAAABAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.Person">
+    <Position X="17" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.Viewer">
+    <Position X="20.75" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.ViewerAccess">
+    <Position X="26.25" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAARAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.GeoName">
+    <Position X="31.5" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAQAAAAAAMAAAIAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.DataModel.SqlQuery">
+    <Position X="13.5" Y="21.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>DataModel\DataModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

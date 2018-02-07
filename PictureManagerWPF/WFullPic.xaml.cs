@@ -61,7 +61,7 @@ namespace PictureManager {
 
       if (current.MediaType == MediaTypes.Image) {
         var o = 0;
-        switch (current.Orientation) {
+        switch (current.Data.Orientation) {
           case 1: o = 0; break;
           case 3: o = 180; break;
           case 6: o = 90; break;
@@ -110,12 +110,8 @@ namespace PictureManager {
           break;
         }
         case Key.Escape: {
-          if (ACore.ViewerOnly) {
-            Application.Current.Shutdown();
-          } else {
-            SwitchToBrowser();
-            Hide();
-          }
+          SwitchToBrowser();
+          Hide();
           break;
         }
         case Key.Enter: {
@@ -157,7 +153,7 @@ namespace PictureManager {
             var mi = ACore.MediaItems.Current;
             if (mi != null) {
               mi.IsModifed = true;
-              mi.Rating = (int) e.Key - 34;
+              mi.Data.Rating = (int) e.Key - 34;
               mi.WbUpdateInfo();
               WbFullPic.Document?.InvokeScript("SetInfo", new object[] {ACore.MediaItems.GetFullScreenInfo()});
             }

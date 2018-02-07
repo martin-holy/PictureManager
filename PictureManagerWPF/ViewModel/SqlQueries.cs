@@ -3,7 +3,7 @@ using System.Linq;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
-  public class SqlQueries : BaseCategoryItem {
+  public sealed class SqlQueries : BaseCategoryItem {
     public List<SqlQuery> AllSqlQueries;
 
     public SqlQueries() : base(Categories.SqlQueries) {
@@ -22,7 +22,7 @@ namespace PictureManager.ViewModel {
       foreach (var g in Items.Cast<CategoryGroup>()) {
         foreach (var sqlQuery in (from q in ACore.Db.SqlQueries
           join cgi in ACore.Db.CategoryGroupsItems
-          on new { qid = q.Id, gid = g.Id } equals new { qid = cgi.ItemId, gid = cgi.CategoryGroupId }
+          on new { qid = q.Id, gid = g.Data.Id } equals new { qid = cgi.ItemId, gid = cgi.CategoryGroupId }
           select q).OrderBy(x => x.Name).Select(x => new SqlQuery(x) { Parent = g })) {
           g.Items.Add(sqlQuery);
           AllSqlQueries.Add(sqlQuery);
@@ -30,7 +30,7 @@ namespace PictureManager.ViewModel {
       }
 
       //Add Queries without Group
-      foreach (var sqlQuery in (from q in ACore.Db.SqlQueries where AllSqlQueries.All(aq => aq.Id != q.Id) select q)
+      foreach (var sqlQuery in (from q in ACore.Db.SqlQueries where AllSqlQueries.All(aq => aq.Data.Id != q.Id) select q)
         .OrderBy(x => x.Name).Select(x => new SqlQuery(x) { Parent = this })) {
         Items.Add(sqlQuery);
         AllSqlQueries.Add(sqlQuery);
@@ -61,7 +61,7 @@ namespace PictureManager.ViewModel {
         Owner = ACore.WMain,
         IconName = IconName,
         SqlQueryName = rename ? ((SqlQuery) item).Title : string.Empty,
-        SqlQueryQuery = rename ? ((SqlQuery) item).Query : string.Empty
+        SqlQueryQuery = rename ? ((SqlQuery) item).Data.Query : string.Empty
       };
 
       sqlQueryDialog.BtnDialogOk.Click += delegate {
@@ -82,27 +82,23 @@ namespace PictureManager.ViewModel {
 
       sqlQueryDialog.TxtName.SelectAll();
 
-      if (sqlQueryDialog.ShowDialog() ?? true) {
-        if (rename) {
-          var sqlQuery = (SqlQuery) item;
-          sqlQuery.Title = sqlQueryDialog.SqlQueryName;
-          sqlQuery.Data.Name = sqlQueryDialog.SqlQueryName;
-          sqlQuery.Query = sqlQueryDialog.SqlQueryQuery;
-          sqlQuery.Data.Query = sqlQueryDialog.SqlQueryQuery;
-          ACore.Db.Update(sqlQuery.Data);
-          ACore.SqlQueries.ItemSetInPlace(sqlQuery.Parent, false, sqlQuery);
-        }
-        else CreateSqlQuery(item, sqlQueryDialog.SqlQueryName, sqlQueryDialog.SqlQueryQuery);
+      if (!(sqlQueryDialog.ShowDialog() ?? true)) return;
+      if (rename) {
+        var sqlQuery = (SqlQuery) item;
+        sqlQuery.Title = sqlQueryDialog.SqlQueryName;
+        sqlQuery.Data.Query = sqlQueryDialog.SqlQueryQuery;
+        ACore.Db.Update(sqlQuery.Data);
+        ACore.SqlQueries.ItemSetInPlace(sqlQuery.Parent, false, sqlQuery);
       }
+      else CreateSqlQuery(item, sqlQueryDialog.SqlQueryName, sqlQueryDialog.SqlQueryQuery);
     }
 
-    public override void ItemDelete(BaseTreeViewTagItem item) {
-      var sqlQuery = item as SqlQuery;
-      if (sqlQuery == null) return;
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is SqlQuery sqlQuery)) return;
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
-        x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+        x => x.ItemId == sqlQuery.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
         ACore.Db.DeleteOnSubmit(cgi, lists);
       }

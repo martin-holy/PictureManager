@@ -15,11 +15,20 @@ using Application = System.Windows.Application;
 
 namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
+    public DataModel.MediaItem Data;
+    public string FilePath;
+    public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
+    public string CommentEscaped => Data.Comment?.Replace("'", "''");
+    public int Index;
+    public double? Lat;
+    public double? Lng;
+    public MediaTypes MediaType;
+    public bool IsModifed;
+    public bool IsNew;
+    public List<Keyword> Keywords = new List<Keyword>();
+    public List<Person> People = new List<Person>();
+    public FolderKeyword FolderKeyword;
+    public AppCore ACore;
 
     private bool _isSelected;
     public bool IsSelected {
@@ -31,49 +40,21 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged();
       }
     }
-    
-    public string FilePath;
-    public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
-    public string FileNameWithExt => Path.GetFileName(FilePath);
-    public string Comment;
-    public string CommentEscaped => Comment?.Replace("'", "''");
-    public int Index;
-    public int Id;
-    public int DirId;
-    public int Rating;
-    public int Orientation;
-    public int Width;
-    public int Height;
-    public int? GeoNameId;
-    public double? Lat;
-    public double? Lng;
-    public MediaTypes MediaType;
-    public bool IsModifed;
-    public DataModel.MediaItem Data;
-    public List<Keyword> Keywords = new List<Keyword>();
-    public List<Person> People = new List<Person>();
-    public FolderKeyword FolderKeyword;
-    public AppCore ACore;
 
-    public BaseMediaItem(string filePath, int index, DataModel.MediaItem data) {
+    public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = "") {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    public BaseMediaItem(string filePath, DataModel.MediaItem data, bool isNew = false) {
+      Data = data;
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
-      Index = index;
+      IsNew = isNew;
       MediaType = ACore.MediaItems.SuportedImageExts.Any(
-        e => filePath.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
+        e => Data.FileName.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
         ? MediaTypes.Image
         : MediaTypes.Video;
-
-      if (data == null) return;
-      Id = data.Id;
-      DirId = data.DirectoryId;
-      Comment = data.Comment;
-      Rating = data.Rating;
-      Orientation = data.Orientation;
-      Width = data.Width;
-      Height = data.Height;
-      GeoNameId = data.GeoNameId;
-      Data = data;
     }
 
     public string GetKeywordsAsString(bool withComment) {
@@ -86,8 +67,8 @@ namespace PictureManager.ViewModel {
       }
 
       var keywordsList = new List<string>();
-      foreach (var keyword in Keywords.OrderBy(x => x.FullPath)) {
-        foreach (var k in keyword.FullPath.Split('/')) {
+      foreach (var keyword in Keywords.OrderBy(x => x.Data.Name)) {
+        foreach (var k in keyword.Data.Name.Split('/')) {
           if (!keywordsList.Contains(k)) keywordsList.Add(k);
         }
       }
@@ -99,76 +80,28 @@ namespace PictureManager.ViewModel {
       }
 
       sb.Append("<div>");
-      sb.Append(Rating);
+      sb.Append(Data.Rating);
       sb.Append("</div>");
 
-      if (Comment != string.Empty) {
+      if (Data.Comment != string.Empty) {
         sb.Append("<div>");
         sb.Append(withComment ? CommentEscaped : "C");
         sb.Append("</div>");
       }
 
-      if (GeoNameId != null) sb.Append("<div>G</div>");
+      if (Data.GeoNameId != null) sb.Append("<div>G</div>");
       if (MediaType == MediaTypes.Video) sb.Append("<div>V</div>");
 
       return sb.ToString();
     }
 
-    private void LoadKeywordsFromDb() {
-      Keywords.Clear();
-      var ks = from mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)
-        join k in ACore.Db.Keywords on mik.KeywordId equals k.Id
-        select k.Name;
-      foreach (var k in ks) {
-        Keywords.Add(ACore.Keywords.GetKeywordByFullPath(k, false));
-      }
-    }
-
-    private void LoadPeopleFromDb() {
-      People.Clear();
-      var ps = from mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Id)
-        join p in ACore.Db.People on mip.PersonId equals p.Id
-        select p;
-      foreach (var p in ps) {
-        People.Add(ACore.People.GetPerson(p.Id));
-      }
-    }
-
-    public void ReLoadFromDb() {
-      ACore.Db.ReloadItem(Data);
-      Rating = Data.Rating;
-      Comment = Data.Comment;
-      Orientation = Data.Orientation;
-      LoadKeywordsFromDb();
-      LoadPeopleFromDb();
-      IsModifed = false;
-    }
-
-    public void SaveMediaItemInToDb(bool update, bool isNew, List<DataModel.BaseTable>[] lists) {
-      if (isNew) {
+    public void SaveMediaItemInToDb(bool update, List<DataModel.BaseTable>[] lists) {
+      if (IsNew) {
         ReadMetadata();
-        Id = ACore.Db.GetNextIdFor<DataModel.MediaItem>();
-        Data = new DataModel.MediaItem {
-          Id = Id,
-          DirectoryId = DirId,
-          FileName = FileNameWithExt,
-          Rating = Rating,
-          Comment = Comment,
-          Orientation = Orientation,
-          Width = Width,
-          Height = Height,
-          GeoNameId = GeoNameId
-        };
         ACore.Db.InsertOnSubmit(Data, lists);
+        IsNew = false;
       } else {
         if (update) ReadMetadata();
-        Data.Rating = Rating;
-        Data.Comment = CommentEscaped;
-        Data.Orientation = Orientation;
-        Data.GeoNameId = GeoNameId;
-        Data.Width = Width;
-        Data.Height = Height;
-        Data.GeoNameId = GeoNameId;
         ACore.Db.UpdateOnSubmit(Data, lists);
       }
 
@@ -178,9 +111,9 @@ namespace PictureManager.ViewModel {
 
     public void SaveMediaItemKeywordsToDb(List<DataModel.BaseTable>[] lists) {
       //Update connection between Keywords and MediaItem
-      var keyIds = Keywords.Select(k => k.Id).ToList();
-      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Id)) {
-        if (Keywords.FirstOrDefault(x => x.Id == mik.KeywordId) == null)
+      var keyIds = Keywords.Select(k => k.Data.Id).ToList();
+      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Data.Id)) {
+        if (Keywords.FirstOrDefault(x => x.Data.Id == mik.KeywordId) == null)
           ACore.Db.DeleteOnSubmit(mik, lists);
         else
           keyIds.Remove(mik.KeywordId);
@@ -190,16 +123,16 @@ namespace PictureManager.ViewModel {
         ACore.Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
           KeywordId = keyId,
-          MediaItemId = Id
+          MediaItemId = Data.Id
         }, lists);
       }
     }
 
     public void SaveMediaItemPeopleInToDb(List<DataModel.BaseTable>[] lists) {
       //Update connection between People and MediaItem
-      var ids = People.Select(p => p.Id).ToList();
-      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Id)) {
-        if (People.FirstOrDefault(x => x.Id == mip.PersonId) == null)
+      var ids = People.Select(p => p.Data.Id).ToList();
+      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Data.Id)) {
+        if (People.FirstOrDefault(x => x.Data.Id == mip.PersonId) == null)
           ACore.Db.DeleteOnSubmit(mip, lists);
          else
           ids.Remove(mip.PersonId);
@@ -209,7 +142,7 @@ namespace PictureManager.ViewModel {
         ACore.Db.InsertOnSubmit(new DataModel.MediaItemPerson {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemPerson>(),
           PersonId = id,
-          MediaItemId = Id
+          MediaItemId = Data.Id
         }, lists);
       }
     }
@@ -242,8 +175,7 @@ namespace PictureManager.ViewModel {
     }
 
     public bool TryWriteMetadata() {
-      var bSuccess = WriteMetadata();
-      if (bSuccess) return true;
+      if (WriteMetadata()) return true;
       ReSave();
       return WriteMetadata();
     }
@@ -275,8 +207,7 @@ namespace PictureManager.ViewModel {
             people.SetQuery(microsoftRegionInfo, new BitmapMetadata("xmpstruct"));
             people.SetQuery(microsoftRegions, new BitmapMetadata("xmpbag"));
             //Adding existing people
-            var existingPeople = metadata.GetQuery(microsoftRegions) as BitmapMetadata;
-            if (existingPeople != null) {
+            if (metadata.GetQuery(microsoftRegions) is BitmapMetadata existingPeople) {
               foreach (var idx in existingPeople) {
                 var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
                 var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
@@ -299,15 +230,15 @@ namespace PictureManager.ViewModel {
               metadata.SetQuery(microsoftRegionInfo, allPeople);
 
 
-            metadata.Rating = Rating;
-            metadata.Comment = Comment ?? string.Empty;
-            metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.FullPath).ToList());
+            metadata.Rating = Data.Rating;
+            metadata.Comment = Data.Comment ?? string.Empty;
+            metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.Data.Name).ToList());
 
             //GeoNameId
-            if (GeoNameId == null)
+            if (Data.GeoNameId == null)
               metadata.RemoveQuery(@"/xmp/GeoNames:GeoNameId");
             else
-              metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", GeoNameId.ToString());
+              metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", Data.GeoNameId.ToString());
 
             var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
             encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
@@ -334,70 +265,22 @@ namespace PictureManager.ViewModel {
       return bSuccess;
     }
 
-    public void ReadMetadata() {
+    public bool ReadMetadata(bool gpsOnly = false) {
       try {
         if (MediaType == MediaTypes.Video) {
           var size = ShellStuff.FileInformation.GetVideoDimensions(FilePath);
-          Height = size[0];
-          Width = size[1];
+          Data.Height = size[0];
+          Data.Width = size[1];
         }
         else { //MediaTypes.Image
           using (var imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-            if (imageFileStream.Length == 0) return;
+            if (imageFileStream.Length == 0) return false;
             var decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
             var frame = decoder.Frames[0];
-            Width = frame.PixelWidth;
-            Height = frame.PixelHeight;
+            Data.Width = frame.PixelWidth;
+            Data.Height = frame.PixelHeight;
             var bm = (BitmapMetadata) frame.Metadata;
-            if (bm == null) return;
-
-            //People
-            People.Clear();
-            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
-
-            var regions = bm.GetQuery(microsoftRegions) as BitmapMetadata;
-            if (regions != null) {
-              foreach (var region in regions) {
-                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-                if (personDisplayName != null) {
-                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
-                }
-              }
-            }
-
-            //Rating
-            Rating = bm.Rating;
-
-            //Comment
-            Comment = bm.Comment == null
-              ? string.Empty
-              : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
-
-            //Orientation
-            var orientation = bm.GetQuery("System.Photo.Orientation");
-            if (orientation != null) {
-              //3: 180, 6: 270, 8: 90
-              Orientation = (ushort) orientation;
-            }
-
-            //Keywords
-            Keywords.Clear();
-            if (bm.Keywords != null) {
-              //Filter out duplicities
-              foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-                if (Keywords.Where(x => x.FullPath.StartsWith(k)).ToList().Count == 0) {
-                  var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
-                  if (keyword != null)
-                    Keywords.Add(keyword);
-                }
-              }
-            }
-
-            //GeoNameId
-            var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
-            if (tmpGId != null)
-              GeoNameId = int.Parse(tmpGId.ToString());
+            if (bm == null) return false;
 
             //Lat Lng
             var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
@@ -413,11 +296,60 @@ namespace PictureManager.ViewModel {
               Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
                     (tmpLng.EndsWith("W") ? -1 : 1);
             }
+
+            if (gpsOnly) return true;
+
+            //People
+            People.Clear();
+            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+
+            if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
+              foreach (var region in regions) {
+                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+                if (personDisplayName != null) {
+                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+                }
+              }
+            }
+
+            //Rating
+              Data.Rating = bm.Rating;
+
+            //Comment
+            Data.Comment = bm.Comment == null
+              ? string.Empty
+              : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+
+            //Orientation
+            var orientation = bm.GetQuery("System.Photo.Orientation");
+            if (orientation != null) {
+              //3: 180, 6: 270, 8: 90
+              Data.Orientation = (ushort) orientation;
+            }
+
+            //Keywords
+            Keywords.Clear();
+            if (bm.Keywords != null) {
+              //Filter out duplicities
+              foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+                if (Keywords.Where(x => x.Data.Name.StartsWith(k)).ToList().Count != 0) continue;
+                var keyword = ACore.Keywords.GetKeywordByFullPath(k, true);
+                if (keyword != null)
+                  Keywords.Add(keyword);
+              }
+            }
+
+            //GeoNameId
+            var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
+            if (tmpGId != null)
+              Data.GeoNameId = int.Parse(tmpGId.ToString());
           }
         }
-      } catch (Exception ex) {
-        // ignored
+      } catch {
+        return false;
       }
+      return true;
     }
 
     public void WbUpdateInfo() {

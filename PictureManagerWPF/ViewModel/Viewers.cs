@@ -1,13 +1,18 @@
 ﻿using System.Linq;
 using System.Windows;
-using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
-  public class Viewers : BaseCategoryItem {
+  public sealed class Viewers : BaseCategoryItem {
 
     public Viewers() : base(Categories.Viewers) {
       Title = "Viewers";
       IconName = "appbar_eye";
+      Items.CollectionChanged +=
+        delegate {
+          ACore.WMain.CmbViewers.Visibility = Items.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+          if (Items.Count == 1)
+            ACore.WMain.CmbViewers.SelectedIndex = 0;
+        };
     }
 
     public void Load() {
@@ -20,7 +25,7 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
     }
 
-    public Viewer CreateViewer(string name) {
+    public void CreateViewer(string name) {
       var dmViewer = new DataModel.Viewer {
         Id = ACore.Db.GetNextIdFor<DataModel.Viewer>(),
         Name = name
@@ -30,29 +35,25 @@ namespace PictureManager.ViewModel {
 
       var vmViewer = new Viewer(dmViewer);
       ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
-      return vmViewer;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, "appbar_eye", "Viewer", rename);
 
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          var viewer = (Viewer)item;
-          viewer.Title = inputDialog.Answer;
-          viewer.Data.Name = inputDialog.Answer;
-          ACore.Db.Update(viewer.Data);
-          ACore.Viewers.ItemSetInPlace(viewer.Parent, false, viewer);
-        } else CreateViewer(inputDialog.Answer);
-      }
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+      if (rename) {
+        var viewer = (Viewer) item;
+        viewer.Title = inputDialog.Answer;
+        ACore.Db.Update(viewer.Data);
+        ACore.Viewers.ItemSetInPlace(viewer.Parent, false, viewer);
+      } else CreateViewer(inputDialog.Answer);
     }
 
-    public override void ItemDelete(BaseTreeViewTagItem item) {
-      var viewer = item as Viewer;
-      if (viewer == null) return;
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is Viewer viewer)) return;
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
-      foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Id)) {
+      foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Data.Id)) {
         ACore.Db.DeleteOnSubmit(v, lists);
       }
 
@@ -63,17 +64,15 @@ namespace PictureManager.ViewModel {
     }
 
     public void AddFolder(bool included, string path) {
-      var viewer = (Viewer) Application.Current.Properties[nameof(AppProps.EditedViewer)];
-      if (viewer == null) return;
+      if (!(Application.Current.Properties[nameof(AppProps.EditedViewer)] is Viewer viewer)) return;
       if ((included ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Any(x => x.ToolTip.Equals(path))) return;
       viewer.AddFolder(included, path);
     }
 
     public void RemoveFolder(BaseTreeViewItem folder) {
-      var data = folder.Tag as DataModel.ViewerAccess;
-      if (data == null) return;
+      if (!(folder.Tag is DataModel.ViewerAccess data)) return;
 
-      var viewer = Items.Cast<Viewer>().SingleOrDefault(x => x.Id == data.ViewerId);
+      var viewer = Items.Cast<Viewer>().SingleOrDefault(x => x.Data.Id == data.ViewerId);
       if (viewer == null) return;
 
       ACore.Db.Delete(data);

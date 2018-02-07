@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 
 namespace PictureManager.ViewModel {
-  public class Ratings : BaseCategoryItem {
+  public sealed class Ratings : BaseCategoryItem {
 
     public Ratings() : base(Categories.Ratings) {
       Title = "Ratings";
@@ -10,7 +10,7 @@ namespace PictureManager.ViewModel {
 
     public void Load() {
       Items.Clear();
-      for (int i = 0; i < 6; i++) {
+      for (var i = 0; i < 6; i++) {
         Items.Add(new Rating {Value = i});
       }
     }

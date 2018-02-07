@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 
 namespace PictureManager.ViewModel {
-  public class People : BaseCategoryItem {
+  public sealed class People : BaseCategoryItem {
     public List<Person> AllPeople; 
     private static readonly Mutex Mut = new Mutex();
 
@@ -27,7 +27,7 @@ namespace PictureManager.ViewModel {
       foreach (var g in Items.Cast<CategoryGroup>()) {
         foreach (var person in (from p in ACore.Db.People
                                 join cgi in ACore.Db.CategoryGroupsItems 
-                                on new { pid = p.Id, gid = g.Id } equals new { pid = cgi.ItemId, gid = cgi.CategoryGroupId }
+                                on new { pid = p.Id, gid = g.Data.Id } equals new { pid = cgi.ItemId, gid = cgi.CategoryGroupId }
                                 select p).OrderBy(x => x.Name).Select(x => new Person(x) {Parent = g})) {
           g.Items.Add(person);
           AllPeople.Add(person);
@@ -35,7 +35,7 @@ namespace PictureManager.ViewModel {
       }
 
       //Add People without Group
-      foreach (var person in (from p in ACore.Db.People where AllPeople.All(ap => ap.Id != p.Id) select p)
+      foreach (var person in (from p in ACore.Db.People where AllPeople.All(ap => ap.Data.Id != p.Id) select p)
           .OrderBy(x => x.Name).Select(x => new Person(x) {Parent = this})) {
         Items.Add(person);
         AllPeople.Add(person);
@@ -43,25 +43,26 @@ namespace PictureManager.ViewModel {
     }
 
     public Person GetPerson(int id) {
-      return AllPeople.SingleOrDefault(x => x.Id == id);
+      return AllPeople.SingleOrDefault(x => x.Data.Id == id);
     }
 
     public Person GetPerson(string name, bool create) {
-      if (create) Mut.WaitOne();
-      var dmPerson = ACore.Db.People.SingleOrDefault(x => x.Name.Equals(name));
-      if (dmPerson != null) {
+      return AllPeople.SingleOrDefault(x => x.Title.Equals(name)) ?? (create ? CreatePerson(this, name) : null);
+      /*if (create) Mut.WaitOne();
+      var person = AllPeople.SingleOrDefault(x => x.Title.Equals(name));
+      if (person != null) {
         Mut.ReleaseMutex();
-        return GetPerson(dmPerson.Id);
+        return person;
       }
       if (!create) return null;
       var newPerson = CreatePerson(this, name);
       Mut.ReleaseMutex();
-      return newPerson;
+      return newPerson;*/
     }
 
     public Person CreatePerson(BaseTreeViewItem root, string name) {
       if (root == null) return null;
-
+      Mut.WaitOne();
       var dmPerson = new DataModel.Person {
         Id = ACore.Db.GetNextIdFor<DataModel.Person>(),
         Name = name
@@ -74,34 +75,32 @@ namespace PictureManager.ViewModel {
       var vmPerson = new Person(dmPerson) {Parent = root};
       AllPeople.Add(vmPerson);
       ACore.People.ItemSetInPlace(root, true, vmPerson);
+      Mut.ReleaseMutex();
       return vmPerson;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, "appbar_people", "Person", rename);
 
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          var person = (Person)item;
-          person.Title = inputDialog.Answer;
-          person.Data.Name = inputDialog.Answer;
-          ACore.Db.Update(person.Data);
-          ACore.People.ItemSetInPlace(person.Parent, false, person);
-        } else CreatePerson(item, inputDialog.Answer);
-      }
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+      if (rename) {
+        var person = (Person) item;
+        person.Title = inputDialog.Answer;
+        ACore.Db.Update(person.Data);
+        ACore.People.ItemSetInPlace(person.Parent, false, person);
+      } else CreatePerson(item, inputDialog.Answer);
     }
 
-    public override void ItemDelete(BaseTreeViewTagItem item) {
-      var person = item as Person;
-      if (person == null) return;
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is Person person)) return;
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
-      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Id)) {
+      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id)) {
         ACore.Db.DeleteOnSubmit(mip, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
-            x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+            x => x.ItemId == person.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
         ACore.Db.DeleteOnSubmit(cgi, lists);
       }

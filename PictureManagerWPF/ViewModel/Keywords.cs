@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 
 namespace PictureManager.ViewModel {
-  public class Keywords: BaseCategoryItem {
+  public sealed class Keywords: BaseCategoryItem {
     public List<Keyword> AllKeywords; 
     private static readonly Mutex Mut = new Mutex();
 
@@ -28,7 +28,7 @@ namespace PictureManager.ViewModel {
       foreach (var g in Items.OfType<CategoryGroup>()) {
         foreach (var keyword in (from k in ACore.Db.Keywords
                                  join cgi in ACore.Db.CategoryGroupsItems
-                                 on new {kid = k.Id, gid = g.Id} equals new {kid = cgi.ItemId, gid = cgi.CategoryGroupId}
+                                 on new {kid = k.Id, gid = g.Data.Id} equals new {kid = cgi.ItemId, gid = cgi.CategoryGroupId}
                                  select k).OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x) {Parent = g})) {
           g.Items.Add(keyword);
           AllKeywords.Add(keyword);
@@ -36,17 +36,15 @@ namespace PictureManager.ViewModel {
       }
 
       //Add rest of Keywords
-      foreach (var keyword in (from k in ACore.Db.Keywords where AllKeywords.All(ak => ak.Id != k.Id) select k)
+      foreach (var keyword in (from k in ACore.Db.Keywords where AllKeywords.All(ak => ak.Data.Id != k.Id) select k)
           .OrderBy(x => x.Name).Select(x => new Keyword(x))) {
-        var lioSlash = keyword.FullPath.LastIndexOf('/');
+        var lioSlash = keyword.Data.Name.LastIndexOf('/');
         if (lioSlash == -1) {
-          keyword.Title = keyword.FullPath;
           keyword.Parent = this;
           Items.Add(keyword);
           AllKeywords.Add(keyword);
         } else {
-          keyword.Title = keyword.FullPath.Substring(lioSlash + 1);
-          var parentKeyword = GetKeywordByFullPath(keyword.FullPath.Substring(0, lioSlash), false);
+          var parentKeyword = GetKeywordByFullPath(keyword.Data.Name.Substring(0, lioSlash), false);
           if (parentKeyword == null) continue;
           keyword.Parent = parentKeyword;
           parentKeyword.Items.Add(keyword);
@@ -59,7 +57,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void Sort() {
-      var sorted = Items.OfType<Keyword>().OrderBy(x => x.Index).ThenBy(x => x.Title).ToList();
+      var sorted = Items.OfType<Keyword>().OrderBy(x => x.Data.Idx).ThenBy(x => x.Title).ToList();
       var groupsCount = Items.Count - sorted.Count;
       foreach (var k in sorted) {
         Items.Move(Items.IndexOf(k), sorted.IndexOf(k) + groupsCount);
@@ -67,13 +65,13 @@ namespace PictureManager.ViewModel {
     }
 
     public Keyword GetKeyword(int id) {
-      return AllKeywords.SingleOrDefault(x => x.Id == id);
+      return AllKeywords.SingleOrDefault(x => x.Data.Id == id);
     }
 
     public Keyword GetKeywordByFullPath(string fullPath, bool create) {
       if (create) Mut.WaitOne();
 
-      var keyword = AllKeywords.SingleOrDefault(x => x.FullPath.Equals(fullPath));
+      var keyword = AllKeywords.SingleOrDefault(x => x.Data.Name.Equals(fullPath));
       if (keyword != null) {
         if (create) Mut.ReleaseMutex();
         return keyword;
@@ -102,7 +100,7 @@ namespace PictureManager.ViewModel {
       var parent = root as Keyword;
       var dmKeyword = new DataModel.Keyword {
         Id = ACore.Db.GetNextIdFor<DataModel.Keyword>(),
-        Name = parent == null ? name : $"{parent.FullPath}/{name}"
+        Name = parent == null ? name : $"{parent.Data.Name}/{name}"
       };
       ACore.Db.Insert(dmKeyword);
 
@@ -112,7 +110,7 @@ namespace PictureManager.ViewModel {
       AllKeywords.Add(vmKeyword);
 
       Mut.WaitOne();
-      var keyword = root.Items.OfType<Keyword>().FirstOrDefault(k => k.Index == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
+      var keyword = root.Items.OfType<Keyword>().FirstOrDefault(k => k.Data.Idx == 0 && string.Compare(k.Title, name, StringComparison.OrdinalIgnoreCase) >= 0);
       root.Items.Insert(keyword == null ? 0 : root.Items.IndexOf(keyword), vmKeyword);
       Mut.ReleaseMutex();
 
@@ -122,33 +120,30 @@ namespace PictureManager.ViewModel {
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, "appbar_tag", "Keyword", rename);
 
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          var keyword = (Keyword) item;
-          var path = keyword.FullPath;
-          path = path.Contains("/")
-            ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
-            : inputDialog.Answer;
-          keyword.FullPath = path;
-          keyword.Title = inputDialog.Answer;
-          (keyword.Parent as Keywords)?.Sort();
-          (keyword.Parent as Keyword)?.Sort();
-          ACore.Db.Update(keyword.Data);
-        } else CreateKeyword(item, inputDialog.Answer);
-      }
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+      if (rename) {
+        var keyword = (Keyword) item;
+        var path = keyword.Data.Name;
+        path = path.Contains("/")
+          ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
+          : inputDialog.Answer;
+        keyword.Title = path;
+        (keyword.Parent as Keywords)?.Sort();
+        (keyword.Parent as Keyword)?.Sort();
+        ACore.Db.Update(keyword.Data);
+      } else CreateKeyword(item, inputDialog.Answer);
     }
 
-    public override void ItemDelete(BaseTreeViewTagItem item) {
-      var keyword = item as Keyword;
-      if (keyword == null) return;
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is Keyword keyword)) return;
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
 
-      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Id)) {
+      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Data.Id)) {
         ACore.Db.DeleteOnSubmit(mik, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
-            x => x.ItemId == item.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Id);
+            x => x.ItemId == keyword.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
         ACore.Db.DeleteOnSubmit(cgi, lists);
       }
@@ -174,7 +169,6 @@ namespace PictureManager.ViewModel {
         var lists = ACore.Db.GetInsertUpdateDeleteLists();
         var i = 0;
         foreach (var itm in items.Where(x => x is Keyword).OfType<Keyword>()) {
-          itm.Index = i;
           itm.Data.Idx = i;
           ACore.Db.UpdateOnSubmit(itm.Data, lists);
           i++;
@@ -184,13 +178,12 @@ namespace PictureManager.ViewModel {
       } else {
         var keyword = item as Keyword;
         if (keyword == null) return;
-        var path = dest is Keyword ? $"{((Keyword) dest).FullPath}/{keyword.Title}" : keyword.Title;
+        var path = dest is Keyword ? $"{((Keyword) dest).Data.Name}/{keyword.Title}" : keyword.Title;
 
-        keyword.Index = 0;
         keyword.Data.Idx = 0;
-        keyword.FullPath = path;
+        keyword.Data.Name = path;
         ACore.Db.Update(keyword.Data);
-        ItemMove(item, dest);
+        ItemMove(item, dest, ((Keyword) item).Data.Id);
       }
     }
   }

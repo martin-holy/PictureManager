@@ -5,12 +5,6 @@ using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
-
     public ObservableCollection<BaseTreeViewItem> Items { get; set; }
     public AppCore ACore;
     public object Tag;
@@ -25,11 +19,16 @@ namespace PictureManager.ViewModel {
 
     public virtual bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    public virtual string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string ToolTip { get => _toolTip; set { _toolTip = value; OnPropertyChanged(); } }
     public BgBrushes BgBrush { get => _bgBrush; set { _bgBrush = value; OnPropertyChanged(); } }
     public BaseTreeViewItem Parent { get => _parent; set { _parent = value; OnPropertyChanged(); } }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = "") {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
 
     public BaseTreeViewItem() {
       Items = new ObservableCollection<BaseTreeViewItem>();

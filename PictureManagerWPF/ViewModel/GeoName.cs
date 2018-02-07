@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
 
 namespace PictureManager.ViewModel {
-  public class GeoName : BaseTreeViewTagItem {
-    public int GeoNameId;
+  public class GeoName : BaseTreeViewTagItem, IDbItem {
     public DataModel.GeoName Data;
+    public override string Title { get => Data.Name; set { Data.Name = value; OnPropertyChanged(); } }
 
     public GeoName(DataModel.GeoName data) {
       Data = data;
-      Id = data.Id;
-      Title = data.Name;
-      GeoNameId = data.GeoNameId;
       IconName = "appbar_location_checkin";
     }
 

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.ViewModel {
-  public class Viewer : BaseTreeViewTagItem {
+  public class Viewer : BaseTreeViewItem, IDbItem {
+    public DataModel.Viewer Data;
+    public override string Title { get => Data.Name; set { Data.Name = value; OnPropertyChanged(); } }
     public BaseTreeViewItem IncludedFolders;
     public BaseTreeViewItem ExcludedFolders;
-    public DataModel.Viewer Data;
     public List<DataModel.BaseTable>[] Lists;
 
     public Viewer() {
@@ -22,8 +23,6 @@ namespace PictureManager.ViewModel {
 
     public Viewer(DataModel.Viewer data) : this() {
       Data = data;
-      Id = data.Id;
-      Title = data.Name;
 
       LoadFolders(true);
       LoadFolders(false);
@@ -38,7 +37,7 @@ namespace PictureManager.ViewModel {
       (included ? IncludedFolders : ExcludedFolders).Items.Clear();
       
       var dirs =
-        from va in ACore.Db.ViewersAccess.Where(x => x.IsIncluded == included && x.ViewerId == Id && x.DirectoryId != null)
+        from va in ACore.Db.ViewersAccess.Where(x => x.IsIncluded == included && x.ViewerId == Data.Id && x.DirectoryId != null)
         join d in ACore.Db.Directories on va.DirectoryId equals d.Id
         orderby d.Path
         select new KeyValuePair<DataModel.ViewerAccess, DataModel.Directory>(va, d);
@@ -62,7 +61,7 @@ namespace PictureManager.ViewModel {
     public void AddFolder(bool included, string path) {
       var dmViewerAccess = new DataModel.ViewerAccess {
         Id = ACore.Db.GetNextIdFor<DataModel.ViewerAccess>(),
-        ViewerId = Id,
+        ViewerId = Data.Id,
         IsIncluded = included,
         DirectoryId = ACore.Db.InsertDirecotryInToDb(path)
       };

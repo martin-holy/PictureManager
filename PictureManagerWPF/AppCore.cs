@@ -31,8 +31,6 @@ namespace PictureManager {
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
     public System.Windows.Forms.WebBrowser WbThumbs;
     public ViewModel.AppInfo AppInfo;
-    public bool OneFileOnly;
-    public bool ViewerOnly = false; //application was run with file path parameter
     public DataModel.PmDataContext Db;
     public ViewModel.MediaItems MediaItems;
     public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
@@ -110,28 +108,18 @@ namespace PictureManager {
       Folders.AddDrives();
       FavoriteFolders.Load();
       Ratings.Load();
-      Filters.Load();
+      //Filters.Load();
       Viewers.Load();
       GeoNames.Load();
       SqlQueries.Load();
 
-      MediaItems.AllItems.AddRange(
-        Db.MediaItems.Join(Db.Directories, mi => mi.DirectoryId, dir => dir.Id,
-        (mi, dir) => new ViewModel.BaseMediaItem(Path.Combine(dir.Path, mi.FileName), 0, mi)));
-
-      Db.MediaItemPeople.Join(
-        People.AllPeople, mip => mip.PersonId, p => p.Id, (mip, p) => new { mip.MediaItemId, p })
-        .Join(MediaItems.AllItems, mip => mip.MediaItemId, mi => mi.Id, (mip, mi) => new { mi, mip.p })
-        .ToList().ForEach(x => x.mi.People.Add(x.p));
-
-      Db.MediaItemKeywords.Join(
-        Keywords.AllKeywords, mik => mik.KeywordId, k => k.Id, (mik, k) => new { mik.MediaItemId, k })
-        .Join(MediaItems.AllItems, mik => mik.MediaItemId, mi => mi.Id, (mik, mi) => new { mi, mik.k })
-        .ToList().ForEach(x => x.mi.Keywords.Add(x.k));
+      MediaItems.LoadAllItems();
+      MediaItems.LoadPeople(MediaItems.AllItems);
+      MediaItems.LoadKeywords(MediaItems.AllItems);
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
       KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords, GeoNames};
-      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Filters, Viewers, SqlQueries};
+      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {/*Filters, */Viewers, SqlQueries};
     }
 
     public void UpdateStatusBarInfo() {
@@ -149,11 +137,11 @@ namespace PictureManager {
       if (KeywordsEditMode) {
         var bti = item as ViewModel.BaseTreeViewTagItem;
         if (bti == null) return;
-        switch (item.GetType().Name) {
-          case nameof(ViewModel.Rating):
-          case nameof(ViewModel.Person):
-          case nameof(ViewModel.Keyword):
-          case nameof(ViewModel.GeoName): {
+        switch (item) {
+          case ViewModel.Rating _:
+          case ViewModel.Person _:
+          case ViewModel.Keyword _:
+          case ViewModel.GeoName _: {
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
               MarkedTags.Add(bti);
@@ -173,9 +161,9 @@ namespace PictureManager {
         }
       }
       else {
-        switch (item.GetType().Name) {
-          case nameof(ViewModel.FavoriteFolder): {
-            var folder = Folders.ExpandTo(((ViewModel.FavoriteFolder) item).FullPath);
+        switch (item) {
+          case ViewModel.FavoriteFolder favoriteFolder: {
+            var folder = Folders.ExpandTo(favoriteFolder.FullPath);
             if (folder != null) {
               var visibleTreeIndex = 0;
               Folders.GetVisibleTreeIndexFor(Folders.Items, folder, ref visibleTreeIndex);
@@ -184,10 +172,10 @@ namespace PictureManager {
             }
             break;
           }
-          case nameof(ViewModel.Rating):
-          case nameof(ViewModel.Person):
-          case nameof(ViewModel.Keyword):
-          case nameof(ViewModel.GeoName): {
+          case ViewModel.Rating _:
+          case ViewModel.Person _:
+          case ViewModel.Keyword _:
+          case ViewModel.GeoName _: {
             var bti = (ViewModel.BaseTreeViewItem) item;
 
             if (bti.BgBrush != BgBrushes.Default)
@@ -212,12 +200,11 @@ namespace PictureManager {
           }
         }
 
-        switch (item.GetType().Name) {
-          case nameof(ViewModel.Folder):
-          case nameof(ViewModel.FolderKeyword):
-          case nameof(ViewModel.SqlQuery): {
-            var folder = item as ViewModel.Folder;
-            if (folder != null && !folder.IsAccessible) {
+        switch (item) {
+          case ViewModel.Folder _:
+          case ViewModel.FolderKeyword _:
+          case ViewModel.SqlQuery _: {
+            if (item is ViewModel.Folder folder && !folder.IsAccessible) {
               folder.IsSelected = false;
               return;
             }
@@ -276,9 +263,8 @@ namespace PictureManager {
           } while (k != null);
         }
 
-        var folderKeyword = FolderKeywords.GetFolderKeywordByDirId(FolderKeywords.Items, mi.DirId);
-        if (folderKeyword != null && !folderKeyword.IsMarked) {
-          var fk = folderKeyword;
+        if (mi.FolderKeyword != null && !mi.FolderKeyword.IsMarked) {
+          var fk = mi.FolderKeyword;
           do {
             if (fk.IsMarked) break;
             fk.IsMarked = true;
@@ -287,7 +273,7 @@ namespace PictureManager {
           } while (fk != null);
         }
 
-        var geoName = GeoNames.AllGeoNames.SingleOrDefault(x => x.GeoNameId == mi.GeoNameId);
+        var geoName = GeoNames.AllGeoNames.SingleOrDefault(x => x.Data.GeoNameId == mi.Data.GeoNameId);
         if (geoName != null && !geoName.IsMarked) {
           var gn = geoName;
           do {
@@ -299,7 +285,7 @@ namespace PictureManager {
         }
       }
 
-      foreach (var rating in mediaItems.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
+      foreach (var rating in mediaItems.Select(p => p.Data.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
         rating.IsMarked = true;
         MarkedTags.Add(rating);
       }
@@ -311,7 +297,7 @@ namespace PictureManager {
             break;
           }
           case ViewModel.Keyword k: {
-            k.PicCount = mediaItems.Count(mi => mi.Keywords.Any(x => x.FullPath.StartsWith(k.FullPath)));
+            k.PicCount = mediaItems.Count(mi => mi.Keywords.Any(x => x.Data.Name.StartsWith(k.Data.Name)));
             break;
           }
           case ViewModel.FolderKeyword fk: {
@@ -319,14 +305,14 @@ namespace PictureManager {
             break;
           }
           case ViewModel.Rating r: {
-            r.PicCount = mediaItems.Count(mi => mi.Rating == r.Value);
+            r.PicCount = mediaItems.Count(mi => mi.Data.Rating == r.Value);
             break;
           }
           case ViewModel.GeoName g: {
             //TODO C# how to count files in subdirectories
             var geoNames = new List<ViewModel.GeoName>();
             g.GetThisAndSubGeoNames(ref geoNames);
-            g.PicCount = mediaItems.Count(mi => geoNames.Select(gn => (int?) gn.GeoNameId).Contains(mi.GeoNameId));
+            g.PicCount = mediaItems.Count(mi => geoNames.Select(gn => (int?) gn.Data.GeoNameId).Contains(mi.Data.GeoNameId));
 
 
 
@@ -381,17 +367,17 @@ namespace PictureManager {
         var mi = MediaItems.Items[(int) e.UserState];
         var thumb = doc.CreateElement("div");
         var keywords = doc.CreateElement("div");
-        var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
-        //var bmi = doc.CreateElement("img");
+        //var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
+        var bmi = doc.CreateElement("img");
 
         if (thumb == null || keywords == null || bmi == null) return;
 
         keywords.SetAttribute("className", "keywords");
         keywords.InnerHtml = mi.GetKeywordsAsString(false);
 
-        bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
+        //bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
 
-        if (mi.MediaType == MediaTypes.Video) {
+        /*if (mi.MediaType == MediaTypes.Video) {
           //bmi.SetAttribute("autoplay", "true");
           bmi.SetAttribute("loop", "true");
           //bmi.SetAttribute("muted", "true");
@@ -400,9 +386,9 @@ namespace PictureManager {
           //bmi.SetAttribute(mi.Width > mi.Height ? "width" : "height", Settings.Default.ThumbnailSize.ToString());
           //TODO get dimensions for video's
           bmi.SetAttribute("width", Settings.Default.ThumbnailSize.ToString());
-        }
+        }*/
 
-        //bmi.SetAttribute("src", mi.FilePathCache);
+        bmi.SetAttribute("src", mi.FilePathCache);
         thumb.SetAttribute("className", "thumbBox");
         thumb.SetAttribute("id", mi.Index.ToString());
         thumb.AppendChild(keywords);
@@ -431,8 +417,8 @@ namespace PictureManager {
           var flag = File.Exists(thumbPath);
           if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
 
-          if (mi.Data == null) {
-            mi.SaveMediaItemInToDb(false, true, (List<DataModel.BaseTable>[]) e.Argument);
+          if (mi.IsNew) {
+            mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) e.Argument);
             Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
           }
 
@@ -490,8 +476,8 @@ namespace PictureManager {
         if (from == null) { //MediaItems
           foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
             switch (mode) {
-              case FileOperations.Copy: { fo.CopyItem(mi.FilePath, to, mi.FileNameWithExt); break; }
-              case FileOperations.Move: { fo.MoveItem(mi.FilePath, to, mi.FileNameWithExt); break; }
+              case FileOperations.Copy: { fo.CopyItem(mi.FilePath, to, mi.Data.FileName); break; }
+              case FileOperations.Move: { fo.MoveItem(mi.FilePath, to, mi.Data.FileName); break; }
               case FileOperations.Delete: { fo.DeleteItem(mi.FilePath); break; }
             }
           }
@@ -525,10 +511,10 @@ namespace PictureManager {
             //delete by file/s
             foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
               if (File.Exists(mi.FilePath)) continue;
+              itemsToDel.Add(mi.Data);
               var cacheFilePath = mi.FilePath.Replace(":\\", cachePath);
               if (!File.Exists(cacheFilePath)) continue;
               fo.DeleteItem(cacheFilePath);
-              itemsToDel.Add(mi.Data);
             }
           } else {
             //delete by folder
@@ -536,10 +522,10 @@ namespace PictureManager {
               foreach (var mi in mItems.Where(x => x.DirectoryId.Equals(dir.Id))) {
                 var miFilePath = Path.Combine(dir.Path, mi.FileName);
                 if (File.Exists(miFilePath)) continue;
+                itemsToDel.Add(mi);
                 var cacheFilePath = miFilePath.Replace(":\\", cachePath);
                 if (!File.Exists(cacheFilePath)) continue;
                 fo.DeleteItem(cacheFilePath);
-                itemsToDel.Add(mi);
               }
             }
           }
@@ -569,23 +555,25 @@ namespace PictureManager {
               if (srcPic == null) continue;
 
               //get destination directory or create it if doesn't exists
-              var dirPath = Path.GetDirectoryName(item.Value);
-              var destDirId = Db.InsertDirecotryInToDb(dirPath);
+              var destDirId = Db.InsertDirecotryInToDb(Path.GetDirectoryName(item.Value));
 
               #region Copy files
 
               if (mode == FileOperations.Copy) {
                 //duplicate Picture
                 var destPicId = Db.GetNextIdFor<DataModel.MediaItem>();
-
-                Db.InsertOnSubmit(new DataModel.MediaItem {
+                var dmiCopy = new DataModel.MediaItem {
                   Id = destPicId,
                   DirectoryId = destDirId,
                   FileName = Path.GetFileName(item.Value),
                   Rating = srcPic.Rating,
                   Comment = srcPic.Comment,
-                  Orientation = srcPic.Orientation
-                }, lists);
+                  Orientation = srcPic.Orientation,
+                  GeoNameId = srcPic.GeoNameId,
+                  Height = srcPic.Height,
+                  Width = srcPic.Width
+                };
+                Db.InsertOnSubmit(dmiCopy, lists);
 
                 //duplicate Picture Keywords
                 foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
@@ -605,6 +593,12 @@ namespace PictureManager {
                   }, lists);
                 }
 
+                var miCopy = new ViewModel.BaseMediaItem(item.Value, dmiCopy, true);
+                MediaItems.AllItems.Add(miCopy);
+                var list = new List<ViewModel.BaseMediaItem> {miCopy};
+                MediaItems.LoadPeople(list);
+                MediaItems.LoadKeywords(list);
+
                 //duplicate thumbnail
                 fo.CopyItem(item.Key.Replace(":\\", cachePath), Path.GetDirectoryName(item.Value)?.Replace(":\\", cachePath),
                   Path.GetFileName(item.Value));
@@ -617,6 +611,7 @@ namespace PictureManager {
                 //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
                 srcPic.DirectoryId = destDirId;
                 srcPic.FileName = Path.GetFileName(item.Value);
+                MediaItems.AllItems.Single(x => x.Data.Id == srcPic.Id).FilePath = item.Value;
                 Db.UpdateOnSubmit(srcPic, lists);
 
                 //delete empty directory

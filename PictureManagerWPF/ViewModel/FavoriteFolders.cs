@@ -3,7 +3,7 @@ using System.Linq;
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModel {
-  public class FavoriteFolders : BaseCategoryItem {
+  public sealed class FavoriteFolders : BaseCategoryItem {
 
     public FavoriteFolders() : base(Categories.FavoriteFolders) {
       Title = "Favorites";
