@@ -719,5 +719,19 @@ namespace PictureManager {
       process.Start();
       process.WaitForExit(1000);
     }
+
+    public static List<string> GetAllDirectoriesSafely(string path) {
+      var list = new List<string>();
+      foreach (var dir in Directory.EnumerateDirectories(path, "*", SearchOption.TopDirectoryOnly)) {
+        try {
+          list.AddRange(GetAllDirectoriesSafely(dir));
+          list.Add(dir);
+        }
+        catch {
+          // 
+        }
+      }
+      return list;
+    }
   }
 }

@@ -18,8 +18,8 @@ namespace PictureManager.ViewModel {
   }
 
   public class MediaItems {
-    public ObservableCollection<BaseMediaItem> Items;
-    public List<BaseMediaItem> AllItems;
+    public ObservableCollection<BaseMediaItem> Items = new ObservableCollection<BaseMediaItem>();
+    public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
     public BaseMediaItem Current;
     public AppCore ACore;
     public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
@@ -28,8 +28,6 @@ namespace PictureManager.ViewModel {
 
     public MediaItems() {
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
-      Items = new ObservableCollection<BaseMediaItem>();
-      AllItems = new List<BaseMediaItem>();
     }
 
     public void LoadAllItems() {
@@ -142,8 +140,8 @@ namespace PictureManager.ViewModel {
       foreach (var topDir in topDirs) {
         dirs.Add(new MediaItemsLoad {DirPath = topDir});
         if (!recursive) continue;
-        dirs.AddRange(Directory.EnumerateDirectories(topDir, "*", SearchOption.AllDirectories)
-          .Select(d => new MediaItemsLoad {DirPath = d}));
+        dirs.AddRange(AppCore.GetAllDirectoriesSafely(topDir)
+          .Select(d => new MediaItemsLoad { DirPath = d }));
       }
 
       //paring folder with DB

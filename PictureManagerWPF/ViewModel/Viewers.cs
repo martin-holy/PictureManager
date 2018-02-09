@@ -7,13 +7,7 @@ namespace PictureManager.ViewModel {
     public Viewers() : base(Categories.Viewers) {
       Title = "Viewers";
       IconName = "appbar_eye";
-      Items.CollectionChanged +=
-        delegate {
-          ACore.WMain.CmbViewers.Visibility = Items.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
-          if (Items.Count == 1)
-            ACore.WMain.CmbViewers.SelectedIndex = 0;
-        };
-    }
+     }
 
     public void Load() {
       Items.Clear();
@@ -23,6 +17,8 @@ namespace PictureManager.ViewModel {
         Items.Add(viewer);
       }
       IsExpanded = true;
+
+      if (Items.Count == 0) ACore.WMain.CmbViewers.Visibility = Visibility.Collapsed;
     }
 
     public void CreateViewer(string name) {
@@ -35,6 +31,7 @@ namespace PictureManager.ViewModel {
 
       var vmViewer = new Viewer(dmViewer);
       ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
+      ACore.WMain.CmbViewers.Visibility = Visibility.Visible;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
@@ -61,6 +58,7 @@ namespace PictureManager.ViewModel {
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(viewer);
+      if (Items.Count == 0) ACore.WMain.CmbViewers.Visibility = Visibility.Collapsed;
     }
 
     public void AddFolder(bool included, string path) {

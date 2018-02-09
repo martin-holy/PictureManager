@@ -83,8 +83,6 @@ namespace PictureManager {
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
       TvFilters.ItemsSource = ACore.FiltersRoot;
       CmbViewers.ItemsSource = ACore.Viewers.Items;
-      if (ACore.Viewers.Items.Count == 0) 
-        CmbViewers.Visibility = Visibility.Hidden;
       ACore.CurrentViewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
       CmbViewers.SelectedItem = ACore.CurrentViewer;
     }
@@ -723,8 +721,7 @@ namespace PictureManager {
       var diff = _dragDropStartPosition - e.GetPosition(null);
       if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
           !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
-      var stackPanel = e.OriginalSource as StackPanel;
-      if (stackPanel == null || _dragDropObject == null) return;
+      if (!(e.OriginalSource is StackPanel stackPanel) || _dragDropObject == null) return;
       DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.All);
     }
 
@@ -925,13 +922,15 @@ namespace PictureManager {
     }*/
 
     private void CmdTestButton_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
+      //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
       //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
-      ACore.MediaItems.Load(folder, true);
+      //ACore.MediaItems.Load(folder, true);
       //ACore.MediaItems.Load(fk, true);
       //ACore.MediaItems.LoadByTag(fk, true);
       //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
-      ACore.InitThumbsPagesControl();
+      //ACore.InitThumbsPagesControl();
+
+      ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
