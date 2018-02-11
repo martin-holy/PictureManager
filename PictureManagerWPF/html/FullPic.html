@@ -28,11 +28,15 @@
     var pic = document.getElementById(currentFullPicId);
     var halfBh = Math.round(window.document.body.clientHeight / 2);
     var halfBw = Math.round(window.document.body.clientWidth / 2);
+    var z = 1.5;
+    if (!picIsZoomed && pic.width > pic.height)
+      z = (window.document.body.clientWidth / (pic.width / 100.0)) / 100.0;
+
     picIsZoomed = true;
     var picT = halfBh - pic.style.top.replace("px", "");
     var picL = halfBw - pic.style.left.replace("px", "");
     //SetPic(pic, zoomIn ? picZoomLevel + 10 : picZoomLevel - 10, picT, picL, halfBh, halfBw, false);
-    SetPic(pic, zoomIn ? picZoomLevel * 1.5 : picZoomLevel / 1.5, picT, picL, halfBh, halfBw, false);
+    SetPic(pic, zoomIn ? picZoomLevel * z : picZoomLevel / z, picT, picL, halfBh, halfBw, false);
         
     SetZoomInfo();
   }
