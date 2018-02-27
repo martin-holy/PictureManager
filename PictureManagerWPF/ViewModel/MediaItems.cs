@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
+using MahApps.Metro.Controls;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.ViewModel {
@@ -17,17 +21,34 @@ namespace PictureManager.ViewModel {
     public BaseMediaItem MediaItem;
   }
 
-  public class MediaItems {
-    public ObservableCollection<BaseMediaItem> Items = new ObservableCollection<BaseMediaItem>();
+  public class MediaItems: INotifyPropertyChanged {
+    private BaseMediaItem _current;
+    public MediaItems() {
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+    }
+
+    public List<BaseMediaItem> Items = new List<BaseMediaItem>();
     public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
-    public BaseMediaItem Current;
+    public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
+
+    public BaseMediaItem Current {
+      get => _current;
+      set {
+        if (_current != null) _current.IsSelected = false;
+        _current = value;
+        if (_current != null) _current.IsSelected = true;
+        OnPropertyChanged();
+      }
+    }
+
     public AppCore ACore;
     public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
     public string[] SuportedImageExts = { ".jpg", ".jpeg" };
     public string[] SuportedVideoExts = { ".mp4", ".mkv" };
 
-    public MediaItems() {
-      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+    public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public void LoadAllItems() {
@@ -60,7 +81,7 @@ namespace PictureManager.ViewModel {
       LoadPeople(items);
       LoadKeywords(items);
 
-      items.ForEach(mi => mi.WbUpdateInfo());
+      items.ForEach(mi => mi.SetInfoBox());
     }
 
     public List<BaseMediaItem> GetSelectedOrAll() {
@@ -81,14 +102,8 @@ namespace PictureManager.ViewModel {
       Current = null;
     }
 
-    public bool CurrentItemMove(bool next) {
-      if (Current == null) return false;
-      var newIndex = next ? Current.Index + 1 : Current.Index - 1;
-      if (newIndex < 0 || newIndex >= Items.Count) return false;
-      Current.IsSelected = false;
-      Current = Items[newIndex];
-      Current.IsSelected = true;
-      return true;
+    public void CurrentItemMove(bool next) {
+      Current = Items[next ? Current.Index + 1 : Current.Index - 1];
     }
 
     public void EditMetadata(object item) {
@@ -115,13 +130,15 @@ namespace PictureManager.ViewModel {
           case GeoName g: { mi.Data.GeoNameId = g.Data.GeoNameId; break; }
         }
 
-        mi.WbUpdateInfo();
+        mi.SetInfoBox();
       }
     }
 
     public void Load(BaseTreeViewItem tag, bool recursive) {
       Current = null;
       Items.Clear();
+      foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
+      SplitedItems.Clear();
 
       var topDirs = new List<string>();
       switch (tag) {
@@ -396,33 +413,80 @@ namespace PictureManager.ViewModel {
     }
 
     public void ScrollTo(int index) {
-      ACore.WbThumbs.Document?.GetElementById(index.ToString())?.ScrollIntoView(true);
+      var count = 0;
+      var rowsHeight = 0;
+      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+      foreach (var row in SplitedItems) {
+        count += row.Count;
+        if (count < index) {
+          rowsHeight += row.Max(x => x.ThumbHeight) + itemOffset;
+          continue;
+        }
+        ACore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToVerticalOffset(rowsHeight);
+        break;
+      }
     }
 
-    public void RemoveSelectedFromWeb() {
-      var doc = ACore.WbThumbs.Document;
-      if (doc == null) return;
-      var items = Items.Where(x => x.IsSelected).ToList();
-      if (items.Count == 0) return;
-      var firstIndex = items[0].Index;
-
-      foreach (var mi in items) {
-        var thumb = doc.GetElementById(mi.Index.ToString());
-        if (thumb == null) continue;
-        thumb.OuterHtml = string.Empty;
-        Items.Remove(mi);
-      }
+    public void RemoveSelected() {
+      var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
+      if (firstIndex == null) return;
+      Items = Items.Where(x => !x.IsSelected).ToList();
 
       //update index
       var index = 0;
       foreach (var mi in Items) {
-        var thumb = doc.GetElementById(mi.Index.ToString());
-        thumb?.SetAttribute("id", index.ToString());
         mi.Index = index;
         index++;
       }
 
-      ScrollTo(firstIndex == 0 ? 0 : firstIndex - 1);
+      SplitedItemsReload();
+      ScrollTo(firstIndex == 0 ? 0 : (int) firstIndex - 1);
+    }
+
+    public void SplitedItemsAdd(BaseMediaItem bmi) {
+      var lastIndex = SplitedItems.Count - 1;
+      if (lastIndex == -1) {
+        SplitedItems.Add(new ObservableCollection<BaseMediaItem>());
+        lastIndex++;
+      }
+
+      var rowMaxWidth = 1200; //TODO read width from UI
+      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+
+      var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
+      if (bmi.ThumbWidth <= rowMaxWidth - rowWidth) {
+        SplitedItems[lastIndex].Add(bmi);
+      }
+      else {
+        SplitedItems.Add(new ObservableCollection<BaseMediaItem>());
+        SplitedItems[lastIndex + 1].Add(bmi);
+      }
+    }
+
+    public void SplitedItemsReload() {
+      foreach (var itemsRow in SplitedItems) {
+        itemsRow.Clear();
+      }
+
+      SplitedItems.Clear();
+
+      var rowMaxWidth = 1200; //TODO read width from UI
+      var rowWidth = 0;
+      const int itemOffset = 6; //border, margin, padding, ...
+      var row = new ObservableCollection<BaseMediaItem>();
+      foreach (var item in Items) {
+        if (item.ThumbWidth + itemOffset <= rowMaxWidth - rowWidth) {
+          row.Add(item);
+          rowWidth += item.ThumbWidth + itemOffset;
+        }
+        else {
+          SplitedItems.Add(row);
+          row = new ObservableCollection<BaseMediaItem> {item};
+          rowWidth = item.ThumbWidth + itemOffset;
+        }
+      }
+
+      SplitedItems.Add(row);
     }
 
     public void SetCurrent() {
@@ -431,7 +495,8 @@ namespace PictureManager.ViewModel {
     }
 
     public string GetFullScreenInfo() {
-      return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div><div>{Current?.Data.Width}x{Current?.Data.Height}</div>{Current?.GetKeywordsAsString(true)}<div>{Current?.Data.FileName}</div>";
+      return "TODO";
+      //return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div><div>{Current?.Data.Width}x{Current?.Data.Height}</div>{Current?.GetKeywordsAsString(true)}<div>{Current?.Data.FileName}</div>";
     }
   }
 }

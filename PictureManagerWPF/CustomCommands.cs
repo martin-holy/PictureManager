@@ -45,5 +45,7 @@ namespace PictureManager {
 
     public static readonly RoutedUICommand CmdGeoNames = new RoutedUICommand(
       "GeoNames", "CmdGeoNames", typeof(CustomCommands));
+
+    
   }
 }

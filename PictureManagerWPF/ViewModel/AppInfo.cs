@@ -40,7 +40,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
   }

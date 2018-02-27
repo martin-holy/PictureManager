@@ -32,12 +32,10 @@ namespace PictureManager {
     public System.Windows.Forms.WebBrowser WbThumbs;
     public ViewModel.AppInfo AppInfo;
     public DataModel.PmDataContext Db;
-    public ViewModel.MediaItems MediaItems;
+    public ViewModel.MediaItems MediaItems { get; set; }
     public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
-    public BackgroundWorker ThumbsWebWorker;
+    public BackgroundWorker ThumbsWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
-    public int ThumbsPageIndex;
-    public int ThumbsPerPage = 300;
     public ViewModel.Viewer CurrentViewer;
 
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
@@ -102,19 +100,30 @@ namespace PictureManager {
       GeoNames = new ViewModel.GeoNames();
       SqlQueries = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
 
+      App.SplashScreen.AddMessage("Loading People");
       People.Load();
+      App.SplashScreen.AddMessage("Loading Keywords");
       Keywords.Load();
+      App.SplashScreen.AddMessage("Loading Folder Keywords");
       FolderKeywords.Load();
+      App.SplashScreen.AddMessage("Loading Folders");
       Folders.AddDrives();
+      App.SplashScreen.AddMessage("Loading Favorite Folders");
       FavoriteFolders.Load();
+      App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
-      //Filters.Load();
+      App.SplashScreen.AddMessage("Loading Viewers");
       Viewers.Load();
+      App.SplashScreen.AddMessage("Loading GeoNames");
       GeoNames.Load();
+      App.SplashScreen.AddMessage("Loading SqlQueries");
       SqlQueries.Load();
 
+      App.SplashScreen.AddMessage("Loading Media Items");
       MediaItems.LoadAllItems();
+      App.SplashScreen.AddMessage("Loading People for Media Items");
       MediaItems.LoadPeople(MediaItems.AllItems);
+      App.SplashScreen.AddMessage("Loading Keywords for Media Items");
       MediaItems.LoadKeywords(MediaItems.AllItems);
 
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
@@ -135,8 +144,7 @@ namespace PictureManager {
       if (item is ViewModel.BaseCategoryItem || item is ViewModel.CategoryGroup) return;
 
       if (KeywordsEditMode) {
-        var bti = item as ViewModel.BaseTreeViewTagItem;
-        if (bti == null) return;
+        if (!(item is ViewModel.BaseTreeViewTagItem bti)) return;
         switch (item) {
           case ViewModel.Rating _:
           case ViewModel.Person _:
@@ -214,19 +222,14 @@ namespace PictureManager {
             LastSelectedSource = bti;
             LastSelectedSourceRecursive = recursive;
 
-            if (ThumbsWebWorker != null && ThumbsWebWorker.IsBusy) {
-              ThumbsWebWorker.CancelAsync();
+            if (ThumbsWorker != null && ThumbsWorker.IsBusy) {
+              ThumbsWorker.CancelAsync();
               ThumbsResetEvent.WaitOne();
             }
 
             MediaItems.Load(LastSelectedSource, recursive);
-
-            /*if (folder != null)
-              MediaItems.Load(folder, recursive);
-            else
-              MediaItems.LoadByTag(LastSelectedSource, recursive);*/
-            InitThumbsPagesControl();
-
+            LoadThumbnails();
+            GC.Collect();
             break;
           }
           default: {
@@ -336,113 +339,67 @@ namespace PictureManager {
       }
     }
 
-    public void InitThumbsPagesControl() {
-      WMain.CmbThumbPage.Visibility = MediaItems.Items.Count > ThumbsPerPage ? Visibility.Visible : Visibility.Collapsed;
-      WMain.CmbThumbPage.Items.Clear();
-      var iPageCount = MediaItems.Items.Count / ThumbsPerPage;
-      if (iPageCount == 0 || MediaItems.Items.Count > ThumbsPerPage) iPageCount++;
-      for (var i = 0; i < iPageCount; i++) {
-        WMain.CmbThumbPage.Items.Add($"Page {i + 1}");
-      }
-      //this will start ACore.CreateThumbnailsWebPage()
-      WMain.CmbThumbPage.SelectedIndex = 0;
-    }
-
-    public void CreateThumbnailsWebPage() {
-      var doc = WbThumbs.Document;
-      var thumbs = doc?.GetElementById("thumbnails");
-      if (thumbs == null) return;
-
-      thumbs.InnerHtml = string.Empty;
-      doc.Window?.ScrollTo(0, 0);
-
+    public void LoadThumbnails() {
       WMain.StatusProgressBar.Value = 0;
       WMain.StatusProgressBar.Maximum = 100;
 
-      ThumbsWebWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
-      ThumbsWebWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
+      ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-
-        var mi = MediaItems.Items[(int) e.UserState];
-        var thumb = doc.CreateElement("div");
-        var keywords = doc.CreateElement("div");
-        //var bmi = doc.CreateElement(mi.MediaType == MediaTypes.Image ? "img" : "video");
-        var bmi = doc.CreateElement("img");
-
-        if (thumb == null || keywords == null || bmi == null) return;
-
-        keywords.SetAttribute("className", "keywords");
-        keywords.InnerHtml = mi.GetKeywordsAsString(false);
-
-        //bmi.SetAttribute("src", mi.MediaType == MediaTypes.Image ? mi.FilePathCache : mi.FilePath);
-
-        /*if (mi.MediaType == MediaTypes.Video) {
-          //bmi.SetAttribute("autoplay", "true");
-          bmi.SetAttribute("loop", "true");
-          //bmi.SetAttribute("muted", "true");
-          bmi.SetAttribute("poster", mi.FilePathCache);
-          bmi.SetAttribute("controls", "true");
-          //bmi.SetAttribute(mi.Width > mi.Height ? "width" : "height", Settings.Default.ThumbnailSize.ToString());
-          //TODO get dimensions for video's
-          bmi.SetAttribute("width", Settings.Default.ThumbnailSize.ToString());
-        }*/
-
-        bmi.SetAttribute("src", mi.FilePathCache);
-        thumb.SetAttribute("className", "thumbBox");
-        thumb.SetAttribute("id", mi.Index.ToString());
-        thumb.AppendChild(keywords);
-        thumb.AppendChild(bmi);
-        thumbs.AppendChild(thumb);
-
+        MediaItems.SplitedItemsAdd(MediaItems.Items[(int) e.UserState]);
         WMain.StatusProgressBar.Value = e.ProgressPercentage;
       };
 
-      ThumbsWebWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+      ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) sender;
         var count = MediaItems.Items.Count;
-        var iFrom = ThumbsPageIndex == 0 ? 0 : ThumbsPageIndex * ThumbsPerPage;
-        var iTo = count > iFrom + ThumbsPerPage ? iFrom + ThumbsPerPage : count;
         var done = 0;
         e.Result = e.Argument;
 
-        for (var i = iFrom; i < iTo; i++) {
+        foreach (var mi in MediaItems.Items) {
           if (worker.CancellationPending) {
             e.Cancel = true;
             ThumbsResetEvent.Set();
             break;
           }
-          var mi = MediaItems.Items[i];
-          var thumbPath = mi.FilePathCache;
-          var flag = File.Exists(thumbPath);
-          if (!flag) CreateThumbnail(mi.FilePath, thumbPath);
+
+          if (!File.Exists(mi.FilePathCache))
+            CreateThumbnail(mi.FilePath, mi.FilePathCache);
 
           if (mi.IsNew) {
-            mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) e.Argument);
+            mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[])e.Argument);
             Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
           }
 
+          if (mi.InfoBoxThumb.Count == 0)
+            mi.SetInfoBox();
+
           done++;
-          worker.ReportProgress(Convert.ToInt32(((double) done/(iTo - iFrom))*100), mi.Index);
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), mi.Index);
         }
       };
 
-      ThumbsWebWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
+      ThumbsWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending) return;
+
         if ((bool) Application.Current.Properties[nameof(AppProps.SubmitChanges)])
           Db.SubmitChanges((List<DataModel.BaseTable>[]) e.Result);
-        MediaItems.ScrollToCurrent();
+
         if (MediaItems.Current != null) {
           MediaItems.Current.IsSelected = false;
           MediaItems.Current.IsSelected = true;
         }
+
+        MediaItems.ScrollTo(0);
         MarkUsedKeywordsAndPeople();
       };
 
       Application.Current.Properties[nameof(AppProps.SubmitChanges)] = false;
-      ThumbsWebWorker.RunWorkerAsync(Db.GetInsertUpdateDeleteLists());
+      ThumbsWorker.RunWorkerAsync(Db.GetInsertUpdateDeleteLists());
     }
 
+    #region File Operations
     public bool FileOperation(FileOperations mode, bool recycle) {
       return FileOperation(mode, null, null, null, recycle);
     }
@@ -656,6 +613,7 @@ namespace PictureManager {
 
       return true;
     }
+#endregion
 
     public bool CanViewerSeeThisFile(string filePath) {
       bool ok;

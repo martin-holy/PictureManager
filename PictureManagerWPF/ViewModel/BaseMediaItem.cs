@@ -7,8 +7,6 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 using Application = System.Windows.Application;
@@ -18,6 +16,8 @@ namespace PictureManager.ViewModel {
     public DataModel.MediaItem Data;
     public string FilePath;
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
+    public Uri FilePathUri => new Uri(FilePath);
+    public Uri FilePathCacheUri => new Uri(FilePathCache);
     public string CommentEscaped => Data.Comment?.Replace("'", "''");
     public int Index;
     public double? Lat;
@@ -25,28 +25,32 @@ namespace PictureManager.ViewModel {
     public MediaTypes MediaType;
     public bool IsModifed;
     public bool IsNew;
+    public int ThumbWidth { get; set; }
+    public int ThumbHeight { get; set; }
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
     public AppCore ACore;
+    public ObservableCollection<string> InfoBoxThumb { get; set; }
+    public ObservableCollection<string> InfoBoxFull { get; set; }
 
     private bool _isSelected;
     public bool IsSelected {
       get => _isSelected;
       set {
         _isSelected = value;
-        //BUG: pri slideshow nenacte Document
-        ACore.WbThumbs.Document?.GetElementById(Index.ToString())?.SetAttribute("className", value ? "thumbBox selected" : "thumbBox");
         OnPropertyChanged();
       }
     }
 
     public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
     public BaseMediaItem(string filePath, DataModel.MediaItem data, bool isNew = false) {
+      InfoBoxThumb = new ObservableCollection<string>();
+      InfoBoxFull = new ObservableCollection<string>();
       Data = data;
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
@@ -55,15 +59,38 @@ namespace PictureManager.ViewModel {
         e => Data.FileName.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
         ? MediaTypes.Image
         : MediaTypes.Video;
+      if (!IsNew) SetThumbSize();
     }
 
-    public string GetKeywordsAsString(bool withComment) {
-      var sb = new StringBuilder();
+    private void SetThumbSize() {
+      //windows settings sets everiting to 125%, so I need to lower ratio
+      //TODO read the settings from system
+      var thumbSize = (int) ((400 / (double) 125) * 100);
+      if (Data.Width == 0 && Data.Height == 0) {
+        ThumbWidth = thumbSize;
+        ThumbHeight = thumbSize;
+        return;
+      }
 
+      var ratio = Data.Width > Data.Height ? Data.Width / (double) Data.Height : Data.Height / (double) Data.Width;
+      
+      if (Data.Width > Data.Height) {
+        ThumbWidth = thumbSize;
+        ThumbHeight = (int) (thumbSize / ratio);
+      }
+      else {
+        ThumbWidth = (int) (thumbSize / ratio);
+        ThumbHeight = thumbSize;
+      }
+    }
+
+    public void SetInfoBox() {
+      InfoBoxThumb.Clear();
+      InfoBoxFull.Clear();
+      InfoBoxFull.Add(FilePath);
       foreach (var p in People.OrderBy(x => x.Title)) {
-        sb.Append("<div>");
-        sb.Append(p.Title);
-        sb.Append("</div>");
+        InfoBoxThumb.Add(p.Title);
+        InfoBoxFull.Add(p.Title);
       }
 
       var keywordsList = new List<string>();
@@ -74,25 +101,15 @@ namespace PictureManager.ViewModel {
       }
 
       foreach (var keyword in keywordsList) {
-        sb.Append("<div>");
-        sb.Append(keyword);
-        sb.Append("</div>");
+        InfoBoxThumb.Add(keyword);
+        InfoBoxFull.Add(keyword);
       }
 
-      sb.Append("<div>");
-      sb.Append(Data.Rating);
-      sb.Append("</div>");
-
-      if (Data.Comment != string.Empty) {
-        sb.Append("<div>");
-        sb.Append(withComment ? CommentEscaped : "C");
-        sb.Append("</div>");
-      }
-
-      if (Data.GeoNameId != null) sb.Append("<div>G</div>");
-      if (MediaType == MediaTypes.Video) sb.Append("<div>V</div>");
-
-      return sb.ToString();
+      InfoBoxThumb.Add(Data.Rating.ToString());
+      InfoBoxFull.Add(Data.Rating.ToString());
+      if (Data.Comment != string.Empty) InfoBoxThumb.Add("C");
+      if (Data.GeoNameId != null) InfoBoxThumb.Add("G");
+      if (MediaType == MediaTypes.Video) InfoBoxThumb.Add("V");
     }
 
     public void SaveMediaItemInToDb(bool update, List<DataModel.BaseTable>[] lists) {
@@ -346,20 +363,12 @@ namespace PictureManager.ViewModel {
               Data.GeoNameId = int.Parse(tmpGId.ToString());
           }
         }
+
+        SetThumbSize();
       } catch {
         return false;
       }
       return true;
-    }
-
-    public void WbUpdateInfo() {
-      var thumb = ACore.WbThumbs.Document?.GetElementById(Index.ToString());
-      if (thumb == null) return;
-      foreach (HtmlElement element in thumb.Children) {
-        if (!element.GetAttribute("className").Equals("keywords")) continue;
-        element.InnerHtml = GetKeywordsAsString(false);
-        break;
-      }
     }
   }
 }

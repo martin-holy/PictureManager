@@ -218,6 +218,7 @@ namespace PictureManager.DataModel {
     }
 
     private List<T> GetTableData<T>() where T : new() {
+      App.SplashScreen.AddMessage($"Loading DB table {typeof(T).Name}");
       var tableName = ((TableAttribute) typeof (T).GetCustomAttribute(typeof (TableAttribute), false))?.Name;
       var data = new List<T>();
       if (tableName == null) return data;

@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
+        xmlns:userControls="clr-namespace:PictureManager.UserControls"
         mc:Ignorable="d"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
         Loaded="Window_Loaded" 
-        Closing="Window_Closing" 
         FontSize="13.333" 
         SaveWindowPosition="True"
         TitleCharacterCasing="Normal">
@@ -47,13 +47,8 @@
       </ComboBox>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
-  
-  <controls:MetroWindow.Resources>
 
-    <Style TargetType="{x:Type controls:MetroWindow}">
-      <Setter Property="controls:ControlsHelper.ContentCharacterCasing" Value="Normal" />
-    </Style>
-    
+  <controls:MetroWindow.Resources>
     <!-- KeywordsPicCountStyle -->
     <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
       <Setter Property="Text" Value="{Binding PicCount}" />
@@ -87,6 +82,19 @@
       <EventSetter Event="DragEnter" Handler="TvKeywords_AllowDropCheck" />
       <EventSetter Event="DragLeave" Handler="TvKeywords_AllowDropCheck" />
       <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
+    </Style>
+
+    <!-- InfoBoxBorderStyle InfoBoxStyle -->
+    <Style x:Key="InfoBoxBorderStyle" TargetType="{x:Type Border}">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Background" Value="#66000000" />
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="Margin" Value="5,5,0,0"/>
+      <Setter Property="Padding" Value="2,0,2,1" />
+    </Style>
+    <Style x:Key="InfoBoxStyle" TargetType="{x:Type TextBlock}">
+      <Setter Property="Foreground" Value="White" />
     </Style>
 
     <RoutedUICommand x:Key="CategoryGroupNew" Text="New Group" />
@@ -158,7 +166,6 @@
               <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="100" />
               <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
           </Grid>
         </ItemsPanelTemplate>
@@ -175,37 +182,34 @@
         <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
       </StatusBarItem>
       <StatusBarItem Grid.Column="5">
-        <ComboBox x:Name="CmbThumbPage" Visibility="Collapsed" SelectionChanged="CmbThumbPage_OnSelectionChanged" />
-      </StatusBarItem>
-      <StatusBarItem Grid.Column="6">
         <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
           <Button Margin="0,0,0,0" Content="Ok" Click="BtnStatBarOk_OnClick" MinWidth="60" />
           <Button Margin="3,0,0,0" Content="Cancel" Click="BtnStatBarCancel_OnClick" MinWidth="60" />
         </StackPanel>
       </StatusBarItem>
       <StatusBar.Style>
-        <Style>
-          <Setter Property="StatusBar.Background" Value="{DynamicResource AccentColorBrush}" />
+        <Style TargetType="{x:Type StatusBar}">
+          <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
           <Style.Triggers>
             <DataTrigger Binding="{Binding AppMode}" Value="2">
-              <Setter Property="StatusBar.Background" Value="#CA5100" />
+              <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
             <DataTrigger Binding="{Binding AppMode}" Value="3">
-              <Setter Property="StatusBar.Background" Value="#CA5100" />
+              <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
           </Style.Triggers>
         </Style>
       </StatusBar.Style>
     </StatusBar>
 
-    <Grid x:Name="GridMain">
+    <Grid x:Name="GridMain" Margin="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
         <ColumnDefinition Width="3" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      <TabControl x:Name="TcMain" Grid.Row="0">
+      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0">
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders">
@@ -404,9 +408,117 @@
       </TabControl>
 
       <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
-      <WindowsFormsHost Grid.Column="2">
-        <wf:WebBrowser x:Name="WbThumbs" Margin="0,0,2,2"/>
-      </WindowsFormsHost>
+
+      <TabControl Grid.Column="2" Padding="0">
+        <!--TabThumbs-->
+        <TabItem x:Name="TabThumbs">
+          <ItemsControl x:Name="ThumbsBox" VirtualizingStackPanel.IsVirtualizing="True" 
+                        VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
+                              MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" MouseMove="Thumb_OnMouseMove">
+                        <Border.Style>
+                          <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="Black" />
+                            <Setter Property="BorderThickness" Value="2" />
+                            <Setter Property="Margin" Value="2,0,0,2" />
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                              </DataTrigger>
+                            </Style.Triggers>
+                            <Style.Resources>
+                              <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                  </DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </Style.Resources>
+                          </Style>
+                        </Border.Style>
+                        <Grid>
+                          <Image Source="{Binding FilePathCacheUri}" Stretch="Fill" />
+                          <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
+                            <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                              </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate>
+                                <Border Style="{StaticResource InfoBoxBorderStyle}">
+                                  <TextBlock Style="{StaticResource InfoBoxStyle}" Text="{Binding}" />
+                                </Border>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+            <ItemsControl.Template>
+              <ControlTemplate>
+                <ScrollViewer x:Name="ThumbsBoxScrollViewer">
+                  <ItemsPresenter />
+                </ScrollViewer>
+              </ControlTemplate>
+            </ItemsControl.Template>
+          </ItemsControl>
+        </TabItem>
+        <!--TabFullScreen-->
+        <TabItem x:Name="TabFullScreen" MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" 
+                 MouseWheel="TabFullScreen_OnMouseWheel">
+          <TabItem.CommandBindings>
+            <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
+            <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
+          </TabItem.CommandBindings>
+          <Grid>
+            <TabControl Padding="0">
+              <TabItem x:Name="TabFullImage">
+                <Border>
+                  <userControls:ZoomImageBox x:Name="FullImage" ClipToBounds="True" />
+                </Border>
+              </TabItem>
+              <TabItem x:Name="TabFullMedia">
+                <MediaElement x:Name="FullMedia" />
+              </TabItem>
+            </TabControl>
+            <ItemsControl x:Name="InfoBox" ItemsSource="{Binding ACore.MediaItems.Current.InfoBoxFull}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Style="{StaticResource InfoBoxBorderStyle}">
+                    <TextBlock Style="{StaticResource InfoBoxStyle}" Text="{Binding}" />
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Grid>
+        </TabItem>
+      </TabControl>
     </Grid>
   </DockPanel>
 </controls:MetroWindow>

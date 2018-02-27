@@ -18,6 +18,7 @@
       <pm:IconNameToBrush x:Key="IconNameToBrush" />
       <pm:RatingConverter x:Key="RatingConverter" />
       <pm:BgColorConverter x:Key="BgColorConverter" />
+      <pm:DatabindingDebugConverter x:Key="DebugConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />

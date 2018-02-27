@@ -85,6 +85,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
+    <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />
     <Compile Include="ViewModel\BaseMediaItem.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ScriptManager.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="ShellStuff\ComReleaser.cs" />
     <Compile Include="ShellStuff\FileOperation.cs" />
@@ -150,14 +150,15 @@
     <Compile Include="WFilterBuilder.xaml.cs">
       <DependentUpon>WFilterBuilder.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WFullPic.xaml.cs">
-      <DependentUpon>WFullPic.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="WMainCommands.cs" />
     <Compile Include="WPicTransform.xaml.cs">
       <DependentUpon>WPicTransform.xaml</DependentUpon>
     </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WSplashScreen.xaml.cs">
+      <DependentUpon>WSplashScreen.xaml</DependentUpon>
     </Compile>
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
@@ -219,15 +220,15 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WFullPic.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="WPicTransform.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WSplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -263,10 +264,6 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="html\FullPic.html" />
-    <EmbeddedResource Include="html\Thumbs.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SQL.sql" />

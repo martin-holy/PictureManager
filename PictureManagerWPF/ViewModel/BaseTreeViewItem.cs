@@ -26,7 +26,7 @@ namespace PictureManager.ViewModel {
     public BaseTreeViewItem Parent { get => _parent; set { _parent = value; OnPropertyChanged(); } }
 
     public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 

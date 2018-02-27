@@ -21,7 +21,7 @@ namespace PictureManager {
   public partial class WFilterBuilder : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
@@ -263,7 +263,7 @@ namespace PictureManager {
     [field:NonSerialized]
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged([CallerMemberName] string name = "") {
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 

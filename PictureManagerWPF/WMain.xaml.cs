@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,55 +7,39 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.Dialogs;
 using PictureManager.Properties;
-using HtmlElementEventArgs = System.Windows.Forms.HtmlElementEventArgs;
-using InputDialog = PictureManager.Dialogs.InputDialog;
 
 namespace PictureManager {
   /// <summary>
   /// Interaction logic for WMain.xaml
   /// </summary>
   public partial class WMain {
-    readonly string _argPicFile;
-    private readonly WFullPic _wFullPic;
-    public AppCore ACore;
+    private readonly string _argPicFile;
     private Point _dragDropStartPosition;
     private object _dragDropObject;
 
     public WMain(string picFile) {
-      System.Windows.Forms.Application.EnableVisualStyles();
       InitializeComponent();
+      
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore {WbThumbs = WbThumbs, WMain = this};
+      ACore = new AppCore {WMain = this};
       Application.Current.Properties[nameof(AppProps.AppCore)] = ACore;
       ACore.InitBase();
       MainStatusBar.DataContext = ACore.AppInfo;
 
-      WbThumbs.ObjectForScripting = new ScriptManager(ACore);
-      WbThumbs.DocumentCompleted += WbThumbs_DocumentCompleted;
-
-      Stream stream = null;
-      try {
-        stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PictureManager.html.Thumbs.html");
-        if (stream != null)
-          using (var reader = new StreamReader(stream)) {
-            stream = null;
-            WbThumbs.DocumentText = reader.ReadToEnd();
-          }
-      }
-      finally {
-        stream?.Dispose();
-      }
-
-      _wFullPic = new WFullPic();
       _argPicFile = picFile;
     }
 
+    public AppCore ACore { get; set; }
+
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       InitUi();
+
+      App.SplashScreen.LoadComplete();
+      Activate();
+
       if (!File.Exists(_argPicFile)) {
         ACore.AppInfo.AppMode = AppModes.Browser;
         return;
@@ -69,11 +51,7 @@ namespace PictureManager {
       ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
       if (ACore.MediaItems.Current != null) ACore.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
-      ACore.InitThumbsPagesControl();
-    }
-
-    private void Window_Closing(object sender, CancelEventArgs e) {
-      _wFullPic.Close();
+      ACore.LoadThumbnails();
     }
 
     public void InitUi() {
@@ -85,32 +63,27 @@ namespace PictureManager {
       CmbViewers.ItemsSource = ACore.Viewers.Items;
       ACore.CurrentViewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
       CmbViewers.SelectedItem = ACore.CurrentViewer;
+      ThumbsBox.ItemsSource = ACore.MediaItems.SplitedItems;
     }
 
     public void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
-      _wFullPic.SetCurrentMediaItem();
-      if (_wFullPic.IsActive) return;
-      Hide();
-      ShowInTaskbar = false;
-      _wFullPic.Show();
+      //TabFullScreen.IsSelected = true;
+      Dispatcher.BeginInvoke((Action) (() => TabFullScreen.IsSelected = true));
+      /*ShowInTaskbar = false;
+      ShowTitleBar = false;
+      IgnoreTaskbarOnMaximize = true;*/
     }
 
     public void SwitchToBrowser() {
-      if (ACore.MediaItems.Current != null) {
-        CmbThumbPage.SelectedIndex = ACore.MediaItems.Current.Index / ACore.ThumbsPerPage;
-      }
+      //TabThumbs.IsSelected = true;
+      Dispatcher.BeginInvoke((Action) (() => TabThumbs.IsSelected = true));
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
-      ShowInTaskbar = true;
-      Show();
-    }
-
-    private void CmbThumbPage_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (CmbThumbPage.SelectedIndex == -1) return;
-      ACore.ThumbsPageIndex = CmbThumbPage.SelectedIndex;
-      ACore.CreateThumbnailsWebPage();
+      /*ShowInTaskbar = true;
+      ShowTitleBar = true;
+      IgnoreTaskbarOnMaximize = false;*/
     }
 
     private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -227,10 +200,6 @@ namespace PictureManager {
 
     private void BtnStatBarOk_OnClick(object sender, RoutedEventArgs e) {
       switch (ACore.AppInfo.AppMode) {
-        case AppModes.Browser:
-          break;
-        case AppModes.Viewer:
-          break;
         case AppModes.KeywordsEdit: {
           CmdKeywordsSave_Executed(null, null);
           break;
@@ -240,17 +209,11 @@ namespace PictureManager {
           ACore.Db.SubmitChanges(editedViewer?.Lists);
           ACore.AppInfo.AppMode = AppModes.Browser;
           break;
-        default:
-          throw new ArgumentOutOfRangeException();
       }
     }
 
     private void BtnStatBarCancel_OnClick(object sender, RoutedEventArgs e) {
       switch (ACore.AppInfo.AppMode) {
-        case AppModes.Browser:
-          break;
-        case AppModes.Viewer:
-          break;
         case AppModes.KeywordsEdit: {
           CmdKeywordsCancel_Executed(null, null);
           break;
@@ -261,18 +224,11 @@ namespace PictureManager {
           editedViewer?.ReLoad();
           ACore.AppInfo.AppMode = AppModes.Browser;
           break;
-        default:
-          throw new ArgumentOutOfRangeException();
       }
     }
 
     #region WbThumbs
-    private void WbThumbs_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
-      if (WbThumbs.Document?.Body == null) return;
-      WbThumbs.Document.MouseDown += WbThumbs_MouseDown;
-      WbThumbs.Document.Body.DoubleClick += WbThumbs_DblClick;
-      WbThumbs.Document.Body.KeyDown += WbThumbs_KeyDown;
-    }
+    /*
 
     private void WbThumbs_KeyDown(object sender, HtmlElementEventArgs e) {
       if (e.KeyPressedCode == 46) {//Delete 
@@ -348,7 +304,7 @@ namespace PictureManager {
       ACore.UpdateStatusBarInfo();
       ACore.MarkUsedKeywordsAndPeople();
     }
-
+    */
     public void WbThumbsShowContextMenu() {
       /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
       if (cm == null) return;
@@ -357,341 +313,7 @@ namespace PictureManager {
     }
     #endregion
 
-    #region Commands
-    private void CmdCategoryGroupNew(object sender, ExecutedRoutedEventArgs e) {
-      (e.Parameter as ViewModel.BaseCategoryItem)?.GroupNewOrRename(null, false);
-    }
-
-    private void CmdCategoryGroupRename(object sender, ExecutedRoutedEventArgs e) {
-      var group = e.Parameter as ViewModel.CategoryGroup;
-      (group?.Parent as ViewModel.BaseCategoryItem)?.GroupNewOrRename(group, true);
-    }
-
-    private void CmdCategoryGroupDelete(object sender, ExecutedRoutedEventArgs e) {
-      var group = e.Parameter as ViewModel.CategoryGroup;
-      (group?.Parent as ViewModel.BaseCategoryItem)?.GroupDelete(group);
-    }
-
-    private void CmdTagItemNew(object sender, ExecutedRoutedEventArgs e) {
-      var item = e.Parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemNewOrRename(item, false);
-    }
-
-    private void CmdTagItemRename(object sender, ExecutedRoutedEventArgs e) {
-      var item = e.Parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemNewOrRename(item, true);
-    }
-
-    private void CmdTagItemDelete(object sender, ExecutedRoutedEventArgs e) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
-      var item = e.Parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
-    }
-
-    private void CmdFilterNew(object sender, ExecutedRoutedEventArgs e) {
-      var parent = e.Parameter as ViewModel.Filter;
-      var newFilter = new ViewModel.Filter { Parent = parent, Title = "New filter" };
-      newFilter.FilterData.Add(new FilterGroup { Operator = FilterGroupOps.And });
-      var fb = new WFilterBuilder(newFilter) { Owner = this };
-      if (!(fb.ShowDialog() ?? true)) return;
-      newFilter.SaveFilter();
-      if (parent != null) 
-        parent.Items.Add(newFilter);
-      else 
-        ACore.Filters.Items.Add(newFilter);
-    }
-
-    private void CmdFilterEdit(object sender, ExecutedRoutedEventArgs e) {
-      var filter = (ViewModel.Filter)e.Parameter;
-      var title = filter.Title;
-      var fb = new WFilterBuilder(filter) { Owner = this };
-      if (fb.ShowDialog() ?? true) {
-        filter.SaveFilter();
-      }
-      else {
-        filter.Title = title;
-        filter.ReloadData();
-      }
-    }
-
-    private void CmdFilterDelete(object sender, ExecutedRoutedEventArgs e) {
-
-    }
-
-    private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
-      ACore.AppInfo.AppMode = AppModes.ViewerEdit;
-      Application.Current.Properties[nameof(AppProps.EditedViewer)] = e.Parameter;
-    }
-
-    private void CmdViewerIncludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.AddFolder(true, ((ViewModel.Folder)e.Parameter).FullPath);
-    }
-
-    private void CmdViewerExcludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.AddFolder(false, ((ViewModel.Folder)e.Parameter).FullPath);
-    }
-
-    private void CmdViewerRemoveFolder(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.RemoveFolder((ViewModel.BaseTreeViewItem)e.Parameter);
-    }
-
-    private void CmdFolderNew(object sender, ExecutedRoutedEventArgs e) {
-      ((ViewModel.Folder)e.Parameter).NewOrRename(false);
-    }
-
-    private void CmdFolderRename(object sender, ExecutedRoutedEventArgs e) {
-      ((ViewModel.Folder)e.Parameter).NewOrRename(true);
-    }
-
-    private void CmdFolderDelete(object sender, ExecutedRoutedEventArgs e) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result == MessageBoxResult.Yes)
-        ((ViewModel.Folder)e.Parameter).Delete(true);
-    }
-
-    private void CmdFolderAddToFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Add(((ViewModel.Folder)e.Parameter).FullPath);
-      ACore.FavoriteFolders.Load();
-    }
-
-    private void CmdFolderRemoveFromFavorites(object sender, ExecutedRoutedEventArgs e) {
-      ACore.FavoriteFolders.Remove(((ViewModel.FavoriteFolder)e.Parameter).FullPath);
-      ACore.FavoriteFolders.Load();
-    }
-
-    private void CmdGeoNameNew(object sender, ExecutedRoutedEventArgs e) {
-      var inputDialog = new InputDialog {
-        Owner = this,
-        IconName = "appbar_location_checkin",
-        Title = "GeoName latitude and longitude",
-        Question = "Enter in format: N36.75847,W3.84609",
-        Answer = ""
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (inputDialog.ShowDialog() ?? true) {
-        ((ViewModel.GeoNames)e.Parameter).New(inputDialog.Answer);
-      }
-    }
-
-    private void CmdAlways_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = true;
-    }
-
-    private void CmdCompressPictures_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Items.Count > 0;
-    }
-
-    private void CmdCompressPictures_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var compress = new WCompress(ACore) { Owner = this };
-      compress.ShowDialog();
-    }
-
-    private void CmdOpenSettings_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var settings = new WSettings { Owner = this };
-      if (settings.ShowDialog() ?? true) {
-        Settings.Default.Save();
-        ACore.FolderKeywords.Load();
-      }
-      else {
-        Settings.Default.Reload();
-      }
-    }
-
-    private void CmdAbout_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var about = new WAbout { Owner = this };
-      about.ShowDialog();
-    }
-
-    private void CmdShowHideTabMain_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var col = GridMain.ColumnDefinitions[0];
-      if (col.ActualWidth > 0) {
-        col.Tag = col.ActualWidth;
-        col.Width = new GridLength(0);
-      }
-      else {
-        col.Width = new GridLength((double?)col.Tag ?? 350);
-      }
-    }
-
-    private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var catalog = new WCatalog(ACore) { Owner = this };
-      catalog.Show();
-    }
-
-    private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = !ACore.KeywordsEditMode && ACore.MediaItems.Items.Count > 0;
-    }
-
-    private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
-      Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)] = TabFolders.IsSelected;
-      ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
-      TabKeywords.IsSelected = true;
-      ACore.KeywordsEditMode = true;
-      ACore.AppInfo.AppMode = AppModes.KeywordsEdit;
-    }
-
-    private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode && ACore.MediaItems.Items.Count(p => p.IsModifed) > 0;
-    }
-
-    private void CmdKeywordsSave_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var pictures = ACore.MediaItems.Items.Where(p => p.IsModifed).ToList();
-
-      StatusProgressBar.Value = 0;
-      StatusProgressBar.Maximum = 100;
-
-      var bw = new BackgroundWorker { WorkerReportsProgress = true };
-
-      bw.ProgressChanged += delegate (object bwsender, ProgressChangedEventArgs bwe) {
-        StatusProgressBar.Value = bwe.ProgressPercentage;
-      };
-
-      bw.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
-        var worker = (BackgroundWorker)bwsender;
-        var count = pictures.Count;
-        var done = 0;
-        bwe.Result = bwe.Argument;
-
-        foreach (var picture in pictures) {
-          picture.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[])bwe.Argument);
-          picture.TryWriteMetadata();
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), picture.Index);
-        }
-      };
-
-      bw.RunWorkerCompleted += delegate (object bwsender, RunWorkerCompletedEventArgs bwe) {
-        ACore.KeywordsEditMode = false;
-        if ((bool)Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
-          TabFolders.IsSelected = true;
-        }
-        ACore.Db.SubmitChanges((List<DataModel.BaseTable>[])bwe.Result);
-        foreach (var mi in ACore.MediaItems.Items.Where(mi => mi.IsModifed)) {
-          mi.IsModifed = false;
-        }
-        ACore.AppInfo.AppMode = AppModes.Browser;
-      };
-
-      bw.RunWorkerAsync(ACore.Db.GetInsertUpdateDeleteLists());
-    }
-
-    private void CmdKeywordsCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode;
-    }
-
-    private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
-      ACore.MediaItems.ReLoad(ACore.MediaItems.Items.Where(x => x.IsModifed).ToList());
-      ACore.MarkUsedKeywordsAndPeople();
-      ACore.KeywordsEditMode = false;
-      ACore.AppInfo.AppMode = AppModes.Browser;
-      if ((bool)Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
-        TabFolders.IsSelected = true;
-      }
-    }
-
-    private void CmdKeywordsComment_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Items.Count(x => x.IsSelected) == 1;
-    }
-
-    private void CmdKeywordsComment_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var current = ACore.MediaItems.Current;
-      var inputDialog = new InputDialog {
-        Owner = this,
-        IconName = "appbar_notification",
-        Title = "Comment",
-        Question = "Add a comment.",
-        Answer = current.Data.Comment
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (inputDialog.TxtAnswer.Text.Length > 256) {
-          inputDialog.ShowErrorMessage("Comment is too long!");
-          return;
-        }
-
-        if (ACore.IncorectChars.Any(inputDialog.TxtAnswer.Text.Contains)) {
-          inputDialog.ShowErrorMessage("Comment contains incorrect character(s)!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (!(inputDialog.ShowDialog() ?? true)) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
-      current.Data.Comment = inputDialog.TxtAnswer.Text;
-      current.SaveMediaItemInToDb(false, lists);
-      current.TryWriteMetadata();
-      ACore.Db.SubmitChanges(lists);
-    }
-
-    private void CmdReloadMetadata_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Items.Count > 0;
-    }
-
-    private void CmdReloadMetadata_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var mediaItems = ACore.MediaItems.GetSelectedOrAll();
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
-      foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(true, lists);
-        AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
-        mi.WbUpdateInfo();
-      }
-      ACore.Db.SubmitChanges(lists);
-    }
-
-    private void CmdGeoNames_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Items.Count(x => x.IsSelected) > 0;
-    }
-
-    private void CmdGeoNames_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var progress = new ProgressBarDialog { Owner = this };
-
-      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs args) {
-        var worker = (BackgroundWorker)o;
-        var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
-        var count = mis.Count;
-        var done = 0;
-        var lists = ACore.Db.GetInsertUpdateDeleteLists();
-
-        foreach (var mi in mis) {
-          if (worker.CancellationPending) {
-            args.Cancel = true;
-            break;
-          }
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.Data.FileName})");
-
-          if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata(true);
-          if (mi.Lat == null || mi.Lng == null) continue;
-
-          var lastGeoName = ACore.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng);
-          if (lastGeoName == null) continue;
-
-          mi.Data.GeoNameId = lastGeoName.GeoNameId;
-          ACore.Db.UpdateOnSubmit(mi.Data, lists);
-          mi.TryWriteMetadata();
-        }
-
-        ACore.Db.SubmitChanges(lists);
-      };
-
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
-      ACore.GeoNames.Load();
-    }
-    #endregion
+    
 
     #region TvFolders
     private ScrollViewer _tvFoldersScrollViewer;
@@ -706,8 +328,7 @@ namespace PictureManager {
     }
 
     private void TvFolders_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      var stackPanel = sender as StackPanel;
-      if (stackPanel == null) return;
+      if (!(sender is StackPanel stackPanel)) return;
       _dragDropObject = stackPanel.DataContext;
       _dragDropStartPosition = e.GetPosition(null);
     }
@@ -756,13 +377,13 @@ namespace PictureManager {
       var itemName = thumbs ? null : srcData?.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
 
       var flag = e.KeyStates == DragDropKeyStates.ControlKey ?
-        ACore.FileOperation(FileOperations.Copy, @from, destData.FullPath, itemName) :
-        ACore.FileOperation(FileOperations.Move, @from, destData.FullPath, itemName);
+        ACore.FileOperation(FileOperations.Copy, from, destData.FullPath, itemName) :
+        ACore.FileOperation(FileOperations.Move, from, destData.FullPath, itemName);
       if (!flag) return;
 
       if (thumbs) {
         if (e.KeyStates != DragDropKeyStates.ControlKey) {
-          ACore.MediaItems.RemoveSelectedFromWeb();
+          ACore.MediaItems.RemoveSelected();
           ACore.UpdateStatusBarInfo();
         }
         return;
@@ -800,8 +421,7 @@ namespace PictureManager {
     }
 
     private void TvKeywords_OnMouseLeftButtonDown(object sender, MouseEventArgs e) {
-      var stackPanel = sender as StackPanel;
-      if (stackPanel == null) return;
+      if (!(sender is StackPanel stackPanel)) return;
       _dragDropObject = stackPanel.DataContext;
       _dragDropStartPosition = e.GetPosition(null);
     }
@@ -811,12 +431,8 @@ namespace PictureManager {
     }
 
     private void TvKeywords_OnMouseMove(object sender, MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed) return;
-      var diff = _dragDropStartPosition - e.GetPosition(null);
-      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
-          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
-      var stackPanel = e.OriginalSource as StackPanel;
-      if (stackPanel == null || _dragDropObject == null) return;
+      if (!IsDragDropStarted(e)) return;
+      if (!(e.OriginalSource is StackPanel stackPanel) || _dragDropObject == null) return;
       DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move);
     }
 
@@ -930,7 +546,7 @@ namespace PictureManager {
       //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
       //ACore.InitThumbsPagesControl();
 
-      ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
+      //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
@@ -940,7 +556,7 @@ namespace PictureManager {
       AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");*/
 
       //height 309, width 311
-
+      
       /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
       var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
       var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
@@ -948,5 +564,94 @@ namespace PictureManager {
       var filePath = @"d:\!test\20150831_114319_Martin.jpg";
       var fileInfo = new FileInfo(filePath);*/
     }
+
+    private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      var isCtrlOn = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+      var isShiftOn = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+      var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+
+      if (!isCtrlOn && !isShiftOn) {
+        ACore.MediaItems.DeselectAll();
+        ACore.MediaItems.Current = bmi;
+      }
+      else {
+        if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
+        if (!isShiftOn || ACore.MediaItems.Current == null) return;
+        var from = ACore.MediaItems.Current.Index;
+        var to = bmi.Index;
+        if (from > to) { to = from; from = bmi.Index; }
+        for (var i = from; i < to + 1; i++) {
+          ACore.MediaItems.Items[i].IsSelected = true;
+        }
+      }
+    }
+
+    private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      _dragDropStartPosition = e.GetPosition(null);
+      if (e.ClickCount != 2) return;
+      ACore.MediaItems.DeselectAll();
+      ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      SetMediaItemSource();
+      SwitchToFullScreen();
+    }
+
+    private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
+      if (!IsDragDropStarted(e)) return;
+      var dob = new DataObject();
+      var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      if (data.Count == 0)
+        data.Add(((ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+      dob.SetData(DataFormats.FileDrop, data.ToArray());
+      DragDrop.DoDragDrop(ACore.WMain, dob, DragDropEffects.Move | DragDropEffects.Copy);
+    }
+
+    private bool IsDragDropStarted(MouseEventArgs e) {
+      if (e.LeftButton != MouseButtonState.Pressed) return false;
+      var diff = _dragDropStartPosition - e.GetPosition(null);
+      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
+          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return false;
+      return true;
+    }
+
+    private void FullScreenBox_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      if (e.ClickCount == 2) {
+        if (FullMedia.Source != null) {
+          FullMedia.Source = null;
+          GC.Collect();
+        }
+
+        SwitchToBrowser();
+      }
+    }
+
+    private void SetMediaItemSource() {
+      switch (ACore.MediaItems.Current.MediaType) {
+        case MediaTypes.Image: {
+          TabFullImage.IsSelected = true;
+          FullImage.FilePath = ACore.MediaItems.Current.FilePath;
+          FullMedia.Source = null;
+          break;
+        }
+        case MediaTypes.Video: {
+          TabFullMedia.IsSelected = true;
+          FullMedia.Source = ACore.MediaItems.Current.FilePathUri;
+          break;
+        }
+      }
+    }
+
+    private void TabFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
+      if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
+      if (e.Delta < 0) {
+        if (CmdMediaItemNext.CanExecute(null, null))
+          CmdMediaItemNext.Execute(null, null);
+      }
+      else {
+        if (CmdMediaItemPrevious.CanExecute(null, null))
+          CmdMediaItemPrevious.Execute(null, null);
+      }
+    }
+
+    
   }
 }
