@@ -480,7 +480,7 @@
                           <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
                             <ItemsControl.ItemsPanel>
                               <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"/>
+                                <WrapPanel Orientation="Horizontal" />
                               </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
@@ -559,7 +559,7 @@
             <ItemsControl x:Name="InfoBox" ItemsSource="{Binding ACore.MediaItems.Current.InfoBoxFull}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal"/>
+                  <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
