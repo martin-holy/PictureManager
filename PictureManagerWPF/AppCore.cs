@@ -29,8 +29,7 @@ namespace PictureManager {
 
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
-    public System.Windows.Forms.WebBrowser WbThumbs;
-    public ViewModel.AppInfo AppInfo;
+    public ViewModel.AppInfo AppInfo { get; set; }
     public DataModel.PmDataContext Db;
     public ViewModel.MediaItems MediaItems { get; set; }
     public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
@@ -227,6 +226,7 @@ namespace PictureManager {
               ThumbsResetEvent.WaitOne();
             }
 
+            AppInfo.AppMode = AppModes.Browser;
             MediaItems.Load(LastSelectedSource, recursive);
             LoadThumbnails();
             GC.Collect();

@@ -16,21 +16,23 @@ namespace PictureManager {
       new RoutedUICommand {Text = "Previous", InputGestures = {new KeyGesture(Key.Left)}};
 
     private void CmdMediaItemNext_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;
+      e.CanExecute = ACore.AppInfo.AppMode == AppModes.Viewer && ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;
     }
 
     private void CmdMediaItemNext_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.MediaItems.CurrentItemMove(true);
       SetMediaItemSource();
+      ACore.UpdateStatusBarInfo();
     }
 
     private void CmdMediaItemPrevious_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = ACore.MediaItems.Current?.Index > 0;
+      e.CanExecute = ACore.AppInfo.AppMode == AppModes.Viewer && ACore.MediaItems.Current?.Index > 0;
     }
 
     private void CmdMediaItemPrevious_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.MediaItems.CurrentItemMove(false);
       SetMediaItemSource();
+      ACore.UpdateStatusBarInfo();
     }
 
     private void CmdCategoryGroupNew(object sender, ExecutedRoutedEventArgs e) {
@@ -191,6 +193,8 @@ namespace PictureManager {
       else {
         col.Width = new GridLength((double?) col.Tag ?? 350);
       }
+      ACore.MediaItems.SplitedItemsReload();
+      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
     }
 
     private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {

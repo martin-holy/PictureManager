@@ -11,6 +11,7 @@ namespace PictureManager.UserControls {
     private Point _start;
     private bool _isDecoded;
     private readonly ScaleTransform _scaleTransform;
+    private readonly RotateTransform _rotateTransform;
     private readonly TranslateTransform _translateTransform;
     private string _filePath;
 

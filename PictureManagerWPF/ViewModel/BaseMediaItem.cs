@@ -13,7 +13,7 @@ using Application = System.Windows.Application;
 
 namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
-    public DataModel.MediaItem Data;
+    public DataModel.MediaItem Data { get; set; }
     public string FilePath;
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
@@ -22,7 +22,6 @@ namespace PictureManager.ViewModel {
     public int Index;
     public double? Lat;
     public double? Lng;
-    public MediaTypes MediaType;
     public bool IsModifed;
     public bool IsNew;
     public int ThumbWidth { get; set; }
@@ -39,6 +38,15 @@ namespace PictureManager.ViewModel {
       get => _isSelected;
       set {
         _isSelected = value;
+        OnPropertyChanged();
+      }
+    }
+
+    private MediaTypes _mediaType;
+    public MediaTypes MediaType {
+      get => _mediaType;
+      set {
+        _mediaType = value;
         OnPropertyChanged();
       }
     }

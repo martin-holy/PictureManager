@@ -20,14 +20,14 @@ namespace PictureManager {
 
     public WMain(string picFile) {
       InitializeComponent();
-      
+      //DataContext = this;
+
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
       ACore = new AppCore {WMain = this};
       Application.Current.Properties[nameof(AppProps.AppCore)] = ACore;
       ACore.InitBase();
-      MainStatusBar.DataContext = ACore.AppInfo;
 
       _argPicFile = picFile;
     }
@@ -63,27 +63,29 @@ namespace PictureManager {
       CmbViewers.ItemsSource = ACore.Viewers.Items;
       ACore.CurrentViewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
       CmbViewers.SelectedItem = ACore.CurrentViewer;
-      ThumbsBox.ItemsSource = ACore.MediaItems.SplitedItems;
     }
 
     public void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
-      //TabFullScreen.IsSelected = true;
-      Dispatcher.BeginInvoke((Action) (() => TabFullScreen.IsSelected = true));
-      /*ShowInTaskbar = false;
-      ShowTitleBar = false;
-      IgnoreTaskbarOnMaximize = true;*/
+      ACore.AppInfo.AppMode = AppModes.Viewer;
+      /*ShowTitleBar = false;
+      IgnoreTaskbarOnMaximize = true;
+
+
+      MainStatusBar.Visibility = Visibility.Collapsed;
+      MainMenu.Visibility = Visibility.Hidden;
+      CmbViewers.Visibility = Visibility.Hidden;*/
     }
 
     public void SwitchToBrowser() {
-      //TabThumbs.IsSelected = true;
-      Dispatcher.BeginInvoke((Action) (() => TabThumbs.IsSelected = true));
+      ACore.AppInfo.AppMode = AppModes.Browser;
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
-      /*ShowInTaskbar = true;
       ShowTitleBar = true;
-      IgnoreTaskbarOnMaximize = false;*/
+      IgnoreTaskbarOnMaximize = false;
+      
+      
     }
 
     private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -547,7 +549,7 @@ namespace PictureManager {
       //ACore.InitThumbsPagesControl();
 
       //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
-
+      ACore.AppInfo.AppMode = AppModes.Viewer;
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
       /*var x = GetFileProps(@"d:\video.mp4");
@@ -556,7 +558,7 @@ namespace PictureManager {
       AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");*/
 
       //height 309, width 311
-      
+
       /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
       var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
       var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
@@ -584,6 +586,7 @@ namespace PictureManager {
           ACore.MediaItems.Items[i].IsSelected = true;
         }
       }
+      ACore.UpdateStatusBarInfo();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
@@ -627,20 +630,18 @@ namespace PictureManager {
     private void SetMediaItemSource() {
       switch (ACore.MediaItems.Current.MediaType) {
         case MediaTypes.Image: {
-          TabFullImage.IsSelected = true;
           FullImage.FilePath = ACore.MediaItems.Current.FilePath;
           FullMedia.Source = null;
           break;
         }
         case MediaTypes.Video: {
-          TabFullMedia.IsSelected = true;
           FullMedia.Source = ACore.MediaItems.Current.FilePathUri;
           break;
         }
       }
     }
 
-    private void TabFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
+    private void FullScreenBox_OnMouseWheel(object sender, MouseWheelEventArgs e) {
       if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
       if (e.Delta < 0) {
         if (CmdMediaItemNext.CanExecute(null, null))

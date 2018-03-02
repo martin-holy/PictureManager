@@ -10,14 +10,11 @@
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
-        Loaded="Window_Loaded" 
-        FontSize="13.333" 
-        SaveWindowPosition="True"
-        TitleCharacterCasing="Normal">
+        Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal">
 
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
-      <Menu Background="Transparent">
+      <Menu x:Name="MainMenu" Background="Transparent">
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:CustomCommands.CmdCompressPictures" />
           <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
@@ -151,9 +148,11 @@
     <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
+    <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
+    <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
   </controls:MetroWindow.CommandBindings>
 
-  <DockPanel>
+  <DockPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
 
     <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
       <StatusBar.ItemsPanel>
@@ -171,11 +170,11 @@
         </ItemsPanelTemplate>
       </StatusBar.ItemsPanel>
       <StatusBarItem>
-        <TextBlock Text="{Binding ViewBaseInfo}" />
+        <TextBlock Text="{Binding ACore.AppInfo.ViewBaseInfo}" />
       </StatusBarItem>
       <Separator Grid.Column="1" />
       <StatusBarItem Grid.Column="2">
-        <TextBlock Text="{Binding CurrentPictureFilePath}" />
+        <TextBlock Text="{Binding ACore.AppInfo.CurrentPictureFilePath}" />
       </StatusBarItem>
       <Separator Grid.Column="3" />
       <StatusBarItem Grid.Column="4">
@@ -191,10 +190,10 @@
         <Style TargetType="{x:Type StatusBar}">
           <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding AppMode}" Value="2">
+            <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="2">
               <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding AppMode}" Value="3">
+            <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="3">
               <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
           </Style.Triggers>
@@ -407,18 +406,35 @@
         </TabItem>
       </TabControl>
 
-      <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
 
-      <TabControl Grid.Column="2" Padding="0">
-        <!--TabThumbs-->
-        <TabItem x:Name="TabThumbs">
-          <ItemsControl x:Name="ThumbsBox" VirtualizingStackPanel.IsVirtualizing="True" 
-                        VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True">
+      <!-- Thumbnails and Full Media -->
+      <Grid Grid.Column="2" >
+
+        <!-- Thumbnails -->
+        <Grid>
+          <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+              <Setter Property="Visibility" Value="Hidden" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Grid.Style>
+
+          <!-- Thumbnails -->
+          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding ACore.MediaItems.SplitedItems}"
+                        VirtualizingStackPanel.IsVirtualizing="True" 
+                        VirtualizingPanel.ScrollUnit="Pixel" 
+                        ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <VirtualizingStackPanel/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
+
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <ItemsControl ItemsSource="{Binding}">
@@ -427,10 +443,13 @@
                       <StackPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                   </ItemsControl.ItemsPanel>
+
+                  <!-- Thumbnail -->
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
-                              MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" MouseMove="Thumb_OnMouseMove">
+                              MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
+                              MouseMove="Thumb_OnMouseMove">
                         <Border.Style>
                           <Style TargetType="{x:Type Border}">
                             <Setter Property="BorderBrush" Value="Black" />
@@ -452,8 +471,12 @@
                             </Style.Resources>
                           </Style>
                         </Border.Style>
+
                         <Grid>
+                          <!-- Thumbnail Image -->
                           <Image Source="{Binding FilePathCacheUri}" Stretch="Fill" />
+                          
+                          <!-- Thumbnail Info Box -->
                           <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
                             <ItemsControl.ItemsPanel>
                               <ItemsPanelTemplate>
@@ -475,6 +498,7 @@
                 </ItemsControl>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
+
             <ItemsControl.Template>
               <ControlTemplate>
                 <ScrollViewer x:Name="ThumbsBoxScrollViewer">
@@ -483,25 +507,55 @@
               </ControlTemplate>
             </ItemsControl.Template>
           </ItemsControl>
-        </TabItem>
-        <!--TabFullScreen-->
-        <TabItem x:Name="TabFullScreen" MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" 
-                 MouseWheel="TabFullScreen_OnMouseWheel">
-          <TabItem.CommandBindings>
-            <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
-            <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
-          </TabItem.CommandBindings>
+        </Grid>
+
+        <!-- Full Media -->
+        <Grid x:Name="PanelFullScreen" MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" MouseWheel="FullScreenBox_OnMouseWheel">
+          <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+              <Setter Property="Visibility" Value="Hidden" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
+                  <Setter Property="Visibility" Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Grid.Style>
           <Grid>
-            <TabControl Padding="0">
-              <TabItem x:Name="TabFullImage">
-                <Border>
-                  <userControls:ZoomImageBox x:Name="FullImage" ClipToBounds="True" />
-                </Border>
-              </TabItem>
-              <TabItem x:Name="TabFullMedia">
-                <MediaElement x:Name="FullMedia" />
-              </TabItem>
-            </TabControl>
+
+            <!-- Full Media Image -->
+            <Grid>
+              <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                  <Setter Property="Visibility" Value="Hidden" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="0">
+                      <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Grid.Style>
+
+              <userControls:ZoomImageBox x:Name="FullImage" ClipToBounds="True" />
+            </Grid>
+
+            <!-- Full Media Video -->
+            <Grid>
+              <Grid.Style>
+                <Style TargetType="{x:Type Grid}">
+                  <Setter Property="Visibility" Value="Hidden" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
+                      <Setter Property="Visibility" Value="Visible" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Grid.Style>
+
+              <MediaElement x:Name="FullMedia" />
+            </Grid>
+
+            <!-- Full Media Info Box -->
             <ItemsControl x:Name="InfoBox" ItemsSource="{Binding ACore.MediaItems.Current.InfoBoxFull}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -517,8 +571,8 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </Grid>
-        </TabItem>
-      </TabControl>
+        </Grid>
+      </Grid>
     </Grid>
   </DockPanel>
 </controls:MetroWindow>

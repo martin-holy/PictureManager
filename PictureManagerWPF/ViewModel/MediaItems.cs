@@ -29,7 +29,7 @@ namespace PictureManager.ViewModel {
 
     public List<BaseMediaItem> Items = new List<BaseMediaItem>();
     public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
-    public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
+    public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
 
     public BaseMediaItem Current {
       get => _current;
@@ -450,7 +450,7 @@ namespace PictureManager.ViewModel {
         lastIndex++;
       }
 
-      var rowMaxWidth = 1200; //TODO read width from UI
+      var rowMaxWidth = ACore.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
       var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
@@ -470,7 +470,7 @@ namespace PictureManager.ViewModel {
 
       SplitedItems.Clear();
 
-      var rowMaxWidth = 1200; //TODO read width from UI
+      var rowMaxWidth = ACore.WMain.ThumbsBox.ActualWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
       var row = new ObservableCollection<BaseMediaItem>();
