@@ -630,6 +630,7 @@ namespace PictureManager {
     private void SetMediaItemSource() {
       switch (ACore.MediaItems.Current.MediaType) {
         case MediaTypes.Image: {
+          FullImage.Orientation = (MediaOrientation)ACore.MediaItems.Current.Data.Orientation;
           FullImage.FilePath = ACore.MediaItems.Current.FilePath;
           FullMedia.Source = null;
           break;

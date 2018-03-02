@@ -14,19 +14,25 @@ namespace PictureManager.UserControls {
     private readonly RotateTransform _rotateTransform;
     private readonly TranslateTransform _translateTransform;
     private string _filePath;
+    private MediaOrientation _orientation;
 
     public ZoomImageBox() {
       _isDecoded = true;
 
       _scaleTransform = new ScaleTransform();
+      _rotateTransform = new RotateTransform();
       _translateTransform = new TranslateTransform();
-      var group = new TransformGroup();
-      group.Children.Add(_scaleTransform);
-      group.Children.Add(_translateTransform);
+      var renderGroup = new TransformGroup();
+      renderGroup.Children.Add(_scaleTransform);
+      renderGroup.Children.Add(_translateTransform);
+      var layoutGroup = new TransformGroup();
+      layoutGroup.Children.Add(_rotateTransform);
       Image = new Image {
-        RenderTransform = group,
+        LayoutTransform = layoutGroup,
+        RenderTransform = renderGroup,
         RenderTransformOrigin = new Point(0, 0)
       };
+      
       Child = Image;
 
       MouseMove += OnMouseMove;
@@ -37,6 +43,35 @@ namespace PictureManager.UserControls {
 
     public Image Image;
     public string FilePath { get => _filePath; set { _filePath = value; SetSource(); } }
+    public MediaOrientation Orientation {
+      get => _orientation;
+      set {
+        _orientation = value;
+
+        switch (value) {
+          case MediaOrientation.Normal:
+            _rotateTransform.Angle = 0;
+            break;
+          case MediaOrientation.FlipHorizontal:
+            break;
+          case MediaOrientation.Rotate180:
+            _rotateTransform.Angle = 180;
+            break;
+          case MediaOrientation.FlipVertical:
+            break;
+          case MediaOrientation.Transpose:
+            break;
+          case MediaOrientation.Rotate270:
+            _rotateTransform.Angle = 270;
+            break;
+          case MediaOrientation.Transverse:
+            break;
+          case MediaOrientation.Rotate90:
+            _rotateTransform.Angle = 90;
+            break;
+        }
+      }
+    }
 
     public void SetSource() {
       Reset();
