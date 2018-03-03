@@ -14,7 +14,7 @@ using Application = System.Windows.Application;
 namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
     public DataModel.MediaItem Data { get; set; }
-    public string FilePath;
+    public string FilePath { get; set; }
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
@@ -30,8 +30,9 @@ namespace PictureManager.ViewModel {
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
     public AppCore ACore;
-    public ObservableCollection<string> InfoBoxThumb { get; set; }
-    public ObservableCollection<string> InfoBoxFull { get; set; }
+    public ObservableCollection<string> InfoBoxThumb { get; set; } = new ObservableCollection<string>();
+    public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
+    public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
 
     private bool _isSelected;
     public bool IsSelected {
@@ -57,8 +58,6 @@ namespace PictureManager.ViewModel {
     }
 
     public BaseMediaItem(string filePath, DataModel.MediaItem data, bool isNew = false) {
-      InfoBoxThumb = new ObservableCollection<string>();
-      InfoBoxFull = new ObservableCollection<string>();
       Data = data;
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
       FilePath = filePath;
@@ -94,30 +93,33 @@ namespace PictureManager.ViewModel {
 
     public void SetInfoBox() {
       InfoBoxThumb.Clear();
-      InfoBoxFull.Clear();
-      InfoBoxFull.Add(FilePath);
-      foreach (var p in People.OrderBy(x => x.Title)) {
-        InfoBoxThumb.Add(p.Title);
-        InfoBoxFull.Add(p.Title);
-      }
+      InfoBoxPeople.Clear();
+      InfoBoxKeywords.Clear();
 
-      var keywordsList = new List<string>();
-      foreach (var keyword in Keywords.OrderBy(x => x.Data.Name)) {
-        foreach (var k in keyword.Data.Name.Split('/')) {
-          if (!keywordsList.Contains(k)) keywordsList.Add(k);
-        }
-      }
+      foreach (var p in People.OrderBy(x => x.Title)) 
+        InfoBoxPeople.Add(p.Title);
 
-      foreach (var keyword in keywordsList) {
-        InfoBoxThumb.Add(keyword);
-        InfoBoxFull.Add(keyword);
-      }
+      foreach (var keyword in Keywords.OrderBy(x => x.Data.Name)) 
+        foreach (var k in keyword.Data.Name.Split('/')) 
+          if (!InfoBoxKeywords.Contains(k))
+            InfoBoxKeywords.Add(k);
 
-      InfoBoxThumb.Add(Data.Rating.ToString());
-      InfoBoxFull.Add(Data.Rating.ToString());
-      if (Data.Comment != string.Empty) InfoBoxThumb.Add("C");
-      if (Data.GeoNameId != null) InfoBoxThumb.Add("G");
+      if (Data.Rating != 0)
+        InfoBoxThumb.Add(Data.Rating.ToString());
+
+      if (Data.Comment != string.Empty) 
+        InfoBoxThumb.Add("C");
+
+      if (Data.GeoNameId != null) 
+        InfoBoxThumb.Add("G");
+
       if (MediaType == MediaTypes.Video) InfoBoxThumb.Add("V");
+
+      foreach (var val in InfoBoxPeople) 
+        InfoBoxThumb.Add(val);
+
+      foreach (var val in InfoBoxKeywords)
+        InfoBoxThumb.Add(val);
     }
 
     public void SaveMediaItemInToDb(bool update, List<DataModel.BaseTable>[] lists) {

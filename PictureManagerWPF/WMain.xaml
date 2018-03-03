@@ -81,17 +81,23 @@
       <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
     </Style>
 
-    <!-- InfoBoxBorderStyle InfoBoxStyle -->
-    <Style x:Key="InfoBoxBorderStyle" TargetType="{x:Type Border}">
+    <!-- SBorderInfoBoxThumb SBorderInfoBoxStatusBar STextBlockInfoBox -->
+    <Style x:Key="SBorderInfoBoxThumb" TargetType="Border">
       <Setter Property="BorderThickness" Value="1" />
       <Setter Property="BorderBrush" Value="Black" />
-      <Setter Property="Background" Value="#66000000" />
+      <Setter Property="Background" Value="#88000000" />
       <Setter Property="VerticalAlignment" Value="Top"/>
       <Setter Property="Margin" Value="5,5,0,0"/>
       <Setter Property="Padding" Value="2,0,2,1" />
+      <Setter Property="CornerRadius" Value="5" />
     </Style>
-    <Style x:Key="InfoBoxStyle" TargetType="{x:Type TextBlock}">
+    <Style x:Key="SBorderInfoBoxStatusBar" TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxThumb}">
+      <Setter Property="Margin" Value="3,0,0,3"/>
+      <Setter Property="MinWidth" Value="20" />
+    </Style>
+    <Style x:Key="STextBlockInfoBox" TargetType="TextBlock">
       <Setter Property="Foreground" Value="White" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
     <RoutedUICommand x:Key="CategoryGroupNew" Text="New Group" />
@@ -152,9 +158,10 @@
     <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
   </controls:MetroWindow.CommandBindings>
 
-  <DockPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
+  <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
 
-    <StatusBar DockPanel.Dock="Bottom" x:Name="MainStatusBar">
+    <StatusBar x:Name="MainStatusBar" Visibility="Collapsed"
+               DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo}">
       <StatusBar.ItemsPanel>
         <ItemsPanelTemplate>
           <Grid>
@@ -170,11 +177,11 @@
         </ItemsPanelTemplate>
       </StatusBar.ItemsPanel>
       <StatusBarItem>
-        <TextBlock Text="{Binding ACore.AppInfo.ViewBaseInfo}" />
+        <TextBlock Text="{Binding ViewBaseInfo}" />
       </StatusBarItem>
       <Separator Grid.Column="1" />
       <StatusBarItem Grid.Column="2">
-        <TextBlock Text="{Binding ACore.AppInfo.CurrentPictureFilePath}" />
+        <TextBlock Text="{Binding CurrentPictureFilePath}" />
       </StatusBarItem>
       <Separator Grid.Column="3" />
       <StatusBarItem Grid.Column="4">
@@ -190,10 +197,10 @@
         <Style TargetType="{x:Type StatusBar}">
           <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="2">
+            <DataTrigger Binding="{Binding AppMode}" Value="2">
               <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
-            <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="3">
+            <DataTrigger Binding="{Binding AppMode}" Value="3">
               <Setter Property="Background" Value="#CA5100" />
             </DataTrigger>
           </Style.Triggers>
@@ -208,7 +215,7 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0">
+      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,25" >
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders">
@@ -475,7 +482,7 @@
                         <Grid>
                           <!-- Thumbnail Image -->
                           <Image Source="{Binding FilePathCacheUri}" Stretch="Fill" />
-                          
+
                           <!-- Thumbnail Info Box -->
                           <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
                             <ItemsControl.ItemsPanel>
@@ -485,8 +492,8 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                               <DataTemplate>
-                                <Border Style="{StaticResource InfoBoxBorderStyle}">
-                                  <TextBlock Style="{StaticResource InfoBoxStyle}" Text="{Binding}" />
+                                <Border Style="{StaticResource SBorderInfoBoxThumb}">
+                                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
                                 </Border>
                               </DataTemplate>
                             </ItemsControl.ItemTemplate>
@@ -554,25 +561,141 @@
 
               <MediaElement x:Name="FullMedia" />
             </Grid>
-
-            <!-- Full Media Info Box -->
-            <ItemsControl x:Name="InfoBox" ItemsSource="{Binding ACore.MediaItems.Current.InfoBoxFull}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Border Style="{StaticResource InfoBoxBorderStyle}">
-                    <TextBlock Style="{StaticResource InfoBoxStyle}" Text="{Binding}" />
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
-  </DockPanel>
+
+    <!-- Status Bar -->
+    <WrapPanel x:Name="StatusPanel" IsHitTestVisible="False" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1"
+               DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo}">
+      <WrapPanel.Style>
+        <Style>
+          <Style.Resources>
+            <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}" />
+          </Style.Resources>
+        </Style>
+      </WrapPanel.Style>
+
+      <!-- PositionSlashCount -->
+      <Border>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding PositionSlashCount}" />
+      </Border>
+
+      <!-- Selected -->
+      <Border Background="{DynamicResource AccentColorBrush}">
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Selected}" />
+      </Border>
+
+      <!-- Modifed -->
+      <Border Background="#CA5100">
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Modifed}" />
+      </Border>
+
+      <!-- Rating -->
+      <Border>
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Rating.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <ItemsControl ItemsSource="{Binding Rating}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Rectangle Style="{StaticResource IconRect}" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </Border>
+
+      <!-- FilePath -->
+      <Border>
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding FilePath}" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding FilePath}" />
+      </Border>
+
+      <!-- People -->
+      <ItemsControl ItemsSource="{Binding CurrentMediaItem.InfoBoxPeople}">
+        <ItemsControl.Style>
+          <Style TargetType="ItemsControl">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding CurrentMediaItem.InfoBoxPeople.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ItemsControl.Style>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
+              <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!-- Keywords -->
+      <ItemsControl ItemsSource="{Binding CurrentMediaItem.InfoBoxKeywords}">
+        <ItemsControl.Style>
+          <Style TargetType="ItemsControl">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding CurrentMediaItem.InfoBoxKeywords.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ItemsControl.Style>
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
+              <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!-- Comment -->
+      <Border>
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Comment}" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Comment}" />
+      </Border>
+
+    </WrapPanel>
+
+  </Grid>
 </controls:MetroWindow>

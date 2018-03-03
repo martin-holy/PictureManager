@@ -137,6 +137,14 @@ namespace PictureManager {
       var iModifed = flag ? MediaItems.Items.Count(p => p.IsModifed) : 0;
       AppInfo.ViewBaseInfo = $"{iTotal} object(s) / {iSelected} selected{(flag ? $" / {iModifed} modifed" : string.Empty)}";
       AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
+
+
+      AppInfo.PositionSlashCount = MediaItems.Current == null
+        ? MediaItems.Items.Count.ToString()
+        : $"{MediaItems.Current.Index + 1}/{MediaItems.Items.Count}";
+      AppInfo.Selected = MediaItems.Items.Count(x => x.IsSelected);
+      AppInfo.Modifed = flag ? MediaItems.Items.Count(x => x.IsModifed) : 0;
+      AppInfo.CurrentMediaItem = MediaItems.Current;
     }
 
     public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
@@ -373,7 +381,7 @@ namespace PictureManager {
           }
 
           if (mi.InfoBoxThumb.Count == 0)
-            mi.SetInfoBox();
+            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
 
           done++;
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), mi.Index);
