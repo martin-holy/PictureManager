@@ -77,8 +77,8 @@ namespace PictureManager {
     public void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
       ACore.AppInfo.AppMode = AppModes.Viewer;
-      ShowTitleBar = false;
-      //IgnoreTaskbarOnMaximize = true;
+      UseNoneWindowStyle = true;
+      IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
       CmbViewers.Visibility = Visibility.Hidden;
     }
@@ -87,8 +87,9 @@ namespace PictureManager {
       ACore.AppInfo.AppMode = AppModes.Browser;
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
+      UseNoneWindowStyle = false;
       ShowTitleBar = true;
-      //IgnoreTaskbarOnMaximize = false;
+      IgnoreTaskbarOnMaximize = false;
       MainMenu.Visibility = Visibility.Visible;
       CmbViewers.Visibility = Visibility.Visible;
     }

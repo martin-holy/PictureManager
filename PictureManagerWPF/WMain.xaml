@@ -214,7 +214,7 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,25" >
+      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,27" >
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders">
