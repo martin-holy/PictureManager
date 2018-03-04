@@ -558,7 +558,7 @@ namespace PictureManager {
                   }, lists);
                 }
 
-                var miCopy = new ViewModel.BaseMediaItem(item.Value, dmiCopy, true);
+                var miCopy = new ViewModel.BaseMediaItem(item.Value, dmiCopy);
                 MediaItems.AllItems.Add(miCopy);
                 var list = new List<ViewModel.BaseMediaItem> {miCopy};
                 MediaItems.LoadPeople(list);
