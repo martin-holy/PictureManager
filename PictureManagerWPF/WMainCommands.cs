@@ -95,17 +95,16 @@ namespace PictureManager {
 
     private void CmdFilterDelete(object sender, ExecutedRoutedEventArgs e) { }
 
-    private void CmdViewerEdit(object sender, ExecutedRoutedEventArgs e) {
-      ACore.AppInfo.AppMode = AppModes.ViewerEdit;
-      Application.Current.Properties[nameof(AppProps.EditedViewer)] = e.Parameter;
-    }
-
     private void CmdViewerIncludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.AddFolder(true, ((ViewModel.Folder) e.Parameter).FullPath);
+      //TODO
+      MessageBox.Show("todo");
+      //ACore.Viewers.AddFolder(true, ((ViewModel.Folder) e.Parameter).FullPath);
     }
 
     private void CmdViewerExcludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      ACore.Viewers.AddFolder(false, ((ViewModel.Folder) e.Parameter).FullPath);
+      //TODO
+      MessageBox.Show("todo");
+      //ACore.Viewers.AddFolder(false, ((ViewModel.Folder) e.Parameter).FullPath);
     }
 
     private void CmdViewerRemoveFolder(object sender, ExecutedRoutedEventArgs e) {
@@ -203,20 +202,18 @@ namespace PictureManager {
     }
 
     private void CmdKeywordsEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = !ACore.KeywordsEditMode && ACore.MediaItems.Items.Count > 0;
+      e.CanExecute = !ACore.MediaItems.IsEditModeOn && ACore.MediaItems.Items.Count > 0;
     }
 
     private void CmdKeywordsEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
       Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)] = TabFolders.IsSelected;
       ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
-      ACore.KeywordsEditMode = true;
-      ACore.AppInfo.AppMode = AppModes.KeywordsEdit;
+      ACore.MediaItems.IsEditModeOn = true;
     }
 
     private void CmdKeywordsSave_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode &&
-                     ACore.MediaItems.Items.Count(p => p.IsModifed) > 0;
+      e.CanExecute = ACore.MediaItems.IsEditModeOn && ACore.MediaItems.Items.Count(p => p.IsModifed) > 0;
     }
 
     private void CmdKeywordsSave_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -246,7 +243,7 @@ namespace PictureManager {
       };
 
       bw.RunWorkerCompleted += delegate(object bwsender, RunWorkerCompletedEventArgs bwe) {
-        ACore.KeywordsEditMode = false;
+        ACore.MediaItems.IsEditModeOn = false;
         if ((bool) Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
           TabFolders.IsSelected = true;
         }
@@ -256,21 +253,20 @@ namespace PictureManager {
           mi.IsModifed = false;
         }
 
-        ACore.AppInfo.AppMode = AppModes.Browser;
+        ACore.MediaItems.IsEditModeOn = false;
       };
 
       bw.RunWorkerAsync(ACore.Db.GetInsertUpdateDeleteLists());
     }
 
     private void CmdKeywordsCancel_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-      e.CanExecute = TabKeywords.IsSelected && ACore.KeywordsEditMode;
+      e.CanExecute = ACore.MediaItems.IsEditModeOn;
     }
 
     private void CmdKeywordsCancel_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.MediaItems.ReLoad(ACore.MediaItems.Items.Where(x => x.IsModifed).ToList());
       ACore.MarkUsedKeywordsAndPeople();
-      ACore.KeywordsEditMode = false;
-      ACore.AppInfo.AppMode = AppModes.Browser;
+      ACore.MediaItems.IsEditModeOn = false;
       if ((bool) Application.Current.Properties[nameof(AppProps.EditKeywordsFromFolders)]) {
         TabFolders.IsSelected = true;
       }

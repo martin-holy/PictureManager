@@ -62,7 +62,7 @@ namespace PictureManager.UserControls {
           case MediaOrientation.Transpose:
             break;
           case MediaOrientation.Rotate270:
-            _rotateTransform.Angle = 270;
+            _rotateTransform.Angle = 90;
             break;
           case MediaOrientation.Transverse:
             break;
@@ -79,6 +79,7 @@ namespace PictureManager.UserControls {
       src.BeginInit();
       src.UriSource = new Uri(FilePath);
       src.CacheOption = BitmapCacheOption.OnLoad;
+      src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
       if (_isDecoded)
         src.DecodePixelWidth = 1920;
       src.EndInit();
@@ -112,6 +113,11 @@ namespace PictureManager.UserControls {
       var zoom = e.Delta > 0 ? .2 : -.2;
       if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4))
         return;
+
+
+      /*var relativeX = relative.X;
+      relative.X = relative.Y;
+      relative.Y = relativeX;*/
 
       var relative = e.GetPosition(Image);
       var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;

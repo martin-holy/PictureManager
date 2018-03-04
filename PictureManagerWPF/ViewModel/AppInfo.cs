@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class AppInfoRating {
@@ -14,13 +12,15 @@ namespace PictureManager.ViewModel {
     private int _modifed;
     private string _positionSlashCount;
     private BaseMediaItem _currentMediaItem;
-
+    private AppModes _appMode;
 
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public string Comment { get; set; } = string.Empty;
     public ObservableCollection<AppInfoRating> Rating { get; set; } = new ObservableCollection<AppInfoRating>();
+    public AppModes AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }
+    public event PropertyChangedEventHandler PropertyChanged;
 
     public string FilePath {
       get {
@@ -48,43 +48,6 @@ namespace PictureManager.ViewModel {
 
         Comment = _currentMediaItem.CommentEscaped;
         OnPropertyChanged($"Comment");
-      }
-    }
-
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    private string _viewBaseInfo;
-    public string ViewBaseInfo {
-      get => _viewBaseInfo;
-      set { _viewBaseInfo = value; OnPropertyChanged(); }
-    }
-
-    private string _currentPictureFilePath;
-    public string CurrentPictureFilePath {
-      get => _currentPictureFilePath;
-      set { _currentPictureFilePath = value; OnPropertyChanged(); }
-    }
-
-    private bool _keywordsEditMode;
-    public bool KeywordsEditMode {
-      get => _keywordsEditMode;
-      set { _keywordsEditMode = value; OnPropertyChanged(); }
-    }
-
-    private AppModes _appMode;
-    public AppModes AppMode
-    {
-      get => _appMode;
-      set {
-        _appMode = value;
-        OnPropertyChanged();
-        var aCore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
-        if (aCore == null) return;
-        aCore.WMain.StatBarOkCancelPanel.Visibility = _appMode == AppModes.KeywordsEdit || _appMode == AppModes.ViewerEdit
-          ? Visibility.Visible
-          : Visibility.Collapsed;
-        aCore.UpdateStatusBarInfo();
       }
     }
 

@@ -23,6 +23,7 @@ namespace PictureManager.ViewModel {
 
   public class MediaItems: INotifyPropertyChanged {
     private BaseMediaItem _current;
+    private bool _isEditModeOn;
     public MediaItems() {
       ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
     }
@@ -45,6 +46,7 @@ namespace PictureManager.ViewModel {
     public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
     public string[] SuportedImageExts = { ".jpg", ".jpeg" };
     public string[] SuportedVideoExts = { ".mp4", ".mkv" };
+    public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {

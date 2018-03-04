@@ -136,7 +136,6 @@
     <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
     <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
     <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
-    <CommandBinding Command="{StaticResource ViewerEdit}" Executed="CmdViewerEdit" />
     <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
     <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
     <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />

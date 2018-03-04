@@ -38,15 +38,6 @@ namespace PictureManager {
     public ViewModel.Viewer CurrentViewer;
 
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
-    private bool _keywordsEditMode;
-
-    public bool KeywordsEditMode {
-      get => _keywordsEditMode;
-      set {
-        _keywordsEditMode = value;
-        AppInfo.KeywordsEditMode = value;
-      }
-    }
 
     public bool LastSelectedSourceRecursive;
     public ViewModel.BaseTreeViewItem LastSelectedSource {
@@ -131,26 +122,18 @@ namespace PictureManager {
     }
 
     public void UpdateStatusBarInfo() {
-      var flag = AppInfo.AppMode == AppModes.KeywordsEdit;
-      var iTotal = MediaItems.Items.Count;
-      var iSelected = MediaItems.Items.Count(x => x.IsSelected);
-      var iModifed = flag ? MediaItems.Items.Count(p => p.IsModifed) : 0;
-      AppInfo.ViewBaseInfo = $"{iTotal} object(s) / {iSelected} selected{(flag ? $" / {iModifed} modifed" : string.Empty)}";
-      AppInfo.CurrentPictureFilePath = MediaItems.Current == null ? string.Empty : MediaItems.Current.FilePath;
-
-
       AppInfo.PositionSlashCount = MediaItems.Current == null
         ? MediaItems.Items.Count.ToString()
         : $"{MediaItems.Current.Index + 1}/{MediaItems.Items.Count}";
       AppInfo.Selected = MediaItems.Items.Count(x => x.IsSelected);
-      AppInfo.Modifed = flag ? MediaItems.Items.Count(x => x.IsModifed) : 0;
+      AppInfo.Modifed = MediaItems.IsEditModeOn ? MediaItems.Items.Count(x => x.IsModifed) : 0;
       AppInfo.CurrentMediaItem = MediaItems.Current;
     }
 
     public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
       if (item is ViewModel.BaseCategoryItem || item is ViewModel.CategoryGroup) return;
 
-      if (KeywordsEditMode) {
+      if (MediaItems.IsEditModeOn) {
         if (!(item is ViewModel.BaseTreeViewTagItem bti)) return;
         switch (item) {
           case ViewModel.Rating _:

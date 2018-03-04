@@ -4,10 +4,20 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
+using Application = System.Windows.Application;
+using ContextMenu = System.Windows.Controls.ContextMenu;
+using DataFormats = System.Windows.DataFormats;
+using DataObject = System.Windows.DataObject;
+using DragDropEffects = System.Windows.DragDropEffects;
+using DragEventArgs = System.Windows.DragEventArgs;
+using MenuItem = System.Windows.Controls.MenuItem;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace PictureManager {
   /// <summary>
@@ -20,7 +30,6 @@ namespace PictureManager {
 
     public WMain(string picFile) {
       InitializeComponent();
-      //DataContext = this;
 
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
@@ -68,24 +77,20 @@ namespace PictureManager {
     public void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
       ACore.AppInfo.AppMode = AppModes.Viewer;
-      /*ShowTitleBar = false;
-      IgnoreTaskbarOnMaximize = true;
-
-
-      MainStatusBar.Visibility = Visibility.Collapsed;
+      ShowTitleBar = false;
+      //IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
-      CmbViewers.Visibility = Visibility.Hidden;*/
+      CmbViewers.Visibility = Visibility.Hidden;
     }
 
     public void SwitchToBrowser() {
       ACore.AppInfo.AppMode = AppModes.Browser;
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
-      ACore.UpdateStatusBarInfo();
       ShowTitleBar = true;
-      IgnoreTaskbarOnMaximize = false;
-      
-      
+      //IgnoreTaskbarOnMaximize = false;
+      MainMenu.Visibility = Visibility.Visible;
+      CmbViewers.Visibility = Visibility.Visible;
     }
 
     private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
@@ -149,10 +154,6 @@ namespace PictureManager {
             MenuAddItem(menu, "FolderDelete", item);
             MenuAddItem(menu, "FolderAddToFavorites", item);
           }
-          if (ACore.AppInfo.AppMode == AppModes.ViewerEdit) {
-            MenuAddItem(menu, "ViewerIncludeFolder", item);
-            MenuAddItem(menu, "ViewerExcludeFolder", item);
-          }
           break;
         }
         case ViewModel.FavoriteFolder _: {
@@ -170,8 +171,9 @@ namespace PictureManager {
           break;
         }
         case ViewModel.Viewer _: {
-          MenuAddItem(menu, "ViewerEdit", item);
-          break;
+          MenuAddItem(menu, "ViewerIncludeFolder", item);
+          MenuAddItem(menu, "ViewerExcludeFolder", item);
+            break;
         }
         case ViewModel.BaseTreeViewItem btvi: {
           if (btvi.Tag is DataModel.ViewerAccess)
@@ -201,32 +203,11 @@ namespace PictureManager {
     }
 
     private void BtnStatBarOk_OnClick(object sender, RoutedEventArgs e) {
-      switch (ACore.AppInfo.AppMode) {
-        case AppModes.KeywordsEdit: {
-          CmdKeywordsSave_Executed(null, null);
-          break;
-        }
-        case AppModes.ViewerEdit:
-          var editedViewer = (ViewModel.Viewer)Application.Current.Properties[nameof(AppProps.EditedViewer)];
-          ACore.Db.SubmitChanges(editedViewer?.Lists);
-          ACore.AppInfo.AppMode = AppModes.Browser;
-          break;
-      }
+      CmdKeywordsSave_Executed(null, null);
     }
 
     private void BtnStatBarCancel_OnClick(object sender, RoutedEventArgs e) {
-      switch (ACore.AppInfo.AppMode) {
-        case AppModes.KeywordsEdit: {
-          CmdKeywordsCancel_Executed(null, null);
-          break;
-        }
-        case AppModes.ViewerEdit:
-          var editedViewer = (ViewModel.Viewer)Application.Current.Properties[nameof(AppProps.EditedViewer)];
-          ACore.Db.RollbackChanges(editedViewer?.Lists);
-          editedViewer?.ReLoad();
-          ACore.AppInfo.AppMode = AppModes.Browser;
-          break;
-      }
+      CmdKeywordsCancel_Executed(null, null);
     }
 
     #region WbThumbs
