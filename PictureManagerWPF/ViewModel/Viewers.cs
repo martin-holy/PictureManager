@@ -18,7 +18,7 @@ namespace PictureManager.ViewModel {
       }
       IsExpanded = true;
 
-      if (Items.Count == 0) ACore.WMain.CmbViewers.Visibility = Visibility.Collapsed;
+      if (Items.Count == 0) ACore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
     public void CreateViewer(string name) {
@@ -31,7 +31,7 @@ namespace PictureManager.ViewModel {
 
       var vmViewer = new Viewer(dmViewer);
       ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
-      ACore.WMain.CmbViewers.Visibility = Visibility.Visible;
+      ACore.WMain.MenuViewers.Visibility = Visibility.Visible;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
@@ -58,13 +58,7 @@ namespace PictureManager.ViewModel {
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(viewer);
-      if (Items.Count == 0) ACore.WMain.CmbViewers.Visibility = Visibility.Collapsed;
-    }
-
-    public void AddFolder(bool included, string path) {
-      if (!(Application.Current.Properties[nameof(AppProps.EditedViewer)] is Viewer viewer)) return;
-      if ((included ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Any(x => x.ToolTip.Equals(path))) return;
-      viewer.AddFolder(included, path);
+      if (Items.Count == 0) ACore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
     public void RemoveFolder(BaseTreeViewItem folder) {

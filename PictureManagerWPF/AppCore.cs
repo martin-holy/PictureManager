@@ -13,6 +13,11 @@ using Directory = System.IO.Directory;
 
 namespace PictureManager {
   public class AppCore : IDisposable {
+    public AppCore(WMain wMain) {
+      WMain = wMain;
+      MediaItems = new ViewModel.MediaItems(this);
+    }
+
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot;
     public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot;
@@ -29,10 +34,10 @@ namespace PictureManager {
 
     public WMain WMain;
     public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
-    public ViewModel.AppInfo AppInfo { get; set; }
+    public ViewModel.AppInfo AppInfo { get; set; } = new ViewModel.AppInfo();
     public DataModel.PmDataContext Db;
     public ViewModel.MediaItems MediaItems { get; set; }
-    public List<ViewModel.BaseTreeViewTagItem> MarkedTags;
+    public List<ViewModel.BaseTreeViewTagItem> MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
     public BackgroundWorker ThumbsWorker;
     public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
     public ViewModel.Viewer CurrentViewer;
@@ -69,16 +74,10 @@ namespace PictureManager {
       }
     }
 
-    public void InitBase() {
-      AppInfo = new ViewModel.AppInfo();
-      MediaItems = new ViewModel.MediaItems();
-      MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
-
+    public void Init() {
       Db = new DataModel.PmDataContext("Data Source = data.db");
       Db.Load();
-    }
 
-    public void Init() {
       People = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};
       Keywords = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
       FolderKeywords = new ViewModel.FolderKeywords();
@@ -89,6 +88,11 @@ namespace PictureManager {
       Viewers = new ViewModel.Viewers {CanModifyItems = true};
       GeoNames = new ViewModel.GeoNames();
       SqlQueries = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
+
+      App.SplashScreen.AddMessage("Loading Viewers");
+      Viewers.Load();
+
+      CurrentViewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
 
       App.SplashScreen.AddMessage("Loading People");
       People.Load();
@@ -102,8 +106,7 @@ namespace PictureManager {
       FavoriteFolders.Load();
       App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
-      App.SplashScreen.AddMessage("Loading Viewers");
-      Viewers.Load();
+      
       App.SplashScreen.AddMessage("Loading GeoNames");
       GeoNames.Load();
       App.SplashScreen.AddMessage("Loading SqlQueries");
@@ -331,15 +334,14 @@ namespace PictureManager {
     }
 
     public void LoadThumbnails() {
-      WMain.StatusProgressBar.Value = 0;
-      WMain.StatusProgressBar.Maximum = 100;
+      AppInfo.ProgressBarValue = 0;
 
       ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
       ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
         if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
         MediaItems.SplitedItemsAdd(MediaItems.Items[(int) e.UserState]);
-        WMain.StatusProgressBar.Value = e.ProgressPercentage;
+        AppInfo.ProgressBarValue = e.ProgressPercentage;
       };
 
       ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {

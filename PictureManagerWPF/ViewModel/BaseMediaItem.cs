@@ -108,10 +108,10 @@ namespace PictureManager.ViewModel {
         InfoBoxThumb.Add(Data.Rating.ToString());
 
       if (Data.Comment != string.Empty) 
-        InfoBoxThumb.Add("C");
+        InfoBoxThumb.Add(Data.Comment);
 
       if (Data.GeoNameId != null) 
-        InfoBoxThumb.Add("G");
+        InfoBoxThumb.Add(ACore.GeoNames.AllGeoNames.Single(x => x.Data.GeoNameId == Data.GeoNameId).Title);
 
       if (MediaType == MediaTypes.Video) InfoBoxThumb.Add("V");
 

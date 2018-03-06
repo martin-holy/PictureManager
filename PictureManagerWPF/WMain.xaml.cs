@@ -34,9 +34,8 @@ namespace PictureManager {
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore {WMain = this};
+      ACore = new AppCore(this);
       Application.Current.Properties[nameof(AppProps.AppCore)] = ACore;
-      ACore.InitBase();
 
       _argPicFile = picFile;
     }
@@ -65,13 +64,13 @@ namespace PictureManager {
 
     public void InitUi() {
       ACore.Init();
+      ACore.AppInfo.ProgressBarValue = 100;
       ACore.Folders.IsExpanded = true;
       TvFolders.ItemsSource = ACore.FoldersRoot;
       TvKeywords.ItemsSource = ACore.KeywordsRoot;
       TvFilters.ItemsSource = ACore.FiltersRoot;
-      CmbViewers.ItemsSource = ACore.Viewers.Items;
-      ACore.CurrentViewer = ACore.Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
-      CmbViewers.SelectedItem = ACore.CurrentViewer;
+      MenuViewers.ItemsSource = ACore.Viewers.Items;
+      MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
     }
 
     public void SwitchToFullScreen() {
@@ -80,7 +79,6 @@ namespace PictureManager {
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
-      CmbViewers.Visibility = Visibility.Hidden;
     }
 
     public void SwitchToBrowser() {
@@ -91,16 +89,6 @@ namespace PictureManager {
       ShowTitleBar = true;
       IgnoreTaskbarOnMaximize = false;
       MainMenu.Visibility = Visibility.Visible;
-      CmbViewers.Visibility = Visibility.Visible;
-    }
-
-    private void CmbViewers_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      if (!(CmbViewers.SelectedItem is ViewModel.Viewer viewer)) return;
-      ACore.CurrentViewer = viewer;
-      Settings.Default.Viewer = viewer.Title;
-      Settings.Default.Save();
-      ACore.FolderKeywords.Load();
-      ACore.Folders.AddDrives();
     }
 
     private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
@@ -196,7 +184,6 @@ namespace PictureManager {
        (Rating)(filter) => MBL => OR between ratings, AND in files
        */
       if (e.ChangedButton != MouseButton.Left) return;
-
       ACore.TreeView_Select(((StackPanel)sender).DataContext,
         Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl),
         Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt),
@@ -210,94 +197,6 @@ namespace PictureManager {
     private void BtnStatBarCancel_OnClick(object sender, RoutedEventArgs e) {
       CmdKeywordsCancel_Executed(null, null);
     }
-
-    #region WbThumbs
-    /*
-
-    private void WbThumbs_KeyDown(object sender, HtmlElementEventArgs e) {
-      if (e.KeyPressedCode == 46) {//Delete 
-        var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-        if (result == MessageBoxResult.Yes)
-          if (ACore.FileOperation(FileOperations.Delete, !e.ShiftKeyPressed))
-            ACore.MediaItems.RemoveSelectedFromWeb();
-      }
-
-      if (e.CtrlKeyPressed && e.KeyPressedCode == 65) {
-        ACore.MediaItems.SelectAll();
-        ACore.MarkUsedKeywordsAndPeople();
-        ACore.UpdateStatusBarInfo();
-        e.ReturnValue = false;
-      }
-
-      if (e.CtrlKeyPressed && e.KeyPressedCode == 75) {
-        if (ACore.MediaItems.Items.Count(x => x.IsSelected) == 1)
-          CmdKeywordsComment_Executed(null, null);
-        e.ReturnValue = false;
-      }
-    }
-
-    private void WbThumbs_DblClick(object sender, HtmlElementEventArgs e) {
-      var thumb = WbThumbs.Document?.GetElementFromPoint(e.ClientMousePosition)?.Parent;
-      if (thumb == null) return;
-      if (thumb.Id == "content" || thumb.Id == null) return;
-      ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = ACore.MediaItems.Items[int.Parse(thumb.Id)];
-      ACore.MediaItems.Current.IsSelected = true;
-      SwitchToFullScreen();
-    }
-
-    private void WbThumbs_MouseDown(object sender, HtmlElementEventArgs e) {
-      if (e.MouseButtonsPressed != System.Windows.Forms.MouseButtons.Left) return;
-      var thumb = WbThumbs.Document?.GetElementFromPoint(e.ClientMousePosition)?.Parent;
-      if (thumb == null) return;
-
-      if (thumb.Id == "content") {
-        ACore.MediaItems.DeselectAll();
-        ACore.UpdateStatusBarInfo();
-        ACore.MarkUsedKeywordsAndPeople();
-        return;
-      }
-
-      if (!thumb.GetAttribute("className").Contains("thumbBox")) return;
-      var mi = ACore.MediaItems.Items[int.Parse(thumb.Id)];
-
-      if (e.CtrlKeyPressed) {
-        mi.IsSelected = !mi.IsSelected;
-        ACore.MediaItems.SetCurrent();
-        ACore.UpdateStatusBarInfo();
-        ACore.MarkUsedKeywordsAndPeople();
-        return;
-      }
-
-      var current = ACore.MediaItems.Current;
-      if (e.ShiftKeyPressed && current != null) {
-        ACore.MediaItems.DeselectAll();
-        var start = mi.Index > current.Index ? current.Index : mi.Index;
-        var stop = mi.Index > current.Index ? mi.Index : current.Index;
-        for (var i = start; i < stop + 1; i++) {
-          ACore.MediaItems.Items[i].IsSelected = true;
-        }
-      }
-
-      if (!e.CtrlKeyPressed && !e.ShiftKeyPressed && !mi.IsSelected) {
-        ACore.MediaItems.DeselectAll();
-        mi.IsSelected = true;
-      }
-
-      ACore.MediaItems.SetCurrent();
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
-    }
-    */
-    public void WbThumbsShowContextMenu() {
-      /*ContextMenu cm = FindResource("MnuFolder") as ContextMenu;
-      if (cm == null) return;
-      cm.PlacementTarget = WbThumbs;
-      cm.IsOpen = true;*/
-    }
-    #endregion
-
-    
 
     #region TvFolders
     private ScrollViewer _tvFoldersScrollViewer;
@@ -569,6 +468,7 @@ namespace PictureManager {
         }
       }
       ACore.UpdateStatusBarInfo();
+      ACore.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
@@ -636,6 +536,20 @@ namespace PictureManager {
       }
     }
 
-    
+
+    private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
+      /*ACore.MediaItems.SplitedItemsReload();
+      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);*/
+    }
+
+    private void CmdMenuViewers_Executed(object sender, ExecutedRoutedEventArgs e) {
+      var viewer = (ViewModel.Viewer) ((MenuItem) e.OriginalSource).DataContext;
+      MenuViewers.Header = viewer.Title;
+      ACore.CurrentViewer = viewer;
+      Settings.Default.Viewer = viewer.Title;
+      Settings.Default.Save();
+      ACore.FolderKeywords.Load();
+      ACore.Folders.AddDrives();
+    }
   }
 }

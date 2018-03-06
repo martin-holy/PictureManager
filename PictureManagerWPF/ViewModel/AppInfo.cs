@@ -10,12 +10,14 @@ namespace PictureManager.ViewModel {
   public class AppInfo : INotifyPropertyChanged {
     private int _selected;
     private int _modifed;
+    private int _progressBarValue;
     private string _positionSlashCount;
     private BaseMediaItem _currentMediaItem;
     private AppModes _appMode;
 
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
+    public int ProgressBarValue { get => _progressBarValue; set { _progressBarValue = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public string Comment { get; set; } = string.Empty;
     public ObservableCollection<AppInfoRating> Rating { get; set; } = new ObservableCollection<AppInfoRating>();

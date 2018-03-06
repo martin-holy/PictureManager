@@ -24,11 +24,11 @@ namespace PictureManager.ViewModel {
   public class MediaItems: INotifyPropertyChanged {
     private BaseMediaItem _current;
     private bool _isEditModeOn;
-    public MediaItems() {
-      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+    public MediaItems(AppCore aCore) {
+      ACore = aCore;
     }
 
-    public List<BaseMediaItem> Items = new List<BaseMediaItem>();
+    public ObservableCollection<BaseMediaItem> Items { get; set; } = new ObservableCollection<BaseMediaItem>();
     public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
     public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
 
@@ -432,7 +432,11 @@ namespace PictureManager.ViewModel {
     public void RemoveSelected() {
       var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
       if (firstIndex == null) return;
-      Items = Items.Where(x => !x.IsSelected).ToList();
+      //Items = Items.Where(x => !x.IsSelected).ToList();
+      foreach (var item in Items.ToList()) {
+        if (!item.IsSelected)
+          Items.Remove(item);
+      }
 
       //update index
       var index = 0;
@@ -489,16 +493,6 @@ namespace PictureManager.ViewModel {
       }
 
       SplitedItems.Add(row);
-    }
-
-    public void SetCurrent() {
-      var mis = Items.Where(x => x.IsSelected).ToList();
-      Current = mis.Count == 1 ? mis[0] : null;
-    }
-
-    public string GetFullScreenInfo() {
-      return "TODO";
-      //return $"<div>{Items.IndexOf(Current) + 1}/{Items.Count}</div><div>{Current?.Data.Width}x{Current?.Data.Height}</div>{Current?.GetKeywordsAsString(true)}<div>{Current?.Data.FileName}</div>";
     }
   }
 }

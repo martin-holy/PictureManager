@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace PictureManager.ViewModel {
   public class Viewer : BaseTreeViewItem, IDbItem {
@@ -8,24 +9,18 @@ namespace PictureManager.ViewModel {
     public override string Title { get => Data.Name; set { Data.Name = value; OnPropertyChanged(); } }
     public BaseTreeViewItem IncludedFolders;
     public BaseTreeViewItem ExcludedFolders;
-    public List<DataModel.BaseTable>[] Lists;
 
-    public Viewer() {
-      IncludedFolders = new BaseTreeViewItem {Title = "Included Folders", IconName = "appbar_folder_star", Parent = this};
-      ExcludedFolders = new BaseTreeViewItem {Title = "Excluded Folders", IconName = "appbar_folder_star", Parent = this};
+    public Viewer(DataModel.Viewer data) {
+      IncludedFolders = new BaseTreeViewItem { Title = "Included Folders", IconName = "appbar_folder_star", Parent = this };
+      ExcludedFolders = new BaseTreeViewItem { Title = "Excluded Folders", IconName = "appbar_folder_star", Parent = this };
 
       Items.Add(IncludedFolders);
       Items.Add(ExcludedFolders);
 
       IconName = "appbar_eye";
-      Lists = ACore.Db.GetInsertUpdateDeleteLists();
-    }
-
-    public Viewer(DataModel.Viewer data) : this() {
       Data = data;
 
-      LoadFolders(true);
-      LoadFolders(false);
+      ReLoad();
     }
 
     public void ReLoad() {
@@ -58,16 +53,20 @@ namespace PictureManager.ViewModel {
       };
     }
 
-    public void AddFolder(bool included, string path) {
+    public void AddFolder(bool included) {
+      var dir = new FolderBrowserDialog();
+      if (dir.ShowDialog() != DialogResult.OK) return;
+      if ((included ? IncludedFolders : ExcludedFolders).Items.Any(x => x.ToolTip.Equals(dir.SelectedPath))) return;
+
       var dmViewerAccess = new DataModel.ViewerAccess {
         Id = ACore.Db.GetNextIdFor<DataModel.ViewerAccess>(),
         ViewerId = Data.Id,
         IsIncluded = included,
-        DirectoryId = ACore.Db.InsertDirecotryInToDb(path)
+        DirectoryId = ACore.Db.InsertDirecotryInToDb(dir.SelectedPath)
       };
 
-      ACore.Db.InsertOnSubmit(dmViewerAccess, Lists);
-      SetInPlace(InitFolder(dmViewerAccess, included, path));
+      ACore.Db.Insert(dmViewerAccess);
+      SetInPlace(InitFolder(dmViewerAccess, included, dir.SelectedPath));
     }
 
     private static void SetInPlace(BaseTreeViewItem item) {

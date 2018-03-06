@@ -9,8 +9,19 @@
         xmlns:userControls="clr-namespace:PictureManager.UserControls"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Picture Manager" Height="547.5" Width="932.674" WindowState="Maximized" 
+        Title="Picture Manager" TitleAlignment="Center" Height="547.5" Width="932.674" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal">
+
+  <controls:MetroWindow.TitleTemplate>
+    <DataTemplate>
+      <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
+        <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" Maximum="100" />
+        <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
+                   FontFamily="{DynamicResource HeaderFontFamily}" />
+      </Grid>
+    </DataTemplate>
+  </controls:MetroWindow.TitleTemplate>
 
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
@@ -29,19 +40,18 @@
           <MenuItem Command="pm:CustomCommands.CmdKeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:CustomCommands.CmdKeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
+        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="appbar_eye" Style="{StaticResource RootMenuStyle}" Icon="{StaticResource MenuItemIconRect}">
+          <MenuItem.ItemContainerStyle>
+            <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
+              <Setter Property="Header" Value="{Binding Title}" />
+              <Setter Property="Tag" Value="appbar_eye" />
+              <Setter Property="Command" Value="pm:CustomCommands.CmdMenuViewers" />
+            </Style>
+          </MenuItem.ItemContainerStyle>
+        </MenuItem>
         <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
         <MenuItem Command="pm:CustomCommands.CmdShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
-      <ComboBox x:Name="CmbViewers" SelectionChanged="CmbViewers_OnSelectionChanged">
-        <ComboBox.ItemTemplate>
-          <DataTemplate>
-            <StackPanel Orientation="Horizontal" Background="Transparent">
-              <Rectangle Style="{StaticResource IconRect}" />
-              <TextBlock Style="{StaticResource TreeViewTitle}" />
-            </StackPanel>
-          </DataTemplate>
-        </ComboBox.ItemTemplate>
-      </ComboBox>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
 
@@ -150,11 +160,13 @@
     <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdAlways_CanExecute" Executed="CmdOpenSettings_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdGeoNames" CanExecute="CmdGeoNames_CanExecute" Executed="CmdGeoNames_Executed" />
+    <CommandBinding Command="pm:CustomCommands.CmdMenuViewers" CanExecute="CmdAlways_CanExecute" Executed="CmdMenuViewers_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
     <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
     <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
     <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
+    <CommandBinding Command="pm:WMain.CmdMediaItemsSelectAll" CanExecute="CmdMediaItemsSelectAll_CanExecute" Executed="CmdMediaItemsSelectAll_Executed" />
   </controls:MetroWindow.CommandBindings>
 
   <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
@@ -184,7 +196,7 @@
       </StatusBarItem>
       <Separator Grid.Column="3" />
       <StatusBarItem Grid.Column="4">
-        <ProgressBar x:Name="StatusProgressBar" Width="90" Height="16" />
+        
       </StatusBarItem>
       <StatusBarItem Grid.Column="5">
         <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
@@ -214,7 +226,7 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,27" >
+      <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,27" SizeChanged="TcMain_OnSizeChanged" >
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
           <TreeView x:Name="TvFolders">
@@ -566,8 +578,7 @@
     </Grid>
 
     <!-- Status Bar -->
-    <WrapPanel x:Name="StatusPanel" IsHitTestVisible="False" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1"
-               DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo}">
+    <WrapPanel x:Name="StatusPanel" IsHitTestVisible="False" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
       <WrapPanel.Style>
         <Style>
           <Style.Resources>
@@ -578,17 +589,47 @@
 
       <!-- PositionSlashCount -->
       <Border>
-        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding PositionSlashCount}" />
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.PositionSlashCount}" />
       </Border>
 
       <!-- Selected -->
       <Border Background="{DynamicResource AccentColorBrush}">
-        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Selected}" />
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Selected}" />
       </Border>
 
       <!-- Modifed -->
       <Border Background="#CA5100">
-        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Modifed}" />
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ACore.MediaItems.IsEditModeOn}" Value="False">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Modifed}" />
       </Border>
 
       <!-- Rating -->
@@ -596,13 +637,13 @@
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
             <Style.Triggers>
-              <DataTrigger Binding="{Binding Rating.Count}" Value="0">
+              <DataTrigger Binding="{Binding ACore.AppInfo.Rating.Count}" Value="0">
                 <Setter Property="Visibility" Value="Collapsed" />
               </DataTrigger>
             </Style.Triggers>
           </Style>
         </Border.Style>
-        <ItemsControl ItemsSource="{Binding Rating}">
+        <ItemsControl ItemsSource="{Binding ACore.AppInfo.Rating}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal" />
@@ -621,21 +662,24 @@
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
             <Style.Triggers>
-              <DataTrigger Binding="{Binding FilePath}" Value="">
+              <DataTrigger Binding="{Binding ACore.AppInfo.FilePath}" Value="">
                 <Setter Property="Visibility" Value="Collapsed" />
               </DataTrigger>
             </Style.Triggers>
           </Style>
         </Border.Style>
-        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding FilePath}" />
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.FilePath}" />
       </Border>
 
       <!-- People -->
-      <ItemsControl ItemsSource="{Binding CurrentMediaItem.InfoBoxPeople}">
+      <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople}">
         <ItemsControl.Style>
           <Style TargetType="ItemsControl">
             <Style.Triggers>
-              <DataTrigger Binding="{Binding CurrentMediaItem.InfoBoxPeople.Count}" Value="0">
+              <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
                 <Setter Property="Visibility" Value="Collapsed" />
               </DataTrigger>
             </Style.Triggers>
@@ -656,11 +700,14 @@
       </ItemsControl>
 
       <!-- Keywords -->
-      <ItemsControl ItemsSource="{Binding CurrentMediaItem.InfoBoxKeywords}">
+      <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords}">
         <ItemsControl.Style>
           <Style TargetType="ItemsControl">
             <Style.Triggers>
-              <DataTrigger Binding="{Binding CurrentMediaItem.InfoBoxKeywords.Count}" Value="0">
+              <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords.Count}" Value="0">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
                 <Setter Property="Visibility" Value="Collapsed" />
               </DataTrigger>
             </Style.Triggers>
@@ -685,13 +732,16 @@
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
             <Style.Triggers>
-              <DataTrigger Binding="{Binding Comment}" Value="">
+              <DataTrigger Binding="{Binding ACore.AppInfo.Comment}" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
                 <Setter Property="Visibility" Value="Collapsed" />
               </DataTrigger>
             </Style.Triggers>
           </Style>
         </Border.Style>
-        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding Comment}" />
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Comment}" />
       </Border>
 
     </WrapPanel>

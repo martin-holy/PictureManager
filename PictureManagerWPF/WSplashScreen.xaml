@@ -18,6 +18,6 @@
     <TextBlock Grid.Row="0" Text="Picture Manager" FontWeight="Bold" FontSize="30" HorizontalAlignment="Center" VerticalAlignment="Center" />
     <TextBlock Grid.Row="1" Name="VersionInfo" Text="" HorizontalAlignment="Center" />
     <TextBlock Grid.Row="2" Name="InfoText" Text="Loading..." HorizontalAlignment="Center" />
-    <ProgressBar Grid.Row="3" IsIndeterminate="True" x:Name="ProgBar" Margin="4,0" />
+    <ProgressBar Grid.Row="3" IsIndeterminate="True" x:Name="ProgBar" Margin="4,0" Height="10" />
   </Grid>
 </controls:MetroWindow>

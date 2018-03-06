@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace PictureManager {
   public partial class WMain {
@@ -14,6 +16,9 @@ namespace PictureManager {
 
     public static readonly RoutedUICommand CmdMediaItemPrevious =
       new RoutedUICommand {Text = "Previous", InputGestures = {new KeyGesture(Key.Left)}};
+
+    public static readonly RoutedUICommand CmdMediaItemsSelectAll =
+      new RoutedUICommand { Text = "Select All", InputGestures = { new KeyGesture(Key.A, ModifierKeys.Control) } };
 
     private void CmdMediaItemNext_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = ACore.AppInfo.AppMode == AppModes.Viewer && ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;
@@ -32,6 +37,15 @@ namespace PictureManager {
     private void CmdMediaItemPrevious_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.MediaItems.CurrentItemMove(false);
       SetMediaItemSource();
+      ACore.UpdateStatusBarInfo();
+    }
+
+    private void CmdMediaItemsSelectAll_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.AppInfo.AppMode == AppModes.Browser && ACore.MediaItems.Items.Count > 0;
+    }
+
+    private void CmdMediaItemsSelectAll_Executed(object sender, ExecutedRoutedEventArgs e) {
+      ACore.MediaItems.SelectAll();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -96,15 +110,11 @@ namespace PictureManager {
     private void CmdFilterDelete(object sender, ExecutedRoutedEventArgs e) { }
 
     private void CmdViewerIncludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      //TODO
-      MessageBox.Show("todo");
-      //ACore.Viewers.AddFolder(true, ((ViewModel.Folder) e.Parameter).FullPath);
+      ((ViewModel.Viewer) e.Parameter).AddFolder(true);
     }
 
     private void CmdViewerExcludeFolder(object sender, ExecutedRoutedEventArgs e) {
-      //TODO
-      MessageBox.Show("todo");
-      //ACore.Viewers.AddFolder(false, ((ViewModel.Folder) e.Parameter).FullPath);
+      ((ViewModel.Viewer) e.Parameter).AddFolder(false);
     }
 
     private void CmdViewerRemoveFolder(object sender, ExecutedRoutedEventArgs e) {
@@ -192,8 +202,6 @@ namespace PictureManager {
       else {
         col.Width = new GridLength((double?) col.Tag ?? 350);
       }
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
     }
 
     private void CmdCatalog_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -219,13 +227,12 @@ namespace PictureManager {
     private void CmdKeywordsSave_Executed(object sender, ExecutedRoutedEventArgs e) {
       var items = ACore.MediaItems.Items.Where(p => p.IsModifed).ToList();
 
-      StatusProgressBar.Value = 0;
-      StatusProgressBar.Maximum = 100;
+      ACore.AppInfo.ProgressBarValue = 0;
 
       var bw = new BackgroundWorker {WorkerReportsProgress = true};
 
       bw.ProgressChanged += delegate(object bwsender, ProgressChangedEventArgs bwe) {
-        StatusProgressBar.Value = bwe.ProgressPercentage;
+        ACore.AppInfo.ProgressBarValue = bwe.ProgressPercentage;
       };
 
       bw.DoWork += delegate(object bwsender, DoWorkEventArgs bwe) {
@@ -254,6 +261,7 @@ namespace PictureManager {
         }
 
         ACore.MediaItems.IsEditModeOn = false;
+        ACore.UpdateStatusBarInfo();
       };
 
       bw.RunWorkerAsync(ACore.Db.GetInsertUpdateDeleteLists());

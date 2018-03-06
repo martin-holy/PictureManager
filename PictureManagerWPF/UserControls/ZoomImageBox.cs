@@ -32,8 +32,8 @@ namespace PictureManager.UserControls {
         RenderTransform = renderGroup,
         RenderTransformOrigin = new Point(0, 0)
       };
-      
-      Child = Image;
+      ImgBorder = new Border {Child = Image};
+      Child = ImgBorder;
 
       MouseMove += OnMouseMove;
       MouseWheel += OnMouseWheel;
@@ -42,6 +42,7 @@ namespace PictureManager.UserControls {
     }
 
     public Image Image;
+    public Border ImgBorder;
     public string FilePath { get => _filePath; set { _filePath = value; SetSource(); } }
     public MediaOrientation Orientation {
       get => _orientation;
@@ -118,7 +119,7 @@ namespace PictureManager.UserControls {
       /*var relativeX = relative.X;
       relative.X = relative.Y;
       relative.Y = relativeX;*/
-
+      var bla = e.GetPosition(ImgBorder);
       var relative = e.GetPosition(Image);
       var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
       var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
