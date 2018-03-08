@@ -4,12 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.Properties;
 using Application = System.Windows.Application;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using DataFormats = System.Windows.DataFormats;
@@ -542,14 +539,6 @@ namespace PictureManager {
       ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);*/
     }
 
-    private void CmdMenuViewers_Executed(object sender, ExecutedRoutedEventArgs e) {
-      var viewer = (ViewModel.Viewer) ((MenuItem) e.OriginalSource).DataContext;
-      MenuViewers.Header = viewer.Title;
-      ACore.CurrentViewer = viewer;
-      Settings.Default.Viewer = viewer.Title;
-      Settings.Default.Save();
-      ACore.FolderKeywords.Load();
-      ACore.Folders.AddDrives();
-    }
+
   }
 }

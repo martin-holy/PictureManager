@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
@@ -19,6 +20,9 @@ namespace PictureManager {
 
     public static readonly RoutedUICommand CmdMediaItemsSelectAll =
       new RoutedUICommand { Text = "Select All", InputGestures = { new KeyGesture(Key.A, ModifierKeys.Control) } };
+
+    public static readonly RoutedUICommand CmdMediaItemsDelete =
+      new RoutedUICommand { Text = "Delete", InputGestures = { new KeyGesture(Key.Delete) } };
 
     private void CmdMediaItemNext_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
       e.CanExecute = ACore.AppInfo.AppMode == AppModes.Viewer && ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;
@@ -46,6 +50,27 @@ namespace PictureManager {
 
     private void CmdMediaItemsSelectAll_Executed(object sender, ExecutedRoutedEventArgs e) {
       ACore.MediaItems.SelectAll();
+      ACore.UpdateStatusBarInfo();
+    }
+
+    private void CmdMediaItemsDelete_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+      e.CanExecute = ACore.AppInfo.Selected > 0;
+    }
+
+    private void CmdMediaItemsDelete_Executed(object sender, ExecutedRoutedEventArgs e) {
+      if (MessageBox.Show("Are you sure?", "Delete Confirmation", 
+        MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+      ACore.FileOperation(FileOperations.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) != 0);
+      ACore.MediaItems.RemoveSelected();
+      if (ACore.AppInfo.AppMode == AppModes.Viewer) {
+        if (CmdMediaItemNext.CanExecute(null, null))
+          CmdMediaItemNext.Execute(null, null);
+        else {
+          if (CmdMediaItemPrevious.CanExecute(null, null))
+            CmdMediaItemPrevious.Execute(null, null);
+          else SwitchToBrowser();
+        }
+      }
       ACore.UpdateStatusBarInfo();
     }
 
@@ -315,6 +340,7 @@ namespace PictureManager {
       current.Data.Comment = inputDialog.TxtAnswer.Text;
       current.SaveMediaItemInToDb(false, lists);
       current.TryWriteMetadata();
+      current.SetInfoBox();
       ACore.Db.SubmitChanges(lists);
     }
 
@@ -327,7 +353,7 @@ namespace PictureManager {
       var lists = ACore.Db.GetInsertUpdateDeleteLists();
       foreach (var mi in mediaItems) {
         mi.SaveMediaItemInToDb(true, lists);
-        AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
+        AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
         mi.SetInfoBox();
       }
 
@@ -375,6 +401,17 @@ namespace PictureManager {
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
       ACore.GeoNames.Load();
+    }
+
+    private void CmdMenuViewers_Executed(object sender, ExecutedRoutedEventArgs e) {
+      if (!(e.OriginalSource is MenuItem mi)) return;
+      var viewer = (ViewModel.Viewer) mi.DataContext;
+      MenuViewers.Header = viewer.Title;
+      ACore.CurrentViewer = viewer;
+      Settings.Default.Viewer = viewer.Title;
+      Settings.Default.Save();
+      ACore.FolderKeywords.Load();
+      ACore.Folders.AddDrives();
     }
   }
 }

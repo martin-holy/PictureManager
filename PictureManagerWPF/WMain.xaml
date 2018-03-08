@@ -167,6 +167,7 @@
     <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
     <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
     <CommandBinding Command="pm:WMain.CmdMediaItemsSelectAll" CanExecute="CmdMediaItemsSelectAll_CanExecute" Executed="CmdMediaItemsSelectAll_Executed" />
+    <CommandBinding Command="pm:WMain.CmdMediaItemsDelete" CanExecute="CmdMediaItemsDelete_CanExecute" Executed="CmdMediaItemsDelete_Executed" />
   </controls:MetroWindow.CommandBindings>
 
   <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
@@ -661,6 +662,8 @@
       <Border>
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Setter Property="IsHitTestVisible" Value="True" />
+            <Setter Property="ToolTip" Value="sdfsd" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding ACore.AppInfo.FilePath}" Value="">
                 <Setter Property="Visibility" Value="Collapsed" />

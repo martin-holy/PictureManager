@@ -68,7 +68,7 @@ namespace PictureManager.UserControls {
           case MediaOrientation.Transverse:
             break;
           case MediaOrientation.Rotate90:
-            _rotateTransform.Angle = 90;
+            _rotateTransform.Angle = 270;
             break;
         }
       }

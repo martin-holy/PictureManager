@@ -126,7 +126,7 @@ namespace PictureManager {
             mi.SaveMediaItemInToDb(!mi.IsNew, _lists);
 
           if (_rebuildThumbnails || !File.Exists(mi.FilePathCache))
-            AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache);
+            AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
           _filesDone++;
 

@@ -154,6 +154,7 @@
       <DependentUpon>WFilterBuilder.xaml</DependentUpon>
     </Compile>
     <Compile Include="WMainCommands.cs" />
+    <Compile Include="WMainEvents.cs" />
     <Compile Include="WPicTransform.xaml.cs">
       <DependentUpon>WPicTransform.xaml</DependentUpon>
     </Compile>

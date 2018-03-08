@@ -434,7 +434,7 @@ namespace PictureManager.ViewModel {
       if (firstIndex == null) return;
       //Items = Items.Where(x => !x.IsSelected).ToList();
       foreach (var item in Items.ToList()) {
-        if (!item.IsSelected)
+        if (item.IsSelected)
           Items.Remove(item);
       }
 

@@ -358,7 +358,7 @@ namespace PictureManager {
           }
 
           if (!File.Exists(mi.FilePathCache))
-            CreateThumbnail(mi.FilePath, mi.FilePathCache);
+            CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
           if (mi.IsNew) {
             mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[])e.Argument);
@@ -652,8 +652,7 @@ namespace PictureManager {
       return ok;
     }
 
-    public static void CreateThumbnail(string origPath, string newPath) {
-      var size = Settings.Default.ThumbnailSize;
+    public static void CreateThumbnail(string origPath, string newPath, int size) {
       var dir = Path.GetDirectoryName(newPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);

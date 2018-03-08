@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 using Application = System.Windows.Application;
@@ -26,6 +27,7 @@ namespace PictureManager.ViewModel {
     public bool IsNew;
     public int ThumbWidth { get; set; }
     public int ThumbHeight { get; set; }
+    public int ThumbSize => ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight;
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
@@ -70,25 +72,46 @@ namespace PictureManager.ViewModel {
     }
 
     private void SetThumbSize() {
+      var size = GetThumbSize();
+      ThumbWidth = (int) size.Width;
+      ThumbHeight = (int) size.Height;
+    }
+
+    public Size GetThumbSize() {
+      var size = new Size();
       //windows settings sets everiting to 125%, so I need to lower ratio
       //TODO read the settings from system
-      var thumbSize = (int) ((400 / (double) 125) * 100);
-      if (Data.Width == 0 && Data.Height == 0) {
-        ThumbWidth = thumbSize;
-        ThumbHeight = thumbSize;
-        return;
+      var desiredSize = (double) (int) ((Settings.Default.ThumbnailSize / 125.0) * 100);
+      var panoramaHeight = (double) (int) ((desiredSize / 16.0) * 9);
+
+      if (Data.Width == 0 || Data.Height == 0) {
+        size.Width = desiredSize;
+        size.Height = desiredSize;
+        return size;
       }
 
-      var ratio = Data.Width > Data.Height ? Data.Width / (double) Data.Height : Data.Height / (double) Data.Width;
-      
-      if (Data.Width > Data.Height) {
-        ThumbWidth = thumbSize;
-        ThumbHeight = (int) (thumbSize / ratio);
+      var rotated = Data.Orientation == (int) MediaOrientation.Rotate90 ||
+                    Data.Orientation == (int) MediaOrientation.Rotate270;
+      var width = (double) (rotated ? Data.Height : Data.Width);
+      var height = (double) (rotated ? Data.Width : Data.Height);
+
+
+      if (width > height) {
+        //panorama
+        if ((width / height) > (16.0 / 9.0)) {
+          size.Height = panoramaHeight;
+          size.Width = (panoramaHeight / height) * width;
+          return size;
+        }
+
+        size.Height = (desiredSize / width) * height;
+        size.Width = desiredSize;
+        return size;
       }
-      else {
-        ThumbWidth = (int) (thumbSize / ratio);
-        ThumbHeight = thumbSize;
-      }
+
+      size.Height = desiredSize;
+      size.Width = (desiredSize / height) * width;
+      return size;
     }
 
     public void SetInfoBox() {
