@@ -24,7 +24,7 @@ namespace PictureManager.ViewModel {
 
     public void Rename(string newName) {
       if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
-      if (!ACore.FileOperation(FileOperations.Move, FullPath, ((Folder) Parent).FullPath, newName)) return;
+      if (!ACore.FileOperation(FileOperationMode.Move, FullPath, ((Folder) Parent).FullPath, newName)) return;
       UpdateFullPath(FullPath, Path.Combine(((Folder) Parent).FullPath, newName));
       Title = newName;
     }
@@ -70,7 +70,7 @@ namespace PictureManager.ViewModel {
       IsExpanded = true;
       var newFullPath = $"{FullPath}\\{folderName}";
       Directory.CreateDirectory(newFullPath);
-      ACore.Db.InsertDirecotryInToDb(newFullPath);
+      ACore.Db.InsertDirectoryInToDb(newFullPath);
 
       var newFolder = new Folder {
         Title = folderName,
@@ -86,7 +86,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void Delete(bool recycle) {
-      if (!ACore.FileOperation(FileOperations.Delete, FullPath, recycle)) return;
+      if (!ACore.FileOperation(FileOperationMode.Delete, FullPath, recycle)) return;
       Parent.Items.Remove(this);
     }
 
@@ -97,7 +97,7 @@ namespace PictureManager.ViewModel {
 
     public void NewOrRename(bool rename) {
       var inputDialog = new InputDialog {
-        Owner = ACore.WMain,
+        Owner = AppCore.WMain,
         IconName = "appbar_folder",
         Title = rename ? "Rename Folder" : "New Folder",
         Question = rename ? "Enter the new name for the folder." : "Enter the name of the new folder.",

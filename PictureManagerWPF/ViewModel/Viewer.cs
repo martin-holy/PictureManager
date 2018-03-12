@@ -62,7 +62,7 @@ namespace PictureManager.ViewModel {
         Id = ACore.Db.GetNextIdFor<DataModel.ViewerAccess>(),
         ViewerId = Data.Id,
         IsIncluded = included,
-        DirectoryId = ACore.Db.InsertDirecotryInToDb(dir.SelectedPath)
+        DirectoryId = ACore.Db.InsertDirectoryInToDb(dir.SelectedPath)
       };
 
       ACore.Db.Insert(dmViewerAccess);

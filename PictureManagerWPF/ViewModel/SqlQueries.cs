@@ -6,7 +6,7 @@ namespace PictureManager.ViewModel {
   public sealed class SqlQueries : BaseCategoryItem {
     public List<SqlQuery> AllSqlQueries;
 
-    public SqlQueries() : base(Categories.SqlQueries) {
+    public SqlQueries() : base(Category.SqlQueries) {
       AllSqlQueries = new List<SqlQuery>();
       Title = "SQL Queries";
       IconName = "appbar_database_sql";
@@ -58,7 +58,7 @@ namespace PictureManager.ViewModel {
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var sqlQueryDialog = new SqlQueryDialog {
-        Owner = ACore.WMain,
+        Owner = AppCore.WMain,
         IconName = IconName,
         SqlQueryName = rename ? ((SqlQuery) item).Title : string.Empty,
         SqlQueryQuery = rename ? ((SqlQuery) item).Data.Query : string.Empty
@@ -95,15 +95,15 @@ namespace PictureManager.ViewModel {
 
     public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is SqlQuery sqlQuery)) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
         x => x.ItemId == sqlQuery.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
-        ACore.Db.DeleteOnSubmit(cgi, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(sqlQuery.Data, lists);
+      DataModel.PmDataContext.DeleteOnSubmit(sqlQuery.Data, lists);
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(sqlQuery);

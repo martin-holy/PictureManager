@@ -45,8 +45,8 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    private MediaTypes _mediaType;
-    public MediaTypes MediaType {
+    private MediaType _mediaType;
+    public MediaType MediaType {
       get => _mediaType;
       set {
         _mediaType = value;
@@ -61,13 +61,13 @@ namespace PictureManager.ViewModel {
 
     public BaseMediaItem(string filePath, DataModel.MediaItem data, bool isNew = false) {
       Data = data;
-      ACore = (AppCore) Application.Current.Properties[nameof(AppProps.AppCore)];
+      ACore = (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
       FilePath = filePath;
       IsNew = isNew;
       MediaType = ACore.MediaItems.SuportedImageExts.Any(
         e => Data.FileName.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
-        ? MediaTypes.Image
-        : MediaTypes.Video;
+        ? MediaType.Image
+        : MediaType.Video;
       if (!IsNew) SetThumbSize();
     }
 
@@ -79,10 +79,11 @@ namespace PictureManager.ViewModel {
 
     public Size GetThumbSize() {
       var size = new Size();
+      const int maxWidth = 1100;
       //windows settings sets everiting to 125%, so I need to lower ratio
       //TODO read the settings from system
-      var desiredSize = (double) (int) ((Settings.Default.ThumbnailSize / 125.0) * 100);
-      var panoramaHeight = (double) (int) ((desiredSize / 16.0) * 9);
+      var desiredSize = Settings.Default.ThumbnailSize / 125.0 * 100;
+      var panoramaHeight = desiredSize / 16.0 * 9;
 
       if (Data.Width == 0 || Data.Height == 0) {
         size.Width = desiredSize;
@@ -98,19 +99,20 @@ namespace PictureManager.ViewModel {
 
       if (width > height) {
         //panorama
-        if ((width / height) > (16.0 / 9.0)) {
-          size.Height = panoramaHeight;
-          size.Width = (panoramaHeight / height) * width;
+        if (width / height > 16.0 / 9.0) {
+          var tooBig = panoramaHeight / height * width > maxWidth;
+          size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
+          size.Width = tooBig ? maxWidth : panoramaHeight / height * width;
           return size;
         }
 
-        size.Height = (desiredSize / width) * height;
+        size.Height = desiredSize / width * height;
         size.Width = desiredSize;
         return size;
       }
 
       size.Height = desiredSize;
-      size.Width = (desiredSize / height) * width;
+      size.Width = desiredSize / height * width;
       return size;
     }
 
@@ -136,7 +138,7 @@ namespace PictureManager.ViewModel {
       if (Data.GeoNameId != null) 
         InfoBoxThumb.Add(ACore.GeoNames.AllGeoNames.Single(x => x.Data.GeoNameId == Data.GeoNameId).Title);
 
-      if (MediaType == MediaTypes.Video) InfoBoxThumb.Add("V");
+      if (MediaType == MediaType.Video) InfoBoxThumb.Add("V");
 
       foreach (var val in InfoBoxPeople) 
         InfoBoxThumb.Add(val);
@@ -148,11 +150,11 @@ namespace PictureManager.ViewModel {
     public void SaveMediaItemInToDb(bool update, List<DataModel.BaseTable>[] lists) {
       if (IsNew) {
         ReadMetadata();
-        ACore.Db.InsertOnSubmit(Data, lists);
+        DataModel.PmDataContext.InsertOnSubmit(Data, lists);
         IsNew = false;
       } else {
         if (update) ReadMetadata();
-        ACore.Db.UpdateOnSubmit(Data, lists);
+        DataModel.PmDataContext.UpdateOnSubmit(Data, lists);
       }
 
       SaveMediaItemKeywordsToDb(lists);
@@ -164,13 +166,13 @@ namespace PictureManager.ViewModel {
       var keyIds = Keywords.Select(k => k.Data.Id).ToList();
       foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.MediaItemId == Data.Id)) {
         if (Keywords.FirstOrDefault(x => x.Data.Id == mik.KeywordId) == null)
-          ACore.Db.DeleteOnSubmit(mik, lists);
+          DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
         else
           keyIds.Remove(mik.KeywordId);
       }
       //Insert new Keywords to MediaItem
       foreach (var keyId in keyIds) {
-        ACore.Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
+        DataModel.PmDataContext.InsertOnSubmit(new DataModel.MediaItemKeyword {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
           KeywordId = keyId,
           MediaItemId = Data.Id
@@ -183,13 +185,13 @@ namespace PictureManager.ViewModel {
       var ids = People.Select(p => p.Data.Id).ToList();
       foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.MediaItemId == Data.Id)) {
         if (People.FirstOrDefault(x => x.Data.Id == mip.PersonId) == null)
-          ACore.Db.DeleteOnSubmit(mip, lists);
+          DataModel.PmDataContext.DeleteOnSubmit(mip, lists);
          else
           ids.Remove(mip.PersonId);
       }
       //Insert new People to MediaItem
       foreach (var id in ids) {
-        ACore.Db.InsertOnSubmit(new DataModel.MediaItemPerson {
+        DataModel.PmDataContext.InsertOnSubmit(new DataModel.MediaItemPerson {
           Id = ACore.Db.GetNextIdFor<DataModel.MediaItemPerson>(),
           PersonId = id,
           MediaItemId = Data.Id
@@ -231,7 +233,7 @@ namespace PictureManager.ViewModel {
     }
 
     public bool WriteMetadata() {
-      if (MediaType == MediaTypes.Video) return true;
+      if (MediaType == MediaType.Video) return true;
       var original = new FileInfo(FilePath);
       var newFile = new FileInfo(FilePath + "_newFile");
       var bSuccess = false;
@@ -317,12 +319,12 @@ namespace PictureManager.ViewModel {
 
     public bool ReadMetadata(bool gpsOnly = false) {
       try {
-        if (MediaType == MediaTypes.Video) {
+        if (MediaType == MediaType.Video) {
           var size = ShellStuff.FileInformation.GetVideoDimensions(FilePath);
           Data.Height = size[0];
           Data.Width = size[1];
         }
-        else { //MediaTypes.Image
+        else { //MediaType.Image
           using (var imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
             if (imageFileStream.Length == 0) return false;
             var decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
@@ -369,7 +371,7 @@ namespace PictureManager.ViewModel {
             //Comment
             Data.Comment = bm.Comment == null
               ? string.Empty
-              : ACore.IncorectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+              : AppCore.IncorrectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
 
             //Orientation
             var orientation = bm.GetQuery("System.Photo.Orientation");

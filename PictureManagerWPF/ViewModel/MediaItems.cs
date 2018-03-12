@@ -24,9 +24,6 @@ namespace PictureManager.ViewModel {
   public class MediaItems: INotifyPropertyChanged {
     private BaseMediaItem _current;
     private bool _isEditModeOn;
-    public MediaItems(AppCore aCore) {
-      ACore = aCore;
-    }
 
     public ObservableCollection<BaseMediaItem> Items { get; set; } = new ObservableCollection<BaseMediaItem>();
     public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
@@ -42,7 +39,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public AppCore ACore;
+    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
     public string[] SuportedImageExts = { ".jpg", ".jpeg" };
     public string[] SuportedVideoExts = { ".mp4", ".mkv" };
@@ -178,7 +175,7 @@ namespace PictureManager.ViewModel {
       foreach (var dir in dirs) {
         if (dir.DirId == -1) {
           var maxDirId = ACore.Db.GetMaxIdFor<DataModel.Directory>();
-          var dirId = ACore.Db.InsertDirecotryInToDb(dir.DirPath);
+          var dirId = ACore.Db.InsertDirectoryInToDb(dir.DirPath);
           if (dirId > maxDirId) ACore.FolderKeywords.Load();
           dir.DirId = dirId;
           dir.FolderKeyword = ACore.FolderKeywords.GetFolderKeywordByFullPath(dir.DirPath);
@@ -217,14 +214,14 @@ namespace PictureManager.ViewModel {
 
       #region Filtering
       //Ratings
-      var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.OrThis).Cast<Rating>().ToArray();
+      var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
         files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Data.Rating))).ToList();
       
       //People
-      var orPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
-      var andPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
-      var notPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.Hidden).ToArray();
+      var orPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andPeopleAny = andPeople.Any();
       var orPeopleAny = orPeople.Any();
       if (orPeopleAny || andPeopleAny || notPeople.Any())
@@ -244,9 +241,9 @@ namespace PictureManager.ViewModel {
         }).ToList();
 
       //Keywords
-      var orKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
-      var andKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.AndThis).ToArray();
-      var notKeywords = ACore.Keywords.AllKeywords.Where(x => x.BgBrush == BgBrushes.Hidden).ToArray();
+      var orKeywords = ACore.Keywords.AllKeywords.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andKeywords = ACore.Keywords.AllKeywords.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notKeywords = ACore.Keywords.AllKeywords.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andKeywordsAny = andKeywords.Any();
       var orKeywordsAny = orKeywords.Any();
       if (orKeywordsAny || andKeywordsAny || notKeywords.Any())
@@ -290,7 +287,7 @@ namespace PictureManager.ViewModel {
       ACore.UpdateStatusBarInfo();
     }
 
-    public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
+    /*public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
       if (tag == null) return;
       Current = null;
       Items.Clear();
@@ -354,11 +351,11 @@ namespace PictureManager.ViewModel {
 
       if (items != null) {
         //Filter by Rating
-        var chosenRatings = ACore.Ratings.Items.Where(x => x.BgBrush == BgBrushes.OrThis).Cast<Rating>().ToArray();
+        var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
         if (chosenRatings.Any())
           items = items.Where(i => chosenRatings.Any(x => x.Value.Equals(i.Rating))).ToArray();
         //Filter by People
-        var chosenPeople = ACore.People.AllPeople.Where(x => x.BgBrush == BgBrushes.OrThis).ToArray();
+        var chosenPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
         if (chosenPeople.Any())
           items = items.Where(mi => chosenPeople.Any(
             p => ACore.Db.MediaItemPeople.Exists(mip => mip.MediaItemId == mi.Id && mip.PersonId == p.Data.Id))).ToArray();
@@ -402,12 +399,12 @@ namespace PictureManager.ViewModel {
             if (bmi.Keywords.Any(x => x.FullPath.StartsWith("#CoSpi/Weed"))) continue;
           }
 
-          Items.Add(bmi);*/
+          Items.Add(bmi);
         }
       }
 
       ACore.UpdateStatusBarInfo();
-    }
+    }*/
 
     public void ScrollToCurrent() {
       if (Current == null || Current.Index == 0) return;
@@ -417,14 +414,14 @@ namespace PictureManager.ViewModel {
     public void ScrollTo(int index) {
       var count = 0;
       var rowsHeight = 0;
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+      const int itemOffset = 5; //BorderThickness, Margin 
       foreach (var row in SplitedItems) {
         count += row.Count;
         if (count < index) {
           rowsHeight += row.Max(x => x.ThumbHeight) + itemOffset;
           continue;
         }
-        ACore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToVerticalOffset(rowsHeight);
+        AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToVerticalOffset(rowsHeight);
         break;
       }
     }
@@ -456,7 +453,7 @@ namespace PictureManager.ViewModel {
         lastIndex++;
       }
 
-      var rowMaxWidth = ACore.WMain.ThumbsBox.ActualWidth;
+      var rowMaxWidth = AppCore.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
       var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
@@ -476,7 +473,7 @@ namespace PictureManager.ViewModel {
 
       SplitedItems.Clear();
 
-      var rowMaxWidth = ACore.WMain.ThumbsBox.ActualWidth;
+      var rowMaxWidth = AppCore.WMain.ThumbsBox.ActualWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
       var row = new ObservableCollection<BaseMediaItem>();

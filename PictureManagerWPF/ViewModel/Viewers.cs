@@ -4,7 +4,7 @@ using System.Windows;
 namespace PictureManager.ViewModel {
   public sealed class Viewers : BaseCategoryItem {
 
-    public Viewers() : base(Categories.Viewers) {
+    public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
       IconName = "appbar_eye";
      }
@@ -18,7 +18,7 @@ namespace PictureManager.ViewModel {
       }
       IsExpanded = true;
 
-      if (Items.Count == 0) ACore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
+      if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
     public void CreateViewer(string name) {
@@ -31,7 +31,7 @@ namespace PictureManager.ViewModel {
 
       var vmViewer = new Viewer(dmViewer);
       ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
-      ACore.WMain.MenuViewers.Visibility = Visibility.Visible;
+      AppCore.WMain.MenuViewers.Visibility = Visibility.Visible;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
@@ -48,17 +48,17 @@ namespace PictureManager.ViewModel {
 
     public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is Viewer viewer)) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
       foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Data.Id)) {
-        ACore.Db.DeleteOnSubmit(v, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(v, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(viewer.Data, lists);
+      DataModel.PmDataContext.DeleteOnSubmit(viewer.Data, lists);
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(viewer);
-      if (Items.Count == 0) ACore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
+      if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
     public void RemoveFolder(BaseTreeViewItem folder) {

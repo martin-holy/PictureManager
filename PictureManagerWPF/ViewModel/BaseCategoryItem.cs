@@ -5,13 +5,13 @@ using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
   public class BaseCategoryItem : BaseTreeViewItem {
-    public Categories Category;
+    public Category Category;
     public bool CanHaveGroups;
     public bool CanHaveSubItems;
     public bool CanModifyItems;
     public string CategoryGroupIconName;
 
-    public BaseCategoryItem(Categories category) {
+    public BaseCategoryItem(Category category) {
       Category = category;
       CategoryGroupIconName = GetCategoryGroupIconName();
     }
@@ -41,7 +41,7 @@ namespace PictureManager.ViewModel {
 
     public void GroupNewOrRename(CategoryGroup group, bool rename) {
       var inputDialog = new InputDialog {
-        Owner = ACore.WMain,
+        Owner = AppCore.WMain,
         IconName = CategoryGroupIconName,
         Title = rename ? "Rename Group" : "New Group",
         Question = rename ? "Enter the new name for the group." : "Enter the name of the new group.",
@@ -77,13 +77,13 @@ namespace PictureManager.ViewModel {
     public void GroupDelete(CategoryGroup group) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
       if (result != MessageBoxResult.Yes) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
       foreach (var cgi in ACore.Db.CategoryGroupsItems.Where(x => x.CategoryGroupId == group.Data.Id)) {
-        ACore.Db.DeleteOnSubmit(cgi, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(group.Data, lists);
+      DataModel.PmDataContext.DeleteOnSubmit(group.Data, lists);
       ACore.Db.SubmitChanges(lists);
 
       foreach (var item in group.Items) {
@@ -103,15 +103,15 @@ namespace PictureManager.ViewModel {
 
     private string GetCategoryGroupIconName() {
       switch (Category) {
-        case Categories.FavoriteFolders: return "appbar_folder_star";
-        case Categories.Folders: return "appbar_folder";
-        case Categories.Ratings: return "appbar_star";
-        case Categories.People: return "appbar_people_multiple";
-        case Categories.FolderKeywords: return "appbar_folder";
-        case Categories.Keywords: return "appbar_tag_label";
-        case Categories.Filters: return "appbar_filter";
-        case Categories.Viewers: return "appbar_eye";
-        case Categories.SqlQueries: return "appbar_database_sql";
+        case Category.FavoriteFolders: return "appbar_folder_star";
+        case Category.Folders: return "appbar_folder";
+        case Category.Ratings: return "appbar_star";
+        case Category.People: return "appbar_people_multiple";
+        case Category.FolderKeywords: return "appbar_folder";
+        case Category.Keywords: return "appbar_tag_label";
+        case Category.Filters: return "appbar_filter";
+        case Category.Viewers: return "appbar_eye";
+        case Category.SqlQueries: return "appbar_database_sql";
         default: return "appbar_bug";
       }
     }
@@ -165,7 +165,7 @@ namespace PictureManager.ViewModel {
       var error = $"{itemName}'s name already exists!";
 
       var inputDialog = new InputDialog {
-        Owner = ACore.WMain,
+        Owner = AppCore.WMain,
         IconName = iconName,
         Title = title,
         Question = question,

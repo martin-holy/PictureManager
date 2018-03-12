@@ -8,7 +8,7 @@ namespace PictureManager.ViewModel {
     public List<Keyword> AllKeywords; 
     private static readonly Mutex Mut = new Mutex();
 
-    public Keywords() : base(Categories.Keywords) {
+    public Keywords() : base(Category.Keywords) {
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
       IconName = "appbar_tag_label";
@@ -136,19 +136,19 @@ namespace PictureManager.ViewModel {
 
     public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is Keyword keyword)) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
       foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Data.Id)) {
-        ACore.Db.DeleteOnSubmit(mik, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
             x => x.ItemId == keyword.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
-        ACore.Db.DeleteOnSubmit(cgi, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(keyword.Data, lists);
+      DataModel.PmDataContext.DeleteOnSubmit(keyword.Data, lists);
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(keyword);
@@ -166,11 +166,11 @@ namespace PictureManager.ViewModel {
 
         items.Move(srcIndex, newIndex);
 
-        var lists = ACore.Db.GetInsertUpdateDeleteLists();
+        var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
         var i = 0;
         foreach (var itm in items.Where(x => x is Keyword).OfType<Keyword>()) {
           itm.Data.Idx = i;
-          ACore.Db.UpdateOnSubmit(itm.Data, lists);
+          DataModel.PmDataContext.UpdateOnSubmit(itm.Data, lists);
           i++;
         }
 

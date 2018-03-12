@@ -70,7 +70,7 @@ namespace PictureManager {
       _compress.ProgressChanged += compress_ProgressChanged;
       _compress.RunWorkerCompleted += compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? _appCore.MediaItems.Items.Where(x => x.IsSelected).ToList()
+        ? _appCore.MediaItems.Items.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
         : _appCore.MediaItems.Items.ToList());
     }
 
@@ -116,7 +116,7 @@ namespace PictureManager {
 
             newFile.CreationTime = original.CreationTime;
 
-            using (var fo = new FileOperation()) {
+            using (var fo = new ShellStuff.FileOperation()) {
               const FileOperationFlags flags = FileOperationFlags.FOF_SILENT | FileOperationFlags.FOFX_RECYCLEONDELETE | FileOperationFlags.FOF_NOERRORUI;
               fo.SetOperationFlags(flags);
               fo.DeleteItem(original.FullName);

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Linq.Mapping;
 using System.Data.SQLite;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -10,25 +12,25 @@ using System.Threading;
 namespace PictureManager.DataModel {
 
   public class PmDataContext : IDisposable {
-    public SQLiteConnection DbConn;
-    public string ConnectionString;
-    public Dictionary<Type, TableInfo> TableInfos = new Dictionary<Type, TableInfo>(); 
+    public SQLiteConnection DbConn { get; set; }
+    public string ConnectionString { get; set; }
 
+    private Dictionary<Type, TableInfo> TablesInfo { get; } = new Dictionary<Type, TableInfo>(); 
     private static readonly Mutex Mut = new Mutex();
 
-    public List<CategoryGroup> CategoryGroups;
-    public List<CategoryGroupItem> CategoryGroupsItems; 
-    public List<Directory> Directories;
-    public List<Filter> Filters;
-    public List<Keyword> Keywords;
-    public List<MediaItemKeyword> MediaItemKeywords;
-    public List<MediaItemPerson> MediaItemPeople;
-    public List<MediaItem> MediaItems;
-    public List<Person> People;
-    public List<Viewer> Viewers;
-    public List<ViewerAccess> ViewersAccess;
-    public List<GeoName> GeoNames;
-    public List<SqlQuery> SqlQueries;
+    public Collection<CategoryGroup> CategoryGroups { get; private set; }
+    public Collection<CategoryGroupItem> CategoryGroupsItems { get; private set; }
+    public Collection<Directory> Directories { get; private set; }
+    public Collection<Filter> Filters { get; private set; }
+    public Collection<Keyword> Keywords { get; private set; }
+    public Collection<MediaItemKeyword> MediaItemKeywords { get; private set; }
+    public Collection<MediaItemPerson> MediaItemPeople { get; private set; }
+    public Collection<MediaItem> MediaItems { get; private set; }
+    public Collection<Person> People { get; private set; }
+    public Collection<Viewer> Viewers { get; private set; }
+    public Collection<ViewerAccess> ViewersAccess { get; private set; }
+    public Collection<GeoName> GeoNames { get; private set; }
+    public Collection<SqlQuery> SqlQueries { get; private set; }
 
     public PmDataContext(string connectionString) {
       ConnectionString = connectionString;
@@ -60,7 +62,7 @@ namespace PictureManager.DataModel {
     public bool Load() {
       if (!OpenDbConnection()) return false;
 
-      TableInfos.Clear();
+      TablesInfo.Clear();
 
       CategoryGroups = GetTableData<CategoryGroup>();
       CategoryGroupsItems = GetTableData<CategoryGroupItem>();
@@ -79,40 +81,40 @@ namespace PictureManager.DataModel {
       return true;
     }
 
-    public List<BaseTable>[] GetInsertUpdateDeleteLists() {
+    public static List<BaseTable>[] GetInsertUpdateDeleteLists() {
       return new[] {new List<BaseTable>(), new List<BaseTable>(), new List<BaseTable>()};
     }
 
-    public void Insert(BaseTable o) {
+    public void Insert(BaseTable item) {
       if (!OpenDbConnection()) return;
       using (var cmd = DbConn.CreateCommand()) {
-        Insert(cmd, o);
+        Insert(cmd, item);
       }
     }
 
-    public void Insert(SQLiteCommand cmd, BaseTable o) {
-      var columns = GetColumnValues(o);
-      cmd.CommandText = TableInfos[o.GetType()].QueryInsert;
+    private void Insert(SQLiteCommand cmd, BaseTable item) {
+      var columns = GetColumnValues(item);
+      cmd.CommandText = TablesInfo[item.GetType()].QueryInsert;
       cmd.Parameters.Clear();
       foreach (var column in columns) {
         cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
       }
       if (!Mut.WaitOne()) return;
       cmd.ExecuteNonQuery();
-      UpdateInList(o, true);
+      UpdateInList(item, true);
       Mut.ReleaseMutex();
     }
 
-    public void Update(BaseTable o) {
+    public void Update(BaseTable item) {
       if (!OpenDbConnection()) return;
       using (var cmd = DbConn.CreateCommand()) {
-        Update(cmd, o);
+        Update(cmd, item);
       }
     }
 
-    public void Update(SQLiteCommand cmd, BaseTable o) {
-      var columns = GetColumnValues(o);
-      cmd.CommandText = TableInfos[o.GetType()].QueryUpdate;
+    private void Update(SQLiteCommand cmd, BaseTable item) {
+      var columns = GetColumnValues(item);
+      cmd.CommandText = TablesInfo[item.GetType()].QueryUpdate;
       cmd.Parameters.Clear();
       foreach (var column in columns) {
         cmd.Parameters.Add(new SQLiteParameter($"@{column.Key}", column.Value));
@@ -122,33 +124,33 @@ namespace PictureManager.DataModel {
       Mut.ReleaseMutex();
     }
 
-    public void Delete(BaseTable o) {
+    public void Delete(BaseTable item) {
       if (!OpenDbConnection()) return;
       using (var cmd = DbConn.CreateCommand()) {
-        Delete(cmd, o);
+        Delete(cmd, item);
       }
     }
 
-    public void Delete(SQLiteCommand cmd, BaseTable o) {
-      cmd.CommandText = TableInfos[o.GetType()].QueryDelete;
+    private void Delete(SQLiteCommand cmd, BaseTable item) {
+      cmd.CommandText = TablesInfo[item.GetType()].QueryDelete;
       cmd.Parameters.Clear();
-      cmd.Parameters.Add(new SQLiteParameter("@Id", o.Id));
+      cmd.Parameters.Add(new SQLiteParameter("@Id", item.Id));
       if (!Mut.WaitOne()) return;
       cmd.ExecuteNonQuery();
-      UpdateInList(o, false);
+      UpdateInList(item, false);
       Mut.ReleaseMutex();
     }
 
-    public void InsertOnSubmit(BaseTable data, List<BaseTable>[] lists) {
-      lists[0].Add(data);
+    public static void InsertOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists?[0].Add(data);
     }
 
-    public void UpdateOnSubmit(BaseTable data, List<BaseTable>[] lists) {
-      lists[1].Add(data);
+    public static void UpdateOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists?[1].Add(data);
     }
 
-    public void DeleteOnSubmit(BaseTable data, List<BaseTable>[] lists) {
-      lists[2].Add(data);
+    public static void DeleteOnSubmit(BaseTable data, List<BaseTable>[] lists) {
+      lists?[2].Add(data);
     }
 
     private void UpdateInList(BaseTable data, bool addIt) {
@@ -170,6 +172,7 @@ namespace PictureManager.DataModel {
     }
 
     public bool SubmitChanges(List<BaseTable>[] lists) {
+      if (lists == null) return false;
       if (!OpenDbConnection()) return false;
       if (!Mut.WaitOne()) return false;
 
@@ -194,6 +197,7 @@ namespace PictureManager.DataModel {
     }
 
     public void RollbackChanges(List<BaseTable>[] lists) {
+      if (lists == null) return;
       lists[0].Clear();
       lists[1].ForEach(ReloadItem);
       lists[1].Clear();
@@ -201,7 +205,8 @@ namespace PictureManager.DataModel {
     }
 
     public void ReloadItem(BaseTable item) {
-      var tableInfo = TableInfos[item.GetType()];
+      if (item == null) return;
+      var tableInfo = TablesInfo[item.GetType()];
       var dbItem = Select($"{tableInfo.QuerySelect} where Id = {item.Id}");
       var i = 0;
       foreach (var column in tableInfo.Columns) {
@@ -214,13 +219,13 @@ namespace PictureManager.DataModel {
     }
 
     private Dictionary<string, object> GetColumnValues(object o) {
-      return TableInfos[o.GetType()].Columns.ToDictionary(c => c.Key, c => c.Value.GetValue(o));
+      return TablesInfo[o.GetType()].Columns.ToDictionary(c => c.Key, c => c.Value.GetValue(o));
     }
 
-    private List<T> GetTableData<T>() where T : new() {
+    private Collection<T> GetTableData<T>() where T : new() {
       App.SplashScreen.AddMessage($"Loading DB table {typeof(T).Name}");
       var tableName = ((TableAttribute) typeof (T).GetCustomAttribute(typeof (TableAttribute), false))?.Name;
-      var data = new List<T>();
+      var data = new Collection<T>();
       if (tableName == null) return data;
 
       var columns = new Dictionary<string, PropertyInfo>();
@@ -265,7 +270,7 @@ namespace PictureManager.DataModel {
 
       var maxId = data.Count == 0 ? 0 : data.Cast<BaseTable>().Max(x => x.Id);
 
-      TableInfos.Add(typeof(T),
+      TablesInfo.Add(typeof(T),
         new TableInfo {
           Columns = columns,
           QuerySelect = qSelect,
@@ -279,44 +284,44 @@ namespace PictureManager.DataModel {
       return data;
     }
 
-    public DataRowCollection Select(string sql) {
+    private DataRowCollection Select(string sql) {
       if (!OpenDbConnection()) return null;
       using (var cmd = DbConn.CreateCommand()) {
         cmd.CommandText = sql;
         using (var adapter = new SQLiteDataAdapter(cmd)) {
-          var ds = new DataSet();
-          adapter.Fill(ds);
-          return ds.Tables[0].Rows;
+          using (var ds = new DataSet {Locale = CultureInfo.InvariantCulture}) {
+            adapter.Fill(ds);
+            return ds.Tables[0].Rows;
+          }
         }
       }
     }
 
-    public bool Execute(string sql) {
-      if (!OpenDbConnection()) return false;
+    private void Execute(string sql) {
+      if (!OpenDbConnection()) return;
       using (var cmd = DbConn.CreateCommand()) {
         cmd.CommandText = sql;
         cmd.ExecuteNonQuery();
       }
-      return true;
     }
 
     public int GetNextIdFor<T>() {
       Mut.WaitOne();
-      var nextId = ++ TableInfos[typeof (T)].MaxId;
+      var nextId = ++ TablesInfo[typeof (T)].MaxId;
       Mut.ReleaseMutex();
       return nextId;
     }
 
 
     public int GetMaxIdFor<T>() {
-      return TableInfos[typeof (T)].MaxId;
+      return TablesInfo[typeof (T)].MaxId;
     }
 
     public int? GetDirectoryIdByPath(string path) {
       return Directories.SingleOrDefault(x => x.Path.Equals(path, StringComparison.OrdinalIgnoreCase))?.Id;
     }
 
-    public int InsertDirecotryInToDb(string path) {
+    public int InsertDirectoryInToDb(string path) {
       Mut.WaitOne();
       var dirId = GetDirectoryIdByPath(path);
       if (dirId != null) {
@@ -331,13 +336,13 @@ namespace PictureManager.DataModel {
   }
 
   public class TableInfo {
-    public string QuerySelect;
-    public string QueryInsert;
-    public string QueryUpdate;
-    public string QueryDelete;
-    public Dictionary<string, PropertyInfo> Columns;
-    public object Items;
-    public int MaxId;
+    public string QuerySelect { get; set; }
+    public string QueryInsert { get; set; }
+    public string QueryUpdate { get; set; }
+    public string QueryDelete { get; set; }
+    public Dictionary<string, PropertyInfo> Columns { get; set; }
+    public object Items { get; set; }
+    public int MaxId { get; set; }
   }
 
   #region Tables

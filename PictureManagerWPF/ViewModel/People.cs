@@ -7,7 +7,7 @@ namespace PictureManager.ViewModel {
     public List<Person> AllPeople; 
     private static readonly Mutex Mut = new Mutex();
 
-    public People() : base(Categories.People) {
+    public People() : base(Category.People) {
       AllPeople = new List<Person>();
       Title = "People";
       IconName = "appbar_people_multiple";
@@ -93,19 +93,19 @@ namespace PictureManager.ViewModel {
 
     public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is Person person)) return;
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
       foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id)) {
-        ACore.Db.DeleteOnSubmit(mip, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(mip, lists);
       }
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
             x => x.ItemId == person.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
       if (cgi != null) {
-        ACore.Db.DeleteOnSubmit(cgi, lists);
+        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
       }
 
-      ACore.Db.DeleteOnSubmit(person.Data, lists);
+      DataModel.PmDataContext.DeleteOnSubmit(person.Data, lists);
       ACore.Db.SubmitChanges(lists);
 
       item.Parent.Items.Remove(person);

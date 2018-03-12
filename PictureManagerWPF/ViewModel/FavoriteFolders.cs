@@ -5,7 +5,7 @@ using PictureManager.Properties;
 namespace PictureManager.ViewModel {
   public sealed class FavoriteFolders : BaseCategoryItem {
 
-    public FavoriteFolders() : base(Categories.FavoriteFolders) {
+    public FavoriteFolders() : base(Category.FavoriteFolders) {
       Title = "Favorites";
       IconName = "appbar_folder_star";
     }
@@ -20,14 +20,14 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public void Remove(string path) {
+    public static void Remove(string path) {
       var lines = Settings.Default.FolderFavorites.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries).ToList();
       lines.Remove(path);
       Settings.Default.FolderFavorites = string.Join(Environment.NewLine, lines);
       Settings.Default.Save();
     }
 
-    public void Add(string path) {
+    public static void Add(string path) {
       if (Settings.Default.FolderFavorites.IndexOf(path, StringComparison.OrdinalIgnoreCase) >= 0) return;
       if (!Settings.Default.FolderFavorites.EndsWith(Environment.NewLine)) {
         Settings.Default.FolderFavorites += Environment.NewLine;

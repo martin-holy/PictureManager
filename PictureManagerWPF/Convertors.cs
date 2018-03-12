@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace PictureManager {
   public class StaticResourceConverter : IValueConverter {
@@ -53,13 +54,13 @@ namespace PictureManager {
     }
   }
 
-  public class BgColorConverter : IValueConverter {
+  public class BackgroundColorConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) value = parameter;
-      switch ((BgBrushes)value) {
-        case BgBrushes.AndThis: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
-        case BgBrushes.OrThis: return new SolidColorBrush(Color.FromRgb(21, 133, 181));
-        case BgBrushes.Hidden: return new SolidColorBrush(Color.FromRgb(222, 87, 58));
+      switch ((BackgroundBrush)value) {
+        case BackgroundBrush.AndThis: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case BackgroundBrush.OrThis: return new SolidColorBrush(Color.FromRgb(21, 133, 181));
+        case BackgroundBrush.Hidden: return new SolidColorBrush(Color.FromRgb(222, 87, 58));
         default: return new SolidColorBrush(Color.FromRgb(37, 37, 37));
       }
     }
@@ -69,9 +70,24 @@ namespace PictureManager {
     }
   }
 
-  public class DatabindingDebugConverter : IValueConverter {
+  public class DataBindingDebugConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       return value;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value;
+    }
+  }
+
+  public class ImageSourceConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      var src = new BitmapImage();
+      src.BeginInit();
+      src.UriSource = (Uri) value;
+      src.CacheOption = BitmapCacheOption.OnLoad;
+      src.EndInit();
+      return src;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

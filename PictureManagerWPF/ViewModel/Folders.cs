@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 
 namespace PictureManager.ViewModel {
-  public class Folders : BaseCategoryItem {
+  public sealed class Folders : BaseCategoryItem {
 
-    public Folders() : base(Categories.Folders) {
+    public Folders() : base(Category.Folders) {
       Title = "Folders";
       IconName = "appbar_folder";
     }

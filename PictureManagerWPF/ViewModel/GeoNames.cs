@@ -7,7 +7,7 @@ namespace PictureManager.ViewModel {
   public sealed class GeoNames: BaseCategoryItem {
     public List<GeoName> AllGeoNames;
 
-    public GeoNames() : base (Categories.GeoNames) {
+    public GeoNames() : base (Category.GeoNames) {
       AllGeoNames = new List<GeoName>();
       Title = "GeoNames";
       IconName = "appbar_location_checkin";
@@ -42,7 +42,7 @@ namespace PictureManager.ViewModel {
       var geonames = xml.SelectNodes("/geonames/geoname");
       if (geonames == null) return null;
 
-      var lists = ACore.Db.GetInsertUpdateDeleteLists();
+      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
       DataModel.GeoName parentGeoName = null;
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
@@ -58,7 +58,7 @@ namespace PictureManager.ViewModel {
             ParentGeoNameId = parentGeoName?.GeoNameId
           };
 
-          ACore.Db.InsertOnSubmit(dbGeoName, lists);
+          DataModel.PmDataContext.InsertOnSubmit(dbGeoName, lists);
         }
 
         parentGeoName = dbGeoName;

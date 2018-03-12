@@ -7,9 +7,10 @@
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
         xmlns:userControls="clr-namespace:PictureManager.UserControls"
+        xmlns:media="https://github.com/JohanLarsson/Gu.Wpf.Media"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="Picture Manager" TitleAlignment="Center" Height="547.5" Width="932.674" WindowState="Maximized" 
+        Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal">
 
   <controls:MetroWindow.TitleTemplate>
@@ -27,30 +28,31 @@
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:CustomCommands.CmdCompressPictures" />
-          <MenuItem Command="pm:CustomCommands.CmdReloadMetadata" />
-          <MenuItem Command="pm:CustomCommands.CmdCatalog" />
-          <MenuItem Command="pm:CustomCommands.CmdOpenSettings" Tag="appbar_settings" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:CustomCommands.CmdGeoNames" Tag="appbar_location_checkin" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:CustomCommands.CmdTestButton" />
+          <MenuItem Command="pm:Commands.CompressPictures" />
+          <MenuItem Command="pm:Commands.ReloadMetadata" />
+          <MenuItem Command="pm:Commands.OpenCatalog" />
+          <MenuItem Command="pm:Commands.OpenSettings" Tag="appbar_settings" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="appbar_location_checkin" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:CustomCommands.CmdKeywordsEdit" Tag="appbar_edit" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:CustomCommands.CmdKeywordsSave" Tag="appbar_save" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:CustomCommands.CmdKeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:CustomCommands.CmdKeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="appbar_edit" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsSave" Tag="appbar_save" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="appbar_eye" Style="{StaticResource RootMenuStyle}" Icon="{StaticResource MenuItemIconRect}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
               <Setter Property="Tag" Value="appbar_eye" />
-              <Setter Property="Command" Value="pm:CustomCommands.CmdMenuViewers" />
+              <Setter Property="Command" Value="pm:Commands.ViewerChange" />
+              <Setter Property="CommandParameter" Value="{Binding}" />
             </Style>
           </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Command="pm:CustomCommands.CmdAbout" Style="{StaticResource RootMenuStyle}" />
-        <MenuItem Command="pm:CustomCommands.CmdShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
+        <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
+        <MenuItem Command="pm:Commands.ShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
@@ -109,117 +111,9 @@
       <Setter Property="Foreground" Value="White" />
       <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
-
-    <RoutedUICommand x:Key="CategoryGroupNew" Text="New Group" />
-    <RoutedUICommand x:Key="CategoryGroupRename" Text="Rename Group" />
-    <RoutedUICommand x:Key="CategoryGroupDelete" Text="Delete Group" />
-    <RoutedUICommand x:Key="TagItemNew" Text="New" />
-    <RoutedUICommand x:Key="TagItemRename" Text="Rename" />
-    <RoutedUICommand x:Key="TagItemDelete" Text="Delete" />
-    <RoutedUICommand x:Key="FolderNew" Text="New folder" />
-    <RoutedUICommand x:Key="FolderRename" Text="Rename" />
-    <RoutedUICommand x:Key="FolderDelete" Text="Delete" />
-    <RoutedUICommand x:Key="FolderAddToFavorites" Text="Add to Favorites" />
-    <RoutedUICommand x:Key="FolderRemoveFromFavorites" Text="Remove from Favorites" />
-    <RoutedUICommand x:Key="FilterNew" Text="New" />
-    <RoutedUICommand x:Key="FilterEdit" Text="Edit" />
-    <RoutedUICommand x:Key="FilterDelete" Text="Delete" />
-    <RoutedUICommand x:Key="ViewerEdit" Text="Edit" />
-    <RoutedUICommand x:Key="ViewerIncludeFolder" Text="Include for Viewer" />
-    <RoutedUICommand x:Key="ViewerExcludeFolder" Text="Exclude for Viewer" />
-    <RoutedUICommand x:Key="ViewerRemoveFolder" Text="Remove" />
-    <RoutedUICommand x:Key="GeoNameNew" Text="New" />
   </controls:MetroWindow.Resources>
 
-  <controls:MetroWindow.CommandBindings>
-    <CommandBinding Command="{StaticResource CategoryGroupNew}" Executed="CmdCategoryGroupNew" />
-    <CommandBinding Command="{StaticResource CategoryGroupRename}" Executed="CmdCategoryGroupRename" />
-    <CommandBinding Command="{StaticResource CategoryGroupDelete}" Executed="CmdCategoryGroupDelete" />
-    <CommandBinding Command="{StaticResource TagItemNew}" Executed="CmdTagItemNew" />
-    <CommandBinding Command="{StaticResource TagItemRename}" Executed="CmdTagItemRename" />
-    <CommandBinding Command="{StaticResource TagItemDelete}" Executed="CmdTagItemDelete" />
-    <CommandBinding Command="{StaticResource FolderNew}" Executed="CmdFolderNew" />
-    <CommandBinding Command="{StaticResource FolderRename}" Executed="CmdFolderRename" />
-    <CommandBinding Command="{StaticResource FolderDelete}" Executed="CmdFolderDelete" />
-    <CommandBinding Command="{StaticResource FolderAddToFavorites}" Executed="CmdFolderAddToFavorites" />
-    <CommandBinding Command="{StaticResource FolderRemoveFromFavorites}" Executed="CmdFolderRemoveFromFavorites" />
-    <CommandBinding Command="{StaticResource FilterNew}" Executed="CmdFilterNew" />
-    <CommandBinding Command="{StaticResource FilterEdit}" Executed="CmdFilterEdit" />
-    <CommandBinding Command="{StaticResource FilterDelete}" Executed="CmdFilterDelete" />
-    <CommandBinding Command="{StaticResource ViewerIncludeFolder}" Executed="CmdViewerIncludeFolder" />
-    <CommandBinding Command="{StaticResource ViewerExcludeFolder}" Executed="CmdViewerExcludeFolder" />
-    <CommandBinding Command="{StaticResource ViewerRemoveFolder}" Executed="CmdViewerRemoveFolder" />
-    <CommandBinding Command="{StaticResource GeoNameNew}" Executed="CmdGeoNameNew" />
-
-    <CommandBinding Command="pm:CustomCommands.CmdKeywordsEdit" CanExecute="CmdKeywordsEdit_CanExecute" Executed="CmdKeywordsEdit_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdKeywordsSave" CanExecute="CmdKeywordsSave_CanExecute" Executed="CmdKeywordsSave_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdKeywordsCancel" CanExecute="CmdKeywordsCancel_CanExecute" Executed="CmdKeywordsCancel_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdKeywordsComment" CanExecute="CmdKeywordsComment_CanExecute" Executed="CmdKeywordsComment_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdCompressPictures" CanExecute="CmdCompressPictures_CanExecute" Executed="CmdCompressPictures_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdTestButton" CanExecute="CmdAlways_CanExecute" Executed="CmdTestButton_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdReloadMetadata" CanExecute="CmdReloadMetadata_CanExecute" Executed="CmdReloadMetadata_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdOpenSettings" CanExecute="CmdAlways_CanExecute" Executed="CmdOpenSettings_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdGeoNames" CanExecute="CmdGeoNames_CanExecute" Executed="CmdGeoNames_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdMenuViewers" CanExecute="CmdAlways_CanExecute" Executed="CmdMenuViewers_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdAbout" CanExecute="CmdAlways_CanExecute" Executed="CmdAbout_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdCatalog" CanExecute="CmdAlways_CanExecute" Executed="CmdCatalog_Executed" />
-    <CommandBinding Command="pm:CustomCommands.CmdShowHideTabMain" CanExecute="CmdAlways_CanExecute" Executed="CmdShowHideTabMain_Executed" />
-    <CommandBinding Command="pm:WMain.CmdMediaItemNext" CanExecute="CmdMediaItemNext_CanExecute" Executed="CmdMediaItemNext_Executed" />
-    <CommandBinding Command="pm:WMain.CmdMediaItemPrevious" CanExecute="CmdMediaItemPrevious_CanExecute" Executed="CmdMediaItemPrevious_Executed" />
-    <CommandBinding Command="pm:WMain.CmdMediaItemsSelectAll" CanExecute="CmdMediaItemsSelectAll_CanExecute" Executed="CmdMediaItemsSelectAll_Executed" />
-    <CommandBinding Command="pm:WMain.CmdMediaItemsDelete" CanExecute="CmdMediaItemsDelete_CanExecute" Executed="CmdMediaItemsDelete_Executed" />
-  </controls:MetroWindow.CommandBindings>
-
   <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
-
-    <StatusBar x:Name="MainStatusBar" Visibility="Collapsed"
-               DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo}">
-      <StatusBar.ItemsPanel>
-        <ItemsPanelTemplate>
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="100" />
-              <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-          </Grid>
-        </ItemsPanelTemplate>
-      </StatusBar.ItemsPanel>
-      <StatusBarItem>
-        <TextBlock Text="{Binding ViewBaseInfo}" />
-      </StatusBarItem>
-      <Separator Grid.Column="1" />
-      <StatusBarItem Grid.Column="2">
-        <TextBlock Text="{Binding CurrentPictureFilePath}" />
-      </StatusBarItem>
-      <Separator Grid.Column="3" />
-      <StatusBarItem Grid.Column="4">
-        
-      </StatusBarItem>
-      <StatusBarItem Grid.Column="5">
-        <StackPanel Orientation="Horizontal" x:Name="StatBarOkCancelPanel">
-          <Button Margin="0,0,0,0" Content="Ok" Click="BtnStatBarOk_OnClick" MinWidth="60" />
-          <Button Margin="3,0,0,0" Content="Cancel" Click="BtnStatBarCancel_OnClick" MinWidth="60" />
-        </StackPanel>
-      </StatusBarItem>
-      <StatusBar.Style>
-        <Style TargetType="{x:Type StatusBar}">
-          <Setter Property="Background" Value="{DynamicResource AccentColorBrush}" />
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding AppMode}" Value="2">
-              <Setter Property="Background" Value="#CA5100" />
-            </DataTrigger>
-            <DataTrigger Binding="{Binding AppMode}" Value="3">
-              <Setter Property="Background" Value="#CA5100" />
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </StatusBar.Style>
-    </StatusBar>
-
     <Grid x:Name="GridMain" Margin="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
@@ -227,6 +121,7 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
+      <!-- TreeView Forders, Keywords and Filters -->
       <TabControl x:Name="TcMain" Grid.Row="0" Padding="0,0,0,27" SizeChanged="TcMain_OnSizeChanged" >
         <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
           <!-- TreeView Folders -->
@@ -450,7 +345,7 @@
                         ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel/>
+                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -493,7 +388,7 @@
 
                         <Grid>
                           <!-- Thumbnail Image -->
-                          <Image Source="{Binding FilePathCacheUri}" Stretch="Fill" />
+                          <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
 
                           <!-- Thumbnail Info Box -->
                           <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
@@ -555,7 +450,7 @@
                 </Style>
               </Grid.Style>
 
-              <userControls:ZoomImageBox x:Name="FullImage" ClipToBounds="True" />
+              <userControls:ZoomImageBox x:Name="FullImage" />
             </Grid>
 
             <!-- Full Media Video -->
@@ -571,14 +466,34 @@
                 </Style>
               </Grid.Style>
 
-              <MediaElement x:Name="FullMedia" />
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+
+              <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
+                ScrubbingEnabled="True" Stretch="Uniform" />
+
+              <Grid Grid.Row="0" VerticalAlignment="Bottom">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Slider x:Name="ProgressSlider" Grid.Row="0" Minimum="0"
+                  media:Drag.PauseWhileDragging="{Binding ElementName=FullMedia}"
+                  IsEnabled="{Binding ElementName=FullMedia, Path=HasMedia}"
+                  Maximum="{Binding ElementName=FullMedia, Path=Length, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}"
+                  Style="{StaticResource {x:Static media:Styles.ProgressSliderStyleKey}}"
+                  Value="{Binding ElementName=FullMedia, Path=Position, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}" />
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
 
-    <!-- Status Bar -->
+    <!-- Status Panel -->
     <WrapPanel x:Name="StatusPanel" IsHitTestVisible="False" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
       <WrapPanel.Style>
         <Style>

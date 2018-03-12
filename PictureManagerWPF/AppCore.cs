@@ -13,38 +13,36 @@ using Directory = System.IO.Directory;
 
 namespace PictureManager {
   public class AppCore : IDisposable {
-    public AppCore(WMain wMain) {
-      WMain = wMain;
-      MediaItems = new ViewModel.MediaItems(this);
-    }
 
-    public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
-    public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot;
-    public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot;
-    public ViewModel.Keywords Keywords;
-    public ViewModel.People People;
-    public ViewModel.FolderKeywords FolderKeywords;
-    public ViewModel.Folders Folders;
-    public ViewModel.FavoriteFolders FavoriteFolders;
-    public ViewModel.Ratings Ratings;
-    public ViewModel.Filters Filters;
-    public ViewModel.Viewers Viewers;
-    public ViewModel.GeoNames GeoNames;
-    public ViewModel.SqlQueries SqlQueries;
+    public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
+    public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
+    public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
 
-    public WMain WMain;
-    public string[] IncorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";" };
-    public ViewModel.AppInfo AppInfo { get; set; } = new ViewModel.AppInfo();
-    public DataModel.PmDataContext Db;
-    public ViewModel.MediaItems MediaItems { get; set; }
-    public List<ViewModel.BaseTreeViewTagItem> MarkedTags = new List<ViewModel.BaseTreeViewTagItem>();
-    public BackgroundWorker ThumbsWorker;
-    public AutoResetEvent ThumbsResetEvent = new AutoResetEvent(false);
-    public ViewModel.Viewer CurrentViewer;
+    public ViewModel.Keywords Keywords { get; } = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
+    public ViewModel.People People { get; } = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};
+    public ViewModel.FolderKeywords FolderKeywords { get; } = new ViewModel.FolderKeywords();
+    public ViewModel.Folders Folders { get; } = new ViewModel.Folders();
+    public ViewModel.FavoriteFolders FavoriteFolders { get; } = new ViewModel.FavoriteFolders();
+    public ViewModel.Ratings Ratings { get; } = new ViewModel.Ratings();
+    public ViewModel.Filters Filters { get; } = new ViewModel.Filters();
+    public ViewModel.Viewers Viewers { get; } = new ViewModel.Viewers {CanModifyItems = true};
+    public ViewModel.GeoNames GeoNames { get; } = new ViewModel.GeoNames();
+    public ViewModel.SqlQueries SqlQueries { get; } = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
 
+    public static WMain WMain => (WMain) Application.Current.Properties[nameof(AppProperty.WMain)];
+    public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";"};
+    public ViewModel.AppInfo AppInfo { get; } = new ViewModel.AppInfo();
+    public DataModel.PmDataContext Db { get; set; } = new DataModel.PmDataContext("Data Source = data.db");
+    public ViewModel.MediaItems MediaItems { get; set; } = new ViewModel.MediaItems();
+    public Collection<ViewModel.BaseTreeViewTagItem> MarkedTags { get; } = new Collection<ViewModel.BaseTreeViewTagItem>();
+    public BackgroundWorker ThumbsWorker { get; set; }
+    public AutoResetEvent ThumbsResetEvent { get; set; } = new AutoResetEvent(false);
+    public ViewModel.Viewer CurrentViewer { get; set; }
+
+    private bool _disposed;
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
 
-    public bool LastSelectedSourceRecursive;
+    public bool LastSelectedSourceRecursive { get; set; }
     public ViewModel.BaseTreeViewItem LastSelectedSource {
       get => _lastSelectedSource;
       set {
@@ -61,39 +59,30 @@ namespace PictureManager {
     }
 
     protected virtual void Dispose(bool disposing) {
-      if (!disposing) return;
-
-      if (Db != null) {
-        Db.Dispose();
-        Db = null;
+      if (_disposed) return;
+      if (disposing) {
+        if (Db != null) {
+          Db.Dispose();
+          Db = null;
+        }
+        if (ThumbsWorker != null) {
+          ThumbsWorker.Dispose();
+          ThumbsWorker = null;
+        }
+        if (ThumbsResetEvent != null) {
+          ThumbsResetEvent.Dispose();
+          ThumbsResetEvent = null;
+        }
       }
-
-      if (ThumbsResetEvent != null) {
-        ThumbsResetEvent.Dispose();
-        ThumbsResetEvent = null;
-      }
+      _disposed = true;
     }
 
     public void Init() {
-      Db = new DataModel.PmDataContext("Data Source = data.db");
+      App.SplashScreen.AddMessage("Loading Database");
       Db.Load();
-
-      People = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};
-      Keywords = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
-      FolderKeywords = new ViewModel.FolderKeywords();
-      Folders = new ViewModel.Folders();
-      FavoriteFolders = new ViewModel.FavoriteFolders();
-      Ratings = new ViewModel.Ratings();
-      Filters = new ViewModel.Filters();
-      Viewers = new ViewModel.Viewers {CanModifyItems = true};
-      GeoNames = new ViewModel.GeoNames();
-      SqlQueries = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
-
       App.SplashScreen.AddMessage("Loading Viewers");
       Viewers.Load();
-
       CurrentViewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as ViewModel.Viewer;
-
       App.SplashScreen.AddMessage("Loading People");
       People.Load();
       App.SplashScreen.AddMessage("Loading Keywords");
@@ -106,12 +95,10 @@ namespace PictureManager {
       FavoriteFolders.Load();
       App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
-      
       App.SplashScreen.AddMessage("Loading GeoNames");
       GeoNames.Load();
       App.SplashScreen.AddMessage("Loading SqlQueries");
       SqlQueries.Load();
-
       App.SplashScreen.AddMessage("Loading Media Items");
       MediaItems.LoadAllItems();
       App.SplashScreen.AddMessage("Loading People for Media Items");
@@ -119,9 +106,15 @@ namespace PictureManager {
       App.SplashScreen.AddMessage("Loading Keywords for Media Items");
       MediaItems.LoadKeywords(MediaItems.AllItems);
 
-      FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {FavoriteFolders, Folders};
-      KeywordsRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {Ratings, People, FolderKeywords, Keywords, GeoNames};
-      FiltersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> {/*Filters, */Viewers, SqlQueries};
+      FoldersRoot.Add(FavoriteFolders);
+      FoldersRoot.Add(Folders);
+      KeywordsRoot.Add(Ratings);
+      KeywordsRoot.Add(People);
+      KeywordsRoot.Add(FolderKeywords);
+      KeywordsRoot.Add(Keywords);
+      KeywordsRoot.Add(GeoNames);
+      FiltersRoot.Add(Viewers);
+      FiltersRoot.Add(SqlQueries);
     }
 
     public void UpdateStatusBarInfo() {
@@ -162,6 +155,7 @@ namespace PictureManager {
         }
       }
       else {
+        var bti = item as ViewModel.BaseTreeViewItem;
         switch (item) {
           case ViewModel.FavoriteFolder favoriteFolder: {
             var folder = Folders.ExpandTo(favoriteFolder.FullPath);
@@ -177,17 +171,16 @@ namespace PictureManager {
           case ViewModel.Person _:
           case ViewModel.Keyword _:
           case ViewModel.GeoName _: {
-            var bti = (ViewModel.BaseTreeViewItem) item;
-
-            if (bti.BgBrush != BgBrushes.Default)
-              bti.BgBrush = BgBrushes.Default;
+            if (bti == null) return;
+            if (bti.BackgroundBrush != BackgroundBrush.Default)
+              bti.BackgroundBrush = BackgroundBrush.Default;
             else {
               if (item is ViewModel.Rating && !and && !hide)
-                bti.BgBrush = BgBrushes.OrThis;
+                bti.BackgroundBrush = BackgroundBrush.OrThis;
               else {
-                if (!and && !hide) bti.BgBrush = BgBrushes.OrThis;
-                if (and && !hide) bti.BgBrush = BgBrushes.AndThis;
-                if (!and && hide) bti.BgBrush = BgBrushes.Hidden;
+                if (!and && !hide) bti.BackgroundBrush = BackgroundBrush.OrThis;
+                if (and && !hide) bti.BackgroundBrush = BackgroundBrush.AndThis;
+                if (!and && hide) bti.BackgroundBrush = BackgroundBrush.Hidden;
               }
             }
 
@@ -210,7 +203,7 @@ namespace PictureManager {
               return;
             }
 
-            var bti = (ViewModel.BaseTreeViewItem) item;
+            if (bti == null) return;
             bti.IsSelected = true;
             LastSelectedSource = bti;
             LastSelectedSourceRecursive = recursive;
@@ -220,14 +213,16 @@ namespace PictureManager {
               ThumbsResetEvent.WaitOne();
             }
 
-            AppInfo.AppMode = AppModes.Browser;
+            AppInfo.AppMode = AppMode.Browser;
             MediaItems.Load(LastSelectedSource, recursive);
+            MediaItems.ScrollTo(0);
             LoadThumbnails();
             GC.Collect();
             break;
           }
           default: {
-            ((ViewModel.BaseTreeViewItem) item).IsSelected = false;
+            if (bti == null) return;
+            bti.IsSelected = false;
             break;
           }
         }
@@ -336,72 +331,73 @@ namespace PictureManager {
     public void LoadThumbnails() {
       AppInfo.ProgressBarValue = 0;
 
-      ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      if (ThumbsWorker == null) {
+        ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
-      ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
-        if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-        MediaItems.SplitedItemsAdd(MediaItems.Items[(int) e.UserState]);
-        AppInfo.ProgressBarValue = e.ProgressPercentage;
-      };
+        ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
+          if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
+          MediaItems.SplitedItemsAdd(MediaItems.Items[(int) e.UserState]);
+          AppInfo.ProgressBarValue = e.ProgressPercentage;
+        };
 
-      ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker) sender;
-        var count = MediaItems.Items.Count;
-        var done = 0;
-        e.Result = e.Argument;
+        ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+          var worker = (BackgroundWorker) sender;
+          var count = MediaItems.Items.Count;
+          var done = 0;
+          e.Result = e.Argument;
 
-        foreach (var mi in MediaItems.Items) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            ThumbsResetEvent.Set();
-            break;
+          foreach (var mi in MediaItems.Items) {
+            if (worker.CancellationPending) {
+              e.Cancel = true;
+              ThumbsResetEvent.Set();
+              break;
+            }
+
+            if (!File.Exists(mi.FilePathCache))
+              CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+
+            if (mi.IsNew) {
+              mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) e.Argument);
+              Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
+            }
+
+            if (mi.InfoBoxThumb.Count == 0)
+              Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
+
+            done++;
+            worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), mi.Index);
+          }
+        };
+
+        ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+          if (((BackgroundWorker) sender).CancellationPending) return;
+
+          if ((bool) Application.Current.Properties[nameof(AppProperty.SubmitChanges)])
+            Db.SubmitChanges((List<DataModel.BaseTable>[]) e.Result);
+
+          if (MediaItems.Current != null) {
+            MediaItems.Current.IsSelected = false;
+            MediaItems.Current.IsSelected = true;
           }
 
-          if (!File.Exists(mi.FilePathCache))
-            CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          MarkUsedKeywordsAndPeople();
+        }; 
+      }
 
-          if (mi.IsNew) {
-            mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[])e.Argument);
-            Application.Current.Properties[nameof(AppProps.SubmitChanges)] = true;
-          }
-
-          if (mi.InfoBoxThumb.Count == 0)
-            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), mi.Index);
-        }
-      };
-
-      ThumbsWorker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
-        if (((BackgroundWorker) sender).CancellationPending) return;
-
-        if ((bool) Application.Current.Properties[nameof(AppProps.SubmitChanges)])
-          Db.SubmitChanges((List<DataModel.BaseTable>[]) e.Result);
-
-        if (MediaItems.Current != null) {
-          MediaItems.Current.IsSelected = false;
-          MediaItems.Current.IsSelected = true;
-        }
-
-        MediaItems.ScrollTo(0);
-        MarkUsedKeywordsAndPeople();
-      };
-
-      Application.Current.Properties[nameof(AppProps.SubmitChanges)] = false;
-      ThumbsWorker.RunWorkerAsync(Db.GetInsertUpdateDeleteLists());
+      Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = false;
+      ThumbsWorker.RunWorkerAsync(DataModel.PmDataContext.GetInsertUpdateDeleteLists());
     }
 
     #region File Operations
-    public bool FileOperation(FileOperations mode, bool recycle) {
+    public bool FileOperation(FileOperationMode mode, bool recycle) {
       return FileOperation(mode, null, null, null, recycle);
     }
 
-    public bool FileOperation(FileOperations mode, string from, bool recycle) {
+    public bool FileOperation(FileOperationMode mode, string from, bool recycle) {
       return FileOperation(mode, from, null, null, recycle);
     }
 
-    public bool FileOperation(FileOperations mode, string from, string to, string newName) {
+    public bool FileOperation(FileOperationMode mode, string from, string to, string newName) {
       return FileOperation(mode, from, to, newName, true);
     }
 
@@ -411,12 +407,12 @@ namespace PictureManager {
     /// <param name="mode"></param>
     /// <param name="to"></param>
     /// <returns></returns>
-    public bool FileOperation(FileOperations mode, string to) {
+    public bool FileOperation(FileOperationMode mode, string to) {
       return FileOperation(mode, null, to, null, true);
     }
 
-    public bool FileOperation(FileOperations mode, string from, string to, string newName, bool recycle) {
-      Application.Current.Properties[nameof(AppProps.FileOperationResult)] = new Dictionary<string, string>();
+    public bool FileOperation(FileOperationMode mode, string from, string to, string newName, bool recycle) {
+      Application.Current.Properties[nameof(AppProperty.FileOperationResult)] = new Dictionary<string, string>();
       //Copy, Move or delete selected MediaItems or folder
       using (var fo = new FileOperation(new PicFileOperationProgressSink())) {
         var flags = FileOperationFlags.FOF_NOCONFIRMMKDIR | (recycle
@@ -426,23 +422,23 @@ namespace PictureManager {
         if (from == null) { //MediaItems
           foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
             switch (mode) {
-              case FileOperations.Copy: { fo.CopyItem(mi.FilePath, to, mi.Data.FileName); break; }
-              case FileOperations.Move: { fo.MoveItem(mi.FilePath, to, mi.Data.FileName); break; }
-              case FileOperations.Delete: { fo.DeleteItem(mi.FilePath); break; }
+              case FileOperationMode.Copy: { fo.CopyItem(mi.FilePath, to, mi.Data.FileName); break; }
+              case FileOperationMode.Move: { fo.MoveItem(mi.FilePath, to, mi.Data.FileName); break; }
+              case FileOperationMode.Delete: { fo.DeleteItem(mi.FilePath); break; }
             }
           }
         } else { //Folders
           switch (mode) {
-            case FileOperations.Copy: { fo.CopyItem(from, to, newName); break; }
-            case FileOperations.Move: { fo.MoveItem(from, to, newName); break; }
-            case FileOperations.Delete: { fo.DeleteItem(from); break; }
+            case FileOperationMode.Copy: { fo.CopyItem(from, to, newName); break; }
+            case FileOperationMode.Move: { fo.MoveItem(from, to, newName); break; }
+            case FileOperationMode.Delete: { fo.DeleteItem(from); break; }
           }
         }
 
         fo.PerformOperations();
       }
 
-      var foResult = (Dictionary<string, string>)Application.Current.Properties[nameof(AppProps.FileOperationResult)];
+      var foResult = (Dictionary<string, string>)Application.Current.Properties[nameof(AppProperty.FileOperationResult)];
       if (foResult.Count == 0) return false;
 
       //update DB and thumbnail cache
@@ -452,9 +448,9 @@ namespace PictureManager {
         var cachePath = Settings.Default.CachePath;
         var mItems = Db.MediaItems;
         var dirs = Db.Directories;
-        var lists = Db.GetInsertUpdateDeleteLists();
+        var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
-        if (mode == FileOperations.Delete) {
+        if (mode == FileOperationMode.Delete) {
           var itemsToDel = new List<DataModel.MediaItem>();
 
           if (from == null) {
@@ -482,18 +478,18 @@ namespace PictureManager {
 
           foreach (var mi in itemsToDel) {
             foreach(var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == mi.Id)) {
-              Db.DeleteOnSubmit(mik, lists);
+              DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
             }
 
             foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == mi.Id)) {
-              Db.DeleteOnSubmit(mip, lists);
+              DataModel.PmDataContext.DeleteOnSubmit(mip, lists);
             }
 
-            Db.DeleteOnSubmit(mi, lists);
+            DataModel.PmDataContext.DeleteOnSubmit(mi, lists);
           }
         }
 
-        if (mode == FileOperations.Copy || mode == FileOperations.Move) {
+        if (mode == FileOperationMode.Copy || mode == FileOperationMode.Move) {
           foreach (var item in foResult) {
             if (MediaItems.SuportedExts.Any(ext => item.Value.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) {
               if (!File.Exists(item.Value)) continue;
@@ -505,11 +501,11 @@ namespace PictureManager {
               if (srcPic == null) continue;
 
               //get destination directory or create it if doesn't exists
-              var destDirId = Db.InsertDirecotryInToDb(Path.GetDirectoryName(item.Value));
+              var destDirId = Db.InsertDirectoryInToDb(Path.GetDirectoryName(item.Value));
 
               #region Copy files
 
-              if (mode == FileOperations.Copy) {
+              if (mode == FileOperationMode.Copy) {
                 //duplicate Picture
                 var destPicId = Db.GetNextIdFor<DataModel.MediaItem>();
                 var dmiCopy = new DataModel.MediaItem {
@@ -523,11 +519,11 @@ namespace PictureManager {
                   Height = srcPic.Height,
                   Width = srcPic.Width
                 };
-                Db.InsertOnSubmit(dmiCopy, lists);
+                DataModel.PmDataContext.InsertOnSubmit(dmiCopy, lists);
 
                 //duplicate Picture Keywords
                 foreach (var mik in Db.MediaItemKeywords.Where(x => x.MediaItemId == srcPic.Id)) {
-                  Db.InsertOnSubmit(new DataModel.MediaItemKeyword {
+                  DataModel.PmDataContext.InsertOnSubmit(new DataModel.MediaItemKeyword {
                     Id = Db.GetNextIdFor<DataModel.MediaItemKeyword>(),
                     KeywordId = mik.KeywordId,
                     MediaItemId = destPicId
@@ -536,7 +532,7 @@ namespace PictureManager {
 
                 //duplicate Picture People
                 foreach (var mip in Db.MediaItemPeople.Where(x => x.MediaItemId == srcPic.Id)) {
-                  Db.InsertOnSubmit(new DataModel.MediaItemPerson {
+                  DataModel.PmDataContext.InsertOnSubmit(new DataModel.MediaItemPerson {
                     Id = Db.GetNextIdFor<DataModel.MediaItemPerson>(),
                     PersonId = mip.PersonId,
                     MediaItemId = destPicId
@@ -557,18 +553,18 @@ namespace PictureManager {
               #endregion
 
               #region Move files
-              if (mode == FileOperations.Move) {
+              if (mode == FileOperationMode.Move) {
                 //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
                 srcPic.DirectoryId = destDirId;
                 srcPic.FileName = Path.GetFileName(item.Value);
                 MediaItems.AllItems.Single(x => x.Data.Id == srcPic.Id).FilePath = item.Value;
-                Db.UpdateOnSubmit(srcPic, lists);
+                DataModel.PmDataContext.UpdateOnSubmit(srcPic, lists);
 
                 //delete empty directory
                 if (mItems.Count(x => x.DirectoryId.Equals(srcDirId)) == 0) {
                   var emptyDir = dirs.SingleOrDefault(x => x.Id.Equals(srcDirId));
                   if (emptyDir != null) {
-                    Db.DeleteOnSubmit(emptyDir, lists);
+                    DataModel.PmDataContext.DeleteOnSubmit(emptyDir, lists);
                   }
                 }
 
@@ -580,13 +576,13 @@ namespace PictureManager {
               #endregion
             } else {
               #region Move directories
-              if (mode == FileOperations.Move) {
+              if (mode == FileOperationMode.Move) {
                 //test if it is directory
                 if (!Directory.Exists(item.Value)) continue;
 
                 foreach (var dir in dirs.Where(x => x.Path.Equals(item.Key) || x.Path.StartsWith(item.Key + "\\"))) {
                   dir.Path = dir.Path.Replace(item.Key, item.Value);
-                  Db.UpdateOnSubmit(dir, lists);
+                  DataModel.PmDataContext.UpdateOnSubmit(dir, lists);
                 }
 
                 //move thumbnails
@@ -630,7 +626,7 @@ namespace PictureManager {
       return ok;
     }
 
-    public bool CanViewerSeeThisDirectory(string dirPath) {
+    public bool CanViewerSeeThisDirectory(string path) {
       bool ok;
       if (CurrentViewer == null) return true;
 
@@ -639,35 +635,40 @@ namespace PictureManager {
       var incFi = new string[0];
       var excFi = new string[0];
 
-      if (incFo.Any(x => x.Contains(dirPath)) || incFo.Any(dirPath.Contains)) {
-        if (excFo.Any(x => x.Contains(dirPath)) || excFo.Any(dirPath.Contains)) {
-          ok = incFi.Any(x => x.StartsWith(dirPath));
+      if (incFo.Any(x => x.Contains(path)) || incFo.Any(path.Contains)) {
+        if (excFo.Any(x => x.Contains(path)) || excFo.Any(path.Contains)) {
+          ok = incFi.Any(x => x.StartsWith(path));
         } else {
-          ok = !excFi.Any(x => x.StartsWith(dirPath));
+          ok = !excFi.Any(x => x.StartsWith(path));
         }
       } else {
-        ok = incFi.Any(x => x.StartsWith(dirPath));
+        ok = incFi.Any(x => x.StartsWith(path));
       }
 
       return ok;
     }
 
-    public static void CreateThumbnail(string origPath, string newPath, int size) {
+    public static void CreateThumbnail(string oldPath, string newPath, int size) {
       var dir = Path.GetDirectoryName(newPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
+      Process process = null;
 
-      var process = new Process {
-        StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{origPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
-          FileName = "ThumbnailCreator.exe",
-          UseShellExecute = false,
-          CreateNoWindow = true
-        }
-      };
-
-      process.Start();
-      process.WaitForExit(1000);
+      try {
+        process = new Process {
+          StartInfo = new ProcessStartInfo {
+            Arguments = $"src|\"{oldPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
+            FileName = "ThumbnailCreator.exe",
+            UseShellExecute = false,
+            CreateNoWindow = true
+          }
+        };
+        process.Start();
+        process.WaitForExit(1000);
+      }
+      finally {
+        process?.Dispose();
+      }
     }
 
     public static List<string> GetAllDirectoriesSafely(string path) {

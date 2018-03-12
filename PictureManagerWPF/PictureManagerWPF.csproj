@@ -27,6 +27,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
+    <CodeAnalysisRuleSet>PictureManagerWPF1.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>x64</PlatformTarget>
@@ -36,6 +37,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>PictureManagerWPF1.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
@@ -73,8 +75,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppCore.cs" />
+    <Compile Include="Commands.cs" />
     <Compile Include="Convertors.cs" />
-    <Compile Include="CustomCommands.cs" />
     <Compile Include="DataModel\DataModel.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
@@ -86,7 +88,7 @@
       <DependentUpon>ProgressBarDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums.cs" />
-    <Compile Include="Info.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
@@ -153,8 +155,7 @@
     <Compile Include="WFilterBuilder.xaml.cs">
       <DependentUpon>WFilterBuilder.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WMainCommands.cs" />
-    <Compile Include="WMainEvents.cs" />
+    <Compile Include="WMain.Commands.cs" />
     <Compile Include="WPicTransform.xaml.cs">
       <DependentUpon>WPicTransform.xaml</DependentUpon>
     </Compile>
@@ -256,6 +257,8 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="packages.config" />
+    <None Include="PictureManagerWPF.ruleset" />
+    <None Include="PictureManagerWPF1.ruleset" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -288,6 +291,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Gu.Wpf.Media\Gu.Wpf.Media.csproj">
+      <Project>{ff1dd0f7-1b31-4560-bd78-ad4dd7a624ae}</Project>
+      <Name>Gu.Wpf.Media</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

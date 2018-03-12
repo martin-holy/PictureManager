@@ -3,7 +3,7 @@
 namespace PictureManager.ViewModel {
   public sealed class Ratings : BaseCategoryItem {
 
-    public Ratings() : base(Categories.Ratings) {
+    public Ratings() : base(Category.Ratings) {
       Title = "Ratings";
       IconName = "appbar_star";
     }

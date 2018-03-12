@@ -27,7 +27,7 @@ namespace PictureManager {
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
     public ViewModel.Folders Folders;
 
-    private readonly AppCore _aCore;
+    private AppCore ACore => (AppCore) System.Windows.Application.Current.Properties[nameof(AppProperty.AppCore)];
     private BackgroundWorker _update;
     private bool _justFilesCount;
     private int _filesCount;
@@ -40,11 +40,10 @@ namespace PictureManager {
     private string _filesProgress;
     public string FilesProgress { get => _filesProgress; set { _filesProgress = value; OnPropertyChanged(); } }
 
-    public WCatalog(AppCore appCore) {
+    public WCatalog() {
       InitializeComponent();
 
-      _aCore = appCore;
-      _lists = _aCore.Db.GetInsertUpdateDeleteLists();
+      _lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
       Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
@@ -81,7 +80,7 @@ namespace PictureManager {
 
         foreach (var path in paths) {
           _filesCount +=
-            _aCore.MediaItems.SuportedExts.Sum(
+            ACore.MediaItems.SuportedExts.Sum(
               ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
         }
 
@@ -107,17 +106,17 @@ namespace PictureManager {
       }
 
       try {
-        var dirId = _aCore.Db.InsertDirecotryInToDb(path);
+        var dirId = ACore.Db.InsertDirectoryInToDb(path);
 
         foreach (var file in Directory.EnumerateFiles(path)
-          .Where(f => _aCore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
+          .Where(f => ACore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
           .OrderBy(x => x)) {
 
-          var miInDb = _aCore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
+          var miInDb = ACore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));
           var mi = miInDb != null
             ? new ViewModel.BaseMediaItem(file, miInDb)
             : new ViewModel.BaseMediaItem(file, new DataModel.MediaItem {
-              Id = _aCore.Db.GetNextIdFor<DataModel.MediaItem>(),
+              Id = ACore.Db.GetNextIdFor<DataModel.MediaItem>(),
               FileName = Path.GetFileName(file),
               DirectoryId = dirId
             }, true);
@@ -149,8 +148,8 @@ namespace PictureManager {
         _update.RunWorkerAsync();
         return;
       }
-      _aCore.Db.SubmitChanges(_lists);
-      _aCore.MediaItems.LoadAllItems();
+      ACore.Db.SubmitChanges(_lists);
+      ACore.MediaItems.LoadAllItems();
       BtnUpdate.IsEnabled = true;
     }
 

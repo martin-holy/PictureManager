@@ -1,7 +1,7 @@
 ﻿namespace PictureManager.ViewModel {
   public sealed class Filters: BaseCategoryItem {
 
-    public Filters() : base (Categories.Filters) {
+    public Filters() : base (Category.Filters) {
       Title = "Filters";
       IconName = "appbar_filter";
     }
