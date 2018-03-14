@@ -93,6 +93,9 @@ namespace PictureManager {
       MainMenu.Visibility = Visibility.Visible;
       GridMain.ColumnDefinitions[0].Width = new GridLength((double) Application.Current.Properties[AppProperty.MainTreeViewWidth]);
       GridMain.ColumnDefinitions[1].Width = new GridLength(3);
+      FullImage.CurrentMediaItem = null;
+      FullImage.SetSource();
+      FullMedia.Source = null;
     }
 
     private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
@@ -474,8 +477,8 @@ namespace PictureManager {
       if (e.ClickCount != 2) return;
       ACore.MediaItems.DeselectAll();
       ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
-      SetMediaItemSource();
       SwitchToFullScreen();
+      SetMediaItemSource();
     }
 
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
@@ -510,8 +513,8 @@ namespace PictureManager {
     private void SetMediaItemSource() {
       switch (ACore.MediaItems.Current.MediaType) {
         case MediaType.Image: {
-          FullImage.Orientation = (MediaOrientation)ACore.MediaItems.Current.Data.Orientation;
-          FullImage.FilePath = ACore.MediaItems.Current.FilePath;
+          FullImage.CurrentMediaItem = ACore.MediaItems.Current;
+          FullImage.SetSource();
           FullMedia.Source = null;
           break;
         }

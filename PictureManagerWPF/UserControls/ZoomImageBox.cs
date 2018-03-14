@@ -11,29 +11,23 @@ namespace PictureManager.UserControls {
     private Point _start;
     private bool _isDecoded;
     private readonly ScaleTransform _scaleTransform;
-    private readonly RotateTransform _rotateTransform;
     private readonly TranslateTransform _translateTransform;
-    private string _filePath;
-    private MediaOrientation _orientation;
 
     public ZoomImageBox() {
       _isDecoded = true;
 
       _scaleTransform = new ScaleTransform();
-      _rotateTransform = new RotateTransform();
       _translateTransform = new TranslateTransform();
       var renderGroup = new TransformGroup();
       renderGroup.Children.Add(_scaleTransform);
       renderGroup.Children.Add(_translateTransform);
       var layoutGroup = new TransformGroup();
-      layoutGroup.Children.Add(_rotateTransform);
       Image = new Image {
         LayoutTransform = layoutGroup,
         RenderTransform = renderGroup,
         RenderTransformOrigin = new Point(0, 0)
       };
-      ImgBorder = new Border {Child = Image};
-      Child = ImgBorder;
+      Child = Image;
 
       MouseMove += OnMouseMove;
       MouseWheel += OnMouseWheel;
@@ -42,48 +36,50 @@ namespace PictureManager.UserControls {
     }
 
     public Image Image;
-    public Border ImgBorder;
-    public string FilePath { get => _filePath; set { _filePath = value; SetSource(); } }
-    public MediaOrientation Orientation {
-      get => _orientation;
-      set {
-        _orientation = value;
-
-        switch (value) {
-          case MediaOrientation.Normal:
-            _rotateTransform.Angle = 0;
-            break;
-          case MediaOrientation.FlipHorizontal:
-            break;
-          case MediaOrientation.Rotate180:
-            _rotateTransform.Angle = 180;
-            break;
-          case MediaOrientation.FlipVertical:
-            break;
-          case MediaOrientation.Transpose:
-            break;
-          case MediaOrientation.Rotate270:
-            _rotateTransform.Angle = 90;
-            break;
-          case MediaOrientation.Transverse:
-            break;
-          case MediaOrientation.Rotate90:
-            _rotateTransform.Angle = 270;
-            break;
-        }
-      }
-    }
+    public ViewModel.BaseMediaItem CurrentMediaItem { get; set; }
 
     public void SetSource() {
       Reset();
+      if (CurrentMediaItem == null) {
+        Image.Source = null;
+        return;
+      }
+
+      var imgWidth = CurrentMediaItem.Data.Width;
+      var imgHeight = CurrentMediaItem.Data.Height;
+      var decodeWidth = Math.Abs(ActualWidth - imgWidth) < Math.Abs(ActualHeight - imgHeight);
+      var isBigger = decodeWidth ? ActualWidth < imgWidth : ActualHeight < imgHeight;
+
       var src = new BitmapImage();
       src.BeginInit();
-      src.UriSource = new Uri(FilePath);
+      src.UriSource = CurrentMediaItem.FilePathUri;
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-      if (_isDecoded)
-        src.DecodePixelWidth = 1920;
+
+      if (isBigger && _isDecoded) {
+        if (decodeWidth)
+          src.DecodePixelWidth = (int) ActualWidth;
+        else
+          src.DecodePixelHeight = (int) ActualHeight;
+      }
+
+      switch (CurrentMediaItem.Data.Orientation) {
+        case (int) MediaOrientation.Rotate90: {
+          src.Rotation = Rotation.Rotate270;
+          break;
+        }
+        case (int) MediaOrientation.Rotate180: {
+          src.Rotation = Rotation.Rotate180;
+          break;
+        }
+        case (int) MediaOrientation.Rotate270: {
+          src.Rotation = Rotation.Rotate90;
+          break;
+        }
+      }
+
       src.EndInit();
+      Image.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
       Image.Source = src;
       GC.Collect();
     }
@@ -115,11 +111,6 @@ namespace PictureManager.UserControls {
       if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4))
         return;
 
-
-      /*var relativeX = relative.X;
-      relative.X = relative.Y;
-      relative.Y = relativeX;*/
-      var bla = e.GetPosition(ImgBorder);
       var relative = e.GetPosition(Image);
       var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
       var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
