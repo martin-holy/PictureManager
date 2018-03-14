@@ -68,10 +68,9 @@ namespace PictureManager.ViewModel {
         e => Data.FileName.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
         ? MediaType.Image
         : MediaType.Video;
-      if (!IsNew) SetThumbSize();
     }
 
-    private void SetThumbSize() {
+    public void SetThumbSize() {
       var size = GetThumbSize();
       ThumbWidth = (int) size.Width;
       ThumbHeight = (int) size.Height;
@@ -79,11 +78,7 @@ namespace PictureManager.ViewModel {
 
     public Size GetThumbSize() {
       var size = new Size();
-      const int maxWidth = 1100;
-      //windows settings sets everiting to 125%, so I need to lower ratio
-      //TODO read the settings from system
-      var desiredSize = Settings.Default.ThumbnailSize / 125.0 * 100;
-      var panoramaHeight = desiredSize / 16.0 * 9;
+      var desiredSize = Settings.Default.ThumbnailSize / ACore.WindowsDisplayScale * 100;
 
       if (Data.Width == 0 || Data.Height == 0) {
         size.Width = desiredSize;
@@ -100,6 +95,8 @@ namespace PictureManager.ViewModel {
       if (width > height) {
         //panorama
         if (width / height > 16.0 / 9.0) {
+          const int maxWidth = 1100;
+          var panoramaHeight = desiredSize / 16.0 * 9;
           var tooBig = panoramaHeight / height * width > maxWidth;
           size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
           size.Width = tooBig ? maxWidth : panoramaHeight / height * width;

@@ -320,7 +320,7 @@
         </TabItem>
       </TabControl>
 
-      <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <GridSplitter x:Name="MainSplitter" Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
 
       <!-- Thumbnails and Full Media -->
       <Grid Grid.Column="2" >
@@ -424,7 +424,8 @@
         </Grid>
 
         <!-- Full Media -->
-        <Grid x:Name="PanelFullScreen" MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" MouseWheel="FullScreenBox_OnMouseWheel">
+        <Grid x:Name="PanelFullScreen" Background="Transparent" 
+              MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" MouseWheel="FullScreenBox_OnMouseWheel">
           <Grid.Style>
             <Style TargetType="{x:Type Grid}">
               <Setter Property="Visibility" Value="Hidden" />
@@ -472,7 +473,7 @@
               </Grid.RowDefinitions>
 
               <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
-                ScrubbingEnabled="True" Stretch="Uniform" />
+                ScrubbingEnabled="True" Stretch="Uniform" MediaEnded="FullMedia_OnMediaEnded" />
 
               <Grid Grid.Row="0" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>
@@ -546,6 +547,20 @@
           </Style>
         </Border.Style>
         <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Modifed}" />
+      </Border>
+
+      <!-- Dimension -->
+      <Border>
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ACore.AppInfo.Dimension}" Value="">
+                <Setter Property="Visibility" Value="Collapsed" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+        <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Dimension}" />
       </Border>
 
       <!-- Rating -->

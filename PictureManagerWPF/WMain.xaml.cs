@@ -78,6 +78,9 @@ namespace PictureManager {
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
+      Application.Current.Properties[AppProperty.MainTreeViewWidth] = GridMain.ColumnDefinitions[0].ActualWidth;
+      GridMain.ColumnDefinitions[0].Width = new GridLength(0);
+      GridMain.ColumnDefinitions[1].Width = new GridLength(0);
     }
 
     public void SwitchToBrowser() {
@@ -88,6 +91,8 @@ namespace PictureManager {
       ShowTitleBar = true;
       IgnoreTaskbarOnMaximize = false;
       MainMenu.Visibility = Visibility.Visible;
+      GridMain.ColumnDefinitions[0].Width = new GridLength((double) Application.Current.Properties[AppProperty.MainTreeViewWidth]);
+      GridMain.ColumnDefinitions[1].Width = new GridLength(3);
     }
 
     private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
@@ -536,5 +541,10 @@ namespace PictureManager {
     }
 
 
+    private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
+      FullMedia.Stop();
+      FullMedia.Rewind();
+      FullMedia.Play();
+    }
   }
 }

@@ -38,6 +38,7 @@ namespace PictureManager {
     public BackgroundWorker ThumbsWorker { get; set; }
     public AutoResetEvent ThumbsResetEvent { get; set; } = new AutoResetEvent(false);
     public ViewModel.Viewer CurrentViewer { get; set; }
+    public double WindowsDisplayScale { get; set; }
 
     private bool _disposed;
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
@@ -78,6 +79,8 @@ namespace PictureManager {
     }
 
     public void Init() {
+      WindowsDisplayScale = PresentationSource.FromVisual(WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
+
       App.SplashScreen.AddMessage("Loading Database");
       Db.Load();
       App.SplashScreen.AddMessage("Loading Viewers");
@@ -358,6 +361,7 @@ namespace PictureManager {
 
             if (mi.IsNew) {
               mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) e.Argument);
+              mi.SetThumbSize();
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
 

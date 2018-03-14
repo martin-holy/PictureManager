@@ -279,6 +279,8 @@ namespace PictureManager.ViewModel {
         }
         else {
           file.MediaItem.Index = i;
+          if (file.MediaItem.ThumbWidth == 0 || file.MediaItem.ThumbHeight == 0)
+            file.MediaItem.SetThumbSize();
           Items.Add(file.MediaItem);
         }
         i++;

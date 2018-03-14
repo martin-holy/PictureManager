@@ -90,12 +90,12 @@ namespace PictureManager {
       };
     }
 
-    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
+    /*private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
       return (o, e) => {
         e.CanExecute = canExecute(e.Parameter);
         e.Handled = true;
       };
-    }
+    }*/
 
     private bool CanMediaItemNext() {
       return ACore.AppInfo.AppMode == AppMode.Viewer && ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;

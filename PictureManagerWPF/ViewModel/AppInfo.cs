@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -22,6 +23,7 @@ namespace PictureManager.ViewModel {
     public string Comment { get; set; } = string.Empty;
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
     public AppMode AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }
+    public string Dimension { get; set; } = string.Empty;
     public event PropertyChangedEventHandler PropertyChanged;
 
     public string FilePath {
@@ -50,6 +52,9 @@ namespace PictureManager.ViewModel {
 
         Comment = _currentMediaItem.CommentEscaped;
         OnPropertyChanged($"Comment");
+
+        Dimension = CurrentMediaItem == null ? string.Empty : $"{CurrentMediaItem.Data.Width}x{CurrentMediaItem.Data.Height}";
+        OnPropertyChanged($"Dimension");
       }
     }
 
