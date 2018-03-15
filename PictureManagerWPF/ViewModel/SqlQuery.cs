@@ -5,7 +5,7 @@
 
     public SqlQuery(DataModel.SqlQuery data) {
       Data = data;
-      IconName = "appbar_database_sql";
+      IconName = IconName.DatabaseSql;
     }
   }
 }

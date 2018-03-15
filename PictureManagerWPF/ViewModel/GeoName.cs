@@ -7,7 +7,7 @@ namespace PictureManager.ViewModel {
 
     public GeoName(DataModel.GeoName data) {
       Data = data;
-      IconName = "appbar_location_checkin";
+      IconName = IconName.LocationCheckin;
     }
 
     public void GetThisAndSubGeoNames(ref List<GeoName> geoNames) {

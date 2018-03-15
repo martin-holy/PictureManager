@@ -14,12 +14,12 @@ namespace PictureManager.ViewModel {
         base.IsExpanded = value;
         if (value) GetSubFolders(false);
         if (Parent != null)
-          IconName = IsExpanded ? "appbar_folder_open" : "appbar_folder";
+          IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
       }
     }
 
     public Folder() {
-      IconName = "appbar_folder";
+      IconName = IconName.Folder;
     }
 
     public void Rename(string newName) {
@@ -49,7 +49,7 @@ namespace PictureManager.ViewModel {
           if (di.GetDirectories().Length > 0)
             item.Items.Add(new Folder {Title = "..."});
         } catch (UnauthorizedAccessException) {
-          item.IconName = "appbar_folder_lock";
+          item.IconName = IconName.FolderLock;
           item.IsAccessible = false;
         } finally {
           Items.Add(item);
@@ -98,7 +98,7 @@ namespace PictureManager.ViewModel {
     public void NewOrRename(bool rename) {
       var inputDialog = new InputDialog {
         Owner = AppCore.WMain,
-        IconName = "appbar_folder",
+        IconName = IconName.Folder,
         Title = rename ? "Rename Folder" : "New Folder",
         Question = rename ? "Enter the new name for the folder." : "Enter the name of the new folder.",
         Answer = rename ? Title : string.Empty

@@ -40,7 +40,7 @@
     <Button Name="BtnBrowseDir" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0" Click="BtnBrowseDir_OnClick">
       <Rectangle  Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
         <Rectangle.OpacityMask>
-          <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource StaticResourceConverter}}"/>
+          <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
         </Rectangle.OpacityMask>
       </Rectangle>
     </Button>

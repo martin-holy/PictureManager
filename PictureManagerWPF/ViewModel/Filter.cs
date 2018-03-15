@@ -23,10 +23,10 @@ namespace PictureManager.ViewModel {
     public Filter() {
       FilterData = new ObservableCollection<BaseFilterItem>();
       Data.Id = -1;
-      IconName = "appbar_filter";
+      IconName = IconName.Filter;
     }
 
-    public Filter(DataModel.Filter data, Filter parent) : this() {
+    public Filter(DataModel.Filter data, BaseTreeViewItem parent) : this() {
       Data = data;
       Parent = parent;
     }

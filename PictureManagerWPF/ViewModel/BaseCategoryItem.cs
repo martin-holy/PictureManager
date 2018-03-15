@@ -9,7 +9,7 @@ namespace PictureManager.ViewModel {
     public bool CanHaveGroups;
     public bool CanHaveSubItems;
     public bool CanModifyItems;
-    public string CategoryGroupIconName;
+    public IconName CategoryGroupIconName;
 
     public BaseCategoryItem(Category category) {
       Category = category;
@@ -101,18 +101,18 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    private string GetCategoryGroupIconName() {
+    private IconName GetCategoryGroupIconName() {
       switch (Category) {
-        case Category.FavoriteFolders: return "appbar_folder_star";
-        case Category.Folders: return "appbar_folder";
-        case Category.Ratings: return "appbar_star";
-        case Category.People: return "appbar_people_multiple";
-        case Category.FolderKeywords: return "appbar_folder";
-        case Category.Keywords: return "appbar_tag_label";
-        case Category.Filters: return "appbar_filter";
-        case Category.Viewers: return "appbar_eye";
-        case Category.SqlQueries: return "appbar_database_sql";
-        default: return "appbar_bug";
+        case Category.FavoriteFolders: return IconName.FolderStar;
+        case Category.Folders: return IconName.Folder;
+        case Category.Ratings: return IconName.Star;
+        case Category.People: return IconName.PeopleMultiple;
+        case Category.FolderKeywords: return IconName.Folder;
+        case Category.Keywords: return IconName.TagLabel;
+        case Category.Filters: return IconName.Filter;
+        case Category.Viewers: return IconName.Eye;
+        case Category.SqlQueries: return IconName.DatabaseSql;
+        default: return IconName.Bug;
       }
     }
     #endregion
@@ -159,7 +159,7 @@ namespace PictureManager.ViewModel {
         root.Items.Move(root.Items.IndexOf(item), idx);
     }
 
-    public InputDialog ItemGetInputDialog(BaseTreeViewItem item, string iconName, string itemName, bool rename) {
+    public InputDialog ItemGetInputDialog(BaseTreeViewItem item, IconName iconName, string itemName, bool rename) {
       var title = rename ? $"Rename {itemName}" : $"New {itemName}";
       var question = rename ? $"Enter the new name for the {itemName.ToLower()}." : $"Enter the name of the new {itemName.ToLower()}.";
       var error = $"{itemName}'s name already exists!";

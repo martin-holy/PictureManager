@@ -93,8 +93,7 @@ namespace PictureManager {
       MainMenu.Visibility = Visibility.Visible;
       GridMain.ColumnDefinitions[0].Width = new GridLength((double) Application.Current.Properties[AppProperty.MainTreeViewWidth]);
       GridMain.ColumnDefinitions[1].Width = new GridLength(3);
-      FullImage.CurrentMediaItem = null;
-      FullImage.SetSource();
+      FullImage.SetSource(null);
       FullMedia.Source = null;
     }
 
@@ -513,8 +512,7 @@ namespace PictureManager {
     private void SetMediaItemSource() {
       switch (ACore.MediaItems.Current.MediaType) {
         case MediaType.Image: {
-          FullImage.CurrentMediaItem = ACore.MediaItems.Current;
-          FullImage.SetSource();
+          FullImage.SetSource(ACore.MediaItems.Current);
           FullMedia.Source = null;
           break;
         }

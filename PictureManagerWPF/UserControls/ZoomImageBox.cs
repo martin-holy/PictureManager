@@ -14,8 +14,6 @@ namespace PictureManager.UserControls {
     private readonly TranslateTransform _translateTransform;
 
     public ZoomImageBox() {
-      _isDecoded = true;
-
       _scaleTransform = new ScaleTransform();
       _translateTransform = new TranslateTransform();
       var renderGroup = new TransformGroup();
@@ -36,26 +34,33 @@ namespace PictureManager.UserControls {
     }
 
     public Image Image;
-    public ViewModel.BaseMediaItem CurrentMediaItem { get; set; }
+    private ViewModel.BaseMediaItem _currentMediaItem;
 
-    public void SetSource() {
+    public void SetSource(ViewModel.BaseMediaItem currentMediaItem) {
+      _currentMediaItem = currentMediaItem;
+      _isDecoded = true;
+      SetSource();
+    }
+
+    private void SetSource() {
       Reset();
-      if (CurrentMediaItem == null) {
+      if (_currentMediaItem == null) {
         Image.Source = null;
         return;
       }
 
-      var imgWidth = CurrentMediaItem.Data.Width;
-      var imgHeight = CurrentMediaItem.Data.Height;
+      var imgWidth = _currentMediaItem.Data.Width;
+      var imgHeight = _currentMediaItem.Data.Height;
       var decodeWidth = Math.Abs(ActualWidth - imgWidth) < Math.Abs(ActualHeight - imgHeight);
       var isBigger = decodeWidth ? ActualWidth < imgWidth : ActualHeight < imgHeight;
 
       var src = new BitmapImage();
       src.BeginInit();
-      src.UriSource = CurrentMediaItem.FilePathUri;
-      src.CacheOption = BitmapCacheOption.OnLoad;
+      src.UriSource = _currentMediaItem.FilePathUri;
+      src.CacheOption = BitmapCacheOption.None;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
+      //_isDecoded = false; //bad quality with decoding
       if (isBigger && _isDecoded) {
         if (decodeWidth)
           src.DecodePixelWidth = (int) ActualWidth;
@@ -63,7 +68,7 @@ namespace PictureManager.UserControls {
           src.DecodePixelHeight = (int) ActualHeight;
       }
 
-      switch (CurrentMediaItem.Data.Orientation) {
+      switch (_currentMediaItem.Data.Orientation) {
         case (int) MediaOrientation.Rotate90: {
           src.Rotation = Rotation.Rotate270;
           break;
@@ -81,6 +86,11 @@ namespace PictureManager.UserControls {
       src.EndInit();
       Image.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
       Image.Source = src;
+      /*if (_isDecoded) {
+        _isDecoded = false;
+        SetSource();
+      }*/
+
       GC.Collect();
     }
 

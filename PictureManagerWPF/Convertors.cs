@@ -16,23 +16,58 @@ namespace PictureManager {
     }
   }
 
+  public class IconNameToStaticResourceConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      string resourceName;
+      switch ((IconName) value) {
+        case IconName.Folder: resourceName = "appbar_folder"; break;
+        case IconName.FolderStar: resourceName = "appbar_folder_star"; break;
+        case IconName.FolderLock: resourceName = "appbar_folder_lock"; break;
+        case IconName.FolderOpen: resourceName = "appbar_folder_open"; break;
+        case IconName.Star: resourceName = "appbar_star"; break;
+        case IconName.People: resourceName = "appbar_people"; break;
+        case IconName.PeopleMultiple: resourceName = "appbar_people_multiple"; break;
+        case IconName.Tag: resourceName = "appbar_tag"; break;
+        case IconName.TagLabel: resourceName = "appbar_tag_label"; break;
+        case IconName.Filter: resourceName = "appbar_filter"; break;
+        case IconName.Eye: resourceName = "appbar_eye"; break;
+        case IconName.DatabaseSql: resourceName = "appbar_database_sql"; break;
+        case IconName.Bug: resourceName = "appbar_bug"; break;
+        case IconName.LocationCheckin: resourceName = "appbar_location_checkin"; break;
+        case IconName.Notification: resourceName = "appbar_notification"; break;
+        case IconName.Cd: resourceName = "appbar_cd"; break;
+        case IconName.Drive: resourceName = "appbar_drive"; break;
+        case IconName.DriveError: resourceName = "appbar_drive_error"; break;
+        case IconName.Cancel: resourceName = "appbar_cancel"; break;
+        case IconName.Save: resourceName = "appbar_save"; break;
+        default: resourceName = "appbar_bug"; break;
+      }
+      return Application.Current.FindResource(resourceName);
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
   public class IconNameToBrush : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) value = parameter;
-      switch ((string) value) {
-        case "appbar_folder":
-        case "appbar_folder_star":
-        case "appbar_folder_lock":
-        case "appbar_folder_open": return new SolidColorBrush(Color.FromRgb(249, 218, 119));
-        case "appbar_tag": return new SolidColorBrush(Color.FromRgb(142, 193, 99));
-        case "appbar_tag_label": return new SolidColorBrush(Color.FromRgb(142, 193, 99));
-        case "appbar_people_multiple":
-        case "appbar_people": return new SolidColorBrush(Color.FromRgb(19, 122, 166));
-        case "appbar_drive":
-        case "appbar_drive_error":
-        case "appbar_cd": return new SolidColorBrush(Color.FromRgb(199, 199, 199));
-        case "appbar_cancel": return new SolidColorBrush(Color.FromRgb(221, 121, 47));
-        case "appbar_save": return new SolidColorBrush(Color.FromRgb(19, 122, 166));
+      if (value == null)
+        value = parameter;
+      switch ((IconName) value) {
+        case IconName.Folder:
+        case IconName.FolderStar:
+        case IconName.FolderLock:
+        case IconName.FolderOpen: return new SolidColorBrush(Color.FromRgb(249, 218, 119));
+        case IconName.Tag: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case IconName.TagLabel: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case IconName.People:
+        case IconName.PeopleMultiple: return new SolidColorBrush(Color.FromRgb(19, 122, 166));
+        case IconName.Drive:
+        case IconName.DriveError:
+        case IconName.Cd: return new SolidColorBrush(Color.FromRgb(199, 199, 199));
+        case IconName.Cancel: return new SolidColorBrush(Color.FromRgb(221, 121, 47));
+        case IconName.Save: return new SolidColorBrush(Color.FromRgb(19, 122, 166));
         default: return new SolidColorBrush(Color.FromRgb(255, 255, 255));
       }
     }

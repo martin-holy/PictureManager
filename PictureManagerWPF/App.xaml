@@ -16,6 +16,7 @@
       
       <pm:StaticResourceConverter x:Key="StaticResourceConverter"/>
       <pm:IconNameToBrush x:Key="IconNameToBrush" />
+      <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
       <pm:RatingConverter x:Key="RatingConverter" />
       <pm:BackgroundColorConverter x:Key="BgColorConverter" />
       <pm:DataBindingDebugConverter x:Key="DebugConverter" />
@@ -39,7 +40,7 @@
         <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
         <Setter Property="OpacityMask">
           <Setter.Value>
-            <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource StaticResourceConverter}}" />
+            <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
           </Setter.Value>
         </Setter>
       </Style>

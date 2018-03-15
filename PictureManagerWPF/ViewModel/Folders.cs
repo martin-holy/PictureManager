@@ -8,7 +8,7 @@ namespace PictureManager.ViewModel {
 
     public Folders() : base(Category.Folders) {
       Title = "Folders";
-      IconName = "appbar_folder";
+      IconName = IconName.Folder;
     }
 
     public void AddDrives() {
@@ -17,21 +17,21 @@ namespace PictureManager.ViewModel {
 
       foreach (var drive in drives) {
         var di = new DriveInfo(drive);
-        string driveImage;
+        IconName driveImage;
 
         switch (di.DriveType) {
           case DriveType.CDRom:
-            driveImage = "appbar_cd";
+            driveImage = IconName.Cd;
             break;
           case DriveType.Network:
-            driveImage = "appbar_drive";
+            driveImage = IconName.Drive;
             break;
           case DriveType.NoRootDirectory:
           case DriveType.Unknown:
-            driveImage = "appbar_drive_error";
+            driveImage = IconName.DriveError;
             break;
           default:
-            driveImage = "appbar_drive";
+            driveImage = IconName.Drive;
             break;
         }
         var item = new Folder {

@@ -10,7 +10,7 @@ namespace PictureManager.ViewModel {
     public GeoNames() : base (Category.GeoNames) {
       AllGeoNames = new List<GeoName>();
       Title = "GeoNames";
-      IconName = "appbar_location_checkin";
+      IconName = IconName.LocationCheckin;
     }
 
     public void Load() {

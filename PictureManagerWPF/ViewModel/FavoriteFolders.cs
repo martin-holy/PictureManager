@@ -7,7 +7,7 @@ namespace PictureManager.ViewModel {
 
     public FavoriteFolders() : base(Category.FavoriteFolders) {
       Title = "Favorites";
-      IconName = "appbar_folder_star";
+      IconName = IconName.FolderStar;
     }
 
     public void Load() {

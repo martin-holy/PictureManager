@@ -185,7 +185,7 @@ namespace PictureManager {
       } else {
         var inputDialog = new InputDialog {
           Owner = this,
-          IconName = "appbar_filter",
+          IconName = IconName.Filter,
           Title = "Filter condition value",
           Question = "Enter filter condition value.",
           Answer = fc.Value

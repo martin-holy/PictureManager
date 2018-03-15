@@ -9,7 +9,7 @@ namespace PictureManager.ViewModel {
     public SqlQueries() : base(Category.SqlQueries) {
       AllSqlQueries = new List<SqlQuery>();
       Title = "SQL Queries";
-      IconName = "appbar_database_sql";
+      IconName = IconName.DatabaseSql;
     }
 
     public void Load() {

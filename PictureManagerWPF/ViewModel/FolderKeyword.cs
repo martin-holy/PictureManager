@@ -8,7 +8,7 @@ namespace PictureManager.ViewModel {
 
     public FolderKeyword() {
       FolderIdList = new List<int>();
-      IconName = "appbar_folder";
+      IconName = IconName.Folder;
     }
   }
 }

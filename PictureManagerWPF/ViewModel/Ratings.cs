@@ -5,7 +5,7 @@ namespace PictureManager.ViewModel {
 
     public Ratings() : base(Category.Ratings) {
       Title = "Ratings";
-      IconName = "appbar_star";
+      IconName = IconName.Star;
     }
 
     public void Load() {

@@ -11,7 +11,7 @@ namespace PictureManager.ViewModel {
     public Keywords() : base(Category.Keywords) {
       AllKeywords = new List<Keyword>();
       Title = "Keywords";
-      IconName = "appbar_tag_label";
+      IconName = IconName.TagLabel;
     }
 
     ~Keywords() {
@@ -118,7 +118,7 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      var inputDialog = ItemGetInputDialog(item, "appbar_tag", "Keyword", rename);
+      var inputDialog = ItemGetInputDialog(item, IconName.TagLabel, "Keyword", rename);
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {

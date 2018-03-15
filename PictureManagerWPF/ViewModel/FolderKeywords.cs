@@ -12,7 +12,7 @@ namespace PictureManager.ViewModel {
     public FolderKeywords() : base (Category.FolderKeywords) {
       AllFolderKeywords = new List<FolderKeyword>();
       Title = "Folder Keywords";
-      IconName = "appbar_folder";
+      IconName = IconName.Folder;
     }
 
     public void Load() {

@@ -3,7 +3,7 @@
 
     public Filters() : base (Category.Filters) {
       Title = "Filters";
-      IconName = "appbar_filter";
+      IconName = IconName.Filter;
     }
 
     public void Load() {

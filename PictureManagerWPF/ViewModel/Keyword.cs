@@ -17,7 +17,7 @@ namespace PictureManager.ViewModel {
 
     public Keyword(DataModel.Keyword data) {
       Data = data;
-      IconName = "appbar_tag";
+      IconName = IconName.Tag;
     }
 
     public void Sort() {

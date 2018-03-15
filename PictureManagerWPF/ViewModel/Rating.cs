@@ -3,7 +3,7 @@
     public int Value { get; set; }
 
     public Rating() {
-      IconName = "appbar_star";
+      IconName = IconName.Star;
     }
   }
 }

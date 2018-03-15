@@ -10,7 +10,7 @@ namespace PictureManager.ViewModel {
     public People() : base(Category.People) {
       AllPeople = new List<Person>();
       Title = "People";
-      IconName = "appbar_people_multiple";
+      IconName = IconName.PeopleMultiple;
     }
 
     ~People() {
@@ -80,7 +80,7 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      var inputDialog = ItemGetInputDialog(item, "appbar_people", "Person", rename);
+      var inputDialog = ItemGetInputDialog(item, IconName.People, "Person", rename);
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {

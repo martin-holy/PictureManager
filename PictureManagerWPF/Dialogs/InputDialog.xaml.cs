@@ -13,12 +13,12 @@ namespace PictureManager.Dialogs {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    private string _iconName = "appbar_bug";
+    private IconName _iconName = IconName.Bug;
     private string _question;
     private string _answer;
     private bool _error;
 
-    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public IconName IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string Question { get => _question; set { _question = value; OnPropertyChanged(); } }
     public string Answer { get => _answer; set { _answer = value; OnPropertyChanged(); } }
     public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }

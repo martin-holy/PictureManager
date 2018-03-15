@@ -5,7 +5,7 @@
 
     public Person(DataModel.Person data) {
       Data = data;
-      IconName = "appbar_people";
+      IconName = IconName.People;
     }
   }
 }

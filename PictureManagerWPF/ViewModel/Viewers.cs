@@ -6,7 +6,7 @@ namespace PictureManager.ViewModel {
 
     public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
-      IconName = "appbar_eye";
+      IconName = IconName.Eye;
      }
 
     public void Load() {
@@ -35,7 +35,7 @@ namespace PictureManager.ViewModel {
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
-      var inputDialog = ItemGetInputDialog(item, "appbar_eye", "Viewer", rename);
+      var inputDialog = ItemGetInputDialog(item, IconName.Eye, "Viewer", rename);
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {

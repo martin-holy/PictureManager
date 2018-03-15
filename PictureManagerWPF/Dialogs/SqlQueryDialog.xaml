@@ -36,7 +36,7 @@
     </Grid.RowDefinitions>
     <Rectangle Width="32" Height="32" Grid.Column="0" Grid.RowSpan="3" Margin="5,0,10,0" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
       <Rectangle.OpacityMask>
-        <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource StaticResourceConverter}}"/>
+        <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
       </Rectangle.OpacityMask>
     </Rectangle>
     <WrapPanel Grid.Column="1" Grid.Row="0">

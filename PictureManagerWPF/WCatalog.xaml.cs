@@ -44,7 +44,7 @@ namespace PictureManager {
       InitializeComponent();
 
       _lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
-      Folders = new ViewModel.Folders { Title = "Folders", IconName = "appbar_folder" };
+      Folders = new ViewModel.Folders { Title = "Folders", IconName = IconName.Folder };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
       Folders.IsExpanded = true;
@@ -193,7 +193,7 @@ namespace PictureManager {
         var item = new ViewModel.Folder {
           Title = di.Name,
           FullPath = path,
-          IconName = "appbar_folder",
+          IconName = IconName.Folder,
           IsAccessible = true
         };
         try {
@@ -201,11 +201,11 @@ namespace PictureManager {
             item.Items.Add(new ViewModel.Folder {Title = "..."});
         }
         catch (UnauthorizedAccessException) {
-          item.IconName = "appbar_folder_lock";
+          item.IconName = IconName.FolderLock;
           item.IsAccessible = false;
         }
         catch (DirectoryNotFoundException) {
-          item.IconName = "appbar_folder_lock";
+          item.IconName = IconName.FolderLock;
           item.IsAccessible = false;
         } finally {
           Folders.Items.Add(item);

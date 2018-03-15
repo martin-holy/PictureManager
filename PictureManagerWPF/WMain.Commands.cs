@@ -247,7 +247,7 @@ namespace PictureManager {
     private void GeoNameNew(object parameter) {
       var inputDialog = new InputDialog {
         Owner = this,
-        IconName = "appbar_location_checkin",
+        IconName = IconName.LocationCheckin,
         Title = "GeoName latitude and longitude",
         Question = "Enter in format: N36.75847,W3.84609",
         Answer = ""
@@ -382,7 +382,7 @@ namespace PictureManager {
       var current = ACore.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = this,
-        IconName = "appbar_notification",
+        IconName = IconName.Notification,
         Title = "Comment",
         Question = "Add a comment.",
         Answer = current.Data.Comment

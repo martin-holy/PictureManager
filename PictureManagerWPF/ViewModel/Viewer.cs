@@ -11,13 +11,13 @@ namespace PictureManager.ViewModel {
     public BaseTreeViewItem ExcludedFolders;
 
     public Viewer(DataModel.Viewer data) {
-      IncludedFolders = new BaseTreeViewItem { Title = "Included Folders", IconName = "appbar_folder_star", Parent = this };
-      ExcludedFolders = new BaseTreeViewItem { Title = "Excluded Folders", IconName = "appbar_folder_star", Parent = this };
+      IncludedFolders = new BaseTreeViewItem { Title = "Included Folders", IconName = IconName.FolderStar, Parent = this };
+      ExcludedFolders = new BaseTreeViewItem { Title = "Excluded Folders", IconName = IconName.FolderStar, Parent = this };
 
       Items.Add(IncludedFolders);
       Items.Add(ExcludedFolders);
 
-      IconName = "appbar_eye";
+      IconName = IconName.Eye;
       Data = data;
 
       ReLoad();
@@ -46,7 +46,7 @@ namespace PictureManager.ViewModel {
     private BaseTreeViewItem InitFolder(DataModel.ViewerAccess data, bool included, string path) {
       return new BaseTreeViewItem {
         Tag = data,
-        IconName = "appbar_folder",
+        IconName = IconName.Folder,
         Title = GetTitleFromPath(path),
         ToolTip = path,
         Parent = included ? IncludedFolders : ExcludedFolders,

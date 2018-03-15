@@ -3,7 +3,7 @@
     public string FullPath { get; set; }
 
     public FavoriteFolder() {
-      IconName = "appbar_folder";
+      IconName = IconName.Folder;
     }
   }
 }
