@@ -429,8 +429,10 @@ namespace PictureManager {
       //ACore.InitThumbsPagesControl();
 
       //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
-    
-      
+
+      foreach (var itemsAllItem in ACore.MediaItems.AllItems) {
+        itemsAllItem.SetThumbSize();
+      }
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
       /*var x = GetFileProps(@"d:\video.mp4");
@@ -546,6 +548,16 @@ namespace PictureManager {
       FullMedia.Stop();
       FullMedia.Rewind();
       FullMedia.Play();
+    }
+
+
+    private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
+      if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
+      if (e.Delta < 0 && ACore.ThumbScale < .1) return;
+      ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
+      ACore.MediaItems.SplitedItemsReload();
+      ACore.MediaItems.ResetThumbsSize();
     }
   }
 }

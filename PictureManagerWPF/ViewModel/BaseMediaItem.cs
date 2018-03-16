@@ -27,7 +27,7 @@ namespace PictureManager.ViewModel {
     public bool IsNew;
     public int ThumbWidth { get; set; }
     public int ThumbHeight { get; set; }
-    public int ThumbSize => (int) ((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * ACore.WindowsDisplayScale / 100);
+    public int ThumbSize { get; set; }
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
@@ -74,11 +74,12 @@ namespace PictureManager.ViewModel {
       var size = GetThumbSize();
       ThumbWidth = (int) size.Width;
       ThumbHeight = (int) size.Height;
+      ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * ACore.WindowsDisplayScale / 100 / ACore.ThumbScale);
     }
 
-    public Size GetThumbSize() {
+    private Size GetThumbSize() {
       var size = new Size();
-      var desiredSize = Settings.Default.ThumbnailSize / ACore.WindowsDisplayScale * 100;
+      var desiredSize = Settings.Default.ThumbnailSize / ACore.WindowsDisplayScale * 100 * ACore.ThumbScale;
 
       if (Data.Width == 0 || Data.Height == 0) {
         size.Width = desiredSize;

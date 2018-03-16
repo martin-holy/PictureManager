@@ -342,7 +342,7 @@
           <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding ACore.MediaItems.SplitedItems}"
                         VirtualizingStackPanel.IsVirtualizing="True" 
                         VirtualizingPanel.ScrollUnit="Pixel" 
-                        ScrollViewer.CanContentScroll="True">
+                        ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
@@ -378,6 +378,9 @@
                               <Style TargetType="{x:Type ItemsControl}">
                                 <Style.Triggers>
                                   <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                  </DataTrigger>
+                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo.IsThumbInfoVisible}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
                                 </Style.Triggers>

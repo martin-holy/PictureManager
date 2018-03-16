@@ -39,6 +39,7 @@ namespace PictureManager {
     public AutoResetEvent ThumbsResetEvent { get; set; } = new AutoResetEvent(false);
     public ViewModel.Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
+    public double ThumbScale { get; set; } = 1.0;
 
     private bool _disposed;
     private ViewModel.BaseTreeViewItem _lastSelectedSource;
