@@ -668,7 +668,7 @@ namespace PictureManager {
           }
         };
         process.Start();
-        process.WaitForExit(1000);
+        process.WaitForExit(2000);
       }
       finally {
         process?.Dispose();

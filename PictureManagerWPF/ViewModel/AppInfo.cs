@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -42,17 +43,13 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged($"FilePath");
 
         Rating.Clear();
-        Comment = string.Empty;
-
-        if (_currentMediaItem == null) return;
-
-        for (var i = 0; i < _currentMediaItem.Data.Rating; i++) 
+        for (var i = 0; i < _currentMediaItem?.Data.Rating; i++) 
           Rating.Add(new AppInfoRating {IconName = IconName.Star });
 
-        Comment = _currentMediaItem.CommentEscaped;
+        Comment = _currentMediaItem == null ? string.Empty : _currentMediaItem.CommentEscaped;
         OnPropertyChanged($"Comment");
 
-        Dimension = CurrentMediaItem == null ? string.Empty : $"{CurrentMediaItem.Data.Width}x{CurrentMediaItem.Data.Height}";
+        Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Data.Width}x{_currentMediaItem.Data.Height}";
         OnPropertyChanged($"Dimension");
       }
     }

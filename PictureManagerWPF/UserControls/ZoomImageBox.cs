@@ -49,24 +49,17 @@ namespace PictureManager.UserControls {
         return;
       }
 
-      var imgWidth = _currentMediaItem.Data.Width;
-      var imgHeight = _currentMediaItem.Data.Height;
-      var decodeWidth = Math.Abs(ActualWidth - imgWidth) < Math.Abs(ActualHeight - imgHeight);
-      var isBigger = decodeWidth ? ActualWidth < imgWidth : ActualHeight < imgHeight;
+      var rotated = _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate90 || 
+                    _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate270;
+      var imgWidth = rotated ? _currentMediaItem.Data.Height : _currentMediaItem.Data.Width;
+      var imgHeight = rotated ? _currentMediaItem.Data.Width : _currentMediaItem.Data.Height;
+      var isBigger = ActualWidth < imgWidth || ActualHeight < imgHeight;
 
       var src = new BitmapImage();
       src.BeginInit();
       src.UriSource = _currentMediaItem.FilePathUri;
       src.CacheOption = BitmapCacheOption.None;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-
-      //_isDecoded = false; //bad quality with decoding
-      if (isBigger && _isDecoded) {
-        if (decodeWidth)
-          src.DecodePixelWidth = (int) ActualWidth;
-        else
-          src.DecodePixelHeight = (int) ActualHeight;
-      }
 
       switch (_currentMediaItem.Data.Orientation) {
         case (int) MediaOrientation.Rotate90: {
@@ -83,14 +76,17 @@ namespace PictureManager.UserControls {
         }
       }
 
+      //bad quality with decoding
+      /*if (isBigger && _isDecoded) {
+        if (decodeWidth)
+          src.DecodePixelWidth = (int) ActualWidth;
+        else
+          src.DecodePixelHeight = (int) ActualHeight;
+      }*/
+
       src.EndInit();
       Image.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
       Image.Source = src;
-      /*if (_isDecoded) {
-        _isDecoded = false;
-        SetSource();
-      }*/
-
       GC.Collect();
     }
 
