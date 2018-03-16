@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace PictureManager.ViewModel {
   public class AppInfoRating {
-    public string IconName { get; set; }
+    public IconName IconName { get; set; }
   }
 
   public class AppInfo : INotifyPropertyChanged {
@@ -47,7 +47,7 @@ namespace PictureManager.ViewModel {
         if (_currentMediaItem == null) return;
 
         for (var i = 0; i < _currentMediaItem.Data.Rating; i++) 
-          Rating.Add(new AppInfoRating {IconName = "appbar_star" });
+          Rating.Add(new AppInfoRating {IconName = IconName.Star });
 
         Comment = _currentMediaItem.CommentEscaped;
         OnPropertyChanged($"Comment");
