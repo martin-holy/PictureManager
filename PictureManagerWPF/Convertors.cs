@@ -8,7 +8,8 @@ using System.Windows.Media.Imaging;
 namespace PictureManager {
   public class StaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return Application.Current.FindResource((string)value);
+      if (value == null) throw new ArgumentNullException();
+      return Application.Current.FindResource((string) value);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
@@ -18,6 +19,8 @@ namespace PictureManager {
 
   public class IconNameToStaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) throw new ArgumentNullException();
+
       string resourceName;
       switch ((IconName) value) {
         case IconName.Folder: resourceName = "appbar_folder"; break;
@@ -52,8 +55,8 @@ namespace PictureManager {
 
   public class IconNameToBrush : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null)
-        value = parameter;
+      if (value == null) throw new ArgumentNullException();
+
       switch ((IconName) value) {
         case IconName.Folder:
         case IconName.FolderStar:
@@ -79,7 +82,8 @@ namespace PictureManager {
 
   public class RatingConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return int.Parse((string)parameter) < (int) value
+      if (value == null || parameter == null) throw new ArgumentNullException();
+      return int.Parse((string) parameter) < (int) value
         ? new SolidColorBrush(Color.FromRgb(255, 255, 255))
         : new SolidColorBrush(Color.FromRgb(104, 104, 104));
     }
@@ -91,7 +95,8 @@ namespace PictureManager {
 
   public class BackgroundColorConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) value = parameter;
+      if (value == null) throw new ArgumentNullException();
+
       switch ((BackgroundBrush)value) {
         case BackgroundBrush.AndThis: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
         case BackgroundBrush.OrThis: return new SolidColorBrush(Color.FromRgb(21, 133, 181));
