@@ -27,7 +27,7 @@ namespace PictureManager.ViewModel {
     public bool IsNew;
     public int ThumbWidth { get; set; }
     public int ThumbHeight { get; set; }
-    public int ThumbSize => ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight;
+    public int ThumbSize => (int) ((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * ACore.WindowsDisplayScale / 100);
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;

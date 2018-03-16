@@ -356,14 +356,14 @@ namespace PictureManager {
               break;
             }
 
-            if (!File.Exists(mi.FilePathCache))
-              CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
-
             if (mi.IsNew) {
               mi.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) e.Argument);
               mi.SetThumbSize();
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
+
+            if (!File.Exists(mi.FilePathCache))
+              CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
             if (mi.InfoBoxThumb.Count == 0)
               Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
