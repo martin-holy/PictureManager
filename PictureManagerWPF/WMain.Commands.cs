@@ -11,6 +11,9 @@ namespace PictureManager {
   public partial class WMain {
 
     private void AddCommandBindings() {
+      //Window Commands
+      CommandBindings.Add(new CommandBinding(Commands.SwitchToFullScreen, HandleExecute(SwitchToFullScreen)));
+      CommandBindings.Add(new CommandBinding(Commands.SwitchToBrowser, HandleExecute(SwitchToBrowser)));
       //MediaItems Commands
       CommandBindings.Add(new CommandBinding(Commands.MediaItemNext, HandleExecute(MediaItemNext), HandleCanExecute(CanMediaItemNext)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
@@ -52,13 +55,14 @@ namespace PictureManager {
     }
 
     private void AddInputBindings() {
+      AddInputBinding(Commands.SwitchToBrowser, new KeyGesture(Key.Escape), PanelFullScreen);
       AddInputBinding(Commands.MediaItemNext, new KeyGesture(Key.Right), PanelFullScreen);
       AddInputBinding(Commands.MediaItemPrevious, new KeyGesture(Key.Left), PanelFullScreen);
       AddInputBinding(Commands.MediaItemsSelectAll, new KeyGesture(Key.A, ModifierKeys.Control), ThumbsBox);
       AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete), PanelFullScreen);
       AddInputBinding(MediaCommands.TogglePlayPause, new KeyGesture(Key.Space), FullMedia);
       AddInputBinding(MediaCommands.TogglePlayPause, new MouseGesture(MouseAction.LeftClick), FullMedia);
-
+      
       AddInputBinding(Commands.KeywordsEdit, new KeyGesture(Key.E, ModifierKeys.Control));
       AddInputBinding(Commands.KeywordsSave, new KeyGesture(Key.S, ModifierKeys.Control));
       AddInputBinding(Commands.KeywordsCancel, new KeyGesture(Key.Q, ModifierKeys.Control));
@@ -136,11 +140,11 @@ namespace PictureManager {
       ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) != 0);
       ACore.MediaItems.RemoveSelected();
       if (ACore.AppInfo.AppMode == AppMode.Viewer) {
-        if (Commands.MediaItemNext.CanExecute(null, null))
-          Commands.MediaItemNext.Execute(null, null);
+        if (CanMediaItemNext())
+          MediaItemNext();
         else {
-          if (Commands.MediaItemPrevious.CanExecute(null, null))
-            Commands.MediaItemPrevious.Execute(null, null);
+          if (CanMediaItemPrevious())
+            MediaItemPrevious();
           else SwitchToBrowser();
         }
       }
@@ -411,6 +415,7 @@ namespace PictureManager {
       current.TryWriteMetadata();
       current.SetInfoBox();
       ACore.Db.SubmitChanges(lists);
+      ACore.UpdateStatusBarInfo();
     }
 
     private bool CanReloadMetadata() {
@@ -480,6 +485,33 @@ namespace PictureManager {
       Settings.Default.Save();
       ACore.FolderKeywords.Load();
       ACore.Folders.AddDrives();
+    }
+
+    private void SwitchToFullScreen() {
+      if (ACore.MediaItems.Current == null) return;
+      ACore.AppInfo.AppMode = AppMode.Viewer;
+      ACore.UpdateStatusBarInfo();
+      UseNoneWindowStyle = true;
+      IgnoreTaskbarOnMaximize = true;
+      MainMenu.Visibility = Visibility.Hidden;
+      Application.Current.Properties[AppProperty.MainTreeViewWidth] = GridMain.ColumnDefinitions[0].ActualWidth;
+      GridMain.ColumnDefinitions[0].Width = new GridLength(0);
+      GridMain.ColumnDefinitions[1].Width = new GridLength(0);
+    }
+
+    private void SwitchToBrowser() {
+      ACore.AppInfo.AppMode = AppMode.Browser;
+      ACore.MediaItems.ScrollToCurrent();
+      ACore.MarkUsedKeywordsAndPeople();
+      ACore.UpdateStatusBarInfo();
+      UseNoneWindowStyle = false;
+      ShowTitleBar = true;
+      IgnoreTaskbarOnMaximize = false;
+      MainMenu.Visibility = Visibility.Visible;
+      GridMain.ColumnDefinitions[0].Width = new GridLength((double)Application.Current.Properties[AppProperty.MainTreeViewWidth]);
+      GridMain.ColumnDefinitions[1].Width = new GridLength(3);
+      FullImage.SetSource(null);
+      FullMedia.Source = null;
     }
   }
 }

@@ -58,7 +58,7 @@ namespace PictureManager.UserControls {
       var src = new BitmapImage();
       src.BeginInit();
       src.UriSource = _currentMediaItem.FilePathUri;
-      src.CacheOption = BitmapCacheOption.None;
+      src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
       switch (_currentMediaItem.Data.Orientation) {

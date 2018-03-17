@@ -393,6 +393,20 @@
                           <!-- Thumbnail Image -->
                           <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
 
+                          <!-- Video overlayer -->
+                          <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
+                                          VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77">
+                            <ContentControl.Style>
+                              <Style>
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding MediaType}" Value="0">
+                                    <Setter Property="ContentControl.Visibility" Value="Hidden"/>
+                                  </DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </ContentControl.Style>
+                          </ContentControl>
+
                           <!-- Thumbnail Info Box -->
                           <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
                             <ItemsControl.ItemsPanel>
@@ -428,7 +442,7 @@
 
         <!-- Full Media -->
         <Grid x:Name="PanelFullScreen" Background="Transparent" 
-              MouseLeftButtonDown="FullScreenBox_OnMouseLeftButtonDown" MouseWheel="FullScreenBox_OnMouseWheel">
+              MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel">
           <Grid.Style>
             <Style TargetType="{x:Type Grid}">
               <Setter Property="Visibility" Value="Hidden" />

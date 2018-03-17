@@ -2,6 +2,9 @@
 
 namespace PictureManager {
   public static class Commands {
+    //Window Commands
+    public static RoutedUICommand SwitchToFullScreen { get; } = new RoutedUICommand();
+    public static RoutedUICommand SwitchToBrowser { get; } = new RoutedUICommand();
     //MediaItems Commands
     public static RoutedUICommand MediaItemNext { get; } = new RoutedUICommand {Text = "Next"};
     public static RoutedUICommand MediaItemPrevious { get; } = new RoutedUICommand {Text = "Previous"};

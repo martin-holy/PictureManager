@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -70,31 +71,6 @@ namespace PictureManager {
       TvFilters.ItemsSource = ACore.FiltersRoot;
       MenuViewers.ItemsSource = ACore.Viewers.Items;
       MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
-    }
-
-    public void SwitchToFullScreen() {
-      if (ACore.MediaItems.Current == null) return;
-      ACore.AppInfo.AppMode = AppMode.Viewer;
-      UseNoneWindowStyle = true;
-      IgnoreTaskbarOnMaximize = true;
-      MainMenu.Visibility = Visibility.Hidden;
-      Application.Current.Properties[AppProperty.MainTreeViewWidth] = GridMain.ColumnDefinitions[0].ActualWidth;
-      GridMain.ColumnDefinitions[0].Width = new GridLength(0);
-      GridMain.ColumnDefinitions[1].Width = new GridLength(0);
-    }
-
-    public void SwitchToBrowser() {
-      ACore.AppInfo.AppMode = AppMode.Browser;
-      ACore.MediaItems.ScrollToCurrent();
-      ACore.MarkUsedKeywordsAndPeople();
-      UseNoneWindowStyle = false;
-      ShowTitleBar = true;
-      IgnoreTaskbarOnMaximize = false;
-      MainMenu.Visibility = Visibility.Visible;
-      GridMain.ColumnDefinitions[0].Width = new GridLength((double) Application.Current.Properties[AppProperty.MainTreeViewWidth]);
-      GridMain.ColumnDefinitions[1].Width = new GridLength(3);
-      FullImage.SetSource(null);
-      FullMedia.Source = null;
     }
 
     private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
@@ -405,19 +381,19 @@ namespace PictureManager {
       return true;
     }
 
-    /*private Dictionary<int, KeyValuePair<string, string>> GetFileProps(string filename) {
+    private Dictionary<int, KeyValuePair<string, string>> GetFileProps(string filename) {
       var shl = new Shell32.Shell();
       var fldr = shl.NameSpace(Path.GetDirectoryName(filename));
       var itm = fldr.ParseName(Path.GetFileName(filename));
       var fileProps = new Dictionary<int, KeyValuePair<string, string>>();
-      for (var i = 0; i < 1000; i++) {
+      for (var i = 0; i < short.MaxValue; i++) {
         var propValue = fldr.GetDetailsOf(itm, i);
         if (propValue != "") {
           fileProps.Add(i, new KeyValuePair<string, string>(fldr.GetDetailsOf(null, i), propValue));
         }
       }
       return fileProps;
-    }*/
+    }
 
     private void TestButton() {
       //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
@@ -430,15 +406,26 @@ namespace PictureManager {
 
       //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
 
-      foreach (var itemsAllItem in ACore.MediaItems.AllItems) {
-        itemsAllItem.SetThumbSize();
-      }
+
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
-      /*var x = GetFileProps(@"d:\video.mp4");
-      var xx = ShellStuff.FileInformation.GetVideoDimensions(@"d:\video.mp4");
-      var doc = WbThumbs.Document.All;
-      AppCore.CreateThumbnail(@"d:\video.mp4", @"d:\video.jpg");*/
+      //var x = GetFileProps(@"d:\video.mp4");
+      //var xx = ShellStuff.FileInformation.GetVideoMetadata(@"d:\video.mp4");
+
+      /*var mediaItems = ACore.MediaItems.AllItems.Where(x => x.MediaType == MediaType.Image);
+      var panoramas = new List<ViewModel.BaseMediaItem>();
+      foreach (var mi in mediaItems) {
+        mi.SetThumbSize();
+        if (mi.ThumbWidth > 400 || mi.ThumbHeight > 400)
+          panoramas.Add(mi);
+      }
+
+      foreach (var mi in panoramas) {
+        if (File.Exists(mi.FilePath))
+          AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+      }*/
+    
+
 
       //height 309, width 311
 
@@ -500,13 +487,8 @@ namespace PictureManager {
       return true;
     }
 
-    private void FullScreenBox_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+    private void PanelFullScreen_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       if (e.ClickCount == 2) {
-        if (FullMedia.Source != null) {
-          FullMedia.Source = null;
-          GC.Collect();
-        }
-
         SwitchToBrowser();
       }
     }
@@ -525,15 +507,15 @@ namespace PictureManager {
       }
     }
 
-    private void FullScreenBox_OnMouseWheel(object sender, MouseWheelEventArgs e) {
+    private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
       if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
       if (e.Delta < 0) {
-        if (Commands.MediaItemNext.CanExecute(null, null))
-          Commands.MediaItemNext.Execute(null, null);
+        if (CanMediaItemNext())
+          MediaItemNext();
       }
       else {
-        if (Commands.MediaItemPrevious.CanExecute(null, null))
-          Commands.MediaItemPrevious.Execute(null, null);
+        if (CanMediaItemPrevious())
+          MediaItemPrevious();
       }
     }
 

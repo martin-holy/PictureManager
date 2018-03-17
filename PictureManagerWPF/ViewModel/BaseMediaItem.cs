@@ -136,8 +136,6 @@ namespace PictureManager.ViewModel {
       if (Data.GeoNameId != null) 
         InfoBoxThumb.Add(ACore.GeoNames.AllGeoNames.Single(x => x.Data.GeoNameId == Data.GeoNameId).Title);
 
-      if (MediaType == MediaType.Video) InfoBoxThumb.Add("V");
-
       foreach (var val in InfoBoxPeople) 
         InfoBoxThumb.Add(val);
 
@@ -318,9 +316,10 @@ namespace PictureManager.ViewModel {
     public bool ReadMetadata(bool gpsOnly = false) {
       try {
         if (MediaType == MediaType.Video) {
-          var size = ShellStuff.FileInformation.GetVideoDimensions(FilePath);
+          var size = ShellStuff.FileInformation.GetVideoMetadata(FilePath);
           Data.Height = size[0];
           Data.Width = size[1];
+          Data.Orientation = size[2];
         }
         else { //MediaType.Image
           using (var imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {

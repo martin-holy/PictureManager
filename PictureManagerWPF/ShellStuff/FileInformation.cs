@@ -5,14 +5,15 @@ using System.Runtime.InteropServices;
 
 namespace PictureManager.ShellStuff {
   public static class FileInformation {
-    internal static int[] GetVideoDimensions(string filePath) {
+    internal static int[] GetVideoMetadata(string filePath) {
       var shl = new Shell32.Shell();
       var fldr = shl.NameSpace(Path.GetDirectoryName(filePath));
       var itm = fldr.ParseName(Path.GetFileName(filePath));
-      string[] size = {fldr.GetDetailsOf(itm, 309), fldr.GetDetailsOf(itm, 311)};
-      int.TryParse(size[0], out int h);
-      int.TryParse(size[1], out int w);
-      return new[] {h, w};
+      string[] size = {fldr.GetDetailsOf(itm, 309), fldr.GetDetailsOf(itm, 311), fldr.GetDetailsOf(itm, 314)};
+      int.TryParse(size[0], out var h);
+      int.TryParse(size[1], out var w);
+      int.TryParse(size[2], out var o);
+      return new[] {h, w, o};
     }
 
     internal static object GetFileIdInfo(string filePath) {
