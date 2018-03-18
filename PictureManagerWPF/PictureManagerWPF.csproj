@@ -160,7 +160,10 @@
     <Compile Include="WFilterBuilder.xaml.cs">
       <DependentUpon>WFilterBuilder.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WMain.Commands.cs" />
+    <Compile Include="WMain.Commands.cs">
+      <DependentUpon>WMain.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="WPicTransform.xaml.cs">
       <DependentUpon>WPicTransform.xaml</DependentUpon>
     </Compile>

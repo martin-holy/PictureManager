@@ -42,7 +42,8 @@
           <MenuItem Command="pm:Commands.KeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.KeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
-        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="appbar_eye" Style="{StaticResource RootMenuStyle}" Icon="{StaticResource MenuItemIconRect}">
+        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="appbar_eye" Style="{StaticResource RootMenuStyle}" 
+                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.Viewers.Items}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
@@ -119,12 +120,12 @@
       <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" Margin="0,30,0,27" 
                        Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" >
         
-        
         <!-- TreeView Forders, Keywords and Filters -->
         <TabControl x:Name="TcMain" Background="Transparent" SizeChanged="TcMain_OnSizeChanged" >
           <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
             <!-- TreeView Folders -->
-            <TreeView x:Name="TvFolders" Background="Transparent">
+            <TreeView x:Name="TvFolders" Background="Transparent" 
+                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FoldersRoot}">
 
               <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -169,7 +170,8 @@
 
           <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
             <!-- TreeView Keywords -->
-            <TreeView x:Name="TvKeywords" Background="Transparent">
+            <TreeView x:Name="TvKeywords" Background="Transparent"
+                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.KeywordsRoot}">
 
               <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -264,7 +266,8 @@
 
           <TabItem Header="Filters" HorizontalAlignment="Left">
             <!-- TreeView Filters -->
-            <TreeView x:Name="TvFilters" Background="Transparent">
+            <TreeView x:Name="TvFilters" Background="Transparent"
+                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FiltersRoot}">
 
               <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -8,15 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
-using MahApps.Metro.Controls;
-using ContextMenu = System.Windows.Controls.ContextMenu;
-using DataFormats = System.Windows.DataFormats;
-using DataObject = System.Windows.DataObject;
-using DragDropEffects = System.Windows.DragDropEffects;
-using DragEventArgs = System.Windows.DragEventArgs;
-using MenuItem = System.Windows.Controls.MenuItem;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace PictureManager {
   /// <summary>
@@ -28,6 +18,8 @@ namespace PictureManager {
     private object _dragDropObject;
 
     public WMain(string picFile) {
+      ACore = new AppCore();
+      Application.Current.Properties[nameof(AppProperty.AppCore)] = ACore;
       Application.Current.Properties[nameof(AppProperty.WMain)] = this;
       InitializeComponent();
       AddCommandBindings();
@@ -36,16 +28,16 @@ namespace PictureManager {
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
 
-      ACore = new AppCore();
-      Application.Current.Properties[nameof(AppProperty.AppCore)] = ACore;
-
       _argPicFile = picFile;
     }
 
     public AppCore ACore { get; set; }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
-      InitUi();
+      ACore.Init();
+      ACore.AppInfo.ProgressBarValue = 100;
+      ACore.Folders.IsExpanded = true;
+      MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
 
       App.SplashScreen.LoadComplete();
       Activate();
@@ -64,24 +56,13 @@ namespace PictureManager {
       ACore.LoadThumbnails();
     }
 
-    public void InitUi() {
-      ACore.Init();
-      ACore.AppInfo.ProgressBarValue = 100;
-      ACore.Folders.IsExpanded = true;
-      TvFolders.ItemsSource = ACore.FoldersRoot;
-      TvKeywords.ItemsSource = ACore.KeywordsRoot;
-      TvFilters.ItemsSource = ACore.FiltersRoot;
-      MenuViewers.ItemsSource = ACore.Viewers.Items;
-      MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
-    }
-
+    //this is PreviewMouseRightButtonDown on StackPanel in TreeView
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
-      //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
       var stackPanel = (StackPanel)sender;
-      var item = stackPanel.DataContext;
+      if (stackPanel.ContextMenu != null) return;
 
-      //if (stackPanel.ContextMenu != null) return;
+      var item = stackPanel.DataContext;
       var menu = new ContextMenu { Tag = item };
 
       if ((item as ViewModel.BaseTreeViewItem)?.GetTopParent() is ViewModel.BaseCategoryItem category) {
@@ -113,7 +94,6 @@ namespace PictureManager {
           }
         }
       }
-
 
       switch (item) {
         case ViewModel.Folder folder: {
@@ -193,12 +173,9 @@ namespace PictureManager {
     }
 
     private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed) return;
-      var diff = _dragDropStartPosition - e.GetPosition(null);
-      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
-          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return;
+      if (!IsDragDropStarted(e)) return;
       if (!(e.OriginalSource is StackPanel stackPanel) || _dragDropObject == null) return;
-      DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.All);
+      DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move | DragDropEffects.Copy);
     }
 
     private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
@@ -343,6 +320,111 @@ namespace PictureManager {
     }
     #endregion
 
+    #region Thumbnail
+    private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      var isCtrlOn = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+      var isShiftOn = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+      var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+
+      if (!isCtrlOn && !isShiftOn) {
+        ACore.MediaItems.DeselectAll();
+        ACore.MediaItems.Current = bmi;
+      }
+      else {
+        if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
+        if (isShiftOn && ACore.MediaItems.Current != null) {
+          var from = ACore.MediaItems.Current.Index;
+          var to = bmi.Index;
+          if (from > to) {
+            to = from;
+            from = bmi.Index;
+          }
+
+          for (var i = from; i < to + 1; i++) {
+            ACore.MediaItems.Items[i].IsSelected = true;
+          }
+        }
+      }
+
+      ACore.UpdateStatusBarInfo();
+      ACore.MarkUsedKeywordsAndPeople();
+    }
+
+    private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      _dragDropStartPosition = e.GetPosition(null);
+      if (e.ClickCount != 2) return;
+      ACore.MediaItems.DeselectAll();
+      ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      SwitchToFullScreen();
+      SetMediaItemSource();
+    }
+
+    private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
+      if (!IsDragDropStarted(e)) return;
+      var dob = new DataObject();
+      var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      if (data.Count == 0)
+        data.Add(((ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+      dob.SetData(DataFormats.FileDrop, data.ToArray());
+      DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
+    }
+
+    private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
+      if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
+      if (e.Delta < 0 && ACore.ThumbScale < .1) return;
+      ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
+      ACore.MediaItems.SplitedItemsReload();
+      ACore.MediaItems.ResetThumbsSize();
+    }
+
+    #endregion
+
+    private bool IsDragDropStarted(MouseEventArgs e) {
+      if (e.LeftButton != MouseButtonState.Pressed) return false;
+      var diff = _dragDropStartPosition - e.GetPosition(null);
+      return Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
+             Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
+    }
+
+    private void SetMediaItemSource() {
+      switch (ACore.MediaItems.Current.MediaType) {
+        case MediaType.Image: {
+          FullImage.SetSource(ACore.MediaItems.Current);
+          FullMedia.Source = null;
+          break;
+        }
+        case MediaType.Video: {
+          FullMedia.Source = ACore.MediaItems.Current.FilePathUri;
+          break;
+        }
+      }
+    }
+
+    private void PanelFullScreen_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      if (e.ClickCount == 2) {
+        SwitchToBrowser();
+      }
+    }
+
+    private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
+      if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
+      if (e.Delta < 0) {
+        if (CanMediaItemNext())
+          MediaItemNext();
+      }
+      else {
+        if (CanMediaItemPrevious())
+          MediaItemPrevious();
+      }
+    }
+
+    private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
+      FullMedia.Stop();
+      FullMedia.Rewind();
+      FullMedia.Play();
+    }
+
     public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
       var original = new FileInfo(filePath);
       if (!original.Exists) return false;
@@ -379,20 +461,6 @@ namespace PictureManager {
       return true;
     }
 
-    private Dictionary<int, KeyValuePair<string, string>> GetFileProps(string filename) {
-      var shl = new Shell32.Shell();
-      var fldr = shl.NameSpace(Path.GetDirectoryName(filename));
-      var itm = fldr.ParseName(Path.GetFileName(filename));
-      var fileProps = new Dictionary<int, KeyValuePair<string, string>>();
-      for (var i = 0; i < short.MaxValue; i++) {
-        var propValue = fldr.GetDetailsOf(itm, i);
-        if (propValue != "") {
-          fileProps.Add(i, new KeyValuePair<string, string>(fldr.GetDetailsOf(null, i), propValue));
-        }
-      }
-      return fileProps;
-    }
-
     private void TestButton() {
       //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
       //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
@@ -403,18 +471,6 @@ namespace PictureManager {
       //ACore.InitThumbsPagesControl();
 
       //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
-
-      var scroll = AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
-      var count = 0;
-      var animationTimer = new DispatcherTimer();
-      animationTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
-      animationTimer.Tick += delegate(object sender, EventArgs args) {
-        count++;
-        if (count == 1000)
-          animationTimer.Stop();
-        scroll.ScrollToVerticalOffset(scroll.VerticalOffset + 1);
-      };
-      animationTimer.Start();
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
@@ -446,110 +502,9 @@ namespace PictureManager {
       var fileInfo = new FileInfo(filePath);*/
     }
 
-    private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      var isCtrlOn = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-      var isShiftOn = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-      var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
-
-      if (!isCtrlOn && !isShiftOn) {
-        ACore.MediaItems.DeselectAll();
-        ACore.MediaItems.Current = bmi;
-      }
-      else {
-        if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
-        if (isShiftOn && ACore.MediaItems.Current != null) {
-          var from = ACore.MediaItems.Current.Index;
-          var to = bmi.Index;
-          if (from > to) { to = from; from = bmi.Index; }
-          for (var i = from; i < to + 1; i++){
-            ACore.MediaItems.Items[i].IsSelected = true;
-          }
-        }
-      }
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
-    }
-
-    private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      _dragDropStartPosition = e.GetPosition(null);
-      if (e.ClickCount != 2) return;
-      ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
-      SwitchToFullScreen();
-      SetMediaItemSource();
-    }
-
-    private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
-      if (!IsDragDropStarted(e)) return;
-      var dob = new DataObject();
-      var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
-      if (data.Count == 0)
-        data.Add(((ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
-      dob.SetData(DataFormats.FileDrop, data.ToArray());
-      DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
-    }
-
-    private bool IsDragDropStarted(MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed) return false;
-      var diff = _dragDropStartPosition - e.GetPosition(null);
-      if (!(Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance) &&
-          !(Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)) return false;
-      return true;
-    }
-
-    private void PanelFullScreen_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      if (e.ClickCount == 2) {
-        SwitchToBrowser();
-      }
-    }
-
-    private void SetMediaItemSource() {
-      switch (ACore.MediaItems.Current.MediaType) {
-        case MediaType.Image: {
-          FullImage.SetSource(ACore.MediaItems.Current);
-          FullMedia.Source = null;
-          break;
-        }
-        case MediaType.Video: {
-          FullMedia.Source = ACore.MediaItems.Current.FilePathUri;
-          break;
-        }
-      }
-    }
-
-    private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-      if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
-      if (e.Delta < 0) {
-        if (CanMediaItemNext())
-          MediaItemNext();
-      }
-      else {
-        if (CanMediaItemPrevious())
-          MediaItemPrevious();
-      }
-    }
-
-
     private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       /*ACore.MediaItems.SplitedItemsReload();
       ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);*/
-    }
-
-
-    private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
-      FullMedia.Stop();
-      FullMedia.Rewind();
-      FullMedia.Play();
-    }
-
-
-    private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
-      if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
-      if (e.Delta < 0 && ACore.ThumbScale < .1) return;
-      ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ResetThumbsSize();
     }
   }
 }

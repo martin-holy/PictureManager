@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
-    public ObservableCollection<BaseTreeViewItem> Items { get; set; }
+    public ObservableCollection<BaseTreeViewItem> Items { get; set; } = new ObservableCollection<BaseTreeViewItem>();
     public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public object Tag;
 
@@ -28,10 +28,6 @@ namespace PictureManager.ViewModel {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
-
-    public BaseTreeViewItem() {
-      Items = new ObservableCollection<BaseTreeViewItem>();
     }
 
     public BaseTreeViewItem GetTopParent() {
