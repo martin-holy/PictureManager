@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -413,6 +412,12 @@ namespace PictureManager.ViewModel {
     }
 
     public void ScrollTo(int index) {
+      var scroll = AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
+      if (index == 0) {
+        scroll.ScrollToTop();
+        return;
+      }
+
       var count = 0;
       var rowsHeight = 0;
       const int itemOffset = 5; //BorderThickness, Margin 
@@ -422,9 +427,9 @@ namespace PictureManager.ViewModel {
           rowsHeight += row.Max(x => x.ThumbHeight) + itemOffset;
           continue;
         }
-        AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToVerticalOffset(rowsHeight);
         break;
       }
+      scroll.ScrollToVerticalOffset(rowsHeight);
     }
 
     public void RemoveSelected() {

@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using MahApps.Metro.Controls;
 using ContextMenu = System.Windows.Controls.ContextMenu;
 using DataFormats = System.Windows.DataFormats;
 using DataObject = System.Windows.DataObject;
@@ -73,10 +75,6 @@ namespace PictureManager {
       MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
     }
 
-    private void MenuAddItem(ItemsControl menu, string resourceName, object item) {
-      menu.Items.Add(new MenuItem { Command = (ICommand)Resources[resourceName], CommandParameter = item });
-    }
-
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //this is PreviewMouseRightButtonDown on StackPanel in TreeView
       e.Handled = true;
@@ -89,7 +87,7 @@ namespace PictureManager {
       if ((item as ViewModel.BaseTreeViewItem)?.GetTopParent() is ViewModel.BaseCategoryItem category) {
 
         if (item is ViewModel.BaseCategoryItem && category.Category == Category.GeoNames) {
-          MenuAddItem(menu, "GeoNameNew", item);
+          menu.Items.Add(new MenuItem {Command = Commands.GeoNameNew, CommandParameter = item});
         }
 
         if (category.CanModifyItems) {
@@ -97,21 +95,21 @@ namespace PictureManager {
           var group = item as ViewModel.CategoryGroup;
 
           if (cat != null || group != null || category.CanHaveSubItems) {
-            MenuAddItem(menu, "TagItemNew", item);
+            menu.Items.Add(new MenuItem { Command = Commands.TagItemNew, CommandParameter = item });
           }
 
           if (item is ViewModel.BaseTreeViewTagItem && group == null) {
-            MenuAddItem(menu, "TagItemRename", item);
-            MenuAddItem(menu, "TagItemDelete", item);
+            menu.Items.Add(new MenuItem { Command = Commands.TagItemRename, CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = Commands.TagItemDelete, CommandParameter = item });
           }
 
           if (category.CanHaveGroups && cat != null) {
-            MenuAddItem(menu, "CategoryGroupNew", item);
+            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupNew, CommandParameter = item });
           }
 
           if (group != null) {
-            MenuAddItem(menu, "CategoryGroupRename", item);
-            MenuAddItem(menu, "CategoryGroupDelete", item);
+            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupRename, CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupDelete, CommandParameter = item });
           }
         }
       }
@@ -119,36 +117,36 @@ namespace PictureManager {
 
       switch (item) {
         case ViewModel.Folder folder: {
-          MenuAddItem(menu, "FolderNew", item);
+          menu.Items.Add(new MenuItem { Command = Commands.FolderNew, CommandParameter = item });
           if (folder.Parent != null) {
-            MenuAddItem(menu, "FolderRename", item);
-            MenuAddItem(menu, "FolderDelete", item);
-            MenuAddItem(menu, "FolderAddToFavorites", item);
+            menu.Items.Add(new MenuItem { Command = Commands.FolderRename, CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = Commands.FolderDelete, CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = Commands.FolderAddToFavorites, CommandParameter = item });
           }
           break;
         }
         case ViewModel.FavoriteFolder _: {
-          MenuAddItem(menu, "FolderRemoveFromFavorites", item);
+          menu.Items.Add(new MenuItem { Command = Commands.FolderRemoveFromFavorites, CommandParameter = item });
           break;
         }
         case ViewModel.Filters _: {
-          MenuAddItem(menu, "FilterNew", item);
+          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
           break;
         }
         case ViewModel.Filter _: {
-          MenuAddItem(menu, "FilterNew", item);
-          MenuAddItem(menu, "FilterEdit", item);
-          MenuAddItem(menu, "FilterDelete", item);
+          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = Commands.FilterEdit, CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = Commands.FilterDelete, CommandParameter = item });
           break;
         }
         case ViewModel.Viewer _: {
-          MenuAddItem(menu, "ViewerIncludeFolder", item);
-          MenuAddItem(menu, "ViewerExcludeFolder", item);
+          menu.Items.Add(new MenuItem { Command = Commands.ViewerIncludeFolder, CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = Commands.ViewerExcludeFolder, CommandParameter = item });
             break;
         }
         case ViewModel.BaseTreeViewItem btvi: {
           if (btvi.Tag is DataModel.ViewerAccess)
-            MenuAddItem(menu, "ViewerRemoveFolder", item);
+            menu.Items.Add(new MenuItem { Command = Commands.ViewerRemoveFolder, CommandParameter = item });
           break;
         }
       }
@@ -406,6 +404,17 @@ namespace PictureManager {
 
       //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
 
+      var scroll = AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
+      var count = 0;
+      var animationTimer = new DispatcherTimer();
+      animationTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+      animationTimer.Tick += delegate(object sender, EventArgs args) {
+        count++;
+        if (count == 1000)
+          animationTimer.Stop();
+        scroll.ScrollToVerticalOffset(scroll.VerticalOffset + 1);
+      };
+      animationTimer.Start();
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
@@ -424,7 +433,7 @@ namespace PictureManager {
         if (File.Exists(mi.FilePath))
           AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
       }*/
-    
+
 
 
       //height 309, width 311
@@ -448,12 +457,13 @@ namespace PictureManager {
       }
       else {
         if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
-        if (!isShiftOn || ACore.MediaItems.Current == null) return;
-        var from = ACore.MediaItems.Current.Index;
-        var to = bmi.Index;
-        if (from > to) { to = from; from = bmi.Index; }
-        for (var i = from; i < to + 1; i++) {
-          ACore.MediaItems.Items[i].IsSelected = true;
+        if (isShiftOn && ACore.MediaItems.Current != null) {
+          var from = ACore.MediaItems.Current.Index;
+          var to = bmi.Index;
+          if (from > to) { to = from; from = bmi.Index; }
+          for (var i = from; i < to + 1; i++){
+            ACore.MediaItems.Items[i].IsSelected = true;
+          }
         }
       }
       ACore.UpdateStatusBarInfo();

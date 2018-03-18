@@ -55,6 +55,7 @@ namespace PictureManager {
     }
 
     private void AddInputBindings() {
+      AddInputBinding(Commands.ShowHideTabMain, new KeyGesture(Key.T, ModifierKeys.Control));
       AddInputBinding(Commands.SwitchToBrowser, new KeyGesture(Key.Escape), PanelFullScreen);
       AddInputBinding(Commands.MediaItemNext, new KeyGesture(Key.Right), PanelFullScreen);
       AddInputBinding(Commands.MediaItemPrevious, new KeyGesture(Key.Left), PanelFullScreen);
@@ -292,14 +293,15 @@ namespace PictureManager {
     }
 
     private void ShowHideTabMain() {
-      var col = GridMain.ColumnDefinitions[0];
+      FlyoutMainTreeView.IsOpen = !FlyoutMainTreeView.IsOpen;
+      /*var col = GridMain.ColumnDefinitions[0];
       if (col.ActualWidth > 0) {
         col.Tag = col.ActualWidth;
         col.Width = new GridLength(0);
       }
       else {
         col.Width = new GridLength((double?) col.Tag ?? 350);
-      }
+      }*/
     }
 
     private void OpenCatalog() {
@@ -489,6 +491,7 @@ namespace PictureManager {
 
     private void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
+      FlyoutMainTreeView.IsOpen = false;
       ACore.AppInfo.AppMode = AppMode.Viewer;
       ACore.UpdateStatusBarInfo();
       UseNoneWindowStyle = true;
@@ -512,6 +515,7 @@ namespace PictureManager {
       GridMain.ColumnDefinitions[1].Width = new GridLength(3);
       FullImage.SetSource(null);
       FullMedia.Source = null;
+      FlyoutMainTreeView.IsOpen = true;
     }
   }
 }

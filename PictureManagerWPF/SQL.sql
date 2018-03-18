@@ -25,6 +25,6 @@ delete from MediaItemPerson where Id in (select MIP.Id from MediaItemPerson as M
 select * from MediaItemPerson where Id in (select MIP.Id from MediaItemPerson as MIP where not exists (select P.Id from People as P where P.Id = MIP.PersonId))
 delete from MediaItemPerson where Id in (select MIP.Id from MediaItemPerson as MIP where not exists (select P.Id from People as P where P.Id = MIP.PersonId))
 
--- smazani slozek bez MediaItems
-select * from Directories where Id not in (select distinct DirectoryId from MediaItems)
-delete from Directories where Id not in (select distinct DirectoryId from MediaItems)
+-- smazani MediaItems bez slozek
+select * from MediaItems as mi where mi.DirectoryId not in (select d.Id from Directories as d where d.Id = mi.DirectoryId)
+delete from MediaItems where Id in (select mi.Id from MediaItems as mi where mi.DirectoryId not in (select d.Id from Directories as d where d.Id = mi.DirectoryId))
