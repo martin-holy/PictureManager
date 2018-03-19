@@ -11,15 +11,6 @@ using MahApps.Metro.Controls;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.ViewModel {
-  public class MediaItemsLoad {
-    public string FilePath;
-    public string FileName;
-    public int DirId;
-    public string DirPath;
-    public FolderKeyword FolderKeyword;
-    public BaseMediaItem MediaItem;
-  }
-
   public class MediaItems: INotifyPropertyChanged {
     private BaseMediaItem _current;
     private bool _isEditModeOn;
@@ -100,10 +91,6 @@ namespace PictureManager.ViewModel {
       Current = null;
     }
 
-    public void CurrentItemMove(bool next) {
-      Current = Items[next ? Current.Index + 1 : Current.Index - 1];
-    }
-
     public void EditMetadata(object item) {
       foreach (var mi in Items.Where(x => x.IsSelected)) {
         mi.IsModifed = true;
@@ -150,7 +137,7 @@ namespace PictureManager.ViewModel {
         }
       }
 
-      //getting all folder
+      //getting all folders
       var dirs = new List<MediaItemsLoad>();
       foreach (var topDir in topDirs) {
         dirs.Add(new MediaItemsLoad {DirPath = topDir});
@@ -282,6 +269,45 @@ namespace PictureManager.ViewModel {
           Items.Add(file.MediaItem);
         }
         i++;
+      }
+
+      ACore.UpdateStatusBarInfo();
+    }
+
+    public void LoadByTag(BaseTreeViewItem tag) {
+      Current = null;
+      Items.Clear();
+      foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
+      SplitedItems.Clear();
+
+      BaseMediaItem[] items = null;
+
+      switch (tag) {
+        case Person person: {
+          items = (from mi in AllItems join mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id) 
+            on mi.Data.Id equals mip.MediaItemId select mi).ToArray();
+          break;
+        }
+      }
+
+      if (items == null) return;
+
+      var allDirs = (from d in ACore.Db.Directories
+        join mi in items on d.Id equals mi.Data.DirectoryId
+        select d).Distinct();
+      var dirs = allDirs.Where(dir => Directory.Exists(dir.Path)).ToDictionary(dir => dir.Id);
+
+      var i = -1;
+      foreach (var item in items.OrderBy(x => x.Data.FileName)) {
+        if (!dirs.ContainsKey(item.Data.DirectoryId)) continue;
+        if (!File.Exists(item.FilePath)) continue;
+
+        //Filter by Viewer
+        if (!ACore.CanViewerSeeThisFile(item.FilePath)) continue;
+
+        item.Index =++ i;
+        item.SetThumbSize();
+        Items.Add(item);
       }
 
       ACore.UpdateStatusBarInfo();
@@ -503,5 +529,14 @@ namespace PictureManager.ViewModel {
         item.SetThumbSize();
       }
     }
+  }
+
+  public class MediaItemsLoad {
+    public string FilePath;
+    public string FileName;
+    public int DirId;
+    public string DirPath;
+    public FolderKeyword FolderKeyword;
+    public BaseMediaItem MediaItem;
   }
 }

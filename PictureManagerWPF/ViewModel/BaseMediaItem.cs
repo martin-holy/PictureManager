@@ -14,6 +14,11 @@ using Application = System.Windows.Application;
 
 namespace PictureManager.ViewModel {
   public class BaseMediaItem: INotifyPropertyChanged {
+    private bool _isSelected;
+    private int _thumbWidth;
+    private int _thumbHeight;
+    private MediaType _mediaType;
+
     public DataModel.MediaItem Data { get; set; }
     public string FilePath { get; set; }
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
@@ -25,8 +30,8 @@ namespace PictureManager.ViewModel {
     public double? Lng;
     public bool IsModifed;
     public bool IsNew;
-    public int ThumbWidth { get; set; }
-    public int ThumbHeight { get; set; }
+    public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
+    public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
@@ -35,24 +40,8 @@ namespace PictureManager.ViewModel {
     public ObservableCollection<string> InfoBoxThumb { get; set; } = new ObservableCollection<string>();
     public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
     public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
-
-    private bool _isSelected;
-    public bool IsSelected {
-      get => _isSelected;
-      set {
-        _isSelected = value;
-        OnPropertyChanged();
-      }
-    }
-
-    private MediaType _mediaType;
-    public MediaType MediaType {
-      get => _mediaType;
-      set {
-        _mediaType = value;
-        OnPropertyChanged();
-      }
-    }
+    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
+    public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {

@@ -124,6 +124,10 @@ namespace PictureManager {
           menu.Items.Add(new MenuItem { Command = Commands.ViewerExcludeFolder, CommandParameter = item });
             break;
         }
+        case ViewModel.Person _: {
+          menu.Items.Add(new MenuItem { Command = Commands.MediaItemsLoadByTag, CommandParameter = item });
+          break;
+        }
         case ViewModel.BaseTreeViewItem btvi: {
           if (btvi.Tag is DataModel.ViewerAccess)
             menu.Items.Add(new MenuItem { Command = Commands.ViewerRemoveFolder, CommandParameter = item });
@@ -388,14 +392,18 @@ namespace PictureManager {
     }
 
     private void SetMediaItemSource() {
-      switch (ACore.MediaItems.Current.MediaType) {
+      var current = ACore.MediaItems.Current;
+      switch (current.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(ACore.MediaItems.Current);
+          FullImage.SetSource(current);
           FullMedia.Source = null;
           break;
         }
         case MediaType.Video: {
-          FullMedia.Source = ACore.MediaItems.Current.FilePathUri;
+          var isBigger = FullMedia.ActualHeight < current.Data.Height ||
+                         FullMedia.ActualWidth < current.Data.Width;
+          FullMedia.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
+          FullMedia.Source = current.FilePathUri;
           break;
         }
       }

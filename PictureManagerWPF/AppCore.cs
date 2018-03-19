@@ -207,9 +207,12 @@ namespace PictureManager {
               return;
             }
 
-            if (bti == null) return;
+            /*if (bti == null) return;
             bti.IsSelected = true;
-            LastSelectedSource = bti;
+            LastSelectedSource = bti;*/
+
+            LastSelectedSource = (ViewModel.BaseTreeViewItem) item;
+            LastSelectedSource.IsSelected = true;
             LastSelectedSourceRecursive = recursive;
 
             if (ThumbsWorker != null && ThumbsWorker.IsBusy) {

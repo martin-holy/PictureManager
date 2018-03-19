@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using PictureManager.ViewModel;
 
 namespace PictureManager {
   public partial class WMain {
@@ -19,6 +20,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectAll, HandleExecute(MediaItemsSelectAll), HandleCanExecute(CanMediaItemsSelectAll)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsDelete, HandleExecute(MediaItemsDelete), HandleCanExecute(CanMediaItemsDelete)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsLoadByTag, HandleExecute(MediaItemsLoadByTag)));
       //TreeView Commands
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupNew, HandleExecute(CategoryGroupNew)));
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupRename, HandleExecute(CategoryGroupRename)));
@@ -107,7 +109,7 @@ namespace PictureManager {
     }
 
     private void MediaItemNext() {
-      ACore.MediaItems.CurrentItemMove(true);
+      ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index + 1];
       SetMediaItemSource();
       ACore.UpdateStatusBarInfo();
     }
@@ -117,7 +119,7 @@ namespace PictureManager {
     }
 
     private void MediaItemPrevious() {
-      ACore.MediaItems.CurrentItemMove(false);
+      ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index - 1];
       SetMediaItemSource();
       ACore.UpdateStatusBarInfo();
     }
@@ -150,6 +152,13 @@ namespace PictureManager {
         }
       }
       ACore.UpdateStatusBarInfo();
+    }
+
+    private void MediaItemsLoadByTag(object parameter) {
+      ACore.MediaItems.LoadByTag((BaseTreeViewTagItem)parameter);
+      ACore.MediaItems.ScrollTo(0);
+      ACore.LoadThumbnails();
+      GC.Collect();
     }
 
     private static void CategoryGroupNew(object parameter) {
