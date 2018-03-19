@@ -16,7 +16,7 @@
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
-      <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
+      <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
         <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" Maximum="100" />
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
@@ -179,7 +179,7 @@
                   <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                   <Setter Property="VerticalContentAlignment" Value="Stretch" />
                   <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                  <Setter Property="Background" Value="{Binding BgBrush, Converter={StaticResource BgColorConverter}}" />
+                  <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
                   <Style.Triggers>
                     <MultiDataTrigger>
                       <MultiDataTrigger.Conditions>
@@ -327,7 +327,7 @@
     </controls:FlyoutsControl>
   </controls:MetroWindow.Flyouts>
 
-  <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext}">
+  <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
     <Grid x:Name="GridMain" Margin="0">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
@@ -397,7 +397,7 @@
                                   <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
-                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=DataContext.ACore.AppInfo.IsThumbInfoVisible}" Value="False">
+                                  <DataTrigger Binding="{Binding ElementName=MainWindow, Path=DataContext.ACore.AppInfo.IsThumbInfoVisible}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
                                 </Style.Triggers>
