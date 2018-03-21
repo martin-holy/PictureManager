@@ -433,7 +433,7 @@ namespace PictureManager.ViewModel {
     }*/
 
     public void ScrollToCurrent() {
-      if (Current == null || Current.Index == 0) return;
+      if (Current == null) return;
       ScrollTo(Current.Index);
     }
 
@@ -461,10 +461,10 @@ namespace PictureManager.ViewModel {
     public void RemoveSelected() {
       var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
       if (firstIndex == null) return;
-      //Items = Items.Where(x => !x.IsSelected).ToList();
       foreach (var item in Items.ToList()) {
-        if (item.IsSelected)
-          Items.Remove(item);
+        if (!item.IsSelected) continue;
+        Items.Remove(item);
+        AllItems.Remove(item);
       }
 
       //update index
@@ -475,7 +475,10 @@ namespace PictureManager.ViewModel {
       }
 
       SplitedItemsReload();
-      ScrollTo(firstIndex == 0 ? 0 : (int) firstIndex - 1);
+      if (Items.Count > 0) {
+        Current = Items[(int) firstIndex];
+        ScrollToCurrent();
+      }
     }
 
     public void SplitedItemsAdd(BaseMediaItem bmi) {

@@ -142,15 +142,14 @@ namespace PictureManager {
         MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
       ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) != 0);
       ACore.MediaItems.RemoveSelected();
+
       if (ACore.AppInfo.AppMode == AppMode.Viewer) {
-        if (CanMediaItemNext())
-          MediaItemNext();
-        else {
-          if (CanMediaItemPrevious())
-            MediaItemPrevious();
-          else SwitchToBrowser();
-        }
+        if (ACore.MediaItems.Current != null)
+          SetMediaItemSource();
+        else
+          SwitchToBrowser();
       }
+
       ACore.UpdateStatusBarInfo();
     }
 
