@@ -21,6 +21,7 @@
       <pm:BackgroundColorConverter x:Key="BgColorConverter" />
       <pm:DataBindingDebugConverter x:Key="DebugConverter" />
       <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
+      <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />

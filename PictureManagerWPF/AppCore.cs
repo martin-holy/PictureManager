@@ -28,6 +28,7 @@ namespace PictureManager {
     public ViewModel.Viewers Viewers { get; } = new ViewModel.Viewers {CanModifyItems = true};
     public ViewModel.GeoNames GeoNames { get; } = new ViewModel.GeoNames();
     public ViewModel.SqlQueries SqlQueries { get; } = new ViewModel.SqlQueries {CanHaveGroups = true, CanModifyItems = true};
+    public ViewModel.MediaItemSizes MediaItemSizes { get; } = new ViewModel.MediaItemSizes();
 
     public static WMain WMain => (WMain) Application.Current.Properties[nameof(AppProperty.WMain)];
     public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";"};
@@ -113,6 +114,7 @@ namespace PictureManager {
       FoldersRoot.Add(FavoriteFolders);
       FoldersRoot.Add(Folders);
       KeywordsRoot.Add(Ratings);
+      KeywordsRoot.Add(MediaItemSizes);
       KeywordsRoot.Add(People);
       KeywordsRoot.Add(FolderKeywords);
       KeywordsRoot.Add(Keywords);

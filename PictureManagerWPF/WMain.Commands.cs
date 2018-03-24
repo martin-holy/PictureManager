@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
-using PictureManager.ViewModel;
 
 namespace PictureManager {
   public partial class WMain {
@@ -154,7 +153,7 @@ namespace PictureManager {
     }
 
     private void MediaItemsLoadByTag(object parameter) {
-      ACore.MediaItems.LoadByTag((BaseTreeViewTagItem)parameter);
+      ACore.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem)parameter);
       ACore.MediaItems.ScrollTo(0);
       ACore.LoadThumbnails();
       GC.Collect();

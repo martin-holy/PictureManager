@@ -259,6 +259,35 @@
                     <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                   </StackPanel>
                 </HierarchicalDataTemplate>
+
+                <!-- TreeView Keywords - MediaItemSize -->
+                <HierarchicalDataTemplate DataType="{x:Type viewModel:MediaItemSize}">
+                  <StackPanel Style="{StaticResource TreeViewStackPanel}" Margin="0,0,3,3">
+                    <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <TextBlock HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" 
+                        Text="{Binding PixelMin, Converter={StaticResource MediaItemSizeConverter}}" />
+                      <TextBlock HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" 
+                        Text="{Binding PixelMax, Converter={StaticResource MediaItemSizeConverter}}" />
+
+                      <controls:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+                        LowerValue="{Binding PixelMin}" UpperValue="{Binding PixelMax}" 
+                        Minimum="0" Maximum="15000000" MoveWholeRange="True" 
+                        UpperThumbDragCompleted="MediaItemSize_OnDragCompleted"
+                        LowerThumbDragCompleted="MediaItemSize_OnDragCompleted"
+                        CentralThumbDragCompleted="MediaItemSize_OnDragCompleted"
+                        IsSnapToTickEnabled="True" TickFrequency="100000" />
+                    </Grid>
+                  </StackPanel>
+                </HierarchicalDataTemplate>
               </TreeView.Resources>
 
             </TreeView>

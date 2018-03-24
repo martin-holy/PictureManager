@@ -137,6 +137,8 @@
     <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
     <Compile Include="ViewModel\Keyword.cs" />
     <Compile Include="ViewModel\Keywords.cs" />
+    <Compile Include="ViewModel\MediaItemSize.cs" />
+    <Compile Include="ViewModel\MediaItemSizes.cs" />
     <Compile Include="ViewModel\People.cs" />
     <Compile Include="ViewModel\Person.cs" />
     <Compile Include="ViewModel\Rating.cs" />

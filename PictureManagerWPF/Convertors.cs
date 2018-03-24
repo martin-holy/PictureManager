@@ -134,4 +134,14 @@ namespace PictureManager {
       return value;
     }
   }
+
+  public class MediaItemSizeConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value == null ? string.Empty : $"{(double) value / 1000000.0} MPx";
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value;
+    }
+  }
 }

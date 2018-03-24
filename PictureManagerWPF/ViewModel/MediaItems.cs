@@ -203,7 +203,13 @@ namespace PictureManager.ViewModel {
       var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
         files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Data.Rating))).ToList();
-      
+
+      //MediaItemSizes
+      if (!ACore.MediaItemSizes.AllSizes()) {
+        files = files.Where(f =>
+          f.MediaItem == null || ACore.MediaItemSizes.Fits(f.MediaItem.Data.Width * f.MediaItem.Data.Height)).ToList();
+      }
+
       //People
       var orPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
       var andPeople = ACore.People.AllPeople.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
@@ -437,6 +443,23 @@ namespace PictureManager.ViewModel {
       ScrollTo(Current.Index);
     }
 
+    public void ScrollTo2(int index) {
+      var count = 0;
+      var rowIndex = 0;
+
+      foreach (var row in SplitedItems) {
+        count += row.Count;
+        if (count < index) {
+          rowIndex++;
+          continue;
+        }
+        break;
+      }
+
+      var itemContainer = AppCore.WMain.ThumbsBox.ItemContainerGenerator.ContainerFromIndex(rowIndex) as ContentPresenter;
+      itemContainer?.BringIntoView();
+    }
+
     public void ScrollTo(int index) {
       var scroll = AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
       if (index == 0) {
@@ -456,6 +479,7 @@ namespace PictureManager.ViewModel {
         break;
       }
       scroll.ScrollToVerticalOffset(rowsHeight);
+      ScrollTo2(index);
     }
 
     public void RemoveSelected() {

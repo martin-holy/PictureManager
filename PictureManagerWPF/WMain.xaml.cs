@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -384,6 +385,10 @@ namespace PictureManager {
 
     #endregion
 
+    private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
+      ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
+    }
+
     private bool IsDragDropStarted(MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed) return false;
       var diff = _dragDropStartPosition - e.GetPosition(null);
@@ -508,6 +513,8 @@ namespace PictureManager {
       //3659174697441353
       var filePath = @"d:\!test\20150831_114319_Martin.jpg";
       var fileInfo = new FileInfo(filePath);*/
+      //ThumbsBox.Items[0].
+      
     }
 
     private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
