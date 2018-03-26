@@ -11,8 +11,14 @@ namespace PictureManager.UserControls {
     private Point _start;
     private bool _isDecoded;
     private bool _isBigger;
+    private bool _isZoomed;
+    private double _zoomScale100;
+    private double _zoomScale;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
+    private ViewModel.BaseMediaItem _currentMediaItem;
+
+    public Image Image;
 
     public ZoomImageBox() {
       _scaleTransform = new ScaleTransform();
@@ -43,34 +49,30 @@ namespace PictureManager.UserControls {
       //Event MouseWheel
       MouseWheel += (o, e) => {
         if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
+
         if (_isDecoded) {
           _isDecoded = false;
           SetSource();
         }
 
-        var zoom = e.Delta > 0 ? .2 : -.2;
-        if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4))
-          return;
+        if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4)) return;
 
-        var relative = e.GetPosition(Image);
-        var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
-        var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
-
-        _scaleTransform.ScaleX += zoom;
-        _scaleTransform.ScaleY += zoom;
-
-        _translateTransform.X = abosuluteX - relative.X * _scaleTransform.ScaleX;
-        _translateTransform.Y = abosuluteY - relative.Y * _scaleTransform.ScaleY;
+        _zoomScale += e.Delta > 0 ? .2 : -.2;
+        _isZoomed = true;
+        SetScale(_zoomScale, e.GetPosition(Image));
       };
 
       //Event MouseLeftButtonUp
       MouseLeftButtonUp += (o, e) => {
         Image.ReleaseMouseCapture();
         Cursor = Cursors.Arrow;
+        if (!_isZoomed) Reset();
       };
 
       //Event MouseLeftButtonDown
       MouseLeftButtonDown += (o, e) => {
+        if (!_isZoomed) SetScale(_zoomScale100, e.GetPosition(Image));
+
         _start = e.GetPosition(this);
         _origin = new Point(_translateTransform.X, _translateTransform.Y);
         Cursor = Cursors.Hand;
@@ -85,8 +87,16 @@ namespace PictureManager.UserControls {
       };
     }
 
-    public Image Image;
-    private ViewModel.BaseMediaItem _currentMediaItem;
+    private void SetScale(double zoom, Point relative) {
+      var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
+      var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
+
+      _scaleTransform.ScaleX = zoom;
+      _scaleTransform.ScaleY = zoom;
+
+      _translateTransform.X = abosuluteX - relative.X * _scaleTransform.ScaleX;
+      _translateTransform.Y = abosuluteY - relative.Y * _scaleTransform.ScaleY;
+    }
 
     public void SetSource(ViewModel.BaseMediaItem currentMediaItem) {
       _currentMediaItem = currentMediaItem;
@@ -130,6 +140,7 @@ namespace PictureManager.UserControls {
       }
 
       //bad quality with decoding
+      _isDecoded = false;
       /*if (isBigger && _isDecoded) {
         if (decodeWidth)
           src.DecodePixelWidth = (int) ActualWidth;
@@ -143,10 +154,14 @@ namespace PictureManager.UserControls {
       Image.Width = _isBigger ? ActualWidth : src.PixelWidth;
       Image.Height = _isBigger ? ActualHeight : src.PixelHeight;
       Image.Source = src;
+      UpdateLayout();
+      _isZoomed = false;
+      _zoomScale100 = _isBigger ? src.PixelWidth / (Image.ActualWidth / 100) / 100 : 1;
       GC.Collect();
     }
 
     private void Reset() {
+      _zoomScale = 1.0;
       // reset zoom
       _scaleTransform.ScaleX = 1.0;
       _scaleTransform.ScaleY = 1.0;
