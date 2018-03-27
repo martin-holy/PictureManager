@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -125,7 +126,9 @@ namespace PictureManager {
           menu.Items.Add(new MenuItem { Command = Commands.ViewerExcludeFolder, CommandParameter = item });
             break;
         }
-        case ViewModel.Person _: {
+        case ViewModel.Person _:
+        case ViewModel.Keyword _:
+        case ViewModel.GeoName _: {
           menu.Items.Add(new MenuItem { Command = Commands.MediaItemsLoadByTag, CommandParameter = item });
           break;
         }
@@ -150,9 +153,9 @@ namespace PictureManager {
        */
       if (e.ChangedButton != MouseButton.Left) return;
       ACore.TreeView_Select(((StackPanel)sender).DataContext,
-        Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl),
-        Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt),
-        Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift));
+        (Keyboard.Modifiers & ModifierKeys.Control) > 0,
+        (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
+        (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
     #region TvFolders
@@ -327,8 +330,8 @@ namespace PictureManager {
 
     #region Thumbnail
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      var isCtrlOn = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
-      var isShiftOn = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+      var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+      var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
 
       if (!isCtrlOn && !isShiftOn) {
@@ -375,7 +378,7 @@ namespace PictureManager {
     }
 
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
-      if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
+      if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
       if (e.Delta < 0 && ACore.ThumbScale < .1) return;
       ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
       ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
@@ -421,7 +424,7 @@ namespace PictureManager {
     }
 
     private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-      if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) return;
+      if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return;
       if (e.Delta < 0) {
         if (CanMediaItemNext())
           MediaItemNext();
@@ -513,8 +516,15 @@ namespace PictureManager {
       //3659174697441353
       var filePath = @"d:\!test\20150831_114319_Martin.jpg";
       var fileInfo = new FileInfo(filePath);*/
-      //ThumbsBox.Items[0].
-      
+      var formattedText = new FormattedText(
+        "\U0001F4CF",
+        CultureInfo.GetCultureInfo("en-us"),
+        FlowDirection.LeftToRight,
+        new Typeface("Segoe UI Symbol"),
+        32,
+        Brushes.Black);
+      var buildGeometry = formattedText.BuildGeometry(new Point(0, 0));
+      var p = buildGeometry.GetFlattenedPathGeometry();
     }
 
     private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {

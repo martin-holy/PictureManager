@@ -280,7 +280,7 @@ namespace PictureManager.ViewModel {
       ACore.UpdateStatusBarInfo();
     }
 
-    public void LoadByTag(BaseTreeViewItem tag) {
+    public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
       Current = null;
       Items.Clear();
       foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
@@ -289,9 +289,38 @@ namespace PictureManager.ViewModel {
       BaseMediaItem[] items = null;
 
       switch (tag) {
+        case Keyword keyword: {
+          if (recursive) {
+            items = (from k in ACore.Db.Keywords.Where(x => x.Name.StartsWith(keyword.Data.Name))
+              join mik in ACore.Db.MediaItemKeywords on k.Id equals mik.KeywordId into keywords
+              from k2 in keywords
+              join mi in AllItems on k2.MediaItemId equals mi.Data.Id
+              select mi).ToList().Distinct().ToArray();
+          }
+          else {
+            items = (from mi in AllItems
+              join mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Data.Id)
+                on mi.Data.Id equals mik.MediaItemId
+              select mi).ToArray();
+          }
+          break;
+        }
         case Person person: {
-          items = (from mi in AllItems join mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id) 
-            on mi.Data.Id equals mip.MediaItemId select mi).ToArray();
+          items = (from mi in AllItems
+            join mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id)
+              on mi.Data.Id equals mip.MediaItemId
+            select mi).ToArray();
+          break;
+        }
+        case GeoName geoName: {
+          if (recursive) {
+            var geoNames = new List<GeoName>();
+            geoName.GetThisAndSubGeoNames(ref geoNames);
+            items = AllItems.Where(x => geoNames.Select(gn => (int?) gn.Data.GeoNameId).Contains(x.Data.GeoNameId)).ToArray();
+          }
+          else {
+            items = AllItems.Where(x => x.Data.GeoNameId == geoName.Data.GeoNameId).ToArray();
+          }
           break;
         }
       }
@@ -499,7 +528,9 @@ namespace PictureManager.ViewModel {
       }
 
       SplitedItemsReload();
-      if (Items.Count > 0) {
+      var count = Items.Count;
+      if (count > 0) {
+        if (count == firstIndex) firstIndex--;
         Current = Items[(int) firstIndex];
         ScrollToCurrent();
       }
