@@ -48,7 +48,7 @@ namespace PictureManager.UserControls {
 
       //Event MouseWheel
       MouseWheel += (o, e) => {
-        if (!(Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))) return;
+        if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
 
         if (_isDecoded) {
           _isDecoded = false;

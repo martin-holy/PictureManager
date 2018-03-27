@@ -22,6 +22,7 @@
       <pm:DataBindingDebugConverter x:Key="DebugConverter" />
       <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
       <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
+      <pm:IconSymbolConverter x:Key="IconSymbolConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />
@@ -44,6 +45,15 @@
             <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
           </Setter.Value>
         </Setter>
+      </Style>
+      
+      <!-- IconSymbol -->
+      <Style x:Key="IconSymbol" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="Segoe UI Symbol" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="0,0,2,0" />
+        <Setter Property="Text" Value="{Binding IconName, Converter={StaticResource IconSymbolConverter}}" />
       </Style>
 
       <!-- TreeViewTitle -->

@@ -139,7 +139,7 @@ namespace PictureManager {
     private void MediaItemsDelete() {
       if (MessageBox.Show("Are you sure?", "Delete Confirmation", 
         MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
-      ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) != 0);
+      ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
       ACore.MediaItems.RemoveSelected();
 
       if (ACore.AppInfo.AppMode == AppMode.Viewer) {
@@ -153,7 +153,7 @@ namespace PictureManager {
     }
 
     private void MediaItemsLoadByTag(object parameter) {
-      ACore.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem)parameter);
+      ACore.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
       ACore.MediaItems.ScrollTo(0);
       ACore.LoadThumbnails();
       GC.Collect();

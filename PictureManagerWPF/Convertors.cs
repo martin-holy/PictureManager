@@ -53,6 +53,23 @@ namespace PictureManager {
     }
   }
 
+  public class IconSymbolConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) throw new ArgumentNullException();
+
+      switch ((IconName) value) {
+        case IconName.Folder: return "\U0001F4C1";
+        case IconName.FolderOpen: return "\U0001F4C2";
+        case IconName.Ruler: return "\U0001F4CF";
+        default: return "";
+      }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
   public class IconNameToBrush : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();
