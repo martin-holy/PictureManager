@@ -81,7 +81,7 @@ namespace PictureManager {
             menu.Items.Add(new MenuItem { Command = Commands.TagItemNew, CommandParameter = item });
           }
 
-          if (item is ViewModel.BaseTreeViewTagItem && group == null) {
+          if (item is ViewModel.BaseTreeViewTagItem && group == null || item is ViewModel.Viewer) {
             menu.Items.Add(new MenuItem { Command = Commands.TagItemRename, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.TagItemDelete, CommandParameter = item });
           }
