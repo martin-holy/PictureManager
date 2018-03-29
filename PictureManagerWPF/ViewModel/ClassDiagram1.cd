@@ -3,7 +3,7 @@
   <Class Name="PictureManager.ViewModel.AppInfo">
     <Position X="19.5" Y="1.25" Width="2" />
     <TypeIdentifier>
-      <HashCode>AABAAEAAAAAAAAAAIAAAIgAApAAAAAAAAAAIAAAgAAA=</HashCode>
+      <HashCode>AABIAAAEAACgAAQAohAAAAAAhAgAQBEAAABAAAAAAAI=</HashCode>
       <FileName>ViewModel\AppInfo.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -11,7 +11,7 @@
   <Class Name="PictureManager.ViewModel.BaseMediaItem">
     <Position X="22.25" Y="1.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AQCBgAAAACAEEAAAKAAAEACCgAAAABABAEBgACACAAA=</HashCode>
+      <HashCode>BQCAgBAAAKgEEAhhKABgEYCCgAAEAJAAAFlAACCCgFg=</HashCode>
       <FileName>ViewModel\BaseMediaItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -19,7 +19,7 @@
   <Class Name="PictureManager.ViewModel.BaseTreeViewItem">
     <Position X="13.5" Y="1.25" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>CAAAAQAAAIAgGEIAIAAAwBiQgQAAAAAAAAABAAAAACg=</HashCode>
+      <HashCode>CAAAAwAAAIAgGEIAIAAAwAiQoQAAAAAAAAAAAAAAACg=</HashCode>
       <FileName>ViewModel\BaseTreeViewItem.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -33,14 +33,6 @@
   </Class>
   <Class Name="PictureManager.ViewModel.FavoriteFolder">
     <Position X="18" Y="8.5" Width="1.5" />
-    <InheritanceLine Type="PictureManager.ViewModel.BaseTreeViewItem" FixedToPoint="true">
-      <Path>
-        <Point X="14.375" Y="6.978" />
-        <Point X="14.375" Y="8.125" />
-        <Point X="18.75" Y="8.125" />
-        <Point X="18.75" Y="8.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\FavoriteFolder.cs</FileName>
@@ -99,7 +91,7 @@
   <Class Name="PictureManager.ViewModel.Keyword">
     <Position X="16.25" Y="11.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAIAAAEAAAAAQAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEAAAAAQAAAAAAAAABAAAAAAAAAAAAA=</HashCode>
       <FileName>ViewModel\Keyword.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -112,11 +104,12 @@
     </TypeIdentifier>
   </Class>
   <Class Name="PictureManager.ViewModel.MediaItems">
-    <Position X="16.5" Y="1.25" Width="2.25" />
+    <Position X="16.5" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAgggAAgACQQCAAAQACCQEAABAAMAAAACQAAAMQAAAg=</HashCode>
+      <HashCode>AAAggAAAACQACIAA4ACCUEIAhAAEAAIACQAABeQAAgg=</HashCode>
       <FileName>ViewModel\MediaItems.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="PictureManager.ViewModel.People">
     <Position X="20.5" Y="15.75" Width="2.25" />
@@ -173,7 +166,7 @@
   <Class Name="PictureManager.ViewModel.Viewer">
     <Position X="9.75" Y="8.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>ACAAAAAAAAAAAEAEAAAAAAAAAIBAARAACAAAAAAAACA=</HashCode>
+      <HashCode>ACAAAAAAAAAAAEAEAAAAAAAAAIBAABAACAAAAAAAACA=</HashCode>
       <FileName>ViewModel\Viewer.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -181,7 +174,7 @@
   <Class Name="PictureManager.ViewModel.Viewers">
     <Position X="12.25" Y="15.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAAgAAAAAAAAAAAAAAAAQAAAAAAAAIgAAAABAAAACA=</HashCode>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAQAAAAAAAAIgAAAABAAAAAA=</HashCode>
       <FileName>ViewModel\Viewers.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -218,7 +211,7 @@
   <Class Name="PictureManager.DataModel.PmDataContext" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="14.5" Y="23" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AIUAiEggIKBgAARQAIAoABIACKEEAAAACKBARQBAkDA=</HashCode>
+      <HashCode>AIUAiEggIKBgAARQAIAoABIACKEEAAAECCBARQBBkBA=</HashCode>
       <FileName>DataModel\DataModel.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />

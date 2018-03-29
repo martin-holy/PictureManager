@@ -195,8 +195,7 @@ namespace PictureManager.ViewModel {
     #endregion
 
     public void InsertCategoryGroupItem(BaseTreeViewItem root, int itemId) {
-      var cg = root as CategoryGroup;
-      if (cg == null) return;
+      if (!(root is CategoryGroup cg)) return;
       var dmCategoryGroupItem = new DataModel.CategoryGroupItem {
         Id = ACore.Db.GetNextIdFor<DataModel.CategoryGroupItem>(),
         CategoryGroupId = cg.Data.Id,
