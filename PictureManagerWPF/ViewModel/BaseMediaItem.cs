@@ -359,12 +359,9 @@ namespace PictureManager.ViewModel {
               ? string.Empty
               : AppCore.IncorrectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
 
-            //Orientation
-            var orientation = bm.GetQuery("System.Photo.Orientation");
-            if (orientation != null) {
-              //3: 180, 6: 270, 8: 90
-              Data.Orientation = (ushort) orientation;
-            }
+            //Orientation 1: 0, 3: 180, 6: 270, 8: 90
+            var orientation = bm.GetQuery("System.Photo.Orientation") ?? (ushort) 1;
+            Data.Orientation = (ushort) orientation;
 
             //Keywords
             Keywords.Clear();

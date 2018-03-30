@@ -182,7 +182,8 @@ namespace PictureManager.ViewModel {
       //pairing files with DB
       files = (from f in files
         join mi in ACore.MediaItems.AllItems on
-        f.FilePath.ToLowerInvariant() equals mi.FilePath.ToLowerInvariant() into tmp
+          new {file = f.FilePath.ToLowerInvariant(), dir = f.DirId} equals 
+          new {file = mi.FilePath.ToLowerInvariant(), dir = mi.Data.DirectoryId} into tmp
         from mi in tmp.DefaultIfEmpty()
         select new MediaItemsLoad {
           FilePath = f.FilePath,
@@ -205,9 +206,9 @@ namespace PictureManager.ViewModel {
         files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Data.Rating))).ToList();
 
       //MediaItemSizes
-      if (!ACore.MediaItemSizes.AllSizes()) {
+      if (!ACore.MediaItemSizes.Size.AllSizes()) {
         files = files.Where(f =>
-          f.MediaItem == null || ACore.MediaItemSizes.Fits(f.MediaItem.Data.Width * f.MediaItem.Data.Height)).ToList();
+          f.MediaItem == null || ACore.MediaItemSizes.Size.Fits(f.MediaItem.Data.Width * f.MediaItem.Data.Height)).ToList();
       }
 
       //People
@@ -277,6 +278,7 @@ namespace PictureManager.ViewModel {
         i++;
       }
 
+      ACore.SetMediaItemSizesLoadedRange();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -345,6 +347,7 @@ namespace PictureManager.ViewModel {
         Items.Add(item);
       }
 
+      ACore.SetMediaItemSizesLoadedRange();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -392,13 +395,13 @@ namespace PictureManager.ViewModel {
       ScrollTo2(index);
     }
 
-    public void RemoveSelected() {
+    public void RemoveSelected(bool delete) {
       var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
       if (firstIndex == null) return;
       foreach (var item in Items.ToList()) {
         if (!item.IsSelected) continue;
         Items.Remove(item);
-        AllItems.Remove(item);
+        if (delete) AllItems.Remove(item);
       }
 
       //update index

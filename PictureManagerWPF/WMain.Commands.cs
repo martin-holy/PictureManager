@@ -20,6 +20,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectAll, HandleExecute(MediaItemsSelectAll), HandleCanExecute(CanMediaItemsSelectAll)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsDelete, HandleExecute(MediaItemsDelete), HandleCanExecute(CanMediaItemsDelete)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsLoadByTag, HandleExecute(MediaItemsLoadByTag)));
+      CommandBindings.Add(new CommandBinding(Commands.Presentation, HandleExecute(Presentation), HandleCanExecute(CanPresentation)));
       //TreeView Commands
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupNew, HandleExecute(CategoryGroupNew)));
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupRename, HandleExecute(CategoryGroupRename)));
@@ -62,6 +63,7 @@ namespace PictureManager {
       AddInputBinding(Commands.MediaItemPrevious, new KeyGesture(Key.Left), PanelFullScreen);
       AddInputBinding(Commands.MediaItemsSelectAll, new KeyGesture(Key.A, ModifierKeys.Control), ThumbsBox);
       AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete), PanelFullScreen);
+      AddInputBinding(Commands.Presentation, new KeyGesture(Key.P, ModifierKeys.Control), PanelFullScreen);
       AddInputBinding(MediaCommands.TogglePlayPause, new KeyGesture(Key.Space), FullMedia);
       AddInputBinding(MediaCommands.TogglePlayPause, new MouseGesture(MouseAction.LeftClick), FullMedia);
       
@@ -140,7 +142,7 @@ namespace PictureManager {
       if (MessageBox.Show("Are you sure?", "Delete Confirmation", 
         MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
       ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
-      ACore.MediaItems.RemoveSelected();
+      ACore.MediaItems.RemoveSelected(true);
 
       if (ACore.AppInfo.AppMode == AppMode.Viewer) {
         if (ACore.MediaItems.Current != null)
@@ -157,6 +159,14 @@ namespace PictureManager {
       ACore.MediaItems.ScrollTo(0);
       ACore.LoadThumbnails();
       GC.Collect();
+    }
+
+    private bool CanPresentation() {
+      return ACore.AppInfo.AppMode == AppMode.Viewer;
+    }
+
+    private void Presentation() {
+      _presentationTimer.Enabled = !_presentationTimer.Enabled;
     }
 
     private static void CategoryGroupNew(object parameter) {
@@ -510,6 +520,7 @@ namespace PictureManager {
     }
 
     private void SwitchToBrowser() {
+      _presentationTimer.Enabled = false;
       ACore.AppInfo.AppMode = AppMode.Browser;
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();

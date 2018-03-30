@@ -398,6 +398,13 @@ namespace PictureManager {
       ThumbsWorker.RunWorkerAsync(DataModel.PmDataContext.GetInsertUpdateDeleteLists());
     }
 
+    public void SetMediaItemSizesLoadedRange() {
+      var zeroItems = MediaItems.Items.Count == 0;
+      var min = zeroItems ? 0 : MediaItems.Items.Min(x => x.Data.Width * x.Data.Height);
+      var max = zeroItems ? 0 : MediaItems.Items.Max(x => x.Data.Width * x.Data.Height);
+      MediaItemSizes.Size.SetLoadedRange(min, max);
+    }
+
     #region File Operations
     public bool FileOperation(FileOperationMode mode, bool recycle) {
       return FileOperation(mode, null, null, null, recycle);

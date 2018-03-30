@@ -154,7 +154,7 @@ namespace PictureManager {
 
   public class MediaItemSizeConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value == null ? string.Empty : $"{(double) value / 1000000.0} MPx";
+      return value == null ? string.Empty : $"{Math.Round((double) value / 1000000, 1)} MPx";
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

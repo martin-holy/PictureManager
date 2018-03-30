@@ -278,13 +278,14 @@
                       <TextBlock HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" 
                         Text="{Binding PixelMax, Converter={StaticResource MediaItemSizeConverter}}" />
 
-                      <controls:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
+                      <controls:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                        HorizontalAlignment="Stretch" MoveWholeRange="True" 
+                        Minimum="{Binding Min}" Maximum="{Binding Max}"
                         LowerValue="{Binding PixelMin}" UpperValue="{Binding PixelMax}" 
-                        Minimum="0" Maximum="15000000" MoveWholeRange="True" 
                         UpperThumbDragCompleted="MediaItemSize_OnDragCompleted"
                         LowerThumbDragCompleted="MediaItemSize_OnDragCompleted"
                         CentralThumbDragCompleted="MediaItemSize_OnDragCompleted"
-                        IsSnapToTickEnabled="True" TickFrequency="100000" />
+                        IsSnapToTickEnabled="True" TickFrequency="0.1" />
                     </Grid>
                   </StackPanel>
                 </HierarchicalDataTemplate>

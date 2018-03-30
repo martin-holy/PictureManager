@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +17,7 @@ namespace PictureManager {
     private readonly string _argPicFile;
     private Point _dragDropStartPosition;
     private object _dragDropObject;
+    private readonly System.Timers.Timer _presentationTimer;
 
     public WMain(string picFile) {
       ACore = new AppCore();
@@ -26,6 +26,14 @@ namespace PictureManager {
       InitializeComponent();
       AddCommandBindings();
       AddInputBindings();
+
+      _presentationTimer = new System.Timers.Timer(3000);
+      _presentationTimer.Elapsed += (o, e) => {
+        Application.Current.Dispatcher.Invoke(delegate {
+          if (CanMediaItemNext())
+            MediaItemNext();
+        });
+      };
 
       var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";
@@ -223,7 +231,7 @@ namespace PictureManager {
 
       if (thumbs) {
         if (e.KeyStates != DragDropKeyStates.ControlKey) {
-          ACore.MediaItems.RemoveSelected();
+          ACore.MediaItems.RemoveSelected(false);
           ACore.MediaItems.Current = null;
           ACore.UpdateStatusBarInfo();
         }
@@ -389,6 +397,7 @@ namespace PictureManager {
     #endregion
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
+      Application.Current.Properties["MediaItemSizeSliderChanged"] = true;
       ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
     }
 
@@ -516,7 +525,8 @@ namespace PictureManager {
       //3659174697441353
       var filePath = @"d:\!test\20150831_114319_Martin.jpg";
       var fileInfo = new FileInfo(filePath);*/
-      var formattedText = new FormattedText(
+
+      /*var formattedText = new FormattedText(
         "\U0001F4CF",
         CultureInfo.GetCultureInfo("en-us"),
         FlowDirection.LeftToRight,
@@ -524,7 +534,7 @@ namespace PictureManager {
         32,
         Brushes.Black);
       var buildGeometry = formattedText.BuildGeometry(new Point(0, 0));
-      var p = buildGeometry.GetFlattenedPathGeometry();
+      var p = buildGeometry.GetFlattenedPathGeometry();*/
     }
 
     private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {

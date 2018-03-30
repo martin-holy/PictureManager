@@ -11,6 +11,7 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemsSelectAll { get; } = new RoutedUICommand {Text = "Select All"};
     public static RoutedUICommand MediaItemsDelete { get; } = new RoutedUICommand {Text = "Delete"};
     public static RoutedUICommand MediaItemsLoadByTag { get; } = new RoutedUICommand { Text = "Load by this" };
+    public static RoutedUICommand Presentation { get; } = new RoutedUICommand { Text = "Presentation" };
     //TreeView Commands
     public static RoutedUICommand CategoryGroupNew { get; } = new RoutedUICommand {Text = "New Group"};
     public static RoutedUICommand CategoryGroupRename { get; } = new RoutedUICommand {Text = "Rename Group"};
