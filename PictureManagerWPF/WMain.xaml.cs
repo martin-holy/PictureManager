@@ -397,7 +397,7 @@ namespace PictureManager {
     #endregion
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      Application.Current.Properties["MediaItemSizeSliderChanged"] = true;
+      ACore.MediaItemSizes.Size.SliderChanged = true;
       ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
     }
 
