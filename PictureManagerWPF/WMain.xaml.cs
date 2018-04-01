@@ -18,6 +18,7 @@ namespace PictureManager {
     private Point _dragDropStartPosition;
     private object _dragDropObject;
     private readonly System.Timers.Timer _presentationTimer;
+    private bool _presentationTimerPaused;
 
     public WMain(string picFile) {
       ACore = new AppCore();
@@ -445,9 +446,17 @@ namespace PictureManager {
     }
 
     private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
-      FullMedia.Stop();
-      FullMedia.Rewind();
-      FullMedia.Play();
+      if (_presentationTimerPaused) {
+        _presentationTimerPaused = false;
+        if (CanMediaItemNext())
+          MediaItemNext();
+        _presentationTimer.Enabled = true;
+      }
+      else {
+        FullMedia.Stop();
+        FullMedia.Rewind();
+        FullMedia.Play();
+      }
     }
 
     public bool RotateJpeg(string filePath, int quality, Rotation rotation) {

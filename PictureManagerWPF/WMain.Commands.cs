@@ -111,6 +111,10 @@ namespace PictureManager {
 
     private void MediaItemNext() {
       ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index + 1];
+      if (_presentationTimer.Enabled && ACore.MediaItems.Current.MediaType == MediaType.Video) {
+        _presentationTimer.Enabled = false;
+        _presentationTimerPaused = true;
+      }
       SetMediaItemSource();
       ACore.UpdateStatusBarInfo();
     }
