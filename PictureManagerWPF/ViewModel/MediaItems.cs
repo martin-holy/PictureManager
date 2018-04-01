@@ -447,7 +447,8 @@ namespace PictureManager.ViewModel {
 
       SplitedItems.Clear();
 
-      var rowMaxWidth = AppCore.WMain.ThumbsBox.ActualWidth;
+      AppCore.WMain.UpdateLayout();
+      var rowMaxWidth = AppCore.WMain.ActualWidth - AppCore.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 - SystemParameters.VerticalScrollBarWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
       var row = new ObservableCollection<BaseMediaItem>();

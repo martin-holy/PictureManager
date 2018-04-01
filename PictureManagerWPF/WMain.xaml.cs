@@ -19,6 +19,8 @@ namespace PictureManager {
     private object _dragDropObject;
     private readonly System.Timers.Timer _presentationTimer;
     private bool _presentationTimerPaused;
+    private bool _mainTreeViewIsPinnedInViewer;
+    private bool _mainTreeViewIsPinnedInBrowser = true;
 
     public WMain(string picFile) {
       ACore = new AppCore();
@@ -546,9 +548,25 @@ namespace PictureManager {
       var p = buildGeometry.GetFlattenedPathGeometry();*/
     }
 
-    private void TcMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-      /*ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);*/
+    private void WMain_OnMouseMove(object sender, MouseEventArgs e) {
+      var pos = e.GetPosition(this);
+      if (pos.X < 3 && !FlyoutMainTreeView.IsOpen)
+        FlyoutMainTreeView.IsOpen = true;
+    }
+
+    private void FlyoutMainTreeView_OnMouseLeave(object sender, MouseEventArgs e) {
+      if (!FlyoutMainTreeView.IsPinned)
+        FlyoutMainTreeView.IsOpen = false;
+    }
+
+    private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
+      FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
+      ACore.MediaItems.SplitedItemsReload();
+      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
+    }
+
+    private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
+      MainSplitter_OnDragDelta(null, null);
     }
   }
 }

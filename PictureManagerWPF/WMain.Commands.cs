@@ -313,16 +313,41 @@ namespace PictureManager {
       about.ShowDialog();
     }
 
-    private void ShowHideTabMain() {
-      FlyoutMainTreeView.IsOpen = !FlyoutMainTreeView.IsOpen;
-      /*var col = GridMain.ColumnDefinitions[0];
-      if (col.ActualWidth > 0) {
-        col.Tag = col.ActualWidth;
-        col.Width = new GridLength(0);
+    private void ShowHideTabMain(object parameter) {
+      var show = false;
+      var reload = false;
+      if (parameter != null)
+        show = (bool) parameter;
+      else {
+        switch (ACore.AppInfo.AppMode) {
+          case AppMode.Browser:
+            reload = true;
+            _mainTreeViewIsPinnedInBrowser = !_mainTreeViewIsPinnedInBrowser;
+            show = _mainTreeViewIsPinnedInBrowser;
+            break;
+          case AppMode.Viewer:
+            _mainTreeViewIsPinnedInViewer = !_mainTreeViewIsPinnedInViewer;
+            show = _mainTreeViewIsPinnedInViewer;
+            break;
+        }
+      }
+
+      if (show) {
+        GridMain.ColumnDefinitions[0].Width = new GridLength(FlyoutMainTreeView.ActualWidth);
+        GridMain.ColumnDefinitions[1].Width = new GridLength(3);
       }
       else {
-        col.Width = new GridLength((double?) col.Tag ?? 350);
-      }*/
+        GridMain.ColumnDefinitions[0].Width = new GridLength(0);
+        GridMain.ColumnDefinitions[1].Width = new GridLength(0);
+      }
+
+      FlyoutMainTreeView.IsPinned = show;
+      FlyoutMainTreeView.IsOpen = show;
+
+      if (reload) {
+        ACore.MediaItems.SplitedItemsReload();
+        ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
+      }
     }
 
     private void OpenCatalog() {
@@ -512,15 +537,12 @@ namespace PictureManager {
 
     private void SwitchToFullScreen() {
       if (ACore.MediaItems.Current == null) return;
-      FlyoutMainTreeView.IsOpen = false;
       ACore.AppInfo.AppMode = AppMode.Viewer;
+      ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       ACore.UpdateStatusBarInfo();
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
-      Application.Current.Properties[AppProperty.MainTreeViewWidth] = GridMain.ColumnDefinitions[0].ActualWidth;
-      GridMain.ColumnDefinitions[0].Width = new GridLength(0);
-      GridMain.ColumnDefinitions[1].Width = new GridLength(0);
     }
 
     private void SwitchToBrowser() {
@@ -533,11 +555,9 @@ namespace PictureManager {
       ShowTitleBar = true;
       IgnoreTaskbarOnMaximize = false;
       MainMenu.Visibility = Visibility.Visible;
-      GridMain.ColumnDefinitions[0].Width = new GridLength((double)Application.Current.Properties[AppProperty.MainTreeViewWidth]);
-      GridMain.ColumnDefinitions[1].Width = new GridLength(3);
       FullImage.SetSource(null);
       FullMedia.Source = null;
-      FlyoutMainTreeView.IsOpen = true;
+      ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
     }
   }
 }

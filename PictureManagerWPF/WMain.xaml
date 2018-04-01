@@ -12,7 +12,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
-        LeftWindowCommandsOverlayBehavior="Never">
+        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove">
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
@@ -117,11 +117,11 @@
 
   <controls:MetroWindow.Flyouts>
     <controls:FlyoutsControl>
-      <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" Margin="0,30,0,27" 
-                       Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" >
+      <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" IsPinned="True" Margin="0,30,0,27" 
+        Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
         
         <!-- TreeView Forders, Keywords and Filters -->
-        <TabControl x:Name="TcMain" Background="Transparent" SizeChanged="TcMain_OnSizeChanged" >
+        <TabControl x:Name="TcMain" Background="Transparent">
           <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
             <!-- TreeView Folders -->
             <TreeView x:Name="TvFolders" Background="Transparent" 
@@ -365,9 +365,8 @@
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
-      
-
-      <GridSplitter x:Name="MainSplitter" Grid.Column="1" Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
+        Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
 
       <!-- Thumbnails and Full Media -->
       <Grid Grid.Column="2" >
