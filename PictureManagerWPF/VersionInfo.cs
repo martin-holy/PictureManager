@@ -1,1 +1,1 @@
-[assembly:System.Reflection.AssemblyFileVersion("18.04.01.1838")]
+[assembly:System.Reflection.AssemblyFileVersion("18.04.02.1727")]

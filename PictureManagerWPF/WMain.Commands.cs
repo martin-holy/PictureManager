@@ -116,6 +116,7 @@ namespace PictureManager {
         _presentationTimerPaused = true;
       }
       SetMediaItemSource();
+      ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -126,6 +127,7 @@ namespace PictureManager {
     private void MediaItemPrevious() {
       ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index - 1];
       SetMediaItemSource();
+      ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
     }
 
@@ -343,6 +345,11 @@ namespace PictureManager {
 
       FlyoutMainTreeView.IsPinned = show;
       FlyoutMainTreeView.IsOpen = show;
+
+      if (show) {
+        FlyoutStatusPanel.IsOpen = false;
+        FlyoutStatusPanel.IsOpen = true;
+      }
 
       if (reload) {
         ACore.MediaItems.SplitedItemsReload();
