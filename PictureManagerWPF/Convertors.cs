@@ -43,6 +43,8 @@ namespace PictureManager {
         case IconName.DriveError: resourceName = "appbar_drive_error"; break;
         case IconName.Cancel: resourceName = "appbar_cancel"; break;
         case IconName.Save: resourceName = "appbar_save"; break;
+        case IconName.Settings: resourceName = "appbar_settings"; break;
+        case IconName.Edit: resourceName = "appbar_edit"; break;
         default: resourceName = "appbar_bug"; break;
       }
       return Application.Current.FindResource(resourceName);

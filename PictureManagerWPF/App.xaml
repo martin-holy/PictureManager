@@ -80,7 +80,7 @@
       <Rectangle x:Key="MenuItemIconRect" x:Shared="False" Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
         <Rectangle.OpacityMask>
           <VisualBrush Stretch="Uniform" Visual="{Binding Tag, RelativeSource={RelativeSource AncestorType=MenuItem},
-                                                  Converter={StaticResource StaticResourceConverter}}" />
+                                                  Converter={StaticResource IconNameToStaticResourceConverter}}" />
         </Rectangle.OpacityMask>
       </Rectangle>
 

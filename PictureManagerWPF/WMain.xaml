@@ -32,22 +32,22 @@
           <MenuItem Command="pm:Commands.CompressPictures" />
           <MenuItem Command="pm:Commands.ReloadMetadata" />
           <MenuItem Command="pm:Commands.OpenCatalog" />
-          <MenuItem Command="pm:Commands.OpenSettings" Tag="appbar_settings" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="appbar_location_checkin" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="appbar_edit" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsSave" Tag="appbar_save" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsCancel" Tag="appbar_cancel" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsComment" Tag="appbar_notification" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
-        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="appbar_eye" Style="{StaticResource RootMenuStyle}" 
+        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
                   Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.Viewers.Items}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
-              <Setter Property="Tag" Value="appbar_eye" />
+              <Setter Property="Tag" Value="{x:Static pm:IconName.Eye}" />
               <Setter Property="Command" Value="pm:Commands.ViewerChange" />
               <Setter Property="CommandParameter" Value="{Binding}" />
             </Style>
