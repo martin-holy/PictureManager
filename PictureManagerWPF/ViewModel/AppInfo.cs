@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace PictureManager.ViewModel {
   public class AppInfoRating {
@@ -26,6 +27,7 @@ namespace PictureManager.ViewModel {
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
     public AppMode AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }
     public string Dimension { get; set; } = string.Empty;
+    public string FullGeoName { get; set; } = string.Empty;
     public event PropertyChangedEventHandler PropertyChanged;
 
     public string FilePath {
@@ -53,6 +55,10 @@ namespace PictureManager.ViewModel {
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Data.Width}x{_currentMediaItem.Data.Height}";
         OnPropertyChanged($"Dimension");
+
+        var aCore = (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
+        FullGeoName = aCore.GeoNames.GetGeoNameHierarchy(_currentMediaItem?.Data.GeoNameId);
+        OnPropertyChanged($"FullGeoName");
       }
     }
 

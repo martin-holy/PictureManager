@@ -46,7 +46,21 @@
           </Setter.Value>
         </Setter>
       </Style>
-      
+
+      <!-- IconRect2 -->
+      <Style x:Key="IconRect2" TargetType="Rectangle">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"></Setter>
+        <Setter Property="Fill" Value="{Binding Tag, Converter={StaticResource IconNameToBrush}}" />
+        <Setter Property="OpacityMask">
+          <Setter.Value>
+            <VisualBrush Stretch="Uniform" Visual="{Binding Tag, Converter={StaticResource IconNameToStaticResourceConverter}}" />
+          </Setter.Value>
+        </Setter>
+      </Style>
+
       <!-- IconSymbol -->
       <Style x:Key="IconSymbol" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="Segoe UI Symbol" />

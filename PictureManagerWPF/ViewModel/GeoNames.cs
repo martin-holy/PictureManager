@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Windows;
 using System.Xml;
 
 namespace PictureManager.ViewModel {
@@ -75,6 +77,27 @@ namespace PictureManager.ViewModel {
       InsertGeoNameHierarchy(lat, lng);
 
       Load();
+    }
+
+    public string GetGeoNameHierarchy(int? geoNameId) {
+      var geoName = AllGeoNames.SingleOrDefault(x => x.Data.GeoNameId == geoNameId);
+      if (geoName == null) return string.Empty;
+      var parts = new List<string> {geoName.Title};
+
+      while (geoName.Data.ParentGeoNameId != null) {
+        geoName = AllGeoNames.Single(x => x.Data.GeoNameId == geoName.Data.ParentGeoNameId);
+        parts.Add(geoName.Title);
+      }
+
+      parts.Reverse();
+      var fullGeoName = new StringBuilder();
+      foreach (var part in parts) {
+        fullGeoName.AppendLine(part);
+      }
+
+      fullGeoName.Remove(fullGeoName.Length - 2, 2);
+
+      return fullGeoName.ToString();
     }
   }
 }

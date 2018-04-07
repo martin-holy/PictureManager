@@ -384,8 +384,18 @@
       </controls:Flyout>
 
       <!-- Status Panel -->
-      <controls:Flyout x:Name="FlyoutStatusPanel" Position="Bottom" Height="Auto" IsOpen="True" IsHitTestVisible="False" 
+      <controls:Flyout x:Name="FlyoutStatusPanel" Position="Bottom" Height="Auto" IsOpen="True" 
         Background="Transparent" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed">
+        <controls:Flyout.Style>
+          <Style>
+            <Setter Property="controls:Flyout.Margin" Value="0,0,0,0" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                <Setter Property="controls:Flyout.Margin" Value="0,0,15,0" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </controls:Flyout.Style>
         <WrapPanel x:Name="StatusPanel" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
           <WrapPanel.Style>
             <Style>
@@ -479,13 +489,29 @@
             </ItemsControl>
           </Border>
 
+          <!-- GeoName -->
+          <Border>
+            <Border.Style>
+              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.Data.GeoNameId}" Value="{x:Null}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
+                <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.FullGeoName}" />
+              </Style>
+            </Border.Style>
+            <Rectangle Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource IconRect2}" />
+          </Border>
+
           <!-- FilePath -->
           <Border>
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Setter Property="IsHitTestVisible" Value="True" />
-                <Setter Property="ToolTip" Value="sdfsd" />
                 <Style.Triggers>
+                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
+                    <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.CurrentMediaItem.FilePath}" />
+                  </DataTrigger>
                   <DataTrigger Binding="{Binding ACore.AppInfo.FilePath}" Value="">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
