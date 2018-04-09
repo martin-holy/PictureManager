@@ -71,6 +71,8 @@ namespace PictureManager {
       AddInputBinding(Commands.KeywordsSave, new KeyGesture(Key.S, ModifierKeys.Control));
       AddInputBinding(Commands.KeywordsCancel, new KeyGesture(Key.Q, ModifierKeys.Control));
       AddInputBinding(Commands.KeywordsComment, new KeyGesture(Key.K, ModifierKeys.Control));
+
+      AddInputBinding(Commands.TestButton, new KeyGesture(Key.D, ModifierKeys.Control));
     }
 
     private void AddInputBinding(ICommand command, InputGesture gesture, IInputElement commandTarget = null) {
@@ -110,12 +112,17 @@ namespace PictureManager {
     }
 
     private void MediaItemNext() {
-      ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index + 1];
-      if (_presentationTimer.Enabled && ACore.MediaItems.Current.MediaType == MediaType.Video) {
+      var current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index + 1];
+      ACore.MediaItems.Current = current;
+      SetMediaItemSource();
+      if (_presentationTimer.Enabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
         _presentationTimer.Enabled = false;
         _presentationTimerPaused = true;
+
+        if (current.MediaType == MediaType.Image && current.IsPanoramatic)
+          FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
       }
-      SetMediaItemSource();
+
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
     }
@@ -168,11 +175,18 @@ namespace PictureManager {
     }
 
     private bool CanPresentation() {
-      return ACore.AppInfo.AppMode == AppMode.Viewer;
+      return ACore.AppInfo.AppMode == AppMode.Viewer && ACore.MediaItems.Current != null;
     }
 
     private void Presentation() {
-      _presentationTimer.Enabled = !_presentationTimer.Enabled;
+      if (_presentationTimer.Enabled)
+        _presentationTimer.Enabled = false;
+      else {
+        if (ACore.MediaItems.Current.MediaType == MediaType.Image && ACore.MediaItems.Current.IsPanoramatic)
+          FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
+        else
+          StartPresentationTimer(true);
+      }
     }
 
     private static void CategoryGroupNew(object parameter) {

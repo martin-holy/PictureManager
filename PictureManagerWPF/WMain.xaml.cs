@@ -21,6 +21,7 @@ namespace PictureManager {
     private bool _presentationTimerPaused;
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
+    private const int PresentationInterval = 3000;
 
     public WMain(string picFile) {
       ACore = new AppCore();
@@ -30,8 +31,9 @@ namespace PictureManager {
       AddCommandBindings();
       AddInputBindings();
 
-      _presentationTimer = new System.Timers.Timer(3000);
+      _presentationTimer = new System.Timers.Timer();
       _presentationTimer.Elapsed += (o, e) => {
+        if (_presentationTimer.Interval == 1) _presentationTimer.Interval = PresentationInterval;
         Application.Current.Dispatcher.Invoke(delegate {
           if (CanMediaItemNext())
             MediaItemNext();
@@ -67,6 +69,11 @@ namespace PictureManager {
       if (ACore.MediaItems.Current != null) ACore.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
       ACore.LoadThumbnails();
+    }
+
+    private void StartPresentationTimer(bool delay) {
+      _presentationTimer.Interval = delay ? PresentationInterval : 1;
+      _presentationTimer.Enabled = true;
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
@@ -450,9 +457,7 @@ namespace PictureManager {
     private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
       if (_presentationTimerPaused) {
         _presentationTimerPaused = false;
-        if (CanMediaItemNext())
-          MediaItemNext();
-        _presentationTimer.Enabled = true;
+        StartPresentationTimer(false);
       }
       else {
         FullMedia.Stop();
@@ -546,6 +551,8 @@ namespace PictureManager {
         Brushes.Black);
       var buildGeometry = formattedText.BuildGeometry(new Point(0, 0));
       var p = buildGeometry.GetFlattenedPathGeometry();*/
+
+
     }
 
     private void WMain_OnMouseMove(object sender, MouseEventArgs e) {

@@ -779,7 +779,7 @@
               </Grid.RowDefinitions>
 
               <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
-                ScrubbingEnabled="True" Stretch="Uniform" MediaEnded="FullMedia_OnMediaEnded" />
+                ScrubbingEnabled="True" MediaEnded="FullMedia_OnMediaEnded" />
 
               <Grid Grid.Row="0" VerticalAlignment="Bottom">
                 <Grid.RowDefinitions>

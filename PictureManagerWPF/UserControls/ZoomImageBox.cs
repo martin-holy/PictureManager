@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.UserControls {
@@ -123,7 +124,6 @@ namespace PictureManager.UserControls {
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
       
-
       switch (_currentMediaItem.Data.Orientation) {
         case (int) MediaOrientation.Rotate90: {
           src.Rotation = Rotation.Rotate270;
@@ -150,7 +150,6 @@ namespace PictureManager.UserControls {
 
       src.EndInit();
 
-      Image.Stretch = Stretch.Uniform;
       Image.Width = _isBigger ? ActualWidth : src.PixelWidth;
       Image.Height = _isBigger ? ActualHeight : src.PixelHeight;
       Image.Source = src;
@@ -168,6 +167,21 @@ namespace PictureManager.UserControls {
       // reset pan
       _translateTransform.X = 0.0;
       _translateTransform.Y = 0.0;
+    }
+
+    public void Play(int minDuration, Action callback) {
+      if (((BitmapImage) Image.Source).PixelWidth < ActualWidth) return;
+      var zoomScale = ActualHeight / (Image.ActualHeight / 100) / 100;
+      if (zoomScale > _zoomScale100) zoomScale = _zoomScale100;
+      var toValue = ((Image.ActualWidth * zoomScale) - Image.ActualWidth) * -1;
+      SetScale(zoomScale, new Point(Image.ActualWidth / 2, Image.ActualHeight / 2));
+      var duration = toValue * 10 * -1 > minDuration ? toValue * 10 * -1 : minDuration;
+      var animation = new DoubleAnimation(0, toValue, TimeSpan.FromMilliseconds(duration), FillBehavior.Stop);
+      animation.Completed += (o, e) => {
+        _translateTransform.X = toValue;
+        callback();
+      };
+      _translateTransform.BeginAnimation(TranslateTransform.XProperty, animation);
     }
   }
 }

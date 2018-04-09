@@ -33,6 +33,7 @@ namespace PictureManager.ViewModel {
     public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
+    public bool IsPanoramatic;
     public List<Keyword> Keywords = new List<Keyword>();
     public List<Person> People = new List<Person>();
     public FolderKeyword FolderKeyword;
@@ -85,6 +86,7 @@ namespace PictureManager.ViewModel {
       if (width > height) {
         //panorama
         if (width / height > 16.0 / 9.0) {
+          IsPanoramatic = true;
           const int maxWidth = 1100;
           var panoramaHeight = desiredSize / 16.0 * 9;
           var tooBig = panoramaHeight / height * width > maxWidth;
