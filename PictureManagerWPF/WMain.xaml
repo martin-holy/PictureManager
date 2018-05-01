@@ -464,6 +464,23 @@
             <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Dimension}" />
           </Border>
 
+          <!-- ImageActualZoom -->
+          <Border>
+            <Border.Style>
+              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                  <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
+          </Border>
+
           <!-- Rating -->
           <Border>
             <Border.Style>

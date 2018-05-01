@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,7 +9,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.UserControls {
-  public sealed class ZoomImageBox : Border {
+  public sealed class ZoomImageBox : Border, INotifyPropertyChanged {
     private Point _origin;
     private Point _start;
     private bool _isDecoded;
@@ -15,11 +17,24 @@ namespace PictureManager.UserControls {
     private bool _isZoomed;
     private double _zoomScale100;
     private double _zoomScale;
+    private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
     private ViewModel.BaseMediaItem _currentMediaItem;
 
     public Image Image;
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public double ZoomActual {
+      get => _zoomActual;
+      set {
+        _zoomActual = value;
+        OnPropertyChanged();
+        OnPropertyChanged($"ZoomActualFormated");
+      }
+    }
+
+    public string ZoomActualFormated => $"{_zoomActual:####} %";
 
     public ZoomImageBox() {
       _scaleTransform = new ScaleTransform();
@@ -67,7 +82,9 @@ namespace PictureManager.UserControls {
       MouseLeftButtonUp += (o, e) => {
         Image.ReleaseMouseCapture();
         Cursor = Cursors.Arrow;
-        if (!_isZoomed) Reset();
+        if (_isZoomed || Image.Source == null) return;
+        Reset();
+        ZoomActual = _isBigger ? (Image.ActualWidth / ((BitmapImage) Image.Source).PixelWidth) * 100 : 100;
       };
 
       //Event MouseLeftButtonDown
@@ -97,6 +114,8 @@ namespace PictureManager.UserControls {
 
       _translateTransform.X = abosuluteX - relative.X * _scaleTransform.ScaleX;
       _translateTransform.Y = abosuluteY - relative.Y * _scaleTransform.ScaleY;
+
+      ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
     public void SetSource(ViewModel.BaseMediaItem currentMediaItem) {
@@ -155,7 +174,8 @@ namespace PictureManager.UserControls {
       Image.Source = src;
       UpdateLayout();
       _isZoomed = false;
-      _zoomScale100 = _isBigger ? src.PixelWidth / (Image.ActualWidth / 100) / 100 : 1;
+      _zoomScale100 = _isBigger ? src.PixelWidth / Image.ActualWidth : 1;
+      ZoomActual = _isBigger ? (Image.ActualWidth / src.PixelWidth) * 100 : 100;
       GC.Collect();
     }
 
@@ -182,6 +202,10 @@ namespace PictureManager.UserControls {
         callback();
       };
       _translateTransform.BeginAnimation(TranslateTransform.XProperty, animation);
+    }
+
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
   }
 }
