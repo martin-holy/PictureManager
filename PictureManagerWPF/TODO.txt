@@ -1,0 +1,3 @@
+﻿- focus to newly created folder
+- on "presentation start" show slider how many seconds
+- show zoom % in full screen
