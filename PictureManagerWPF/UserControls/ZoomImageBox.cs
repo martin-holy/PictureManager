@@ -34,7 +34,7 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public string ZoomActualFormated => $"{_zoomActual:####} %";
+    public string ZoomActualFormated => $"{_zoomActual:####}%";
 
     public ZoomImageBox() {
       _scaleTransform = new ScaleTransform();
