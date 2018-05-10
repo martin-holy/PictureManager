@@ -72,6 +72,7 @@ namespace PictureManager {
     }
 
     private void StartPresentationTimer(bool delay) {
+      if (ACore.AppInfo.AppMode != AppMode.Viewer) return;
       _presentationTimer.Interval = delay ? PresentationInterval : 1;
       _presentationTimer.Enabled = true;
     }

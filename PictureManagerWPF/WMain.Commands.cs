@@ -179,6 +179,11 @@ namespace PictureManager {
     }
 
     private void Presentation() {
+      if (FullImage.IsAnimationOn) {
+        FullImage.Stop();
+        return;
+      }
+      
       if (_presentationTimer.Enabled)
         _presentationTimer.Enabled = false;
       else {
@@ -577,6 +582,7 @@ namespace PictureManager {
       IgnoreTaskbarOnMaximize = false;
       MainMenu.Visibility = Visibility.Visible;
       FullImage.SetSource(null);
+      FullImage.Stop();
       FullMedia.Source = null;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
     }

@@ -24,6 +24,7 @@ namespace PictureManager.UserControls {
 
     public Image Image;
     public event PropertyChangedEventHandler PropertyChanged;
+    public bool IsAnimationOn;
 
     public double ZoomActual {
       get => _zoomActual;
@@ -198,10 +199,19 @@ namespace PictureManager.UserControls {
       var duration = toValue * 10 * -1 > minDuration ? toValue * 10 * -1 : minDuration;
       var animation = new DoubleAnimation(0, toValue, TimeSpan.FromMilliseconds(duration), FillBehavior.Stop);
       animation.Completed += (o, e) => {
+        if (!IsAnimationOn) return;
         _translateTransform.X = toValue;
+        IsAnimationOn = false;
         callback();
       };
+      IsAnimationOn = true;
       _translateTransform.BeginAnimation(TranslateTransform.XProperty, animation);
+    }
+
+    public void Stop() {
+      _translateTransform.BeginAnimation(TranslateTransform.XProperty, null);
+      IsAnimationOn = false;
+      Reset();
     }
 
     public void OnPropertyChanged([CallerMemberName] string name = null) {
