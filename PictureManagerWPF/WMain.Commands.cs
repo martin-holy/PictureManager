@@ -63,6 +63,7 @@ namespace PictureManager {
       AddInputBinding(Commands.MediaItemPrevious, new KeyGesture(Key.Left), PanelFullScreen);
       AddInputBinding(Commands.MediaItemsSelectAll, new KeyGesture(Key.A, ModifierKeys.Control), ThumbsBox);
       AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete), PanelFullScreen);
+      AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete, ModifierKeys.Shift), PanelFullScreen);
       AddInputBinding(Commands.Presentation, new KeyGesture(Key.P, ModifierKeys.Control), PanelFullScreen);
       AddInputBinding(MediaCommands.TogglePlayPause, new KeyGesture(Key.Space), FullMedia);
       AddInputBinding(MediaCommands.TogglePlayPause, new MouseGesture(MouseAction.LeftClick), FullMedia);
@@ -152,9 +153,10 @@ namespace PictureManager {
     }
 
     private void MediaItemsDelete() {
-      if (MessageBox.Show("Are you sure?", "Delete Confirmation", 
+      var recycle = (Keyboard.Modifiers & ModifierKeys.Shift) == 0;
+      if (recycle && MessageBox.Show("Are you sure?", "Delete Confirmation", 
         MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
-      ACore.FileOperation(FileOperationMode.Delete, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
+      if (!ACore.FileOperation(FileOperationMode.Delete, recycle)) return;
       ACore.MediaItems.RemoveSelected(true);
 
       if (ACore.AppInfo.AppMode == AppMode.Viewer) {

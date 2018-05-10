@@ -1,7 +1,5 @@
 ﻿- focus to newly created folder
 - on "presentation start" show slider how many seconds
-- odstranit dvojite potvzeni mazani
-- bug presuseni presentace pri prehravani panoramatu nefunguje
 - fix compress pictures dialog design
 - pri presouvani souboru/zvoleni nove slozky zrusit Selected
 - zobrazovat progres pri kopirovaní/přesouvaní
