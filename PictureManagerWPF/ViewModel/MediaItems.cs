@@ -128,6 +128,9 @@ namespace PictureManager.ViewModel {
 
     public void Load(BaseTreeViewItem tag, bool recursive) {
       Current = null;
+      foreach (var item in Items) {
+        if (item.IsSelected) item.IsSelected = false;
+      }
       Items.Clear();
       foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
       SplitedItems.Clear();
@@ -189,8 +192,8 @@ namespace PictureManager.ViewModel {
       //pairing files with DB
       files = (from f in files
         join mi in ACore.MediaItems.AllItems on
-          new {file = f.FilePath.ToLowerInvariant(), dir = f.DirId} equals 
-          new {file = mi.FilePath.ToLowerInvariant(), dir = mi.Data.DirectoryId} into tmp
+          new {file = f.FileName.ToLowerInvariant(), dir = f.DirId} equals 
+          new {file = mi.Data.FileName.ToLowerInvariant(), dir = mi.Data.DirectoryId} into tmp
         from mi in tmp.DefaultIfEmpty()
         select new MediaItemsLoad {
           FilePath = f.FilePath,
@@ -291,6 +294,9 @@ namespace PictureManager.ViewModel {
 
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
       Current = null;
+      foreach (var item in Items) {
+        if (item.IsSelected) item.IsSelected = false;
+      }
       Items.Clear();
       foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
       SplitedItems.Clear();
@@ -409,6 +415,7 @@ namespace PictureManager.ViewModel {
         if (!item.IsSelected) continue;
         Items.Remove(item);
         if (delete) AllItems.Remove(item);
+        else item.IsSelected = false;
       }
 
       //update index

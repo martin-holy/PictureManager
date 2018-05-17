@@ -260,6 +260,11 @@ namespace PictureManager {
           srcData.Parent = destData;
           var folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
           destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
+
+          if (srcData == ACore.LastSelectedSource) {
+            ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
+            ACore.Folders.ExpandTo(srcData.FullPath);
+          }
         }
       }
       else {

@@ -1,7 +1,6 @@
 ﻿- focus to newly created folder
 - on "presentation start" show slider how many seconds
 - fix compress pictures dialog design
-- pri presouvani souboru/zvoleni nove slozky zrusit Selected
 - zobrazovat progres pri kopirovaní/přesouvaní
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
 - changing viewer takes too long

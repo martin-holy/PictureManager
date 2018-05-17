@@ -600,6 +600,11 @@ namespace PictureManager {
                 foreach (var dir in dirs.Where(x => x.Path.Equals(item.Key) || x.Path.StartsWith(item.Key + "\\"))) {
                   dir.Path = dir.Path.Replace(item.Key, item.Value);
                   DataModel.PmDataContext.UpdateOnSubmit(dir, lists);
+
+                  //update files path
+                  foreach (var mi in MediaItems.AllItems.Where(x => x.Data.DirectoryId == dir.Id)) {
+                    mi.FilePath = Path.Combine(dir.Path, mi.Data.FileName);
+                  }
                 }
 
                 //move thumbnails
