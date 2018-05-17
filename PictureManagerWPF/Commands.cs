@@ -9,6 +9,7 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemNext { get; } = new RoutedUICommand {Text = "Next"};
     public static RoutedUICommand MediaItemPrevious { get; } = new RoutedUICommand {Text = "Previous"};
     public static RoutedUICommand MediaItemsSelectAll { get; } = new RoutedUICommand {Text = "Select All"};
+    public static RoutedUICommand MediaItemsSelectNotModifed { get; } = new RoutedUICommand { Text = "Select Not Modifed" };
     public static RoutedUICommand MediaItemsDelete { get; } = new RoutedUICommand {Text = "Delete"};
     public static RoutedUICommand MediaItemsLoadByTag { get; } = new RoutedUICommand { Text = "Load by this" };
     public static RoutedUICommand Presentation { get; } = new RoutedUICommand { Text = "Presentation" };

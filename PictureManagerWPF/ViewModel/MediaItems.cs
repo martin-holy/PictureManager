@@ -84,6 +84,13 @@ namespace PictureManager.ViewModel {
       }
     }
 
+    public void SelectNotModifed() {
+      DeselectAll();
+      foreach (var mi in Items.Where(x => !x.IsModifed)) {
+        mi.IsSelected = true;
+      }
+    }
+
     public void DeselectAll() {
       foreach (var mi in Items.Where(x => x.IsSelected)) {
         mi.IsSelected = false;

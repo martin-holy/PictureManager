@@ -18,6 +18,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.MediaItemNext, HandleExecute(MediaItemNext), HandleCanExecute(CanMediaItemNext)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectAll, HandleExecute(MediaItemsSelectAll), HandleCanExecute(CanMediaItemsSelectAll)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectNotModifed, HandleExecute(MediaItemsSelectNotModifed), HandleCanExecute(CanMediaItemsSelectNotModifed)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsDelete, HandleExecute(MediaItemsDelete), HandleCanExecute(CanMediaItemsDelete)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsLoadByTag, HandleExecute(MediaItemsLoadByTag)));
       CommandBindings.Add(new CommandBinding(Commands.Presentation, HandleExecute(Presentation), HandleCanExecute(CanPresentation)));
@@ -145,6 +146,16 @@ namespace PictureManager {
 
     private void MediaItemsSelectAll() {
       ACore.MediaItems.SelectAll();
+      ACore.UpdateStatusBarInfo();
+      ACore.MarkUsedKeywordsAndPeople();
+    }
+
+    private bool CanMediaItemsSelectNotModifed() {
+      return ACore.AppInfo.AppMode == AppMode.Browser && ACore.MediaItems.Items.Count > 0;
+    }
+
+    private void MediaItemsSelectNotModifed() {
+      ACore.MediaItems.SelectNotModifed();
       ACore.UpdateStatusBarInfo();
       ACore.MarkUsedKeywordsAndPeople();
     }

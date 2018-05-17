@@ -34,6 +34,7 @@
           <MenuItem Command="pm:Commands.OpenCatalog" />
           <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MediaItemsSelectNotModifed" />
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
