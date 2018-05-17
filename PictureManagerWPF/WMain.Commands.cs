@@ -146,6 +146,7 @@ namespace PictureManager {
     private void MediaItemsSelectAll() {
       ACore.MediaItems.SelectAll();
       ACore.UpdateStatusBarInfo();
+      ACore.MarkUsedKeywordsAndPeople();
     }
 
     private bool CanMediaItemsDelete() {

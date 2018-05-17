@@ -4,3 +4,6 @@
 - pri presouvani souboru/zvoleni nove slozky zrusit Selected
 - zobrazovat progres pri kopirovaní/přesouvaní
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
+- mark used after CTRL+A
+- select unmodifed
+- changing viewer takes too long
