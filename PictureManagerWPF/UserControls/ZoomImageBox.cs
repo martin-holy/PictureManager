@@ -191,21 +191,28 @@ namespace PictureManager.UserControls {
     }
 
     public void Play(int minDuration, Action callback) {
-      if (((BitmapImage) Image.Source).PixelWidth < ActualWidth) return;
-      var zoomScale = ActualHeight / (Image.ActualHeight / 100) / 100;
+      var pano = Image.ActualHeight < ActualHeight;
+      var zoomScale = pano
+        ? ActualHeight / (Image.ActualHeight / 100) / 100
+        : ActualWidth / (Image.ActualWidth / 100) / 100;
       if (zoomScale > _zoomScale100) zoomScale = _zoomScale100;
-      var toValue = ((Image.ActualWidth * zoomScale) - Image.ActualWidth) * -1;
+      var toValue = pano
+        ? ((Image.ActualWidth * zoomScale) - Image.ActualWidth) * -1
+        : ((Image.ActualHeight * zoomScale) - Image.ActualHeight) * -1;
       SetScale(zoomScale, new Point(Image.ActualWidth / 2, Image.ActualHeight / 2));
       var duration = toValue * 10 * -1 > minDuration ? toValue * 10 * -1 : minDuration;
       var animation = new DoubleAnimation(0, toValue, TimeSpan.FromMilliseconds(duration), FillBehavior.Stop);
       animation.Completed += (o, e) => {
         if (!IsAnimationOn) return;
-        _translateTransform.X = toValue;
+        if (pano)
+          _translateTransform.X = toValue;
+        else
+          _translateTransform.Y = toValue;
         IsAnimationOn = false;
         callback();
       };
       IsAnimationOn = true;
-      _translateTransform.BeginAnimation(TranslateTransform.XProperty, animation);
+      _translateTransform.BeginAnimation(pano ? TranslateTransform.XProperty : TranslateTransform.YProperty, animation);
     }
 
     public void Stop() {

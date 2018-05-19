@@ -509,6 +509,9 @@ namespace PictureManager {
     }
 
     private void TestButton() {
+      foreach (var item in ACore.MediaItems.AllItems) {
+        item.IsPanoramatic = true;
+      }
       //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
       //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
       //ACore.MediaItems.Load(folder, true);
