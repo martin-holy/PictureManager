@@ -401,7 +401,8 @@ namespace PictureManager {
 
     private void KeywordsEdit() {
       Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)] = TabFolders.IsSelected;
-      ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
+      if (ACore.LastSelectedSource != null)
+        ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
       ACore.MediaItems.IsEditModeOn = true;
     }

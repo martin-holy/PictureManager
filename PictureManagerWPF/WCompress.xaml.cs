@@ -105,7 +105,7 @@ namespace PictureManager {
             bSuccess = true;
           }
         }
-        catch (Exception) {
+        catch (Exception ex) {
           // ignored
         }
 
