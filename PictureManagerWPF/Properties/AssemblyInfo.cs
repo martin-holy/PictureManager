@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Martin Holý")]
 [assembly: AssemblyProduct("Picture Manager")]
-[assembly: AssemblyCopyright("Copyright © Martin Holý 2015")]
+[assembly: AssemblyCopyright("Martin Holý (2015 - 2018)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

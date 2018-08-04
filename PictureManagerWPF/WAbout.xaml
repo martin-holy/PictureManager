@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="About" Height="310" Width="310" 
+        Title="About" Height="290" Width="310" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
         ShowInTaskbar="False" 
@@ -73,10 +73,10 @@
     </StackPanel>
     <StackPanel>
       <Label Content="Picture Manager" FontSize="26.667" />
-      <StackPanel Orientation="Horizontal">
+      <!--<StackPanel Orientation="Horizontal">
         <Label Content="Version:" />
         <Label Content="{Binding Mode=OneTime, Path=Version}" />
-      </StackPanel>
+      </StackPanel>-->
       <StackPanel Orientation="Horizontal">
         <Label Content="File Version:" />
         <Label Content="{Binding Mode=OneTime, Path=FileVersion}" />
