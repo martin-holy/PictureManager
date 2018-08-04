@@ -197,7 +197,7 @@ namespace PictureManager.ViewModel {
               var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
               if (encoder == null) return;
               var encParams = new EncoderParameters(1) {
-                Param = {[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, Settings.Default.JpegQualityLevel)}
+                Param = {[0] = new EncoderParameter(Encoder.Quality, Settings.Default.JpegQualityLevel)}
               };
               bmp.Save(newFileStream, encoder, encParams);
             }
@@ -283,14 +283,40 @@ namespace PictureManager.ViewModel {
             encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
               decoder.Frames[0].ColorContexts));
 
+            var hResult = 0;
             try {
               using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
                 encoder.Save(newFileStream);
               }
               bSuccess = true;
             }
-            catch (Exception) {
+            catch (Exception ex) {
+              hResult = ex.HResult;
+              if (hResult != -2146233033)
+                MessageBox.Show(ex.Message);
               bSuccess = false;
+            }
+
+            //There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
+            //Problem with ThumbnailImage in JPEG images taken by Huawei P10
+            if (!bSuccess && hResult == -2146233033) {
+              if (metadata.ContainsQuery("/app1/thumb/"))
+                metadata.RemoveQuery("/app1/thumb/");
+              encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+              encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], null, metadata,
+                decoder.Frames[0].ColorContexts));
+
+              try {
+                using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+                  encoder.Save(newFileStream);
+                }
+
+                bSuccess = true;
+              }
+              catch (Exception ex) {
+                MessageBox.Show(ex.Message);
+                bSuccess = false;
+              }
             }
           }
         }
