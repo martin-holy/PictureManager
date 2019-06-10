@@ -37,6 +37,8 @@ namespace PictureManager {
         Application.Current.Dispatcher.Invoke(delegate {
           if (CanMediaItemNext())
             MediaItemNext();
+          else
+            _presentationTimer.Enabled = false;
         });
       };
 

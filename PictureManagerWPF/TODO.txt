@@ -8,7 +8,6 @@
 - neprerusi se nacitani
 - pri odstraneni osoby se neprepocita pocet na kategorii a zustava tam jeden i kdyz tam nic neni
 - pri nacteni za keyword MediaItems asi nemaj FolderKeyword
-- ukoncit presentaci kdyz dojede na konec
 - na prehravani panoramat zmensit obrazek na vysku obrazovky
 - zmensovat hodne velky obrazky pri prohlizeni
 - kdyz presunu slozku treba "2018" do slozky kde uz slozka "2018" je, tak je pak ve stromu 2x, jinak snad v pohode
