@@ -3,7 +3,6 @@
 - zobrazovat progres pri kopirovaní/přesouvaní
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
 - changing viewer takes too long
-- pri prechodu z viewera do browsera thumbs precuhujou. asi potom kdyz se ve vieweru neco smaze
 - reload metadata in new thread + reload thumbnails
 - neprerusi se nacitani
 - pri odstraneni osoby se neprepocita pocet na kategorii a zustava tam jeden i kdyz tam nic neni

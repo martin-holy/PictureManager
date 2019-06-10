@@ -589,6 +589,8 @@ namespace PictureManager {
     private void SwitchToBrowser() {
       _presentationTimer.Enabled = false;
       ACore.AppInfo.AppMode = AppMode.Browser;
+      ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
+      ACore.MediaItems.SplitedItemsReload();
       ACore.MediaItems.ScrollToCurrent();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.UpdateStatusBarInfo();
@@ -599,7 +601,6 @@ namespace PictureManager {
       FullImage.SetSource(null);
       FullImage.Stop();
       FullMedia.Source = null;
-      ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
     }
   }
 }
