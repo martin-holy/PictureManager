@@ -508,7 +508,7 @@ namespace PictureManager {
 
         if (mode == FileOperationMode.Copy || mode == FileOperationMode.Move) {
           foreach (var item in foResult) {
-            if (MediaItems.SuportedExts.Any(ext => item.Value.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) {
+            if (ViewModel.MediaItems.SuportedExts.Any(ext => item.Value.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) {
               if (!File.Exists(item.Value)) continue;
 
               var srcDirId = dirs.SingleOrDefault(x => x.Path.Equals(Path.GetDirectoryName(item.Key)))?.Id;

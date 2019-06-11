@@ -80,7 +80,7 @@ namespace PictureManager {
 
         foreach (var path in paths) {
           _filesCount +=
-            ACore.MediaItems.SuportedExts.Sum(
+            ViewModel.MediaItems.SuportedExts.Sum(
               ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
         }
 
@@ -109,7 +109,7 @@ namespace PictureManager {
         var dirId = ACore.Db.InsertDirectoryInToDb(path);
 
         foreach (var file in Directory.EnumerateFiles(path)
-          .Where(f => ACore.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
+          .Where(f => ViewModel.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
           .OrderBy(x => x)) {
 
           var miInDb = ACore.Db.MediaItems.SingleOrDefault(x => x.DirectoryId == dirId && x.FileName == Path.GetFileName(file));

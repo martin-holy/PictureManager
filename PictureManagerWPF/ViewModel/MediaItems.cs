@@ -7,17 +7,18 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.ViewModel {
-  public class MediaItems: INotifyPropertyChanged {
+  public class MediaItems : INotifyPropertyChanged {
     private BaseMediaItem _current;
     private bool _isEditModeOn;
 
     public ObservableCollection<BaseMediaItem> Items { get; set; } = new ObservableCollection<BaseMediaItem>();
-    public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
     public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
+    public List<BaseMediaItem> AllItems = new List<BaseMediaItem>();
 
     public BaseMediaItem Current {
       get => _current;
@@ -30,12 +31,20 @@ namespace PictureManager.ViewModel {
     }
 
     public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-    public string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
-    public string[] SuportedImageExts = { ".jpg", ".jpeg" };
-    public string[] SuportedVideoExts = { ".mp4", ".mkv" };
-    public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
+    public static string[] SuportedExts = {".jpg", ".jpeg", ".mp4", ".mkv"};
+    public string[] SuportedImageExts = {".jpg", ".jpeg"};
+    public string[] SuportedVideoExts = {".mp4", ".mkv"};
+
+    public bool IsEditModeOn {
+      get => _isEditModeOn;
+      set {
+        _isEditModeOn = value;
+        OnPropertyChanged();
+      }
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
+
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
@@ -95,6 +104,7 @@ namespace PictureManager.ViewModel {
       foreach (var mi in Items.Where(x => x.IsSelected)) {
         mi.IsSelected = false;
       }
+
       Current = null;
     }
 
@@ -103,7 +113,11 @@ namespace PictureManager.ViewModel {
         mi.IsModifed = true;
 
         switch (item) {
-          case Person p: { if (p.IsMarked) mi.People.Add(p); else mi.People.Remove(p); break; }
+          case Person p: {
+            if (p.IsMarked) mi.People.Add(p);
+            else mi.People.Remove(p);
+            break;
+          }
           case Keyword k: {
             if (k.IsMarked) {
               //remove potencial redundant keywords (example: if new keyword is "#CoSpi/Sunny" keyword "#CoSpi" is redundant)
@@ -112,14 +126,22 @@ namespace PictureManager.ViewModel {
                   mi.Keywords.RemoveAt(i);
                 }
               }
+
               mi.Keywords.Add(k);
             }
-            else 
+            else
               mi.Keywords.Remove(k);
+
             break;
           }
-          case Rating r: { mi.Data.Rating = r.Value; break; }
-          case GeoName g: { mi.Data.GeoNameId = g.Data.GeoNameId; break; }
+          case Rating r: {
+            mi.Data.Rating = r.Value;
+            break;
+          }
+          case GeoName g: {
+            mi.Data.GeoNameId = g.Data.GeoNameId;
+            break;
+          }
         }
 
         mi.SetInfoBox();
@@ -131,8 +153,12 @@ namespace PictureManager.ViewModel {
       foreach (var item in Items) {
         if (item.IsSelected) item.IsSelected = false;
       }
+
       Items.Clear();
-      foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
+      foreach (var splitedItem in SplitedItems) {
+        splitedItem.Clear();
+      }
+
       SplitedItems.Clear();
 
       var topDirs = new List<string>();
@@ -153,7 +179,7 @@ namespace PictureManager.ViewModel {
         dirs.Add(new MediaItemsLoad {DirPath = topDir});
         if (!recursive) continue;
         dirs.AddRange(AppCore.GetAllDirectoriesSafely(topDir)
-          .Select(d => new MediaItemsLoad { DirPath = d }));
+          .Select(d => new MediaItemsLoad {DirPath = d}));
       }
 
       //paring folder with DB
@@ -178,8 +204,7 @@ namespace PictureManager.ViewModel {
         }
 
         files.AddRange(from file in Directory.EnumerateFiles(dir.DirPath, "*.*", SearchOption.TopDirectoryOnly)
-            .Where(f => SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
-          where ACore.CanViewerSeeThisFile(file)
+          where IsSupportedFileType(file) && ACore.CanViewerSeeThisFile(file)
           select new MediaItemsLoad {
             FilePath = file,
             FileName = Path.GetFileName(file),
@@ -192,7 +217,7 @@ namespace PictureManager.ViewModel {
       //pairing files with DB
       files = (from f in files
         join mi in ACore.MediaItems.AllItems on
-          new {file = f.FileName.ToLowerInvariant(), dir = f.DirId} equals 
+          new {file = f.FileName.ToLowerInvariant(), dir = f.DirId} equals
           new {file = mi.Data.FileName.ToLowerInvariant(), dir = mi.Data.DirectoryId} into tmp
         from mi in tmp.DefaultIfEmpty()
         select new MediaItemsLoad {
@@ -210,15 +235,19 @@ namespace PictureManager.ViewModel {
       });
 
       #region Filtering
+
       //Ratings
-      var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
+      var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>()
+        .ToArray();
       if (chosenRatings.Any())
-        files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Data.Rating))).ToList();
+        files = files.Where(f => f.MediaItem == null || chosenRatings.Any(x => x.Value.Equals(f.MediaItem.Data.Rating)))
+          .ToList();
 
       //MediaItemSizes
       if (!ACore.MediaItemSizes.Size.AllSizes()) {
         files = files.Where(f =>
-          f.MediaItem == null || ACore.MediaItemSizes.Size.Fits(f.MediaItem.Data.Width * f.MediaItem.Data.Height)).ToList();
+            f.MediaItem == null || ACore.MediaItemSizes.Size.Fits(f.MediaItem.Data.Width * f.MediaItem.Data.Height))
+          .ToList();
       }
 
       //People
@@ -257,12 +286,14 @@ namespace PictureManager.ViewModel {
             return false;
           if (!andKeywordsAny && !orKeywordsAny)
             return true;
-          if (andKeywordsAny && andKeywords.All(k => f.MediaItem.Keywords.Any(mik => mik.Data.Name.StartsWith(k.Data.Name))))
+          if (andKeywordsAny &&
+              andKeywords.All(k => f.MediaItem.Keywords.Any(mik => mik.Data.Name.StartsWith(k.Data.Name))))
             return true;
           if (orKeywords.Any(k => f.MediaItem.Keywords.Any(mik => mik.Data.Name.StartsWith(k.Data.Name))))
             return true;
           return false;
         }).ToList();
+
       #endregion
 
       var i = 0;
@@ -285,6 +316,7 @@ namespace PictureManager.ViewModel {
           file.MediaItem.SetThumbSize();
           Items.Add(file.MediaItem);
         }
+
         i++;
       }
 
@@ -297,8 +329,12 @@ namespace PictureManager.ViewModel {
       foreach (var item in Items) {
         if (item.IsSelected) item.IsSelected = false;
       }
+
       Items.Clear();
-      foreach (var splitedItem in SplitedItems) { splitedItem.Clear(); }
+      foreach (var splitedItem in SplitedItems) {
+        splitedItem.Clear();
+      }
+
       SplitedItems.Clear();
 
       BaseMediaItem[] items = null;
@@ -318,6 +354,7 @@ namespace PictureManager.ViewModel {
                 on mi.Data.Id equals mik.MediaItemId
               select mi).ToArray();
           }
+
           break;
         }
         case Person person: {
@@ -331,11 +368,13 @@ namespace PictureManager.ViewModel {
           if (recursive) {
             var geoNames = new List<GeoName>();
             geoName.GetThisAndSubGeoNames(ref geoNames);
-            items = AllItems.Where(x => geoNames.Select(gn => (int?) gn.Data.GeoNameId).Contains(x.Data.GeoNameId)).ToArray();
+            items = AllItems.Where(x => geoNames.Select(gn => (int?) gn.Data.GeoNameId).Contains(x.Data.GeoNameId))
+              .ToArray();
           }
           else {
             items = AllItems.Where(x => x.Data.GeoNameId == geoName.Data.GeoNameId).ToArray();
           }
+
           break;
         }
       }
@@ -355,7 +394,7 @@ namespace PictureManager.ViewModel {
         //Filter by Viewer
         if (!ACore.CanViewerSeeThisFile(item.FilePath)) continue;
 
-        item.Index =++ i;
+        item.Index = ++i;
         item.SetThumbSize();
         Items.Add(item);
       }
@@ -379,6 +418,7 @@ namespace PictureManager.ViewModel {
           rowIndex++;
           continue;
         }
+
         break;
       }
 
@@ -402,8 +442,10 @@ namespace PictureManager.ViewModel {
           rowsHeight += row.Max(x => x.ThumbHeight) + itemOffset;
           continue;
         }
+
         break;
       }
+
       scroll.ScrollToVerticalOffset(rowsHeight);
       ScrollTo2(index);
     }
@@ -462,7 +504,8 @@ namespace PictureManager.ViewModel {
       SplitedItems.Clear();
 
       AppCore.WMain.UpdateLayout();
-      var rowMaxWidth = AppCore.WMain.ActualWidth - AppCore.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 - SystemParameters.VerticalScrollBarWidth;
+      var rowMaxWidth = AppCore.WMain.ActualWidth - AppCore.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 -
+                        SystemParameters.VerticalScrollBarWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
       var row = new ObservableCollection<BaseMediaItem>();
@@ -484,6 +527,19 @@ namespace PictureManager.ViewModel {
     public void ResetThumbsSize() {
       foreach (var item in Items) {
         item.SetThumbSize();
+      }
+    }
+
+    public static bool IsSupportedFileType(string filePath) {
+      if (!SuportedExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) return false;
+      using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+        try {
+          BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.None);
+          return true;
+        }
+        catch (Exception) {
+          return false;
+        }
       }
     }
   }
