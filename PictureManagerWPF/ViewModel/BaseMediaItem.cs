@@ -110,18 +110,18 @@ namespace PictureManager.ViewModel {
       InfoBoxPeople.Clear();
       InfoBoxKeywords.Clear();
 
-      foreach (var p in People.OrderBy(x => x.Title)) 
+      foreach (var p in People.OrderBy(x => x.Title))
         InfoBoxPeople.Add(p.Title);
 
-      foreach (var keyword in Keywords.OrderBy(x => x.Data.Name)) 
-        foreach (var k in keyword.Data.Name.Split('/')) 
-          if (!InfoBoxKeywords.Contains(k))
-            InfoBoxKeywords.Add(k);
+      foreach (var keyword in Keywords.OrderBy(x => x.Data.Name))
+      foreach (var k in keyword.Data.Name.Split('/'))
+        if (!InfoBoxKeywords.Contains(k))
+          InfoBoxKeywords.Add(k);
 
       if (Data.Rating != 0)
         InfoBoxThumb.Add(Data.Rating.ToString());
 
-      if (Data.Comment != string.Empty) 
+      if (!string.IsNullOrEmpty(Data.Comment))
         InfoBoxThumb.Add(Data.Comment);
 
       if (Data.GeoNameId != null) 
