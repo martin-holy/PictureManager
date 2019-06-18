@@ -24,7 +24,7 @@ namespace PictureManager.ViewModel {
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
-    public string CommentEscaped => Data.Comment?.Replace("'", "''");
+    public string CommentEscaped => Data.Comment?.Replace("'", "''") ?? string.Empty;
     public int Index;
     public double? Lat;
     public double? Lng;
