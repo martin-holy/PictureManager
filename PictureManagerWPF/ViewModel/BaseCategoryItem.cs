@@ -162,29 +162,12 @@ namespace PictureManager.ViewModel {
     public InputDialog ItemGetInputDialog(BaseTreeViewItem item, IconName iconName, string itemName, bool rename) {
       var title = rename ? $"Rename {itemName}" : $"New {itemName}";
       var question = rename ? $"Enter the new name for the {itemName.ToLower()}." : $"Enter the name of the new {itemName.ToLower()}.";
-      var error = $"{itemName}'s name already exists!";
-
       var inputDialog = new InputDialog {
         Owner = AppCore.WMain,
         IconName = iconName,
         Title = title,
         Question = question,
         Answer = rename ? item.Title : string.Empty
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        var root = rename ? item.Parent : item;
-        if (root.Items.Where(x => !(x is CategoryGroup)).SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
-          inputDialog.ShowErrorMessage(error);
-          return;
-        }
-
-        inputDialog.DialogResult = true;
       };
 
       inputDialog.TxtAnswer.SelectAll();

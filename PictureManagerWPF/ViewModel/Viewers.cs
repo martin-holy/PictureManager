@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 
 namespace PictureManager.ViewModel {
@@ -36,6 +37,19 @@ namespace PictureManager.ViewModel {
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, IconName.Eye, "Viewer", rename);
+      inputDialog.BtnDialogOk.Click += delegate {
+        if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
+          inputDialog.DialogResult = true;
+          return;
+        }
+
+        if (ACore.Db.Viewers.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+          inputDialog.ShowErrorMessage("This viewer already exists!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {

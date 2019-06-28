@@ -32,8 +32,8 @@ namespace PictureManager.ViewModel {
 
     public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public static string[] SuportedExts = {".jpg", ".jpeg", ".mp4", ".mkv"};
-    public string[] SuportedImageExts = {".jpg", ".jpeg"};
-    public string[] SuportedVideoExts = {".mp4", ".mkv"};
+    public static string[] SuportedImageExts = {".jpg", ".jpeg"};
+    public static string[] SuportedVideoExts = {".mp4", ".mkv"};
 
     public bool IsEditModeOn {
       get => _isEditModeOn;
@@ -531,16 +531,24 @@ namespace PictureManager.ViewModel {
     }
 
     public static bool IsSupportedFileType(string filePath) {
-      if (!SuportedExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) return false;
-      using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        try {
-          BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.None);
-          return true;
-        }
-        catch (Exception) {
-          return false;
+      if (SuportedImageExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) {
+        // chceck if is image valid
+        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+          try {
+            BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.None);
+            return true;
+          }
+          catch (Exception) {
+            return false;
+          }
         }
       }
+
+      if (SuportedVideoExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) {
+        return true;
+      }
+
+      return false;
     }
   }
 

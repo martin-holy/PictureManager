@@ -119,6 +119,24 @@ namespace PictureManager.ViewModel {
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, IconName.TagLabel, "Keyword", rename);
+      inputDialog.BtnDialogOk.Click += delegate {
+        if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
+          inputDialog.DialogResult = true;
+          return;
+        }
+
+        var path = (item as Keyword)?.Data.Name ?? string.Empty;
+        path = path.Contains("/")
+          ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
+          : inputDialog.Answer;
+
+        if (ACore.Db.Keywords.SingleOrDefault(x => x.Name.Equals(path)) != null) {
+          inputDialog.ShowErrorMessage("This keyword already exists!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {
@@ -127,6 +145,13 @@ namespace PictureManager.ViewModel {
         path = path.Contains("/")
           ? path.Substring(0, path.LastIndexOf("/", StringComparison.OrdinalIgnoreCase) + 1) + inputDialog.Answer
           : inputDialog.Answer;
+
+        var uniqueCheck = ACore.Db.Keywords.SingleOrDefault(x => x.Name.Equals(path));
+        if (uniqueCheck != null) {
+          inputDialog.ShowErrorMessage($"Keyword {path} already exists!");
+          return;
+        }
+
         keyword.Title = path;
         (keyword.Parent as Keywords)?.Sort();
         (keyword.Parent as Keyword)?.Sort();
