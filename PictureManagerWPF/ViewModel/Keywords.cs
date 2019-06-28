@@ -162,10 +162,18 @@ namespace PictureManager.ViewModel {
     public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is Keyword keyword)) return;
       var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
+      var keywords = AllKeywords.Where(x => x.Data.Name.StartsWith($"{keyword.Data.Name}/")).ToList();
+      keywords.Add(keyword);
 
-      foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == keyword.Data.Id)) {
-        DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
+      foreach (var k in keywords) {
+        foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == k.Data.Id))
+          DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
+
+        DataModel.PmDataContext.DeleteOnSubmit(k.Data, lists);
+        AllKeywords.Remove(k);
       }
+
+      item.Parent.Items.Remove(keyword);
 
       var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
             x => x.ItemId == keyword.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
@@ -173,11 +181,7 @@ namespace PictureManager.ViewModel {
         DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
       }
 
-      DataModel.PmDataContext.DeleteOnSubmit(keyword.Data, lists);
       ACore.Db.SubmitChanges(lists);
-
-      item.Parent.Items.Remove(keyword);
-      AllKeywords.Remove(keyword); 
     }
 
     public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
