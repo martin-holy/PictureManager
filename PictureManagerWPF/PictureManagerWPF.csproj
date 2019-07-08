@@ -82,6 +82,21 @@
     <Compile Include="AppCore.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Convertors.cs" />
+    <Compile Include="Database\BaseMediaItem.cs" />
+    <Compile Include="Database\CategoryGroup.cs" />
+    <Compile Include="Database\CategoryGroups.cs" />
+    <Compile Include="Database\Folder.cs" />
+    <Compile Include="Database\Folders.cs" />
+    <Compile Include="Database\GeoName.cs" />
+    <Compile Include="Database\GeoNames.cs" />
+    <Compile Include="Database\Keyword.cs" />
+    <Compile Include="Database\Keywords.cs" />
+    <Compile Include="Database\MediaItems.cs" />
+    <Compile Include="Database\People.cs" />
+    <Compile Include="Database\Person.cs" />
+    <Compile Include="Database\SimpleDB.cs" />
+    <Compile Include="Database\Viewer.cs" />
+    <Compile Include="Database\Viewers.cs" />
     <Compile Include="DataModel\DataModel.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
@@ -93,6 +108,7 @@
       <DependentUpon>ProgressBarDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
@@ -302,6 +318,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

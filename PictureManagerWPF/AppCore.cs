@@ -14,9 +14,16 @@ using Directory = System.IO.Directory;
 namespace PictureManager {
   public class AppCore : IDisposable {
 
+    public Database.SimpleDB Sdb = new Database.SimpleDB();
+
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
     public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
     public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
+
+    public Database.Keywords NewKeywords { get; } = new Database.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
+    public Database.People NewPeople { get; } = new Database.People {CanHaveGroups = true, CanModifyItems = true};
+    public Database.Folders NewFolders { get; } = new Database.Folders();
+    public Database.GeoNames NewGeoNames { get; } = new Database.GeoNames();
 
     public ViewModel.Keywords Keywords { get; } = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
     public ViewModel.People People { get; } = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};

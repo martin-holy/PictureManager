@@ -28,6 +28,7 @@ namespace PictureManager.ViewModel {
         paths.Add(dir.Id, path);
       }
 
+      // TODO tady to dohledavani v paths udelat jinak. vypada to ze to bude pomaly
       foreach (var keyPath in paths.Select(p => p.Value).Distinct().OrderBy(p => p)) {
         var newItem = new FolderKeyword {
           FullPath = keyPath, 

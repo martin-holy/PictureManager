@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -511,9 +514,21 @@ namespace PictureManager {
     }
 
     private void TestButton() {
-      foreach (var item in ACore.MediaItems.AllItems) {
-        item.IsPanoramatic = true;
+ 
+      /*const string fileName = "mediaItems.data";
+      IFormatter formatter = new BinaryFormatter();
+      using (var fs = new FileStream(fileName, FileMode.Create)) {
+        formatter.Serialize(fs, ACore.Db.MediaItems);
       }
+
+      System.Collections.ObjectModel.Collection<DataModel.MediaItem> mi = null;
+
+      using (var fs = new FileStream(fileName, FileMode.Open)) {
+        mi = (System.Collections.ObjectModel.Collection<DataModel.MediaItem>)formatter.Deserialize(fs);
+      }*/
+
+      Console.WriteLine("bla");
+
       //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
       //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
       //ACore.MediaItems.Load(folder, true);
