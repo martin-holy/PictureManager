@@ -18,7 +18,7 @@ namespace PictureManager.Database {
       var props = csv.Split('|');
       if (props.Length != 5) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new Folder(id, props[1], null) { Csv = props });
+      Records.Add(id, new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
     }
 
     public void LinkReferences(SimpleDB sdb) {
@@ -30,15 +30,14 @@ namespace PictureManager.Database {
           folder.Parent = (Folder)Records[int.Parse(folder.Csv[2])];
 
         // reference to subfolders
-        if (folder.Csv[3] != string.Empty)
-          foreach (var folderId in folder.Csv[3].Split(','))
+        if (folder.Csv[4] != string.Empty)
+          foreach (var folderId in folder.Csv[4].Split(','))
             folder.Items.Add((Folder)Records[int.Parse(folderId)]);
 
         // reference to mediaItems
-        //TODO: MediaItems
-        /*if (folder.Csv[4] != string.Empty)
-          foreach (var fileId in folder.Csv[4].Split(','))
-            folder.Files.Add((FolderItem)sdb.Table<FolderItems>().Table.Items[int.Parse(fileId)]);*/
+        if (folder.Csv[5] != string.Empty)
+          foreach (var miId in folder.Csv[5].Split(','))
+            folder.MediaItems.Add((BaseMediaItem)ACore.NewMediaItems.Records[int.Parse(miId)]);
 
         // csv array is not needed any more
         folder.Csv = null;

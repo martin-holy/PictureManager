@@ -24,6 +24,7 @@ namespace PictureManager {
     public Database.People NewPeople { get; } = new Database.People {CanHaveGroups = true, CanModifyItems = true};
     public Database.Folders NewFolders { get; } = new Database.Folders();
     public Database.GeoNames NewGeoNames { get; } = new Database.GeoNames();
+    public Database.MediaItems NewMediaItems { get; set; } = new Database.MediaItems();
 
     public ViewModel.Keywords Keywords { get; } = new ViewModel.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
     public ViewModel.People People { get; } = new ViewModel.People {CanHaveGroups = true, CanModifyItems = true};

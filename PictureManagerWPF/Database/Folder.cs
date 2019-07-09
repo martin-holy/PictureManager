@@ -9,9 +9,8 @@ namespace PictureManager.Database {
   public sealed class Folder : VM.BaseTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; set; }
-
-    //TODO: pridat MediaItems
-    //public List<MediaItems> Files { get; set; } = new List<MediaItems>();
+    public bool IsFolderKeyword { get; set; }
+    public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
 
     private bool _isAccessible;
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
@@ -34,12 +33,14 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
+      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
       return string.Join("|",
         Id.ToString(),
         Title,
         ((IRecord) Parent)?.Id.ToString(),
-        string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)));
-      //TODO: pridat MediaItems
+        IsFolderKeyword ? "1" : "0",
+        string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)),
+        string.Join(",", MediaItems.Select(x => x.Id)));
     }
 
     public string GetFullPath() {
