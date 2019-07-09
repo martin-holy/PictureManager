@@ -161,7 +161,6 @@
     <Compile Include="ViewModel\Ratings.cs" />
     <Compile Include="ViewModel\SqlQueries.cs" />
     <Compile Include="ViewModel\SqlQuery.cs" />
-    <Compile Include="ViewModel\Viewer.cs" />
     <Compile Include="ViewModel\Viewers.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
