@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -32,6 +33,12 @@ namespace PictureManager.ViewModel {
 
     public BaseTreeViewItem GetTopParent() {
       return Parent == null ? this : Parent.GetTopParent();
+    }
+
+    public void GetThisAndItemsRecursive(ref List<BaseTreeViewItem> items) {
+      items.Add(this);
+      foreach (var item in Items)
+        item.GetThisAndItemsRecursive(ref items);
     }
   }
 }

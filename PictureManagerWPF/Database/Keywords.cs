@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class Keywords : VM.BaseCategoryItem, ITable {
+  public sealed class Keywords : BaseCategoryItem, ITable {
+    public TableHelper Helper { get; set; }
     public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
 
     private static readonly Mutex Mut = new Mutex();
@@ -20,6 +21,7 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
+      // ID|Name|Parent|Index|Children
       var props = csv.Split('|');
       if (props.Length != 5) return;
       var id = int.Parse(props[0]);
@@ -27,6 +29,8 @@ namespace PictureManager.Database {
     }
 
     public void LinkReferences(SimpleDB sdb) {
+      // ID|Name|Parent|Index|Children
+      // MediaItems to the Keyword are added in LinkReferences on MediaItem
       foreach (var item in Records) {
         var keyword = (Keyword)item.Value;
 
@@ -42,46 +46,17 @@ namespace PictureManager.Database {
         // csv array is not needed any more
         keyword.Csv = null;
       }
-    }
 
-    public void Load() {
-      //TODO
-      /*Items.Clear();
-      AllKeywords.Clear();
-
+      Items.Clear();
       LoadGroups();
 
-      //Add top level Keywords in Group
-      foreach (var g in Items.OfType<CategoryGroup>()) {
-        foreach (var keyword in (from k in ACore.Db.Keywords
-                                 join cgi in ACore.Db.CategoryGroupsItems
-                                 on new { kid = k.Id, gid = g.Data.Id } equals new { kid = cgi.ItemId, gid = cgi.CategoryGroupId }
-                                 select k).OrderBy(x => x.Idx).ThenBy(x => x.Name).Select(x => new Keyword(x) { Parent = g })) {
-          g.Items.Add(keyword);
-          AllKeywords.Add(keyword);
-        }
+      // add Keywords without group
+      foreach (var keyword in Records.Values.Cast<Keyword>().Where(x => x.Parent == null)) {
+        keyword.Parent = this;
+        Items.Add(keyword);
       }
 
-      //Add rest of Keywords
-      foreach (var keyword in (from k in ACore.Db.Keywords where AllKeywords.All(ak => ak.Data.Id != k.Id) select k)
-          .OrderBy(x => x.Name).Select(x => new Keyword(x))) {
-        var lioSlash = keyword.Data.Name.LastIndexOf('/');
-        if (lioSlash == -1) {
-          keyword.Parent = this;
-          Items.Add(keyword);
-          AllKeywords.Add(keyword);
-        }
-        else {
-          var parentKeyword = GetKeywordByFullPath(keyword.Data.Name.Substring(0, lioSlash), false);
-          if (parentKeyword == null) continue;
-          keyword.Parent = parentKeyword;
-          parentKeyword.Items.Add(keyword);
-          AllKeywords.Add(keyword);
-        }
-      }
-
-      Sort();
-      AllKeywords.ForEach(x => x.Sort());*/
+      //TODO Sort
     }
 
     public void Sort() {
@@ -99,56 +74,53 @@ namespace PictureManager.Database {
       return null;
     }
 
-    public Keyword GetKeywordByFullPath(string fullPath, bool create) {
-      return null;
-      //TODO
-      /*if (create) Mut.WaitOne();
+    public Keyword GetKeywordByFullPath(string fullPath) {
+      if (fullPath.Equals(string.Empty)) return null;
 
-      var keyword = AllKeywords.SingleOrDefault(x => x.Data.Name.Equals(fullPath));
-      if (keyword != null) {
-        if (create) Mut.ReleaseMutex();
+      Mut.WaitOne();
+
+      var pathNames = fullPath.Split('/');
+      var title = pathNames[0];
+      var keyword = Records.Values.Cast<Keyword>().SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(title));
+
+      if (keyword != null && pathNames.Length == 1) {
+        Mut.ReleaseMutex();
         return keyword;
       }
 
-      if (!create) return null;
-
-      var ioSlash = fullPath.IndexOf('/');
-      var keyFirstTitle = fullPath.Substring(0, ioSlash == -1 ? fullPath.Length : ioSlash);
-      var root = AllKeywords.SingleOrDefault(x => x.Title.Equals(keyFirstTitle))?.Parent ??
+      // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
+      var root = keyword?.Parent ??
                  (Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
                   GroupCreate("Auto Added"));
 
-      foreach (var keyPart in fullPath.Split('/')) {
-        var k = root.Items.Cast<Keyword>().SingleOrDefault(x => x.Title.Equals(keyPart));
-        root = k ?? CreateKeyword(root, keyPart);
+      foreach (var name in pathNames) {
+        root = root.Items.OfType<Keyword>().SingleOrDefault(x => x.Title.Equals(name))
+               ?? CreateKeyword(root, name);
       }
 
       Mut.ReleaseMutex();
-      return root as Keyword;*/
+      return root as Keyword;
     }
 
-    public Keyword CreateKeyword(VM.BaseTreeViewItem root, string name) {
+    public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
       // TODO keyword by mel mit parenta, ale ten muze bejt bud grupa, nebo keyword
       // TODO sort the tree
       Mut.WaitOne();
-      var id = ACore.Sdb.Table<Keywords>().GetNextId();
+      var id = ACore.Keywords.Helper.GetNextId();
       var keyword = new Keyword(id, name, null, 0);
 
       // add new Keyword to the database
-      ACore.Sdb.Table<Keywords>().AddRecord(keyword);
+      ACore.Keywords.Helper.AddRecord(keyword);
 
       // add new Keyword to the tree
-      if (root is CategoryGroup cg)
-        cg.Items.Add(keyword);
-      else
-        Items.Add(keyword);
+      (root is CategoryGroup cg ? cg.Items : Items).Add(keyword);
 
       Mut.ReleaseMutex();
 
       return keyword;
     }
 
-    public override void ItemNewOrRename(VM.BaseTreeViewItem item, bool rename) {
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, IconName.TagLabel, "Keyword", rename);
       inputDialog.BtnDialogOk.Click += delegate {
         if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
@@ -176,36 +148,30 @@ namespace PictureManager.Database {
       else CreateKeyword(item, inputDialog.Answer);
     }
 
-    public override void ItemDelete(VM.BaseTreeViewItem item) {
-      // TODO
-      /*if (!(item is Keyword keyword)) return;
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
-      var keywords = AllKeywords.Where(x => x.Data.Name.StartsWith($"{keyword.Data.Name}/")).ToList();
-      keywords.Add(keyword);
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is Keyword keyword)) return;
 
-      foreach (var k in keywords) {
-        foreach (var mik in ACore.Db.MediaItemKeywords.Where(x => x.KeywordId == k.Data.Id))
-          DataModel.PmDataContext.DeleteOnSubmit(mik, lists);
+      // remove Keyword from the tree
+      keyword.Parent.Items.Remove(keyword);
 
-        DataModel.PmDataContext.DeleteOnSubmit(k.Data, lists);
-        AllKeywords.Remove(k);
+      // get all descending keywords
+      var keywords = new List<BaseTreeViewItem>();
+      keyword.GetThisAndItemsRecursive(ref keywords);
+
+      foreach (var k in keywords.Cast<Keyword>()) {
+        // remove Keyword from MediaItems
+        foreach (var bmi in k.MediaItems)
+          bmi.Keywords.Remove(k);
+
+        // remove Keyword from DB
+        Records.Remove(k.Id);
       }
-
-      item.Parent.Items.Remove(keyword);
-
-      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
-            x => x.ItemId == keyword.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
-      if (cgi != null) {
-        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
-      }
-
-      ACore.Db.SubmitChanges(lists);*/
     }
 
-    public void ItemMove(VM.BaseTreeViewTagItem item, VM.BaseTreeViewItem dest, bool dropOnTop) {
+    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
       //if (item.Parent == dest.Parent) => postun ve skupine, tzn. zmenit keyword.index
       //if (item.Parent != dest.Parent) => posun mezi skupinama, tzn. resetovat keyword.index a zaradit podle jmena
-      /*if (dest is Keyword && item.Parent == dest.Parent) {
+      if (dest is Keyword && item.Parent == dest.Parent) {
         var items = item.Parent.Items;
         var srcIndex = items.IndexOf(item);
         var destIndex = items.IndexOf(dest);
@@ -213,26 +179,15 @@ namespace PictureManager.Database {
 
         items.Move(srcIndex, newIndex);
 
-        var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
         var i = 0;
-        foreach (var itm in items.Where(x => x is Keyword).OfType<Keyword>()) {
-          itm.Data.Idx = i;
-          DataModel.PmDataContext.UpdateOnSubmit(itm.Data, lists);
-          i++;
-        }
-
-        ACore.Db.SubmitChanges(lists);
+        foreach (var itm in items.OfType<Keyword>()) itm.Idx = i++;
       }
       else {
-        var keyword = item as Keyword;
-        if (keyword == null) return;
-        var path = dest is Keyword ? $"{((Keyword)dest).Data.Name}/{keyword.Title}" : keyword.Title;
+        if (!(item is Keyword keyword)) return;
 
-        keyword.Data.Idx = 0;
-        keyword.Data.Name = path;
-        ACore.Db.Update(keyword.Data);
-        ItemMove(item, dest, ((Keyword)item).Data.Id);
-      }*/
+        keyword.Idx = 0;
+        ItemMove(item, dest, ((Keyword)item).Id);
+      }
     }
   }
 }

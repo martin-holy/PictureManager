@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -68,12 +69,13 @@ namespace PictureManager {
       }
 
       //app opened with argument
-      ACore.AppInfo.AppMode = AppMode.Viewer;
+      // TODO
+      /*ACore.AppInfo.AppMode = AppMode.Viewer;
       ACore.MediaItems.Load(ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
       ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
       if (ACore.MediaItems.Current != null) ACore.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
-      ACore.LoadThumbnails();
+      ACore.LoadThumbnails();*/
     }
 
     private void StartPresentationTimer(bool delay) {
@@ -99,13 +101,13 @@ namespace PictureManager {
 
         if (category.CanModifyItems) {
           var cat = item as ViewModel.BaseCategoryItem;
-          var group = item as ViewModel.CategoryGroup;
+          var group = item as Database.CategoryGroup;
 
           if (cat != null || group != null || category.CanHaveSubItems) {
             menu.Items.Add(new MenuItem { Command = Commands.TagItemNew, CommandParameter = item });
           }
 
-          if (item is ViewModel.BaseTreeViewTagItem && group == null || item is ViewModel.Viewer) {
+          if (item is ViewModel.BaseTreeViewTagItem && group == null || item is Database.Viewer) {
             menu.Items.Add(new MenuItem { Command = Commands.TagItemRename, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.TagItemDelete, CommandParameter = item });
           }
@@ -122,7 +124,7 @@ namespace PictureManager {
       }
 
       switch (item) {
-        case ViewModel.Folder folder: {
+        case Database.Folder folder: {
           menu.Items.Add(new MenuItem { Command = Commands.FolderNew, CommandParameter = item });
           if (folder.Parent != null) {
             menu.Items.Add(new MenuItem { Command = Commands.FolderRename, CommandParameter = item });
@@ -135,30 +137,15 @@ namespace PictureManager {
           menu.Items.Add(new MenuItem { Command = Commands.FolderRemoveFromFavorites, CommandParameter = item });
           break;
         }
-        case ViewModel.Filters _: {
-          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
-          break;
-        }
-        case ViewModel.Filter _: {
-          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = Commands.FilterEdit, CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = Commands.FilterDelete, CommandParameter = item });
-          break;
-        }
-        case ViewModel.Viewer _: {
+        case Database.Viewer _: {
           menu.Items.Add(new MenuItem { Command = Commands.ViewerIncludeFolder, CommandParameter = item });
           menu.Items.Add(new MenuItem { Command = Commands.ViewerExcludeFolder, CommandParameter = item });
             break;
         }
-        case ViewModel.Person _:
-        case ViewModel.Keyword _:
-        case ViewModel.GeoName _: {
+        case Database.Person _:
+        case Database.Keyword _:
+        case Database.GeoName _: {
           menu.Items.Add(new MenuItem { Command = Commands.MediaItemsLoadByTag, CommandParameter = item });
-          break;
-        }
-        case ViewModel.BaseTreeViewItem btvi: {
-          if (btvi.Tag is DataModel.ViewerAccess)
-            menu.Items.Add(new MenuItem { Command = Commands.ViewerRemoveFolder, CommandParameter = item });
           break;
         }
       }
@@ -225,8 +212,8 @@ namespace PictureManager {
         var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
         if (dragged != null) thumbs = selected.SequenceEqual(dragged);
       }
-      var srcData = (ViewModel.Folder)e.Data.GetData(typeof(ViewModel.Folder));
-      var destData = (ViewModel.Folder)((StackPanel)sender).DataContext;
+      var srcData = (Database.Folder)e.Data.GetData(typeof(Database.Folder));
+      var destData = (Database.Folder)((StackPanel)sender).DataContext;
       if ((srcData == null && !thumbs) || destData == null || srcData == destData || !destData.IsAccessible) {
         e.Effects = DragDropEffects.None;
         e.Handled = true;
@@ -235,9 +222,10 @@ namespace PictureManager {
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
-      var srcData = (ViewModel.Folder)e.Data.GetData(typeof(ViewModel.Folder));
-      var destData = (ViewModel.Folder)((StackPanel)sender).DataContext;
+      var srcData = (Database.Folder)e.Data.GetData(typeof(Database.Folder));
+      var destData = (Database.Folder)((StackPanel)sender).DataContext;
       var from = thumbs ? null : srcData?.FullPath;
+      //TODO DEBUG asi neni potreba brat fullpath ale jen title
       var itemName = thumbs ? null : srcData?.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
 
       var flag = e.KeyStates == DragDropKeyStates.ControlKey ?
@@ -256,24 +244,23 @@ namespace PictureManager {
 
       if (e.KeyStates != DragDropKeyStates.ControlKey) {
         if (srcData != null) {
-          srcData.UpdateFullPath(((ViewModel.Folder)srcData.Parent).FullPath, destData.FullPath);
           srcData.Parent.Items.Remove(srcData);
 
           //check if was destination expanded
           if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
 
           srcData.Parent = destData;
-          var folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
+          var folder = destData.Items.Cast<Database.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
           destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
 
           if (srcData == ACore.LastSelectedSource) {
             ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
-            ACore.Folders.ExpandTo(srcData.FullPath);
+            ACore.Folders.ExpandTo(srcData.Id);
           }
         }
       }
       else {
-        destData.GetSubFolders(true);
+        destData.LoadSubFolders(false);
       }
     }
     #endregion
@@ -316,21 +303,21 @@ namespace PictureManager {
       }
 
       var dest = ((StackPanel)sender).DataContext;
-      if (e.Data.GetDataPresent(typeof(ViewModel.Keyword))) {
+      if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
 
-        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as ViewModel.CategoryGroup)?.Category) == Category.Keywords)
+        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as Database.CategoryGroup)?.Category) == Category.Keywords)
           return;
 
-        var srcData = e.Data.GetData(typeof(ViewModel.Keyword)) as ViewModel.Keyword;
-        var destData = dest as ViewModel.Keyword;
+        var srcData = e.Data.GetData(typeof(Database.Keyword)) as Database.Keyword;
+        var destData = dest as Database.Keyword;
         if (destData?.Parent == srcData?.Parent) return;
 
         e.Effects = DragDropEffects.None;
         e.Handled = true;
       }
-      else if (e.Data.GetDataPresent(typeof(ViewModel.Person))) {
-        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as ViewModel.CategoryGroup)?.Category) == Category.People) {
-          var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
+      else if (e.Data.GetDataPresent(typeof(Database.Person))) {
+        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as Database.CategoryGroup)?.Category) == Category.People) {
+          var srcData = (Database.Person)e.Data.GetData(typeof(Database.Person));
           if (srcData != null && srcData.Parent != (ViewModel.BaseTreeViewItem)dest) return;
         }
         e.Effects = DragDropEffects.None;
@@ -341,18 +328,18 @@ namespace PictureManager {
     private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
       var panel = (StackPanel)sender;
 
-      if (e.Data.GetDataPresent(typeof(ViewModel.Keyword))) {
-        var srcData = (ViewModel.Keyword)e.Data.GetData(typeof(ViewModel.Keyword));
+      if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
+        var srcData = (Database.Keyword)e.Data.GetData(typeof(Database.Keyword));
         var destData = (ViewModel.BaseTreeViewItem)panel.DataContext;
         var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
         if (srcData == null || destData == null) return;
         ACore.Keywords.ItemMove(srcData, destData, dropOnTop);
       }
-      else if (e.Data.GetDataPresent(typeof(ViewModel.Person))) {
-        var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
+      else if (e.Data.GetDataPresent(typeof(Database.Person))) {
+        var srcData = (Database.Person)e.Data.GetData(typeof(Database.Person));
         if (srcData == null) return;
         var destData = panel.DataContext as ViewModel.BaseTreeViewItem;
-        ACore.People.ItemMove(srcData, destData, srcData.Data.Id);
+        ACore.People.ItemMove(srcData, destData, srcData.Id);
       }
     }
     #endregion
@@ -361,7 +348,7 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      var bmi = (Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
 
       if (!isCtrlOn && !isShiftOn) {
         ACore.MediaItems.DeselectAll();
@@ -391,7 +378,7 @@ namespace PictureManager {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
       ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      ACore.MediaItems.Current = (Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
       SwitchToFullScreen();
       SetMediaItemSource();
     }
@@ -401,7 +388,7 @@ namespace PictureManager {
       var dob = new DataObject();
       var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
-        data.Add(((ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+        data.Add(((Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
@@ -438,8 +425,8 @@ namespace PictureManager {
           break;
         }
         case MediaType.Video: {
-          var isBigger = FullMedia.ActualHeight < current.Data.Height ||
-                         FullMedia.ActualWidth < current.Data.Width;
+          var isBigger = FullMedia.ActualHeight < current.Height ||
+                         FullMedia.ActualWidth < current.Width;
           FullMedia.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
           FullMedia.Source = current.FilePathUri;
           break;
@@ -526,7 +513,7 @@ namespace PictureManager {
       using (var fs = new FileStream(fileName, FileMode.Open)) {
         mi = (System.Collections.ObjectModel.Collection<DataModel.MediaItem>)formatter.Deserialize(fs);
       }*/
-
+      var acore = ACore;
       Console.WriteLine("bla");
 
       //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
@@ -600,6 +587,10 @@ namespace PictureManager {
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
       MainSplitter_OnDragDelta(null, null);
+    }
+
+    private void WMain_OnClosing(object sender, CancelEventArgs e) {
+      ACore.Sdb.SaveAllTables();
     }
   }
 }

@@ -16,16 +16,21 @@ namespace PictureManager.Database {
     }
 
     public void LoadAllTables() {
-      foreach (var table in Tables)
+      foreach (var table in Tables) {
+        App.SplashScreen.AddMessage($"Loading data for {table.Key.Name}");
         table.Value.Load();
+      }
     }
 
     public void LinkReferences() {
-      foreach (var table in Tables)
+      foreach (var table in Tables) {
+        App.SplashScreen.AddMessage($"Linking references for {table.Key.Name}");
         table.Value.Table.LinkReferences(this);
+      }
     }
 
     public void SaveAllTables() {
+      Directory.CreateDirectory("db");
       foreach (var table in Tables)
         table.Value.Save();
       SaveIdSequences();
@@ -33,12 +38,12 @@ namespace PictureManager.Database {
 
     public void SaveIdSequences() {
       try {
-        using (var sw = new StreamWriter("IdSequences.csv", false, Encoding.UTF8)) {
+        using (var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8)) {
           foreach (var table in Tables)
             sw.WriteLine(string.Join("|", table.Key.Name, table.Value.MaxId));
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
     }
@@ -50,14 +55,15 @@ namespace PictureManager.Database {
     private readonly string _tableFilePath;
 
     public TableHelper(ITable table) {
+      table.Helper = this;
       Table = table;
       MaxId = GetMaxId();
-      _tableFilePath = $"{Table.GetType().Name}.csv";
+      _tableFilePath = Path.Combine("db", $"{Table.GetType().Name}.csv");
     }
 
     private int GetMaxId() {
       var maxId = 0;
-      const string filePath = "IdSequences.csv";
+      var filePath = Path.Combine("db", "IdSequences.csv");
       try {
         if (!File.Exists(filePath)) return maxId;
         using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
@@ -71,7 +77,7 @@ namespace PictureManager.Database {
           }
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
 
@@ -112,13 +118,14 @@ namespace PictureManager.Database {
             sw.WriteLine(item.Value.ToCsv());
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
     }
   }
 
   public interface ITable {
+    TableHelper Helper { get; set; }
     Dictionary<int, IRecord> Records { get; set; }
     void NewFromCsv(string csv);
     void LinkReferences(SimpleDB sdb);

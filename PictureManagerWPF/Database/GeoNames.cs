@@ -2,10 +2,11 @@
 using System.Globalization;
 using System.Linq;
 using System.Xml;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class GeoNames : VM.BaseCategoryItem, ITable {
+  public sealed class GeoNames : BaseCategoryItem, ITable {
+    public TableHelper Helper { get; set; }
     public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
 
     public GeoNames() : base(Category.GeoNames) {
@@ -14,6 +15,7 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
+      // ID|Name|ToponymName|FCode|Parent|Children
       var props = csv.Split('|');
       if (props.Length != 6) return;
       var id = int.Parse(props[0]);
@@ -21,6 +23,7 @@ namespace PictureManager.Database {
     }
 
     public void LinkReferences(SimpleDB sdb) {
+      // ID|Name|ToponymName|FCode|Parent|Children
       foreach (var item in Records) {
         var geoName = (GeoName)item.Value;
 
@@ -36,9 +39,7 @@ namespace PictureManager.Database {
         // csv array is not needed any more
         geoName.Csv = null;
       }
-    }
 
-    public void Load() {
       Items.Clear();
 
       var earth = Records.Cast<GeoName>().SingleOrDefault(x => x.Parent == null);
@@ -58,7 +59,7 @@ namespace PictureManager.Database {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
 
         if (!Records.TryGetValue(geoNameId, out var dbGeoName)) {
-          var id = ACore.Sdb.Table<GeoNames>().GetNextId();
+          var id = ACore.GeoNames.Helper.GetNextId();
           dbGeoName = new GeoName(
             id,
             geoname.SelectSingleNode("name")?.InnerText,
@@ -77,20 +78,17 @@ namespace PictureManager.Database {
       var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-").Replace(",", "."), CultureInfo.InvariantCulture);
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
 
-      //TODO InsertGeoNameHierarchy nemusi nic vracet a Load asi nebude potreba
       InsertGeoNameHierarchy(lat, lng);
-
-      Load();
     }
 
-    public string GetGeoNameHierarchy(int? geoNameId) {
-      if (geoNameId == null) return string.Empty;
+    public string GetGeoNameHierarchy(GeoName geoName) {
+      if (geoName == null) return string.Empty;
 
-      if (!Records.TryGetValue((int)geoNameId, out var geoName))
+      if (!Records.TryGetValue((int) geoName.Id, out var gn))
         return string.Empty;
 
-      var parent = ((GeoName)geoName).Parent;
-      var names = new List<string> { ((GeoName)geoName).Title };
+      var parent = ((GeoName) gn).Parent;
+      var names = new List<string> {((GeoName) gn).Title};
       while (parent != null) {
         names.Add(parent.Title);
         parent = parent.Parent;

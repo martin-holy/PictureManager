@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
+             xmlns:database="clr-namespace:PictureManager.Database"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
   <TreeView.ItemContainerStyle>
@@ -29,7 +30,7 @@
     </HierarchicalDataTemplate>
 
     <!-- TreeView Folders - Folder -->
-    <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
+    <HierarchicalDataTemplate DataType="{x:Type database:Folder}" ItemsSource="{Binding Items}">
       <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu">
         <Rectangle Style="{StaticResource IconRect}" />
         <TextBlock Style="{StaticResource TreeViewTitle}" />

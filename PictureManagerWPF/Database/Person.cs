@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class Person : VM.BaseTreeViewTagItem, IRecord {
+  public sealed class Person : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
@@ -14,6 +14,7 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
+      // ID|Name
       return string.Join("|", Id.ToString(), Title);
     }
   }

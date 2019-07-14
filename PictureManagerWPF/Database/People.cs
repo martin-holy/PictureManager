@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class People : VM.BaseCategoryItem, ITable {
+  public sealed class People : BaseCategoryItem, ITable {
+    public TableHelper Helper { get; set; }
     public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
     private static readonly Mutex Mut = new Mutex();
 
@@ -19,46 +20,24 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
+      // ID|Name
       var props = csv.Split('|');
       if (props.Length != 2) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new Person(id, props[1]) {Csv = props});
+      Records.Add(id, new Person(id, props[1]));
     }
 
     public void LinkReferences(SimpleDB sdb) {
-      // nothing yet, later every person will have list of MediaItems
-      foreach (var item in Records) {
-        var person = (Person)item.Value;
+      // MediaItems to the Person are added in LinkReferences on MediaItem
 
-        // csv array is not needed any more
-        person.Csv = null;
-      }
-    }
-
-    public void Load() {
-      //TODO
-      /*Items.Clear();
-      AllPeople.Clear();
-
+      Items.Clear();
       LoadGroups();
 
-      //Add People in Group
-      foreach (var g in Items.Cast<CategoryGroup>()) {
-        foreach (var person in (from p in ACore.Db.People
-                                join cgi in ACore.Db.CategoryGroupsItems
-                                on new { pid = p.Id, gid = g.Data.Id } equals new { pid = cgi.ItemId, gid = cgi.CategoryGroupId }
-                                select p).OrderBy(x => x.Name).Select(x => new Person(x) { Parent = g })) {
-          g.Items.Add(person);
-          AllPeople.Add(person);
-        }
-      }
-
-      //Add People without Group
-      foreach (var person in (from p in ACore.Db.People where AllPeople.All(ap => ap.Data.Id != p.Id) select p)
-          .OrderBy(x => x.Name).Select(x => new Person(x) { Parent = this })) {
+      // add People without group
+      foreach (var person in Records.Values.Cast<Person>().Where(x => x.Parent == null)) {
+        person.Parent = this;
         Items.Add(person);
-        AllPeople.Add(person);
-      }*/
+      }
     }
 
     public Person GetPerson(int id) {
@@ -72,14 +51,14 @@ namespace PictureManager.Database {
       return person ?? (create ? CreatePerson(this, name) : null);
     }
 
-    public Person CreatePerson(VM.BaseTreeViewItem root, string name) {
+    public Person CreatePerson(BaseTreeViewItem root, string name) {
       // TODO person by mel mit asi parenta
       Mut.WaitOne();
-      var id = ACore.Sdb.Table<People>().GetNextId();
+      var id = ACore.People.Helper.GetNextId();
       var person = new Person(id, name);
       
       // add new Person to the database
-      ACore.Sdb.Table<People>().AddRecord(person);
+      ACore.People.Helper.AddRecord(person);
 
       // add new Person to the tree
       if (root is CategoryGroup cg)
@@ -92,7 +71,7 @@ namespace PictureManager.Database {
       return person;
     }
 
-    public override void ItemNewOrRename(VM.BaseTreeViewItem item, bool rename) {
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, IconName.People, "Person", rename);
       inputDialog.BtnDialogOk.Click += delegate {
         if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
@@ -100,7 +79,7 @@ namespace PictureManager.Database {
           return;
         }
 
-        if (ACore.Sdb.Table<People>().Table.Records.Cast<Person>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
+        if (ACore.People.Records.Cast<Person>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("This person already exists!");
           return;
         }
@@ -117,26 +96,18 @@ namespace PictureManager.Database {
       else CreatePerson(item, inputDialog.Answer);
     }
 
-    public override void ItemDelete(VM.BaseTreeViewItem item) {
-      // TODO person bude mit list of MediaItems a Parenta na skupinu, takze pak bude jednoduchy smazat tyhle vazby
-      /*if (!(item is Person person)) return;
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
+    public override void ItemDelete(BaseTreeViewItem item) {
+      if (!(item is Person person)) return;
 
-      foreach (var mip in ACore.Db.MediaItemPeople.Where(x => x.PersonId == person.Data.Id)) {
-        DataModel.PmDataContext.DeleteOnSubmit(mip, lists);
-      }
+      // remove Person from MediaItems
+      foreach (var bmi in person.MediaItems)
+        bmi.People.Remove(person);
 
-      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(
-            x => x.ItemId == person.Data.Id && x.CategoryGroupId == (item.Parent as CategoryGroup)?.Data.Id);
-      if (cgi != null) {
-        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
-      }
+      // remove Person from the tree
+      person.Parent.Items.Remove(person);
 
-      DataModel.PmDataContext.DeleteOnSubmit(person.Data, lists);
-      ACore.Db.SubmitChanges(lists);
-
-      item.Parent.Items.Remove(person);
-      AllPeople.Remove(person);*/
+      // remove Person from DB
+      Records.Remove(person.Id);
     }
   }
 }

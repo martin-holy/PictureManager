@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class Keyword : VM.BaseTreeViewTagItem, IRecord {
+  public sealed class Keyword : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public int Idx { get; set; }
     public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
 
-    public Keyword(int id, string name, Keyword parent, int index) {
+    public string FullPath => GetFullPath();
+
+    public Keyword(int id, string name, BaseTreeViewItem parent, int index) {
       Id = id;
       Title = name;
       Parent = parent;
@@ -22,17 +24,17 @@ namespace PictureManager.Database {
       return string.Join("|",
         Id.ToString(),
         Title,
-        ((IRecord)Parent)?.Id.ToString(),
+        (Parent as Keyword)?.Id.ToString(),
         Idx.ToString(),
         string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)));
     }
 
-    public string GetFullPath() {
+    private string GetFullPath() {
       var parent = Parent;
       var names = new List<string> { Title };
       while (parent != null) {
         names.Add(parent.Title);
-        parent = parent.Parent;
+        parent = parent.Parent as Keyword;
       }
 
       names.Reverse();
@@ -53,22 +55,15 @@ namespace PictureManager.Database {
       return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
     }
 
-    public void GetThisAndItems(ref List<Keyword> keywords) {
-      keywords.Add(this);
-      foreach (var item in Items) {
-        ((Keyword)item).GetThisAndItems(ref keywords);
-      }
-    }
-
     public BaseMediaItem[] GetMediaItemsRecursive() {
       // get all Keywords
-      var keywords = new List<Keyword>();
-      GetThisAndItems(ref keywords);
+      var keywords = new List<BaseTreeViewItem>();
+      GetThisAndItemsRecursive(ref keywords);
 
       // get all MediaItems from keywords
       var mis = new List<BaseMediaItem>();
       foreach (var k in keywords)
-        mis.AddRange(k.MediaItems);
+        mis.AddRange(((Keyword) k).MediaItems);
 
       return mis.Distinct().ToArray();
     }

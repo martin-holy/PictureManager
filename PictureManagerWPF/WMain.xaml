@@ -6,13 +6,14 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
+        xmlns:database="clr-namespace:PictureManager.Database"
         xmlns:userControls="clr-namespace:PictureManager.UserControls"
         xmlns:media="https://github.com/JohanLarsson/Gu.Wpf.Media"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
-        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove">
+        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing">
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
@@ -176,7 +177,7 @@
                   </HierarchicalDataTemplate>
 
                   <!-- TreeView Folders - Folder -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:Folder}" ItemsSource="{Binding Items}">
                     <StackPanel Orientation="Horizontal" Background="Transparent" AllowDrop="True"
                             MouseLeftButtonUp="TvFolders_OnMouseLeftButtonUp"
                             MouseLeftButtonDown="TvFolders_OnMouseLeftButtonDown"
@@ -229,7 +230,7 @@
                   </HierarchicalDataTemplate>
 
                   <!-- TreeView Keywords - Keyword -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Keyword}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:Keyword}" ItemsSource="{Binding Items}">
                     <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                       <Rectangle Style="{StaticResource IconRect}" />
                       <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -247,7 +248,7 @@
                   </HierarchicalDataTemplate>
 
                   <!-- TreeView Keywords - GeoName -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:GeoName}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:GeoName}" ItemsSource="{Binding Items}">
                     <StackPanel Style="{StaticResource TreeViewStackPanel}">
                       <Rectangle Style="{StaticResource IconRect}" />
                       <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -256,7 +257,7 @@
                   </HierarchicalDataTemplate>
 
                   <!-- TreeView Keywords - CategoryGroup -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:CategoryGroup}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:CategoryGroup}" ItemsSource="{Binding Items}">
                     <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                       <Rectangle Style="{StaticResource IconRect}" />
                       <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -265,7 +266,7 @@
                   </HierarchicalDataTemplate>
 
                   <!-- TreeView Keywords - Person -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Person}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:Person}">
                     <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
                       <Rectangle Style="{StaticResource IconRect}" />
                       <TextBlock Style="{StaticResource TreeViewTitle}" />
@@ -351,25 +352,8 @@
                     </StackPanel>
                   </HierarchicalDataTemplate>
 
-                  <!-- TreeView Filters - Filter -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Filter}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
                   <!-- TreeView Filters - Viewer -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Viewer}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Filters - SqlQuery -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:SqlQuery}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type database:Viewer}" ItemsSource="{Binding Items}">
                     <StackPanel Style="{StaticResource TreeViewStackPanel}">
                       <Rectangle Style="{StaticResource IconRect}" />
                       <TextBlock Style="{StaticResource TreeViewTitle}" />

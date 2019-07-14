@@ -3,10 +3,11 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class Folders : VM.BaseCategoryItem, ITable {
+  public sealed class Folders : BaseCategoryItem, ITable {
+    public TableHelper Helper { get; set; }
     public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
 
     public Folders() : base(Category.Folders) {
@@ -15,13 +16,15 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
+      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
       var props = csv.Split('|');
-      if (props.Length != 5) return;
+      if (props.Length != 6) return;
       var id = int.Parse(props[0]);
       Records.Add(id, new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
     }
 
     public void LinkReferences(SimpleDB sdb) {
+      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
       foreach (var item in Records) {
         var folder = (Folder)item.Value;
 
@@ -37,11 +40,17 @@ namespace PictureManager.Database {
         // reference to mediaItems
         if (folder.Csv[5] != string.Empty)
           foreach (var miId in folder.Csv[5].Split(','))
-            folder.MediaItems.Add((BaseMediaItem)ACore.NewMediaItems.Records[int.Parse(miId)]);
+            folder.MediaItems.Add((BaseMediaItem)ACore.MediaItems.Records[int.Parse(miId)]);
 
         // csv array is not needed any more
         folder.Csv = null;
       }
+
+      foreach (var topFolder in Records.Values.Cast<Folder>().Where(x => x.Parent == null)) {
+        Items.Add(topFolder);
+      }
+
+      AddDrives();
     }
 
     public void AddDrives() {
@@ -50,7 +59,8 @@ namespace PictureManager.Database {
 
       foreach (var drive in drives) {
         var di = new DriveInfo(drive);
-        drivesNames.Add(di.Name);
+        var driveName = di.Name.Replace(Path.DirectorySeparatorChar.ToString(), string.Empty);
+        drivesNames.Add(driveName);
         IconName driveImage;
 
         // set drive icon
@@ -70,23 +80,19 @@ namespace PictureManager.Database {
             break;
         }
 
-        // check if the Drive already exists in the tree
-        var existingDir = Items.SingleOrDefault(x => x.Title.Equals(di.Name));
+        // add Drive to the database and to the tree if not already exists
+        if (!(Items.SingleOrDefault(x => x.Title.Equals(driveName)) is Folder item)) {
+          item = new Folder(ACore.Folders.Helper.GetNextId(), driveName, null);
+          ACore.Folders.Helper.AddRecord(item);
+          Items.Add(item);
+        }
 
-        // continue if the Drive already exists in the tree
-        if (existingDir != null) continue;
-
-        // add new Drive to the database and to the tree
-        var item = new Folder(ACore.Sdb.Table<Folders>().GetNextId(), di.Name, null) {
-          IsAccessible = true,
-          IconName = driveImage
-        };
-        ACore.Sdb.Table<Folders>().AddRecord(item);
-        Items.Add(item);
+        item.IsAccessible = di.IsReady;
+        item.IconName = driveImage; 
 
         // add placeholder so the Drive can be expanded
-        if (di.IsReady)
-          item.Items.Add(new VM.BaseTreeViewItem { Title = "..." });
+        if (di.IsReady && item.Items.Count == 0)
+          item.Items.Add(new BaseTreeViewItem { Title = "..." });
       }
 
       // remove not available drives
@@ -96,8 +102,23 @@ namespace PictureManager.Database {
       }
     }
 
+    public Folder GetByPath(string path) {
+      if (path.Equals(string.Empty)) return null;
+
+      var pathParts = path.Split(Path.DirectorySeparatorChar);
+      var root = (BaseTreeViewItem) this;
+
+      foreach (var pathPart in pathParts) {
+        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
+        if (folder == null) return null;
+        root = folder;
+      }
+
+      return root as Folder;
+    }
+
     public Folder ExpandTo(int id) {
-      if (!ACore.Sdb.Table<Folders>().Table.Records.TryGetValue(id, out var folder)) return null;
+      if (!ACore.Folders.Records.TryGetValue(id, out var folder)) return null;
       var parent = ((Folder) folder).Parent;
       while (parent != null) {
         parent.IsExpanded = true;
@@ -107,7 +128,7 @@ namespace PictureManager.Database {
       return (Folder) folder;
     }
 
-    public bool GetVisibleTreeIndexFor(ObservableCollection<VM.BaseTreeViewItem> folders, Folder folder, ref int index) {
+    public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
       foreach (var item in folders) {
         index++;
         if (item.Equals(folder)) return true;

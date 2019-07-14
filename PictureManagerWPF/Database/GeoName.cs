@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class GeoName : VM.BaseTreeViewTagItem, IRecord {
+  public sealed class GeoName : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; set; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
     public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
 
-    public GeoName(int id, string name, string toponymName, string fCode, GeoName parent) {
+    public GeoName(int id, string name, string toponymName, string fCode, BaseTreeViewItem parent) {
       Id = id;
       Title = name;
       ToponymName = toponymName;
@@ -47,11 +47,11 @@ namespace PictureManager.Database {
       GetThisAndItems(ref geoNames);
 
       // get all MediaItems from geoNames
-      var mis = new List<BaseMediaItem>();
+      var bmis = new List<BaseMediaItem>();
       foreach (var gn in geoNames)
-        mis.AddRange(gn.MediaItems);
+        bmis.AddRange(gn.MediaItems);
 
-      return mis.Distinct().ToArray();
+      return bmis.Distinct().ToArray();
     }
   }
 }

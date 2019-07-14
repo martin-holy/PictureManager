@@ -25,7 +25,7 @@ namespace PictureManager {
     }
 
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
-    public ViewModel.Folders Folders;
+    public Database.Folders Folders;
 
     private AppCore ACore => (AppCore) System.Windows.Application.Current.Properties[nameof(AppProperty.AppCore)];
     private BackgroundWorker _update;
@@ -35,7 +35,6 @@ namespace PictureManager {
     private string _selectedFolderPath;
     private bool _newOnly;
     private bool _rebuildThumbnails;
-    private readonly List<DataModel.BaseTable>[] _lists;
 
     private string _filesProgress;
     public string FilesProgress { get => _filesProgress; set { _filesProgress = value; OnPropertyChanged(); } }
@@ -43,8 +42,7 @@ namespace PictureManager {
     public WCatalog() {
       InitializeComponent();
 
-      _lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
-      Folders = new ViewModel.Folders { Title = "Folders", IconName = IconName.Folder };
+      Folders = new Database.Folders { Title = "Folders", IconName = IconName.Folder };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       LoadFolders();
       Folders.IsExpanded = true;
@@ -56,7 +54,7 @@ namespace PictureManager {
       _newOnly = ChbNewOnly.IsChecked == true;
       _rebuildThumbnails = ChbRebuildThumbs.IsChecked == true;
 
-      var folder = TvFolders.SelectedItem as ViewModel.Folder;
+      var folder = TvFolders.SelectedItem as Database.Folder;
       _selectedFolderPath = folder == null ? string.Empty : folder.FullPath;
 
       if (folder != null && !folder.IsAccessible) return;
@@ -80,7 +78,7 @@ namespace PictureManager {
 
         foreach (var path in paths) {
           _filesCount +=
-            ViewModel.MediaItems.SuportedExts.Sum(
+            Database.MediaItems.SuportedExts.Sum(
               ext => Directory.EnumerateFiles(path, ext.Replace(".", "*."), SearchOption.AllDirectories).Count());
         }
 
@@ -106,7 +104,8 @@ namespace PictureManager {
       }
 
       try {
-        var dirId = ACore.Db.InsertDirectoryInToDb(path);
+        // TODO
+        /*var dirId = ACore.Db.InsertDirectoryInToDb(path);
 
         foreach (var file in Directory.EnumerateFiles(path)
           .Where(f => ViewModel.MediaItems.SuportedExts.Any(x => f.EndsWith(x, StringComparison.OrdinalIgnoreCase)))
@@ -130,7 +129,7 @@ namespace PictureManager {
           _filesDone++;
 
           worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100));
-        }
+        }*/
       }
       catch (Exception) {
         // ignored
@@ -148,8 +147,9 @@ namespace PictureManager {
         _update.RunWorkerAsync();
         return;
       }
-      ACore.Db.SubmitChanges(_lists);
-      ACore.MediaItems.LoadAllItems();
+      //TODO
+      /*ACore.Db.SubmitChanges(_lists);
+      ACore.MediaItems.LoadAllItems();*/
       BtnUpdate.IsEnabled = true;
     }
 
@@ -168,11 +168,11 @@ namespace PictureManager {
       var menu = new ContextMenu { Tag = item };
 
       switch (item) {
-        case ViewModel.Folders _: {
+        case Database.Folders _: {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAdd"], CommandParameter = item});
           break;
         }
-        case ViewModel.Folder f: {
+        case Database.Folder f: {
           if (f.Parent == null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemove"], CommandParameter = item});
           }
@@ -189,8 +189,9 @@ namespace PictureManager {
           .OrderBy(x => x).ToList();
       Folders.Items.Clear();
       foreach (var path in paths) {
-        var di = new DirectoryInfo(path);
-        var item = new ViewModel.Folder {
+        //TODO
+        /*var di = new DirectoryInfo(path);
+        var item = new Database.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = IconName.Folder,
@@ -198,7 +199,7 @@ namespace PictureManager {
         };
         try {
           if (di.GetDirectories().Length > 0)
-            item.Items.Add(new ViewModel.Folder {Title = "..."});
+            item.Items.Add(new Database.Folder {Title = "..."});
         }
         catch (UnauthorizedAccessException) {
           item.IconName = IconName.FolderLock;
@@ -209,7 +210,7 @@ namespace PictureManager {
           item.IsAccessible = false;
         } finally {
           Folders.Items.Add(item);
-        }
+        }*/
       }
     }
 
@@ -224,7 +225,7 @@ namespace PictureManager {
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {
-      var folder = e.Parameter as ViewModel.Folder;
+      var folder = e.Parameter as Database.Folder;
       if (folder == null) return;
       var paths = Settings.Default.CatalogFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
       paths.Remove(folder.FullPath);

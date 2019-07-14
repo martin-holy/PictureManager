@@ -34,8 +34,8 @@ namespace PictureManager.Database {
     private int _thumbHeight;
     private MediaType _mediaType;
 
-    
-    public string FilePath { get; set; }
+
+    public string FilePath => Folder.GetFullPath() + FileName;
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
@@ -147,7 +147,7 @@ namespace PictureManager.Database {
 
       //TODO asi to bude ve spatnem poradi a GetFullPath by mohlo vracet List aby se nemuselo delat Split
       foreach (var keyword in Keywords) {
-        foreach (var k in keyword.GetFullPath().Split('/'))
+        foreach (var k in keyword.FullPath.Split('/'))
           if (!InfoBoxKeywords.Contains(k))
             InfoBoxKeywords.Add(k);
       }
@@ -166,6 +166,31 @@ namespace PictureManager.Database {
 
       foreach (var val in InfoBoxKeywords)
         InfoBoxThumb.Add(val);
+    }
+
+    //TODO DEBUG
+    public BaseMediaItem CopyTo(Folder folder, string fileName) {
+      var copy = (BaseMediaItem)MemberwiseClone();
+      copy.Id = ACore.MediaItems.Helper.GetNextId();
+      copy.FileName = fileName;
+      copy.Folder = folder;
+      copy.Folder.MediaItems.Add(copy);
+      copy.GeoName?.MediaItems.Remove(this);
+      copy.GeoName?.MediaItems.Add(copy);
+
+      foreach (var p in copy.People) {
+        p.MediaItems.Remove(this);
+        p.MediaItems.Add(copy);
+      }
+
+      foreach (var k in copy.Keywords) {
+        k.MediaItems.Remove(this);
+        k.MediaItems.Add(copy);
+      }
+
+      ACore.MediaItems.Records.Add(copy.Id, copy);
+
+      return copy;
     }
 
     public void SaveMediaItemInToDb(bool update) {
@@ -362,7 +387,7 @@ namespace PictureManager.Database {
               foreach (var region in regions) {
                 var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
                 if (personDisplayName != null) {
-                  People.Add(ACore.NewPeople.GetPerson(personDisplayName.ToString(), true));
+                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
                 }
               }
             }
@@ -384,8 +409,8 @@ namespace PictureManager.Database {
             if (bm.Keywords != null) {
               //Filter out duplicities
               foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-                if (Keywords.SingleOrDefault(x => x.GetFullPath().Equals(k)) != null) continue;
-                var keyword = ACore.NewKeywords.GetKeywordByFullPath(k, true);
+                if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
+                var keyword = ACore.Keywords.GetKeywordByFullPath(k);
                 if (keyword != null)
                   Keywords.Add(keyword);
               }
@@ -394,7 +419,7 @@ namespace PictureManager.Database {
             //GeoNameId
             var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
             if (tmpGId != null) {
-              ACore.NewGeoNames.Records.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
+              ACore.GeoNames.Records.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
               GeoName = (GeoName) geoname;
             }
           }

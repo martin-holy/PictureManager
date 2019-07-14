@@ -54,10 +54,6 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.99.0\lib\net46\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -97,7 +93,6 @@
     <Compile Include="Database\SimpleDB.cs" />
     <Compile Include="Database\Viewer.cs" />
     <Compile Include="Database\Viewers.cs" />
-    <Compile Include="DataModel\DataModel.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -114,20 +109,11 @@
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />
-    <Compile Include="ViewModel\BaseMediaItem.cs" />
-    <Compile Include="ViewModel\CategoryGroup.cs" />
     <Compile Include="ViewModel\FavoriteFolder.cs" />
     <Compile Include="ViewModel\FavoriteFolders.cs" />
-    <Compile Include="ViewModel\Filter.cs" />
-    <Compile Include="ViewModel\Filters.cs" />
-    <Compile Include="ViewModel\Folder.cs" />
     <Compile Include="ViewModel\FolderKeyword.cs" />
     <Compile Include="ViewModel\FolderKeywords.cs" />
-    <Compile Include="ViewModel\Folders.cs" />
-    <Compile Include="ViewModel\GeoName.cs" />
-    <Compile Include="ViewModel\GeoNames.cs" />
     <Compile Include="ViewModel\IDbItem.cs" />
-    <Compile Include="ViewModel\MediaItems.cs" />
     <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
       <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
     </Compile>
@@ -151,17 +137,10 @@
     <Compile Include="VersionInfo.cs" />
     <Compile Include="ViewModel\BaseTreeViewItem.cs" />
     <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
-    <Compile Include="ViewModel\Keyword.cs" />
-    <Compile Include="ViewModel\Keywords.cs" />
     <Compile Include="ViewModel\MediaItemSize.cs" />
     <Compile Include="ViewModel\MediaItemSizes.cs" />
-    <Compile Include="ViewModel\People.cs" />
-    <Compile Include="ViewModel\Person.cs" />
     <Compile Include="ViewModel\Rating.cs" />
     <Compile Include="ViewModel\Ratings.cs" />
-    <Compile Include="ViewModel\SqlQueries.cs" />
-    <Compile Include="ViewModel\SqlQuery.cs" />
-    <Compile Include="ViewModel\Viewers.cs" />
     <Compile Include="WAbout.xaml.cs">
       <DependentUpon>WAbout.xaml</DependentUpon>
     </Compile>
@@ -173,9 +152,6 @@
     </Compile>
     <Compile Include="WError.xaml.cs">
       <DependentUpon>WError.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WFilterBuilder.xaml.cs">
-      <DependentUpon>WFilterBuilder.xaml</DependentUpon>
     </Compile>
     <Compile Include="WMain.Commands.cs">
       <DependentUpon>WMain.xaml</DependentUpon>
@@ -231,10 +207,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WError.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WFilterBuilder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -336,12 +308,5 @@
   <Target Name="BeforeBuild">
     <Delete Files="VersionInfo.cs" />
     <WriteLinesToFile File="VersionInfo.cs" Lines="$(AssemblyFileVersionAttribute)" Overwrite="true" />
-  </Target>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
 </Project>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -34,9 +33,6 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.FolderDelete, HandleExecute(FolderDelete)));
       CommandBindings.Add(new CommandBinding(Commands.FolderAddToFavorites, HandleExecute(FolderAddToFavorites)));
       CommandBindings.Add(new CommandBinding(Commands.FolderRemoveFromFavorites, HandleExecute(FolderRemoveFromFavorites)));
-      CommandBindings.Add(new CommandBinding(Commands.FilterNew, HandleExecute(FilterNew)));
-      CommandBindings.Add(new CommandBinding(Commands.FilterEdit, HandleExecute(FilterEdit)));
-      CommandBindings.Add(new CommandBinding(Commands.FilterDelete, HandleExecute(FilterDelete)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerIncludeFolder, HandleExecute(ViewerIncludeFolder)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerExcludeFolder, HandleExecute(ViewerExcludeFolder)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerRemoveFolder, HandleExecute(ViewerRemoveFolder)));
@@ -213,12 +209,12 @@ namespace PictureManager {
     }
 
     private static void CategoryGroupRename(object parameter) {
-      var group = parameter as ViewModel.CategoryGroup;
+      var group = parameter as Database.CategoryGroup;
       (group?.Parent as ViewModel.BaseCategoryItem)?.GroupNewOrRename(group, true);
     }
 
     private static void CategoryGroupDelete(object parameter) {
-      var group = parameter as ViewModel.CategoryGroup;
+      var group = parameter as Database.CategoryGroup;
       (group?.Parent as ViewModel.BaseCategoryItem)?.GroupDelete(group);
     }
 
@@ -240,40 +236,12 @@ namespace PictureManager {
       (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
     }
 
-    private void FilterNew(object parameter) {
-      var parent = parameter as ViewModel.Filter;
-      var newFilter = new ViewModel.Filter {Parent = parent, Title = "New filter"};
-      newFilter.FilterData.Add(new FilterGroup {Operator = FilterGroupOps.And});
-      var fb = new WFilterBuilder(newFilter) {Owner = this};
-      if (!(fb.ShowDialog() ?? true)) return;
-      newFilter.SaveFilter();
-      if (parent != null)
-        parent.Items.Add(newFilter);
-      else
-        ACore.Filters.Items.Add(newFilter);
-    }
-
-    private void FilterEdit(object parameter) {
-      var filter = (ViewModel.Filter) parameter;
-      var title = filter.Title;
-      var fb = new WFilterBuilder(filter) {Owner = this};
-      if (fb.ShowDialog() ?? true) {
-        filter.SaveFilter();
-      }
-      else {
-        filter.Title = title;
-        filter.ReloadData();
-      }
-    }
-
-    private static void FilterDelete(object parameter) { }
-
     private static void ViewerIncludeFolder(object parameter) {
-      ((ViewModel.Viewer) parameter).AddFolder(true);
+      ((Database.Viewer) parameter).AddFolder(true);
     }
 
     private static void ViewerExcludeFolder(object parameter) {
-      ((ViewModel.Viewer) parameter).AddFolder(false);
+      ((Database.Viewer) parameter).AddFolder(false);
     }
 
     private void ViewerRemoveFolder(object parameter) {
@@ -281,22 +249,22 @@ namespace PictureManager {
     }
 
     private static void FolderNew(object parameter) {
-      ((ViewModel.Folder) parameter).NewOrRename(false);
+      ((Database.Folder) parameter).NewOrRename(false);
     }
 
     private static void FolderRename(object parameter) {
-      ((ViewModel.Folder) parameter).NewOrRename(true);
+      ((Database.Folder) parameter).NewOrRename(true);
     }
 
     private static void FolderDelete(object parameter) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo,
         MessageBoxImage.Question);
       if (result == MessageBoxResult.Yes)
-        ((ViewModel.Folder) parameter).Delete(true);
+        ((Database.Folder) parameter).Delete(true);
     }
 
     private void FolderAddToFavorites(object parameter) {
-      ViewModel.FavoriteFolders.Add(((ViewModel.Folder) parameter).FullPath);
+      ViewModel.FavoriteFolders.Add(((Database.Folder) parameter).FullPath);
       ACore.FavoriteFolders.Load();
     }
 
@@ -319,7 +287,7 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
-        ((ViewModel.GeoNames) parameter).New(inputDialog.Answer);
+        ((Database.GeoNames) parameter).New(inputDialog.Answer);
       }
     }
 
@@ -428,20 +396,18 @@ namespace PictureManager {
           bwe.Result = bwe.Argument;
 
           foreach (var item in items) {
-            item.SaveMediaItemInToDb(false, (List<DataModel.BaseTable>[]) bwe.Argument);
             item.TryWriteMetadata();
             done++;
             worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), item.Index);
           }
         };
 
-        bw.RunWorkerCompleted += delegate(object bwsender, RunWorkerCompletedEventArgs bwe) {
+        bw.RunWorkerCompleted += delegate {
           ACore.MediaItems.IsEditModeOn = false;
           if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
             TabFolders.IsSelected = true;
           }
 
-          ACore.Db.SubmitChanges((List<DataModel.BaseTable>[]) bwe.Result);
           foreach (var mi in ACore.MediaItems.Items.Where(mi => mi.IsModifed)) {
             mi.IsModifed = false;
           }
@@ -450,7 +416,7 @@ namespace PictureManager {
           ACore.UpdateStatusBarInfo();
         };
 
-        bw.RunWorkerAsync(DataModel.PmDataContext.GetInsertUpdateDeleteLists());
+        bw.RunWorkerAsync();
       }
     }
 
@@ -478,7 +444,7 @@ namespace PictureManager {
         IconName = IconName.Notification,
         Title = "Comment",
         Question = "Add a comment.",
-        Answer = current.Data.Comment
+        Answer = current.Comment
       };
 
       inputDialog.BtnDialogOk.Click += delegate {
@@ -498,12 +464,9 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
-      current.Data.Comment = inputDialog.TxtAnswer.Text;
-      current.SaveMediaItemInToDb(false, lists);
+      current.Comment = inputDialog.TxtAnswer.Text;
       current.TryWriteMetadata();
       current.SetInfoBox();
-      ACore.Db.SubmitChanges(lists);
       ACore.UpdateStatusBarInfo();
     }
 
@@ -513,14 +476,11 @@ namespace PictureManager {
 
     private void ReloadMetadata() {
       var mediaItems = ACore.MediaItems.GetSelectedOrAll();
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
       foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(true, lists);
+        mi.SaveMediaItemInToDb(true);
         AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
         mi.SetInfoBox();
       }
-
-      ACore.Db.SubmitChanges(lists);
     }
 
     private bool CanAddGeoNamesFromFiles() {
@@ -535,7 +495,6 @@ namespace PictureManager {
         var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
         var count = mis.Count;
         var done = 0;
-        var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
 
         foreach (var mi in mis) {
           if (worker.CancellationPending) {
@@ -545,7 +504,7 @@ namespace PictureManager {
 
           done++;
           worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100),
-            $"Processing file {done} of {count} ({mi.Data.FileName})");
+            $"Processing file {done} of {count} ({mi.FileName})");
 
           if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata(true);
           if (mi.Lat == null || mi.Lng == null) continue;
@@ -553,21 +512,17 @@ namespace PictureManager {
           var lastGeoName = ACore.GeoNames.InsertGeoNameHierarchy((double) mi.Lat, (double) mi.Lng);
           if (lastGeoName == null) continue;
 
-          mi.Data.GeoNameId = lastGeoName.GeoNameId;
-          DataModel.PmDataContext.UpdateOnSubmit(mi.Data, lists);
+          mi.GeoName = lastGeoName;
           mi.TryWriteMetadata();
         }
-
-        ACore.Db.SubmitChanges(lists);
       };
 
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
-      ACore.GeoNames.Load();
     }
 
     private void ViewerChange(object parameter) {
-      var viewer = (ViewModel.Viewer) parameter;
+      var viewer = (Database.Viewer) parameter;
       MenuViewers.Header = viewer.Title;
       ACore.CurrentViewer = viewer;
       Settings.Default.Viewer = viewer.Title;

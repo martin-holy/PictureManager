@@ -24,7 +24,7 @@ namespace PictureManager.UserControls {
     }
 
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot;
-    public ViewModel.Folders Folders;
+    public Database.Folders Folders;
     public List<string> Paths; 
 
     private string _settingsPropertyName;
@@ -43,7 +43,7 @@ namespace PictureManager.UserControls {
       InitializeComponent();
 
       Paths = new List<string>();
-      Folders = new ViewModel.Folders { Title = "Folders", IconName = IconName.Folder };
+      Folders = new Database.Folders { Title = "Folders", IconName = IconName.Folder };
       FoldersRoot = new ObservableCollection<ViewModel.BaseTreeViewItem> { Folders };
       ItemsSource = FoldersRoot;
     }
@@ -78,12 +78,12 @@ namespace PictureManager.UserControls {
       var menu = new ContextMenu {Tag = item};
 
       switch (item.GetType().Name) {
-        case nameof(ViewModel.Folders): {
+        case nameof(Database.Folders): {
           menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderAdd"], CommandParameter = item});
           break;
         }
-        case nameof(ViewModel.Folder): {
-          if (((ViewModel.Folder) item).Parent == null) {
+        case nameof(Database.Folder): {
+          if (((Database.Folder) item).Parent == null) {
             menu.Items.Add(new MenuItem {Command = (ICommand) Resources["FolderRemove"], CommandParameter = item});
           }
           break;
@@ -95,10 +95,11 @@ namespace PictureManager.UserControls {
     }
 
     private void LoadFolders() {
-      Folders.Items.Clear();
+      //TODO
+      /*Folders.Items.Clear();
       foreach (var path in Paths.OrderBy(x => x)) {
         var di = new DirectoryInfo(path);
-        var item = new ViewModel.Folder {
+        var item = new Database.Folder {
           Title = di.Name,
           FullPath = path,
           IconName = IconName.Folder,
@@ -116,7 +117,7 @@ namespace PictureManager.UserControls {
         } finally {
           Folders.Items.Add(item);
         }
-      }
+      }*/
     }
 
     private void CmdFolderAdd(object sender, ExecutedRoutedEventArgs e) {
@@ -129,7 +130,7 @@ namespace PictureManager.UserControls {
     }
 
     private void CmdFolderRemove(object sender, ExecutedRoutedEventArgs e) {
-      var folder = e.Parameter as ViewModel.Folder;
+      var folder = e.Parameter as Database.Folder;
       if (folder == null) return;
       Paths.Remove(folder.FullPath);
       LoadFolders();

@@ -12,70 +12,74 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using VM = PictureManager.ViewModel;
+using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
-  public sealed class Viewers : VM.BaseCategoryItem, ITable {
+  public sealed class Viewers : BaseCategoryItem, ITable {
+    public TableHelper Helper { get; set; }
     public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
 
     public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
       IconName = IconName.Eye;
+      IsExpanded = true;
     }
 
     public void NewFromCsv(string csv) {
-      //TODO
-      /*var props = csv.Split('|');
-      if (props.Length != 5) return;
+      // ID|Name|IncludedFolders|ExcludedFolders
+      var props = csv.Split('|');
+      if (props.Length != 4) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new Keyword(id, props[1], null, int.Parse(props[3])) { Csv = props });*/
+      Records.Add(id, new Viewer(id, props[1], this) { Csv = props });
     }
 
     public void LinkReferences(SimpleDB sdb) {
-      //TODO
-      /*foreach (var item in Records) {
-        var keyword = (Keyword)item.Value;
+      // ID|Name|IncludedFolders|ExcludedFolders
 
-        // reference to parent
-        if (keyword.Csv[2] != string.Empty)
-          keyword.Parent = (Keyword)Records[int.Parse(keyword.Csv[2])];
-
-        // reference to childrens
-        if (keyword.Csv[4] != string.Empty)
-          foreach (var keywordId in keyword.Csv[4].Split(','))
-            keyword.Items.Add((Keyword)Records[int.Parse(keywordId)]);
-
-        // csv array is not needed any more
-        keyword.Csv = null;
-      }*/
-    }
-
-    public void Load() {
       Items.Clear();
 
-      foreach (var viewer in ACore.Db.Viewers.OrderBy(x => x.Name).Select(x => new Viewer(x))) {
-        viewer.Parent = this;
-        Items.Add(viewer);
-      }
-      IsExpanded = true;
+      foreach (var viewer in Records.Values.Cast<Viewer>().OrderBy(x => x.Title)) {
+        // reference to IncludedFolders
+        if (viewer.Csv[2] != string.Empty)
+          foreach (var folderId in viewer.Csv[2].Split(',')) {
+            var f = (Folder)ACore.Folders.Records[int.Parse(folderId)];
+            viewer.IncludedFolders.Items.Add(new BaseTreeViewItem {
+              Tag = f.Id,
+              Title = f.Title,
+              IconName = IconName.Folder,
+              ToolTip = f.FullPath,
+              Parent = viewer.IncludedFolders
+            });
+          }
 
-      if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
+        // reference to ExcludedFolders
+        if (viewer.Csv[3] != string.Empty)
+          foreach (var folderId in viewer.Csv[3].Split(',')) {
+            var f = (Folder)ACore.Folders.Records[int.Parse(folderId)];
+            viewer.ExcludedFolders.Items.Add(new BaseTreeViewItem {
+              Tag = f.Id,
+              Title = f.Title,
+              IconName = IconName.Folder,
+              ToolTip = f.FullPath,
+              Parent = viewer.ExcludedFolders
+            });
+          }
+
+        // adding Viewer to Viewers
+        Items.Add(viewer);
+
+        // csv array is not needed any more
+        viewer.Csv = null;
+      }
     }
 
     public void CreateViewer(string name) {
-      var dmViewer = new DataModel.Viewer {
-        Id = ACore.Db.GetNextIdFor<DataModel.Viewer>(),
-        Name = name
-      };
-
-      ACore.Db.Insert(dmViewer);
-
-      var vmViewer = new Viewer(dmViewer);
-      ACore.Viewers.ItemSetInPlace(this, true, vmViewer);
+      var viewer = new Viewer(ACore.Viewers.Helper.GetNextId(), name, this);
+      ACore.Viewers.ItemSetInPlace(this, true, viewer);
       AppCore.WMain.MenuViewers.Visibility = Visibility.Visible;
     }
 
-    public override void ItemNewOrRename(VM.BaseTreeViewItem item, bool rename) {
+    public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
       var inputDialog = ItemGetInputDialog(item, IconName.Eye, "Viewer", rename);
       inputDialog.BtnDialogOk.Click += delegate {
         if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
@@ -83,7 +87,7 @@ namespace PictureManager.Database {
           return;
         }
 
-        if (ACore.Db.Viewers.SingleOrDefault(x => x.Name.Equals(inputDialog.Answer)) != null) {
+        if (ACore.Viewers.Records.Values.Cast<Viewer>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("This viewer already exists!");
           return;
         }
@@ -95,35 +99,20 @@ namespace PictureManager.Database {
       if (rename) {
         var viewer = (Viewer)item;
         viewer.Title = inputDialog.Answer;
-        ACore.Db.Update(viewer.Data);
         ACore.Viewers.ItemSetInPlace(viewer.Parent, false, viewer);
       }
       else CreateViewer(inputDialog.Answer);
     }
 
-    public override void ItemDelete(VM.BaseTreeViewItem item) {
+    public override void ItemDelete(BaseTreeViewItem item) {
       if (!(item is Viewer viewer)) return;
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
-
-      foreach (var v in ACore.Db.ViewersAccess.Where(x => x.ViewerId == viewer.Data.Id)) {
-        DataModel.PmDataContext.DeleteOnSubmit(v, lists);
-      }
-
-      DataModel.PmDataContext.DeleteOnSubmit(viewer.Data, lists);
-      ACore.Db.SubmitChanges(lists);
-
+      ACore.Viewers.Helper.DeleteRecord(viewer);
       item.Parent.Items.Remove(viewer);
       if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
-    public void RemoveFolder(VM.BaseTreeViewItem folder) {
-      if (!(folder.Tag is DataModel.ViewerAccess data)) return;
-
-      var viewer = Items.Cast<Viewer>().SingleOrDefault(x => x.Data.Id == data.ViewerId);
-      if (viewer == null) return;
-
-      ACore.Db.Delete(data);
-      (data.IsIncluded ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Remove(folder);
+    public void RemoveFolder(BaseTreeViewItem folder) {
+      folder.Parent.Items.Remove(folder);
     }
   }
 }

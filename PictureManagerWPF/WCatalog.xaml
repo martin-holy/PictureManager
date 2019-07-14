@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
+        xmlns:database="clr-namespace:PictureManager.Database"
         mc:Ignorable="d"
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
@@ -69,7 +70,7 @@
         </HierarchicalDataTemplate>
 
         <!-- TreeView Folders - Folder -->
-        <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
+        <HierarchicalDataTemplate DataType="{x:Type database:Folder}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent" PreviewMouseRightButtonDown="AttachContextMenu">
             <Rectangle Style="{StaticResource IconRect}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />

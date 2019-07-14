@@ -20,7 +20,7 @@ namespace PictureManager.UserControls {
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
-    private ViewModel.BaseMediaItem _currentMediaItem;
+    private Database.BaseMediaItem _currentMediaItem;
 
     public Image Image;
     public event PropertyChangedEventHandler PropertyChanged;
@@ -119,7 +119,7 @@ namespace PictureManager.UserControls {
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
-    public void SetSource(ViewModel.BaseMediaItem currentMediaItem) {
+    public void SetSource(Database.BaseMediaItem currentMediaItem) {
       _currentMediaItem = currentMediaItem;
       _isDecoded = true;
       SetSource();
@@ -132,10 +132,10 @@ namespace PictureManager.UserControls {
         return;
       }
 
-      var rotated = _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate90 || 
-                    _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate270;
-      var imgWidth = rotated ? _currentMediaItem.Data.Height : _currentMediaItem.Data.Width;
-      var imgHeight = rotated ? _currentMediaItem.Data.Width : _currentMediaItem.Data.Height;
+      var rotated = _currentMediaItem.Orientation == (int) MediaOrientation.Rotate90 || 
+                    _currentMediaItem.Orientation == (int) MediaOrientation.Rotate270;
+      var imgWidth = rotated ? _currentMediaItem.Height : _currentMediaItem.Width;
+      var imgHeight = rotated ? _currentMediaItem.Width : _currentMediaItem.Height;
       _isBigger = ActualWidth < imgWidth || ActualHeight < imgHeight;
 
       var src = new BitmapImage();
@@ -144,7 +144,7 @@ namespace PictureManager.UserControls {
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
       
-      switch (_currentMediaItem.Data.Orientation) {
+      switch (_currentMediaItem.Orientation) {
         case (int) MediaOrientation.Rotate90: {
           src.Rotation = Rotation.Rotate270;
           break;

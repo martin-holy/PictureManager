@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
   public class AppInfoRating {
@@ -33,8 +34,8 @@ namespace PictureManager.ViewModel {
     public string FilePath {
       get {
         if (CurrentMediaItem == null) return string.Empty;
-        if (AppMode == AppMode.Viewer && CurrentMediaItem.FolderKeyword != null) 
-          return $"{CurrentMediaItem.FolderKeyword.FullPath}\\{CurrentMediaItem.Data.FileName}";
+        if (AppMode == AppMode.Viewer && CurrentMediaItem.Folder.FolderKeyword != null) 
+          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}\\{CurrentMediaItem.FileName}"; // TODO ne title ale FullPath
         return CurrentMediaItem.FilePath;
       }
     }
@@ -47,17 +48,17 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged($"FilePath");
 
         Rating.Clear();
-        for (var i = 0; i < _currentMediaItem?.Data.Rating; i++) 
+        for (var i = 0; i < _currentMediaItem?.Rating; i++) 
           Rating.Add(new AppInfoRating {IconName = IconName.Star });
 
         Comment = _currentMediaItem == null ? string.Empty : _currentMediaItem.CommentEscaped;
         OnPropertyChanged($"Comment");
 
-        Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Data.Width}x{_currentMediaItem.Data.Height}";
+        Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         OnPropertyChanged($"Dimension");
 
         var aCore = (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-        FullGeoName = aCore.GeoNames.GetGeoNameHierarchy(_currentMediaItem?.Data.GeoNameId);
+        FullGeoName = aCore.GeoNames.GetGeoNameHierarchy(_currentMediaItem?.GeoName);
         OnPropertyChanged($"FullGeoName");
       }
     }
