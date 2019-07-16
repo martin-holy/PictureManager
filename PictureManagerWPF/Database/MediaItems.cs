@@ -71,8 +71,9 @@ namespace PictureManager.Database {
       foreach (var item in Records) {
         var bmi = (BaseMediaItem)item.Value;
 
-        // reference to Folder
+        // reference to Folder and back reference from Folder to MediaItems
         bmi.Folder = (Folder) ACore.Folders.Records[int.Parse(bmi.Csv[1])];
+        bmi.Folder.MediaItems.Add(bmi);
 
         // reference to People and back reference from Person to MediaItems
         if (bmi.Csv[9] != string.Empty)
@@ -232,13 +233,19 @@ namespace PictureManager.Database {
       // get all MediaItems
       var mediaItems = new List<BaseMediaItem>();
       foreach (var folder in allFolders.Cast<Folder>()) {
-        foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)
-          .Where(f => IsSupportedFileType(f) && ACore.CanViewerSeeThisFile(f))) {
+
+        // add MediaItems from current Folder to dictionary for faster search
+        var fmis = new Dictionary<string, BaseMediaItem>();
+        folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
+
+        foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
+          if (!IsSupportedFileType(file) || !ACore.CanViewerSeeThisFile(file)) continue;
 
           // check if the MediaItem is already in DB, if not put it there
-          var inDbFile = folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(Path.GetFileName(file)));
+          var fileName = Path.GetFileName(file) ?? string.Empty;
+          fmis.TryGetValue(fileName, out var inDbFile);
           if (inDbFile == null) {
-            inDbFile = new BaseMediaItem(ACore.MediaItems.Helper.GetNextId(), folder, Path.GetFileName(file), true);
+            inDbFile = new BaseMediaItem(ACore.MediaItems.Helper.GetNextId(), folder, fileName, true);
             ACore.MediaItems.Records.Add(inDbFile.Id, inDbFile);
             folder.MediaItems.Add(inDbFile);
           }
@@ -476,24 +483,7 @@ namespace PictureManager.Database {
     }
 
     public static bool IsSupportedFileType(string filePath) {
-      if (SuportedImageExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) {
-        // chceck if is image valid
-        using (var fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-          try {
-            BitmapDecoder.Create(fs, BitmapCreateOptions.None, BitmapCacheOption.None);
-            return true;
-          }
-          catch (Exception) {
-            return false;
-          }
-        }
-      }
-
-      if (SuportedVideoExts.Any(x => filePath.EndsWith(x, StringComparison.OrdinalIgnoreCase))) {
-        return true;
-      }
-
-      return false;
+      return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
     }
   }
 

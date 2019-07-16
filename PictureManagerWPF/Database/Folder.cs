@@ -36,14 +36,12 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
-      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
+      // ID|Name|Parent|IsFolderKeyword
       return string.Join("|",
         Id.ToString(),
         Title,
         (Parent as Folder)?.Id.ToString(),
-        IsFolderKeyword ? "1" : "0",
-        string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)),
-        string.Join(",", MediaItems.Select(x => x.Id)));
+        IsFolderKeyword ? "1" : "0");
     }
 
     public string GetFullPath() {
@@ -55,7 +53,7 @@ namespace PictureManager.Database {
       }
 
       names.Reverse();
-      names.Add(""); // for the DirectorySeparatorChar on the end as well
+      names.Add(string.Empty); // for the DirectorySeparatorChar on the end as well
 
       return string.Join(Path.DirectorySeparatorChar.ToString(), names);
     }
@@ -64,10 +62,6 @@ namespace PictureManager.Database {
       if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
       if (!ACore.FileOperation(FileOperationMode.Move, FullPath, ((Folder)Parent).FullPath, newName)) return;
       Title = newName;
-    }
-
-    public void LoadSubFoldersRecursive() {
-
     }
 
     public void LoadSubFolders(bool recursive) {
@@ -102,6 +96,10 @@ namespace PictureManager.Database {
       foreach (var item in Items) {
         if (dirNames.Any(x => x.Equals(item.Title))) continue;
         Items.Remove(item);
+
+        // remove MediaItems
+        ((Folder) item).MediaItems.ForEach(mi => ACore.MediaItems.Delete(mi));
+
         ACore.Folders.Helper.DeleteRecord((IRecord)item);
       }
 
@@ -130,7 +128,7 @@ namespace PictureManager.Database {
           item.IsAccessible = false;
         }
       }
-
+      
       // sort Items
       Items.Sort(x => x.Title);
     }
@@ -151,7 +149,7 @@ namespace PictureManager.Database {
 
         return item;
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
         // TOOD: return error message
         return null;

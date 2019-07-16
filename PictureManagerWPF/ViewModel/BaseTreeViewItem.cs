@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Data;
 
 namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
@@ -17,6 +18,7 @@ namespace PictureManager.ViewModel {
     private string _toolTip;
     private BackgroundBrush _backgroundBrush;
     private BaseTreeViewItem _parent;
+    private readonly object _itemsLock = new object();
 
     public virtual bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
@@ -29,6 +31,13 @@ namespace PictureManager.ViewModel {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    public BaseTreeViewItem() {
+      BindingOperations.CollectionRegistering += delegate(object o, CollectionRegisteringEventArgs e) {
+        if (Equals(e.Collection, Items))
+          BindingOperations.EnableCollectionSynchronization(Items, _itemsLock);
+      };
     }
 
     public BaseTreeViewItem GetTopParent() {

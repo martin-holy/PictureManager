@@ -34,7 +34,7 @@ namespace PictureManager {
     public ViewModel.MediaItemSizes MediaItemSizes { get; } = new ViewModel.MediaItemSizes();
 
     public static WMain WMain => (WMain) Application.Current.Properties[nameof(AppProperty.WMain)];
-    public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";"};
+    public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";", "\n"};
     public ViewModel.AppInfo AppInfo { get; } = new ViewModel.AppInfo();
     public Collection<ViewModel.BaseTreeViewTagItem> MarkedTags { get; } = new Collection<ViewModel.BaseTreeViewTagItem>();
     public BackgroundWorker ThumbsWorker { get; set; }
@@ -81,13 +81,13 @@ namespace PictureManager {
     public void Init() {
       WindowsDisplayScale = PresentationSource.FromVisual(WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
 
+      Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
       Sdb.AddTable(Viewers);
       Sdb.AddTable(People);
       Sdb.AddTable(Keywords);
       Sdb.AddTable(Folders);
       Sdb.AddTable(GeoNames);
       Sdb.AddTable(MediaItems);
-      Sdb.AddTable(CategoryGroups);
 
       Sdb.LoadAllTables();
       Sdb.LinkReferences();
@@ -98,11 +98,11 @@ namespace PictureManager {
 
 
       // TODO
-      App.SplashScreen.AddMessage("Loading Folder Keywords");
+      //App.SplashScreen.AddMessage("Loading Folder Keywords");
       FolderKeywords.Load();
-      App.SplashScreen.AddMessage("Loading Favorite Folders");
+      //App.SplashScreen.AddMessage("Loading Favorite Folders");
       FavoriteFolders.Load();
-      App.SplashScreen.AddMessage("Loading Ratings");
+      //App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
 
 
@@ -256,9 +256,10 @@ namespace PictureManager {
         foreach (var keyword in mi.Keywords) {
           var k = keyword;
           while (k != null) {
-            if (k.IsMarked) continue;
-            k.IsMarked = true;
-            MarkedTags.Add(k);
+            if (!k.IsMarked) {
+              k.IsMarked = true;
+              MarkedTags.Add(k);
+            }
             k = k.Parent as Database.Keyword;
           }
         }
@@ -267,9 +268,10 @@ namespace PictureManager {
         if (mi.Folder.FolderKeyword != null && !mi.Folder.FolderKeyword.IsMarked) {
           var fk = mi.Folder.FolderKeyword;
           while (fk != null) {
-            if (fk.IsMarked) continue;
-            fk.IsMarked = true;
-            MarkedTags.Add(fk);
+            if (!fk.IsMarked) {
+              fk.IsMarked = true;
+              MarkedTags.Add(fk);
+            }
             fk = fk.Parent as ViewModel.FolderKeyword;
           }
         }
@@ -277,9 +279,10 @@ namespace PictureManager {
         // GeoNames
         var gn = mi.GeoName;
         while (gn != null) {
-          if (gn.IsMarked) continue;
-          gn.IsMarked = true;
-          MarkedTags.Add(gn);
+          if (!gn.IsMarked) {
+            gn.IsMarked = true;
+            MarkedTags.Add(gn);
+          }
           gn = gn.Parent as Database.GeoName;
         }
       }
@@ -362,12 +365,13 @@ namespace PictureManager {
             }
 
             if (mi.IsNew) {
-              mi.SaveMediaItemInToDb(false);
+              mi.IsNew = false;
+              mi.ReadMetadata();
               mi.SetThumbSize();
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
 
-            if (!File.Exists(mi.FilePathCache))
+            if (!mi.IsCorupted && !File.Exists(mi.FilePathCache))
               CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
             if (mi.InfoBoxThumb.Count == 0)
@@ -388,6 +392,11 @@ namespace PictureManager {
           if (MediaItems.Current != null) {
             MediaItems.Current.IsSelected = false;
             MediaItems.Current.IsSelected = true;
+          }
+
+          // delete corupted MediaItems
+          foreach (var mi in MediaItems.Items.Where(x => x.IsCorupted)) {
+            MediaItems.Delete(mi);
           }
 
           MarkUsedKeywordsAndPeople();

@@ -52,7 +52,6 @@ namespace PictureManager.Database {
     }
 
     public Person CreatePerson(BaseTreeViewItem root, string name) {
-      // TODO person by mel mit asi parenta
       Mut.WaitOne();
       var id = ACore.People.Helper.GetNextId();
       var person = new Person(id, name);
@@ -61,10 +60,8 @@ namespace PictureManager.Database {
       ACore.People.Helper.AddRecord(person);
 
       // add new Person to the tree
-      if (root is CategoryGroup cg)
-        cg.Items.Add(person);
-      else
-        Items.Add(person);
+      person.Parent = root;
+      root.Items.Add(person);
       
       Mut.ReleaseMutex();
 

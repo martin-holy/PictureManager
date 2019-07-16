@@ -477,7 +477,7 @@ namespace PictureManager {
     private void ReloadMetadata() {
       var mediaItems = ACore.MediaItems.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
-        mi.SaveMediaItemInToDb(true);
+        mi.ReadMetadata();
         AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
         mi.SetInfoBox();
       }

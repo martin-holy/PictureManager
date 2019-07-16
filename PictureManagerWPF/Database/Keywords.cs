@@ -80,9 +80,11 @@ namespace PictureManager.Database {
       Mut.WaitOne();
 
       var pathNames = fullPath.Split('/');
-      var title = pathNames[0];
-      var keyword = Records.Values.Cast<Keyword>().SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(title));
 
+      // get root Keyword => Parent is not Keyword but Keywords or CategoryGroup
+      var keyword = Records.Values.Cast<Keyword>().SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
+
+      // return Keyword if it was found and is 1 level type
       if (keyword != null && pathNames.Length == 1) {
         Mut.ReleaseMutex();
         return keyword;
@@ -103,17 +105,13 @@ namespace PictureManager.Database {
     }
 
     public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
-      // TODO keyword by mel mit parenta, ale ten muze bejt bud grupa, nebo keyword
-      // TODO sort the tree
       Mut.WaitOne();
       var id = ACore.Keywords.Helper.GetNextId();
-      var keyword = new Keyword(id, name, null, 0);
+      var keyword = new Keyword(id, name, root, 0);
 
-      // add new Keyword to the database
+      // add new Keyword to the database and to the tree
       ACore.Keywords.Helper.AddRecord(keyword);
-
-      // add new Keyword to the tree
-      (root is CategoryGroup cg ? cg.Items : Items).Add(keyword);
+      root.Items.Add(keyword);
 
       Mut.ReleaseMutex();
 

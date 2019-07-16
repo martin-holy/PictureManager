@@ -30,7 +30,7 @@ namespace PictureManager.Database {
     }
 
     private string GetFullPath() {
-      var parent = Parent;
+      var parent = Parent as Keyword;
       var names = new List<string> { Title };
       while (parent != null) {
         names.Add(parent.Title);

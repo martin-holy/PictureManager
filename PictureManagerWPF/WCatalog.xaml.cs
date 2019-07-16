@@ -99,7 +99,7 @@ namespace PictureManager {
           ProcessDirectory(dir, worker);
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
 
@@ -131,7 +131,7 @@ namespace PictureManager {
           worker.ReportProgress(Convert.ToInt32(((double)_filesDone / _filesCount) * 100));
         }*/
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
     }

@@ -49,6 +49,7 @@ namespace PictureManager.Database {
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
     public bool IsPanoramatic;
+    public bool IsCorupted;
     
     //public FolderKeyword FolderKeyword; //TODO
     
@@ -193,12 +194,6 @@ namespace PictureManager.Database {
       return copy;
     }
 
-    public void SaveMediaItemInToDb(bool update) {
-      //TODO asi pak odstranit
-      if (IsNew || update) ReadMetadata();
-      if (IsNew) IsNew = false;
-    }
-
     public void ReSave() {
       //TODO: try to preserve EXIF information
       var original = new FileInfo(FilePath);
@@ -221,7 +216,7 @@ namespace PictureManager.Database {
         original.Delete();
         newFile.MoveTo(original.FullName);
       }
-      catch (Exception) {
+      catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
       }
     }
@@ -351,83 +346,81 @@ namespace PictureManager.Database {
           Width = size[1];
           Orientation = size[2];
         }
-        else { //MediaType.Image
-          using (var imageFileStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-            if (imageFileStream.Length == 0) return false;
-            var decoder = BitmapDecoder.Create(imageFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-            var frame = decoder.Frames[0];
-            Width = frame.PixelWidth;
-            Height = frame.PixelHeight;
-            var bm = (BitmapMetadata)frame.Metadata;
-            if (bm == null) return false;
+        else {
+          var decoder = BitmapDecoder.Create(new Uri(FilePath), BitmapCreateOptions.None, BitmapCacheOption.None);
+          var frame = decoder.Frames[0];
+          Width = frame.PixelWidth;
+          Height = frame.PixelHeight;
+          var bm = (BitmapMetadata) frame.Metadata;
+          if (bm == null) return false;
 
-            //Lat Lng
-            var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
-            if (tmpLat != null) {
-              var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
-              Lat = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
-                    (tmpLat.EndsWith("S") ? -1 : 1);
-            }
+          //Lat Lng
+          var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
+          if (tmpLat != null) {
+            var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
+            Lat = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
+                  (tmpLat.EndsWith("S") ? -1 : 1);
+          }
 
-            var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
-            if (tmpLng != null) {
-              var vals = tmpLng.Substring(0, tmpLng.Length - 1).Split(',');
-              Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
-                    (tmpLng.EndsWith("W") ? -1 : 1);
-            }
+          var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
+          if (tmpLng != null) {
+            var vals = tmpLng.Substring(0, tmpLng.Length - 1).Split(',');
+            Lng = (int.Parse(vals[0]) + double.Parse(vals[1], CultureInfo.InvariantCulture) / 60) *
+                  (tmpLng.EndsWith("W") ? -1 : 1);
+          }
 
-            if (gpsOnly) return true;
+          if (gpsOnly) return true;
 
-            //People
-            People.Clear();
-            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+          //People
+          People.Clear();
+          const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+          const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
 
-            if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
-              foreach (var region in regions) {
-                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-                if (personDisplayName != null) {
-                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
-                }
+          if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
+            foreach (var region in regions) {
+              var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+              if (personDisplayName != null) {
+                People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
               }
             }
+          }
 
-            //Rating
-            Rating = bm.Rating;
+          //Rating
+          Rating = bm.Rating;
 
-            //Comment
-            Comment = bm.Comment == null
-              ? string.Empty
-              : AppCore.IncorrectChars.Aggregate(bm.Comment, (current, ch) => current.Replace(ch, string.Empty));
+          //Comment
+          Comment = bm.Comment == null
+            ? string.Empty
+            : new string(bm.Comment.Where(char.IsLetterOrDigit).ToArray());
 
-            //Orientation 1: 0, 3: 180, 6: 270, 8: 90
-            var orientation = bm.GetQuery("System.Photo.Orientation") ?? (ushort)1;
-            Orientation = (ushort)orientation;
+          //Orientation 1: 0, 3: 180, 6: 270, 8: 90
+          var orientation = bm.GetQuery("System.Photo.Orientation") ?? (ushort) 1;
+          Orientation = (ushort) orientation;
 
-            //Keywords
-            Keywords.Clear();
-            if (bm.Keywords != null) {
-              //Filter out duplicities
-              foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-                if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-                var keyword = ACore.Keywords.GetKeywordByFullPath(k);
-                if (keyword != null)
-                  Keywords.Add(keyword);
-              }
+          //Keywords
+          Keywords.Clear();
+          if (bm.Keywords != null) {
+            //Filter out duplicities
+            foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+              if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
+              var keyword = ACore.Keywords.GetKeywordByFullPath(k);
+              if (keyword != null)
+                Keywords.Add(keyword);
             }
+          }
 
-            //GeoNameId
-            var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
-            if (tmpGId != null) {
-              ACore.GeoNames.Records.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
-              GeoName = (GeoName) geoname;
-            }
+          //GeoNameId
+          var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
+          if (tmpGId != null) {
+            ACore.GeoNames.Records.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
+            GeoName = (GeoName) geoname;
           }
         }
 
         SetThumbSize();
       }
-      catch {
+      catch (Exception ex) {
+        IsCorupted = true;
         return false;
       }
       return true;

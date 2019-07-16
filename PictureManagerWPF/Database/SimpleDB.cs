@@ -106,7 +106,7 @@ namespace PictureManager.Database {
             Table.NewFromCsv(line);
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         // ignored
       }
     }

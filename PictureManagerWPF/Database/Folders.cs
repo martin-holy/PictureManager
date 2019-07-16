@@ -16,31 +16,23 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
+      // ID|Name|Parent|IsFolderKeyword
       var props = csv.Split('|');
-      if (props.Length != 6) return;
+      if (props.Length != 4) return;
       var id = int.Parse(props[0]);
       Records.Add(id, new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
     }
 
     public void LinkReferences(SimpleDB sdb) {
-      // ID|Name|Parent|IsFolderKeyword|SubFolders|MediaItems
+      // ID|Name|Parent|IsFolderKeyword
       foreach (var item in Records) {
         var folder = (Folder)item.Value;
 
-        // reference to parent
-        if (folder.Csv[2] != string.Empty)
-          folder.Parent = (Folder)Records[int.Parse(folder.Csv[2])];
-
-        // reference to subfolders
-        if (folder.Csv[4] != string.Empty)
-          foreach (var folderId in folder.Csv[4].Split(','))
-            folder.Items.Add((Folder)Records[int.Parse(folderId)]);
-
-        // reference to mediaItems
-        if (folder.Csv[5] != string.Empty)
-          foreach (var miId in folder.Csv[5].Split(','))
-            folder.MediaItems.Add((BaseMediaItem)ACore.MediaItems.Records[int.Parse(miId)]);
+        // reference to Parent and back reference from Parent to SubFolder
+        if (folder.Csv[2] != string.Empty) {
+          folder.Parent = (Folder) Records[int.Parse(folder.Csv[2])];
+          folder.Parent.Items.Add(folder);
+        }
 
         // csv array is not needed any more
         folder.Csv = null;
@@ -96,9 +88,9 @@ namespace PictureManager.Database {
       }
 
       // remove not available drives
-      foreach (var item in Items) {
-        if (drivesNames.Any(x => x.Equals(item.Title))) continue;
-        Items.Remove(item);
+      for (var i = Items.Count - 1; i > -1; i--) {
+        if (drivesNames.Any(x => x.Equals(Items[i].Title))) continue;
+        Items.RemoveAt(i);
       }
     }
 

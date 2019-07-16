@@ -69,7 +69,7 @@ namespace PictureManager.ShellStuff {
     public void PerformOperations() {
       ThrowIfDisposed();
       try { _fileOperation.PerformOperations(); }
-      catch (Exception) {
+      catch (Exception ex) {
         // canceling operation cause exception :-/
       }
     }
@@ -96,7 +96,7 @@ namespace PictureManager.ShellStuff {
         }
         return new ComReleaser<IShellItem>((IShellItem) SHCreateItemFromParsingName(path, null, ref _shellItemGuid));
       }
-      catch (Exception) {
+      catch (Exception ex) {
         return null;
       }
     }

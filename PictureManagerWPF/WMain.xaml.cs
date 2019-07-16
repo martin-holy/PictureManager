@@ -46,8 +46,8 @@ namespace PictureManager {
         });
       };
 
-      var ver = Assembly.GetEntryAssembly().GetName().Version;
-      Title = $"{Title} {ver.Major}.{ver.Minor}";
+      /*var ver = Assembly.GetEntryAssembly().GetName().Version;
+      Title = $"{Title} {ver.Major}.{ver.Minor}";*/
 
       _argPicFile = picFile;
     }
@@ -484,7 +484,7 @@ namespace PictureManager {
           }
         }
       }
-      catch (Exception) {
+      catch (Exception ex) {
         return false;
       }
 
@@ -493,7 +493,7 @@ namespace PictureManager {
         original.Delete();
         temp.MoveTo(original.FullName);
       }
-      catch (Exception) {
+      catch (Exception ex) {
         return false;
       }
 

@@ -88,6 +88,7 @@ namespace PictureManager.ViewModel {
     public void LoadGroups() {
       foreach (var cg in ACore.CategoryGroups.Records.Values.Cast<CategoryGroup>()
         .Where(x => x.Category == Category).OrderBy(x => x.Title)) {
+        cg.IconName = GetCategoryGroupIconName();
         Items.Add(cg);
       }
     }

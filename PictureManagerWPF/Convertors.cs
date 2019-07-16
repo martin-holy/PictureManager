@@ -141,12 +141,18 @@ namespace PictureManager {
 
   public class ImageSourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      var src = new BitmapImage();
-      src.BeginInit();
-      src.UriSource = (Uri) value;
-      src.CacheOption = BitmapCacheOption.OnLoad;
-      src.EndInit();
-      return src;
+      try {
+        var src = new BitmapImage();
+        src.BeginInit();
+        src.UriSource = (Uri)value;
+        src.CacheOption = BitmapCacheOption.OnLoad;
+        src.EndInit();
+        return src;
+      }
+      catch (Exception ex) {
+        Console.WriteLine(ex);
+        return null;
+      }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
