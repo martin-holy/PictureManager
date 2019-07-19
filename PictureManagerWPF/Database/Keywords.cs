@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using PictureManager.ViewModel;
@@ -7,7 +8,8 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class Keywords : BaseCategoryItem, ITable {
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<Keyword> All { get; } = new List<Keyword>();
+    public Dictionary<int, Keyword> AllDic { get; } = new Dictionary<int, Keyword>();
 
     private static readonly Mutex Mut = new Mutex();
 
@@ -20,28 +22,32 @@ namespace PictureManager.Database {
       Mut.Dispose();
     }
 
-    public void NewFromCsv(string csv) {
-      // ID|Name|Parent|Index|Children
-      var props = csv.Split('|');
-      if (props.Length != 5) return;
-      var id = int.Parse(props[0]);
-      Records.Add(id, new Keyword(id, props[1], null, int.Parse(props[3])) { Csv = props });
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
     }
 
-    public void LinkReferences(SimpleDB sdb) {
-      // ID|Name|Parent|Index|Children
+    public void ClearBeforeLoad() {
+      All.Clear();
+      AllDic.Clear();
+    }
+
+    public void NewFromCsv(string csv) {
+      // ID|Name|Parent|Index
+      var props = csv.Split('|');
+      if (props.Length != 4) return;
+      var id = int.Parse(props[0]);
+      AddRecord(new Keyword(id, props[1], null, int.Parse(props[3])) { Csv = props });
+    }
+
+    public void LinkReferences() {
+      // ID|Name|Parent|Index
       // MediaItems to the Keyword are added in LinkReferences on MediaItem
-      foreach (var item in Records) {
-        var keyword = (Keyword)item.Value;
-
-        // reference to parent
-        if (keyword.Csv[2] != string.Empty)
-          keyword.Parent = (Keyword)Records[int.Parse(keyword.Csv[2])];
-
-        // reference to childrens
-        if (keyword.Csv[4] != string.Empty)
-          foreach (var keywordId in keyword.Csv[4].Split(','))
-            keyword.Items.Add((Keyword)Records[int.Parse(keywordId)]);
+      foreach (var keyword in All) {
+        // reference to parent and back reference to children
+        if (keyword.Csv[2] != string.Empty) {
+          keyword.Parent = AllDic[int.Parse(keyword.Csv[2])];
+          keyword.Parent.Items.Add(keyword);
+        }
 
         // csv array is not needed any more
         keyword.Csv = null;
@@ -51,27 +57,31 @@ namespace PictureManager.Database {
       LoadGroups();
 
       // add Keywords without group
-      foreach (var keyword in Records.Values.Cast<Keyword>().Where(x => x.Parent == null)) {
+      foreach (var keyword in All.Where(x => x.Parent == null)) {
         keyword.Parent = this;
         Items.Add(keyword);
       }
 
-      //TODO Sort
+      // sort Keywords
+      Sort(Items, true);
     }
 
-    public void Sort() {
-      //TODO
-      /*var sorted = Items.OfType<Keyword>().OrderBy(x => x.Data.Idx).ThenBy(x => x.Title).ToList();
-      var groupsCount = Items.Count - sorted.Count;
-      foreach (var k in sorted) {
-        Items.Move(Items.IndexOf(k), sorted.IndexOf(k) + groupsCount);
-      }*/
+    public static void Sort(ObservableCollection<BaseTreeViewItem> items, bool recursive) {
+      var sorted = items.OfType<Keyword>().OrderBy(x => x.Idx).ThenBy(x => x.Title).ToList();
+      var groupsCount = items.Count - sorted.Count;
+
+      foreach (var k in sorted)
+        items.Move(items.IndexOf(k), sorted.IndexOf(k) + groupsCount);
+
+      if (!recursive) return;
+      
+      foreach (var item in items)
+        Sort(item.Items, true);
     }
 
-    public Keyword GetKeyword(int id) {
-      if (Records.TryGetValue(id, out var keyword))
-        return (Keyword)keyword;
-      return null;
+    private void AddRecord(Keyword record) {
+      All.Add(record);
+      AllDic.Add(record.Id, record);
     }
 
     public Keyword GetKeywordByFullPath(string fullPath) {
@@ -82,7 +92,7 @@ namespace PictureManager.Database {
       var pathNames = fullPath.Split('/');
 
       // get root Keyword => Parent is not Keyword but Keywords or CategoryGroup
-      var keyword = Records.Values.Cast<Keyword>().SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
+      var keyword = All.SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
 
       // return Keyword if it was found and is 1 level type
       if (keyword != null && pathNames.Length == 1) {
@@ -106,11 +116,10 @@ namespace PictureManager.Database {
 
     public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
       Mut.WaitOne();
-      var id = ACore.Keywords.Helper.GetNextId();
-      var keyword = new Keyword(id, name, root, 0);
+      var keyword = new Keyword(Helper.GetNextId(), name, root, 0);
 
       // add new Keyword to the database and to the tree
-      ACore.Keywords.Helper.AddRecord(keyword);
+      AddRecord(keyword);
       root.Items.Add(keyword);
 
       Mut.ReleaseMutex();
@@ -139,9 +148,8 @@ namespace PictureManager.Database {
       if (rename) {
         var keyword = (Keyword)item;
         keyword.Title = inputDialog.Answer;
-        //TODO check the sorts
-        (keyword.Parent as Keywords)?.Sort();
-        (keyword.Parent as Keyword)?.Sort();
+        Sort(keyword.Parent.Items, false);
+        Helper.IsModifed = true;
       }
       else CreateKeyword(item, inputDialog.Answer);
     }
@@ -158,12 +166,17 @@ namespace PictureManager.Database {
 
       foreach (var k in keywords.Cast<Keyword>()) {
         // remove Keyword from MediaItems
-        foreach (var bmi in k.MediaItems)
+        foreach (var bmi in k.MediaItems) {
           bmi.Keywords.Remove(k);
+          ACore.MediaItems.Helper.IsModifed = true;
+        } 
 
         // remove Keyword from DB
-        Records.Remove(k.Id);
+        All.Remove(k);
+        AllDic.Remove(k.Id);
       }
+
+      Helper.IsModifed = true;
     }
 
     public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {

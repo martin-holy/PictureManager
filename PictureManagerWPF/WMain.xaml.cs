@@ -133,7 +133,7 @@ namespace PictureManager {
           }
           break;
         }
-        case ViewModel.FavoriteFolder _: {
+        case Database.FavoriteFolder _: {
           menu.Items.Add(new MenuItem { Command = Commands.FolderRemoveFromFavorites, CommandParameter = item });
           break;
         }
@@ -255,7 +255,7 @@ namespace PictureManager {
 
           if (srcData == ACore.LastSelectedSource) {
             ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
-            ACore.Folders.ExpandTo(srcData.Id);
+            ACore.Folders.ExpandTo(srcData);
           }
         }
       }

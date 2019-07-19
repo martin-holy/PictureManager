@@ -20,35 +20,27 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
-      // ID|Name|ToponymName|FCode|Parent|Children
+      // ID|Name|ToponymName|FCode|Parent
       return string.Join("|",
         Id.ToString(),
         Title,
         ToponymName,
         Fcode,
-        ((IRecord)Parent)?.Id.ToString(),
-        string.Join(",", Items.Cast<IRecord>().Select(x => x.Id)));
+        (Parent as GeoName)?.Id.ToString());
     }
 
     public BaseMediaItem[] GetMediaItems(bool recursive) {
       return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
     }
 
-    public void GetThisAndItems(ref List<GeoName> geoNames) {
-      geoNames.Add(this);
-      foreach (var geoName in Items) {
-        ((GeoName)geoName).GetThisAndItems(ref geoNames);
-      }
-    }
-
     public BaseMediaItem[] GetMediaItemsRecursive() {
       // get all GeoNames
-      var geoNames = new List<GeoName>();
-      GetThisAndItems(ref geoNames);
+      var geoNames = new List<BaseTreeViewItem>();
+      GetThisAndItemsRecursive(ref geoNames);
 
       // get all MediaItems from geoNames
       var bmis = new List<BaseMediaItem>();
-      foreach (var gn in geoNames)
+      foreach (var gn in geoNames.Cast<GeoName>())
         bmis.AddRange(gn.MediaItems);
 
       return bmis.Distinct().ToArray();

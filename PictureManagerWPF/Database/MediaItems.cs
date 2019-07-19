@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
@@ -15,7 +14,7 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public class MediaItems : INotifyPropertyChanged, ITable {
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<BaseMediaItem> All { get; } = new List<BaseMediaItem>();
 
     private BaseMediaItem _current;
     private bool _isEditModeOn;
@@ -57,7 +56,7 @@ namespace PictureManager.Database {
       var props = csv.Split('|');
       if (props.Length != 11) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new BaseMediaItem(id, null, props[2]) {
+      AddRecord(new BaseMediaItem(id, null, props[2]) {
         Csv = props,
         Width = props[3].IntParseOrDefault(0),
         Height = props[4].IntParseOrDefault(0),
@@ -67,18 +66,16 @@ namespace PictureManager.Database {
       });
     }
 
-    public void LinkReferences(SimpleDB sdb) {
-      foreach (var item in Records) {
-        var bmi = (BaseMediaItem)item.Value;
-
+    public void LinkReferences() {
+      foreach (var bmi in All) {
         // reference to Folder and back reference from Folder to MediaItems
-        bmi.Folder = (Folder) ACore.Folders.Records[int.Parse(bmi.Csv[1])];
+        bmi.Folder = ACore.Folders.AllDic[int.Parse(bmi.Csv[1])];
         bmi.Folder.MediaItems.Add(bmi);
 
         // reference to People and back reference from Person to MediaItems
         if (bmi.Csv[9] != string.Empty)
           foreach (var personId in bmi.Csv[9].Split(',')) {
-            var p = (Person) ACore.People.Records[int.Parse(personId)];
+            var p = ACore.People.AllDic[int.Parse(personId)];
             p.MediaItems.Add(bmi);
             bmi.People.Add(p);
           }
@@ -86,20 +83,32 @@ namespace PictureManager.Database {
         // reference to Keywords and back reference from Keyword to MediaItems
         if (bmi.Csv[10] != string.Empty)
           foreach (var keywordId in bmi.Csv[10].Split(',')) {
-            var k = (Keyword) ACore.Keywords.Records[int.Parse(keywordId)];
+            var k = ACore.Keywords.AllDic[int.Parse(keywordId)];
             k.MediaItems.Add(bmi);
             bmi.Keywords.Add(k);
           }
 
         // reference to GeoName
         if (bmi.Csv[8] != string.Empty) {
-          bmi.GeoName = (GeoName)ACore.GeoNames.Records[int.Parse(bmi.Csv[8])];
+          bmi.GeoName = ACore.GeoNames.AllDic[int.Parse(bmi.Csv[8])];
           bmi.GeoName.MediaItems.Add(bmi);
         }
 
         // csv array is not needed any more
         bmi.Csv = null;
       }
+    }
+
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
+    }
+
+    public void ClearBeforeLoad() {
+      All.Clear();
+    }
+
+    public void AddRecord(BaseMediaItem record) {
+      All.Add(record);
     }
 
     public void Delete(BaseMediaItem item) {
@@ -111,7 +120,9 @@ namespace PictureManager.Database {
 
       item.Folder.MediaItems.Remove(item);
 
-      Records.Remove(item.Id);
+      All.Remove(item);
+
+      Helper.IsModifed = true;
     }
 
     public void ReLoad(List<BaseMediaItem> items) {
@@ -133,22 +144,19 @@ namespace PictureManager.Database {
     }
 
     public void SelectAll() {
-      foreach (var mi in Items) {
+      foreach (var mi in Items)
         mi.IsSelected = true;
-      }
     }
 
     public void SelectNotModifed() {
       DeselectAll();
-      foreach (var mi in Items.Where(x => !x.IsModifed)) {
+      foreach (var mi in Items.Where(x => !x.IsModifed))
         mi.IsSelected = true;
-      }
     }
 
     public void DeselectAll() {
-      foreach (var mi in Items.Where(x => x.IsSelected)) {
+      foreach (var mi in Items.Where(x => x.IsSelected))
         mi.IsSelected = false;
-      }
 
       Current = null;
     }
@@ -194,7 +202,7 @@ namespace PictureManager.Database {
       }
     }
 
-    private void ClearBeforeLoad() {
+    private void ClearItBeforeLoad() {
       Current = null;
       foreach (var item in Items) {
         if (item.IsSelected) item.IsSelected = false;
@@ -209,7 +217,7 @@ namespace PictureManager.Database {
     }
 
     public void Load(BaseTreeViewItem tag, bool recursive) {
-      ClearBeforeLoad();
+      ClearItBeforeLoad();
 
       // get top folders
       var topFolders = new List<Folder>();
@@ -245,8 +253,8 @@ namespace PictureManager.Database {
           var fileName = Path.GetFileName(file) ?? string.Empty;
           fmis.TryGetValue(fileName, out var inDbFile);
           if (inDbFile == null) {
-            inDbFile = new BaseMediaItem(ACore.MediaItems.Helper.GetNextId(), folder, fileName, true);
-            ACore.MediaItems.Records.Add(inDbFile.Id, inDbFile);
+            inDbFile = new BaseMediaItem(Helper.GetNextId(), folder, fileName, true);
+            AddRecord(inDbFile);
             folder.MediaItems.Add(inDbFile);
           }
           mediaItems.Add(inDbFile);
@@ -265,9 +273,9 @@ namespace PictureManager.Database {
         mediaItems = mediaItems.Where(mi => mi.IsNew || ACore.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
 
       //People
-      var orPeople = ACore.People.Records.Values.Cast<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andPeople = ACore.People.Records.Values.Cast<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notPeople = ACore.People.Records.Values.Cast<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var orPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andPeopleAny = andPeople.Any();
       var orPeopleAny = orPeople.Any();
       if (orPeopleAny || andPeopleAny || notPeople.Any()) {
@@ -288,9 +296,9 @@ namespace PictureManager.Database {
       }
 
       //Keywords
-      var orKeywords = ACore.Keywords.Records.Values.Cast<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andKeywords = ACore.Keywords.Records.Values.Cast<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notKeywords = ACore.Keywords.Records.Values.Cast<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var orKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andKeywordsAny = andKeywords.Any();
       var orKeywordsAny = orKeywords.Any();
       if (orKeywordsAny || andKeywordsAny || notKeywords.Any()) {
@@ -323,7 +331,7 @@ namespace PictureManager.Database {
     }
 
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
-      ClearBeforeLoad();
+      ClearItBeforeLoad();
 
       BaseMediaItem[] items = null;
 
@@ -408,7 +416,7 @@ namespace PictureManager.Database {
       foreach (var item in Items.ToList()) {
         if (!item.IsSelected) continue;
         Items.Remove(item);
-        if (delete) Records.Remove(item.Id);
+        if (delete) Delete(item);
         else item.IsSelected = false;
       }
 
@@ -449,9 +457,8 @@ namespace PictureManager.Database {
     }
 
     public void SplitedItemsReload() {
-      foreach (var itemsRow in SplitedItems) {
+      foreach (var itemsRow in SplitedItems)
         itemsRow.Clear();
-      }
 
       SplitedItems.Clear();
 
@@ -485,14 +492,5 @@ namespace PictureManager.Database {
     public static bool IsSupportedFileType(string filePath) {
       return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
     }
-  }
-
-  public class MediaItemsLoad {
-    public string FilePath;
-    public string FileName;
-    public int DirId;
-    public string DirPath;
-    public FolderKeyword FolderKeyword;
-    public BaseMediaItem MediaItem;
   }
 }

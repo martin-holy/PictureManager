@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Windows.Forms;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -7,8 +6,8 @@ namespace PictureManager.Database {
     public string[] Csv { get; set; }
     public int Id { get; set; }
 
-    public BaseTreeViewItem IncludedFolders;
-    public BaseTreeViewItem ExcludedFolders;
+    public BaseTreeViewItem IncludedFolders { get; }
+    public BaseTreeViewItem ExcludedFolders { get; }
 
     public Viewer(int id, string name, BaseTreeViewItem parent) {
       Id = id;

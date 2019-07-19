@@ -20,13 +20,12 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
-      // ID|Name|Parent|Index|Children
+      // ID|Name|Parent|Index
       return string.Join("|",
         Id.ToString(),
         Title,
         (Parent as Keyword)?.Id.ToString(),
-        Idx.ToString(),
-        string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)));
+        Idx.ToString());
     }
 
     private string GetFullPath() {
@@ -42,15 +41,6 @@ namespace PictureManager.Database {
       return string.Join("/", names);
     }
 
-    public void Sort() {
-      //TODO
-      //BUG: asi bug, takhle to asi srovnavat nejde, kdyz dam move tak se prepisou indexy a tak "i" bude odkazovat na neco jineho
-      /*var sorted = Items.Cast<Keyword>().OrderBy(x => x.Data.Idx).ThenBy(x => x.Title).ToList();
-      for (var i = 0; i < Items.Count; i++) {
-        Items.Move(Items.IndexOf(Items[i]), sorted.IndexOf((Keyword)Items[i]));
-      }*/
-    }
-
     public BaseMediaItem[] GetMediaItems(bool recursive) {
       return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
     }
@@ -62,8 +52,8 @@ namespace PictureManager.Database {
 
       // get all MediaItems from keywords
       var mis = new List<BaseMediaItem>();
-      foreach (var k in keywords)
-        mis.AddRange(((Keyword) k).MediaItems);
+      foreach (var k in keywords.Cast<Keyword>())
+        mis.AddRange(k.MediaItems);
 
       return mis.Distinct().ToArray();
     }

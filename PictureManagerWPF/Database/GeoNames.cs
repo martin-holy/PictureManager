@@ -7,7 +7,8 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class GeoNames : BaseCategoryItem, ITable {
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<GeoName> All { get; } = new List<GeoName>();
+    public Dictionary<int, GeoName> AllDic { get; } = new Dictionary<int, GeoName>();
 
     public GeoNames() : base(Category.GeoNames) {
       Title = "GeoNames";
@@ -15,26 +16,21 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|ToponymName|FCode|Parent|Children
+      // ID|Name|ToponymName|FCode|Parent
       var props = csv.Split('|');
-      if (props.Length != 6) return;
+      if (props.Length != 5) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new GeoName(id, props[1], props[2], props[3], null) { Csv = props });
+      AddRecord(new GeoName(id, props[1], props[2], props[3], null) { Csv = props });
     }
 
-    public void LinkReferences(SimpleDB sdb) {
-      // ID|Name|ToponymName|FCode|Parent|Children
-      foreach (var item in Records) {
-        var geoName = (GeoName)item.Value;
-
-        // reference to parent
-        if (geoName.Csv[4] != string.Empty)
-          geoName.Parent = (GeoName)Records[int.Parse(geoName.Csv[4])];
-
-        // reference to children
-        if (geoName.Csv[5] != string.Empty)
-          foreach (var geoNameId in geoName.Csv[5].Split(','))
-            geoName.Items.Add((GeoName)Records[int.Parse(geoNameId)]);
+    public void LinkReferences() {
+      // ID|Name|ToponymName|FCode|Parent
+      foreach (var geoName in All) {
+        // reference to parent and back reference to children
+        if (geoName.Csv[4] != string.Empty) {
+          geoName.Parent = AllDic[int.Parse(geoName.Csv[4])];
+          geoName.Parent.Items.Add(geoName);
+        }
 
         // csv array is not needed any more
         geoName.Csv = null;
@@ -42,9 +38,23 @@ namespace PictureManager.Database {
 
       Items.Clear();
 
-      var earth = Records.Cast<GeoName>().SingleOrDefault(x => x.Parent == null);
+      var earth = All.SingleOrDefault(x => x.Parent == null);
       if (earth == null) return;
       Items.Add(earth);
+    }
+
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
+    }
+
+    public void ClearBeforeLoad() {
+      All.Clear();
+      AllDic.Clear();
+    }
+
+    private void AddRecord(GeoName record) {
+      All.Add(record);
+      AllDic.Add(record.Id, record);
     }
 
     public GeoName InsertGeoNameHierarchy(double lat, double lng) {
@@ -58,17 +68,19 @@ namespace PictureManager.Database {
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
 
-        if (!Records.TryGetValue(geoNameId, out var dbGeoName)) {
-          var id = ACore.GeoNames.Helper.GetNextId();
+        if (!AllDic.TryGetValue(geoNameId, out var dbGeoName)) {
           dbGeoName = new GeoName(
-            id,
+            geoNameId,
             geoname.SelectSingleNode("name")?.InnerText,
             geoname.SelectSingleNode("toponymName")?.InnerText,
             geoname.SelectSingleNode("fcode")?.InnerText,
             parentGeoName);
+
+          AddRecord(dbGeoName);
+          Helper.IsModifed = true;
         }
 
-        parentGeoName = (GeoName)dbGeoName;
+        parentGeoName = dbGeoName;
       }
 
       return parentGeoName;
@@ -84,11 +96,8 @@ namespace PictureManager.Database {
     public string GetGeoNameHierarchy(GeoName geoName) {
       if (geoName == null) return string.Empty;
 
-      if (!Records.TryGetValue((int) geoName.Id, out var gn))
-        return string.Empty;
-
-      var parent = ((GeoName) gn).Parent;
-      var names = new List<string> {((GeoName) gn).Title};
+      var parent = geoName.Parent;
+      var names = new List<string> { geoName.Title};
       while (parent != null) {
         names.Add(parent.Title);
         parent = parent.Parent;

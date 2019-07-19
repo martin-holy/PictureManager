@@ -24,14 +24,13 @@ namespace PictureManager.ViewModel {
         Parent = this
       };
 
-      ACore.CategoryGroups.Helper.AddRecord(cg);
+      ACore.CategoryGroups.AddRecord(cg);
       GroupSetInPalce(cg, true);
       return cg;
     }
 
     private void GroupSetInPalce(CategoryGroup group, bool isNew) {
-      var idx = ACore.CategoryGroups.Records.Values.Cast<CategoryGroup>()
-        .Where(x => x.Category == Category).OrderBy(x => x.Title).ToList().IndexOf(group);
+      var idx = ACore.CategoryGroups.All.Where(x => x.Category == Category).OrderBy(x => x.Title).ToList().IndexOf(group);
       
       if (isNew)
         Items.Insert(idx, group);
@@ -55,7 +54,7 @@ namespace PictureManager.ViewModel {
         }
 
         var root = rename ? group.Parent : this;
-        if (root.Items.Where(x => x is CategoryGroup).SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
+        if (root.Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;
         }
@@ -69,6 +68,7 @@ namespace PictureManager.ViewModel {
       if (rename) {
         group.Title = inputDialog.Answer;
         GroupSetInPalce(group, false);
+        ACore.CategoryGroups.Helper.IsModifed = true;
       } else GroupCreate(inputDialog.Answer);
     }
 
@@ -82,12 +82,11 @@ namespace PictureManager.ViewModel {
 
       group.Items.Clear();
       Items.Remove(group);
-      ACore.CategoryGroups.Records.Remove(group.Id);
+      ACore.CategoryGroups.DeleteRecord(group);
     }
 
     public void LoadGroups() {
-      foreach (var cg in ACore.CategoryGroups.Records.Values.Cast<CategoryGroup>()
-        .Where(x => x.Category == Category).OrderBy(x => x.Title)) {
+      foreach (var cg in ACore.CategoryGroups.All.Where(x => x.Category == Category).OrderBy(x => x.Title)) {
         cg.IconName = GetCategoryGroupIconName();
         Items.Add(cg);
       }

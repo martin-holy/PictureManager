@@ -7,7 +7,9 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class People : BaseCategoryItem, ITable {
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<Person> All { get; } = new List<Person>();
+    public Dictionary<int, Person> AllDic { get; } = new Dictionary<int, Person>();
+
     private static readonly Mutex Mut = new Mutex();
 
     public People() : base(Category.People) {
@@ -19,45 +21,56 @@ namespace PictureManager.Database {
       Mut.Dispose();
     }
 
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
+    }
+
+    public void ClearBeforeLoad() {
+      All.Clear();
+      AllDic.Clear();
+    }
+
     public void NewFromCsv(string csv) {
       // ID|Name
       var props = csv.Split('|');
       if (props.Length != 2) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new Person(id, props[1]));
+      AddRecord(new Person(id, props[1]));
     }
 
-    public void LinkReferences(SimpleDB sdb) {
+    public void LinkReferences() {
       // MediaItems to the Person are added in LinkReferences on MediaItem
 
       Items.Clear();
       LoadGroups();
 
       // add People without group
-      foreach (var person in Records.Values.Cast<Person>().Where(x => x.Parent == null)) {
+      foreach (var person in All.Where(x => x.Parent == null).OrderBy(x => x.Title)) {
         person.Parent = this;
         Items.Add(person);
       }
+
+      // sort People in the Groups
+      foreach (var g in Items.OfType<CategoryGroup>())
+        g.Items.Sort(x => x.Title);
     }
 
-    public Person GetPerson(int id) {
-      if (Records.TryGetValue(id, out var person))
-        return (Person) person;
-      return null;
+    private void AddRecord(Person record) {
+      All.Add(record);
+      AllDic.Add(record.Id, record);
     }
 
     public Person GetPerson(string name, bool create) {
-      var person = Records.Values.Cast<Person>().SingleOrDefault(x => x.Title.Equals(name));
+      var person = All.SingleOrDefault(x => x.Title.Equals(name));
       return person ?? (create ? CreatePerson(this, name) : null);
-    }
+    } 
 
     public Person CreatePerson(BaseTreeViewItem root, string name) {
       Mut.WaitOne();
-      var id = ACore.People.Helper.GetNextId();
-      var person = new Person(id, name);
-      
+      var person = new Person(Helper.GetNextId(), name);
+
       // add new Person to the database
-      ACore.People.Helper.AddRecord(person);
+      AddRecord(person);
 
       // add new Person to the tree
       person.Parent = root;
@@ -76,7 +89,7 @@ namespace PictureManager.Database {
           return;
         }
 
-        if (ACore.People.Records.Cast<Person>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
+        if (All.SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("This person already exists!");
           return;
         }
@@ -89,6 +102,7 @@ namespace PictureManager.Database {
         var person = (Person)item;
         person.Title = inputDialog.Answer;
         ItemSetInPlace(person.Parent, false, person);
+        Helper.IsModifed = true;
       }
       else CreatePerson(item, inputDialog.Answer);
     }
@@ -104,7 +118,12 @@ namespace PictureManager.Database {
       person.Parent.Items.Remove(person);
 
       // remove Person from DB
-      Records.Remove(person.Id);
+      All.Remove(person);
+      AllDic.Remove(person.Id);
+
+      Helper.IsModifed = true;
+      if (person.MediaItems.Count > 0)
+        ACore.MediaItems.Helper.IsModifed = true;
     }
   }
 }

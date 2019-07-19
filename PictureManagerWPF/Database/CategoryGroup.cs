@@ -19,7 +19,7 @@ namespace PictureManager.Database {
         Id.ToString(),
         Title,
         (int) Category,
-        string.Join(",", Items.OfType<IRecord>().Select(x => x.Id)));
+        string.Join(",", Items.Cast<IRecord>().Select(x => x.Id)));
     }
   }
 }

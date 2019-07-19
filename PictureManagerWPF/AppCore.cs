@@ -14,7 +14,7 @@ using Directory = System.IO.Directory;
 namespace PictureManager {
   public class AppCore : IDisposable {
 
-    public Database.SimpleDB Sdb = new Database.SimpleDB();
+    public Database.SimpleDb Sdb = new Database.SimpleDb();
 
     public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
     public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
@@ -27,9 +27,10 @@ namespace PictureManager {
     public Database.GeoNames GeoNames { get; } = new Database.GeoNames();
     public Database.Viewers Viewers { get; } = new Database.Viewers {CanModifyItems = true};
     public Database.CategoryGroups CategoryGroups { get; } = new Database.CategoryGroups();
-    
+    public Database.FavoriteFolders FavoriteFolders { get; } = new Database.FavoriteFolders();
+
     public ViewModel.FolderKeywords FolderKeywords { get; } = new ViewModel.FolderKeywords();
-    public ViewModel.FavoriteFolders FavoriteFolders { get; } = new ViewModel.FavoriteFolders();
+    
     public ViewModel.Ratings Ratings { get; } = new ViewModel.Ratings();
     public ViewModel.MediaItemSizes MediaItemSizes { get; } = new ViewModel.MediaItemSizes();
 
@@ -88,6 +89,7 @@ namespace PictureManager {
       Sdb.AddTable(Folders);
       Sdb.AddTable(GeoNames);
       Sdb.AddTable(MediaItems);
+      Sdb.AddTable(FavoriteFolders);
 
       Sdb.LoadAllTables();
       Sdb.LinkReferences();
@@ -101,7 +103,7 @@ namespace PictureManager {
       //App.SplashScreen.AddMessage("Loading Folder Keywords");
       FolderKeywords.Load();
       //App.SplashScreen.AddMessage("Loading Favorite Folders");
-      FavoriteFolders.Load();
+      //FavoriteFolders.Load();
       //App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
 
@@ -157,15 +159,12 @@ namespace PictureManager {
       else {
         var bti = item as ViewModel.BaseTreeViewItem;
         switch (item) {
-          case ViewModel.FavoriteFolder favoriteFolder: {
-            //TODO
-            /*var folder = Folders.ExpandTo(favoriteFolder.FullPath);
-            if (folder != null) {
-              var visibleTreeIndex = 0;
-              Folders.GetVisibleTreeIndexFor(Folders.Items, folder, ref visibleTreeIndex);
-              var offset = (FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
-              WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
-            }*/
+          case Database.FavoriteFolder favoriteFolder: {
+            Folders.ExpandTo(favoriteFolder.Folder);
+            var visibleTreeIndex = 0;
+            Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
+            var offset = (FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
+            WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
             break;
           }
           case ViewModel.Rating _:
@@ -580,7 +579,9 @@ namespace PictureManager {
       return ok;
     }
 
-    public bool CanViewerSeeThisDirectory(string path) {
+    // TODO predelat na objekty
+    public bool CanViewerSeeThisDirectory(Database.Folder folder) {
+      var path = folder.FullPath;
       bool ok;
       if (CurrentViewer == null) return true;
 
@@ -637,6 +638,10 @@ namespace PictureManager {
         }
       }
       return list;
+    }
+
+    public static void ShowErrorDialog(Exception ex) {
+      MessageBox.Show($"{ex.Message}\n{ex.StackTrace}");
     }
   }
 }

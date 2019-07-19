@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
   public sealed class FolderKeywords: BaseCategoryItem {
-    public List<FolderKeyword> AllFolderKeywords = new List<FolderKeyword>();
-
     public FolderKeywords() : base (Category.FolderKeywords) {
       Title = "Folder Keywords";
       IconName = IconName.Folder;
@@ -14,29 +11,26 @@ namespace PictureManager.ViewModel {
 
     public void Load() {
       Items.Clear();
-      AllFolderKeywords.Clear();
 
-      var fkRoots = ACore.Folders.Records.Values.Cast<Folder>().Where(x => x.IsFolderKeyword);
+      var fkRoots = ACore.Folders.All.Where(x => x.IsFolderKeyword);
 
-      foreach (var fkRoot in fkRoots) {
-        var folderKeywordRoot = new FolderKeyword {Title = fkRoot.Title};
-        Items.Add(folderKeywordRoot);
-        AllFolderKeywords.Add(folderKeywordRoot);
-        LoadRecursive(fkRoot, folderKeywordRoot);
-      }
+      foreach (var fkRoot in fkRoots)
+        LoadRecursive(fkRoot, null);
     }
 
-    private void LoadRecursive(Folder folder, FolderKeyword folderKeyword) {
-      foreach (var folderItem in folder.Items) {
-        var fi = (Folder) folderItem;
+    private void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
+      foreach (var fi in folder.Items.Cast<Folder>()) {
+        // TODO check jesli jsou nasledujici 2 podminky potreba az to bude vsechno hotovy
         if (!Directory.Exists(fi.FullPath)) continue;
-        if (!ACore.CanViewerSeeThisDirectory(fi.FullPath)) continue;
+        if (!ACore.CanViewerSeeThisDirectory(fi)) continue;
 
-        var fk = (FolderKeyword) folderKeyword.Items.SingleOrDefault(x => x.Title.Equals(fi.Title));
+        var fk = (FolderKeyword) folderKeyword?.Items.SingleOrDefault(x => x.Title.Equals(fi.Title));
         if (fk == null) {
-          fk = new FolderKeyword {Title = fi.Title, Parent = folderKeyword};
-          folderKeyword.Items.Add(fk);
-          AllFolderKeywords.Add(fk);
+          fk = new FolderKeyword {
+            Title = fi.Title,
+            Parent = folderKeyword ?? this
+          };
+          (folderKeyword ?? this).Items.Add(fk);
         }
 
         fi.FolderKeyword = fk;

@@ -1,0 +1,224 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="PictureManager.Database.BaseMediaItem" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="44" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BQCCABQEBagEUAhhIABgEMCCgAIEEIEAAFlAACDApFg=</HashCode>
+      <FileName>Database\BaseMediaItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.CategoryGroup" BaseTypeListCollapsed="true">
+    <Position X="9.25" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAQAAAAAAAAAAAAAAAEAAAAAAAAAAACAA=</HashCode>
+      <FileName>Database\CategoryGroup.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.CategoryGroups" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="45.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAAAAAAAAAAAAAAgAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\CategoryGroups.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.FavoriteFolder" BaseTypeListCollapsed="true">
+    <Position X="21.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAQAAAAAAAAAAAAAAAEAAAAAAAAAAABAA=</HashCode>
+      <FileName>Database\FavoriteFolder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.FavoriteFolders" BaseTypeListCollapsed="true">
+    <Position X="32.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAJAAAAAAAAAAAAAAAAgBAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\FavoriteFolders.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Folder" BaseTypeListCollapsed="true">
+    <Position X="19.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CgACAQACAQJAQCAAAABAAQAAAAEEEAAAIAAAIAABgAA=</HashCode>
+      <FileName>Database\Folder.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Folders" BaseTypeListCollapsed="true">
+    <Position X="25.25" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAAAAAAEAAAAAAAgABAAAkAAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>Database\Folders.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.GeoName" BaseTypeListCollapsed="true">
+    <Position X="5.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgACAAAAAARAQAAAAAAAACAAAAAAEMAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\GeoName.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.GeoNames" BaseTypeListCollapsed="true">
+    <Position X="27" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAAAAAAAgCAAAAAgAAAAAMAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\GeoNames.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Keyword" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CgACAAAAAARAQAAAAAAQAAAAAAAAEAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Database\Keyword.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Keywords" BaseTypeListCollapsed="true">
+    <Position X="23.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAFAAAAAAAAAAAAgABAwAQAQAEAAAAAgAAAAAAAAAAA=</HashCode>
+      <FileName>Database\Keywords.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.MediaItems" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="47.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABggBAAACQADIAAoACiUEIAhFEEAAIACAAABWQAAAg=</HashCode>
+      <FileName>Database\MediaItems.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.People" BaseTypeListCollapsed="true">
+    <Position X="28.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAFAAAAAAAAAAAAAAAAgAQAAAEAAIAAgAAAAAACAAAA=</HashCode>
+      <FileName>Database\People.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Person" BaseTypeListCollapsed="true">
+    <Position X="4" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAABAQAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\Person.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.SimpleDB">
+    <Position X="41" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAABAAAQAAAAEAAACAAAAAAgAAAAAA=</HashCode>
+      <FileName>Database\SimpleDB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.Database.TableHelper" Collapsed="true">
+    <Position X="47.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAgIAAAAACABAAAAAAQAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>Database\SimpleDB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.Database.Viewer" BaseTypeListCollapsed="true">
+    <Position X="17.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAQAAAAAAAAAAAAIAAEAAACAAAAAAAACA=</HashCode>
+      <FileName>Database\Viewer.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.Database.Viewers" BaseTypeListCollapsed="true">
+    <Position X="30.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAAAAAAAAAAAAAAgAQAAAEAAAAIgAAAABAAAAAA=</HashCode>
+      <FileName>Database\Viewers.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="PictureManager.ViewModel.BaseCategoryItem">
+    <Position X="32.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEQAQABAAAAEBAUAQAABAAAAhAAIAAAAGCAA=</HashCode>
+      <FileName>ViewModel\BaseCategoryItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.BaseTreeViewItem">
+    <Position X="21" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>SAAAAwQAAIAgGEIAIAAAwAiQoQAAAAAAAAAAAAAAACg=</HashCode>
+      <FileName>ViewModel\BaseTreeViewItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="PictureManager.ViewModel.BaseTreeViewTagItem">
+    <Position X="7.5" Y="7.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAEAAAAAAAAAABAAIAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\BaseTreeViewTagItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.FolderKeyword">
+    <Position X="11" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\FolderKeyword.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.FolderKeywords">
+    <Position X="35.75" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAABAAAQAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\FolderKeywords.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.MediaItemSize">
+    <Position X="14.5" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAABAABACAEAAAAAAQABAAkIAAEABAAAAAAgA=</HashCode>
+      <FileName>ViewModel\MediaItemSize.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.MediaItemSizes">
+    <Position X="34" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\MediaItemSizes.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.Rating">
+    <Position X="12.75" Y="10.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>ViewModel\Rating.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PictureManager.ViewModel.Ratings">
+    <Position X="37.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ViewModel\Ratings.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="PictureManager.Database.ITable" Collapsed="true">
+    <Position X="45.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IABAAAAAAAAAAAAAAAAgAAAAAEAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\SimpleDB.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="PictureManager.Database.IRecord" Collapsed="true">
+    <Position X="44" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAQAAAAAAAAAAAAAAAEAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Database\SimpleDB.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

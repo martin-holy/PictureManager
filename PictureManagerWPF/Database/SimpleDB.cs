@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PictureManager.Database {
-  public class SimpleDB {
+  public class SimpleDb {
     public Dictionary<Type, TableHelper> Tables = new Dictionary<Type, TableHelper>();
-
-    public TableHelper Table<T>() {
-      return Tables[typeof(T)];
-    }
 
     public void AddTable(ITable table) {
       Tables.Add(table.GetType(), new TableHelper(table));
@@ -25,14 +22,17 @@ namespace PictureManager.Database {
     public void LinkReferences() {
       foreach (var table in Tables) {
         App.SplashScreen.AddMessage($"Linking references for {table.Key.Name}");
-        table.Value.Table.LinkReferences(this);
+        table.Value.Table.LinkReferences();
       }
     }
 
     public void SaveAllTables() {
       Directory.CreateDirectory("db");
-      foreach (var table in Tables)
-        table.Value.Save();
+      foreach (var helper in Tables.Values.Where(x => x.IsModifed)) {
+        helper.Table.SaveToFile();
+        helper.IsModifed = false;
+      }
+
       SaveIdSequences();
     }
 
@@ -44,7 +44,7 @@ namespace PictureManager.Database {
         }
       }
       catch (Exception ex) {
-        // ignored
+        AppCore.ShowErrorDialog(ex);
       }
     }
   }
@@ -52,6 +52,7 @@ namespace PictureManager.Database {
   public class TableHelper {
     public int MaxId { get; set; }
     public ITable Table { get; set; }
+    public bool IsModifed { get; set; }
     private readonly string _tableFilePath;
 
     public TableHelper(ITable table) {
@@ -62,6 +63,7 @@ namespace PictureManager.Database {
     }
 
     private int GetMaxId() {
+      // TODO tohle dat do SImpleDB at se to necte vic jak jedou
       var maxId = 0;
       var filePath = Path.Combine("db", "IdSequences.csv");
       try {
@@ -78,26 +80,19 @@ namespace PictureManager.Database {
         }
       }
       catch (Exception ex) {
-        // ignored
+        AppCore.ShowErrorDialog(ex);
       }
 
       return maxId;
     }
 
     public int GetNextId() {
+      IsModifed = true;
       return ++MaxId;
     }
 
-    public void AddRecord(IRecord record) {
-      Table.Records.Add(record.Id, record);
-    }
-
-    public void DeleteRecord(IRecord record) {
-      Table.Records.Remove(record.Id);
-    }
-
     public void Load() {
-      Table.Records.Clear();
+      Table.ClearBeforeLoad();
       if (!File.Exists(_tableFilePath)) return;
       try {
         using (var sr = new StreamReader(_tableFilePath, Encoding.UTF8)) {
@@ -107,28 +102,29 @@ namespace PictureManager.Database {
         }
       }
       catch (Exception ex) {
-        // ignored
+        AppCore.ShowErrorDialog(ex);
       }
     }
 
-    public void Save() {
+    public void SaveToFile(IEnumerable<IRecord> records) {
       try {
         using (var sw = new StreamWriter(_tableFilePath, false, Encoding.UTF8, 65536)) {
-          foreach (var item in Table.Records)
-            sw.WriteLine(item.Value.ToCsv());
+          foreach (var item in records)
+            sw.WriteLine(item.ToCsv());
         }
       }
       catch (Exception ex) {
-        // ignored
+        AppCore.ShowErrorDialog(ex);
       }
     }
   }
 
   public interface ITable {
     TableHelper Helper { get; set; }
-    Dictionary<int, IRecord> Records { get; set; }
     void NewFromCsv(string csv);
-    void LinkReferences(SimpleDB sdb);
+    void LinkReferences();
+    void SaveToFile();
+    void ClearBeforeLoad();
   }
 
   public interface IRecord {

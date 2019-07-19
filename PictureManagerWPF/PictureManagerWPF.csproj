@@ -109,11 +109,10 @@
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />
-    <Compile Include="ViewModel\FavoriteFolder.cs" />
-    <Compile Include="ViewModel\FavoriteFolders.cs" />
+    <Compile Include="Database\FavoriteFolder.cs" />
+    <Compile Include="Database\FavoriteFolders.cs" />
     <Compile Include="ViewModel\FolderKeyword.cs" />
     <Compile Include="ViewModel\FolderKeywords.cs" />
-    <Compile Include="ViewModel\IDbItem.cs" />
     <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
       <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
     </Compile>
@@ -262,6 +261,7 @@
     </None>
     <AppDesigner Include="Properties\" />
     <None Include="ViewModel\ClassDiagram1.cd" />
+    <None Include="ViewModel\ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

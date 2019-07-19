@@ -26,39 +26,37 @@ namespace PictureManager.Database {
     public int Rating { get; set; }
     public string Comment { get; set; }
     public GeoName GeoName { get; set; }
-    public List<Keyword> Keywords = new List<Keyword>();
-    public List<Person> People = new List<Person>();
+    public List<Person> People { get; } = new List<Person>();
+    public List<Keyword> Keywords { get; } = new List<Keyword>();
 
     private bool _isSelected;
     private int _thumbWidth;
     private int _thumbHeight;
     private MediaType _mediaType;
 
+    public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
+    public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
+    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
+    public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
+    public ObservableCollection<string> InfoBoxThumb { get; set; } = new ObservableCollection<string>();
+    public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
+    public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
 
     public string FilePath => Folder.GetFullPath() + FileName;
     public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
     public string CommentEscaped => Comment?.Replace("'", "''") ?? string.Empty;
-    public int Index;
-    public double? Lat;
-    public double? Lng;
-    public bool IsModifed;
-    public bool IsNew;
-    public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
-    public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
+    public int Index { get; set; }
     public int ThumbSize { get; set; }
-    public bool IsPanoramatic;
-    public bool IsCorupted;
-    
-    //public FolderKeyword FolderKeyword; //TODO
-    
-    public AppCore ACore;
-    public ObservableCollection<string> InfoBoxThumb { get; set; } = new ObservableCollection<string>();
-    public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
-    public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
-    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
+    public double? Lat { get; set; }
+    public double? Lng { get; set; }
+    public bool IsModifed { get; set; }
+    public bool IsNew { get; set; }
+    public bool IsPanoramatic { get; set; }
+    public bool IsCorupted { get; set; }
+
+    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
@@ -66,13 +64,12 @@ namespace PictureManager.Database {
     }
 
     public BaseMediaItem(int id, Folder folder, string fileName, bool isNew = false) {
-      ACore = (AppCore)Application.Current.Properties[nameof(AppProperty.AppCore)];
       Id = id;
       Folder = folder;
       FileName = fileName;
       IsNew = isNew;
       MediaType = MediaItems.SuportedImageExts.Any(
-        e => FileName.EndsWith(e, StringComparison.InvariantCultureIgnoreCase))
+        x => FileName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
         ? MediaType.Image
         : MediaType.Video;
     }
@@ -146,7 +143,6 @@ namespace PictureManager.Database {
       foreach (var p in People.OrderBy(x => x.Title))
         InfoBoxPeople.Add(p.Title);
 
-      //TODO asi to bude ve spatnem poradi a GetFullPath by mohlo vracet List aby se nemuselo delat Split
       foreach (var keyword in Keywords) {
         foreach (var k in keyword.FullPath.Split('/'))
           if (!InfoBoxKeywords.Contains(k))
@@ -160,7 +156,7 @@ namespace PictureManager.Database {
         InfoBoxThumb.Add(Comment);
 
       if (GeoName != null)
-        InfoBoxThumb.Add(((GeoName) ACore.Sdb.Table<GeoNames>().Table.Records[GeoName.Id]).Title);
+        InfoBoxThumb.Add(GeoName.Title);
 
       foreach (var val in InfoBoxPeople)
         InfoBoxThumb.Add(val);
@@ -189,7 +185,7 @@ namespace PictureManager.Database {
         k.MediaItems.Add(copy);
       }
 
-      ACore.MediaItems.Records.Add(copy.Id, copy);
+      ACore.MediaItems.AddRecord(copy);
 
       return copy;
     }
@@ -218,10 +214,12 @@ namespace PictureManager.Database {
       }
       catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
+        AppCore.ShowErrorDialog(ex);
       }
     }
 
     public bool TryWriteMetadata() {
+      ACore.MediaItems.Helper.IsModifed = true;
       if (WriteMetadata()) return true;
       ReSave();
       return WriteMetadata();
@@ -322,8 +320,8 @@ namespace PictureManager.Database {
                 bSuccess = true;
               }
               catch (Exception ex) {
-                MessageBox.Show(ex.Message);
                 bSuccess = false;
+                AppCore.ShowErrorDialog(ex);
               }
             }
           }
@@ -412,8 +410,8 @@ namespace PictureManager.Database {
           //GeoNameId
           var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
           if (tmpGId != null) {
-            ACore.GeoNames.Records.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
-            GeoName = (GeoName) geoname;
+            ACore.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
+            GeoName = geoname;
           }
         }
 
@@ -421,6 +419,7 @@ namespace PictureManager.Database {
       }
       catch (Exception ex) {
         IsCorupted = true;
+        AppCore.ShowErrorDialog(ex);
         return false;
       }
       return true;

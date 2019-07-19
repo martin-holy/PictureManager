@@ -264,13 +264,11 @@ namespace PictureManager {
     }
 
     private void FolderAddToFavorites(object parameter) {
-      ViewModel.FavoriteFolders.Add(((Database.Folder) parameter).FullPath);
-      ACore.FavoriteFolders.Load();
+      ACore.FavoriteFolders.Add((Database.Folder) parameter);
     }
 
     private void FolderRemoveFromFavorites(object parameter) {
-      ViewModel.FavoriteFolders.Remove(((ViewModel.FavoriteFolder) parameter).FullPath);
-      ACore.FavoriteFolders.Load();
+      ACore.FavoriteFolders.Remove((Database.FavoriteFolder) parameter);
     }
 
     private void GeoNameNew(object parameter) {

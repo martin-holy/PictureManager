@@ -8,7 +8,8 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class Folders : BaseCategoryItem, ITable {
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<Folder> All { get; } = new List<Folder>();
+    public Dictionary<int, Folder> AllDic { get; } = new Dictionary<int, Folder>();
 
     public Folders() : base(Category.Folders) {
       Title = "Folders";
@@ -20,17 +21,15 @@ namespace PictureManager.Database {
       var props = csv.Split('|');
       if (props.Length != 4) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
+      AddRecord(new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
     }
 
-    public void LinkReferences(SimpleDB sdb) {
+    public void LinkReferences() {
       // ID|Name|Parent|IsFolderKeyword
-      foreach (var item in Records) {
-        var folder = (Folder)item.Value;
-
+      foreach (var folder in All) {
         // reference to Parent and back reference from Parent to SubFolder
         if (folder.Csv[2] != string.Empty) {
-          folder.Parent = (Folder) Records[int.Parse(folder.Csv[2])];
+          folder.Parent = AllDic[int.Parse(folder.Csv[2])];
           folder.Parent.Items.Add(folder);
         }
 
@@ -38,11 +37,39 @@ namespace PictureManager.Database {
         folder.Csv = null;
       }
 
-      foreach (var topFolder in Records.Values.Cast<Folder>().Where(x => x.Parent == null)) {
+      foreach (var topFolder in All.Where(x => x.Parent == null)) {
         Items.Add(topFolder);
       }
 
       AddDrives();
+    }
+
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
+    }
+
+    public void ClearBeforeLoad() {
+      All.Clear();
+      AllDic.Clear();
+    }
+
+    public void AddRecord(Folder record) {
+      All.Add(record);
+      AllDic.Add(record.Id, record);
+    }
+
+    public void DeleteRecord(Folder folder) {
+      All.Remove(folder);
+      AllDic.Remove(folder.Id);
+
+      // remove MediaItems
+      folder.MediaItems.ForEach(mi => ACore.MediaItems.Delete(mi));
+
+      // remove FavoriteFolder
+      var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Equals(folder));
+      if (ff != null) ACore.FavoriteFolders.Remove(ff);
+
+      Helper.IsModifed = true;
     }
 
     public void AddDrives() {
@@ -74,8 +101,8 @@ namespace PictureManager.Database {
 
         // add Drive to the database and to the tree if not already exists
         if (!(Items.SingleOrDefault(x => x.Title.Equals(driveName)) is Folder item)) {
-          item = new Folder(ACore.Folders.Helper.GetNextId(), driveName, null);
-          ACore.Folders.Helper.AddRecord(item);
+          item = new Folder(Helper.GetNextId(), driveName, null);
+          AddRecord(item);
           Items.Add(item);
         }
 
@@ -109,15 +136,12 @@ namespace PictureManager.Database {
       return root as Folder;
     }
 
-    public Folder ExpandTo(int id) {
-      if (!ACore.Folders.Records.TryGetValue(id, out var folder)) return null;
-      var parent = ((Folder) folder).Parent;
+    public void ExpandTo(Folder folder) {
+      var parent = folder.Parent;
       while (parent != null) {
         parent.IsExpanded = true;
         parent = parent.Parent;
       }
-
-      return (Folder) folder;
     }
 
     public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {

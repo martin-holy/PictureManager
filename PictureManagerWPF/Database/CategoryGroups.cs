@@ -1,29 +1,29 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace PictureManager.Database {
   public class CategoryGroups : ITable {
+    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public TableHelper Helper { get; set; }
-    public Dictionary<int, IRecord> Records { get; set; } = new Dictionary<int, IRecord>();
+    public List<CategoryGroup> All { get; } = new List<CategoryGroup>();
 
     public void NewFromCsv(string csv) {
       // ID|Name|Category|GroupItems
       var props = csv.Split('|');
       if (props.Length != 4) return;
       var id = int.Parse(props[0]);
-      Records.Add(id, new CategoryGroup(id, props[1], (Category) int.Parse(props[2])) {Csv = props});
+      AddRecord(new CategoryGroup(id, props[1], (Category) int.Parse(props[2])) {Csv = props});
     }
 
-    public void LinkReferences(SimpleDB sdb) {
+    public void LinkReferences() {
       // ID|Name|Category|GroupItems
-      foreach (var item in Records) {
-        var group = (CategoryGroup) item.Value;
-
+      foreach (var group in All) {
         // reference to group items
         if (group.Csv[3] != string.Empty) {
           switch (group.Category) {
             case Category.People: {
               foreach (var itemId in group.Csv[3].Split(',')) {
-                var p = (Person) sdb.Table<People>().Table.Records[int.Parse(itemId)];
+                var p = ACore.People.AllDic[int.Parse(itemId)];
                 p.Parent = group;
                 group.Items.Add(p);
               }
@@ -32,7 +32,7 @@ namespace PictureManager.Database {
             }
             case Category.Keywords: {
               foreach (var itemId in group.Csv[3].Split(',')) {
-                var k = (Keyword) sdb.Table<Keywords>().Table.Records[int.Parse(itemId)];
+                var k = ACore.Keywords.AllDic[int.Parse(itemId)];
                 k.Parent = group;
                 group.Items.Add(k);
               }
@@ -45,6 +45,23 @@ namespace PictureManager.Database {
         // csv array is not needed any more
         group.Csv = null;
       }
+    }
+
+    public void SaveToFile() {
+      Helper.SaveToFile(All);
+    }
+
+    public void ClearBeforeLoad() {
+      All.Clear();
+    }
+
+    public void AddRecord(CategoryGroup record) {
+      All.Add(record);
+    }
+
+    public void DeleteRecord(CategoryGroup record) {
+      All.Remove(record);
+      Helper.IsModifed = true;
     }
   }
 }

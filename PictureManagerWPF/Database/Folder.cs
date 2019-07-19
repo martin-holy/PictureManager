@@ -23,7 +23,7 @@ namespace PictureManager.Database {
       set {
         base.IsExpanded = value;
         if (value) LoadSubFolders(false);
-        if (Parent != null)
+        if (Parent != null) // not Drive Folder
           IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
       }
     }
@@ -41,7 +41,7 @@ namespace PictureManager.Database {
         Id.ToString(),
         Title,
         (Parent as Folder)?.Id.ToString(),
-        IsFolderKeyword ? "1" : "0");
+        IsFolderKeyword ? "1" : string.Empty);
     }
 
     public string GetFullPath() {
@@ -59,48 +59,47 @@ namespace PictureManager.Database {
     }
 
     public void Rename(string newName) {
-      if (Parent.Items.Any(x => x.Title.Equals(newName))) return;
       if (!ACore.FileOperation(FileOperationMode.Move, FullPath, ((Folder)Parent).FullPath, newName)) return;
       Title = newName;
+      ACore.Folders.Helper.IsModifed = true;
     }
 
     public void LoadSubFolders(bool recursive) {
       // remove placeholder
-      if (Items.Count > 0 && Items[0].Title.Equals("..."))
+      if (Items.Count == 1 && Items[0].Title.Equals("..."))
         Items.RemoveAt(0);
 
       var dirNames = new List<string>();
       foreach (var dir in Directory.EnumerateDirectories(FullPath)) {
+        var isNew = false;
         var di = new DirectoryInfo(dir);
         dirNames.Add(di.Name);
 
         // get existing Folder in the tree
-        var folder = Items.SingleOrDefault(x => x.Title.Equals(di.Name));
+        var folder = (Folder) Items.SingleOrDefault(x => x.Title.Equals(di.Name));
+
+        if (folder == null) {
+          isNew = true;
+          // add new Folder to the database
+          folder = new Folder(ACore.Folders.Helper.GetNextId(), di.Name, this);
+          ACore.Folders.AddRecord(folder);
+        }
 
         // if Viewer can't see this Folder => remove Folder from the tree and continue
-        if (!ACore.CanViewerSeeThisDirectory(dir)) {
-          if (folder != null)
-            Items.Remove(folder);
+        if (!ACore.CanViewerSeeThisDirectory(folder)) {
+          if (!isNew) Items.Remove(folder);
           continue;
         }
 
-        if (folder != null) continue;
-
-        // add new Folder to the database and to the tree
-        folder = new Folder(ACore.Folders.Helper.GetNextId(), di.Name, this);
-        ACore.Folders.Helper.AddRecord((IRecord)folder);
-        Items.Add(folder);
+        // add new Folder to the tree
+        if (isNew) Items.Add(folder);
       }
 
       // remove Folders deleted outside of this application
       foreach (var item in Items) {
         if (dirNames.Any(x => x.Equals(item.Title))) continue;
         Items.Remove(item);
-
-        // remove MediaItems
-        ((Folder) item).MediaItems.ForEach(mi => ACore.MediaItems.Delete(mi));
-
-        ACore.Folders.Helper.DeleteRecord((IRecord)item);
+        ACore.Folders.DeleteRecord((Folder) item);
       }
 
       // add placeholder so the folder can be expanded
@@ -141,17 +140,16 @@ namespace PictureManager.Database {
         var item = new Folder(ACore.Folders.Helper.GetNextId(), folderName, this) { IsAccessible = true };
 
         // add new Folder to the database
-        ACore.Folders.Helper.AddRecord(item);
+        ACore.Folders.AddRecord(item);
 
         // add new Folder to the tree
-        var folder = Items.Cast<Folder>().FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
+        var folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
         Items.Insert(folder == null ? Items.Count : Items.IndexOf(folder), item);
 
         return item;
       }
       catch (Exception ex) {
-        // ignored
-        // TOOD: return error message
+        AppCore.ShowErrorDialog(ex);
         return null;
       }
     }
@@ -162,13 +160,8 @@ namespace PictureManager.Database {
     /// <param name="recycle"></param>
     public void Delete(bool recycle) {
       if (!ACore.FileOperation(FileOperationMode.Delete, FullPath, recycle)) return;
-      ACore.Folders.Helper.DeleteRecord(this);
+      ACore.Folders.DeleteRecord(this);
       Parent.Items.Remove(this);
-    }
-
-    public bool IsItCorrectFolderName(string name) {
-      string[] incorectChars = { "\\", "/", ":", "*", "?", "\"", "<", ">", "|" };
-      return !incorectChars.Any(name.Contains);
     }
 
     public void NewOrRename(bool rename) {
@@ -188,7 +181,7 @@ namespace PictureManager.Database {
         }
 
         // check if is correct folder name
-        if (!IsItCorrectFolderName(inputDialog.TxtAnswer.Text)) {
+        if (Path.GetInvalidPathChars().Any(inputDialog.TxtAnswer.Text.Contains)) {
           inputDialog.ShowErrorMessage("New folder's name contains incorrect character(s)!");
           return;
         }
@@ -210,8 +203,8 @@ namespace PictureManager.Database {
 
       // get all MediaItems from folders
       var mis = new List<BaseMediaItem>();
-      foreach (var f in folders)
-        mis.AddRange(((Folder) f).MediaItems);
+      foreach (var f in folders.Cast<Folder>())
+        mis.AddRange(f.MediaItems);
 
       return mis;
     }
