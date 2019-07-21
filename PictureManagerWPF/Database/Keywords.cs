@@ -26,9 +26,10 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
       AllDic.Clear();
+      Helper.LoadFromFile();
     }
 
     public void NewFromCsv(string csv) {
@@ -70,8 +71,8 @@ namespace PictureManager.Database {
       var sorted = items.OfType<Keyword>().OrderBy(x => x.Idx).ThenBy(x => x.Title).ToList();
       var groupsCount = items.Count - sorted.Count;
 
-      foreach (var k in sorted)
-        items.Move(items.IndexOf(k), sorted.IndexOf(k) + groupsCount);
+      for (var i = 0; i < sorted.Count; i++)
+        items.Move(items.IndexOf(sorted[i]), i + groupsCount);
 
       if (!recursive) return;
       

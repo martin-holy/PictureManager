@@ -103,15 +103,16 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
+      Helper.LoadFromFile();
     }
 
     public void AddRecord(BaseMediaItem record) {
       All.Add(record);
     }
 
-    public void Delete(BaseMediaItem item) {
+    public void Delete(BaseMediaItem item, bool dbOnly = false) {
       foreach (var person in item.People)
         person.MediaItems.Remove(item);
 
@@ -119,6 +120,7 @@ namespace PictureManager.Database {
         keyword.MediaItems.Remove(item);
 
       item.Folder.MediaItems.Remove(item);
+      item.Folder = null;
 
       All.Remove(item);
 

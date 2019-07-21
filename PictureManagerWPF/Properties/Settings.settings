@@ -11,15 +11,6 @@
     <Setting Name="ThumbnailSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">400</Value>
     </Setting>
-    <Setting Name="RootKeyword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">#CoSpi</Value>
-    </Setting>
-    <Setting Name="FolderKeywordIngnoreList" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="FolderFavorites" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="CatalogFolders" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

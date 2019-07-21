@@ -15,8 +15,9 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
+      Helper.LoadFromFile();
     }
 
     public void NewFromCsv(string csv) {
@@ -43,8 +44,13 @@ namespace PictureManager.Database {
     }
 
     public void Remove(FavoriteFolder folder) {
+      // remove from the Tree
       Items.Remove(folder);
+      
+      // remove from DB
       All.Remove(folder);
+
+      folder.Folder = null;
       Helper.IsModifed = true;
     }
 

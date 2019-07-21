@@ -51,8 +51,9 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
+      Helper.LoadFromFile();
     }
 
     public void AddRecord(CategoryGroup record) {

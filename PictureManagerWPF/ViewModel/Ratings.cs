@@ -10,9 +10,8 @@ namespace PictureManager.ViewModel {
 
     public void Load() {
       Items.Clear();
-      for (var i = 0; i < 6; i++) {
+      for (var i = 0; i < 6; i++)
         Items.Add(new Rating {Value = i});
-      }
     }
 
     public Rating GetRatingByValue(int value) {

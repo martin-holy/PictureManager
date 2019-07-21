@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -26,6 +22,8 @@ namespace PictureManager {
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
     private const int PresentationInterval = 3000;
+
+    public AppCore ACore { get; set; }
 
     public WMain(string picFile) {
       ACore = new AppCore();
@@ -51,8 +49,6 @@ namespace PictureManager {
 
       _argPicFile = picFile;
     }
-
-    public AppCore ACore { get; set; }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       ACore.Init();
@@ -501,52 +497,15 @@ namespace PictureManager {
     }
 
     private void TestButton() {
- 
-      /*const string fileName = "mediaItems.data";
-      IFormatter formatter = new BinaryFormatter();
-      using (var fs = new FileStream(fileName, FileMode.Create)) {
-        formatter.Serialize(fs, ACore.Db.MediaItems);
-      }
 
-      System.Collections.ObjectModel.Collection<DataModel.MediaItem> mi = null;
-
-      using (var fs = new FileStream(fileName, FileMode.Open)) {
-        mi = (System.Collections.ObjectModel.Collection<DataModel.MediaItem>)formatter.Deserialize(fs);
-      }*/
       var acore = ACore;
       Console.WriteLine("bla");
 
-      //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
-      //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
-      //ACore.MediaItems.Load(folder, true);
-      //ACore.MediaItems.Load(fk, true);
-      //ACore.MediaItems.LoadByTag(fk, true);
-      //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
-      //ACore.InitThumbsPagesControl();
-
-      //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
 
 
       //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
       //var x = GetFileProps(@"d:\video.mp4");
       //var xx = ShellStuff.FileInformation.GetVideoMetadata(@"d:\video.mp4");
-
-      /*var mediaItems = ACore.MediaItems.AllItems.Where(x => x.MediaType == MediaType.Image);
-      var panoramas = new List<ViewModel.BaseMediaItem>();
-      foreach (var mi in mediaItems) {
-        mi.SetThumbSize();
-        if (mi.ThumbWidth > 400 || mi.ThumbHeight > 400)
-          panoramas.Add(mi);
-      }
-
-      foreach (var mi in panoramas) {
-        if (File.Exists(mi.FilePath))
-          AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
-      }*/
-
-
-
-      //height 309, width 311
 
       /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
       var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");

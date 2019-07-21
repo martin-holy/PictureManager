@@ -3,7 +3,7 @@ using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
   public class FolderKeyword: BaseTreeViewTagItem {
-    public List<Folder> Folders = new List<Folder>();
+    public List<Folder> Folders { get; } = new List<Folder>();
 
     public FolderKeyword() {
       IconName = IconName.Folder;

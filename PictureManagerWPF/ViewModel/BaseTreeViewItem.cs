@@ -9,7 +9,7 @@ namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
     public ObservableCollection<BaseTreeViewItem> Items { get; set; } = new ObservableCollection<BaseTreeViewItem>();
     public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-    public object Tag;
+    public object Tag { get; set; }
 
     private bool _isExpanded;
     private bool _isSelected;

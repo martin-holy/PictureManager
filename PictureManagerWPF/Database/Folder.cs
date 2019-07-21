@@ -98,7 +98,6 @@ namespace PictureManager.Database {
       // remove Folders deleted outside of this application
       foreach (var item in Items) {
         if (dirNames.Any(x => x.Equals(item.Title))) continue;
-        Items.Remove(item);
         ACore.Folders.DeleteRecord((Folder) item);
       }
 
@@ -152,16 +151,6 @@ namespace PictureManager.Database {
         AppCore.ShowErrorDialog(ex);
         return null;
       }
-    }
-
-    /// <summary>
-    /// Deletes Folder from FileSystem, Database and the Tree
-    /// </summary>
-    /// <param name="recycle"></param>
-    public void Delete(bool recycle) {
-      if (!ACore.FileOperation(FileOperationMode.Delete, FullPath, recycle)) return;
-      ACore.Folders.DeleteRecord(this);
-      Parent.Items.Remove(this);
     }
 
     public void NewOrRename(bool rename) {

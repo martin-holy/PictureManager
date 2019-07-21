@@ -48,9 +48,10 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
       AllDic.Clear();
+      Helper.LoadFromFile();
     }
 
     public void AddRecord(Folder record) {
@@ -59,17 +60,53 @@ namespace PictureManager.Database {
     }
 
     public void DeleteRecord(Folder folder) {
-      All.Remove(folder);
-      AllDic.Remove(folder.Id);
+      // delete folder, subfolders and mediaItems from file system
+      if (Directory.Exists(folder.FullPath)) {
+        var result = ACore.FileOperationDelete(new List<string> {folder.FullPath}, true, false);
+        if (result.Count == 0) return;
+      }
 
-      // remove MediaItems
-      folder.MediaItems.ForEach(mi => ACore.MediaItems.Delete(mi));
+      // delete folder, subfolders and mediaItems from cache
+      if (Directory.Exists(folder.FullPathCache)) {
+        var result = ACore.FileOperationDelete(new List<string> {folder.FullPathCache}, false, true);
+        if (result.Count == 0) return;
+      }
 
-      // remove FavoriteFolder
-      var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Equals(folder));
-      if (ff != null) ACore.FavoriteFolders.Remove(ff);
+      // get all folders recursive
+      var folders = new List<BaseTreeViewItem>();
+      GetThisAndItemsRecursive(ref folders);
 
+      // remove Folder from the Tree
+      folder.Parent.Items.Remove(folder);
+
+      foreach (var f in folders.Cast<Folder>()) {
+        // remove Folder from DB
+        All.Remove(f);
+        AllDic.Remove(f.Id);
+
+        // remove MediaItems
+        foreach (var mi in f.MediaItems)
+          ACore.MediaItems.Delete(mi, true);
+
+        // MediaItems should by empty from calling ACore.MediaItems.Delete(mi)
+        f.MediaItems.Clear();
+
+        // remove Parent
+        f.Parent = null;
+
+        // clear subFolders
+        f.Items.Clear();
+
+        // remove FavoriteFolder
+        var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Equals(f));
+        if (ff != null) ACore.FavoriteFolders.Remove(ff);
+      }
+
+      // set Folders table as modifed
       Helper.IsModifed = true;
+
+      // reload FolderKeywords
+      ACore.FolderKeywords.Load();
     }
 
     public void AddDrives() {

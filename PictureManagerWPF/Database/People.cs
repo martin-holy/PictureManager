@@ -25,9 +25,10 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
       AllDic.Clear();
+      Helper.LoadFromFile();
     }
 
     public void NewFromCsv(string csv) {
@@ -74,8 +75,7 @@ namespace PictureManager.Database {
 
       // add new Person to the tree
       person.Parent = root;
-      root.Items.Add(person);
-      
+      ItemSetInPlace(root, true, person);
       Mut.ReleaseMutex();
 
       return person;

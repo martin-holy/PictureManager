@@ -47,9 +47,10 @@ namespace PictureManager.Database {
       Helper.SaveToFile(All);
     }
 
-    public void ClearBeforeLoad() {
+    public void LoadFromFile() {
       All.Clear();
       AllDic.Clear();
+      Helper.LoadFromFile();
     }
 
     private void AddRecord(GeoName record) {

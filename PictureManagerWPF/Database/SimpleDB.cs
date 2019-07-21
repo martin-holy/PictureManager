@@ -8,14 +8,23 @@ namespace PictureManager.Database {
   public class SimpleDb {
     public Dictionary<Type, TableHelper> Tables = new Dictionary<Type, TableHelper>();
 
+    private readonly Dictionary<string, int> _idSequences = new Dictionary<string, int>();
+
+    public SimpleDb() {
+      LoadIdSequences();
+    }
+
     public void AddTable(ITable table) {
-      Tables.Add(table.GetType(), new TableHelper(table));
+      if (!_idSequences.TryGetValue(table.GetType().Name, out var maxId))
+        _idSequences.Add(table.GetType().Name, 0);
+
+      Tables.Add(table.GetType(), new TableHelper(table, maxId));
     }
 
     public void LoadAllTables() {
       foreach (var table in Tables) {
         App.SplashScreen.AddMessage($"Loading data for {table.Key.Name}");
-        table.Value.Load();
+        table.Value.Table.LoadFromFile();
       }
     }
 
@@ -36,7 +45,35 @@ namespace PictureManager.Database {
       SaveIdSequences();
     }
 
+    private void LoadIdSequences() {
+      var filePath = Path.Combine("db", "IdSequences.csv");
+      try {
+        if (!File.Exists(filePath)) return;
+        using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
+          string line;
+          while ((line = sr.ReadLine()) != null) {
+            var vals = line.Split('|');
+            if (vals.Length != 2) continue;
+            _idSequences.Add(vals[0], int.Parse(vals[1]));
+          }
+        }
+      }
+      catch (Exception ex) {
+        AppCore.ShowErrorDialog(ex);
+      }
+    }
+
     public void SaveIdSequences() {
+      // check if something changed
+      var isModifed = false;
+      foreach (var table in Tables) {
+        if (_idSequences[table.Key.Name] == table.Value.MaxId) continue;
+        _idSequences[table.Key.Name] = table.Value.MaxId;
+        isModifed = true;
+      }
+
+      if (!isModifed) return;
+
       try {
         using (var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8)) {
           foreach (var table in Tables)
@@ -55,35 +92,11 @@ namespace PictureManager.Database {
     public bool IsModifed { get; set; }
     private readonly string _tableFilePath;
 
-    public TableHelper(ITable table) {
+    public TableHelper(ITable table, int maxId) {
       table.Helper = this;
       Table = table;
-      MaxId = GetMaxId();
+      MaxId = maxId;
       _tableFilePath = Path.Combine("db", $"{Table.GetType().Name}.csv");
-    }
-
-    private int GetMaxId() {
-      // TODO tohle dat do SImpleDB at se to necte vic jak jedou
-      var maxId = 0;
-      var filePath = Path.Combine("db", "IdSequences.csv");
-      try {
-        if (!File.Exists(filePath)) return maxId;
-        using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
-          string line;
-          var tableName = Table.GetType().Name;
-          while ((line = sr.ReadLine()) != null) {
-            var vals = line.Split('|');
-            if (vals.Length != 2) continue;
-            if (!vals[0].Equals(tableName)) continue;
-            maxId = int.Parse(vals[1]);
-          }
-        }
-      }
-      catch (Exception ex) {
-        AppCore.ShowErrorDialog(ex);
-      }
-
-      return maxId;
     }
 
     public int GetNextId() {
@@ -91,8 +104,7 @@ namespace PictureManager.Database {
       return ++MaxId;
     }
 
-    public void Load() {
-      Table.ClearBeforeLoad();
+    public void LoadFromFile() {
       if (!File.Exists(_tableFilePath)) return;
       try {
         using (var sr = new StreamReader(_tableFilePath, Encoding.UTF8)) {
@@ -124,7 +136,7 @@ namespace PictureManager.Database {
     void NewFromCsv(string csv);
     void LinkReferences();
     void SaveToFile();
-    void ClearBeforeLoad();
+    void LoadFromFile();
   }
 
   public interface IRecord {

@@ -7,11 +7,9 @@ namespace PictureManager {
   public partial class WSettings {
     public WSettings() {
       InitializeComponent();
-      DirListFkIgnoreList.SettingsPropertyName = "FolderKeywordIngnoreList";
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e) {
-      DirListFkIgnoreList.SavePathsToSettings();
       DialogResult = true;
     }
   }
