@@ -255,7 +255,7 @@ namespace PictureManager.DataModel {
       if (!tableName.Equals("sqlite_sequence"))
         Execute(qCreate);
       
-      foreach (DataRow row in Select(qSelect)) {
+      /*foreach (DataRow row in Select(qSelect)) {
         var item = new T();
         var i = 0;
         foreach (var column in columns) {
@@ -266,6 +266,25 @@ namespace PictureManager.DataModel {
           i++;
         }
         data.Add(item);
+      }*/
+
+      if (OpenDbConnection()) {
+        using (var cmd = new SQLiteCommand(qSelect, DbConn)) {
+          using (var dr = cmd.ExecuteReader()) {
+            while (dr.Read()) {
+              var item = new T();
+              var i = 0;
+              foreach (var column in columns) {
+                var val = dr.GetValue(i);
+                var type = column.Value.PropertyType;
+                type = Nullable.GetUnderlyingType(type) ?? type;
+                column.Value.SetValue(item, val is DBNull ? null : Convert.ChangeType(val, type));
+                i++;
+              }
+              data.Add(item);
+            }
+          }
+        }
       }
 
       var maxId = data.Count == 0 ? 0 : data.Cast<BaseTable>().Max(x => x.Id);
