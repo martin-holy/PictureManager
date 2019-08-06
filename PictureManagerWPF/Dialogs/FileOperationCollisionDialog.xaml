@@ -1,0 +1,89 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.FileOperationCollisionDialog"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  mc:Ignorable="d"
+  Title="The destination already has a file with this name" Height="420" Width="515" 
+  BorderBrush="{DynamicResource AccentColorBrush}" 
+  Background="{DynamicResource WhiteBrush}" 
+  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
+  WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
+  DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0"
+  Closing="OnClosing">
+
+  <controls:MetroWindow.Resources>
+    <Style x:Key="ErrorStyle" TargetType="TextBox">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Path=Error}" Value="True">
+          <Setter Property="Background" Value="#7FFF0000" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+    
+    <Style x:Key="ThumbBorder" TargetType="Border">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+  </controls:MetroWindow.Resources>
+
+  <Grid Margin="5">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="310"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    
+    <!-- Thumbnails -->
+    <Grid Grid.Row="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="250" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      
+      <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource ThumbBorder}">
+        <Image Source="{Binding SrcFilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" 
+               Stretch="Uniform" ToolTip="{Binding SrcFileInfo.FullName}"  />
+      </Border>
+
+      <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource ThumbBorder}">
+        <Image Source="{Binding DestFilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" 
+               Stretch="Uniform" ToolTip="{Binding DestFileInfo.FullName}" x:Name="DestThumb" />
+      </Border>
+
+      <!-- Source File Info -->
+      <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+        <Label Content="{Binding SrcFileSize}" />
+        <Label Content="{Binding SrcFileModified}" />
+      </StackPanel>
+
+      <!-- Destination File Info -->
+      <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
+        <Label Content="{Binding DestFileSize}" />
+        <Label Content="{Binding DestFileModified}" />
+      </StackPanel>
+    </Grid>
+    
+    <!-- File Name -->
+    <StackPanel Grid.Row="1" Orientation="Horizontal">
+      <Label Content="File name:" />
+      <TextBox Text="{Binding FileName}" x:Name="TxtFileName" Margin="5,0" MinWidth="200" Style="{StaticResource ErrorStyle}" />
+    </StackPanel>
+
+    <!-- Buttons -->
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button x:Name="BtnRename" MinWidth="60" Click="BtnRename_OnClick" VerticalAlignment="Bottom">Rename</Button>
+      <Button x:Name="BtnReplace" MinWidth="60" Click="BtnReplace_OnClick" VerticalAlignment="Bottom" Margin="10,0,0,0">Replace</Button>
+      <Button x:Name="BtnSkip" MinWidth="60" Click="BtnSkip_OnClick" VerticalAlignment="Bottom" Margin="10,0,0,0">Skip</Button>
+    </StackPanel>
+
+  </Grid>
+</controls:MetroWindow>

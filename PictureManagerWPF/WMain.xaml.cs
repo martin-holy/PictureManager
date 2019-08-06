@@ -218,47 +218,29 @@ namespace PictureManager {
 
     private void TvFolders_OnDrop(object sender, DragEventArgs e) {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
-      var srcData = (Database.Folder)e.Data.GetData(typeof(Database.Folder));
-      var destData = (Database.Folder)((StackPanel)sender).DataContext;
-      var from = thumbs ? null : srcData?.FullPath;
-      //TODO DEBUG asi neni potreba brat fullpath ale jen title
-      var itemName = thumbs ? null : srcData?.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
+      var srcFolder = (Database.Folder) e.Data.GetData(typeof(Database.Folder));
+      var destFolder = (Database.Folder) ((StackPanel) sender).DataContext;
+      var items = thumbs ? ACore.MediaItems.Items.Where(x => x.IsSelected).ToList() : null;
+      var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
 
-      var flag = e.KeyStates == DragDropKeyStates.ControlKey ?
-        ACore.FileOperation(FileOperationMode.Copy, from, destData.FullPath, itemName) :
-        ACore.FileOperation(FileOperationMode.Move, from, destData.FullPath, itemName);
-      if (!flag) return;
-
-      if (thumbs) {
-        if (e.KeyStates != DragDropKeyStates.ControlKey) {
-          ACore.MediaItems.RemoveSelected(false);
-          ACore.MediaItems.Current = null;
-          ACore.UpdateStatusBarInfo();
-        }
-        return;
-      }
-
-      if (e.KeyStates != DragDropKeyStates.ControlKey) {
-        if (srcData != null) {
-          srcData.Parent.Items.Remove(srcData);
-
-          //check if was destination expanded
-          if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
-
-          srcData.Parent = destData;
-          var folder = destData.Items.Cast<Database.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
-          destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
-
-          if (srcData == ACore.LastSelectedSource) {
-            ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
-            ACore.Folders.ExpandTo(srcData);
-          }
-        }
+      if (items != null) {
+        ACore.MediaItems.CopyMove(foMode, items, destFolder);
+        ACore.MediaItems.Helper.IsModifed = true;
       }
       else {
-        destData.LoadSubFolders(false);
+        ACore.Folders.CopyMove(foMode, srcFolder, destFolder);
+        ACore.MediaItems.Helper.IsModifed = true;
+        ACore.Folders.Helper.IsModifed = true;
+      }
+
+      ACore.Sdb.SaveAllTables();
+
+      if (foMode == FileOperationMode.Move && srcFolder == ACore.LastSelectedSource) {
+        ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
+        ACore.Folders.ExpandTo(srcFolder);
       }
     }
+
     #endregion
 
     #region TvKeywords
@@ -498,8 +480,42 @@ namespace PictureManager {
 
     private void TestButton() {
 
+      /*ACore.FileOperationDelete(new List<string> {@"d:\!test2\deltest1"}, true, true);*/
+      //Directory.Delete(@"d:\!test2\deltest2", true);
+
+      //File.Move(@"d:\!test2\20140206_175827_Martin.jpg", @"d:\!test2\aaa\20140206_175827_Martin.jpg");
+      //AppCore.MoveDirectory(@"d:\!test2\2019", @"d:\!test2\newfolder\2019");
+
+      //AppCore.MoveDirectory(@"d:\!test2\2019", @"d:\!test2\newF\blabla\bleble\2019");
+
+      //File.Move(@"d:\!test2\deltest1\20140206_175827_Martin.jpg", @"d:\!test2\deltest1\20140206_175827_Martin.jpg");
+
+      /*var paths = new List<string>();
+      for (var i = 0; i < 20; i++) {
+        paths.Add($"d:\\!test2\\RecycleBinTest\\file{i}.txt");
+      }
+      foreach (var path in paths) {
+        using (var file = new StreamWriter(path)) {
+          file.WriteLine("Delete to Recycle Bin test");
+        }
+      }
+
+      ACore.FileOperationDelete(paths, true, true);*/
+
+      //var focd = new FileOperationCollisionDialog(@"d:\!test2\20150410_220526_Martin.jpg", @"d:\!test2\aaa\20150410_220526_Martin.jpg") {Owner = this};
+      //focd.ShowDialog();
+
       var acore = ACore;
+
+      //d:\!test2\moveTestData\2019\08
+      var folder = acore.Folders.GetByPath(@"D:\!test2");
+      var folder2 = folder.GetByPath(@"moveTestData\2019\08");
+      var folder3 = acore.Folders.GetByPath(@"D:\!test2\moveTestData\2019\08");
+
+      var p = @"D:".Split(Path.DirectorySeparatorChar);
       Console.WriteLine("bla");
+
+      
 
 
 

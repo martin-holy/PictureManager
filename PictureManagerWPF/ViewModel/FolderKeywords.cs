@@ -18,6 +18,7 @@ namespace PictureManager.ViewModel {
         LoadRecursive(fkRoot, null);
     }
 
+    // TODO predelat na OnExpand a ne recursive
     private void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
       foreach (var fi in folder.Items.Cast<Folder>()) {
         // TODO check jesli jsou nasledujici 2 podminky potreba az to bude vsechno hotovy
@@ -30,7 +31,7 @@ namespace PictureManager.ViewModel {
             Title = fi.Title,
             Parent = folderKeyword ?? this
           };
-          (folderKeyword ?? this).Items.Add(fk);
+          fk.Parent.Items.Add(fk);
         }
 
         fi.FolderKeyword = fk;

@@ -2,7 +2,11 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Windows;
+using PictureManager.Dialogs;
+using PictureManager.Properties;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -59,34 +63,32 @@ namespace PictureManager.Database {
       AllDic.Add(record.Id, record);
     }
 
-    public void DeleteRecord(Folder folder) {
+    public void DeleteRecord(Folder folder, bool fileSystem) {
       // delete folder, subfolders and mediaItems from file system
-      if (Directory.Exists(folder.FullPath)) {
-        var result = ACore.FileOperationDelete(new List<string> {folder.FullPath}, true, false);
-        if (result.Count == 0) return;
+      if (fileSystem && Directory.Exists(folder.FullPath)) {
+        ACore.FileOperationDelete(new List<string> {folder.FullPath}, true, false);
       }
 
       // delete folder, subfolders and mediaItems from cache
       if (Directory.Exists(folder.FullPathCache)) {
-        var result = ACore.FileOperationDelete(new List<string> {folder.FullPathCache}, false, true);
-        if (result.Count == 0) return;
+        Directory.Delete(folder.FullPathCache, true);
       }
-
-      // get all folders recursive
-      var folders = new List<BaseTreeViewItem>();
-      GetThisAndItemsRecursive(ref folders);
 
       // remove Folder from the Tree
       folder.Parent.Items.Remove(folder);
 
-      foreach (var f in folders.Cast<Folder>()) {
+      // get all folders recursive
+      var folders = new List<BaseTreeViewItem>();
+      folder.GetThisAndItemsRecursive(ref folders);
+
+      foreach (var f in folders.OfType<Folder>()) {
         // remove Folder from DB
         All.Remove(f);
         AllDic.Remove(f.Id);
 
         // remove MediaItems
-        foreach (var mi in f.MediaItems)
-          ACore.MediaItems.Delete(mi, true);
+        foreach (var mi in f.MediaItems.ToList())
+          ACore.MediaItems.Delete(mi);
 
         // MediaItems should by empty from calling ACore.MediaItems.Delete(mi)
         f.MediaItems.Clear();
@@ -115,7 +117,7 @@ namespace PictureManager.Database {
 
       foreach (var drive in drives) {
         var di = new DriveInfo(drive);
-        var driveName = di.Name.Replace(Path.DirectorySeparatorChar.ToString(), string.Empty);
+        var driveName = di.Name.TrimEnd(Path.DirectorySeparatorChar);
         drivesNames.Add(driveName);
         IconName driveImage;
 
@@ -158,19 +160,11 @@ namespace PictureManager.Database {
       }
     }
 
-    public Folder GetByPath(string path) {
+    public Folder GetByPath(string path, bool withReload = false) {
       if (path.Equals(string.Empty)) return null;
-
       var pathParts = path.Split(Path.DirectorySeparatorChar);
-      var root = (BaseTreeViewItem) this;
-
-      foreach (var pathPart in pathParts) {
-        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
-        if (folder == null) return null;
-        root = folder;
-      }
-
-      return root as Folder;
+      var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0]));
+      return ((Folder) drive)?.GetByPath(path, withReload);
     }
 
     public void ExpandTo(Folder folder) {
@@ -189,6 +183,144 @@ namespace PictureManager.Database {
         if (GetVisibleTreeIndexFor(item.Items, folder, ref index)) return true;
       }
       return false;
+    }
+
+    public Folder GetFromDic(string folderPath, ref Dictionary<string, Folder> dic) {
+      if (dic.TryGetValue(folderPath, out var folder)) return folder;
+      folder = GetByPath(folderPath, true);
+      if (folder != null)
+        dic.Add(folderPath, folder);
+
+      return folder;
+    }
+
+    public void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder) {
+      var fop = new FileOperationDialog { Owner = AppCore.WMain };
+
+      fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs args) {
+        var worker = (BackgroundWorker)sender;
+        var skippedFiles = new HashSet<string>();
+        var renamedFiles = new Dictionary<string, string>();
+
+        // Files and Cache
+        CopyMoveFilesAndCache(mode, srcFolder.FullPath, Path.Combine(destFolder.FullPath, srcFolder.Title),
+          fop, ref skippedFiles, ref renamedFiles, worker);
+
+        // DB  
+        switch (mode) {
+          case FileOperationMode.Copy:
+            srcFolder.CopyTo(destFolder, ref skippedFiles, ref renamedFiles);
+            break;
+          case FileOperationMode.Move:
+            // Rename Renamed Files if Mode is Move
+            foreach (var renamedFile in renamedFiles) {
+              var mediaItem = srcFolder.GetMediaItemByPath(renamedFile.Key);
+              if (mediaItem == null) continue;
+              mediaItem.FileName = renamedFile.Value;
+            }
+
+            srcFolder.MoveTo(destFolder, ref skippedFiles);
+            break;
+        } 
+      };
+
+      fop.PbProgress.IsIndeterminate = true;
+      fop.Worker.RunWorkerAsync();
+      fop.ShowDialog();
+
+      // reload FolderKeywords
+      ACore.FolderKeywords.Load();
+    }
+
+    private void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath, Window owner,
+      ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, BackgroundWorker worker) {
+
+      try {
+        Directory.CreateDirectory(destDirPath);
+        var srcDirPathLength = srcDirPath.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
+
+        foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
+          CopyMoveFilesAndCache(mode, dir, Path.Combine(destDirPath, dir.Substring(srcDirPathLength)), owner, ref skippedFiles,
+            ref renamedFiles, worker);
+        }
+
+        var volumeSeparator = new string(new[] { Path.VolumeSeparatorChar, Path.DirectorySeparatorChar });
+        var srcDirPathCache = srcDirPath.Replace(volumeSeparator, Settings.Default.CachePath);
+        var destDirPathCache = destDirPath.Replace(volumeSeparator, Settings.Default.CachePath);
+
+        foreach (var srcFilePath in Directory.EnumerateFiles(srcDirPath)) {
+          var srcFileName = srcFilePath.Substring(srcDirPathLength);
+          var destFileName = srcFileName;
+          var destFilePath = Path.Combine(destDirPath, destFileName);
+          var srcFilePathCache = Path.Combine(srcDirPathCache, srcFileName);
+          var destFilePathCache = Path.Combine(destDirPathCache, destFileName);
+
+          worker.ReportProgress(0, new[] { srcDirPath, destDirPath, srcFileName });
+
+          if (File.Exists(destFilePath)) {
+            var result = ACore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, owner, ref destFileName);
+
+            switch (result) {
+              case FileOperationCollisionDialog.CollisionResult.Rename: {
+                  renamedFiles.Add(srcFilePath, destFileName);
+                  destFilePath = Path.Combine(destDirPath, destFileName);
+                  destFilePathCache = Path.Combine(destDirPathCache, destFileName);
+                  break;
+                }
+              case FileOperationCollisionDialog.CollisionResult.Replace: {
+                  File.Delete(destFilePath);
+
+                  if (File.Exists(destFilePathCache))
+                    File.Delete(destFilePathCache);
+
+                  break;
+                }
+              case FileOperationCollisionDialog.CollisionResult.Skip: {
+                  skippedFiles.Add(srcFilePath);
+                  continue;
+                }
+            }
+          }
+
+          try {
+            switch (mode) {
+              case FileOperationMode.Copy:
+                File.Copy(srcFilePath, destFilePath);
+                break;
+              case FileOperationMode.Move:
+                File.Move(srcFilePath, destFilePath);
+                break;
+            }
+
+            if (File.Exists(srcFilePathCache)) {
+              Directory.CreateDirectory(destDirPathCache);
+              switch (mode) {
+                case FileOperationMode.Copy:
+                  File.Copy(srcFilePathCache, destFilePathCache);
+                  break;
+                case FileOperationMode.Move:
+                  File.Move(srcFilePathCache, destFilePathCache);
+                  break;
+              }
+            }
+          }
+          catch (Exception) {
+            skippedFiles.Add(srcFilePath);
+          }
+        }
+
+        // Delete empty directory
+        if (mode == FileOperationMode.Move) {
+          // if this is done on worker thread => directory is not deleted until worker is finished
+          Application.Current.Dispatcher.Invoke(delegate {
+            Extensions.DeleteDirectoryIfEmpty(srcDirPath);
+            Extensions.DeleteDirectoryIfEmpty(srcDirPathCache);
+          });
+        }
+      }
+      catch (Exception ex) {
+        AppCore.ShowErrorDialog(ex);
+      }
     }
   }
 }

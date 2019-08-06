@@ -7,6 +7,7 @@ using System.Linq;
 using System.IO;
 using System.Threading;
 using System.Windows;
+using PictureManager.Dialogs;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using Directory = System.IO.Directory;
@@ -409,27 +410,20 @@ namespace PictureManager {
       MediaItemSizes.Size.SetLoadedRange(min, max);
     }
 
-    #region File Operations
-    public bool FileOperation(FileOperationMode mode, bool recycle) {
-      return FileOperation(mode, null, null, null, recycle);
-    }
+    public FileOperationCollisionDialog.CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
+      var result = FileOperationCollisionDialog.CollisionResult.Skip;
+      var outFileName = fileName;
 
-    public bool FileOperation(FileOperationMode mode, string from, bool recycle) {
-      return FileOperation(mode, from, null, null, recycle);
-    }
+      Application.Current.Dispatcher.Invoke(delegate {
+        var focd = new FileOperationCollisionDialog(srcFilePath, destFilePath, owner);
+        focd.ShowDialog();
+        result = focd.Result;
+        outFileName = focd.FileName;
+      });
 
-    public bool FileOperation(FileOperationMode mode, string from, string to, string newName) {
-      return FileOperation(mode, from, to, newName, true);
-    }
+      fileName = outFileName;
 
-    /// <summary>
-    /// Operates only with selected MediaItems
-    /// </summary>
-    /// <param name="mode"></param>
-    /// <param name="to"></param>
-    /// <returns></returns>
-    public bool FileOperation(FileOperationMode mode, string to) {
-      return FileOperation(mode, null, to, null, true);
+      return result;
     }
 
     public Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
@@ -448,161 +442,6 @@ namespace PictureManager {
 
       return FileOperationResult;
     }
-
-    // Copy, Move or Delete selected MediaItems or Folder
-    public bool FileOperation(FileOperationMode mode, string from, string to, string newName, bool recycle) {
-      Application.Current.Properties[nameof(AppProperty.FileOperationResult)] = new Dictionary<string, string>();
-      var isOnMediaItems = from == null;
-      
-      // perform operations on MediaItems or Folder
-      using (var fo = new FileOperation(new PicFileOperationProgressSink())) {
-        fo.SetOperationFlags(FileOperationFlags.FOF_NOCONFIRMMKDIR | (recycle
-                               ? FileOperationFlags.FOFX_RECYCLEONDELETE
-                               : FileOperationFlags.FOF_WANTNUKEWARNING));
-
-        if (isOnMediaItems) { //MediaItems
-          foreach (var mi in MediaItems.Items.Where(x => x.IsSelected)) {
-            switch (mode) {
-              case FileOperationMode.Copy: { fo.CopyItem(mi.FilePath, to, mi.FileName); break; }
-              case FileOperationMode.Move: { fo.MoveItem(mi.FilePath, to, mi.FileName); break; }
-              case FileOperationMode.Delete: { fo.DeleteItem(mi.FilePath); break; }
-            }
-          }
-        } else { //Folder
-          switch (mode) {
-            case FileOperationMode.Copy: { fo.CopyItem(from, to, newName); break; }
-            case FileOperationMode.Move: { fo.MoveItem(from, to, newName); break; }
-            case FileOperationMode.Delete: { fo.DeleteItem(from); break; }
-          }
-        }
-
-        fo.PerformOperations();
-      }
-
-      // get result of the operations and update DB and thumbnail cache
-      var foResult = (Dictionary<string, string>)Application.Current.Properties[nameof(AppProperty.FileOperationResult)];
-      if (foResult.Count == 0) return false;
-
-      //TODO check the foResult for list of items to work with insted of selected items
-
-      using (var fo = new FileOperation()) {
-        fo.SetOperationFlags(FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
-                             FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE);
-
-        switch (mode) {
-          case FileOperationMode.Delete: {
-            var mediaItems = isOnMediaItems
-              ? MediaItems.Items.Where(x => x.IsSelected).ToList()
-              : Folders.GetByPath(from)?.GetMediaItemsRecursive();
-
-            if (mediaItems != null) {
-              foreach (var mi in mediaItems) {
-                if (File.Exists(mi.FilePath)) continue;
-
-                MediaItems.Delete(mi);
-
-                if (!File.Exists(mi.FilePathCache)) continue;
-                fo.DeleteItem(mi.FilePathCache);
-              }
-            }
-
-            /*if (!isOnMediaItems)
-              Folders.DeleteRecord();*/
-
-            break;
-          }
-          case FileOperationMode.Copy:
-          case FileOperationMode.Move: {
-            foreach (var item in foResult) {
-              var srcDir = Folders.GetByPath(Path.GetDirectoryName(item.Key));
-              var destDir = Folders.GetByPath(Path.GetDirectoryName(item.Value));
-
-              if (srcDir == null || destDir == null) continue;
-
-              if (Database.MediaItems.SuportedExts.Any(ext =>
-                item.Value.EndsWith(ext, StringComparison.OrdinalIgnoreCase))) {
-                if (!File.Exists(item.Value)) continue;
-
-                var srcFile = srcDir.MediaItems.SingleOrDefault(x => x.FileName.Equals(Path.GetFileName(item.Key)));
-                if (srcFile == null) continue;
-
-                switch (mode) {
-                  case FileOperationMode.Copy: {
-                    // duplicate MediaItem
-                    var miCopy = srcFile.CopyTo(destDir, Path.GetFileName(item.Value));
-
-                    // duplicate thumbnail
-                    fo.CopyItem(srcFile.FilePathCache, destDir.FullPathCache, miCopy.FileName);
-                    break;
-                  }
-                  case FileOperationMode.Move: {
-                    //BUG: if the file already exists in the destination directory, FileOperation returns COPYENGINE_S_USER_IGNORED and source thumbnail file is not deleted
-
-                    // take the path before is changed
-                    var srcFilePathCache = srcFile.FilePathCache;
-
-                    // if the file already exists in the destination directory => delete db record of it
-                    var existingFile = destDir.MediaItems.SingleOrDefault(x => x.FileName.Equals(srcFile.FileName));
-                    if (existingFile != null)
-                      MediaItems.Delete(existingFile);
-
-                    // move MediaItem
-                    srcFile.Folder.MediaItems.Remove(srcFile);
-                    srcFile.Folder = destDir;
-                    srcFile.Folder.MediaItems.Add(srcFile);
-                    srcFile.FileName = Path.GetFileName(item.Value);
-
-                    // move thumbnail
-                    fo.MoveItem(srcFilePathCache, destDir.FullPathCache, srcFile.FileName);
-                    break;
-                  }
-                }
-              }
-              else {
-                #region Move directories
-
-                if (mode == FileOperationMode.Move) {
-                  // test if it is directory
-                  if (!Directory.Exists(item.Value)) continue;
-
-                  // take the path before is changed
-                  var srcFullPathCache = srcDir.FullPathCache;
-
-                  // check if directory exists in destination
-                  var existingDir = (Database.Folder) destDir.Items.SingleOrDefault(x => x.Title.Equals(srcDir.Title));
-                  if (existingDir != null) {
-                    // move MediaItems to new directory
-                    existingDir.MediaItems.ForEach(mi => mi.Folder = srcDir);
-                    // clear list so that MediaItems are not deleted
-                    existingDir.MediaItems.Clear();
-                    // TODO jinak
-                    //Folders.DeleteRecord(existingDir);
-                  }
-
-                  // move folder
-                  srcDir.Parent.Items.Remove(srcDir);
-                  srcDir.Parent = destDir;
-                  destDir.Items.Add(srcDir);
-
-                  // move thumbnails
-                  // TODO DEBUG destDir, jde o to jestli destDir je nadrazena slozka
-                  fo.MoveItem(srcFullPathCache, destDir.FullPathCache, destDir.Title);
-                }
-
-                #endregion
-              }
-            }
-
-            break;
-          }
-        }
-
-        fo.PerformOperations();
-      }
-
-      return true;
-    }
-#endregion
 
     public bool CanViewerSeeThisFile(string filePath) {
       bool ok;
@@ -628,10 +467,10 @@ namespace PictureManager {
 
     // TODO predelat na objekty
     public bool CanViewerSeeThisDirectory(Database.Folder folder) {
-      var path = folder.FullPath;
-      bool ok;
       if (CurrentViewer == null) return true;
 
+      var path = folder.FullPath;
+      bool ok;
       var incFo = CurrentViewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var excFo = CurrentViewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
       var incFi = new string[0];
@@ -650,8 +489,8 @@ namespace PictureManager {
       return ok;
     }
 
-    public static void CreateThumbnail(string oldPath, string newPath, int size) {
-      var dir = Path.GetDirectoryName(newPath);
+    public static void CreateThumbnail(string srcPath, string destPath, int size) {
+      var dir = Path.GetDirectoryName(destPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
       Process process = null;
@@ -659,7 +498,7 @@ namespace PictureManager {
       try {
         process = new Process {
           StartInfo = new ProcessStartInfo {
-            Arguments = $"src|\"{oldPath}\" dest|\"{newPath}\" quality|\"{80}\" size|\"{size}\"",
+            Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
             FileName = "ThumbnailCreator.exe",
             UseShellExecute = false,
             CreateNoWindow = true

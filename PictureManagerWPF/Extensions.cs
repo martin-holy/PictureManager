@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace PictureManager {
@@ -14,6 +15,43 @@ namespace PictureManager {
 
     public static int IntParseOrDefault(this string s, int d) {
       return int.TryParse(s, out var result) ? result : d;
+    }
+
+    public static void DeleteDirectoryIfEmpty(string path) {
+      if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext())
+        Directory.Delete(path);
+    }
+
+    /// <summary>
+    /// Move directory but don't crash when directory exists or not exists
+    /// </summary>
+    /// <param name="srcPath"></param>
+    /// <param name="destPath"></param>
+    public static void MoveDirectory(string srcPath, string destPath) {
+      if (Directory.Exists(destPath)) {
+        var srcPathLength = srcPath.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
+
+        foreach (var dir in Directory.EnumerateDirectories(srcPath)) {
+          MoveDirectory(dir, Path.Combine(destPath, dir.Substring(srcPathLength)));
+        }
+
+        foreach (var file in Directory.EnumerateFiles(srcPath)) {
+          var destFilePath = Path.Combine(destPath, file.Substring(srcPathLength));
+          if (File.Exists(destFilePath))
+            File.Delete(destFilePath);
+          File.Move(file, destFilePath);
+        }
+
+        if (!Directory.EnumerateFileSystemEntries(srcPath).GetEnumerator().MoveNext()) {
+          Directory.Delete(srcPath);
+        }
+      }
+      else {
+        var destParentPath = Path.GetDirectoryName(destPath.TrimEnd(Path.DirectorySeparatorChar)) ??
+                             throw new ArgumentNullException();
+        Directory.CreateDirectory(destParentPath);
+        Directory.Move(srcPath, destPath);
+      }
     }
   }
 }

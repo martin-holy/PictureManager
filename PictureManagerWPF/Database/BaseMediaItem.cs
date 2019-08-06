@@ -42,8 +42,8 @@ namespace PictureManager.Database {
     public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
     public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
 
-    public string FilePath => Folder.GetFullPath() + FileName;
-    public string FilePathCache => FilePath.Replace(":\\", Settings.Default.CachePath);
+    public string FilePath => Path.Combine(Folder.FullPath, FileName);
+    public string FilePathCache => FilePath.Replace(new string(new[] {Path.VolumeSeparatorChar, Path.DirectorySeparatorChar}), Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
     public string CommentEscaped => Comment?.Replace("'", "''") ?? string.Empty;
@@ -188,6 +188,17 @@ namespace PictureManager.Database {
       ACore.MediaItems.AddRecord(copy);
 
       return copy;
+    }
+
+    public void MoveTo(Folder folder, string fileName) {
+      // TODO zbytecne nemenit filename kdyz je stejnej, a mazani dat na parametr. mozna to nekde neni potreba
+      // delete existing MediaItem if exists
+      ACore.MediaItems.Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
+
+      FileName = fileName;
+      Folder.MediaItems.Remove(this);
+      Folder = folder;
+      Folder.MediaItems.Add(this);
     }
 
     public void ReSave() {

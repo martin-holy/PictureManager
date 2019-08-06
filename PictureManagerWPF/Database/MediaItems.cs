@@ -112,18 +112,31 @@ namespace PictureManager.Database {
       All.Add(record);
     }
 
-    public void Delete(BaseMediaItem item, bool dbOnly = false) {
+    public void Delete(BaseMediaItem item) {
+      if (item == null) return;
+        
+      // remove People
       foreach (var person in item.People)
         person.MediaItems.Remove(item);
+      item.People.Clear();
 
+      // remove Keywords
       foreach (var keyword in item.Keywords)
         keyword.MediaItems.Remove(item);
+      item.Keywords.Clear();
 
+      // remove item from Folder
       item.Folder.MediaItems.Remove(item);
       item.Folder = null;
 
+      // remove GeoName
+      item.GeoName?.MediaItems.Remove(item);
+      item.GeoName = null;
+
+      // remove from DB
       All.Remove(item);
 
+      // set MediaItems table as modifed
       Helper.IsModifed = true;
     }
 
@@ -415,11 +428,23 @@ namespace PictureManager.Database {
     public void RemoveSelected(bool delete) {
       var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
       if (firstIndex == null) return;
-      foreach (var item in Items.ToList()) {
-        if (!item.IsSelected) continue;
+
+      var files = new List<string>();
+      var cache = new List<string>();
+
+      foreach (var item in Items.Where(x => x.IsSelected).ToList()) {
         Items.Remove(item);
-        if (delete) Delete(item);
+        if (delete) {
+          files.Add(item.FilePath);
+          cache.Add(item.FilePathCache);
+          Delete(item);
+        }
         else item.IsSelected = false;
+      }
+
+      if (delete) {
+        ACore.FileOperationDelete(files, true, false);
+        cache.ForEach(File.Delete);
       }
 
       //update index
@@ -494,5 +519,90 @@ namespace PictureManager.Database {
     public static bool IsSupportedFileType(string filePath) {
       return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
     }
+
+    /// <summary>
+    /// Copy or Move MediaItems (Files, Cache and DB)
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <param name="items"></param>
+    /// <param name="destFolder"></param>
+    public void CopyMove(FileOperationMode mode, List<BaseMediaItem> items, Folder destFolder) {
+      var fop = new Dialogs.FileOperationDialog { Owner = AppCore.WMain };
+
+      fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)sender;
+        var mis = (List<BaseMediaItem>)e.Argument;
+        var count = mis.Count;
+        var done = 0;
+
+        foreach (var mi in mis) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            new[] { mi.Folder.FullPath, destFolder.FullPath, mi.FileName });
+
+          var miNewFileName = mi.FileName;
+
+          // Open FileOperationCollisionDialog if file with the same name exists in destination
+          var destFilePath = Path.Combine(destFolder.FullPath, mi.FileName);
+          if (File.Exists(destFilePath)) {
+            var result = ACore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
+
+            if (result == Dialogs.FileOperationCollisionDialog.CollisionResult.Skip) {
+              mi.IsSelected = false;
+              continue;
+            }
+          }
+
+          switch (mode) {
+            case FileOperationMode.Copy: {
+                // create object copy
+                var miCopy = mi.CopyTo(destFolder, miNewFileName);
+                // copy MediaItem and cache on file system
+                Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache));
+                File.Copy(mi.FilePath, miCopy.FilePath, true);
+                File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+                break;
+              }
+            case FileOperationMode.Move: {
+                var srcFilePath = mi.FilePath;
+                var srcFilePathCache = mi.FilePathCache;
+
+                // DB
+                mi.MoveTo(destFolder, miNewFileName);
+
+                // File System
+                if (File.Exists(mi.FilePath))
+                  File.Delete(mi.FilePath);
+                File.Move(srcFilePath, mi.FilePath);
+
+                // Cache
+                if (File.Exists(mi.FilePathCache))
+                  File.Delete(mi.FilePathCache);
+                Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache));
+                File.Move(srcFilePathCache, mi.FilePathCache);
+                break;
+              }
+          }
+
+          done++;
+        }
+      };
+
+      fop.PbProgress.IsIndeterminate = false;
+      fop.PbProgress.Value = 0;
+      fop.Worker.RunWorkerAsync(items);
+      fop.ShowDialog();
+
+      if (mode == FileOperationMode.Move) {
+        RemoveSelected(false);
+        Current = null;
+        ACore.UpdateStatusBarInfo();
+      }
+    }
+
   }
 }

@@ -44,7 +44,7 @@ namespace PictureManager.Database {
         IsFolderKeyword ? "1" : string.Empty);
     }
 
-    public string GetFullPath() {
+    private string GetFullPath() {
       var parent = Parent;
       var names = new List<string> {Title};
       while (parent != null) {
@@ -53,15 +53,89 @@ namespace PictureManager.Database {
       }
 
       names.Reverse();
-      names.Add(string.Empty); // for the DirectorySeparatorChar on the end as well
+
+      // if just drive => add empty item so the FullPath ends with DirectorySeparatorChar
+      if (names.Count == 1)
+        names.Add(string.Empty);
 
       return string.Join(Path.DirectorySeparatorChar.ToString(), names);
     }
 
-    public void Rename(string newName) {
-      if (!ACore.FileOperation(FileOperationMode.Move, FullPath, ((Folder)Parent).FullPath, newName)) return;
+    private void Rename(string newName) {
+      Directory.Move(FullPath, Path.Combine(((Folder) Parent).FullPath, newName));
+      Directory.Move(FullPathCache, Path.Combine(((Folder) Parent).FullPathCache, newName));
       Title = newName;
       ACore.Folders.Helper.IsModifed = true;
+
+      // reload if the folder was selected before
+      if (ACore.LastSelectedSource == this)
+        ACore.TreeView_Select(this, false, false, ACore.LastSelectedSourceRecursive);
+    }
+
+    public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
+      var targetFolder = destFolder.GetByPath(Title, true);
+      if (targetFolder == null) return; // if folder doesn't exists => nothing was copied
+
+      foreach (var mi in MediaItems) {
+        var filePath = mi.FilePath;
+        var fileName = mi.FileName;
+
+        if (skipped.Remove(filePath)) continue;
+
+        if (renamed.TryGetValue(filePath, out var newFileName)) {
+          fileName = newFileName;
+          renamed.Remove(filePath);
+        }
+
+        mi.CopyTo(targetFolder, fileName);
+      }
+
+      foreach (var subFolder in Items.OfType<Folder>()) {
+        subFolder.CopyTo(targetFolder, ref skipped, ref renamed);
+      }
+
+      // if srcFolder have subFolders and targetFolder not => add place holder
+      if (Items.Count > 0 && targetFolder.Items.Count == 0)
+        targetFolder.Items.Add(new BaseTreeViewItem { Title = "..." });
+    }
+
+    public void MoveTo(Folder destFolder, ref HashSet<string> skipped) {
+      var targetFolder = (Folder)destFolder.Items.SingleOrDefault(x => x.Title.Equals(Title));
+      var srcExists = Directory.Exists(FullPath);
+      var deleteThis = !srcExists && targetFolder != null;
+
+      // if nothing was skipped and folder with the same name doesn't exist in destination
+      if (!srcExists && targetFolder == null) {
+        Parent.Items.Remove(this);
+        Parent = destFolder;
+
+        // insert in sort order
+        var folder = destFolder.Items.Cast<Folder>().FirstOrDefault(
+          f => string.Compare(f.Title, Title, StringComparison.OrdinalIgnoreCase) >= 0);
+        destFolder.Items.Insert(folder == null ? destFolder.Items.Count : destFolder.Items.IndexOf(folder), this);
+
+        return;
+      }
+
+      if (targetFolder == null)
+        targetFolder = destFolder.GetByPath(Title, true);
+      if (targetFolder == null) throw new DirectoryNotFoundException();
+
+      foreach (var mi in MediaItems.ToList()) {
+        if (skipped.Remove(mi.FilePath)) continue;
+        mi.MoveTo(targetFolder, mi.FileName);
+      }
+
+      foreach (var subFolder in Items.OfType<Folder>().ToList()) {
+        subFolder.MoveTo(targetFolder, ref skipped);
+      }
+
+      // if srcFolder have subFolders and targetFolder not => add place holder
+      if (Items.Count > 0 && targetFolder.Items.Count == 0)
+        targetFolder.Items.Add(new BaseTreeViewItem { Title = "..." });
+
+      if (deleteThis)
+        ACore.Folders.DeleteRecord(this, false);
     }
 
     public void LoadSubFolders(bool recursive) {
@@ -96,9 +170,9 @@ namespace PictureManager.Database {
       }
 
       // remove Folders deleted outside of this application
-      foreach (var item in Items) {
+      foreach (var item in Items.ToList()) {
         if (dirNames.Any(x => x.Equals(item.Title))) continue;
-        ACore.Folders.DeleteRecord((Folder) item);
+        ACore.Folders.DeleteRecord((Folder) item, false);
       }
 
       // add placeholder so the folder can be expanded
@@ -115,7 +189,7 @@ namespace PictureManager.Database {
             item.LoadSubFolders(true);
           }
           else {
-            if (Directory.EnumerateDirectories(item.FullPath).FirstOrDefault() != null) {
+            if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
               item.Items.Add(new BaseTreeViewItem {Title = "..."});
             }
             item.IsAccessible = true;
@@ -183,6 +257,44 @@ namespace PictureManager.Database {
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) Rename(inputDialog.Answer);
       else New(inputDialog.Answer);
+
+      ACore.Sdb.SaveAllTables();
+    }
+
+    /// <param name="path">full or partial folder path with no direcotry separator on the end</param>
+    /// <param name="withReload">try with reload if not the path was not found</param>
+    /// <returns>full folder path</returns>
+    public Folder GetByPath(string path, bool withReload = false) {
+      if (path.Equals(string.Empty)) return null;
+      if (FullPath.Equals(path)) return this;
+
+      var root = this;
+      var pathParts = path.Replace(FullPath, string.Empty)
+        .TrimStart(Path.DirectorySeparatorChar)
+        .Split(Path.DirectorySeparatorChar);
+
+      foreach (var pathPart in pathParts) {
+        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
+        if (folder == null) {
+          if (!withReload) return null;
+
+          // Reload SubFolders and try it again
+          root.LoadSubFolders(false);
+          folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
+          if (folder == null) return null;
+        }
+        root = (Folder) folder;
+      }
+
+      return root;
+    }
+
+    public BaseMediaItem GetMediaItemByPath(string path) {
+      var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
+      var folderPath = path.Substring(0, lioSep);
+      var fileName = path.Substring(lioSep + 1);
+      var folder = GetByPath(folderPath);
+      return folder?.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName));
     }
 
     public List<BaseMediaItem> GetMediaItemsRecursive() {
