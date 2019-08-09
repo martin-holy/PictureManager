@@ -17,7 +17,7 @@ namespace PictureManager.Database {
     private bool _isAccessible;
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath => GetFullPath();
-    public string FullPathCache => FullPath.Replace(":\\", Settings.Default.CachePath);
+    public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public override bool IsExpanded {
       get => base.IsExpanded;
       set {
@@ -51,12 +51,7 @@ namespace PictureManager.Database {
         names.Add(parent.Title);
         parent = parent.Parent as Folder;
       }
-
       names.Reverse();
-
-      // if just drive => add empty item so the FullPath ends with DirectorySeparatorChar
-      if (names.Count == 1)
-        names.Add(string.Empty);
 
       return string.Join(Path.DirectorySeparatorChar.ToString(), names);
     }
@@ -73,15 +68,19 @@ namespace PictureManager.Database {
     }
 
     public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
+      // get target folder with reload so that new folder is added
       var targetFolder = destFolder.GetByPath(Title, true);
       if (targetFolder == null) return; // if folder doesn't exists => nothing was copied
 
+      // Copy all MediaItems to target folder
       foreach (var mi in MediaItems) {
         var filePath = mi.FilePath;
         var fileName = mi.FileName;
 
+        // skip if this file was skipped
         if (skipped.Remove(filePath)) continue;
 
+        // change the file name if the file was renamed
         if (renamed.TryGetValue(filePath, out var newFileName)) {
           fileName = newFileName;
           renamed.Remove(filePath);
@@ -90,6 +89,7 @@ namespace PictureManager.Database {
         mi.CopyTo(targetFolder, fileName);
       }
 
+      // Copy all subFolders
       foreach (var subFolder in Items.OfType<Folder>()) {
         subFolder.CopyTo(targetFolder, ref skipped, ref renamed);
       }
@@ -100,7 +100,8 @@ namespace PictureManager.Database {
     }
 
     public void MoveTo(Folder destFolder, ref HashSet<string> skipped) {
-      var targetFolder = (Folder)destFolder.Items.SingleOrDefault(x => x.Title.Equals(Title));
+      // get target folder without reload!
+      var targetFolder = (Folder) destFolder.Items.SingleOrDefault(x => x.Title.Equals(Title));
       var srcExists = Directory.Exists(FullPath);
       var deleteThis = !srcExists && targetFolder != null;
 
@@ -109,7 +110,14 @@ namespace PictureManager.Database {
         Parent.Items.Remove(this);
         Parent = destFolder;
 
-        // insert in sort order
+        // add folder to the tree if destination is empty
+        if (destFolder.Items.Count == 1 && destFolder.Items[0].Title.Equals("...")) {
+          destFolder.Items.Clear();
+          destFolder.Items.Add(this);
+          return;
+        }
+
+        // insert folder to the tree in sort order
         var folder = destFolder.Items.Cast<Folder>().FirstOrDefault(
           f => string.Compare(f.Title, Title, StringComparison.OrdinalIgnoreCase) >= 0);
         destFolder.Items.Insert(folder == null ? destFolder.Items.Count : destFolder.Items.IndexOf(folder), this);
@@ -117,15 +125,20 @@ namespace PictureManager.Database {
         return;
       }
 
+      // get target folder with reload so that new folder is added
       if (targetFolder == null)
         targetFolder = destFolder.GetByPath(Title, true);
       if (targetFolder == null) throw new DirectoryNotFoundException();
 
+      // Move all MediaItems to target folder
       foreach (var mi in MediaItems.ToList()) {
+        // skip if this file was skipped
         if (skipped.Remove(mi.FilePath)) continue;
+
         mi.MoveTo(targetFolder, mi.FileName);
       }
 
+      // Move all subFolders
       foreach (var subFolder in Items.OfType<Folder>().ToList()) {
         subFolder.MoveTo(targetFolder, ref skipped);
       }
@@ -134,6 +147,7 @@ namespace PictureManager.Database {
       if (Items.Count > 0 && targetFolder.Items.Count == 0)
         targetFolder.Items.Add(new BaseTreeViewItem { Title = "..." });
 
+      // delete if this folder was moved completely and the target folder was already in DB
       if (deleteThis)
         ACore.Folders.DeleteRecord(this, false);
     }

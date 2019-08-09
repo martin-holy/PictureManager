@@ -6,7 +6,7 @@
       <Value Profile="(Default)">80</Value>
     </Setting>
     <Setting Name="CachePath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">:\Temp\PictureManagerCache\</Value>
+      <Value Profile="(Default)">:\Temp\PictureManagerCache</Value>
     </Setting>
     <Setting Name="ThumbnailSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">400</Value>

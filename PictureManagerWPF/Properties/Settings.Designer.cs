@@ -37,7 +37,7 @@ namespace PictureManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(":\\Temp\\PictureManagerCache\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute(":\\Temp\\PictureManagerCache")]
         public string CachePath {
             get {
                 return ((string)(this["CachePath"]));

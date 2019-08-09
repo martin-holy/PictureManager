@@ -49,8 +49,7 @@ namespace PictureManager.Dialogs {
     }
 
     private Uri GetThumbFilePath(string filePath) {
-      var volumeSeparator = new string(new[] {Path.VolumeSeparatorChar, Path.DirectorySeparatorChar});
-      var thumbPath = filePath.Replace(volumeSeparator, Settings.Default.CachePath);
+      var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
         AppCore.CreateThumbnail(filePath, thumbPath, Settings.Default.ThumbnailSize);
@@ -62,6 +61,11 @@ namespace PictureManager.Dialogs {
     private void BtnRename_OnClick(object sender, RoutedEventArgs e) {
       Error = false;
       TxtFileName.ToolTip = string.Empty;
+
+      if (FileName.Equals(string.Empty)) {
+        Error = true;
+        return;
+      }
 
       if (Path.GetInvalidFileNameChars().Any(FileName.Contains)) {
         TxtFileName.ToolTip = "New file name contains incorrect character(s)!";

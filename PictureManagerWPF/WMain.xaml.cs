@@ -223,21 +223,28 @@ namespace PictureManager {
       var items = thumbs ? ACore.MediaItems.Items.Where(x => x.IsSelected).ToList() : null;
       var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
 
-      if (items != null) {
+      if (items != null) { // MediaItems
         ACore.MediaItems.CopyMove(foMode, items, destFolder);
         ACore.MediaItems.Helper.IsModifed = true;
       }
-      else {
+      else { // Folder
         ACore.Folders.CopyMove(foMode, srcFolder, destFolder);
         ACore.MediaItems.Helper.IsModifed = true;
         ACore.Folders.Helper.IsModifed = true;
+        ACore.FolderKeywords.Load();
       }
 
       ACore.Sdb.SaveAllTables();
 
+      // reload last selected source if was moved
       if (foMode == FileOperationMode.Move && srcFolder == ACore.LastSelectedSource) {
-        ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
-        ACore.Folders.ExpandTo(srcFolder);
+        ACore.MediaItems.Current = null;
+        ACore.UpdateStatusBarInfo();
+
+        var folder = destFolder.GetByPath(srcFolder?.Title);
+        if (folder == null) return;
+        ACore.Folders.ExpandTo(folder);
+        ACore.TreeView_Select(folder, false, false, false);
       }
     }
 
@@ -506,13 +513,19 @@ namespace PictureManager {
       //focd.ShowDialog();
 
       var acore = ACore;
-
+      var drive = ACore.Folders.GetByPath("D:");
+      var test = ACore.Folders.GetByPath(@"D:\!test2");
+      var path = Extensions.PathCombine(drive.FullPath, @"blabla");
+      var jo = Directory.Exists("D:");
       //d:\!test2\moveTestData\2019\08
-      var folder = acore.Folders.GetByPath(@"D:\!test2");
+      /*var folder = acore.Folders.GetByPath(@"D:\!test2");
       var folder2 = folder.GetByPath(@"moveTestData\2019\08");
       var folder3 = acore.Folders.GetByPath(@"D:\!test2\moveTestData\2019\08");
 
-      var p = @"D:".Split(Path.DirectorySeparatorChar);
+      //D:\!test2\moveTestData\2019\08
+      //D:\Temp\PictureManagerCache\!test2\moveTestData\2019\08
+
+      var p = @"D:".Split(Path.DirectorySeparatorChar);*/
       Console.WriteLine("bla");
 
       

@@ -42,8 +42,8 @@ namespace PictureManager.Database {
     public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
     public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
 
-    public string FilePath => Path.Combine(Folder.FullPath, FileName);
-    public string FilePathCache => FilePath.Replace(new string(new[] {Path.VolumeSeparatorChar, Path.DirectorySeparatorChar}), Settings.Default.CachePath);
+    public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
+    public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
     public string CommentEscaped => Comment?.Replace("'", "''") ?? string.Empty;
@@ -165,25 +165,15 @@ namespace PictureManager.Database {
         InfoBoxThumb.Add(val);
     }
 
-    //TODO DEBUG
     public BaseMediaItem CopyTo(Folder folder, string fileName) {
       var copy = (BaseMediaItem)MemberwiseClone();
       copy.Id = ACore.MediaItems.Helper.GetNextId();
       copy.FileName = fileName;
       copy.Folder = folder;
       copy.Folder.MediaItems.Add(copy);
-      copy.GeoName?.MediaItems.Remove(this);
       copy.GeoName?.MediaItems.Add(copy);
-
-      foreach (var p in copy.People) {
-        p.MediaItems.Remove(this);
-        p.MediaItems.Add(copy);
-      }
-
-      foreach (var k in copy.Keywords) {
-        k.MediaItems.Remove(this);
-        k.MediaItems.Add(copy);
-      }
+      copy.People.ForEach(x => x.MediaItems.Add(copy));
+      copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
 
       ACore.MediaItems.AddRecord(copy);
 
@@ -191,7 +181,6 @@ namespace PictureManager.Database {
     }
 
     public void MoveTo(Folder folder, string fileName) {
-      // TODO zbytecne nemenit filename kdyz je stejnej, a mazani dat na parametr. mozna to nekde neni potreba
       // delete existing MediaItem if exists
       ACore.MediaItems.Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
 

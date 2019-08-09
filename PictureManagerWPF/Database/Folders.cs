@@ -77,6 +77,10 @@ namespace PictureManager.Database {
       // remove Folder from the Tree
       folder.Parent.Items.Remove(folder);
 
+      // colapse parent if doesn't have any subfolders
+      if (folder.Parent.Items.Count == 0)
+        folder.Parent.IsExpanded = false;
+
       // get all folders recursive
       var folders = new List<BaseTreeViewItem>();
       folder.GetThisAndItemsRecursive(ref folders);
@@ -106,9 +110,6 @@ namespace PictureManager.Database {
 
       // set Folders table as modifed
       Helper.IsModifed = true;
-
-      // reload FolderKeywords
-      ACore.FolderKeywords.Load();
     }
 
     public void AddDrives() {
@@ -163,8 +164,8 @@ namespace PictureManager.Database {
     public Folder GetByPath(string path, bool withReload = false) {
       if (path.Equals(string.Empty)) return null;
       var pathParts = path.Split(Path.DirectorySeparatorChar);
-      var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0]));
-      return ((Folder) drive)?.GetByPath(path, withReload);
+      var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0])) as Folder;
+      return pathParts.Length == 1 ? drive : drive?.GetByPath(path, withReload);
     }
 
     public void ExpandTo(Folder folder) {
@@ -202,21 +203,22 @@ namespace PictureManager.Database {
         var skippedFiles = new HashSet<string>();
         var renamedFiles = new Dictionary<string, string>();
 
-        // Files and Cache
-        CopyMoveFilesAndCache(mode, srcFolder.FullPath, Path.Combine(destFolder.FullPath, srcFolder.Title),
+        // Copy/Move Files and Cache on file system
+        CopyMoveFilesAndCache(mode, srcFolder.FullPath, Extensions.PathCombine(destFolder.FullPath, srcFolder.Title),
           fop, ref skippedFiles, ref renamedFiles, worker);
 
-        // DB  
+        // update objects with skipped and renamed files in mind
         switch (mode) {
           case FileOperationMode.Copy:
             srcFolder.CopyTo(destFolder, ref skippedFiles, ref renamedFiles);
             break;
           case FileOperationMode.Move:
-            // Rename Renamed Files if Mode is Move
+            // Rename Renamed Files
             foreach (var renamedFile in renamedFiles) {
-              var mediaItem = srcFolder.GetMediaItemByPath(renamedFile.Key);
-              if (mediaItem == null) continue;
-              mediaItem.FileName = renamedFile.Value;
+              var mi = srcFolder.GetMediaItemByPath(renamedFile.Key);
+              // renamed files can contain files which are not in DB
+              if (mi == null) continue;
+              mi.FileName = renamedFile.Value;
             }
 
             srcFolder.MoveTo(destFolder, ref skippedFiles);
@@ -227,9 +229,6 @@ namespace PictureManager.Database {
       fop.PbProgress.IsIndeterminate = true;
       fop.Worker.RunWorkerAsync();
       fop.ShowDialog();
-
-      // reload FolderKeywords
-      ACore.FolderKeywords.Load();
     }
 
     private void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath, Window owner,
@@ -237,42 +236,42 @@ namespace PictureManager.Database {
 
       try {
         Directory.CreateDirectory(destDirPath);
-        var srcDirPathLength = srcDirPath.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
+        var srcDirPathLength = srcDirPath.Length + 1;
 
+        // run this function for each sub directory
         foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
-          CopyMoveFilesAndCache(mode, dir, Path.Combine(destDirPath, dir.Substring(srcDirPathLength)), owner, ref skippedFiles,
-            ref renamedFiles, worker);
+          CopyMoveFilesAndCache(mode, dir, Extensions.PathCombine(destDirPath, dir.Substring(srcDirPathLength)),
+            owner, ref skippedFiles, ref renamedFiles, worker);
         }
 
-        var volumeSeparator = new string(new[] { Path.VolumeSeparatorChar, Path.DirectorySeparatorChar });
-        var srcDirPathCache = srcDirPath.Replace(volumeSeparator, Settings.Default.CachePath);
-        var destDirPathCache = destDirPath.Replace(volumeSeparator, Settings.Default.CachePath);
+        // get source and destination paths to Cache
+        var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
+        var destDirPathCache = destDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
 
+        // for each file in the folder
         foreach (var srcFilePath in Directory.EnumerateFiles(srcDirPath)) {
           var srcFileName = srcFilePath.Substring(srcDirPathLength);
           var destFileName = srcFileName;
-          var destFilePath = Path.Combine(destDirPath, destFileName);
-          var srcFilePathCache = Path.Combine(srcDirPathCache, srcFileName);
-          var destFilePathCache = Path.Combine(destDirPathCache, destFileName);
+          var destFilePath = Extensions.PathCombine(destDirPath, destFileName);
+          var srcFilePathCache = Extensions.PathCombine(srcDirPathCache, srcFileName);
+          var destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
 
           worker.ReportProgress(0, new[] { srcDirPath, destDirPath, srcFileName });
 
+          // if the file with the same name exists in the destination
+          // show dialog with options to Rename, Replace or Skip the file
           if (File.Exists(destFilePath)) {
             var result = ACore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, owner, ref destFileName);
 
             switch (result) {
               case FileOperationCollisionDialog.CollisionResult.Rename: {
                   renamedFiles.Add(srcFilePath, destFileName);
-                  destFilePath = Path.Combine(destDirPath, destFileName);
-                  destFilePathCache = Path.Combine(destDirPathCache, destFileName);
+                  destFilePath = Extensions.PathCombine(destDirPath, destFileName);
+                  destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
                   break;
                 }
               case FileOperationCollisionDialog.CollisionResult.Replace: {
                   File.Delete(destFilePath);
-
-                  if (File.Exists(destFilePathCache))
-                    File.Delete(destFilePathCache);
-
                   break;
                 }
               case FileOperationCollisionDialog.CollisionResult.Skip: {
@@ -283,22 +282,26 @@ namespace PictureManager.Database {
           }
 
           try {
+            // Copy/Move Files
             switch (mode) {
               case FileOperationMode.Copy:
-                File.Copy(srcFilePath, destFilePath);
+                File.Copy(srcFilePath, destFilePath, true);
                 break;
               case FileOperationMode.Move:
                 File.Move(srcFilePath, destFilePath);
                 break;
             }
 
+            // Copy/Move Cache
             if (File.Exists(srcFilePathCache)) {
               Directory.CreateDirectory(destDirPathCache);
               switch (mode) {
                 case FileOperationMode.Copy:
-                  File.Copy(srcFilePathCache, destFilePathCache);
+                  File.Copy(srcFilePathCache, destFilePathCache, true);
                   break;
                 case FileOperationMode.Move:
+                  if (File.Exists(destFilePathCache))
+                    File.Delete(destFilePathCache);
                   File.Move(srcFilePathCache, destFilePathCache);
                   break;
               }

@@ -257,8 +257,10 @@ namespace PictureManager {
 
     private void FolderDelete(object parameter) {
       var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result == MessageBoxResult.Yes)
-        ACore.Folders.DeleteRecord((Database.Folder) parameter, true);
+      if (result != MessageBoxResult.Yes) return;
+      ACore.Folders.DeleteRecord((Database.Folder) parameter, true);
+      // reload FolderKeywords
+      ACore.FolderKeywords.Load();
     }
 
     private void FolderAddToFavorites(object parameter) {

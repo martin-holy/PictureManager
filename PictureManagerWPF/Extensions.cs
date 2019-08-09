@@ -53,5 +53,15 @@ namespace PictureManager {
         Directory.Move(srcPath, destPath);
       }
     }
+
+    /// <summary>
+    /// Combine two paths with no checks!
+    /// </summary>
+    /// <param name="path1">path with no directory separator on the end</param>
+    /// <param name="path2"></param>
+    /// <returns></returns>
+    public static string PathCombine(string path1, string path2) {
+      return path1 + Path.DirectorySeparatorChar + path2;
+    }
   }
 }

@@ -455,6 +455,7 @@ namespace PictureManager.Database {
       }
 
       SplitedItemsReload();
+      Current = null;
       var count = Items.Count;
       if (count > 0) {
         if (count == firstIndex) firstIndex--;
@@ -547,7 +548,7 @@ namespace PictureManager.Database {
           var miNewFileName = mi.FileName;
 
           // Open FileOperationCollisionDialog if file with the same name exists in destination
-          var destFilePath = Path.Combine(destFolder.FullPath, mi.FileName);
+          var destFilePath = Extensions.PathCombine(destFolder.FullPath, mi.FileName);
           if (File.Exists(destFilePath)) {
             var result = ACore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
 
@@ -557,8 +558,9 @@ namespace PictureManager.Database {
             }
           }
 
-          switch (mode) {
-            case FileOperationMode.Copy: {
+          try {
+            switch (mode) {
+              case FileOperationMode.Copy: {
                 // create object copy
                 var miCopy = mi.CopyTo(destFolder, miNewFileName);
                 // copy MediaItem and cache on file system
@@ -567,7 +569,7 @@ namespace PictureManager.Database {
                 File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
                 break;
               }
-            case FileOperationMode.Move: {
+              case FileOperationMode.Move: {
                 var srcFilePath = mi.FilePath;
                 var srcFilePathCache = mi.FilePathCache;
 
@@ -586,6 +588,10 @@ namespace PictureManager.Database {
                 File.Move(srcFilePathCache, mi.FilePathCache);
                 break;
               }
+            }
+          }
+          catch (Exception ex) {
+            AppCore.ShowErrorDialog(ex);
           }
 
           done++;
