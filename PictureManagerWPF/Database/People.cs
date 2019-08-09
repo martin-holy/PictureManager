@@ -76,6 +76,10 @@ namespace PictureManager.Database {
       // add new Person to the tree
       person.Parent = root;
       ItemSetInPlace(root, true, person);
+
+      if (root is CategoryGroup)
+        ACore.CategoryGroups.Helper.IsModifed = true;
+
       Mut.ReleaseMutex();
 
       return person;

@@ -401,7 +401,7 @@ namespace PictureManager.Database {
             //Filter out duplicities
             foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
               if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-              var keyword = ACore.Keywords.GetKeywordByFullPath(k);
+              var keyword = ACore.Keywords.GetByFullPath(k);
               if (keyword != null)
                 Keywords.Add(keyword);
             }

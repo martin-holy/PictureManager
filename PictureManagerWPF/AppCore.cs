@@ -215,8 +215,8 @@ namespace PictureManager {
             }
 
             AppInfo.AppMode = AppMode.Browser;
-            MediaItems.Load(LastSelectedSource, recursive);
             MediaItems.ScrollTo(0);
+            MediaItems.Load(LastSelectedSource, recursive);
             LoadThumbnails();
             GC.Collect();
             break;

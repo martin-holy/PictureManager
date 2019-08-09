@@ -12,6 +12,7 @@ namespace PictureManager.Database {
     public Dictionary<int, Keyword> AllDic { get; } = new Dictionary<int, Keyword>();
 
     private static readonly Mutex Mut = new Mutex();
+    private CategoryGroup _autoAddedGroup;
 
     public Keywords() : base(Category.Keywords) {
       Title = "Keywords";
@@ -57,6 +58,10 @@ namespace PictureManager.Database {
       Items.Clear();
       LoadGroups();
 
+      // group for keywords automatically added from MediaItems metadata
+      _autoAddedGroup = Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
+                       GroupCreate("Auto Added");
+
       // add Keywords without group
       foreach (var keyword in All.Where(x => x.Parent == null)) {
         keyword.Parent = this;
@@ -85,14 +90,14 @@ namespace PictureManager.Database {
       AllDic.Add(record.Id, record);
     }
 
-    public Keyword GetKeywordByFullPath(string fullPath) {
+    public Keyword GetByFullPath(string fullPath) {
       if (fullPath.Equals(string.Empty)) return null;
 
       Mut.WaitOne();
 
       var pathNames = fullPath.Split('/');
 
-      // get root Keyword => Parent is not Keyword but Keywords or CategoryGroup
+      // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
       var keyword = All.SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
 
       // return Keyword if it was found and is 1 level type
@@ -102,10 +107,9 @@ namespace PictureManager.Database {
       }
 
       // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
-      var root = keyword?.Parent ??
-                 (Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
-                  GroupCreate("Auto Added"));
+      var root = keyword?.Parent ?? _autoAddedGroup;
 
+      // for each keyword in pathNames => find or create
       foreach (var name in pathNames) {
         root = root.Items.OfType<Keyword>().SingleOrDefault(x => x.Title.Equals(name))
                ?? CreateKeyword(root, name);
@@ -115,13 +119,16 @@ namespace PictureManager.Database {
       return root as Keyword;
     }
 
-    public Keyword CreateKeyword(BaseTreeViewItem root, string name) {
+    private Keyword CreateKeyword(BaseTreeViewItem root, string name) {
       Mut.WaitOne();
       var keyword = new Keyword(Helper.GetNextId(), name, root, 0);
 
       // add new Keyword to the database and to the tree
       AddRecord(keyword);
       root.Items.Add(keyword);
+
+      if (root is CategoryGroup)
+        ACore.CategoryGroups.Helper.IsModifed = true;
 
       Mut.ReleaseMutex();
 
@@ -170,7 +177,9 @@ namespace PictureManager.Database {
         foreach (var bmi in k.MediaItems) {
           bmi.Keywords.Remove(k);
           ACore.MediaItems.Helper.IsModifed = true;
-        } 
+        }
+
+        k.Parent = null;
 
         // remove Keyword from DB
         All.Remove(k);
@@ -198,8 +207,11 @@ namespace PictureManager.Database {
         if (!(item is Keyword keyword)) return;
 
         keyword.Idx = 0;
-        ItemMove(item, dest, ((Keyword)item).Id);
+        ItemMove(item, dest);
       }
+
+      Helper.IsModifed = true;
+      ACore.Sdb.SaveAllTables();
     }
   }
 }

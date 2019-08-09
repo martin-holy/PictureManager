@@ -26,6 +26,7 @@ namespace PictureManager.ViewModel {
 
       ACore.CategoryGroups.AddRecord(cg);
       GroupSetInPalce(cg, true);
+      ACore.Sdb.SaveAllTables();
       return cg;
     }
 
@@ -118,10 +119,13 @@ namespace PictureManager.ViewModel {
       //implemented in inherited class
     }
 
-    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, int itemId) {
+    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest) {
       item.Parent.Items.Remove(item);
       item.Parent = dest;
       ItemSetInPlace(dest, true, item);
+
+      if (item.Parent is CategoryGroup || dest is CategoryGroup)
+        ACore.CategoryGroups.Helper.IsModifed = true;
     }
 
     public void ItemSetInPlace(BaseTreeViewItem root, bool isNew, BaseTreeViewItem item) {

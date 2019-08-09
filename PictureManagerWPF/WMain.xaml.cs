@@ -312,7 +312,7 @@ namespace PictureManager {
 
     private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
       var panel = (StackPanel)sender;
-
+      // TODO udelat lip
       if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
         var srcData = (Database.Keyword)e.Data.GetData(typeof(Database.Keyword));
         var destData = (ViewModel.BaseTreeViewItem)panel.DataContext;
@@ -324,7 +324,7 @@ namespace PictureManager {
         var srcData = (Database.Person)e.Data.GetData(typeof(Database.Person));
         if (srcData == null) return;
         var destData = panel.DataContext as ViewModel.BaseTreeViewItem;
-        ACore.People.ItemMove(srcData, destData, srcData.Id);
+        ACore.People.ItemMove(srcData, destData);
       }
     }
     #endregion
