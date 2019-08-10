@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Shell32;
 
 namespace PictureManager {
   /// <summary>
@@ -513,19 +514,21 @@ namespace PictureManager {
       //focd.ShowDialog();
 
       var acore = ACore;
-      var drive = ACore.Folders.GetByPath("D:");
-      var test = ACore.Folders.GetByPath(@"D:\!test2");
-      var path = Extensions.PathCombine(drive.FullPath, @"blabla");
-      var jo = Directory.Exists("D:");
-      //d:\!test2\moveTestData\2019\08
-      /*var folder = acore.Folders.GetByPath(@"D:\!test2");
-      var folder2 = folder.GetByPath(@"moveTestData\2019\08");
-      var folder3 = acore.Folders.GetByPath(@"D:\!test2\moveTestData\2019\08");
 
-      //D:\!test2\moveTestData\2019\08
-      //D:\Temp\PictureManagerCache\!test2\moveTestData\2019\08
+      var mkv = @"d:\!test2\vid\20190324_145306_Kos a veverka_lq.mkv";
+      var mp4 = @"d:\!test2\vid\20190715_105711.mp4";
 
-      var p = @"D:".Split(Path.DirectorySeparatorChar);*/
+      //var fileInfoMkv = ShellStuff.FileInformation.GetFileIdInfo(mkv);
+      //var fileInfoMp4 = ShellStuff.FileInformation.GetFileIdInfo(mp4);
+
+      //var metadataMkv = ShellStuff.FileInformation.GetVideoMetadata(mkv);
+      //var metadataMp4 = ShellStuff.FileInformation.GetVideoMetadata(mp4);
+
+
+
+      //var getAllMp4 = ShellStuff.FileInformation.GetAllVideoMetadata(mp4);
+      //var getAllMkv = ShellStuff.FileInformation.GetAllVideoMetadata(mkv);
+
       Console.WriteLine("bla");
 
       

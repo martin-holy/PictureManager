@@ -106,9 +106,12 @@ namespace PictureManager.Database {
         var person = (Person)item;
         person.Title = inputDialog.Answer;
         ItemSetInPlace(person.Parent, false, person);
-        Helper.IsModifed = true;
+        SaveToFile();
       }
-      else CreatePerson(item, inputDialog.Answer);
+      else {
+        CreatePerson(item, inputDialog.Answer);
+        ACore.Sdb.SaveAllTables();
+      }
     }
 
     public override void ItemDelete(BaseTreeViewItem item) {

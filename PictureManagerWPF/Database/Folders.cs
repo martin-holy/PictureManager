@@ -151,7 +151,7 @@ namespace PictureManager.Database {
 
         // add placeholder so the Drive can be expanded
         if (di.IsReady && item.Items.Count == 0)
-          item.Items.Add(new BaseTreeViewItem { Title = "..." });
+          item.Items.Add(new BaseTreeViewItem());
       }
 
       // remove not available drives

@@ -5,7 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
-using System.Threading;
 using System.Windows;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
@@ -41,7 +40,6 @@ namespace PictureManager {
     public ViewModel.AppInfo AppInfo { get; } = new ViewModel.AppInfo();
     public Collection<ViewModel.BaseTreeViewTagItem> MarkedTags { get; } = new Collection<ViewModel.BaseTreeViewTagItem>();
     public BackgroundWorker ThumbsWorker { get; set; }
-    public AutoResetEvent ThumbsResetEvent { get; set; } = new AutoResetEvent(false);
     public Database.Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -75,10 +73,6 @@ namespace PictureManager {
         if (ThumbsWorker != null) {
           ThumbsWorker.Dispose();
           ThumbsWorker = null;
-        }
-        if (ThumbsResetEvent != null) {
-          ThumbsResetEvent.Dispose();
-          ThumbsResetEvent = null;
         }
       }
       _disposed = true;
@@ -201,18 +195,9 @@ namespace PictureManager {
               return;
             }
 
-            /*if (bti == null) return;
-            bti.IsSelected = true;
-            LastSelectedSource = bti;*/
-
             LastSelectedSource = (ViewModel.BaseTreeViewItem) item;
             LastSelectedSource.IsSelected = true;
             LastSelectedSourceRecursive = recursive;
-
-            if (ThumbsWorker != null && ThumbsWorker.IsBusy) {
-              ThumbsWorker.CancelAsync();
-              ThumbsResetEvent.WaitOne();
-            }
 
             AppInfo.AppMode = AppMode.Browser;
             MediaItems.ScrollTo(0);
@@ -355,10 +340,9 @@ namespace PictureManager {
           var done = 0;
           e.Result = e.Argument;
 
-          foreach (var mi in MediaItems.Items) {
+          foreach (var mi in MediaItems.Items.ToList()) {
             if (worker.CancellationPending) {
               e.Cancel = true;
-              ThumbsResetEvent.Set();
               break;
             }
 
@@ -381,7 +365,11 @@ namespace PictureManager {
         };
 
         ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-          if (((BackgroundWorker) sender).CancellationPending) return;
+          if (e.Cancelled) {
+            // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
+            ThumbsWorker.RunWorkerAsync();
+            return;
+          }
 
           if ((bool) Application.Current.Properties[nameof(AppProperty.SubmitChanges)])
             Sdb.SaveAllTables();
@@ -397,6 +385,12 @@ namespace PictureManager {
 
           MarkUsedKeywordsAndPeople();
         }; 
+      }
+
+      // worker will be started after cancel is done from RunWorkerCompleted
+      if (ThumbsWorker.IsBusy) {
+        ThumbsWorker.CancelAsync();
+        return;
       }
 
       Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = false;

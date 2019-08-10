@@ -339,10 +339,17 @@ namespace PictureManager.Database {
     public bool ReadMetadata(bool gpsOnly = false) {
       try {
         if (MediaType == MediaType.Video) {
-          var size = ShellStuff.FileInformation.GetVideoMetadata(FilePath);
-          Height = size[0];
-          Width = size[1];
-          Orientation = size[2];
+          Application.Current.Dispatcher.Invoke(delegate {
+            try {
+              var size = ShellStuff.FileInformation.GetVideoMetadata(Folder.FullPath, FileName);
+              Height = size[0];
+              Width = size[1];
+              Orientation = size[2];
+            }
+            catch (Exception ex) {
+              AppCore.ShowErrorDialog(ex);
+            }
+          });
         }
         else {
           var decoder = BitmapDecoder.Create(new Uri(FilePath), BitmapCreateOptions.None, BitmapCacheOption.None);

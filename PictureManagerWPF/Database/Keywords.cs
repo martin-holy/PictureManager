@@ -157,9 +157,12 @@ namespace PictureManager.Database {
         var keyword = (Keyword)item;
         keyword.Title = inputDialog.Answer;
         Sort(keyword.Parent.Items, false);
-        Helper.IsModifed = true;
+        SaveToFile();
       }
-      else CreateKeyword(item, inputDialog.Answer);
+      else {
+        CreateKeyword(item, inputDialog.Answer);
+        ACore.Sdb.SaveAllTables();
+      }
     }
 
     public override void ItemDelete(BaseTreeViewItem item) {

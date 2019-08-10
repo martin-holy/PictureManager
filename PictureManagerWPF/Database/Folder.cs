@@ -96,7 +96,7 @@ namespace PictureManager.Database {
 
       // if srcFolder have subFolders and targetFolder not => add place holder
       if (Items.Count > 0 && targetFolder.Items.Count == 0)
-        targetFolder.Items.Add(new BaseTreeViewItem { Title = "..." });
+        targetFolder.Items.Add(new BaseTreeViewItem());
     }
 
     public void MoveTo(Folder destFolder, ref HashSet<string> skipped) {
@@ -111,7 +111,7 @@ namespace PictureManager.Database {
         Parent = destFolder;
 
         // add folder to the tree if destination is empty
-        if (destFolder.Items.Count == 1 && destFolder.Items[0].Title.Equals("...")) {
+        if (destFolder.Items.Count == 1 && destFolder.Items[0].Title == null) {
           destFolder.Items.Clear();
           destFolder.Items.Add(this);
           return;
@@ -145,7 +145,7 @@ namespace PictureManager.Database {
 
       // if srcFolder have subFolders and targetFolder not => add place holder
       if (Items.Count > 0 && targetFolder.Items.Count == 0)
-        targetFolder.Items.Add(new BaseTreeViewItem { Title = "..." });
+        targetFolder.Items.Add(new BaseTreeViewItem());
 
       // delete if this folder was moved completely and the target folder was already in DB
       if (deleteThis)
@@ -154,7 +154,7 @@ namespace PictureManager.Database {
 
     public void LoadSubFolders(bool recursive) {
       // remove placeholder
-      if (Items.Count == 1 && Items[0].Title.Equals("..."))
+      if (Items.Count == 1 && Items[0].Title == null)
         Items.RemoveAt(0);
 
       var dirNames = new List<string>();
@@ -204,7 +204,7 @@ namespace PictureManager.Database {
           }
           else {
             if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
-              item.Items.Add(new BaseTreeViewItem {Title = "..."});
+              item.Items.Add(new BaseTreeViewItem());
             }
             item.IsAccessible = true;
           } 

@@ -92,6 +92,7 @@ namespace PictureManager.Database {
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
 
       InsertGeoNameHierarchy(lat, lng);
+      SaveToFile();
     }
 
     public string GetGeoNameHierarchy(GeoName geoName) {

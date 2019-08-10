@@ -479,6 +479,7 @@ namespace PictureManager {
         AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
         mi.SetInfoBox();
       }
+      ACore.Sdb.SaveAllTables();
     }
 
     private bool CanAddGeoNamesFromFiles() {
@@ -517,6 +518,7 @@ namespace PictureManager {
 
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
+      ACore.Sdb.SaveAllTables();
     }
 
     private void ViewerChange(object parameter) {
