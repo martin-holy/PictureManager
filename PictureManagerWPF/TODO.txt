@@ -13,4 +13,3 @@
 - funkci zobraz random x obrazku 
 - pri potvrzovani mazani zobrazit nazev souboru/slozky
 - pridat do menu na slozce => rebuild thumbnails, reload metadata a zrusit Catalog
-- pridat do menu na slozce => set as FolderKeyword a udelat dialog na odstraneni FolderKeywrds

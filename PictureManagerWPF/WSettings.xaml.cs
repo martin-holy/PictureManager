@@ -9,7 +9,7 @@ namespace PictureManager {
       InitializeComponent();
     }
 
-    private void ButtonBase_OnClick(object sender, RoutedEventArgs e) {
+    private void Save(object sender, RoutedEventArgs e) {
       DialogResult = true;
     }
   }

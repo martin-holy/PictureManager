@@ -309,7 +309,6 @@ namespace PictureManager {
       var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
         Settings.Default.Save();
-        ACore.FolderKeywords.Load();
       }
       else {
         Settings.Default.Reload();

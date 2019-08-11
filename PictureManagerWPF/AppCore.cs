@@ -350,11 +350,12 @@ namespace PictureManager {
             if (mi.IsNew) {
               mi.IsNew = false;
               mi.ReadMetadata();
+              if (mi.IsCorupted) continue;
               mi.SetThumbSize();
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
 
-            if (!mi.IsCorupted && !File.Exists(mi.FilePathCache))
+            if (!File.Exists(mi.FilePathCache))
               CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
             if (mi.InfoBoxThumb.Count == 0)
@@ -366,14 +367,18 @@ namespace PictureManager {
         };
 
         ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-          // delete corupted MediaItems
-          foreach (var mi in ((List<Database.BaseMediaItem>) e.Result).Where(x => x.IsCorupted))
-            MediaItems.Delete(mi);
-
           if (e.Cancelled) {
             // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
             ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
             return;
+          }
+
+          AppInfo.ProgressBarValue = 100;
+
+          // delete corupted MediaItems
+          foreach (var mi in ((List<Database.BaseMediaItem>) e.Result).Where(x => x.IsCorupted)) {
+            MediaItems.Delete(mi);
+            MediaItems.Items.Remove(mi);
           }
 
           if ((bool) Application.Current.Properties[nameof(AppProperty.SubmitChanges)])

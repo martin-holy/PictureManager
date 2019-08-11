@@ -5,10 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:p="clr-namespace:PictureManager.Properties"
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:userControls="clr-namespace:PictureManager.UserControls"
         mc:Ignorable="d"
         Title="Settings" 
-        Height="300" 
+        Height="162.439" 
         Width="497.561" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
@@ -16,12 +15,11 @@
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
         ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner" TitleCaps="False">
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal">
 
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="28" />
@@ -31,23 +29,21 @@
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
     <Label Grid.Row="0" Grid.Column="0" Content="Cache path:"/>
-    <Label Grid.Row="1" Grid.Column="0" Content="Folder keyword ignore list:"/>
-    <Label Grid.Row="2" Grid.Column="0" Content="Jpeg quality level:"/>
-    <Label Grid.Row="3" Grid.Column="0" Content="Thumbnail size:"/>
+    <Label Grid.Row="1" Grid.Column="0" Content="Jpeg quality level:"/>
+    <Label Grid.Row="2" Grid.Column="0" Content="Thumbnail size:"/>
 
     <TextBox Grid.Column="1" Grid.Row="0" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=CachePath, Mode=TwoWay}" />
-    <userControls:DirectoryList Grid.Column="1" Grid.Row="1" Margin="3" x:Name="DirListFkIgnoreList" />
-    <DockPanel Grid.Column="1" Grid.Row="2">
+    <DockPanel Grid.Column="1" Grid.Row="1">
       <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}" />
       <Slider Margin="3" Minimum="80" Maximum="95" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}"/>
     </DockPanel>
-    <DockPanel Grid.Column="1" Grid.Row="3">
+    <DockPanel Grid.Column="1" Grid.Row="2">
       <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}" />
       <Slider Margin="3" Minimum="200" Maximum="500" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}"/>
     </DockPanel>
-    <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 3, 0">
-      <Button Margin="3, 0, 0, 3" Content="Save" Click="ButtonBase_OnClick" />
-      <Button Margin="3, 0, 0, 3" Content="Cancel" IsCancel="True" />
+    <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 3, 0">
+      <Button Margin="3, 0, 0, 3" Content="Save" IsDefault="True" MinWidth="60" Click="Save" />
+      <Button Margin="3, 0, 0, 3" Content="Cancel" IsCancel="True" MinWidth="60" />
     </StackPanel>
   </Grid>
 
