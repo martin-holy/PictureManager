@@ -464,7 +464,8 @@ namespace PictureManager.Database {
       }
     }
 
-    public void SplitedItemsAdd(BaseMediaItem bmi) {
+    public void SplitedItemsAdd(int index) {
+      var bmi = Items[index];
       var lastIndex = SplitedItems.Count - 1;
       if (lastIndex == -1) {
         SplitedItems.Add(new ObservableCollection<BaseMediaItem>());

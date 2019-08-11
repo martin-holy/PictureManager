@@ -8,7 +8,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Shell32;
 
 namespace PictureManager {
   /// <summary>
@@ -312,19 +311,18 @@ namespace PictureManager {
     }
 
     private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
-      var panel = (StackPanel)sender;
-      // TODO udelat lip
+      var panel = (StackPanel) sender;
+      if (!(panel.DataContext is ViewModel.BaseTreeViewItem destData)) return;
+
       if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
         var srcData = (Database.Keyword)e.Data.GetData(typeof(Database.Keyword));
-        var destData = (ViewModel.BaseTreeViewItem)panel.DataContext;
+        if (srcData == null) return;
         var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
-        if (srcData == null || destData == null) return;
         ACore.Keywords.ItemMove(srcData, destData, dropOnTop);
       }
       else if (e.Data.GetDataPresent(typeof(Database.Person))) {
         var srcData = (Database.Person)e.Data.GetData(typeof(Database.Person));
         if (srcData == null) return;
-        var destData = panel.DataContext as ViewModel.BaseTreeViewItem;
         ACore.People.ItemMove(srcData, destData);
       }
     }

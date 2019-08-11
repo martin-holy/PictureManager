@@ -330,17 +330,18 @@ namespace PictureManager {
 
         ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
           if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-          MediaItems.SplitedItemsAdd(MediaItems.Items[(int) e.UserState]);
+          MediaItems.SplitedItemsAdd((int) e.UserState);
           AppInfo.ProgressBarValue = e.ProgressPercentage;
         };
 
         ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
           var worker = (BackgroundWorker) sender;
-          var count = MediaItems.Items.Count;
+          var items = (List<Database.BaseMediaItem>) e.Argument;
+          var count = items.Count;
           var done = 0;
           e.Result = e.Argument;
 
-          foreach (var mi in MediaItems.Items.ToList()) {
+          foreach (var mi in items) {
             if (worker.CancellationPending) {
               e.Cancel = true;
               break;
@@ -365,9 +366,13 @@ namespace PictureManager {
         };
 
         ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+          // delete corupted MediaItems
+          foreach (var mi in ((List<Database.BaseMediaItem>) e.Result).Where(x => x.IsCorupted))
+            MediaItems.Delete(mi);
+
           if (e.Cancelled) {
             // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
-            ThumbsWorker.RunWorkerAsync();
+            ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
             return;
           }
 
@@ -378,10 +383,6 @@ namespace PictureManager {
             MediaItems.Current.IsSelected = false;
             MediaItems.Current.IsSelected = true;
           }
-
-          // delete corupted MediaItems
-          foreach (var mi in MediaItems.Items.Where(x => x.IsCorupted))
-            MediaItems.Delete(mi);
 
           MarkUsedKeywordsAndPeople();
         }; 
@@ -394,7 +395,7 @@ namespace PictureManager {
       }
 
       Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = false;
-      ThumbsWorker.RunWorkerAsync();
+      ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
     }
 
     public void SetMediaItemSizesLoadedRange() {

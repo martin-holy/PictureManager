@@ -2,14 +2,10 @@
 - focus to newly created folder
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
 - reload metadata in new thread + reload thumbnails
-- neprerusi se nacitani
 - pri odstraneni osoby se neprepocita pocet na kategorii a zustava tam jeden i kdyz tam nic neni
-- kdyz presunu slozku treba "2018" do slozky kde uz slozka "2018" je, tak je pak ve stromu 2x, jinak snad v pohode
-- pri presunu, kdyz uz soubor v cili existuje a da se preskocit, tak se soubor odstrani z nahledu, ale po znovunacteni tam porad je
 
 #New
 - on "presentation start" show slider how many seconds
-- zobrazovat progres pri kopirovaní/přesouvaní
 - na prehravani panoramat zmensit obrazek na vysku obrazovky
 - zmensovat hodne velky obrazky pri prohlizeni
 - pridat progress bar do "rebuild thumbnails"
