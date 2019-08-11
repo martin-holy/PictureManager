@@ -25,6 +25,7 @@ namespace PictureManager {
     public static RoutedUICommand FolderDelete { get; } = new RoutedUICommand {Text = "Delete"};
     public static RoutedUICommand FolderAddToFavorites { get; } = new RoutedUICommand {Text = "Add to Favorites"};
     public static RoutedUICommand FolderRemoveFromFavorites { get; } = new RoutedUICommand {Text = "Remove from Favorites"};
+    public static RoutedUICommand FolderSetAsFolderKeyword { get; } = new RoutedUICommand { Text = "Set as Folder Keyword" };
     public static RoutedUICommand FilterNew { get; } = new RoutedUICommand {Text = "New"};
     public static RoutedUICommand FilterEdit { get; } = new RoutedUICommand {Text = "Edit"};
     public static RoutedUICommand FilterDelete { get; } = new RoutedUICommand {Text = "Delete"};
@@ -47,5 +48,6 @@ namespace PictureManager {
     public static RoutedUICommand ShowHideTabMain { get; } = new RoutedUICommand {Text = "S/H"};
     public static RoutedUICommand AddGeoNamesFromFiles { get; } = new RoutedUICommand {Text = "GeoNames"};
     public static RoutedUICommand ViewerChange { get; } = new RoutedUICommand {Text = ""};
+    public static RoutedUICommand OpenFolderKeywordsList { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
   }
 }

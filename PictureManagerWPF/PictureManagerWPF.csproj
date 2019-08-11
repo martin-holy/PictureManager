@@ -99,6 +99,9 @@
     <Compile Include="Dialogs\FileOperationCollisionDialog.xaml.cs">
       <DependentUpon>FileOperationCollisionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\FolderKeywordList.xaml.cs">
+      <DependentUpon>FolderKeywordList.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\SqlQueryDialog.xaml.cs">
       <DependentUpon>SqlQueryDialog.xaml</DependentUpon>
     </Compile>
@@ -180,6 +183,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\FileOperationCollisionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FolderKeywordList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -126,6 +126,7 @@ namespace PictureManager {
             menu.Items.Add(new MenuItem { Command = Commands.FolderRename, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.FolderDelete, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.FolderAddToFavorites, CommandParameter = item });
+            menu.Items.Add(new MenuItem { Command = Commands.FolderSetAsFolderKeyword, CommandParameter = item });
           }
           break;
         }
@@ -142,6 +143,10 @@ namespace PictureManager {
         case Database.Keyword _:
         case Database.GeoName _: {
           menu.Items.Add(new MenuItem { Command = Commands.MediaItemsLoadByTag, CommandParameter = item });
+          break;
+        }
+        case ViewModel.FolderKeywords _: {
+          menu.Items.Add(new MenuItem {Command = Commands.OpenFolderKeywordsList});
           break;
         }
       }

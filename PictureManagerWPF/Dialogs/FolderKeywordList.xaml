@@ -1,0 +1,33 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.FolderKeywordList"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  mc:Ignorable="d"
+  Title="Folder Keywords" Height="300" Width="515" 
+  BorderBrush="{DynamicResource AccentColorBrush}" 
+  Background="{DynamicResource WhiteBrush}" 
+  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
+  WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
+  DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+  <DockPanel>
+    <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,5,5">
+      <Button Name="BtnRemove" MinWidth="60" Margin="0,0,10,0" Click="BtnRemove_OnClick">_Remove</Button>
+      <Button IsCancel="True" MinWidth="60">_Close</Button>
+    </WrapPanel>
+
+    <ListBox x:Name="LbFolderKeywords" SelectionMode="Multiple" ItemsSource="{Binding Items}" Margin="4,5,4,0">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal" Background="Transparent" >
+            <Rectangle Style="{StaticResource IconRect}" />
+            <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0" />
+          </StackPanel> 
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+  
+</controls:MetroWindow>

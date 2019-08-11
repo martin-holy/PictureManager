@@ -32,6 +32,7 @@
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:Commands.CompressPictures" />
           <MenuItem Command="pm:Commands.ReloadMetadata" />
+          <MenuItem Command="pm:Commands.OpenFolderKeywordsList" />
           <MenuItem Command="pm:Commands.OpenCatalog" />
           <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
@@ -496,7 +497,7 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.Data.GeoNameId}" Value="{x:Null}">
+                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.GeoName.Id}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>

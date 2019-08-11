@@ -33,6 +33,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.FolderDelete, HandleExecute(FolderDelete)));
       CommandBindings.Add(new CommandBinding(Commands.FolderAddToFavorites, HandleExecute(FolderAddToFavorites)));
       CommandBindings.Add(new CommandBinding(Commands.FolderRemoveFromFavorites, HandleExecute(FolderRemoveFromFavorites)));
+      CommandBindings.Add(new CommandBinding(Commands.FolderSetAsFolderKeyword, HandleExecute(FolderSetAsFolderKeyword)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerIncludeFolder, HandleExecute(ViewerIncludeFolder)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerExcludeFolder, HandleExecute(ViewerExcludeFolder)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerRemoveFolder, HandleExecute(ViewerRemoveFolder)));
@@ -50,6 +51,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.ViewerChange, HandleExecute(ViewerChange)));
       CommandBindings.Add(new CommandBinding(Commands.OpenAbout, HandleExecute(OpenAbout)));
       CommandBindings.Add(new CommandBinding(Commands.OpenCatalog, HandleExecute(OpenCatalog)));
+      CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
       CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
     }
 
@@ -271,6 +273,11 @@ namespace PictureManager {
       ACore.FavoriteFolders.Remove((Database.FavoriteFolder) parameter);
     }
 
+    private void FolderSetAsFolderKeyword(object parameter) {
+      ((Database.Folder) parameter).IsFolderKeyword = true;
+      ACore.Folders.Helper.Table.SaveToFile();
+    }
+
     private void GeoNameNew(object parameter) {
       var inputDialog = new InputDialog {
         Owner = this,
@@ -359,6 +366,11 @@ namespace PictureManager {
     private void OpenCatalog() {
       var catalog = new WCatalog {Owner = this};
       catalog.Show();
+    }
+
+    private void OpenFolderKeywordsList() {
+      var fkl = new FolderKeywordList {Owner = this};
+      fkl.ShowDialog();
     }
 
     private bool CanKeywordsEdit() {
