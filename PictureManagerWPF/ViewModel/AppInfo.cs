@@ -13,6 +13,7 @@ namespace PictureManager.ViewModel {
     private int _selected;
     private int _modifed;
     private int _progressBarValue;
+    private bool _progressBarIsIndeterminate;
     private string _positionSlashCount;
     private BaseMediaItem _currentMediaItem;
     private AppMode _appMode;
@@ -21,6 +22,7 @@ namespace PictureManager.ViewModel {
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
     public int ProgressBarValue { get => _progressBarValue; set { _progressBarValue = value; OnPropertyChanged(); } }
+    public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public string Comment { get; set; } = string.Empty;
@@ -34,7 +36,7 @@ namespace PictureManager.ViewModel {
       get {
         if (CurrentMediaItem == null) return string.Empty;
         if (AppMode == AppMode.Viewer && CurrentMediaItem.Folder.FolderKeyword != null) 
-          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}\\{CurrentMediaItem.FileName}"; // TODO ne title ale FullPath
+          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}\\{CurrentMediaItem.FileName}";
         return CurrentMediaItem.FilePath;
       }
     }

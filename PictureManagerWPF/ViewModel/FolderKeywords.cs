@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
@@ -14,22 +13,21 @@ namespace PictureManager.ViewModel {
 
       var fkRoots = ACore.Folders.All.Where(x => x.IsFolderKeyword);
 
-      foreach (var fkRoot in fkRoots)
-        LoadRecursive(fkRoot, null);
+      foreach (var fkRoot in fkRoots) {
+        if (fkRoot.IsThisOrParentHidden()) continue;
+        LoadRecursive(fkRoot, this);
+      }
     }
 
-    // TODO predelat na OnExpand a ne recursive
-    private void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
-      foreach (var fi in folder.Items.Cast<Folder>()) {
-        // TODO check jesli jsou nasledujici 2 podminky potreba az to bude vsechno hotovy
-        if (!Directory.Exists(fi.FullPath)) continue;
-        if (!ACore.CanViewerSeeThisDirectory(fi)) continue;
+    private static void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
+      foreach (var fi in folder.Items.OfType<Folder>()) {
+        if (fi.IsThisOrParentHidden()) continue;
 
-        var fk = (FolderKeyword) folderKeyword?.Items.SingleOrDefault(x => x.Title.Equals(fi.Title));
-        if (fk == null) {
+        // create new FolderKeyword if doesn't exists
+        if (!(folderKeyword.Items.SingleOrDefault(x => x.Title.Equals(fi.Title)) is FolderKeyword fk)) {
           fk = new FolderKeyword {
             Title = fi.Title,
-            Parent = folderKeyword ?? this
+            Parent = folderKeyword
           };
           fk.Parent.Items.Add(fk);
         }

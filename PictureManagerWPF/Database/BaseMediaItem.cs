@@ -54,7 +54,6 @@ namespace PictureManager.Database {
     public bool IsModifed { get; set; }
     public bool IsNew { get; set; }
     public bool IsPanoramatic { get; set; }
-    public bool IsCorupted { get; set; }
 
     public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
 
@@ -416,7 +415,8 @@ namespace PictureManager.Database {
 
           //GeoNameId
           var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
-          if (tmpGId != null) {
+          if (!string.IsNullOrEmpty(tmpGId as string)) {
+            // TODO dohledani/vytvoreni geoname
             ACore.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
             GeoName = geoname;
           }
@@ -425,8 +425,7 @@ namespace PictureManager.Database {
         SetThumbSize();
       }
       catch (Exception ex) {
-        IsCorupted = true;
-        AppCore.ShowErrorDialog(ex);
+        AppCore.ShowErrorDialog(ex, FilePath);
         return false;
       }
       return true;

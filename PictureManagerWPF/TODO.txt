@@ -2,7 +2,6 @@
 - focus to newly created folder
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
 - reload metadata in new thread + reload thumbnails
-- pri odstraneni osoby se neprepocita pocet na kategorii a zustava tam jeden i kdyz tam nic neni
 
 #New
 - on "presentation start" show slider how many seconds

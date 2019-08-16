@@ -180,9 +180,6 @@ namespace PictureManager {
 
     private void MediaItemsLoadByTag(object parameter) {
       ACore.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
-      ACore.MediaItems.ScrollTo(0);
-      ACore.LoadThumbnails();
-      GC.Collect();
     }
 
     private bool CanPresentation() {
@@ -276,6 +273,7 @@ namespace PictureManager {
     private void FolderSetAsFolderKeyword(object parameter) {
       ((Database.Folder) parameter).IsFolderKeyword = true;
       ACore.Folders.Helper.Table.SaveToFile();
+      ACore.FolderKeywords.Load();
     }
 
     private void GeoNameNew(object parameter) {
@@ -391,6 +389,7 @@ namespace PictureManager {
     private void KeywordsSave() {
       var items = ACore.MediaItems.Items.Where(p => p.IsModifed).ToList();
 
+      ACore.AppInfo.ProgressBarIsIndeterminate = false;
       ACore.AppInfo.ProgressBarValue = 0;
 
       using (var bw = new BackgroundWorker {WorkerReportsProgress = true}) {

@@ -203,7 +203,6 @@ namespace PictureManager {
             MediaItems.ScrollTo(0);
             MediaItems.Load(LastSelectedSource, recursive);
             LoadThumbnails();
-            GC.Collect();
             break;
           }
           default: {
@@ -213,6 +212,13 @@ namespace PictureManager {
           }
         }
       }
+    }
+
+    private void MarkedTagsAddWithIncrease(ViewModel.BaseTreeViewTagItem item) {
+      item.PicCount++;
+      if (item.IsMarked) return;
+      item.IsMarked = true;
+      MarkedTags.Add(item);
     }
 
     public void MarkUsedKeywordsAndPeople() {
@@ -228,110 +234,59 @@ namespace PictureManager {
       var mediaItems = MediaItems.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
 
-        // TODO DEBUG asi tam nemusi bejt Where(...)
         // People
-        foreach (var person in mi.People.Where(person => !person.IsMarked)) {
-          person.IsMarked = true;
-          MarkedTags.Add(person);
+        foreach (var person in mi.People) {
+          MarkedTagsAddWithIncrease(person);
+
+          // Category Group
+          if (!(person.Parent is Database.CategoryGroup group)) continue;
+          MarkedTagsAddWithIncrease(group);
         }
 
         // Keywords
         foreach (var keyword in mi.Keywords) {
           var k = keyword;
           while (k != null) {
-            if (!k.IsMarked) {
-              k.IsMarked = true;
-              MarkedTags.Add(k);
-            }
+            MarkedTagsAddWithIncrease(k);
+            
+            // Category Group
+            if (k.Parent is Database.CategoryGroup group)
+              MarkedTagsAddWithIncrease(group);
+
             k = k.Parent as Database.Keyword;
           }
         }
 
         // FolderKeywords
-        if (mi.Folder.FolderKeyword != null && !mi.Folder.FolderKeyword.IsMarked) {
-          var fk = mi.Folder.FolderKeyword;
-          while (fk != null) {
-            if (!fk.IsMarked) {
-              fk.IsMarked = true;
-              MarkedTags.Add(fk);
-            }
-            fk = fk.Parent as ViewModel.FolderKeyword;
-          }
+        var fk = mi.Folder.FolderKeyword;
+        while (fk != null) {
+          MarkedTagsAddWithIncrease(fk);
+          fk = fk.Parent as ViewModel.FolderKeyword;
         }
 
         // GeoNames
         var gn = mi.GeoName;
         while (gn != null) {
-          if (!gn.IsMarked) {
-            gn.IsMarked = true;
-            MarkedTags.Add(gn);
-          }
+          MarkedTagsAddWithIncrease(gn);
           gn = gn.Parent as Database.GeoName;
         }
-      }
 
-      // Ratings
-      foreach (var rating in mediaItems.Select(p => p.Rating).Distinct().Select(r => Ratings.GetRatingByValue(r))) {
-        rating.IsMarked = true;
-        MarkedTags.Add(rating);
-      }
-
-      // set count of MediaItems
-      foreach (var item in MarkedTags) {
-        switch (item) {
-          case Database.Person p: {
-            p.PicCount = mediaItems.Count(mi => mi.People.Contains(p));
-            break;
-          }
-          case Database.Keyword k: {
-            k.PicCount = mediaItems.Count(mi => mi.Keywords.Any(x => x.FullPath.StartsWith(k.FullPath)));
-            break;
-          }
-          case ViewModel.FolderKeyword fk: {
-            //TODO
-            fk.PicCount = mediaItems.Count(mi => fk.Folders.Contains(mi.Folder));
-            break;
-          }
-          case ViewModel.Rating r: {
-            r.PicCount = mediaItems.Count(mi => mi.Rating == r.Value);
-            break;
-          }
-          case Database.GeoName g: {
-            g.PicCount = mediaItems.Count(mi => mi.GeoName == g);
-            break;
-          }
-        }
-      }
-
-      foreach (var pg in People.Items.OfType<Database.CategoryGroup>()) {
-        pg.PicCount = pg.Items.Cast<Database.Person>().Sum(x => x.PicCount);
-        pg.IsMarked = pg.PicCount > 0;
-      }
-
-      foreach (var kg in Keywords.Items.OfType<Database.CategoryGroup>()) {
-        kg.PicCount = kg.Items.Cast<Database.Keyword>().Sum(x => x.PicCount);
-        kg.IsMarked = kg.PicCount > 0;
-      }
-
-      foreach (var g in MarkedTags.OfType<Database.GeoName>()) {
-        var parent = g.Parent as Database.GeoName;
-        while (parent != null) {
-          parent.PicCount = parent.Items.Cast<Database.GeoName>().Sum(x => x.PicCount);
-          parent = parent.Parent as Database.GeoName;
-        }
+        // Ratings
+        MarkedTagsAddWithIncrease(Ratings.GetRatingByValue(mi.Rating));
       }
     }
 
     public void LoadThumbnails() {
+      AppInfo.ProgressBarIsIndeterminate = false;
       AppInfo.ProgressBarValue = 0;
 
       if (ThumbsWorker == null) {
         ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
 
         ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
-          if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-          MediaItems.SplitedItemsAdd((int) e.UserState);
           AppInfo.ProgressBarValue = e.ProgressPercentage;
+          if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
+          MediaItems.SplitedItemsAdd((Database.BaseMediaItem) e.UserState);
         };
 
         ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
@@ -349,8 +304,19 @@ namespace PictureManager {
 
             if (mi.IsNew) {
               mi.IsNew = false;
-              mi.ReadMetadata();
-              if (mi.IsCorupted) continue;
+              
+              if (!mi.ReadMetadata()) { // delete corupted MediaItems
+                Application.Current.Dispatcher.Invoke(delegate {
+                  MediaItems.Items.Remove(mi);
+                  MediaItems.Delete(mi);
+                });
+
+                done++;
+                worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), null);
+
+                continue;
+              }
+
               mi.SetThumbSize();
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
@@ -362,7 +328,7 @@ namespace PictureManager {
               Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
 
             done++;
-            worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), mi.Index);
+            worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), mi);
           }
         };
 
@@ -371,14 +337,6 @@ namespace PictureManager {
             // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
             ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
             return;
-          }
-
-          AppInfo.ProgressBarValue = 100;
-
-          // delete corupted MediaItems
-          foreach (var mi in ((List<Database.BaseMediaItem>) e.Result).Where(x => x.IsCorupted)) {
-            MediaItems.Delete(mi);
-            MediaItems.Items.Remove(mi);
           }
 
           if ((bool) Application.Current.Properties[nameof(AppProperty.SubmitChanges)])
@@ -390,6 +348,7 @@ namespace PictureManager {
           }
 
           MarkUsedKeywordsAndPeople();
+          GC.Collect();
         }; 
       }
 
@@ -512,8 +471,8 @@ namespace PictureManager {
       }
     }
 
-    public static void ShowErrorDialog(Exception ex) {
-      MessageBox.Show($"{ex.Message}\n{ex.StackTrace}");
+    public static void ShowErrorDialog(Exception ex, string msg = "") {
+      MessageBox.Show($"{msg}\n{ex.Message}\n{ex.StackTrace}");
     }
   }
 }

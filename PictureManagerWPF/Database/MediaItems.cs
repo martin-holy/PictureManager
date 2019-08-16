@@ -37,18 +37,20 @@ namespace PictureManager.Database {
     public static string[] SuportedImageExts = { ".jpg", ".jpeg" };
     public static string[] SuportedVideoExts = { ".mp4", ".mkv" };
 
-    public bool IsEditModeOn {
-      get => _isEditModeOn;
-      set {
-        _isEditModeOn = value;
-        OnPropertyChanged();
-      }
-    }
+    public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
+
+    private BackgroundWorker _loadByTagWorker;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    ~MediaItems() {
+      if (_loadByTagWorker == null) return;
+      _loadByTagWorker.Dispose();
+      _loadByTagWorker = null;
     }
 
     public void NewFromCsv(string csv) {
@@ -182,35 +184,52 @@ namespace PictureManager.Database {
 
         switch (item) {
           case Person p: {
-              if (p.IsMarked) mi.People.Add(p);
-              else mi.People.Remove(p);
-              break;
-            }
+            if (p.IsMarked) mi.People.Add(p);
+            else mi.People.Remove(p);
+            break;
+          }
           case Keyword k: {
-              if (k.IsMarked) {
-                //TODO DEBUG this
-                //remove potencial redundant keywords (example: if new keyword is "#CoSpi/Sunny" keyword "#CoSpi" is redundant)
-                for (var i = mi.Keywords.Count - 1; i >= 0; i--) {
-                  if (k.FullPath.StartsWith(mi.Keywords[i].Title)) {
-                    mi.Keywords.RemoveAt(i);
-                  }
-                }
+            if (!k.IsMarked) {
+              mi.Keywords.Remove(k);
+              break;
+            }
 
-                mi.Keywords.Add(k);
+            // skip if any Parent of MediaItem Keywords is marked Keyword
+            var skip = false;
+            foreach (var miKeyword in mi.Keywords) {
+              var tmpMik = miKeyword;
+              while (tmpMik.Parent is Keyword parent) {
+                tmpMik = parent;
+                if (!parent.Id.Equals(k.Id)) continue;
+                skip = true;
+                break;
               }
-              else
-                mi.Keywords.Remove(k);
+            }
+            if (skip) break;
 
-              break;
+            // remove potencial redundant keywords 
+            // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
+            foreach (var miKeyword in mi.Keywords.ToArray()) {
+              var tmpMarkedK = k;
+              while (tmpMarkedK.Parent is Keyword parent) {
+                tmpMarkedK = parent;
+                if (!parent.Id.Equals(miKeyword.Id)) continue;
+                mi.Keywords.Remove(miKeyword);
+              }
             }
+
+            mi.Keywords.Add(k);
+
+            break;
+          }
           case Rating r: {
-              mi.Rating = r.Value;
-              break;
-            }
+            mi.Rating = r.Value;
+            break;
+          }
           case GeoName g: {
-              mi.GeoName = g;
-              break;
-            }
+            mi.GeoName = g;
+            break;
+          }
         }
 
         mi.SetInfoBox();
@@ -348,6 +367,7 @@ namespace PictureManager.Database {
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
       ClearItBeforeLoad();
 
+      // get items by tag
       BaseMediaItem[] items = null;
 
       switch (tag) {
@@ -358,24 +378,63 @@ namespace PictureManager.Database {
 
       if (items == null) return;
 
-      var dirs = (from mi in items select mi.Folder).Distinct()
-        .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
+      // filter out items if directory or file not exists or Viewer can not see items
+      ACore.AppInfo.ProgressBarIsIndeterminate = true;
 
-      var i = -1;
-      foreach (var item in items.OrderBy(x => x.FileName)) {
-        if (!dirs.ContainsKey(item.Folder.Id)) continue;
-        if (!File.Exists(item.FilePath)) continue;
+      if (_loadByTagWorker == null) {
+        _loadByTagWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
 
-        //Filter by Viewer
-        if (!ACore.CanViewerSeeThisFile(item.FilePath)) continue;
+        _loadByTagWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
+          var worker = (BackgroundWorker) sender;
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            return;
+          }
 
-        item.Index = ++i;
-        item.SetThumbSize();
-        Items.Add(item);
+          var allItems = (BaseMediaItem[]) e.Argument;
+          var resultItems = new List<BaseMediaItem>();
+          var dirs = (from mi in allItems select mi.Folder).Distinct()
+            .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
+
+          var i = -1;
+          foreach (var item in allItems.OrderBy(x => x.FileName)) {
+            if (!dirs.ContainsKey(item.Folder.Id)) continue;
+            if (!File.Exists(item.FilePath)) continue;
+
+            // Filter by Viewer
+            if (!ACore.CanViewerSeeThisFile(item.FilePath)) continue;
+
+            item.Index = ++i;
+            item.SetThumbSize();
+            resultItems.Add(item);
+          }
+
+          e.Result = resultItems;
+        };
+
+        _loadByTagWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
+          if (e.Cancelled) {
+            // run with new items
+            _loadByTagWorker.RunWorkerAsync(items);
+            return;
+          }
+
+          foreach (var item in (List<BaseMediaItem>) e.Result)
+            Items.Add(item);
+
+          ACore.SetMediaItemSizesLoadedRange();
+          ACore.UpdateStatusBarInfo();
+          ScrollTo(0);
+          ACore.LoadThumbnails();
+        };
       }
 
-      ACore.SetMediaItemSizesLoadedRange();
-      ACore.UpdateStatusBarInfo();
+      if (_loadByTagWorker.IsBusy) {
+        _loadByTagWorker.CancelAsync();
+        return;
+      }
+
+      _loadByTagWorker.RunWorkerAsync(items);
     }
 
     public void ScrollToCurrent() {
@@ -464,8 +523,7 @@ namespace PictureManager.Database {
       }
     }
 
-    public void SplitedItemsAdd(int index) {
-      var bmi = Items[index];
+    public void SplitedItemsAdd(BaseMediaItem bmi) {
       var lastIndex = SplitedItems.Count - 1;
       if (lastIndex == -1) {
         SplitedItems.Add(new ObservableCollection<BaseMediaItem>());

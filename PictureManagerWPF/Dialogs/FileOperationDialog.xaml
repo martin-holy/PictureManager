@@ -10,7 +10,7 @@
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
-  DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="FileOperationDialog_OnClosing">
 
   <Grid>
     <Grid.RowDefinitions>

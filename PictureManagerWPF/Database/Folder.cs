@@ -15,7 +15,9 @@ namespace PictureManager.Database {
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
+    private bool _isHidden;
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
+    public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
     public string FullPath => GetFullPath();
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public override bool IsExpanded {
@@ -57,8 +59,8 @@ namespace PictureManager.Database {
     }
 
     private void Rename(string newName) {
-      Directory.Move(FullPath, Path.Combine(((Folder) Parent).FullPath, newName));
-      Directory.Move(FullPathCache, Path.Combine(((Folder) Parent).FullPathCache, newName));
+      Directory.Move(FullPath, Extensions.PathCombine(((Folder) Parent).FullPath, newName));
+      Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
       Title = newName;
       ACore.Folders.Helper.IsModifed = true;
 
@@ -154,38 +156,52 @@ namespace PictureManager.Database {
 
     public void LoadSubFolders(bool recursive) {
       // remove placeholder
-      if (Items.Count == 1 && Items[0].Title == null)
-        Items.RemoveAt(0);
+      if (Items.Count == 1 && Items[0].Title == null) Items.Clear();
 
-      var dirNames = new List<string>();
+      var dirNames = new HashSet<string>();
+      var fullPathLength = FullPath.Length + 1;
+      if (IconName == IconName.Drive) fullPathLength--;
       foreach (var dir in Directory.EnumerateDirectories(FullPath)) {
         var isNew = false;
-        var di = new DirectoryInfo(dir);
-        dirNames.Add(di.Name);
+        var dirName = dir.Substring(fullPathLength);
+        dirNames.Add(dirName);
 
         // get existing Folder in the tree
-        var folder = (Folder) Items.SingleOrDefault(x => x.Title.Equals(di.Name));
-
-        if (folder == null) {
+        if (!(Items.SingleOrDefault(x => x.Title.Equals(dirName)) is Folder folder)) {
           isNew = true;
           // add new Folder to the database
-          folder = new Folder(ACore.Folders.Helper.GetNextId(), di.Name, this);
+          folder = new Folder(ACore.Folders.Helper.GetNextId(), dirName, this);
           ACore.Folders.AddRecord(folder);
         }
 
-        // if Viewer can't see this Folder => remove Folder from the tree and continue
+        // if Viewer can't see this Folder set it as hidden and continue
         if (!ACore.CanViewerSeeThisDirectory(folder)) {
-          if (!isNew) Items.Remove(folder);
+          if (!isNew) folder.IsHidden = true;
           continue;
         }
 
         // add new Folder to the tree
         if (isNew) Items.Add(folder);
+
+        if (isNew) {
+          if (FolderKeyword != null) {
+            // remove placeholder
+            if (FolderKeyword.Items.Count == 1 && FolderKeyword.Items[0].Title == null)
+              FolderKeyword.Items.Clear();
+
+            if (!(FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title)) is FolderKeyword fk)) {
+              fk = new FolderKeyword {Title = folder.Title, Parent = FolderKeyword};
+              FolderKeyword.Items.Add(fk);
+            }
+            fk.Folders.Add(folder);
+            folder.FolderKeyword = fk;
+          }
+        }
       }
 
       // remove Folders deleted outside of this application
       foreach (var item in Items.ToList()) {
-        if (dirNames.Any(x => x.Equals(item.Title))) continue;
+        if (dirNames.Contains(item.Title)) continue;
         ACore.Folders.DeleteRecord((Folder) item, false);
       }
 
@@ -205,6 +221,7 @@ namespace PictureManager.Database {
           else {
             if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
               item.Items.Add(new BaseTreeViewItem());
+              item.FolderKeyword?.Items.Add(new BaseTreeViewItem());
             }
             item.IsAccessible = true;
           } 
@@ -223,7 +240,7 @@ namespace PictureManager.Database {
       IsExpanded = true;
       try {
         // create Folder
-        Directory.CreateDirectory(Path.Combine(FullPath, folderName));
+        Directory.CreateDirectory(Extensions.PathCombine(FullPath, folderName));
         var item = new Folder(ACore.Folders.Helper.GetNextId(), folderName, this) { IsAccessible = true };
 
         // add new Folder to the database
@@ -252,7 +269,7 @@ namespace PictureManager.Database {
 
       inputDialog.BtnDialogOk.Click += delegate {
         // check if folder already exists
-        if (Directory.Exists(Path.Combine(rename ? ((Folder)Parent).FullPath : FullPath, inputDialog.TxtAnswer.Text))) {
+        if (Directory.Exists(Extensions.PathCombine(rename ? ((Folder)Parent).FullPath : FullPath, inputDialog.TxtAnswer.Text))) {
           inputDialog.ShowErrorMessage("Folder already exists!");
           return;
         }
@@ -277,15 +294,12 @@ namespace PictureManager.Database {
 
     /// <param name="path">full or partial folder path with no direcotry separator on the end</param>
     /// <param name="withReload">try with reload if not the path was not found</param>
-    /// <returns>full folder path</returns>
     public Folder GetByPath(string path, bool withReload = false) {
       if (path.Equals(string.Empty)) return null;
       if (FullPath.Equals(path)) return this;
 
       var root = this;
-      var pathParts = path.Replace(FullPath, string.Empty)
-        .TrimStart(Path.DirectorySeparatorChar)
-        .Split(Path.DirectorySeparatorChar);
+      var pathParts = path.Substring(FullPath.Length + 1).Split(Path.DirectorySeparatorChar);
 
       foreach (var pathPart in pathParts) {
         var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
@@ -322,6 +336,20 @@ namespace PictureManager.Database {
         mis.AddRange(f.MediaItems);
 
       return mis;
+    }
+
+    /// <summary>
+    /// Hidden folder with not hidden subfolders is not supported
+    /// </summary>
+    /// <returns></returns>
+    public bool IsThisOrParentHidden() {
+      var f = this;
+      do {
+        if (f.IsHidden) return true;
+        f = f.Parent as Folder;
+      } while (f != null);
+
+      return false;
     }
   }
 }

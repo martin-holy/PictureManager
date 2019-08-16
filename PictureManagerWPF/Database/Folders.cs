@@ -36,13 +36,12 @@ namespace PictureManager.Database {
           folder.Parent = AllDic[int.Parse(folder.Csv[2])];
           folder.Parent.Items.Add(folder);
         }
+        else { // drive
+          Items.Add(folder);
+        }
 
         // csv array is not needed any more
         folder.Csv = null;
-      }
-
-      foreach (var topFolder in All.Where(x => x.Parent == null)) {
-        Items.Add(topFolder);
       }
 
       AddDrives();
@@ -104,7 +103,7 @@ namespace PictureManager.Database {
         f.Items.Clear();
 
         // remove FavoriteFolder
-        var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Equals(f));
+        var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Id.Equals(f.Id));
         if (ff != null) ACore.FavoriteFolders.Remove(ff);
       }
 
@@ -146,6 +145,12 @@ namespace PictureManager.Database {
           Items.Add(item);
         }
 
+        // if Viewer can't see this Drive set it as hidden and continue
+        if (!ACore.CanViewerSeeThisDirectory(item)) {
+          item.IsHidden = true;
+          continue;
+        }
+
         item.IsAccessible = di.IsReady;
         item.IconName = driveImage; 
 
@@ -154,10 +159,10 @@ namespace PictureManager.Database {
           item.Items.Add(new BaseTreeViewItem());
       }
 
-      // remove not available drives
-      for (var i = Items.Count - 1; i > -1; i--) {
-        if (drivesNames.Any(x => x.Equals(Items[i].Title))) continue;
-        Items.RemoveAt(i);
+      // set not available drives as hidden
+      foreach (var item in Items) {
+        if (drivesNames.Any(x => x.Equals(item.Title))) continue;
+        ((Folder) item).IsHidden = true;
       }
     }
 
@@ -177,9 +182,9 @@ namespace PictureManager.Database {
     }
 
     public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
-      foreach (var item in folders) {
+      foreach (var item in folders.Cast<Folder>()) {
         index++;
-        if (item.Equals(folder)) return true;
+        if (item.Id.Equals(folder.Id)) return true;
         if (!item.IsExpanded) continue;
         if (GetVisibleTreeIndexFor(item.Items, folder, ref index)) return true;
       }

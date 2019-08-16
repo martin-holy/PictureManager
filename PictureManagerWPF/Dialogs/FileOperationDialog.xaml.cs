@@ -45,5 +45,11 @@ namespace PictureManager.Dialogs {
       Worker.CancelAsync();
       Close();
     }
+
+    private void FileOperationDialog_OnClosing(object sender, CancelEventArgs e) {
+      if (Worker == null) return;
+      Worker.Dispose();
+      Worker = null;
+    }
   }
 }

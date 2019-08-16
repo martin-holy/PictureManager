@@ -18,7 +18,8 @@
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
       <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
-        <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" Maximum="100" />
+        <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" 
+                     IsIndeterminate="{Binding ACore.AppInfo.ProgressBarIsIndeterminate}" Maximum="100" />
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
                    FontFamily="{DynamicResource HeaderFontFamily}" />
@@ -163,6 +164,11 @@
                     <Setter Property="VerticalContentAlignment" Value="Stretch" />
                     <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                     <Setter Property="Background" Value="Transparent" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
                   </Style>
                 </TreeView.ItemContainerStyle>
 
