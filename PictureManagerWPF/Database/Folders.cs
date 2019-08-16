@@ -112,6 +112,8 @@ namespace PictureManager.Database {
     }
 
     public void AddDrives() {
+      All.Where(x => x.IsHidden).ToList().ForEach(x => x.IsHidden = false);
+
       var drives = Environment.GetLogicalDrives();
       var drivesNames = new List<string>();
 

@@ -62,30 +62,6 @@ namespace PictureManager.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CatalogFolders {
-            get {
-                return ((string)(this["CatalogFolders"]));
-            }
-            set {
-                this["CatalogFolders"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Viewer {
-            get {
-                return ((string)(this["Viewer"]));
-            }
-            set {
-                this["Viewer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DirectorySelectFolders {
             get {
                 return ((string)(this["DirectorySelectFolders"]));

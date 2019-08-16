@@ -545,13 +545,17 @@ namespace PictureManager {
     }
 
     private void ViewerChange(object parameter) {
+      if (ACore.CurrentViewer != null)
+        ACore.CurrentViewer.IsDefault = false;
+
       var viewer = (Database.Viewer) parameter;
+      viewer.IsDefault = true;
+      ACore.Viewers.Helper.Table.SaveToFile();
+
       MenuViewers.Header = viewer.Title;
       ACore.CurrentViewer = viewer;
-      Settings.Default.Viewer = viewer.Title;
-      Settings.Default.Save();
-      ACore.FolderKeywords.Load();
       ACore.Folders.AddDrives();
+      ACore.FolderKeywords.Load();
     }
 
     private void SwitchToFullScreen() {

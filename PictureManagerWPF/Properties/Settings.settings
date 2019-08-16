@@ -11,12 +11,6 @@
     <Setting Name="ThumbnailSize" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">400</Value>
     </Setting>
-    <Setting Name="CatalogFolders" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="Viewer" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="DirectorySelectFolders" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

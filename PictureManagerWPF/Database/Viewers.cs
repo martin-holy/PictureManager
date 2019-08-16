@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using PictureManager.Properties;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -25,15 +26,17 @@ namespace PictureManager.Database {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|IncludedFolders|ExcludedFolders
+      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
       var props = csv.Split('|');
-      if (props.Length != 4) return;
+      if (props.Length != 5) return;
       var id = int.Parse(props[0]);
-      AddRecord(new Viewer(id, props[1], this) { Csv = props });
+      var viewer = new Viewer(id, props[1], this) {Csv = props, IsDefault = props[4] == "1"};
+      if (viewer.IsDefault) ACore.CurrentViewer = viewer;
+      AddRecord(viewer);
     }
 
     public void LinkReferences() {
-      // ID|Name|IncludedFolders|ExcludedFolders
+      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
 
       Items.Clear();
 
@@ -42,26 +45,14 @@ namespace PictureManager.Database {
         if (viewer.Csv[2] != string.Empty)
           foreach (var folderId in viewer.Csv[2].Split(',')) {
             var f = ACore.Folders.AllDic[int.Parse(folderId)];
-            viewer.IncludedFolders.Items.Add(new BaseTreeViewItem {
-              Tag = f.Id,
-              Title = f.Title,
-              IconName = IconName.Folder,
-              ToolTip = f.FullPath,
-              Parent = viewer.IncludedFolders
-            });
+            viewer.AddFolder(f, true);
           }
 
         // reference to ExcludedFolders
         if (viewer.Csv[3] != string.Empty)
           foreach (var folderId in viewer.Csv[3].Split(',')) {
             var f = ACore.Folders.AllDic[int.Parse(folderId)];
-            viewer.ExcludedFolders.Items.Add(new BaseTreeViewItem {
-              Tag = f.Id,
-              Title = f.Title,
-              IconName = IconName.Folder,
-              ToolTip = f.FullPath,
-              Parent = viewer.ExcludedFolders
-            });
+            viewer.AddFolder(f, false);
           }
 
         // adding Viewer to Viewers
@@ -76,8 +67,10 @@ namespace PictureManager.Database {
       All.Add(record);
     }
 
-    public void CreateViewer(string name) {
+    private void CreateViewer(string name) {
       var viewer = new Viewer(Helper.GetNextId(), name, this);
+      AddRecord(viewer);
+      ACore.Sdb.SaveAllTables();
       ItemSetInPlace(this, true, viewer);
       AppCore.WMain.MenuViewers.Visibility = Visibility.Visible;
     }

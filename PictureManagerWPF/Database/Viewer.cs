@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Windows.Forms;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
   public sealed class Viewer : BaseTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; set; }
+    public bool IsDefault { get; set; } 
 
     public BaseTreeViewItem IncludedFolders { get; }
     public BaseTreeViewItem ExcludedFolders { get; }
@@ -24,29 +27,43 @@ namespace PictureManager.Database {
     }
 
     public string ToCsv() {
-      // ID|Name|IncludedFolders|ExcludedFolders
+      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
       return string.Join("|",
         Id.ToString(),
         Title,
         string.Join(",", IncludedFolders.Items.Select(x => x.Tag)),
-        string.Join(",", ExcludedFolders.Items.Select(x => x.Tag)));
+        string.Join(",", ExcludedFolders.Items.Select(x => x.Tag)),
+        IsDefault ? "1" : string.Empty);
     }
 
     public void AddFolder(bool included) {
-      // TODO asi by bylo lepsi nez zobrazovat Windows only dialog, moznost vybrat slozku z Folders
-      /*var dir = new FolderBrowserDialog();
+      // TODO vlastni dialog na vyber slozky
+      var dir = new FolderBrowserDialog();
       if (dir.ShowDialog() != DialogResult.OK) return;
       if ((included ? IncludedFolders : ExcludedFolders).Items.Any(x => x.ToolTip.Equals(dir.SelectedPath))) return;
 
-      var dmViewerAccess = new DataModel.ViewerAccess {
-        Id = ACore.Db.GetNextIdFor<DataModel.ViewerAccess>(),
-        ViewerId = Data.Id,
-        IsIncluded = included,
-        DirectoryId = ACore.Db.InsertDirectoryInToDb(dir.SelectedPath)
+      var folder = ACore.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
+      if (folder == null) {
+        MessageBox.Show(@"Select this folder in Folders tree first.");
+        return;
+      }
+
+      AddFolder(folder, included);
+      ACore.Viewers.Helper.Table.SaveToFile();
+      ACore.Folders.AddDrives();
+      ACore.FolderKeywords.Load();
+    }
+
+    public void AddFolder(Folder folder, bool included) {
+      var item = new BaseTreeViewItem {
+        Tag = folder.Id,
+        Title = folder.Title,
+        ToolTip = folder.FullPath,
+        IconName = IconName.Folder,
+        Parent = included ? IncludedFolders : ExcludedFolders
       };
 
-      ACore.Db.Insert(dmViewerAccess);
-      SetInPlace(InitFolder(dmViewerAccess, included, dir.SelectedPath));*/
+      SetInPlace(item);
     }
 
     private static void SetInPlace(BaseTreeViewItem item) {

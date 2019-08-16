@@ -82,7 +82,7 @@ namespace PictureManager {
       WindowsDisplayScale = PresentationSource.FromVisual(WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
 
       Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
-      Sdb.AddTable(Viewers);
+      Sdb.AddTable(Viewers); // needs to be before Folders
       Sdb.AddTable(People);
       Sdb.AddTable(Keywords);
       Sdb.AddTable(Folders);
@@ -99,7 +99,6 @@ namespace PictureManager {
       Ratings.Load();
 
       if (Viewers.Items.Count == 0) WMain.MenuViewers.Visibility = Visibility.Collapsed;
-      CurrentViewer = Viewers.Items.SingleOrDefault(x => x.Title == Settings.Default.Viewer) as Database.Viewer;
 
       FoldersRoot.Add(FavoriteFolders);
       FoldersRoot.Add(Folders);
