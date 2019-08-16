@@ -45,12 +45,12 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.KeywordsComment, HandleExecute(KeywordsComment), HandleCanExecute(CanKeywordsComment)));
       CommandBindings.Add(new CommandBinding(Commands.CompressPictures, HandleExecute(CompressPictures), HandleCanExecute(CanCompressPictures)));
       CommandBindings.Add(new CommandBinding(Commands.TestButton, HandleExecute(TestButton)));
-      CommandBindings.Add(new CommandBinding(Commands.ReloadMetadata, HandleExecute(ReloadMetadata), HandleCanExecute(CanReloadMetadata)));
+      CommandBindings.Add(new CommandBinding(Commands.ReloadMetadata, HandleExecute(ReloadMetadata)));
+      CommandBindings.Add(new CommandBinding(Commands.RebuildThumbnails, HandleExecute(RebuildThumbnails)));
       CommandBindings.Add(new CommandBinding(Commands.OpenSettings, HandleExecute(OpenSettings)));
       CommandBindings.Add(new CommandBinding(Commands.AddGeoNamesFromFiles, HandleExecute(AddGeoNamesFromFiles), HandleCanExecute(CanAddGeoNamesFromFiles)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerChange, HandleExecute(ViewerChange)));
       CommandBindings.Add(new CommandBinding(Commands.OpenAbout, HandleExecute(OpenAbout)));
-      CommandBindings.Add(new CommandBinding(Commands.OpenCatalog, HandleExecute(OpenCatalog)));
       CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
       CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
     }
@@ -360,11 +360,6 @@ namespace PictureManager {
       }
     }
 
-    private void OpenCatalog() {
-      var catalog = new WCatalog {Owner = this};
-      catalog.Show();
-    }
-
     private void OpenFolderKeywordsList() {
       var fkl = new FolderKeywordList {Owner = this};
       fkl.ShowDialog();
@@ -478,18 +473,36 @@ namespace PictureManager {
       ACore.UpdateStatusBarInfo();
     }
 
-    private bool CanReloadMetadata() {
-      return ACore.MediaItems.Items.Count > 0;
-    }
-
-    private void ReloadMetadata() {
-      var mediaItems = ACore.MediaItems.GetSelectedOrAll();
+    private void ReloadMetadata(object parameter) {
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var mediaItems = parameter is Database.Folder folder
+        ? folder.GetMediaItems(recursive)
+        : ACore.MediaItems.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
         mi.ReadMetadata();
-        AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
         mi.SetInfoBox();
       }
       ACore.Sdb.SaveAllTables();
+    }
+
+    private void RebuildThumbnails(object parameter) {
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var mediaItems = parameter is Database.Folder folder
+        ? folder.GetMediaItems(recursive)
+        : ACore.MediaItems.GetSelectedOrAll();
+
+      using (var bw = new BackgroundWorker()) {
+        bw.DoWork += delegate {
+          foreach (var mi in mediaItems.ToArray())
+            AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+        };
+
+        bw.RunWorkerCompleted += delegate {
+          MessageBox.Show($"{mediaItems.Count} Thumbnails rebuilded.");
+        };
+
+        bw.RunWorkerAsync();
+      }
     }
 
     private bool CanAddGeoNamesFromFiles() {

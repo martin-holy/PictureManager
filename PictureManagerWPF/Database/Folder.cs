@@ -325,7 +325,9 @@ namespace PictureManager.Database {
       return folder?.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName));
     }
 
-    public List<BaseMediaItem> GetMediaItemsRecursive() {
+    public List<BaseMediaItem> GetMediaItems(bool recursive) {
+      if (!recursive) return MediaItems;
+
       // get all Folders
       var folders = new List<BaseTreeViewItem>();
       GetThisAndItemsRecursive(ref folders);

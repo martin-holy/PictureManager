@@ -42,9 +42,9 @@ namespace PictureManager {
     public static RoutedUICommand CompressPictures { get; } = new RoutedUICommand {Text = "Compress Pictures"};
     public static RoutedUICommand TestButton { get; } = new RoutedUICommand {Text = "Test Button"};
     public static RoutedUICommand ReloadMetadata { get; } = new RoutedUICommand {Text = "Reload Metadata"};
+    public static RoutedUICommand RebuildThumbnails { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };
     public static RoutedUICommand OpenSettings { get; } = new RoutedUICommand {Text = "Settings"};
     public static RoutedUICommand OpenAbout { get; } = new RoutedUICommand {Text = "About"};
-    public static RoutedUICommand OpenCatalog { get; } = new RoutedUICommand {Text = "Catalog"};
     public static RoutedUICommand ShowHideTabMain { get; } = new RoutedUICommand {Text = "S/H"};
     public static RoutedUICommand AddGeoNamesFromFiles { get; } = new RoutedUICommand {Text = "GeoNames"};
     public static RoutedUICommand ViewerChange { get; } = new RoutedUICommand {Text = ""};

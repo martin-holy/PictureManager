@@ -1,14 +1,10 @@
 ﻿#Bugs
 - focus to newly created folder
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
-- reload metadata in new thread + reload thumbnails
 
 #New
 - on "presentation start" show slider how many seconds
 - na prehravani panoramat zmensit obrazek na vysku obrazovky
 - zmensovat hodne velky obrazky pri prohlizeni
-- pridat progress bar do "rebuild thumbnails"
-- mazat za sebou temp thumbnails
 - funkci zobraz random x obrazku 
 - pri potvrzovani mazani zobrazit nazev souboru/slozky
-- pridat do menu na slozce => rebuild thumbnails, reload metadata a zrusit Catalog

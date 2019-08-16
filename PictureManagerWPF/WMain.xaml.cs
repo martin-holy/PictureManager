@@ -122,12 +122,16 @@ namespace PictureManager {
       switch (item) {
         case Database.Folder folder: {
           menu.Items.Add(new MenuItem { Command = Commands.FolderNew, CommandParameter = item });
+
           if (folder.Parent != null) {
             menu.Items.Add(new MenuItem { Command = Commands.FolderRename, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.FolderDelete, CommandParameter = item });
             menu.Items.Add(new MenuItem { Command = Commands.FolderAddToFavorites, CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = Commands.FolderSetAsFolderKeyword, CommandParameter = item });
           }
+
+          menu.Items.Add(new MenuItem { Command = Commands.FolderSetAsFolderKeyword, CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = Commands.ReloadMetadata, CommandParameter = item });
+          menu.Items.Add(new MenuItem { Command = Commands.RebuildThumbnails, CommandParameter = item });
           break;
         }
         case Database.FavoriteFolder _: {
