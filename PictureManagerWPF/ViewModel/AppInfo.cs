@@ -18,6 +18,7 @@ namespace PictureManager.ViewModel {
     private BaseMediaItem _currentMediaItem;
     private AppMode _appMode;
     private bool _isThumbInfoVisible = true;
+    private int _mediaItemsCount;
 
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
@@ -25,6 +26,7 @@ namespace PictureManager.ViewModel {
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
+    public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public string Comment { get; set; } = string.Empty;
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
     public AppMode AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }

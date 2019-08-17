@@ -100,6 +100,8 @@ namespace PictureManager {
 
       if (Viewers.Items.Count == 0) WMain.MenuViewers.Visibility = Visibility.Collapsed;
 
+      AppInfo.MediaItemsCount = MediaItems.All.Count;
+
       FoldersRoot.Add(FavoriteFolders);
       FoldersRoot.Add(Folders);
       KeywordsRoot.Add(Ratings);
@@ -317,6 +319,7 @@ namespace PictureManager {
               }
 
               mi.SetThumbSize();
+              Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
               Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
             }
 

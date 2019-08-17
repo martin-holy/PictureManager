@@ -175,6 +175,7 @@ namespace PictureManager.Database {
       copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
 
       ACore.MediaItems.AddRecord(copy);
+      ACore.AppInfo.MediaItemsCount++;
 
       return copy;
     }
@@ -423,6 +424,8 @@ namespace PictureManager.Database {
         }
 
         SetThumbSize();
+
+        ACore.MediaItems.Helper.IsModifed = true;
       }
       catch (Exception ex) {
         AppCore.ShowErrorDialog(ex, FilePath);

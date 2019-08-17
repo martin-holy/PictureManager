@@ -13,8 +13,7 @@ namespace PictureManager {
       ACore = aCore;
 
       //TestListVsArray();
-      GetByPathTest();
-
+      //GetByPathTest();
 
     }
 

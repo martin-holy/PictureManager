@@ -60,6 +60,7 @@
         <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
         <MenuItem Command="pm:Commands.ShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
+      <TextBlock Text="{Binding ACore.AppInfo.MediaItemsCount}" VerticalAlignment="Center" Margin="5,0" />
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
 

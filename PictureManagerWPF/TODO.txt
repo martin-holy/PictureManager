@@ -8,3 +8,5 @@
 - zmensovat hodne velky obrazky pri prohlizeni
 - funkci zobraz random x obrazku 
 - pri potvrzovani mazani zobrazit nazev souboru/slozky
+- vlastni error dialog
+- pripinacek na tab
