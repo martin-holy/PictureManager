@@ -22,6 +22,8 @@ namespace PictureManager.Database {
         if (group.Csv[3] != string.Empty) {
           switch (group.Category) {
             case Category.People: {
+              group.Parent = ACore.People;
+
               foreach (var itemId in group.Csv[3].Split(',')) {
                 var p = ACore.People.AllDic[int.Parse(itemId)];
                 p.Parent = group;
@@ -31,6 +33,8 @@ namespace PictureManager.Database {
               break;
             }
             case Category.Keywords: {
+              group.Parent = ACore.Keywords;
+
               foreach (var itemId in group.Csv[3].Split(',')) {
                 var k = ACore.Keywords.AllDic[int.Parse(itemId)];
                 k.Parent = group;

@@ -429,6 +429,7 @@ namespace PictureManager {
 
     private void KeywordsCancel() {
       ACore.MediaItems.ReLoad(ACore.MediaItems.Items.Where(x => x.IsModifed).ToList());
+      ACore.Sdb.SaveAllTables();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.MediaItems.IsEditModeOn = false;
       if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
