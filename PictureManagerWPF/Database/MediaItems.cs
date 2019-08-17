@@ -143,16 +143,11 @@ namespace PictureManager.Database {
     }
 
     public void ReLoad(List<BaseMediaItem> items) {
-      //TODO
-      /*items.ForEach(mi => {
-        ACore.Db.ReloadItem(mi.Data);
+      foreach (var mi in items) {
+        mi.ReadMetadata();
         mi.IsModifed = false;
-      });
-
-      LoadPeople(items);
-      LoadKeywords(items);
-
-      items.ForEach(mi => mi.SetInfoBox());*/
+        mi.SetInfoBox();
+      }
     }
 
     public List<BaseMediaItem> GetSelectedOrAll() {
