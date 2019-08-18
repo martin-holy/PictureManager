@@ -5,22 +5,16 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   mc:Ignorable="d"
-  Title="File Operation Dialog" Height="180" Width="515" 
+  Title="File Operation Dialog" SizeToContent="Height" Width="500"
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="FileOperationDialog_OnClosing">
 
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
-    
+  <StackPanel Orientation="Vertical">
     <!-- Directory From / To, FileName -->
-    <Grid Grid.Row="0" VerticalAlignment="Center">
+    <Grid VerticalAlignment="Center">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
@@ -31,7 +25,7 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      
+
       <Label Grid.Row="0" Grid.Column="0" Content="From: " />
       <Label Grid.Row="1" Grid.Column="0" Content="To: " />
       <Label Grid.Row="2" Grid.Column="0" Content="File: " />
@@ -40,12 +34,12 @@
       <Label Grid.Row="1" Grid.Column="1" Content="{Binding DirTo}" />
       <Label Grid.Row="2" Grid.Column="1" Content="{Binding FileName}" />
     </Grid>
-    
+
     <!-- Progress Bar -->
-    <ProgressBar Grid.Row="1" x:Name="PbProgress" Height="16" Margin="5,0" IsIndeterminate="True" />
+    <ProgressBar x:Name="PbProgress" Height="16" Margin="5,0" IsIndeterminate="True" />
 
-    <!-- Cancel Button -->
-    <Button Grid.Row="2" Margin="0,5,5,5" Content="Cancel" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" HorizontalAlignment="Right" />
-
-  </Grid>
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+    </StackPanel>
+  </StackPanel>
 </controls:MetroWindow>

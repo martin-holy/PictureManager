@@ -87,6 +87,19 @@
       <Style x:Key="MenuItemIcon" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
         <Setter Property="Icon" Value="{StaticResource MenuItemIconRect}"/>
       </Style>
+      
+      <!-- DialogButtons -->
+      <Style x:Key="DialogButtons" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Margin" Value="5" />
+      </Style>
+
+      <!-- DialogButton -->
+      <Style x:Key="DialogButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="MinWidth" Value="60" />
+        <Setter Property="Margin" Value="5" />
+      </Style>
 
     </ResourceDictionary>
     

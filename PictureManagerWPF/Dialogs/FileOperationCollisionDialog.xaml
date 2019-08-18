@@ -5,7 +5,7 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   mc:Ignorable="d"
-  Title="The destination already has a file with this name" Height="420" Width="515" 
+  Title="The destination already has a file with this name" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
@@ -29,15 +29,10 @@
     </Style>
   </controls:MetroWindow.Resources>
 
-  <Grid Margin="5">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="310"/>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
+  <StackPanel Margin="5">
     
     <!-- Thumbnails -->
-    <Grid Grid.Row="0">
+    <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="250" />
         <RowDefinition Height="Auto" />
@@ -73,17 +68,17 @@
     </Grid>
     
     <!-- File Name -->
-    <StackPanel Grid.Row="1" Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal">
       <Label Content="File name:" />
       <TextBox Text="{Binding FileName}" x:Name="TxtFileName" Margin="5,0" MinWidth="200" Style="{StaticResource ErrorStyle}" />
     </StackPanel>
 
     <!-- Buttons -->
-    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button x:Name="BtnRename" MinWidth="60" Click="BtnRename_OnClick" VerticalAlignment="Bottom">Rename</Button>
-      <Button x:Name="BtnReplace" MinWidth="60" Click="BtnReplace_OnClick" VerticalAlignment="Bottom" Margin="10,0,0,0">Replace</Button>
-      <Button x:Name="BtnSkip" MinWidth="60" Click="BtnSkip_OnClick" VerticalAlignment="Bottom" Margin="10,0,0,0">Skip</Button>
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnRename" Style="{StaticResource DialogButton}" Content="Rename" Click="BtnRename_OnClick" />
+      <Button x:Name="BtnReplace" Style="{StaticResource DialogButton}" Content="Replace" Click="BtnReplace_OnClick" />
+      <Button x:Name="BtnSkip" Style="{StaticResource DialogButton}" Content="Skip" Click="BtnSkip_OnClick" />
     </StackPanel>
 
-  </Grid>
+  </StackPanel>
 </controls:MetroWindow>

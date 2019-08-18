@@ -5,29 +5,29 @@
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   mc:Ignorable="d"
-  Title="Folder Keywords" Height="300" Width="515" 
+  Title="Folder Keywords" SizeToContent="Height" Width="400"
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
-  <DockPanel>
-    <WrapPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,5,5,5">
-      <Button Name="BtnRemove" MinWidth="60" Margin="0,0,10,0" Click="BtnRemove_OnClick">_Remove</Button>
-      <Button IsCancel="True" MinWidth="60">_Close</Button>
-    </WrapPanel>
-
-    <ListBox x:Name="LbFolderKeywords" SelectionMode="Multiple" ItemsSource="{Binding Items}" Margin="4,5,4,0">
+  <StackPanel Orientation="Vertical">
+    <ListBox x:Name="LbFolderKeywords" SelectionMode="Multiple" ItemsSource="{Binding Items}" Margin="5" Height="200">
       <ListBox.ItemTemplate>
         <DataTemplate>
           <StackPanel Orientation="Horizontal" Background="Transparent" >
             <Rectangle Style="{StaticResource IconRect}" />
             <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0" />
-          </StackPanel> 
+          </StackPanel>
         </DataTemplate>
       </ListBox.ItemTemplate>
     </ListBox>
-  </DockPanel>
-  
+
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnRemove" Style="{StaticResource DialogButton}" Content="_Remove" Click="BtnRemove_OnClick" />
+      <Button Style="{StaticResource DialogButton}" Content="_Close" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
+
 </controls:MetroWindow>

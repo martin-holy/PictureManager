@@ -14,8 +14,8 @@
   <StackPanel Margin="5">
     <Label x:Name="LblProgress" Content="" />
     <ProgressBar x:Name="PbWorkerProgress" Height="20" Margin="5" />
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-      <Button x:Name="BtnCancel" Margin="5" MinWidth="60" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>
