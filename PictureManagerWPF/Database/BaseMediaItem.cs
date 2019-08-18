@@ -26,8 +26,8 @@ namespace PictureManager.Database {
     public int Rating { get; set; }
     public string Comment { get; set; }
     public GeoName GeoName { get; set; }
-    public List<Person> People { get; } = new List<Person>();
-    public List<Keyword> Keywords { get; } = new List<Keyword>();
+    public List<Person> People { get; set; }
+    public List<Keyword> Keywords { get; set; }
 
     private bool _isSelected;
     private int _thumbWidth;
@@ -38,9 +38,9 @@ namespace PictureManager.Database {
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
-    public ObservableCollection<string> InfoBoxThumb { get; set; } = new ObservableCollection<string>();
-    public ObservableCollection<string> InfoBoxPeople { get; set; } = new ObservableCollection<string>();
-    public ObservableCollection<string> InfoBoxKeywords { get; set; } = new ObservableCollection<string>();
+    public ObservableCollection<string> InfoBoxThumb { get; set; }
+    public ObservableCollection<string> InfoBoxPeople { get; set; }
+    public ObservableCollection<string> InfoBoxKeywords { get; set; }
 
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
@@ -85,8 +85,8 @@ namespace PictureManager.Database {
         Rating.ToString(),
         Comment,
         GeoName?.Id.ToString(),
-        string.Join(",", People.Select(x => x.Id)),
-        string.Join(",", Keywords.Select(x => x.Id)));
+        People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
+        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
     }
 
     public void SetThumbSize() {
@@ -135,33 +135,52 @@ namespace PictureManager.Database {
     }
 
     public void SetInfoBox() {
-      InfoBoxThumb.Clear();
-      InfoBoxPeople.Clear();
-      InfoBoxKeywords.Clear();
+      InfoBoxThumb?.Clear();
+      InfoBoxPeople?.Clear();
+      InfoBoxKeywords?.Clear();
 
-      foreach (var p in People.OrderBy(x => x.Title))
-        InfoBoxPeople.Add(p.Title);
-
-      foreach (var keyword in Keywords) {
-        foreach (var k in keyword.FullPath.Split('/'))
-          if (!InfoBoxKeywords.Contains(k))
-            InfoBoxKeywords.Add(k);
+      if (Rating != 0) {
+        if (InfoBoxThumb == null)
+          InfoBoxThumb = new ObservableCollection<string>();
+        InfoBoxThumb.Add(Rating.ToString());
       }
 
-      if (Rating != 0)
-        InfoBoxThumb.Add(Rating.ToString());
-
-      if (!string.IsNullOrEmpty(Comment))
+      if (!string.IsNullOrEmpty(Comment)) {
+        if (InfoBoxThumb == null)
+          InfoBoxThumb = new ObservableCollection<string>();
         InfoBoxThumb.Add(Comment);
+      }
 
-      if (GeoName != null)
+      if (GeoName != null) {
+        if (InfoBoxThumb == null)
+          InfoBoxThumb = new ObservableCollection<string>();
         InfoBoxThumb.Add(GeoName.Title);
+      }
 
-      foreach (var val in InfoBoxPeople)
-        InfoBoxThumb.Add(val);
+      if (People != null) {
+        if (InfoBoxThumb == null)
+          InfoBoxThumb = new ObservableCollection<string>();
+        InfoBoxPeople = new ObservableCollection<string>();
 
-      foreach (var val in InfoBoxKeywords)
-        InfoBoxThumb.Add(val);
+        foreach (var p in People.OrderBy(x => x.Title)) {
+          InfoBoxPeople.Add(p.Title);
+          InfoBoxThumb.Add(p.Title);
+        }
+      }
+
+      if (Keywords != null) {
+        if (InfoBoxThumb == null)
+          InfoBoxThumb = new ObservableCollection<string>();
+        InfoBoxKeywords = new ObservableCollection<string>();
+
+        foreach (var keyword in Keywords) {
+          foreach (var k in keyword.FullPath.Split('/')) {
+            if (InfoBoxKeywords.Contains(k)) continue;
+            InfoBoxKeywords.Add(k);
+            InfoBoxThumb.Add(k);
+          }
+        }
+      }
     }
 
     public BaseMediaItem CopyTo(Folder folder, string fileName) {
@@ -171,8 +190,8 @@ namespace PictureManager.Database {
       copy.Folder = folder;
       copy.Folder.MediaItems.Add(copy);
       copy.GeoName?.MediaItems.Add(copy);
-      copy.People.ForEach(x => x.MediaItems.Add(copy));
-      copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
+      copy.People?.ForEach(x => x.MediaItems.Add(copy));
+      copy.Keywords?.ForEach(x => x.MediaItems.Add(copy));
 
       ACore.MediaItems.AddRecord(copy);
       ACore.AppInfo.MediaItemsCount++;
@@ -242,42 +261,46 @@ namespace PictureManager.Database {
           if (metadata != null) {
 
             //People
-            const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
-            const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-            const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
-            var peopleIdx = -1;
-            var addedPeople = new List<string>();
-            //New metadata just for People
-            var people = new BitmapMetadata("jpg");
-            people.SetQuery(microsoftRegionInfo, new BitmapMetadata("xmpstruct"));
-            people.SetQuery(microsoftRegions, new BitmapMetadata("xmpbag"));
-            //Adding existing people
-            if (metadata.GetQuery(microsoftRegions) is BitmapMetadata existingPeople) {
-              foreach (var idx in existingPeople) {
-                var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
-                var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
-                if (personDisplayName == null) continue;
-                if (!People.Any(p => p.Title.Equals(personDisplayName.ToString()))) continue;
-                addedPeople.Add(personDisplayName.ToString());
-                peopleIdx++;
-                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", existingPerson);
+            if (People != null) {
+              const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
+              const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
+              const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+              var peopleIdx = -1;
+              var addedPeople = new List<string>();
+              //New metadata just for People
+              var people = new BitmapMetadata("jpg");
+              people.SetQuery(microsoftRegionInfo, new BitmapMetadata("xmpstruct"));
+              people.SetQuery(microsoftRegions, new BitmapMetadata("xmpbag"));
+              //Adding existing people => preserve original metadata because they can contain positions of people
+              if (metadata.GetQuery(microsoftRegions) is BitmapMetadata existingPeople) {
+                foreach (var idx in existingPeople) {
+                  var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
+                  var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
+                  if (personDisplayName == null) continue;
+                  if (!People.Any(p => p.Title.Equals(personDisplayName.ToString()))) continue;
+                  addedPeople.Add(personDisplayName.ToString());
+                  peopleIdx++;
+                  people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", existingPerson);
+                }
               }
-            }
-            //Adding new people
-            foreach (var person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
-              peopleIdx++;
-              people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", new BitmapMetadata("xmpstruct"));
-              people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
-            }
-            //Writing all people to MediaItem metadata
-            var allPeople = people.GetQuery(microsoftRegionInfo);
-            if (allPeople != null)
-              metadata.SetQuery(microsoftRegionInfo, allPeople);
 
+              //Adding new people
+              foreach (var person in People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
+                peopleIdx++;
+                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", new BitmapMetadata("xmpstruct"));
+                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
+              }
+
+              //Writing all people to MediaItem metadata
+              var allPeople = people.GetQuery(microsoftRegionInfo);
+              if (allPeople != null)
+                metadata.SetQuery(microsoftRegionInfo, allPeople);
+            }
 
             metadata.Rating = Rating;
             metadata.Comment = Comment ?? string.Empty;
-            metadata.Keywords = new ReadOnlyCollection<string>(Keywords.Select(k => k.Title).ToList());
+            // TODO test it
+            metadata.Keywords = Keywords == null ? null : new ReadOnlyCollection<string>(Keywords.Select(k => k.Title).ToList());
 
             //GeoNameId
             if (GeoName == null)
@@ -377,15 +400,19 @@ namespace PictureManager.Database {
           if (gpsOnly) return true;
 
           //People
-          People.Clear();
+          People = null;
           const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
           const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
 
           if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
-            foreach (var region in regions) {
-              var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-              if (personDisplayName != null) {
-                People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+            var count = regions.Count();
+            if (count > 0) {
+              People = new List<Person>(count);
+              foreach (var region in regions) {
+                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+                if (personDisplayName != null) {
+                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+                }
               }
             }
           }
@@ -403,8 +430,9 @@ namespace PictureManager.Database {
           Orientation = (ushort) orientation;
 
           //Keywords
-          Keywords.Clear();
+          Keywords = null;
           if (bm.Keywords != null) {
+            Keywords = new List<Keyword>();
             //Filter out duplicities
             foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
               if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;

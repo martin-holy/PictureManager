@@ -536,7 +536,7 @@
             <ItemsControl.Style>
               <Style TargetType="ItemsControl">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople.Count}" Value="0">
+                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople}" Value="null">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                   <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
@@ -564,7 +564,7 @@
             <ItemsControl.Style>
               <Style TargetType="ItemsControl">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords.Count}" Value="0">
+                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords}" Value="null">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                   <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">

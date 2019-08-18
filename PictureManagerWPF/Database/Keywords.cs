@@ -177,8 +177,13 @@ namespace PictureManager.Database {
 
       foreach (var k in keywords.Cast<Keyword>()) {
         // remove Keyword from MediaItems
-        foreach (var bmi in k.MediaItems) {
-          bmi.Keywords.Remove(k);
+        if (k.MediaItems.Count > 0) {
+          foreach (var bmi in k.MediaItems) {
+            bmi.Keywords.Remove(k);
+            if (bmi.Keywords.Count == 0)
+              bmi.Keywords = null;
+          }
+
           ACore.MediaItems.Helper.IsModifed = true;
         }
 
@@ -190,6 +195,7 @@ namespace PictureManager.Database {
       }
 
       Helper.IsModifed = true;
+      
     }
 
     public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {

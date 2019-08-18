@@ -236,25 +236,28 @@ namespace PictureManager {
       foreach (var mi in mediaItems) {
 
         // People
-        foreach (var person in mi.People) {
-          MarkedTagsAddWithIncrease(person);
+        if (mi.People != null)
+          foreach (var person in mi.People) {
+            MarkedTagsAddWithIncrease(person);
 
-          // Category Group
-          if (!(person.Parent is Database.CategoryGroup group)) continue;
-          MarkedTagsAddWithIncrease(group);
-        }
+            // Category Group
+            if (!(person.Parent is Database.CategoryGroup group)) continue;
+            MarkedTagsAddWithIncrease(group);
+          }
 
         // Keywords
-        foreach (var keyword in mi.Keywords) {
-          var k = keyword;
-          while (k != null) {
-            MarkedTagsAddWithIncrease(k);
-            
-            // Category Group
-            if (k.Parent is Database.CategoryGroup group)
-              MarkedTagsAddWithIncrease(group);
+        if (mi.Keywords != null) {
+          foreach (var keyword in mi.Keywords) {
+            var k = keyword;
+            while (k != null) {
+              MarkedTagsAddWithIncrease(k);
 
-            k = k.Parent as Database.Keyword;
+              // Category Group
+              if (k.Parent is Database.CategoryGroup group)
+                MarkedTagsAddWithIncrease(group);
+
+              k = k.Parent as Database.Keyword;
+            }
           }
         }
 
@@ -326,8 +329,7 @@ namespace PictureManager {
             if (!File.Exists(mi.FilePathCache))
               CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
 
-            if (mi.InfoBoxThumb.Count == 0)
-              Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
+            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
 
             done++;
             worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), mi);

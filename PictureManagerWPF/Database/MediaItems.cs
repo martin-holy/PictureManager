@@ -75,20 +75,24 @@ namespace PictureManager.Database {
         bmi.Folder.MediaItems.Add(bmi);
 
         // reference to People and back reference from Person to MediaItems
-        if (bmi.Csv[9] != string.Empty)
+        if (bmi.Csv[9] != string.Empty) {
+          bmi.People = new List<Person>();
           foreach (var personId in bmi.Csv[9].Split(',')) {
             var p = ACore.People.AllDic[int.Parse(personId)];
             p.MediaItems.Add(bmi);
             bmi.People.Add(p);
           }
+        }
 
         // reference to Keywords and back reference from Keyword to MediaItems
-        if (bmi.Csv[10] != string.Empty)
+        if (bmi.Csv[10] != string.Empty) {
+          bmi.Keywords = new List<Keyword>();
           foreach (var keywordId in bmi.Csv[10].Split(',')) {
             var k = ACore.Keywords.AllDic[int.Parse(keywordId)];
             k.MediaItems.Add(bmi);
             bmi.Keywords.Add(k);
           }
+        }
 
         // reference to GeoName
         if (bmi.Csv[8] != string.Empty) {
@@ -118,14 +122,18 @@ namespace PictureManager.Database {
       if (item == null) return;
         
       // remove People
-      foreach (var person in item.People)
-        person.MediaItems.Remove(item);
-      item.People.Clear();
+      if (item.People != null) {
+        foreach (var person in item.People)
+          person.MediaItems.Remove(item);
+        item.People = null;
+      }
 
       // remove Keywords
-      foreach (var keyword in item.Keywords)
-        keyword.MediaItems.Remove(item);
-      item.Keywords.Clear();
+      if (item.Keywords != null) {
+        foreach (var keyword in item.Keywords)
+          keyword.MediaItems.Remove(item);
+        item.Keywords = null;
+      }
 
       // remove item from Folder
       item.Folder.MediaItems.Remove(item);
@@ -171,40 +179,56 @@ namespace PictureManager.Database {
 
         switch (item) {
           case Person p: {
-            if (p.IsMarked) mi.People.Add(p);
-            else mi.People.Remove(p);
+            if (p.IsMarked) {
+              if (mi.People == null)
+                mi.People = new List<Person>();
+              mi.People.Add(p);
+            }
+            else {
+              mi.People.Remove(p);
+              if (mi.People.Count == 0)
+                mi.People = null;
+            }
             break;
           }
           case Keyword k: {
             if (!k.IsMarked) {
               mi.Keywords.Remove(k);
+              if (mi.Keywords.Count == 0)
+                mi.Keywords = null;
               break;
             }
 
-            // skip if any Parent of MediaItem Keywords is marked Keyword
-            var skip = false;
-            foreach (var miKeyword in mi.Keywords) {
-              var tmpMik = miKeyword;
-              while (tmpMik.Parent is Keyword parent) {
-                tmpMik = parent;
-                if (!parent.Id.Equals(k.Id)) continue;
-                skip = true;
-                break;
+            
+            if (mi.Keywords != null) {
+              // skip if any Parent of MediaItem Keywords is marked Keyword
+              var skip = false;
+              foreach (var miKeyword in mi.Keywords) {
+                var tmpMik = miKeyword;
+                while (tmpMik.Parent is Keyword parent) {
+                  tmpMik = parent;
+                  if (!parent.Id.Equals(k.Id)) continue;
+                  skip = true;
+                  break;
+                }
+              }
+
+              if (skip) break;
+
+              // remove potencial redundant keywords 
+              // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
+              foreach (var miKeyword in mi.Keywords.ToArray()) {
+                var tmpMarkedK = k;
+                while (tmpMarkedK.Parent is Keyword parent) {
+                  tmpMarkedK = parent;
+                  if (!parent.Id.Equals(miKeyword.Id)) continue;
+                  mi.Keywords.Remove(miKeyword);
+                }
               }
             }
-            if (skip) break;
-
-            // remove potencial redundant keywords 
-            // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
-            foreach (var miKeyword in mi.Keywords.ToArray()) {
-              var tmpMarkedK = k;
-              while (tmpMarkedK.Parent is Keyword parent) {
-                tmpMarkedK = parent;
-                if (!parent.Id.Equals(miKeyword.Id)) continue;
-                mi.Keywords.Remove(miKeyword);
-              }
-            }
-
+            
+            if (mi.Keywords == null)
+              mi.Keywords = new List<Keyword>();
             mi.Keywords.Add(k);
 
             break;
@@ -227,9 +251,9 @@ namespace PictureManager.Database {
       Current = null;
       foreach (var item in Items) {
         if (item.IsSelected) item.IsSelected = false;
-        item.InfoBoxThumb.Clear();
-        item.InfoBoxPeople.Clear();
-        item.InfoBoxKeywords.Clear();
+        item.InfoBoxThumb = null;
+        item.InfoBoxPeople = null;
+        item.InfoBoxKeywords = null;
       }
 
       Items.Clear();
@@ -306,13 +330,13 @@ namespace PictureManager.Database {
         mediaItems = mediaItems.Where(mi => {
           if (mi.IsNew)
             return true;
-          if (notPeople.Any(p => mi.People.Any(x => x == p)))
+          if (mi.People != null && notPeople.Any(p => mi.People.Any(x => x == p)))
             return false;
           if (!andPeopleAny && !orPeopleAny)
             return true;
-          if (andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p)))
+          if (mi.People != null && andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p)))
             return true;
-          if (orPeople.Any(p => mi.People.Any(x => x == p)))
+          if (mi.People != null && orPeople.Any(p => mi.People.Any(x => x == p)))
             return true;
 
           return false;
@@ -329,13 +353,13 @@ namespace PictureManager.Database {
         mediaItems = mediaItems.Where(mi => {
           if (mi.IsNew)
             return true;
-          if (notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+          if (mi.Keywords != null && notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
             return false;
           if (!andKeywordsAny && !orKeywordsAny)
             return true;
-          if (andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
             return true;
-          if (orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+          if (mi.Keywords != null && orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
             return true;
           return false;
         }).ToList();
