@@ -19,30 +19,30 @@ namespace PictureManager.Database {
       // ID|Name|Category|GroupItems
       foreach (var group in All) {
         // reference to group items
-        if (group.Csv[3] != string.Empty) {
-          switch (group.Category) {
-            case Category.People: {
-              group.Parent = ACore.People;
+        switch (group.Category) {
+          case Category.People: {
+            group.Parent = ACore.People;
+            if (group.Csv[3].Equals(string.Empty)) continue;
 
-              foreach (var itemId in group.Csv[3].Split(',')) {
-                var p = ACore.People.AllDic[int.Parse(itemId)];
-                p.Parent = group;
-                group.Items.Add(p);
-              }
-
-              break;
+            foreach (var itemId in group.Csv[3].Split(',')) {
+              var p = ACore.People.AllDic[int.Parse(itemId)];
+              p.Parent = group;
+              group.Items.Add(p);
             }
-            case Category.Keywords: {
-              group.Parent = ACore.Keywords;
 
-              foreach (var itemId in group.Csv[3].Split(',')) {
-                var k = ACore.Keywords.AllDic[int.Parse(itemId)];
-                k.Parent = group;
-                group.Items.Add(k);
-              }
+            break;
+          }
+          case Category.Keywords: {
+            group.Parent = ACore.Keywords;
+            if (group.Csv[3].Equals(string.Empty)) continue;
 
-              break;
+            foreach (var itemId in group.Csv[3].Split(',')) {
+              var k = ACore.Keywords.AllDic[int.Parse(itemId)];
+              k.Parent = group;
+              group.Items.Add(k);
             }
+
+            break;
           }
         }
 
