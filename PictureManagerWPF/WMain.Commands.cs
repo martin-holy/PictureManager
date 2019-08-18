@@ -473,7 +473,7 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      current.Comment = inputDialog.TxtAnswer.Text;
+      current.Comment = inputDialog.TxtAnswer.Text.Equals(string.Empty) ? null : inputDialog.TxtAnswer.Text;
       current.TryWriteMetadata();
       current.SetInfoBox();
       ACore.UpdateStatusBarInfo();

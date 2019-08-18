@@ -83,7 +83,7 @@ namespace PictureManager.Database {
         Height.ToString(),
         Orientation.ToString(),
         Rating.ToString(),
-        Comment,
+        Comment ?? string.Empty,
         GeoName?.Id.ToString(),
         People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
@@ -422,7 +422,7 @@ namespace PictureManager.Database {
 
           //Comment
           Comment = bm.Comment == null
-            ? string.Empty
+            ? null
             : new string(bm.Comment.Where(char.IsLetterOrDigit).ToArray());
 
           //Orientation 1: 0, 3: 180, 6: 270, 8: 90

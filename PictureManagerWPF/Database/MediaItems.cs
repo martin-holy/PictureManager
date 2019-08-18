@@ -64,7 +64,7 @@ namespace PictureManager.Database {
         Height = props[4].IntParseOrDefault(0),
         Orientation = props[5].IntParseOrDefault(1),
         Rating = props[6].IntParseOrDefault(0),
-        Comment = props[7]
+        Comment = props[7].Equals(string.Empty) ? null : props[7]
       });
     }
 
