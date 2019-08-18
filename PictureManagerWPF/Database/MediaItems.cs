@@ -142,14 +142,6 @@ namespace PictureManager.Database {
       Helper.IsModifed = true;
     }
 
-    public void ReLoad(List<BaseMediaItem> items) {
-      foreach (var mi in items) {
-        mi.ReadMetadata();
-        mi.IsModifed = false;
-        mi.SetInfoBox();
-      }
-    }
-
     public List<BaseMediaItem> GetSelectedOrAll() {
       var mediaItems = Items.Where(x => x.IsSelected).ToList();
       return mediaItems.Count == 0 ? Items.ToList() : mediaItems;
@@ -235,6 +227,9 @@ namespace PictureManager.Database {
       Current = null;
       foreach (var item in Items) {
         if (item.IsSelected) item.IsSelected = false;
+        item.InfoBoxThumb.Clear();
+        item.InfoBoxPeople.Clear();
+        item.InfoBoxKeywords.Clear();
       }
 
       Items.Clear();

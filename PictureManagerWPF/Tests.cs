@@ -18,6 +18,7 @@ namespace PictureManager {
         mi.ReadMetadata();
       }
       aCore.Sdb.SaveAllTables();*/
+      var count = aCore.MediaItems.All.Where(x => x.InfoBoxThumb.Count > 0);
     }
 
     public void GetByPathTest() {

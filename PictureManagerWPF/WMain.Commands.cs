@@ -428,7 +428,12 @@ namespace PictureManager {
     }
 
     private void KeywordsCancel() {
-      ACore.MediaItems.ReLoad(ACore.MediaItems.Items.Where(x => x.IsModifed).ToList());
+      foreach (var mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
+        mi.ReadMetadata();
+        mi.IsModifed = false;
+        mi.SetInfoBox();
+      }
+
       ACore.Sdb.SaveAllTables();
       ACore.MarkUsedKeywordsAndPeople();
       ACore.MediaItems.IsEditModeOn = false;
@@ -484,7 +489,8 @@ namespace PictureManager {
       };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var mediaItems = parameter is Database.Folder folder
+        var folder = parameter as Database.Folder;
+        var mediaItems = folder != null
           ? folder.GetMediaItems(recursive)
           : ACore.MediaItems.GetSelectedOrAll();
         var worker = (BackgroundWorker) o;
@@ -502,7 +508,10 @@ namespace PictureManager {
             $"Processing file {done} of {count} ({mi.FileName})");
 
           mi.ReadMetadata();
-          Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
+
+          // set info box just for loaded media items
+          if (folder == null)
+            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
         }
       };
 
