@@ -180,23 +180,24 @@ namespace PictureManager.Database {
           continue;
         }
 
+        if (!isNew) continue;
+
         // add new Folder to the tree
-        if (isNew) Items.Add(folder);
+        Items.Add(folder);
 
-        if (isNew) {
-          if (FolderKeyword != null) {
-            // remove placeholder
-            if (FolderKeyword.Items.Count == 1 && FolderKeyword.Items[0].Title == null)
-              FolderKeyword.Items.Clear();
+        if (FolderKeyword == null) continue;
 
-            if (!(FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title)) is FolderKeyword fk)) {
-              fk = new FolderKeyword {Title = folder.Title, Parent = FolderKeyword};
-              FolderKeyword.Items.Add(fk);
-            }
-            fk.Folders.Add(folder);
-            folder.FolderKeyword = fk;
-          }
+        // remove placeholder
+        if (FolderKeyword.Items.Count == 1 && FolderKeyword.Items[0].Title == null)
+          FolderKeyword.Items.Clear();
+
+        if (!(FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title)) is FolderKeyword fk)) {
+          fk = new FolderKeyword {Title = folder.Title, Parent = FolderKeyword};
+          FolderKeyword.Items.Add(fk);
+          FolderKeyword.Items.Sort(x => x.Title);
         }
+        fk.Folders.Add(folder);
+        folder.FolderKeyword = fk;
       }
 
       // remove Folders deleted outside of this application

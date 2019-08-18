@@ -37,6 +37,8 @@ namespace PictureManager.ViewModel {
 
         LoadRecursive(fi, fk);
       }
+
+      folder.Items.Sort(x => x.Title);
     }
   }
 }

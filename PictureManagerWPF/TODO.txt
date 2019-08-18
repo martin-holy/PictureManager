@@ -1,7 +1,6 @@
 ﻿#Bugs
 - focus to newly created folder
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
-- sort FolderKeywords
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 
 #New
