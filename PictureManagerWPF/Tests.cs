@@ -14,10 +14,10 @@ namespace PictureManager {
 
       //TestListVsArray();
       //GetByPathTest();
-      foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0)) {
+      /*foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0)) {
         mi.ReadMetadata();
       }
-      aCore.Sdb.SaveAllTables();
+      aCore.Sdb.SaveAllTables();*/
     }
 
     public void GetByPathTest() {

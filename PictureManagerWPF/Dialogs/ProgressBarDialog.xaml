@@ -5,22 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="ProgressBarDialog" Height="122" Width="444.8" 
+        Title="Work in progress ..." SizeToContent="WidthAndHeight" MinWidth="450"
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
-        ShowInTaskbar="False" 
-        FontSize="13.333" 
-        ShowMaxRestoreButton="False" 
-        ShowMinButton="False" ShowCloseButton="False"
+        ShowInTaskbar="False" FontSize="13.333" 
+        ShowMaxRestoreButton="False" ShowMinButton="False" ShowCloseButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"></RowDefinition>
-      <RowDefinition Height="Auto"></RowDefinition>
-      <RowDefinition Height="*"></RowDefinition>
-    </Grid.RowDefinitions>
-    <Label Grid.Row="0" x:Name="LblProgress" Content="" />
-    <ProgressBar Grid.Row="1" Height="20" Margin="5" x:Name="PbWorkerProgress"></ProgressBar>
-    <Button Grid.Row="2" Margin="3,0,3,3" Content="Cancel" VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
-  </Grid>
+  <StackPanel Margin="5">
+    <Label x:Name="LblProgress" Content="" />
+    <ProgressBar x:Name="PbWorkerProgress" Height="20" Margin="5" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+      <Button x:Name="BtnCancel" Margin="5" MinWidth="60" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+    </StackPanel>
+  </StackPanel>
 </controls:MetroWindow>

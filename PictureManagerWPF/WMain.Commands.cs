@@ -476,34 +476,70 @@ namespace PictureManager {
 
     private void ReloadMetadata(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var mediaItems = parameter is Database.Folder folder
-        ? folder.GetMediaItems(recursive)
-        : ACore.MediaItems.GetSelectedOrAll();
-      foreach (var mi in mediaItems) {
-        mi.ReadMetadata();
-        mi.SetInfoBox();
-      }
-      ACore.Sdb.SaveAllTables();
+      var progress = new ProgressBarDialog {Owner = this};
+
+      progress.Worker.RunWorkerCompleted += delegate {
+        progress.Close();
+        ACore.Sdb.SaveAllTables();
+      };
+
+      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
+        var mediaItems = parameter is Database.Folder folder
+          ? folder.GetMediaItems(recursive)
+          : ACore.MediaItems.GetSelectedOrAll();
+        var worker = (BackgroundWorker) o;
+        var count = mediaItems.Count;
+        var done = 0;
+
+        foreach (var mi in mediaItems.ToArray()) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
+
+          mi.ReadMetadata();
+          Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.Show();
     }
 
     private void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var mediaItems = parameter is Database.Folder folder
-        ? folder.GetMediaItems(recursive)
-        : ACore.MediaItems.GetSelectedOrAll();
+      var progress = new ProgressBarDialog {Owner = this};
 
-      using (var bw = new BackgroundWorker()) {
-        bw.DoWork += delegate {
-          foreach (var mi in mediaItems.ToArray())
-            AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
-        };
+      progress.Worker.RunWorkerCompleted += delegate { progress.Close(); };
 
-        bw.RunWorkerCompleted += delegate {
-          MessageBox.Show($"{mediaItems.Count} Thumbnails rebuilded.");
-        };
+      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
+        var mediaItems = parameter is Database.Folder folder
+          ? folder.GetMediaItems(recursive)
+          : ACore.MediaItems.GetSelectedOrAll();
+        var worker = (BackgroundWorker)o;
+        var count = mediaItems.Count;
+        var done = 0;
 
-        bw.RunWorkerAsync();
-      }
+        foreach (var mi in mediaItems.ToArray()) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
+
+          AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.Show();
     }
 
     private bool CanAddGeoNamesFromFiles() {
@@ -513,7 +549,9 @@ namespace PictureManager {
     private void AddGeoNamesFromFiles() {
       var progress = new ProgressBarDialog {Owner = this};
 
-      progress.Worker.DoWork += delegate(object o, DoWorkEventArgs args) {
+      progress.Worker.RunWorkerCompleted += delegate { progress.Close(); };
+
+      progress.Worker.DoWork += delegate(object o, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) o;
         var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
         var count = mis.Count;
@@ -521,7 +559,7 @@ namespace PictureManager {
 
         foreach (var mi in mis) {
           if (worker.CancellationPending) {
-            args.Cancel = true;
+            e.Cancel = true;
             break;
           }
 
