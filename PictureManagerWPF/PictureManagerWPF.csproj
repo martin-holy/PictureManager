@@ -268,7 +268,6 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="ViewModel\ClassDiagram1.cd" />
     <None Include="ViewModel\ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>

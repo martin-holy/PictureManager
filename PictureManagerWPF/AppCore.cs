@@ -7,48 +7,50 @@ using System.Linq;
 using System.IO;
 using System.Windows;
 using PictureManager.Dialogs;
-using PictureManager.Properties;
 using PictureManager.ShellStuff;
+using PictureManager.Database;
+using PictureManager.ViewModel;
 using Directory = System.IO.Directory;
 
 namespace PictureManager {
   public class AppCore : IDisposable {
 
-    public Database.SimpleDb Sdb = new Database.SimpleDb();
+    #region TreeView Roots and Categories
+    // Folders
+    public ObservableCollection<BaseTreeViewItem> FoldersRoot { get; }
+    public FavoriteFolders FavoriteFolders { get; }
+    public Folders Folders { get; }
+    // Keywords
+    public ObservableCollection<BaseTreeViewItem> KeywordsRoot { get; }
+    public Ratings Ratings { get; }
+    public MediaItemSizes MediaItemSizes { get; }
+    public People People { get; }
+    public FolderKeywords FolderKeywords { get; }
+    public Keywords Keywords { get; }
+    public GeoNames GeoNames { get; }
+    // Filters
+    public ObservableCollection<BaseTreeViewItem> FiltersRoot { get; }
+    public Viewers Viewers { get; }
 
-    public ObservableCollection<ViewModel.BaseTreeViewItem> FoldersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
-    public ObservableCollection<ViewModel.BaseTreeViewItem> KeywordsRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
-    public ObservableCollection<ViewModel.BaseTreeViewItem> FiltersRoot { get; } = new ObservableCollection<ViewModel.BaseTreeViewItem>();
+    public CategoryGroups CategoryGroups { get; }
+    #endregion
 
-    public Database.Folders Folders { get; } = new Database.Folders();
-    public Database.MediaItems MediaItems { get; set; } = new Database.MediaItems();
-    public Database.People People { get; } = new Database.People { CanHaveGroups = true, CanModifyItems = true };
-    public Database.Keywords Keywords { get; } = new Database.Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
-    public Database.GeoNames GeoNames { get; } = new Database.GeoNames();
-    public Database.Viewers Viewers { get; } = new Database.Viewers {CanModifyItems = true};
-    public Database.CategoryGroups CategoryGroups { get; } = new Database.CategoryGroups();
-    public Database.FavoriteFolders FavoriteFolders { get; } = new Database.FavoriteFolders();
-
-    public ViewModel.FolderKeywords FolderKeywords { get; } = new ViewModel.FolderKeywords();
-    
-    public ViewModel.Ratings Ratings { get; } = new ViewModel.Ratings();
-    public ViewModel.MediaItemSizes MediaItemSizes { get; } = new ViewModel.MediaItemSizes();
-
+    public SimpleDb Sdb { get; } = new SimpleDb();
+    public MediaItems MediaItems { get; }
     public static WMain WMain => (WMain) Application.Current.Properties[nameof(AppProperty.WMain)];
-    public static Dictionary<string, string> FileOperationResult => (Dictionary<string, string>) Application.Current.Properties[nameof(AppProperty.FileOperationResult)];
     public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";", "\n"};
-    public ViewModel.AppInfo AppInfo { get; } = new ViewModel.AppInfo();
-    public Collection<ViewModel.BaseTreeViewTagItem> MarkedTags { get; } = new Collection<ViewModel.BaseTreeViewTagItem>();
+    public AppInfo AppInfo { get; } = new AppInfo();
+    public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
     public BackgroundWorker ThumbsWorker { get; set; }
-    public Database.Viewer CurrentViewer { get; set; }
+    public Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
     public double ThumbScale { get; set; } = 1.0;
 
     private bool _disposed;
-    private ViewModel.BaseTreeViewItem _lastSelectedSource;
+    private BaseTreeViewItem _lastSelectedSource;
 
     public bool LastSelectedSourceRecursive { get; set; }
-    public ViewModel.BaseTreeViewItem LastSelectedSource {
+    public BaseTreeViewItem LastSelectedSource {
       get => _lastSelectedSource;
       set {
         if (_lastSelectedSource == value) return;
@@ -59,7 +61,27 @@ namespace PictureManager {
     }
 
     public AppCore() {
-      Application.Current.Properties[nameof(AppProperty.FileOperationResult)] = new Dictionary<string, string>();
+      #region TreeView Roots and Categories
+      // Folders
+      FavoriteFolders = new FavoriteFolders();
+      Folders = new Folders();
+      FoldersRoot = new ObservableCollection<BaseTreeViewItem> {FavoriteFolders, Folders};
+      // Keywords
+      Ratings = new Ratings();
+      MediaItemSizes = new MediaItemSizes();
+      People = new People {CanHaveGroups = true, CanModifyItems = true};
+      FolderKeywords = new FolderKeywords();
+      Keywords = new Keywords {CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true};
+      GeoNames = new GeoNames();
+      KeywordsRoot = new ObservableCollection<BaseTreeViewItem> {Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames};
+      // Filters
+      Viewers = new Viewers {CanModifyItems = true};
+      FiltersRoot = new ObservableCollection<BaseTreeViewItem> {Viewers};
+
+      CategoryGroups = new CategoryGroups();
+      #endregion
+
+      MediaItems = new MediaItems();
     }
 
     public void Dispose() {
@@ -101,16 +123,6 @@ namespace PictureManager {
       if (Viewers.Items.Count == 0) WMain.MenuViewers.Visibility = Visibility.Collapsed;
 
       AppInfo.MediaItemsCount = MediaItems.All.Count;
-
-      FoldersRoot.Add(FavoriteFolders);
-      FoldersRoot.Add(Folders);
-      KeywordsRoot.Add(Ratings);
-      KeywordsRoot.Add(MediaItemSizes);
-      KeywordsRoot.Add(People);
-      KeywordsRoot.Add(FolderKeywords);
-      KeywordsRoot.Add(Keywords);
-      KeywordsRoot.Add(GeoNames);
-      FiltersRoot.Add(Viewers);
     }
 
     public void UpdateStatusBarInfo() {
@@ -123,15 +135,15 @@ namespace PictureManager {
     }
 
     public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
-      if (item is ViewModel.BaseCategoryItem || item is Database.CategoryGroup) return;
+      if (item is BaseCategoryItem || item is CategoryGroup) return;
 
       if (MediaItems.IsEditModeOn) {
-        if (!(item is ViewModel.BaseTreeViewTagItem bti)) return;
+        if (!(item is BaseTreeViewTagItem bti)) return;
         switch (item) {
-          case ViewModel.Rating _:
-          case Database.Person _:
-          case Database.Keyword _:
-          case Database.GeoName _: {
+          case Rating _:
+          case Person _:
+          case Keyword _:
+          case GeoName _: {
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
               MarkedTags.Add(bti);
@@ -151,9 +163,9 @@ namespace PictureManager {
         }
       }
       else {
-        var bti = item as ViewModel.BaseTreeViewItem;
+        var bti = item as BaseTreeViewItem;
         switch (item) {
-          case Database.FavoriteFolder favoriteFolder: {
+          case FavoriteFolder favoriteFolder: {
             Folders.ExpandTo(favoriteFolder.Folder);
             var visibleTreeIndex = 0;
             Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
@@ -161,15 +173,15 @@ namespace PictureManager {
             WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
             break;
           }
-          case ViewModel.Rating _:
-          case Database.Person _:
-          case Database.Keyword _:
-          case Database.GeoName _: {
+          case Rating _:
+          case Person _:
+          case Keyword _:
+          case GeoName _: {
             if (bti == null) return;
             if (bti.BackgroundBrush != BackgroundBrush.Default)
               bti.BackgroundBrush = BackgroundBrush.Default;
             else {
-              if (item is ViewModel.Rating && !and && !hide)
+              if (item is Rating && !and && !hide)
                 bti.BackgroundBrush = BackgroundBrush.OrThis;
               else {
                 if (!and && !hide) bti.BackgroundBrush = BackgroundBrush.OrThis;
@@ -189,14 +201,14 @@ namespace PictureManager {
         }
 
         switch (item) {
-          case Database.Folder _:
-          case ViewModel.FolderKeyword _: {
-            if (item is Database.Folder folder && !folder.IsAccessible) {
+          case Folder _:
+          case FolderKeyword _: {
+            if (item is Folder folder && !folder.IsAccessible) {
               folder.IsSelected = false;
               return;
             }
 
-            LastSelectedSource = (ViewModel.BaseTreeViewItem) item;
+            LastSelectedSource = (BaseTreeViewItem) item;
             LastSelectedSource.IsSelected = true;
             LastSelectedSourceRecursive = recursive;
 
@@ -215,7 +227,7 @@ namespace PictureManager {
       }
     }
 
-    private void MarkedTagsAddWithIncrease(ViewModel.BaseTreeViewTagItem item) {
+    private void MarkedTagsAddWithIncrease(BaseTreeViewTagItem item) {
       item.PicCount++;
       if (item.IsMarked) return;
       item.IsMarked = true;
@@ -241,7 +253,7 @@ namespace PictureManager {
             MarkedTagsAddWithIncrease(person);
 
             // Category Group
-            if (!(person.Parent is Database.CategoryGroup group)) continue;
+            if (!(person.Parent is CategoryGroup group)) continue;
             MarkedTagsAddWithIncrease(group);
           }
 
@@ -253,10 +265,10 @@ namespace PictureManager {
               MarkedTagsAddWithIncrease(k);
 
               // Category Group
-              if (k.Parent is Database.CategoryGroup group)
+              if (k.Parent is CategoryGroup group)
                 MarkedTagsAddWithIncrease(group);
 
-              k = k.Parent as Database.Keyword;
+              k = k.Parent as Keyword;
             }
           }
         }
@@ -265,14 +277,14 @@ namespace PictureManager {
         var fk = mi.Folder.FolderKeyword;
         while (fk != null) {
           MarkedTagsAddWithIncrease(fk);
-          fk = fk.Parent as ViewModel.FolderKeyword;
+          fk = fk.Parent as FolderKeyword;
         }
 
         // GeoNames
         var gn = mi.GeoName;
         while (gn != null) {
           MarkedTagsAddWithIncrease(gn);
-          gn = gn.Parent as Database.GeoName;
+          gn = gn.Parent as GeoName;
         }
 
         // Ratings
@@ -290,12 +302,12 @@ namespace PictureManager {
         ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
           AppInfo.ProgressBarValue = e.ProgressPercentage;
           if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-          MediaItems.SplitedItemsAdd((Database.MediaItem) e.UserState);
+          MediaItems.SplitedItemsAdd((MediaItem) e.UserState);
         };
 
         ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
           var worker = (BackgroundWorker) sender;
-          var items = (List<Database.MediaItem>) e.Argument;
+          var items = (List<MediaItem>) e.Argument;
           var count = items.Count;
           var done = 0;
           e.Result = e.Argument;
@@ -390,8 +402,8 @@ namespace PictureManager {
     }
 
     public Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
-      FileOperationResult.Clear();
-      using (var fo = new FileOperation(new PicFileOperationProgressSink())) {
+      var fops = new PicFileOperationProgressSink();
+      using (var fo = new FileOperation(fops)) {
         fo.SetOperationFlags(
           (recycle ? FileOperationFlags.FOFX_RECYCLEONDELETE : FileOperationFlags.FOF_WANTNUKEWARNING) |
           (silent
@@ -403,7 +415,7 @@ namespace PictureManager {
         fo.PerformOperations();
       }
 
-      return FileOperationResult;
+      return fops.FileOperationResult;
     }
 
     public bool CanViewerSeeThisFile(string filePath) {
@@ -429,7 +441,7 @@ namespace PictureManager {
     }
 
     // TODO predelat na objekty
-    public bool CanViewerSeeThisDirectory(Database.Folder folder) {
+    public bool CanViewerSeeThisDirectory(Folder folder) {
       if (CurrentViewer == null) return true;
 
       var path = folder.FullPath;
