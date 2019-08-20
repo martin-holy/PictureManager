@@ -76,7 +76,7 @@ namespace PictureManager {
 
     private void compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
-      var mis = (List<Database.BaseMediaItem>) e.Argument;
+      var mis = (List<Database.MediaItem>) e.Argument;
       var count = mis.Count;
       var done = 0;
       const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;

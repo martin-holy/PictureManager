@@ -290,12 +290,12 @@ namespace PictureManager {
         ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
           AppInfo.ProgressBarValue = e.ProgressPercentage;
           if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-          MediaItems.SplitedItemsAdd((Database.BaseMediaItem) e.UserState);
+          MediaItems.SplitedItemsAdd((Database.MediaItem) e.UserState);
         };
 
         ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
           var worker = (BackgroundWorker) sender;
-          var items = (List<Database.BaseMediaItem>) e.Argument;
+          var items = (List<Database.MediaItem>) e.Argument;
           var count = items.Count;
           var done = 0;
           e.Result = e.Argument;

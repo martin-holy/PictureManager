@@ -78,7 +78,7 @@
     <Compile Include="AppCore.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Convertors.cs" />
-    <Compile Include="Database\BaseMediaItem.cs" />
+    <Compile Include="Database\MediaItem.cs" />
     <Compile Include="Database\CategoryGroup.cs" />
     <Compile Include="Database\CategoryGroups.cs" />
     <Compile Include="Database\Folder.cs" />

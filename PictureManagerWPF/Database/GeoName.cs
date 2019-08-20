@@ -8,7 +8,7 @@ namespace PictureManager.Database {
     public int Id { get; set; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
-    public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
+    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
 
     public GeoName(int id, string name, string toponymName, string fCode, BaseTreeViewItem parent) {
       Id = id;
@@ -29,21 +29,21 @@ namespace PictureManager.Database {
         (Parent as GeoName)?.Id.ToString());
     }
 
-    public BaseMediaItem[] GetMediaItems(bool recursive) {
+    public MediaItem[] GetMediaItems(bool recursive) {
       return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
     }
 
-    public BaseMediaItem[] GetMediaItemsRecursive() {
+    public MediaItem[] GetMediaItemsRecursive() {
       // get all GeoNames
       var geoNames = new List<BaseTreeViewItem>();
       GetThisAndItemsRecursive(ref geoNames);
 
       // get all MediaItems from geoNames
-      var bmis = new List<BaseMediaItem>();
+      var mis = new List<MediaItem>();
       foreach (var gn in geoNames.Cast<GeoName>())
-        bmis.AddRange(gn.MediaItems);
+        mis.AddRange(gn.MediaItems);
 
-      return bmis.Distinct().ToArray();
+      return mis.Distinct().ToArray();
     }
   }
 }

@@ -14,15 +14,15 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public class MediaItems : INotifyPropertyChanged, ITable {
     public TableHelper Helper { get; set; }
-    public List<BaseMediaItem> All { get; } = new List<BaseMediaItem>();
+    public List<MediaItem> All { get; } = new List<MediaItem>();
 
-    private BaseMediaItem _current;
+    private MediaItem _current;
     private bool _isEditModeOn;
 
-    public ObservableCollection<BaseMediaItem> Items { get; set; } = new ObservableCollection<BaseMediaItem>();
-    public ObservableCollection<ObservableCollection<BaseMediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<BaseMediaItem>>();
+    public ObservableCollection<MediaItem> Items { get; set; } = new ObservableCollection<MediaItem>();
+    public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<MediaItem>>();
 
-    public BaseMediaItem Current {
+    public MediaItem Current {
       get => _current;
       set {
         if (_current != null) _current.IsSelected = false;
@@ -58,7 +58,7 @@ namespace PictureManager.Database {
       var props = csv.Split('|');
       if (props.Length != 11) return;
       var id = int.Parse(props[0]);
-      AddRecord(new BaseMediaItem(id, null, props[2]) {
+      AddRecord(new MediaItem(id, null, props[2]) {
         Csv = props,
         Width = props[3].IntParseOrDefault(0),
         Height = props[4].IntParseOrDefault(0),
@@ -69,39 +69,41 @@ namespace PictureManager.Database {
     }
 
     public void LinkReferences() {
-      foreach (var bmi in All) {
+      foreach (var mi in All) {
         // reference to Folder and back reference from Folder to MediaItems
-        bmi.Folder = ACore.Folders.AllDic[int.Parse(bmi.Csv[1])];
-        bmi.Folder.MediaItems.Add(bmi);
+        mi.Folder = ACore.Folders.AllDic[int.Parse(mi.Csv[1])];
+        mi.Folder.MediaItems.Add(mi);
 
         // reference to People and back reference from Person to MediaItems
-        if (bmi.Csv[9] != string.Empty) {
-          bmi.People = new List<Person>();
-          foreach (var personId in bmi.Csv[9].Split(',')) {
+        if (mi.Csv[9] != string.Empty) {
+          var ids = mi.Csv[9].Split(',');
+          mi.People = new List<Person>(ids.Length);
+          foreach (var personId in ids) {
             var p = ACore.People.AllDic[int.Parse(personId)];
-            p.MediaItems.Add(bmi);
-            bmi.People.Add(p);
+            p.MediaItems.Add(mi);
+            mi.People.Add(p);
           }
         }
 
         // reference to Keywords and back reference from Keyword to MediaItems
-        if (bmi.Csv[10] != string.Empty) {
-          bmi.Keywords = new List<Keyword>();
-          foreach (var keywordId in bmi.Csv[10].Split(',')) {
+        if (mi.Csv[10] != string.Empty) {
+          var ids = mi.Csv[10].Split(',');
+          mi.Keywords = new List<Keyword>(ids.Length);
+          foreach (var keywordId in ids) {
             var k = ACore.Keywords.AllDic[int.Parse(keywordId)];
-            k.MediaItems.Add(bmi);
-            bmi.Keywords.Add(k);
+            k.MediaItems.Add(mi);
+            mi.Keywords.Add(k);
           }
         }
 
         // reference to GeoName
-        if (bmi.Csv[8] != string.Empty) {
-          bmi.GeoName = ACore.GeoNames.AllDic[int.Parse(bmi.Csv[8])];
-          bmi.GeoName.MediaItems.Add(bmi);
+        if (mi.Csv[8] != string.Empty) {
+          mi.GeoName = ACore.GeoNames.AllDic[int.Parse(mi.Csv[8])];
+          mi.GeoName.MediaItems.Add(mi);
         }
 
         // csv array is not needed any more
-        bmi.Csv = null;
+        mi.Csv = null;
       }
     }
 
@@ -114,11 +116,11 @@ namespace PictureManager.Database {
       Helper.LoadFromFile();
     }
 
-    public void AddRecord(BaseMediaItem record) {
+    public void AddRecord(MediaItem record) {
       All.Add(record);
     }
 
-    public void Delete(BaseMediaItem item) {
+    public void Delete(MediaItem item) {
       if (item == null) return;
         
       // remove People
@@ -150,7 +152,7 @@ namespace PictureManager.Database {
       Helper.IsModifed = true;
     }
 
-    public List<BaseMediaItem> GetSelectedOrAll() {
+    public List<MediaItem> GetSelectedOrAll() {
       var mediaItems = Items.Where(x => x.IsSelected).ToList();
       return mediaItems.Count == 0 ? Items.ToList() : mediaItems;
     }
@@ -287,11 +289,11 @@ namespace PictureManager.Database {
       }
 
       // get all MediaItems
-      var mediaItems = new List<BaseMediaItem>();
+      var mediaItems = new List<MediaItem>();
       foreach (var folder in allFolders.Cast<Folder>()) {
 
         // add MediaItems from current Folder to dictionary for faster search
-        var fmis = new Dictionary<string, BaseMediaItem>();
+        var fmis = new Dictionary<string, MediaItem>();
         folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
 
         foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
@@ -301,7 +303,7 @@ namespace PictureManager.Database {
           var fileName = Path.GetFileName(file) ?? string.Empty;
           fmis.TryGetValue(fileName, out var inDbFile);
           if (inDbFile == null) {
-            inDbFile = new BaseMediaItem(Helper.GetNextId(), folder, fileName, true);
+            inDbFile = new MediaItem(Helper.GetNextId(), folder, fileName, true);
             AddRecord(inDbFile);
             folder.MediaItems.Add(inDbFile);
           }
@@ -382,7 +384,7 @@ namespace PictureManager.Database {
       ClearItBeforeLoad();
 
       // get items by tag
-      BaseMediaItem[] items = null;
+      MediaItem[] items = null;
 
       switch (tag) {
         case Keyword keyword: items = keyword.GetMediaItems(recursive); break;
@@ -405,8 +407,8 @@ namespace PictureManager.Database {
             return;
           }
 
-          var allItems = (BaseMediaItem[]) e.Argument;
-          var resultItems = new List<BaseMediaItem>();
+          var allItems = (MediaItem[]) e.Argument;
+          var resultItems = new List<MediaItem>();
           var dirs = (from mi in allItems select mi.Folder).Distinct()
             .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
 
@@ -433,7 +435,7 @@ namespace PictureManager.Database {
             return;
           }
 
-          foreach (var item in (List<BaseMediaItem>) e.Result)
+          foreach (var item in (List<MediaItem>) e.Result)
             Items.Add(item);
 
           ACore.SetMediaItemSizesLoadedRange();
@@ -537,10 +539,10 @@ namespace PictureManager.Database {
       }
     }
 
-    public void SplitedItemsAdd(BaseMediaItem bmi) {
+    public void SplitedItemsAdd(MediaItem mi) {
       var lastIndex = SplitedItems.Count - 1;
       if (lastIndex == -1) {
-        SplitedItems.Add(new ObservableCollection<BaseMediaItem>());
+        SplitedItems.Add(new ObservableCollection<MediaItem>());
         lastIndex++;
       }
 
@@ -548,12 +550,12 @@ namespace PictureManager.Database {
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
       var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
-      if (bmi.ThumbWidth <= rowMaxWidth - rowWidth) {
-        SplitedItems[lastIndex].Add(bmi);
+      if (mi.ThumbWidth <= rowMaxWidth - rowWidth) {
+        SplitedItems[lastIndex].Add(mi);
       }
       else {
-        SplitedItems.Add(new ObservableCollection<BaseMediaItem>());
-        SplitedItems[lastIndex + 1].Add(bmi);
+        SplitedItems.Add(new ObservableCollection<MediaItem>());
+        SplitedItems[lastIndex + 1].Add(mi);
       }
     }
 
@@ -568,7 +570,7 @@ namespace PictureManager.Database {
                         SystemParameters.VerticalScrollBarWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
-      var row = new ObservableCollection<BaseMediaItem>();
+      var row = new ObservableCollection<MediaItem>();
       foreach (var item in Items) {
         if (item.ThumbWidth + itemOffset <= rowMaxWidth - rowWidth) {
           row.Add(item);
@@ -576,7 +578,7 @@ namespace PictureManager.Database {
         }
         else {
           SplitedItems.Add(row);
-          row = new ObservableCollection<BaseMediaItem> { item };
+          row = new ObservableCollection<MediaItem> { item };
           rowWidth = item.ThumbWidth + itemOffset;
         }
       }
@@ -600,12 +602,12 @@ namespace PictureManager.Database {
     /// <param name="mode"></param>
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
-    public void CopyMove(FileOperationMode mode, List<BaseMediaItem> items, Folder destFolder) {
+    public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
       var fop = new Dialogs.FileOperationDialog { Owner = AppCore.WMain };
 
       fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker)sender;
-        var mis = (List<BaseMediaItem>)e.Argument;
+        var mis = (List<MediaItem>)e.Argument;
         var count = mis.Count;
         var done = 0;
 

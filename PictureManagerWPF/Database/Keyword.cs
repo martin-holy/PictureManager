@@ -7,7 +7,7 @@ namespace PictureManager.Database {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public int Idx { get; set; }
-    public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
+    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
 
     public string FullPath => GetFullPath();
 
@@ -41,17 +41,17 @@ namespace PictureManager.Database {
       return string.Join("/", names);
     }
 
-    public BaseMediaItem[] GetMediaItems(bool recursive) {
+    public MediaItem[] GetMediaItems(bool recursive) {
       return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
     }
 
-    public BaseMediaItem[] GetMediaItemsRecursive() {
+    public MediaItem[] GetMediaItemsRecursive() {
       // get all Keywords
       var keywords = new List<BaseTreeViewItem>();
       GetThisAndItemsRecursive(ref keywords);
 
       // get all MediaItems from keywords
-      var mis = new List<BaseMediaItem>();
+      var mis = new List<MediaItem>();
       foreach (var k in keywords.Cast<Keyword>())
         mis.AddRange(k.MediaItems);
 

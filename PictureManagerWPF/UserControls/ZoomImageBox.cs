@@ -20,7 +20,7 @@ namespace PictureManager.UserControls {
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
-    private Database.BaseMediaItem _currentMediaItem;
+    private Database.MediaItem _currentMediaItem;
 
     public Image Image;
     public event PropertyChangedEventHandler PropertyChanged;
@@ -119,7 +119,7 @@ namespace PictureManager.UserControls {
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
-    public void SetSource(Database.BaseMediaItem currentMediaItem) {
+    public void SetSource(Database.MediaItem currentMediaItem) {
       _currentMediaItem = currentMediaItem;
       _isDecoded = true;
       SetSource();

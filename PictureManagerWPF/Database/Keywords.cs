@@ -178,10 +178,10 @@ namespace PictureManager.Database {
       foreach (var k in keywords.Cast<Keyword>()) {
         // remove Keyword from MediaItems
         if (k.MediaItems.Count > 0) {
-          foreach (var bmi in k.MediaItems) {
-            bmi.Keywords.Remove(k);
-            if (bmi.Keywords.Count == 0)
-              bmi.Keywords = null;
+          foreach (var mi in k.MediaItems) {
+            mi.Keywords.Remove(k);
+            if (mi.Keywords.Count == 0)
+              mi.Keywords = null;
           }
 
           ACore.MediaItems.Helper.IsModifed = true;

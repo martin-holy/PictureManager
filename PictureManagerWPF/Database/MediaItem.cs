@@ -13,7 +13,7 @@ using PictureManager.Properties;
 using Application = System.Windows.Application;
 
 namespace PictureManager.Database {
-  public class BaseMediaItem : INotifyPropertyChanged, IRecord {
+  public class MediaItem : INotifyPropertyChanged, IRecord {
     public string[] Csv { get; set; }
 
     // DB Fields
@@ -62,7 +62,7 @@ namespace PictureManager.Database {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public BaseMediaItem(int id, Folder folder, string fileName, bool isNew = false) {
+    public MediaItem(int id, Folder folder, string fileName, bool isNew = false) {
       Id = id;
       Folder = folder;
       FileName = fileName;
@@ -183,8 +183,8 @@ namespace PictureManager.Database {
       }
     }
 
-    public BaseMediaItem CopyTo(Folder folder, string fileName) {
-      var copy = (BaseMediaItem)MemberwiseClone();
+    public MediaItem CopyTo(Folder folder, string fileName) {
+      var copy = (MediaItem)MemberwiseClone();
       copy.Id = ACore.MediaItems.Helper.GetNextId();
       copy.FileName = fileName;
       copy.Folder = folder;

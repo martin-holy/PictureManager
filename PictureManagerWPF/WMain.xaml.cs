@@ -341,20 +341,20 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var bmi = (Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      var mi = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
 
       if (!isCtrlOn && !isShiftOn) {
         ACore.MediaItems.DeselectAll();
-        ACore.MediaItems.Current = bmi;
+        ACore.MediaItems.Current = mi;
       }
       else {
-        if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
+        if (isCtrlOn) mi.IsSelected = !mi.IsSelected;
         if (isShiftOn && ACore.MediaItems.Current != null) {
           var from = ACore.MediaItems.Current.Index;
-          var to = bmi.Index;
+          var to = mi.Index;
           if (from > to) {
             to = from;
-            from = bmi.Index;
+            from = mi.Index;
           }
 
           for (var i = from; i < to + 1; i++) {
@@ -371,7 +371,7 @@ namespace PictureManager {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
       ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = (Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      ACore.MediaItems.Current = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
       SwitchToFullScreen();
       SetMediaItemSource();
     }
@@ -381,7 +381,7 @@ namespace PictureManager {
       var dob = new DataObject();
       var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
-        data.Add(((Database.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+        data.Add(((Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }

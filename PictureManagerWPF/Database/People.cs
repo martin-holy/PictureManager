@@ -118,10 +118,10 @@ namespace PictureManager.Database {
       if (!(item is Person person)) return;
 
       // remove Person from MediaItems
-      foreach (var bmi in person.MediaItems) {
-        bmi.People.Remove(person);
-        if (bmi.People.Count == 0)
-          bmi.People = null;
+      foreach (var mi in person.MediaItems) {
+        mi.People.Remove(person);
+        if (mi.People.Count == 0)
+          mi.People = null;
       }
 
       // remove Person from the tree

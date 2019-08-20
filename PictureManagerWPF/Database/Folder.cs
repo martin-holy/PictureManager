@@ -11,7 +11,7 @@ namespace PictureManager.Database {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public bool IsFolderKeyword { get; set; }
-    public List<BaseMediaItem> MediaItems { get; set; } = new List<BaseMediaItem>();
+    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
@@ -318,7 +318,7 @@ namespace PictureManager.Database {
       return root;
     }
 
-    public BaseMediaItem GetMediaItemByPath(string path) {
+    public MediaItem GetMediaItemByPath(string path) {
       var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
       var folderPath = path.Substring(0, lioSep);
       var fileName = path.Substring(lioSep + 1);
@@ -326,7 +326,7 @@ namespace PictureManager.Database {
       return folder?.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName));
     }
 
-    public List<BaseMediaItem> GetMediaItems(bool recursive) {
+    public List<MediaItem> GetMediaItems(bool recursive) {
       if (!recursive) return MediaItems;
 
       // get all Folders
@@ -334,7 +334,7 @@ namespace PictureManager.Database {
       GetThisAndItemsRecursive(ref folders);
 
       // get all MediaItems from folders
-      var mis = new List<BaseMediaItem>();
+      var mis = new List<MediaItem>();
       foreach (var f in folders.Cast<Folder>())
         mis.AddRange(f.MediaItems);
 

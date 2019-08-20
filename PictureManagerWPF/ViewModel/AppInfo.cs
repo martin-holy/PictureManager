@@ -15,7 +15,7 @@ namespace PictureManager.ViewModel {
     private int _progressBarValue;
     private bool _progressBarIsIndeterminate;
     private string _positionSlashCount;
-    private BaseMediaItem _currentMediaItem;
+    private MediaItem _currentMediaItem;
     private AppMode _appMode;
     private bool _isThumbInfoVisible = true;
     private int _mediaItemsCount;
@@ -43,7 +43,7 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public BaseMediaItem CurrentMediaItem {
+    public MediaItem CurrentMediaItem {
       get => _currentMediaItem;
       set {
         _currentMediaItem = value;
