@@ -45,6 +45,8 @@ namespace PictureManager {
         case IconName.Save: resourceName = "appbar_save"; break;
         case IconName.Settings: resourceName = "appbar_settings"; break;
         case IconName.Edit: resourceName = "appbar_edit"; break;
+        case IconName.Question: resourceName = "appbar_question"; break;
+        case IconName.Information: resourceName = "appbar_information"; break;
         default: resourceName = "appbar_bug"; break;
       }
       return Application.Current.FindResource(resourceName);

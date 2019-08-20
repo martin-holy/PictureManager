@@ -20,7 +20,8 @@ namespace PictureManager {
       aCore.Sdb.SaveAllTables();*/
       //var count = aCore.MediaItems.All.Where(x => x.InfoBoxThumb.Count > 0);
 
-
+      var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
+      var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
     }
 
     public void GetByPathTest() {
