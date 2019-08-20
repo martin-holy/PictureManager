@@ -163,8 +163,7 @@ namespace PictureManager {
     }
 
     private void MediaItemsDelete() {
-      if (MessageBox.Show("Are you sure?", "Delete Confirmation", 
-        MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
 
       ACore.MediaItems.RemoveSelected(true);
 
@@ -227,9 +226,7 @@ namespace PictureManager {
     }
 
     private static void TagItemDelete(object parameter) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo,
-        MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
+      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
       var item = parameter as ViewModel.BaseTreeViewItem;
       (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
     }
@@ -255,9 +252,10 @@ namespace PictureManager {
     }
 
     private void FolderDelete(object parameter) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
-      ACore.Folders.DeleteRecord((Database.Folder) parameter, true);
+      var folder = (Database.Folder) parameter;
+      if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{folder.Title}' folder?", true)) return;
+
+      ACore.Folders.DeleteRecord(folder, true);
       // reload FolderKeywords
       ACore.FolderKeywords.Load();
     }

@@ -44,7 +44,7 @@ namespace PictureManager.Database {
 
       var folder = ACore.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
       if (folder == null) {
-        MessageBox.Show(@"Select this folder in Folders tree first.");
+        Dialogs.MessageDialog.Show("Information", @"Select this folder in Folders tree first.", false);
         return;
       }
 

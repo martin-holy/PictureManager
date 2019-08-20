@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
 using PictureManager.Database;
 using PictureManager.Dialogs;
 
@@ -74,8 +73,7 @@ namespace PictureManager.ViewModel {
     }
 
     public void GroupDelete(CategoryGroup group) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
+      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
 
       // move Group items to the root
       foreach (var item in group.Items)

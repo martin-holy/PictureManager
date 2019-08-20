@@ -29,9 +29,7 @@ namespace PictureManager.Dialogs {
 
     private void BtnRemove_OnClick(object sender, RoutedEventArgs e) {
       if (LbFolderKeywords.SelectedItems.Count == 0) return;
-
-      var result = MessageBox.Show("Are you sure?", "Remove Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
+      if (!MessageDialog.Show("Remove Confirmation", "Are you sure?", true)) return;
 
       foreach (var item in LbFolderKeywords.SelectedItems.Cast<Folder>().ToList()) {
         item.IsFolderKeyword = false;
