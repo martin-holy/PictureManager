@@ -163,7 +163,9 @@ namespace PictureManager {
     }
 
     private void MediaItemsDelete() {
-      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
+      var count = ACore.MediaItems.Items.Count(x => x.IsSelected);
+      if (!MessageDialog.Show("Delete Confirmation", 
+        $"Do you realy want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
       ACore.MediaItems.RemoveSelected(true);
 

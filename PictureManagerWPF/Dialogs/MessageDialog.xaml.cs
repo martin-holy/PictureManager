@@ -22,26 +22,27 @@ namespace PictureManager.Dialogs {
     public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
     public bool CanCancel { get => _canCancel; set { _canCancel = value; OnPropertyChanged(); } }
 
-    public MessageDialog() {
+    public MessageDialog(string title, string message, bool canCancel) {
       InitializeComponent();
+
+      TitleText = title;
+      Message = message;
+      IconName = canCancel ? IconName.Question : IconName.Information;
+      CanCancel = canCancel;
+      Owner = AppCore.WMain;
+      BtnOk.Content = canCancel ? "_Yes" : "_Ok";
     }
 
     public static bool Show(string title, string message, bool canCancel) {
       var result = false;
-
-      var md = new MessageDialog {
-        TitleText = title,
-        Message = message,
-        IconName = canCancel ? IconName.Question : IconName.Information,
-        CanCancel = canCancel
-      };
+      var md = new MessageDialog(title, message, canCancel);
 
       md.BtnOk.Click += delegate {
         md.Close();
         result = true;
       };
 
-      md.BtnCancel.Click += delegate {
+      md.BtnNo.Click += delegate {
         md.Close();
         result = false;
       };

@@ -14,7 +14,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <controls:MetroWindow.Resources>
-    <Style x:Key="CancelButton" TargetType="Button" BasedOn="{StaticResource DialogButton}">
+    <Style x:Key="NoButton" TargetType="Button" BasedOn="{StaticResource DialogButton}">
       <Setter Property="Visibility" Value="Visible" />
       <Style.Triggers>
         <DataTrigger Binding="{Binding CanCancel}" Value="False">
@@ -37,7 +37,7 @@
 
     <StackPanel Style="{StaticResource DialogButtons}">
       <Button x:Name="BtnOk" Style="{StaticResource DialogButton}" Content="_Ok" IsDefault="True" />
-      <Button x:Name="BtnCancel" Style="{StaticResource CancelButton}" Content="_Cancel" IsCancel="True" />
+      <Button x:Name="BtnNo" Style="{StaticResource NoButton}" Content="_No" IsCancel="True" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>
