@@ -13,7 +13,7 @@ using PictureManager.ViewModel;
 using Directory = System.IO.Directory;
 
 namespace PictureManager {
-  public class AppCore : IDisposable {
+  public class AppCore {
 
     #region TreeView Roots and Categories
     // Folders
@@ -45,20 +45,8 @@ namespace PictureManager {
     public Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
     public double ThumbScale { get; set; } = 1.0;
-
-    private bool _disposed;
-    private BaseTreeViewItem _lastSelectedSource;
-
     public bool LastSelectedSourceRecursive { get; set; }
-    public BaseTreeViewItem LastSelectedSource {
-      get => _lastSelectedSource;
-      set {
-        if (_lastSelectedSource == value) return;
-        if (_lastSelectedSource != null)
-          _lastSelectedSource.IsSelected = false;
-        _lastSelectedSource = value;
-      }
-    }
+    public BaseTreeViewItem LastSelectedSource { get; set; }
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -84,20 +72,10 @@ namespace PictureManager {
       MediaItems = new MediaItems();
     }
 
-    public void Dispose() {
-      Dispose(true);
-      GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing) {
-      if (_disposed) return;
-      if (disposing) {
-        if (ThumbsWorker != null) {
-          ThumbsWorker.Dispose();
-          ThumbsWorker = null;
-        }
-      }
-      _disposed = true;
+    ~AppCore() {
+      if (ThumbsWorker == null) return;
+      ThumbsWorker.Dispose();
+      ThumbsWorker = null;
     }
 
     public void Init() {
@@ -150,7 +128,7 @@ namespace PictureManager {
             else
               MarkedTags.Remove(bti);
 
-            MediaItems.EditMetadata(item);
+            MediaItems.SetMetadata(item);
 
             MarkUsedKeywordsAndPeople();
             UpdateStatusBarInfo();
@@ -385,7 +363,7 @@ namespace PictureManager {
       MediaItemSizes.Size.SetLoadedRange(min, max);
     }
 
-    public FileOperationCollisionDialog.CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
+    public static FileOperationCollisionDialog.CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
       var result = FileOperationCollisionDialog.CollisionResult.Skip;
       var outFileName = fileName;
 
@@ -401,7 +379,7 @@ namespace PictureManager {
       return result;
     }
 
-    public Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
+    public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
       var fops = new PicFileOperationProgressSink();
       using (var fo = new FileOperation(fops)) {
         fo.SetOperationFlags(
@@ -416,52 +394,6 @@ namespace PictureManager {
       }
 
       return fops.FileOperationResult;
-    }
-
-    public bool CanViewerSeeThisFile(string filePath) {
-      bool ok;
-      if (CurrentViewer == null) return true;
-
-      var incFo = CurrentViewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var excFo = CurrentViewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var incFi = new string[0];
-      var excFi = new string[0];
-
-      if (incFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-        if (excFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
-          ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-        } else {
-          ok = !excFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-        }
-      } else {
-        ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
-      }
-
-      return ok;
-    }
-
-    // TODO predelat na objekty
-    public bool CanViewerSeeThisDirectory(Folder folder) {
-      if (CurrentViewer == null) return true;
-
-      var path = folder.FullPath;
-      bool ok;
-      var incFo = CurrentViewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var excFo = CurrentViewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
-      var incFi = new string[0];
-      var excFi = new string[0];
-
-      if (incFo.Any(x => x.Contains(path)) || incFo.Any(path.Contains)) {
-        if (excFo.Any(x => x.Contains(path)) || excFo.Any(path.Contains)) {
-          ok = incFi.Any(x => x.StartsWith(path));
-        } else {
-          ok = !excFi.Any(x => x.StartsWith(path));
-        }
-      } else {
-        ok = incFi.Any(x => x.StartsWith(path));
-      }
-
-      return ok;
     }
 
     public static void CreateThumbnail(string srcPath, string destPath, int size) {

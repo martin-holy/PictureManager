@@ -175,7 +175,7 @@ namespace PictureManager.Database {
         }
 
         // if Viewer can't see this Folder set it as hidden and continue
-        if (!ACore.CanViewerSeeThisDirectory(folder)) {
+        if (!Viewers.CanViewerSeeThisDirectory(ACore.CurrentViewer, folder)) {
           if (!isNew) folder.IsHidden = true;
           continue;
         }

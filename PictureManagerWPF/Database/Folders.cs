@@ -65,7 +65,7 @@ namespace PictureManager.Database {
     public void DeleteRecord(Folder folder, bool fileSystem) {
       // delete folder, subfolders and mediaItems from file system
       if (fileSystem && Directory.Exists(folder.FullPath)) {
-        ACore.FileOperationDelete(new List<string> {folder.FullPath}, true, false);
+        AppCore.FileOperationDelete(new List<string> {folder.FullPath}, true, false);
       }
 
       // delete folder, subfolders and mediaItems from cache
@@ -148,7 +148,7 @@ namespace PictureManager.Database {
         }
 
         // if Viewer can't see this Drive set it as hidden and continue
-        if (!ACore.CanViewerSeeThisDirectory(item)) {
+        if (!Viewers.CanViewerSeeThisDirectory(ACore.CurrentViewer ,item)) {
           item.IsHidden = true;
           continue;
         }
@@ -268,7 +268,7 @@ namespace PictureManager.Database {
           // if the file with the same name exists in the destination
           // show dialog with options to Rename, Replace or Skip the file
           if (File.Exists(destFilePath)) {
-            var result = ACore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, owner, ref destFileName);
+            var result = AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, owner, ref destFileName);
 
             switch (result) {
               case FileOperationCollisionDialog.CollisionResult.Rename: {

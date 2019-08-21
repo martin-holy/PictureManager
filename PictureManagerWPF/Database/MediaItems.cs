@@ -175,11 +175,11 @@ namespace PictureManager.Database {
       Current = null;
     }
 
-    public void EditMetadata(object item) {
+    public void SetMetadata(object tag) {
       foreach (var mi in Items.Where(x => x.IsSelected)) {
         mi.IsModifed = true;
 
-        switch (item) {
+        switch (tag) {
           case Person p: {
             if (p.IsMarked) {
               if (mi.People == null)
@@ -297,7 +297,7 @@ namespace PictureManager.Database {
         folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
 
         foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-          if (!IsSupportedFileType(file) || !ACore.CanViewerSeeThisFile(file)) continue;
+          if (!IsSupportedFileType(file) || !Viewers.CanViewerSeeThisFile(ACore.CurrentViewer, file)) continue;
 
           // check if the MediaItem is already in DB, if not put it there
           var fileName = Path.GetFileName(file) ?? string.Empty;
@@ -418,7 +418,7 @@ namespace PictureManager.Database {
             if (!File.Exists(item.FilePath)) continue;
 
             // Filter by Viewer
-            if (!ACore.CanViewerSeeThisFile(item.FilePath)) continue;
+            if (!Viewers.CanViewerSeeThisFile(ACore.CurrentViewer, item.FilePath)) continue;
 
             item.Index = ++i;
             item.SetThumbSize();
@@ -518,7 +518,7 @@ namespace PictureManager.Database {
       }
 
       if (delete) {
-        ACore.FileOperationDelete(files, true, false);
+        AppCore.FileOperationDelete(files, true, false);
         cache.ForEach(File.Delete);
       }
 
@@ -625,7 +625,7 @@ namespace PictureManager.Database {
           // Open FileOperationCollisionDialog if file with the same name exists in destination
           var destFilePath = Extensions.PathCombine(destFolder.FullPath, mi.FileName);
           if (File.Exists(destFilePath)) {
-            var result = ACore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
+            var result = AppCore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
 
             if (result == Dialogs.FileOperationCollisionDialog.CollisionResult.Skip) {
               mi.IsSelected = false;

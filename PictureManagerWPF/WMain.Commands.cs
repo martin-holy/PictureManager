@@ -241,8 +241,8 @@ namespace PictureManager {
       ((Database.Viewer) parameter).AddFolder(false);
     }
 
-    private void ViewerRemoveFolder(object parameter) {
-      ACore.Viewers.RemoveFolder((ViewModel.BaseTreeViewItem) parameter);
+    private static void ViewerRemoveFolder(object parameter) {
+      Database.Viewers.RemoveFolder((ViewModel.BaseTreeViewItem) parameter);
     }
 
     private static void FolderNew(object parameter) {

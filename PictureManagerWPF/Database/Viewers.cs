@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using PictureManager.Properties;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -115,8 +114,58 @@ namespace PictureManager.Database {
       if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
-    public void RemoveFolder(BaseTreeViewItem folder) {
+    public static void RemoveFolder(BaseTreeViewItem folder) {
       folder.Parent.Items.Remove(folder);
+    }
+
+    public static bool CanViewerSeeThisFile(Viewer viewer, string filePath) {
+      bool ok;
+      if (viewer == null) return true;
+
+      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFi = new string[0];
+      var excFi = new string[0];
+
+      if (incFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+        if (excFo.Any(x => filePath.StartsWith(x, StringComparison.OrdinalIgnoreCase))) {
+          ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+        }
+        else {
+          ok = !excFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+        }
+      }
+      else {
+        ok = incFi.Any(x => filePath.Equals(x, StringComparison.OrdinalIgnoreCase));
+      }
+
+      return ok;
+    }
+
+    // TODO predelat na objekty
+    public static bool CanViewerSeeThisDirectory(Viewer viewer, Folder folder) {
+      if (viewer == null) return true;
+
+      var path = folder.FullPath;
+      bool ok;
+      var incFo = viewer.IncludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var excFo = viewer.ExcludedFolders.Items.Select(x => x.ToolTip).ToArray();
+      var incFi = new string[0];
+      var excFi = new string[0];
+
+      if (incFo.Any(x => x.Contains(path)) || incFo.Any(path.Contains)) {
+        if (excFo.Any(x => x.Contains(path)) || excFo.Any(path.Contains)) {
+          ok = incFi.Any(x => x.StartsWith(path));
+        }
+        else {
+          ok = !excFi.Any(x => x.StartsWith(path));
+        }
+      }
+      else {
+        ok = incFi.Any(x => x.StartsWith(path));
+      }
+
+      return ok;
     }
   }
 }

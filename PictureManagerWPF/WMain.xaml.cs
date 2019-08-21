@@ -229,11 +229,10 @@ namespace PictureManager {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       var srcFolder = (Database.Folder) e.Data.GetData(typeof(Database.Folder));
       var destFolder = (Database.Folder) ((StackPanel) sender).DataContext;
-      var items = thumbs ? ACore.MediaItems.Items.Where(x => x.IsSelected).ToList() : null;
       var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
 
-      if (items != null) { // MediaItems
-        ACore.MediaItems.CopyMove(foMode, items, destFolder);
+      if (thumbs) { // MediaItems
+        ACore.MediaItems.CopyMove(foMode, ACore.MediaItems.Items.Where(x => x.IsSelected).ToList(), destFolder);
         ACore.MediaItems.Helper.IsModifed = true;
       }
       else { // Folder
@@ -241,20 +240,17 @@ namespace PictureManager {
         ACore.MediaItems.Helper.IsModifed = true;
         ACore.Folders.Helper.IsModifed = true;
         ACore.FolderKeywords.Load();
+
+        // reload last selected source if was moved
+        if (foMode == FileOperationMode.Move && srcFolder == ACore.LastSelectedSource) {
+          var folder = destFolder.GetByPath(srcFolder?.Title);
+          if (folder == null) return;
+          ACore.Folders.ExpandTo(folder);
+          ACore.TreeView_Select(folder, false, false, false);
+        }
       }
 
       ACore.Sdb.SaveAllTables();
-
-      // reload last selected source if was moved
-      if (foMode == FileOperationMode.Move && srcFolder == ACore.LastSelectedSource) {
-        ACore.MediaItems.Current = null;
-        ACore.UpdateStatusBarInfo();
-
-        var folder = destFolder.GetByPath(srcFolder?.Title);
-        if (folder == null) return;
-        ACore.Folders.ExpandTo(folder);
-        ACore.TreeView_Select(folder, false, false, false);
-      }
     }
 
     #endregion
