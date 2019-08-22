@@ -107,13 +107,13 @@ namespace PictureManager {
       };
     }*/
 
-    private bool CanMediaItemNext() {
-      return ACore.AppInfo.AppMode == AppMode.Viewer && ACore.MediaItems.Current?.Index + 1 < ACore.MediaItems.Items.Count;
+    private static bool CanMediaItemNext() {
+      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current?.Index + 1 < App.Core.MediaItems.Items.Count;
     }
 
     private void MediaItemNext() {
-      var current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index + 1];
-      ACore.MediaItems.Current = current;
+      var current = App.Core.MediaItems.Items[App.Core.MediaItems.Current.Index + 1];
+      App.Core.MediaItems.Current = current;
       SetMediaItemSource();
       if (_presentationTimer.Enabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
         _presentationTimer.Enabled = false;
@@ -123,68 +123,68 @@ namespace PictureManager {
           FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
       }
 
-      ACore.MarkUsedKeywordsAndPeople();
-      ACore.UpdateStatusBarInfo();
+      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.UpdateStatusBarInfo();
     }
 
-    private bool CanMediaItemPrevious() {
-      return ACore.AppInfo.AppMode == AppMode.Viewer && ACore.MediaItems.Current?.Index > 0;
+    private static bool CanMediaItemPrevious() {
+      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current?.Index > 0;
     }
 
     private void MediaItemPrevious() {
-      ACore.MediaItems.Current = ACore.MediaItems.Items[ACore.MediaItems.Current.Index - 1];
+      App.Core.MediaItems.Current = App.Core.MediaItems.Items[App.Core.MediaItems.Current.Index - 1];
       SetMediaItemSource();
-      ACore.MarkUsedKeywordsAndPeople();
-      ACore.UpdateStatusBarInfo();
+      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.UpdateStatusBarInfo();
     }
 
-    private bool CanMediaItemsSelectAll() {
-      return ACore.AppInfo.AppMode == AppMode.Browser && ACore.MediaItems.Items.Count > 0;
+    private static bool CanMediaItemsSelectAll() {
+      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.Items.Count > 0;
     }
 
-    private void MediaItemsSelectAll() {
-      ACore.MediaItems.SelectAll();
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
+    private static void MediaItemsSelectAll() {
+      App.Core.MediaItems.SelectAll();
+      App.Core.UpdateStatusBarInfo();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private bool CanMediaItemsSelectNotModifed() {
-      return ACore.AppInfo.AppMode == AppMode.Browser && ACore.MediaItems.Items.Count > 0;
+    private static bool CanMediaItemsSelectNotModifed() {
+      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.Items.Count > 0;
     }
 
-    private void MediaItemsSelectNotModifed() {
-      ACore.MediaItems.SelectNotModifed();
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
+    private static void MediaItemsSelectNotModifed() {
+      App.Core.MediaItems.SelectNotModifed();
+      App.Core.UpdateStatusBarInfo();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private bool CanMediaItemsDelete() {
-      return ACore.AppInfo.Selected > 0;
+    private static bool CanMediaItemsDelete() {
+      return App.Core.AppInfo.Selected > 0;
     }
 
     private void MediaItemsDelete() {
-      var count = ACore.MediaItems.Items.Count(x => x.IsSelected);
+      var count = App.Core.MediaItems.Items.Count(x => x.IsSelected);
       if (!MessageDialog.Show("Delete Confirmation", 
         $"Do you realy want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      ACore.MediaItems.RemoveSelected(true);
+      App.Core.MediaItems.RemoveSelected(true);
 
-      if (ACore.AppInfo.AppMode == AppMode.Viewer) {
-        if (ACore.MediaItems.Current != null)
+      if (App.Core.AppInfo.AppMode == AppMode.Viewer) {
+        if (App.Core.MediaItems.Current != null)
           SetMediaItemSource();
         else
           SwitchToBrowser();
       }
 
-      ACore.UpdateStatusBarInfo();
+      App.Core.UpdateStatusBarInfo();
     }
 
-    private void MediaItemsLoadByTag(object parameter) {
-      ACore.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
+    private static void MediaItemsLoadByTag(object parameter) {
+      App.Core.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
-    private bool CanPresentation() {
-      return ACore.AppInfo.AppMode == AppMode.Viewer && ACore.MediaItems.Current != null;
+    private static bool CanPresentation() {
+      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current != null;
     }
 
     private void Presentation() {
@@ -196,7 +196,7 @@ namespace PictureManager {
       if (_presentationTimer.Enabled)
         _presentationTimer.Enabled = false;
       else {
-        if (ACore.MediaItems.Current.MediaType == MediaType.Image && ACore.MediaItems.Current.IsPanoramatic)
+        if (App.Core.MediaItems.Current.MediaType == MediaType.Image && App.Core.MediaItems.Current.IsPanoramatic)
           FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
         else
           StartPresentationTimer(true);
@@ -253,27 +253,27 @@ namespace PictureManager {
       ((Database.Folder) parameter).NewOrRename(true);
     }
 
-    private void FolderDelete(object parameter) {
+    private static void FolderDelete(object parameter) {
       var folder = (Database.Folder) parameter;
       if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{folder.Title}' folder?", true)) return;
 
-      ACore.Folders.DeleteRecord(folder, true);
+      App.Core.Folders.DeleteRecord(folder, true);
       // reload FolderKeywords
-      ACore.FolderKeywords.Load();
+      App.Core.FolderKeywords.Load();
     }
 
-    private void FolderAddToFavorites(object parameter) {
-      ACore.FavoriteFolders.Add((Database.Folder) parameter);
+    private static void FolderAddToFavorites(object parameter) {
+      App.Core.FavoriteFolders.Add((Database.Folder) parameter);
     }
 
-    private void FolderRemoveFromFavorites(object parameter) {
-      ACore.FavoriteFolders.Remove((Database.FavoriteFolder) parameter);
+    private static void FolderRemoveFromFavorites(object parameter) {
+      App.Core.FavoriteFolders.Remove((Database.FavoriteFolder) parameter);
     }
 
-    private void FolderSetAsFolderKeyword(object parameter) {
+    private static void FolderSetAsFolderKeyword(object parameter) {
       ((Database.Folder) parameter).IsFolderKeyword = true;
-      ACore.Folders.Helper.Table.SaveToFile();
-      ACore.FolderKeywords.Load();
+      App.Core.Folders.Helper.Table.SaveToFile();
+      App.Core.FolderKeywords.Load();
     }
 
     private void GeoNameNew(object parameter) {
@@ -294,12 +294,12 @@ namespace PictureManager {
       }
     }
 
-    private bool CanCompressPictures() {
-      return ACore.MediaItems.Items.Count > 0;
+    private static bool CanCompressPictures() {
+      return App.Core.MediaItems.Items.Count > 0;
     }
 
     private void CompressPictures() {
-      var compress = new WCompress(ACore) {Owner = this};
+      var compress = new WCompress(App.Core) {Owner = this};
       compress.ShowDialog();
     }
 
@@ -324,7 +324,7 @@ namespace PictureManager {
       if (parameter != null)
         show = (bool) parameter;
       else {
-        switch (ACore.AppInfo.AppMode) {
+        switch (App.Core.AppInfo.AppMode) {
           case AppMode.Browser:
             reload = true;
             _mainTreeViewIsPinnedInBrowser = !_mainTreeViewIsPinnedInBrowser;
@@ -355,8 +355,8 @@ namespace PictureManager {
       }
 
       if (reload) {
-        ACore.MediaItems.SplitedItemsReload();
-        ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
+        App.Core.MediaItems.SplitedItemsReload();
+        App.Core.MediaItems.ScrollTo(App.Core.MediaItems.Current?.Index ?? 0);
       }
     }
 
@@ -365,31 +365,31 @@ namespace PictureManager {
       fkl.ShowDialog();
     }
 
-    private bool CanKeywordsEdit() {
-      return !ACore.MediaItems.IsEditModeOn && ACore.MediaItems.Items.Count > 0;
+    private static bool CanKeywordsEdit() {
+      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.Items.Count > 0;
     }
 
     private void KeywordsEdit() {
       Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)] = TabFolders.IsSelected;
-      if (ACore.LastSelectedSource != null)
-        ACore.LastSelectedSource.IsSelected = TabFolders.IsSelected;
+      if (App.Core.LastSelectedSource != null)
+        App.Core.LastSelectedSource.IsSelected = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
-      ACore.MediaItems.IsEditModeOn = true;
+      App.Core.MediaItems.IsEditModeOn = true;
     }
 
-    private bool CanKeywordsSave() {
-      return ACore.MediaItems.IsEditModeOn && ACore.MediaItems.Items.Count(p => p.IsModifed) > 0;
+    private static bool CanKeywordsSave() {
+      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.Items.Count(p => p.IsModifed) > 0;
     }
 
     private void KeywordsSave() {
-      var items = ACore.MediaItems.Items.Where(p => p.IsModifed).ToList();
+      var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
 
-      ACore.AppInfo.ProgressBarIsIndeterminate = false;
-      ACore.AppInfo.ProgressBarValue = 0;
+      App.Core.AppInfo.ProgressBarIsIndeterminate = false;
+      App.Core.AppInfo.ProgressBarValue = 0;
 
       using (var bw = new BackgroundWorker {WorkerReportsProgress = true}) {
         bw.ProgressChanged += delegate(object bwsender, ProgressChangedEventArgs bwe) {
-          ACore.AppInfo.ProgressBarValue = bwe.ProgressPercentage;
+          App.Core.AppInfo.ProgressBarValue = bwe.ProgressPercentage;
         };
 
         bw.DoWork += delegate(object bwsender, DoWorkEventArgs bwe) {
@@ -406,48 +406,48 @@ namespace PictureManager {
         };
 
         bw.RunWorkerCompleted += delegate {
-          ACore.MediaItems.IsEditModeOn = false;
+          App.Core.MediaItems.IsEditModeOn = false;
           if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
             TabFolders.IsSelected = true;
           }
 
-          foreach (var mi in ACore.MediaItems.Items.Where(mi => mi.IsModifed)) {
+          foreach (var mi in App.Core.MediaItems.Items.Where(mi => mi.IsModifed)) {
             mi.IsModifed = false;
           }
 
-          ACore.MediaItems.IsEditModeOn = false;
-          ACore.UpdateStatusBarInfo();
+          App.Core.MediaItems.IsEditModeOn = false;
+          App.Core.UpdateStatusBarInfo();
         };
 
         bw.RunWorkerAsync();
       }
     }
 
-    private bool CanKeywordsCancel() {
-      return ACore.MediaItems.IsEditModeOn;
+    private static bool CanKeywordsCancel() {
+      return App.Core.MediaItems.IsEditModeOn;
     }
 
     private void KeywordsCancel() {
-      foreach (var mi in ACore.MediaItems.Items.Where(x => x.IsModifed)) {
+      foreach (var mi in App.Core.MediaItems.Items.Where(x => x.IsModifed)) {
         mi.ReadMetadata();
         mi.IsModifed = false;
         mi.SetInfoBox();
       }
 
-      ACore.Sdb.SaveAllTables();
-      ACore.MarkUsedKeywordsAndPeople();
-      ACore.MediaItems.IsEditModeOn = false;
+      App.Core.Sdb.SaveAllTables();
+      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItems.IsEditModeOn = false;
       if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
         TabFolders.IsSelected = true;
       }
     }
 
-    private bool CanKeywordsComment() {
-      return ACore.MediaItems.Items.Count(x => x.IsSelected) == 1;
+    private static bool CanKeywordsComment() {
+      return App.Core.MediaItems.Items.Count(x => x.IsSelected) == 1;
     }
 
     private void KeywordsComment() {
-      var current = ACore.MediaItems.Current;
+      var current = App.Core.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = this,
         IconName = IconName.Notification,
@@ -473,10 +473,10 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      current.Comment = inputDialog.TxtAnswer.Text.Equals(string.Empty) ? null : inputDialog.TxtAnswer.Text;
+      current.Comment = string.IsNullOrEmpty(inputDialog.TxtAnswer.Text) ? null : inputDialog.TxtAnswer.Text;
       current.TryWriteMetadata();
       current.SetInfoBox();
-      ACore.UpdateStatusBarInfo();
+      App.Core.UpdateStatusBarInfo();
     }
 
     private void ReloadMetadata(object parameter) {
@@ -485,14 +485,14 @@ namespace PictureManager {
 
       progress.Worker.RunWorkerCompleted += delegate {
         progress.Close();
-        ACore.Sdb.SaveAllTables();
+        App.Core.Sdb.SaveAllTables();
       };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
         var folder = parameter as Database.Folder;
         var mediaItems = folder != null
           ? folder.GetMediaItems(recursive)
-          : ACore.MediaItems.GetSelectedOrAll();
+          : App.Core.MediaItems.GetSelectedOrAll();
         var worker = (BackgroundWorker) o;
         var count = mediaItems.Count;
         var done = 0;
@@ -528,7 +528,7 @@ namespace PictureManager {
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
         var mediaItems = parameter is Database.Folder folder
           ? folder.GetMediaItems(recursive)
-          : ACore.MediaItems.GetSelectedOrAll();
+          : App.Core.MediaItems.GetSelectedOrAll();
         var worker = (BackgroundWorker)o;
         var count = mediaItems.Count;
         var done = 0;
@@ -551,8 +551,8 @@ namespace PictureManager {
       progress.Show();
     }
 
-    private bool CanAddGeoNamesFromFiles() {
-      return ACore.MediaItems.Items.Count(x => x.IsSelected) > 0;
+    private static bool CanAddGeoNamesFromFiles() {
+      return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {
@@ -562,7 +562,7 @@ namespace PictureManager {
 
       progress.Worker.DoWork += delegate(object o, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) o;
-        var mis = ACore.MediaItems.Items.Where(x => x.IsSelected).ToList();
+        var mis = App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList();
         var count = mis.Count;
         var done = 0;
 
@@ -579,7 +579,7 @@ namespace PictureManager {
           if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata(true);
           if (mi.Lat == null || mi.Lng == null) continue;
 
-          var lastGeoName = ACore.GeoNames.InsertGeoNameHierarchy((double) mi.Lat, (double) mi.Lng);
+          var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double) mi.Lat, (double) mi.Lng);
           if (lastGeoName == null) continue;
 
           mi.GeoName = lastGeoName;
@@ -589,28 +589,28 @@ namespace PictureManager {
 
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
     }
 
     private void ViewerChange(object parameter) {
-      if (ACore.CurrentViewer != null)
-        ACore.CurrentViewer.IsDefault = false;
+      if (App.Core.CurrentViewer != null)
+        App.Core.CurrentViewer.IsDefault = false;
 
       var viewer = (Database.Viewer) parameter;
       viewer.IsDefault = true;
-      ACore.Viewers.Helper.Table.SaveToFile();
+      App.Core.Viewers.Helper.Table.SaveToFile();
 
       MenuViewers.Header = viewer.Title;
-      ACore.CurrentViewer = viewer;
-      ACore.Folders.AddDrives();
-      ACore.FolderKeywords.Load();
+      App.Core.CurrentViewer = viewer;
+      App.Core.Folders.AddDrives();
+      App.Core.FolderKeywords.Load();
     }
 
     private void SwitchToFullScreen() {
-      if (ACore.MediaItems.Current == null) return;
-      ACore.AppInfo.AppMode = AppMode.Viewer;
+      if (App.Core.MediaItems.Current == null) return;
+      App.Core.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
-      ACore.UpdateStatusBarInfo();
+      App.Core.UpdateStatusBarInfo();
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
@@ -618,12 +618,12 @@ namespace PictureManager {
 
     private void SwitchToBrowser() {
       _presentationTimer.Enabled = false;
-      ACore.AppInfo.AppMode = AppMode.Browser;
+      App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ScrollToCurrent();
-      ACore.MarkUsedKeywordsAndPeople();
-      ACore.UpdateStatusBarInfo();
+      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.ScrollToCurrent();
+      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.UpdateStatusBarInfo();
       UseNoneWindowStyle = false;
       ShowTitleBar = true;
       IgnoreTaskbarOnMaximize = false;

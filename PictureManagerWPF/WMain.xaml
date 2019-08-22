@@ -17,9 +17,9 @@
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
-      <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
-        <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" 
-                     IsIndeterminate="{Binding ACore.AppInfo.ProgressBarIsIndeterminate}" Maximum="100" />
+      <Grid>
+        <ProgressBar Width="250" Height="22" Value="{Binding AppInfo.ProgressBarValue, Source={x:Static pm:App.Core}}" 
+                     IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate, Source={x:Static pm:App.Core}}" Maximum="100" />
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
                    FontFamily="{DynamicResource HeaderFontFamily}" />
@@ -47,7 +47,7 @@
           <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
-                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.Viewers.Items}">
+                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
@@ -60,7 +60,7 @@
         <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
         <MenuItem Command="pm:Commands.ShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
-      <TextBlock Text="{Binding ACore.AppInfo.MediaItemsCount}" VerticalAlignment="Center" Margin="5,0" />
+      <TextBlock Text="{Binding AppInfo.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
 
@@ -128,7 +128,7 @@
           <Style TargetType="controls:Flyout">
             <Setter Property="Margin" Value="0" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                 <Setter Property="Margin" Value="0,30,0,0" />
               </DataTrigger>
             </Style.Triggers>
@@ -156,7 +156,7 @@
             <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
               <!-- TreeView Folders -->
               <TreeView x:Name="TvFolders" Background="Transparent" 
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FoldersRoot}">
+                      ItemsSource="{Binding FoldersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
                   <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -207,7 +207,7 @@
             <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
               <!-- TreeView Keywords -->
               <TreeView x:Name="TvKeywords" Background="Transparent"
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.KeywordsRoot}">
+                      ItemsSource="{Binding KeywordsRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
                   <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -333,7 +333,7 @@
             <TabItem Header="Filters" HorizontalAlignment="Left">
               <!-- TreeView Filters -->
               <TreeView x:Name="TvFilters" Background="Transparent"
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FiltersRoot}">
+                      ItemsSource="{Binding FiltersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
                   <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
@@ -383,7 +383,7 @@
           <Style>
             <Setter Property="controls:Flyout.Margin" Value="0,0,0,0" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                 <Setter Property="controls:Flyout.Margin" Value="0,0,15,0" />
               </DataTrigger>
             </Style.Triggers>
@@ -403,13 +403,14 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
+                  <DataTrigger Binding="{Binding MediaItems.Items.Count, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.PositionSlashCount}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.PositionSlashCount, Source={x:Static pm:App.Core}}" />
           </Border>
 
           <!-- Selected -->
@@ -417,16 +418,17 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
+                  <DataTrigger Binding="{Binding MediaItems.Items.Count, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Selected}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.Selected, Source={x:Static pm:App.Core}}" />
           </Border>
 
           <!-- Modifed -->
@@ -434,13 +436,14 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.IsEditModeOn}" Value="False">
+                  <DataTrigger Binding="{Binding MediaItems.IsEditModeOn, Source={x:Static pm:App.Core}}" Value="False">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Modifed}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.Modifed, Source={x:Static pm:App.Core}}" />
           </Border>
 
           <!-- Dimension -->
@@ -448,13 +451,14 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Dimension}" Value="">
+                  <DataTrigger Binding="{Binding AppInfo.Dimension, Source={x:Static pm:App.Core}}" Value="">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Dimension}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.Dimension, Source={x:Static pm:App.Core}}" />
           </Border>
 
           <!-- ImageActualZoom -->
@@ -462,16 +466,17 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
+                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
           </Border>
 
           <!-- Rating -->
@@ -479,13 +484,13 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Rating.Count}" Value="0">
+                  <DataTrigger Binding="{Binding AppInfo.Rating.Count, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <ItemsControl ItemsSource="{Binding ACore.AppInfo.Rating}">
+            <ItemsControl ItemsSource="{Binding AppInfo.Rating, Source={x:Static pm:App.Core}}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <StackPanel Orientation="Horizontal" />
@@ -504,11 +509,11 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.GeoName.Id}" Value="{x:Null}">
+                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.GeoName, Source={x:Static pm:App.Core}}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
-                <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.FullGeoName}" />
+                <Setter Property="ToolTip" Value="{Binding AppInfo.FullGeoName, Source={x:Static pm:App.Core}}" />
               </Style>
             </Border.Style>
             <Rectangle Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource IconRect2}" />
@@ -519,27 +524,28 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
-                    <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.CurrentMediaItem.FilePath}" />
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
+                    <Setter Property="ToolTip" Value="{Binding AppInfo.CurrentMediaItem.FilePath, Source={x:Static pm:App.Core}}" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.FilePath}" Value="">
+                  <DataTrigger Binding="{Binding AppInfo.FilePath, Source={x:Static pm:App.Core}}" Value="">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.FilePath}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.FilePath, Source={x:Static pm:App.Core}}" />
           </Border>
 
           <!-- People -->
-          <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople}">
+          <ItemsControl ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople, Source={x:Static pm:App.Core}}">
             <ItemsControl.Style>
               <Style TargetType="ItemsControl">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople}" Value="null">
+                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople, Source={x:Static pm:App.Core}}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -560,14 +566,14 @@
           </ItemsControl>
 
           <!-- Keywords -->
-          <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords}">
+          <ItemsControl ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords, Source={x:Static pm:App.Core}}">
             <ItemsControl.Style>
               <Style TargetType="ItemsControl">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords}" Value="null">
+                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords, Source={x:Static pm:App.Core}}" Value="{x:Null}">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -592,16 +598,17 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Comment}" Value="">
+                  <DataTrigger Binding="{Binding AppInfo.Comment, Source={x:Static pm:App.Core}}" Value="">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Comment}" />
+            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
+                       Text="{Binding AppInfo.Comment, Source={x:Static pm:App.Core}}" />
           </Border>
 
         </WrapPanel>
@@ -630,7 +637,7 @@
             <Style TargetType="{x:Type Grid}">
               <Setter Property="Visibility" Value="Hidden" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
+                <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
                   <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
               </Style.Triggers>
@@ -638,7 +645,7 @@
           </Grid.Style>
 
           <!-- Thumbnails -->
-          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding ACore.MediaItems.SplitedItems}"
+          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplitedItems, Source={x:Static pm:App.Core}}"
                         VirtualizingStackPanel.IsVirtualizing="True" 
                         VirtualizingPanel.ScrollUnit="Pixel" 
                         ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
@@ -679,7 +686,7 @@
                                   <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
-                                  <DataTrigger Binding="{Binding ElementName=MainWindow, Path=DataContext.ACore.AppInfo.IsThumbInfoVisible}" Value="False">
+                                  <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
                                 </Style.Triggers>
@@ -746,7 +753,7 @@
             <Style TargetType="{x:Type Grid}">
               <Setter Property="Visibility" Value="Hidden" />
               <Style.Triggers>
-                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
+                <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
                   <Setter Property="Visibility" Value="Visible" />
                 </DataTrigger>
               </Style.Triggers>
@@ -760,7 +767,7 @@
                 <Style TargetType="{x:Type Grid}">
                   <Setter Property="Visibility" Value="Hidden" />
                   <Style.Triggers>
-                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="0">
+                    <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="0">
                       <Setter Property="Visibility" Value="Visible" />
                     </DataTrigger>
                   </Style.Triggers>
@@ -776,7 +783,7 @@
                 <Style TargetType="{x:Type Grid}">
                   <Setter Property="Visibility" Value="Hidden" />
                   <Style.Triggers>
-                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
+                    <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
                       <Setter Property="Visibility" Value="Visible" />
                     </DataTrigger>
                   </Style.Triggers>

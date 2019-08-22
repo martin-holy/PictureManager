@@ -8,7 +8,6 @@ using System.Windows.Data;
 namespace PictureManager.ViewModel {
   public class BaseTreeViewItem : INotifyPropertyChanged {
     public ObservableCollection<BaseTreeViewItem> Items { get; set; } = new ObservableCollection<BaseTreeViewItem>();
-    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public object Tag { get; set; }
 
     private bool _isExpanded;
@@ -48,6 +47,27 @@ namespace PictureManager.ViewModel {
       items.Add(this);
       foreach (var item in Items)
         item.GetThisAndItemsRecursive(ref items);
+    }
+
+    public static void ExpandTo(BaseTreeViewItem item) {
+      var parent = item.Parent;
+      while (parent != null) {
+        parent.IsExpanded = true;
+        parent = parent.Parent;
+      }
+    }
+
+    public string GetFullPath(string separator) {
+      var parent = Parent;
+      var names = new List<string> { Title };
+      while (parent != null) {
+        names.Add(parent.Title);
+        parent = parent.Parent;
+        if (parent is BaseCategoryItem) break;
+      }
+      names.Reverse();
+
+      return string.Join(separator, names);
     }
   }
 }

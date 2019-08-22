@@ -69,7 +69,9 @@ namespace PictureManager.ShellStuff {
     public void PerformOperations() {
       ThrowIfDisposed();
       try { _fileOperation.PerformOperations(); }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
       catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
         // canceling operation cause exception :-/
       }
     }
@@ -96,7 +98,9 @@ namespace PictureManager.ShellStuff {
         }
         return new ComReleaser<IShellItem>((IShellItem) SHCreateItemFromParsingName(path, null, ref _shellItemGuid));
       }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
       catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
         return null;
       }
     }

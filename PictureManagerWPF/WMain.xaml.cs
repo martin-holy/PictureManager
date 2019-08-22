@@ -23,12 +23,7 @@ namespace PictureManager {
     private bool _mainTreeViewIsPinnedInBrowser = true;
     private const int PresentationInterval = 3000;
 
-    public AppCore ACore { get; set; }
-
     public WMain(string picFile) {
-      ACore = new AppCore();
-      Application.Current.Properties[nameof(AppProperty.AppCore)] = ACore;
-      Application.Current.Properties[nameof(AppProperty.WMain)] = this;
       InitializeComponent();
       AddCommandBindings();
       AddInputBindings();
@@ -50,32 +45,36 @@ namespace PictureManager {
       _argPicFile = picFile;
     }
 
+    ~WMain() {
+      _presentationTimer?.Dispose();
+    }
+
     private void Window_Loaded(object sender, RoutedEventArgs e) {
-      ACore.Init();
-      ACore.AppInfo.ProgressBarValue = 100;
-      ACore.Folders.IsExpanded = true;
-      MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
+      App.Core.Init();
+      App.Core.AppInfo.ProgressBarValue = 100;
+      App.Core.Folders.IsExpanded = true;
+      MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
 
       App.SplashScreen.LoadComplete();
       Activate();
 
       if (!File.Exists(_argPicFile)) {
-        ACore.AppInfo.AppMode = AppMode.Browser;
+        App.Core.AppInfo.AppMode = AppMode.Browser;
         return;
       }
 
       //app opened with argument
       // TODO
-      /*ACore.AppInfo.AppMode = AppMode.Viewer;
-      ACore.MediaItems.Load(ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
-      ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
-      if (ACore.MediaItems.Current != null) ACore.MediaItems.Current.IsSelected = true;
+      /*App.Core.AppInfo.AppMode = AppMode.Viewer;
+      App.Core.MediaItems.Load(App.Core.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
+      App.Core.MediaItems.Current = App.Core.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
+      if (App.Core.MediaItems.Current != null) App.Core.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
-      ACore.LoadThumbnails();*/
+      App.Core.LoadThumbnails();*/
     }
 
     private void StartPresentationTimer(bool delay) {
-      if (ACore.AppInfo.AppMode != AppMode.Viewer) return;
+      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
       _presentationTimer.Interval = delay ? PresentationInterval : 1;
       _presentationTimer.Enabled = true;
     }
@@ -168,7 +167,7 @@ namespace PictureManager {
        (Rating)(filter) => MBL => OR between ratings, AND in files
        */
       if (e.ChangedButton != MouseButton.Left) return;
-      ACore.TreeView_Select(((StackPanel)sender).DataContext,
+      App.Core.TreeView_Select(((StackPanel)sender).DataContext,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
@@ -214,7 +213,7 @@ namespace PictureManager {
       var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
       if (thumbs) {
         var dragged = ((string[])e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
-        var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        var selected = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
         if (dragged != null) thumbs = selected.SequenceEqual(dragged);
       }
       var srcData = (Database.Folder)e.Data.GetData(typeof(Database.Folder));
@@ -232,25 +231,25 @@ namespace PictureManager {
       var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
 
       if (thumbs) { // MediaItems
-        ACore.MediaItems.CopyMove(foMode, ACore.MediaItems.Items.Where(x => x.IsSelected).ToList(), destFolder);
-        ACore.MediaItems.Helper.IsModifed = true;
+        App.Core.MediaItems.CopyMove(foMode, App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), destFolder);
+        App.Core.MediaItems.Helper.IsModifed = true;
       }
       else { // Folder
-        ACore.Folders.CopyMove(foMode, srcFolder, destFolder);
-        ACore.MediaItems.Helper.IsModifed = true;
-        ACore.Folders.Helper.IsModifed = true;
-        ACore.FolderKeywords.Load();
+        App.Core.Folders.CopyMove(foMode, srcFolder, destFolder);
+        App.Core.MediaItems.Helper.IsModifed = true;
+        App.Core.Folders.Helper.IsModifed = true;
+        App.Core.FolderKeywords.Load();
 
         // reload last selected source if was moved
-        if (foMode == FileOperationMode.Move && srcFolder == ACore.LastSelectedSource) {
+        if (foMode == FileOperationMode.Move && srcFolder == App.Core.LastSelectedSource) {
           var folder = destFolder.GetByPath(srcFolder?.Title);
           if (folder == null) return;
-          ACore.Folders.ExpandTo(folder);
-          ACore.TreeView_Select(folder, false, false, false);
+          ViewModel.BaseTreeViewItem.ExpandTo(folder);
+          App.Core.TreeView_Select(folder, false, false, false);
         }
       }
 
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
     }
 
     #endregion
@@ -323,12 +322,12 @@ namespace PictureManager {
         var srcData = (Database.Keyword)e.Data.GetData(typeof(Database.Keyword));
         if (srcData == null) return;
         var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
-        ACore.Keywords.ItemMove(srcData, destData, dropOnTop);
+        App.Core.Keywords.ItemMove(srcData, destData, dropOnTop);
       }
       else if (e.Data.GetDataPresent(typeof(Database.Person))) {
         var srcData = (Database.Person)e.Data.GetData(typeof(Database.Person));
         if (srcData == null) return;
-        ACore.People.ItemMove(srcData, destData);
+        App.Core.People.ItemMove(srcData, destData);
       }
     }
     #endregion
@@ -340,13 +339,13 @@ namespace PictureManager {
       var mi = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
 
       if (!isCtrlOn && !isShiftOn) {
-        ACore.MediaItems.DeselectAll();
-        ACore.MediaItems.Current = mi;
+        App.Core.MediaItems.DeselectAll();
+        App.Core.MediaItems.Current = mi;
       }
       else {
         if (isCtrlOn) mi.IsSelected = !mi.IsSelected;
-        if (isShiftOn && ACore.MediaItems.Current != null) {
-          var from = ACore.MediaItems.Current.Index;
+        if (isShiftOn && App.Core.MediaItems.Current != null) {
+          var from = App.Core.MediaItems.Current.Index;
           var to = mi.Index;
           if (from > to) {
             to = from;
@@ -354,20 +353,20 @@ namespace PictureManager {
           }
 
           for (var i = from; i < to + 1; i++) {
-            ACore.MediaItems.Items[i].IsSelected = true;
+            App.Core.MediaItems.Items[i].IsSelected = true;
           }
         }
       }
 
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
+      App.Core.UpdateStatusBarInfo();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
-      ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      App.Core.MediaItems.DeselectAll();
+      App.Core.MediaItems.Current = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
       SwitchToFullScreen();
       SetMediaItemSource();
     }
@@ -375,7 +374,7 @@ namespace PictureManager {
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       var dob = new DataObject();
-      var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      var data = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
         data.Add(((Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
@@ -384,18 +383,18 @@ namespace PictureManager {
 
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
-      if (e.Delta < 0 && ACore.ThumbScale < .1) return;
-      ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ResetThumbsSize();
+      if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
+      App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      App.Core.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
+      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.ResetThumbsSize();
     }
 
     #endregion
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      ACore.MediaItemSizes.Size.SliderChanged = true;
-      ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
+      App.Core.MediaItemSizes.Size.SliderChanged = true;
+      App.Core.TreeView_Select(App.Core.LastSelectedSource, false, false, App.Core.LastSelectedSourceRecursive);
     }
 
     private bool IsDragDropStarted(MouseEventArgs e) {
@@ -406,7 +405,7 @@ namespace PictureManager {
     }
 
     private void SetMediaItemSource() {
-      var current = ACore.MediaItems.Current;
+      var current = App.Core.MediaItems.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current);
@@ -473,7 +472,9 @@ namespace PictureManager {
           }
         }
       }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
       catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
         return false;
       }
 
@@ -482,7 +483,9 @@ namespace PictureManager {
         original.Delete();
         temp.MoveTo(original.FullName);
       }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
       catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
         return false;
       }
 
@@ -490,7 +493,7 @@ namespace PictureManager {
     }
 
     private void TestButton() {
-      var tests = new Tests(ACore);
+      var tests = new Tests(App.Core);
     }
 
     private void WMain_OnMouseMove(object sender, MouseEventArgs e) {
@@ -506,8 +509,8 @@ namespace PictureManager {
 
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
+      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.ScrollTo(App.Core.MediaItems.Current?.Index ?? 0);
     }
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
@@ -515,7 +518,7 @@ namespace PictureManager {
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
     }
   }
 }

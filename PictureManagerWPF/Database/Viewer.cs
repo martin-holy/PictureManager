@@ -42,16 +42,16 @@ namespace PictureManager.Database {
       if (dir.ShowDialog() != DialogResult.OK) return;
       if ((included ? IncludedFolders : ExcludedFolders).Items.Any(x => x.ToolTip.Equals(dir.SelectedPath))) return;
 
-      var folder = ACore.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
+      var folder = App.Core.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
       if (folder == null) {
         Dialogs.MessageDialog.Show("Information", @"Select this folder in Folders tree first.", false);
         return;
       }
 
       AddFolder(folder, included);
-      ACore.Viewers.Helper.Table.SaveToFile();
-      ACore.Folders.AddDrives();
-      ACore.FolderKeywords.Load();
+      App.Core.Viewers.Helper.Table.SaveToFile();
+      App.Core.Folders.AddDrives();
+      App.Core.FolderKeywords.Load();
     }
 
     public void AddFolder(Folder folder, bool included) {

@@ -29,7 +29,7 @@ namespace PictureManager.Dialogs {
       Message = message;
       IconName = canCancel ? IconName.Question : IconName.Information;
       CanCancel = canCancel;
-      Owner = AppCore.WMain;
+      Owner = App.WMain;
       BtnOk.Content = canCancel ? "_Yes" : "_Ok";
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PictureManager {
@@ -12,7 +13,6 @@ namespace PictureManager {
     public Tests(AppCore aCore) {
       ACore = aCore;
 
-      //TestListVsArray();
       //GetByPathTest();
       /*foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0)) {
         mi.ReadMetadata();
@@ -20,30 +20,15 @@ namespace PictureManager {
       aCore.Sdb.SaveAllTables();*/
       //var count = aCore.MediaItems.All.Where(x => x.InfoBoxThumb.Count > 0);
       
-      var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
-      var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
+      //var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
+      //var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
+
+      var x = $"appbar{Regex.Replace(IconName.DriveError.ToString(), @"([A-Z])", "_$1").ToLower()}";
     }
 
     public void GetByPathTest() {
       var f = ACore.Folders.GetByPath(@"D:\!test2");
       var f2 = f.GetByPath(@"D:\!test2\2019");
-    }
-
-    public void TestListVsArray() {
-      var data = new List<int>(1000000);
-      for (var i = 0; i < 1000000; i++) {
-        data.Add(i);
-      }
-
-      var idx = 0;
-      foreach (var i in data.ToArray()) {
-        idx = i;
-      }
-
-      idx = 0;
-      foreach (var i in data.ToList()) {
-        idx = i;
-      }
     }
 
     public void OldTests() {
@@ -75,8 +60,12 @@ namespace PictureManager {
 
       var acore = ACore;
 
+#pragma warning disable CS0219 // The variable 'mkv' is assigned but its value is never used
       var mkv = @"d:\!test2\vid\20190324_145306_Kos a veverka_lq.mkv";
+#pragma warning restore CS0219 // The variable 'mkv' is assigned but its value is never used
+#pragma warning disable CS0219 // The variable 'mp4' is assigned but its value is never used
       var mp4 = @"d:\!test2\vid\20190715_105711.mp4";
+#pragma warning restore CS0219 // The variable 'mp4' is assigned but its value is never used
 
       //var fileInfoMkv = ShellStuff.FileInformation.GetFileIdInfo(mkv);
       //var fileInfoMp4 = ShellStuff.FileInformation.GetFileIdInfo(mp4);

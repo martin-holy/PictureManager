@@ -66,15 +66,15 @@ namespace PictureManager {
       OnPropertyChanged("TotalCompressedSize");
 
       _compress = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
-      _compress.DoWork += compress_DoWork;
-      _compress.ProgressChanged += compress_ProgressChanged;
-      _compress.RunWorkerCompleted += compress_RunWorkerCompleted;
+      _compress.DoWork += Compress_DoWork;
+      _compress.ProgressChanged += Compress_ProgressChanged;
+      _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
         ? _appCore.MediaItems.Items.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
         : _appCore.MediaItems.Items.ToList());
     }
 
-    private void compress_DoWork(object sender, DoWorkEventArgs e) {
+    private void Compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
       var mis = (List<Database.MediaItem>) e.Argument;
       var count = mis.Count;
@@ -105,7 +105,9 @@ namespace PictureManager {
             bSuccess = true;
           }
         }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
         catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
           // ignored
         }
 
@@ -127,14 +129,16 @@ namespace PictureManager {
             
             worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), fileSizes);
           }
+#pragma warning disable CS0168 // The variable 'ex' is declared but never used
           catch (Exception ex) {
+#pragma warning restore CS0168 // The variable 'ex' is declared but never used
             // ignored
           }
         }
       }
     }
 
-    private void compress_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+    private void Compress_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbCompressProgress.Value = e.ProgressPercentage;
       if (e.UserState == null) return;
       _totalSourceSize += ((long[]) e.UserState)[0];
@@ -143,7 +147,7 @@ namespace PictureManager {
       OnPropertyChanged("TotalCompressedSize");
     }
 
-    private void compress_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+    private void Compress_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
       GbSettings.IsEnabled = true;
       BtnCompress.IsEnabled = true;
       BtnCancel.Content = "Close";

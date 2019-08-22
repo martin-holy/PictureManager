@@ -78,7 +78,7 @@ namespace PictureManager.Database {
       ItemSetInPlace(root, true, person);
 
       if (root is CategoryGroup)
-        ACore.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModifed = true;
 
       Mut.ReleaseMutex();
 
@@ -110,7 +110,7 @@ namespace PictureManager.Database {
       }
       else {
         CreatePerson(item, inputDialog.Answer);
-        ACore.Sdb.SaveAllTables();
+        App.Core.Sdb.SaveAllTables();
       }
     }
 
@@ -133,7 +133,7 @@ namespace PictureManager.Database {
 
       Helper.IsModifed = true;
       if (person.MediaItems.Count > 0)
-        ACore.MediaItems.Helper.IsModifed = true;
+        App.Core.MediaItems.Helper.IsModifed = true;
     }
   }
 }

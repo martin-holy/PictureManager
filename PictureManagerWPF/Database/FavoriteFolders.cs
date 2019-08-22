@@ -30,7 +30,7 @@ namespace PictureManager.Database {
 
     public void LinkReferences() {
       foreach (var item in All) {
-        item.Folder = ACore.Folders.AllDic[int.Parse(item.Csv[1])];
+        item.Folder = App.Core.Folders.AllDic[int.Parse(item.Csv[1])];
         item.Title = item.Folder.Title;
         Items.Add(item);
 

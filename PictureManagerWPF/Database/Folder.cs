@@ -11,14 +11,14 @@ namespace PictureManager.Database {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public bool IsFolderKeyword { get; set; }
-    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
     private bool _isHidden;
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
     public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
-    public string FullPath => GetFullPath();
+    public string FullPath => GetFullPath(Path.DirectorySeparatorChar.ToString());
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public override bool IsExpanded {
       get => base.IsExpanded;
@@ -46,27 +46,15 @@ namespace PictureManager.Database {
         IsFolderKeyword ? "1" : string.Empty);
     }
 
-    private string GetFullPath() {
-      var parent = Parent;
-      var names = new List<string> {Title};
-      while (parent != null) {
-        names.Add(parent.Title);
-        parent = parent.Parent as Folder;
-      }
-      names.Reverse();
-
-      return string.Join(Path.DirectorySeparatorChar.ToString(), names);
-    }
-
     private void Rename(string newName) {
       Directory.Move(FullPath, Extensions.PathCombine(((Folder) Parent).FullPath, newName));
       Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
       Title = newName;
-      ACore.Folders.Helper.IsModifed = true;
+      App.Core.Folders.Helper.IsModifed = true;
 
       // reload if the folder was selected before
-      if (ACore.LastSelectedSource == this)
-        ACore.TreeView_Select(this, false, false, ACore.LastSelectedSourceRecursive);
+      if (App.Core.LastSelectedSource == this)
+        App.Core.TreeView_Select(this, false, false, App.Core.LastSelectedSourceRecursive);
     }
 
     public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
@@ -151,7 +139,7 @@ namespace PictureManager.Database {
 
       // delete if this folder was moved completely and the target folder was already in DB
       if (deleteThis)
-        ACore.Folders.DeleteRecord(this, false);
+        App.Core.Folders.DeleteRecord(this, false);
     }
 
     public void LoadSubFolders(bool recursive) {
@@ -170,12 +158,12 @@ namespace PictureManager.Database {
         if (!(Items.SingleOrDefault(x => x.Title.Equals(dirName)) is Folder folder)) {
           isNew = true;
           // add new Folder to the database
-          folder = new Folder(ACore.Folders.Helper.GetNextId(), dirName, this);
-          ACore.Folders.AddRecord(folder);
+          folder = new Folder(App.Core.Folders.Helper.GetNextId(), dirName, this);
+          App.Core.Folders.AddRecord(folder);
         }
 
         // if Viewer can't see this Folder set it as hidden and continue
-        if (!Viewers.CanViewerSeeThisDirectory(ACore.CurrentViewer, folder)) {
+        if (!Viewers.CanViewerSeeThisDirectory(App.Core.CurrentViewer, folder)) {
           if (!isNew) folder.IsHidden = true;
           continue;
         }
@@ -203,7 +191,7 @@ namespace PictureManager.Database {
       // remove Folders deleted outside of this application
       foreach (var item in Items.ToList()) {
         if (dirNames.Contains(item.Title)) continue;
-        ACore.Folders.DeleteRecord((Folder) item, false);
+        App.Core.Folders.DeleteRecord((Folder) item, false);
       }
 
       // add placeholder so the folder can be expanded
@@ -242,10 +230,10 @@ namespace PictureManager.Database {
       try {
         // create Folder
         Directory.CreateDirectory(Extensions.PathCombine(FullPath, folderName));
-        var item = new Folder(ACore.Folders.Helper.GetNextId(), folderName, this) { IsAccessible = true };
+        var item = new Folder(App.Core.Folders.Helper.GetNextId(), folderName, this) { IsAccessible = true };
 
         // add new Folder to the database
-        ACore.Folders.AddRecord(item);
+        App.Core.Folders.AddRecord(item);
 
         // add new Folder to the tree
         var folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -261,7 +249,7 @@ namespace PictureManager.Database {
 
     public void NewOrRename(bool rename) {
       var inputDialog = new InputDialog {
-        Owner = AppCore.WMain,
+        Owner = App.WMain,
         IconName = IconName.Folder,
         Title = rename ? "Rename Folder" : "New Folder",
         Question = rename ? "Enter the new name for the folder." : "Enter the name of the new folder.",
@@ -290,13 +278,13 @@ namespace PictureManager.Database {
       if (rename) Rename(inputDialog.Answer);
       else New(inputDialog.Answer);
 
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
     }
 
     /// <param name="path">full or partial folder path with no direcotry separator on the end</param>
     /// <param name="withReload">try with reload if not the path was not found</param>
     public Folder GetByPath(string path, bool withReload = false) {
-      if (path.Equals(string.Empty)) return null;
+      if (string.IsNullOrEmpty(path)) return null;
       if (FullPath.Equals(path)) return this;
 
       var root = this;

@@ -27,7 +27,7 @@ namespace PictureManager.Database {
       // ID|Name|ToponymName|FCode|Parent
       foreach (var geoName in All) {
         // reference to parent and back reference to children
-        if (geoName.Csv[4] != string.Empty) {
+        if (!string.IsNullOrEmpty(geoName.Csv[4])) {
           geoName.Parent = AllDic[int.Parse(geoName.Csv[4])];
           geoName.Parent.Items.Add(geoName);
         }
@@ -93,21 +93,6 @@ namespace PictureManager.Database {
 
       InsertGeoNameHierarchy(lat, lng);
       SaveToFile();
-    }
-
-    public string GetGeoNameHierarchy(GeoName geoName) {
-      if (geoName == null) return string.Empty;
-
-      var parent = geoName.Parent;
-      var names = new List<string> { geoName.Title};
-      while (parent != null) {
-        names.Add(parent.Title);
-        parent = parent.Parent;
-      }
-
-      names.Reverse();
-
-      return string.Join("\n", names);
     }
   }
 }

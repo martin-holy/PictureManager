@@ -46,7 +46,7 @@ namespace PictureManager.Database {
       // MediaItems to the Keyword are added in LinkReferences on MediaItem
       foreach (var keyword in All) {
         // reference to parent and back reference to children
-        if (keyword.Csv[2] != string.Empty) {
+        if (!string.IsNullOrEmpty(keyword.Csv[2])) {
           keyword.Parent = AllDic[int.Parse(keyword.Csv[2])];
           keyword.Parent.Items.Add(keyword);
         }
@@ -91,7 +91,7 @@ namespace PictureManager.Database {
     }
 
     public Keyword GetByFullPath(string fullPath) {
-      if (fullPath.Equals(string.Empty)) return null;
+      if (string.IsNullOrEmpty(fullPath)) return null;
 
       Mut.WaitOne();
 
@@ -128,7 +128,7 @@ namespace PictureManager.Database {
       root.Items.Add(keyword);
 
       if (root is CategoryGroup)
-        ACore.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModifed = true;
 
       Mut.ReleaseMutex();
 
@@ -161,7 +161,7 @@ namespace PictureManager.Database {
       }
       else {
         CreateKeyword(item, inputDialog.Answer);
-        ACore.Sdb.SaveAllTables();
+        App.Core.Sdb.SaveAllTables();
       }
     }
 
@@ -184,7 +184,7 @@ namespace PictureManager.Database {
               mi.Keywords = null;
           }
 
-          ACore.MediaItems.Helper.IsModifed = true;
+          App.Core.MediaItems.Helper.IsModifed = true;
         }
 
         k.Parent = null;
@@ -220,7 +220,7 @@ namespace PictureManager.Database {
       }
 
       Helper.IsModifed = true;
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
     }
   }
 }

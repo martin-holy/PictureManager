@@ -37,7 +37,6 @@ namespace PictureManager {
 
     public SimpleDb Sdb { get; } = new SimpleDb();
     public MediaItems MediaItems { get; }
-    public static WMain WMain => (WMain) Application.Current.Properties[nameof(AppProperty.WMain)];
     public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";", "\n"};
     public AppInfo AppInfo { get; } = new AppInfo();
     public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
@@ -79,7 +78,7 @@ namespace PictureManager {
     }
 
     public void Init() {
-      WindowsDisplayScale = PresentationSource.FromVisual(WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
+      WindowsDisplayScale = PresentationSource.FromVisual(App.WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
 
       Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
       Sdb.AddTable(Viewers); // needs to be before Folders
@@ -98,7 +97,7 @@ namespace PictureManager {
       App.SplashScreen.AddMessage("Loading Ratings");
       Ratings.Load();
 
-      if (Viewers.Items.Count == 0) WMain.MenuViewers.Visibility = Visibility.Collapsed;
+      if (Viewers.Items.Count == 0) App.WMain.MenuViewers.Visibility = Visibility.Collapsed;
 
       AppInfo.MediaItemsCount = MediaItems.All.Count;
     }
@@ -144,11 +143,11 @@ namespace PictureManager {
         var bti = item as BaseTreeViewItem;
         switch (item) {
           case FavoriteFolder favoriteFolder: {
-            Folders.ExpandTo(favoriteFolder.Folder);
+            BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
             var visibleTreeIndex = 0;
             Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
             var offset = (FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
-            WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
+            App.WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
             break;
           }
           case Rating _:
@@ -288,7 +287,8 @@ namespace PictureManager {
           var items = (List<MediaItem>) e.Argument;
           var count = items.Count;
           var done = 0;
-          e.Result = e.Argument;
+
+          e.Result = false;
 
           foreach (var mi in items) {
             if (worker.CancellationPending) {
@@ -313,7 +313,7 @@ namespace PictureManager {
 
               mi.SetThumbSize();
               Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
-              Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = true;
+              e.Result = true;
             }
 
             if (!File.Exists(mi.FilePathCache))
@@ -333,7 +333,7 @@ namespace PictureManager {
             return;
           }
 
-          if ((bool) Application.Current.Properties[nameof(AppProperty.SubmitChanges)])
+          if ((bool) e.Result)
             Sdb.SaveAllTables();
 
           if (MediaItems.Current != null) {
@@ -352,7 +352,6 @@ namespace PictureManager {
         return;
       }
 
-      Application.Current.Properties[nameof(AppProperty.SubmitChanges)] = false;
       ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
     }
 

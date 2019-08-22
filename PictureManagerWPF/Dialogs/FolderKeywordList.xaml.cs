@@ -16,11 +16,10 @@ namespace PictureManager.Dialogs {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-    public ObservableCollection<Folder> Items { get; set; } = new ObservableCollection<Folder>();
+    public ObservableCollection<Folder> Items { get; } = new ObservableCollection<Folder>();
 
     public FolderKeywordList() {
-      foreach (var folder in ACore.Folders.All.Where(x => x.IsFolderKeyword)) {
+      foreach (var folder in App.Core.Folders.All.Where(x => x.IsFolderKeyword)) {
         Items.Add(folder);
       }
 
@@ -36,8 +35,8 @@ namespace PictureManager.Dialogs {
         Items.Remove(item);
       }
 
-      ACore.Folders.Helper.Table.SaveToFile();
-      ACore.FolderKeywords.Load();
+      App.Core.Folders.Helper.Table.SaveToFile();
+      App.Core.FolderKeywords.Load();
     }
   }
 }

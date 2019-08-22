@@ -11,7 +11,7 @@ namespace PictureManager.ViewModel {
     public void Load() {
       Items.Clear();
 
-      var fkRoots = ACore.Folders.All.Where(x => x.IsFolderKeyword);
+      var fkRoots = App.Core.Folders.All.Where(x => x.IsFolderKeyword);
 
       foreach (var fkRoot in fkRoots) {
         if (fkRoot.IsThisOrParentHidden()) continue;

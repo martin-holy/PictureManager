@@ -26,7 +26,7 @@ namespace PictureManager.ShellStuff {
 
       for (short i = 0; i < short.MaxValue; i++) {
         var header = fldr.GetDetailsOf(null, i);
-        if (header.Equals(string.Empty)) continue;
+        if (string.IsNullOrEmpty(header)) continue;
         headers.Add(i, header);
       }
 

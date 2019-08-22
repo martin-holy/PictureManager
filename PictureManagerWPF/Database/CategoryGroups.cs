@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
 
 namespace PictureManager.Database {
   public class CategoryGroups : ITable {
-    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
     public TableHelper Helper { get; set; }
     public List<CategoryGroup> All { get; } = new List<CategoryGroup>();
 
@@ -21,11 +19,11 @@ namespace PictureManager.Database {
         // reference to group items
         switch (group.Category) {
           case Category.People: {
-            group.Parent = ACore.People;
-            if (group.Csv[3].Equals(string.Empty)) continue;
+            group.Parent = App.Core.People;
+            if (string.IsNullOrEmpty(group.Csv[3])) continue;
 
             foreach (var itemId in group.Csv[3].Split(',')) {
-              var p = ACore.People.AllDic[int.Parse(itemId)];
+              var p = App.Core.People.AllDic[int.Parse(itemId)];
               p.Parent = group;
               group.Items.Add(p);
             }
@@ -33,11 +31,11 @@ namespace PictureManager.Database {
             break;
           }
           case Category.Keywords: {
-            group.Parent = ACore.Keywords;
-            if (group.Csv[3].Equals(string.Empty)) continue;
+            group.Parent = App.Core.Keywords;
+            if (string.IsNullOrEmpty(group.Csv[3])) continue;
 
             foreach (var itemId in group.Csv[3].Split(',')) {
-              var k = ACore.Keywords.AllDic[int.Parse(itemId)];
+              var k = App.Core.Keywords.AllDic[int.Parse(itemId)];
               k.Parent = group;
               group.Items.Add(k);
             }

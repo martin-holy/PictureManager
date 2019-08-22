@@ -8,7 +8,7 @@ namespace PictureManager.Database {
     public int Id { get; set; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
-    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
 
     public GeoName(int id, string name, string toponymName, string fCode, BaseTreeViewItem parent) {
       Id = id;

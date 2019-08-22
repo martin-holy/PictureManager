@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -19,36 +20,11 @@ namespace PictureManager {
 
   public class IconNameToStaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
+      if (value == null)
+        value = IconName.Bug;
 
-      string resourceName;
-      switch ((IconName) value) {
-        case IconName.Folder: resourceName = "appbar_folder"; break;
-        case IconName.FolderStar: resourceName = "appbar_folder_star"; break;
-        case IconName.FolderLock: resourceName = "appbar_folder_lock"; break;
-        case IconName.FolderOpen: resourceName = "appbar_folder_open"; break;
-        case IconName.Star: resourceName = "appbar_star"; break;
-        case IconName.People: resourceName = "appbar_people"; break;
-        case IconName.PeopleMultiple: resourceName = "appbar_people_multiple"; break;
-        case IconName.Tag: resourceName = "appbar_tag"; break;
-        case IconName.TagLabel: resourceName = "appbar_tag_label"; break;
-        case IconName.Filter: resourceName = "appbar_filter"; break;
-        case IconName.Eye: resourceName = "appbar_eye"; break;
-        case IconName.DatabaseSql: resourceName = "appbar_database_sql"; break;
-        case IconName.Bug: resourceName = "appbar_bug"; break;
-        case IconName.LocationCheckin: resourceName = "appbar_location_checkin"; break;
-        case IconName.Notification: resourceName = "appbar_notification"; break;
-        case IconName.Cd: resourceName = "appbar_cd"; break;
-        case IconName.Drive: resourceName = "appbar_drive"; break;
-        case IconName.DriveError: resourceName = "appbar_drive_error"; break;
-        case IconName.Cancel: resourceName = "appbar_cancel"; break;
-        case IconName.Save: resourceName = "appbar_save"; break;
-        case IconName.Settings: resourceName = "appbar_settings"; break;
-        case IconName.Edit: resourceName = "appbar_edit"; break;
-        case IconName.Question: resourceName = "appbar_question"; break;
-        case IconName.Information: resourceName = "appbar_information"; break;
-        default: resourceName = "appbar_bug"; break;
-      }
+      var resourceName = $"appbar{Regex.Replace(((IconName) value).ToString(), @"([A-Z])", "_$1").ToLower()}";
+      
       return Application.Current.FindResource(resourceName);
     }
 

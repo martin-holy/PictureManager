@@ -19,8 +19,8 @@ namespace PictureManager.Database {
     private MediaItem _current;
     private bool _isEditModeOn;
 
-    public ObservableCollection<MediaItem> Items { get; set; } = new ObservableCollection<MediaItem>();
-    public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; set; } = new ObservableCollection<ObservableCollection<MediaItem>>();
+    public ObservableCollection<MediaItem> Items { get; } = new ObservableCollection<MediaItem>();
+    public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
 
     public MediaItem Current {
       get => _current;
@@ -32,7 +32,6 @@ namespace PictureManager.Database {
       }
     }
 
-    public AppCore ACore => (AppCore)Application.Current.Properties[nameof(AppProperty.AppCore)];
     public static string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
     public static string[] SuportedImageExts = { ".jpg", ".jpeg" };
     public static string[] SuportedVideoExts = { ".mp4", ".mkv" };
@@ -64,41 +63,41 @@ namespace PictureManager.Database {
         Height = props[4].IntParseOrDefault(0),
         Orientation = props[5].IntParseOrDefault(1),
         Rating = props[6].IntParseOrDefault(0),
-        Comment = props[7].Equals(string.Empty) ? null : props[7]
+        Comment = string.IsNullOrEmpty(props[7]) ? null : props[7]
       });
     }
 
     public void LinkReferences() {
       foreach (var mi in All) {
         // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = ACore.Folders.AllDic[int.Parse(mi.Csv[1])];
+        mi.Folder = App.Core.Folders.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
         // reference to People and back reference from Person to MediaItems
-        if (mi.Csv[9] != string.Empty) {
+        if (!string.IsNullOrEmpty(mi.Csv[9])) {
           var ids = mi.Csv[9].Split(',');
           mi.People = new List<Person>(ids.Length);
           foreach (var personId in ids) {
-            var p = ACore.People.AllDic[int.Parse(personId)];
+            var p = App.Core.People.AllDic[int.Parse(personId)];
             p.MediaItems.Add(mi);
             mi.People.Add(p);
           }
         }
 
         // reference to Keywords and back reference from Keyword to MediaItems
-        if (mi.Csv[10] != string.Empty) {
+        if (!string.IsNullOrEmpty(mi.Csv[10])) {
           var ids = mi.Csv[10].Split(',');
           mi.Keywords = new List<Keyword>(ids.Length);
           foreach (var keywordId in ids) {
-            var k = ACore.Keywords.AllDic[int.Parse(keywordId)];
+            var k = App.Core.Keywords.AllDic[int.Parse(keywordId)];
             k.MediaItems.Add(mi);
             mi.Keywords.Add(k);
           }
         }
 
         // reference to GeoName
-        if (mi.Csv[8] != string.Empty) {
-          mi.GeoName = ACore.GeoNames.AllDic[int.Parse(mi.Csv[8])];
+        if (!string.IsNullOrEmpty(mi.Csv[8])) {
+          mi.GeoName = App.Core.GeoNames.AllDic[int.Parse(mi.Csv[8])];
           mi.GeoName.MediaItems.Add(mi);
         }
 
@@ -297,7 +296,7 @@ namespace PictureManager.Database {
         folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
 
         foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-          if (!IsSupportedFileType(file) || !Viewers.CanViewerSeeThisFile(ACore.CurrentViewer, file)) continue;
+          if (!IsSupportedFileType(file) || !Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, file)) continue;
 
           // check if the MediaItem is already in DB, if not put it there
           var fileName = Path.GetFileName(file) ?? string.Empty;
@@ -314,18 +313,18 @@ namespace PictureManager.Database {
       #region Filtering
 
       //Ratings
-      var chosenRatings = ACore.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
+      var chosenRatings = App.Core.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 
       //MediaItemSizes
-      if (!ACore.MediaItemSizes.Size.AllSizes())
-        mediaItems = mediaItems.Where(mi => mi.IsNew || ACore.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
+      if (!App.Core.MediaItemSizes.Size.AllSizes())
+        mediaItems = mediaItems.Where(mi => mi.IsNew || App.Core.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
 
       //People
-      var orPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notPeople = ACore.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var orPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andPeopleAny = andPeople.Any();
       var orPeopleAny = orPeople.Any();
       if (orPeopleAny || andPeopleAny || notPeople.Any()) {
@@ -346,9 +345,9 @@ namespace PictureManager.Database {
       }
 
       //Keywords
-      var orKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notKeywords = ACore.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var orKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
       var andKeywordsAny = andKeywords.Any();
       var orKeywordsAny = orKeywords.Any();
       if (orKeywordsAny || andKeywordsAny || notKeywords.Any()) {
@@ -376,8 +375,8 @@ namespace PictureManager.Database {
         Items.Add(mi);
       }
 
-      ACore.SetMediaItemSizesLoadedRange();
-      ACore.UpdateStatusBarInfo();
+      App.Core.SetMediaItemSizesLoadedRange();
+      App.Core.UpdateStatusBarInfo();
     }
 
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
@@ -395,7 +394,7 @@ namespace PictureManager.Database {
       if (items == null) return;
 
       // filter out items if directory or file not exists or Viewer can not see items
-      ACore.AppInfo.ProgressBarIsIndeterminate = true;
+      App.Core.AppInfo.ProgressBarIsIndeterminate = true;
 
       if (_loadByTagWorker == null) {
         _loadByTagWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
@@ -418,7 +417,7 @@ namespace PictureManager.Database {
             if (!File.Exists(item.FilePath)) continue;
 
             // Filter by Viewer
-            if (!Viewers.CanViewerSeeThisFile(ACore.CurrentViewer, item.FilePath)) continue;
+            if (!Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, item.FilePath)) continue;
 
             item.Index = ++i;
             item.SetThumbSize();
@@ -438,10 +437,10 @@ namespace PictureManager.Database {
           foreach (var item in (List<MediaItem>) e.Result)
             Items.Add(item);
 
-          ACore.SetMediaItemSizesLoadedRange();
-          ACore.UpdateStatusBarInfo();
+          App.Core.SetMediaItemSizesLoadedRange();
+          App.Core.UpdateStatusBarInfo();
           ScrollTo(0);
-          ACore.LoadThumbnails();
+          App.Core.LoadThumbnails();
         };
       }
 
@@ -472,12 +471,12 @@ namespace PictureManager.Database {
         break;
       }
 
-      var itemContainer = AppCore.WMain.ThumbsBox.ItemContainerGenerator.ContainerFromIndex(rowIndex) as ContentPresenter;
+      var itemContainer = App.WMain.ThumbsBox.ItemContainerGenerator.ContainerFromIndex(rowIndex) as ContentPresenter;
       itemContainer?.BringIntoView();
     }
 
     public void ScrollTo(int index) {
-      var scroll = AppCore.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
+      var scroll = App.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
       if (index == 0) {
         scroll.ScrollToTop();
         return;
@@ -546,7 +545,7 @@ namespace PictureManager.Database {
         lastIndex++;
       }
 
-      var rowMaxWidth = AppCore.WMain.ThumbsBox.ActualWidth;
+      var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
       var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
@@ -565,8 +564,8 @@ namespace PictureManager.Database {
 
       SplitedItems.Clear();
 
-      AppCore.WMain.UpdateLayout();
-      var rowMaxWidth = AppCore.WMain.ActualWidth - AppCore.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 -
+      App.WMain.UpdateLayout();
+      var rowMaxWidth = App.WMain.ActualWidth - App.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 -
                         SystemParameters.VerticalScrollBarWidth;
       var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
@@ -603,7 +602,7 @@ namespace PictureManager.Database {
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
     public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
-      var fop = new Dialogs.FileOperationDialog { Owner = AppCore.WMain };
+      var fop = new Dialogs.FileOperationDialog { Owner = App.WMain };
 
       fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker)sender;
@@ -681,7 +680,7 @@ namespace PictureManager.Database {
       if (mode == FileOperationMode.Move) {
         RemoveSelected(false);
         Current = null;
-        ACore.UpdateStatusBarInfo();
+        App.Core.UpdateStatusBarInfo();
       }
     }
 

@@ -60,8 +60,7 @@ namespace PictureManager.ViewModel {
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         OnPropertyChanged($"Dimension");
 
-        var aCore = (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-        FullGeoName = aCore.GeoNames.GetGeoNameHierarchy(_currentMediaItem?.GeoName);
+        FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
         OnPropertyChanged($"FullGeoName");
       }
     }

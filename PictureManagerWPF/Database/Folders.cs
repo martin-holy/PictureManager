@@ -32,7 +32,7 @@ namespace PictureManager.Database {
       // ID|Name|Parent|IsFolderKeyword
       foreach (var folder in All) {
         // reference to Parent and back reference from Parent to SubFolder
-        if (folder.Csv[2] != string.Empty) {
+        if (!string.IsNullOrEmpty(folder.Csv[2])) {
           folder.Parent = AllDic[int.Parse(folder.Csv[2])];
           folder.Parent.Items.Add(folder);
         }
@@ -91,9 +91,9 @@ namespace PictureManager.Database {
 
         // remove MediaItems
         foreach (var mi in f.MediaItems.ToList())
-          ACore.MediaItems.Delete(mi);
+          App.Core.MediaItems.Delete(mi);
 
-        // MediaItems should by empty from calling ACore.MediaItems.Delete(mi)
+        // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
         f.MediaItems.Clear();
 
         // remove Parent
@@ -103,8 +103,8 @@ namespace PictureManager.Database {
         f.Items.Clear();
 
         // remove FavoriteFolder
-        var ff = ACore.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Id.Equals(f.Id));
-        if (ff != null) ACore.FavoriteFolders.Remove(ff);
+        var ff = App.Core.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Id.Equals(f.Id));
+        if (ff != null) App.Core.FavoriteFolders.Remove(ff);
       }
 
       // set Folders table as modifed
@@ -148,7 +148,7 @@ namespace PictureManager.Database {
         }
 
         // if Viewer can't see this Drive set it as hidden and continue
-        if (!Viewers.CanViewerSeeThisDirectory(ACore.CurrentViewer ,item)) {
+        if (!Viewers.CanViewerSeeThisDirectory(App.Core.CurrentViewer ,item)) {
           item.IsHidden = true;
           continue;
         }
@@ -169,18 +169,10 @@ namespace PictureManager.Database {
     }
 
     public Folder GetByPath(string path, bool withReload = false) {
-      if (path.Equals(string.Empty)) return null;
+      if (string.IsNullOrEmpty(path)) return null;
       var pathParts = path.Split(Path.DirectorySeparatorChar);
       var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0])) as Folder;
       return pathParts.Length == 1 ? drive : drive?.GetByPath(path, withReload);
-    }
-
-    public void ExpandTo(Folder folder) {
-      var parent = folder.Parent;
-      while (parent != null) {
-        parent.IsExpanded = true;
-        parent = parent.Parent;
-      }
     }
 
     public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
@@ -203,7 +195,7 @@ namespace PictureManager.Database {
     }
 
     public void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder) {
-      var fop = new FileOperationDialog { Owner = AppCore.WMain };
+      var fop = new FileOperationDialog { Owner = App.WMain };
 
       fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs args) {
         var worker = (BackgroundWorker)sender;

@@ -62,7 +62,7 @@ namespace PictureManager.Dialogs {
       Error = false;
       TxtFileName.ToolTip = string.Empty;
 
-      if (FileName.Equals(string.Empty)) {
+      if (string.IsNullOrEmpty(FileName)) {
         Error = true;
         return;
       }

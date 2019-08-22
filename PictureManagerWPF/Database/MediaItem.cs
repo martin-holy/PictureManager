@@ -55,8 +55,6 @@ namespace PictureManager.Database {
     public bool IsNew { get; set; }
     public bool IsPanoramatic { get; set; }
 
-    public AppCore ACore => (AppCore) Application.Current.Properties[nameof(AppProperty.AppCore)];
-
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -93,12 +91,12 @@ namespace PictureManager.Database {
       var size = GetThumbSize();
       ThumbWidth = (int)size.Width;
       ThumbHeight = (int)size.Height;
-      ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * ACore.WindowsDisplayScale / 100 / ACore.ThumbScale);
+      ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * App.Core.WindowsDisplayScale / 100 / App.Core.ThumbScale);
     }
 
     private Size GetThumbSize() {
       var size = new Size();
-      var desiredSize = Settings.Default.ThumbnailSize / ACore.WindowsDisplayScale * 100 * ACore.ThumbScale;
+      var desiredSize = Settings.Default.ThumbnailSize / App.Core.WindowsDisplayScale * 100 * App.Core.ThumbScale;
 
       if (Width == 0 || Height == 0) {
         size.Width = desiredSize;
@@ -185,7 +183,7 @@ namespace PictureManager.Database {
 
     public MediaItem CopyTo(Folder folder, string fileName) {
       var copy = (MediaItem)MemberwiseClone();
-      copy.Id = ACore.MediaItems.Helper.GetNextId();
+      copy.Id = App.Core.MediaItems.Helper.GetNextId();
       copy.FileName = fileName;
       copy.Folder = folder;
       copy.Folder.MediaItems.Add(copy);
@@ -193,15 +191,15 @@ namespace PictureManager.Database {
       copy.People?.ForEach(x => x.MediaItems.Add(copy));
       copy.Keywords?.ForEach(x => x.MediaItems.Add(copy));
 
-      ACore.MediaItems.AddRecord(copy);
-      ACore.AppInfo.MediaItemsCount++;
+      App.Core.MediaItems.AddRecord(copy);
+      App.Core.AppInfo.MediaItemsCount++;
 
       return copy;
     }
 
     public void MoveTo(Folder folder, string fileName) {
       // delete existing MediaItem if exists
-      ACore.MediaItems.Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
+      App.Core.MediaItems.Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
 
       FileName = fileName;
       Folder.MediaItems.Remove(this);
@@ -238,7 +236,7 @@ namespace PictureManager.Database {
     }
 
     public bool TryWriteMetadata() {
-      ACore.MediaItems.Helper.IsModifed = true;
+      App.Core.MediaItems.Helper.IsModifed = true;
       if (WriteMetadata()) return true;
       ReSave();
       return WriteMetadata();
@@ -411,7 +409,7 @@ namespace PictureManager.Database {
               foreach (var region in regions) {
                 var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
                 if (personDisplayName != null) {
-                  People.Add(ACore.People.GetPerson(personDisplayName.ToString(), true));
+                  People.Add(App.Core.People.GetPerson(personDisplayName.ToString(), true));
                 }
               }
             }
@@ -436,7 +434,7 @@ namespace PictureManager.Database {
             //Filter out duplicities
             foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
               if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-              var keyword = ACore.Keywords.GetByFullPath(k);
+              var keyword = App.Core.Keywords.GetByFullPath(k);
               if (keyword != null)
                 Keywords.Add(keyword);
             }
@@ -446,14 +444,14 @@ namespace PictureManager.Database {
           var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
           if (!string.IsNullOrEmpty(tmpGId as string)) {
             // TODO dohledani/vytvoreni geoname
-            ACore.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
+            App.Core.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
             GeoName = geoname;
           }
         }
 
         SetThumbSize();
 
-        ACore.MediaItems.Helper.IsModifed = true;
+        App.Core.MediaItems.Helper.IsModifed = true;
       }
       catch (Exception ex) {
         AppCore.ShowErrorDialog(ex, FilePath);

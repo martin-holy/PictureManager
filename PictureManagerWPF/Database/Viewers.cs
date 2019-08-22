@@ -30,7 +30,7 @@ namespace PictureManager.Database {
       if (props.Length != 5) return;
       var id = int.Parse(props[0]);
       var viewer = new Viewer(id, props[1], this) {Csv = props, IsDefault = props[4] == "1"};
-      if (viewer.IsDefault) ACore.CurrentViewer = viewer;
+      if (viewer.IsDefault) App.Core.CurrentViewer = viewer;
       AddRecord(viewer);
     }
 
@@ -41,16 +41,16 @@ namespace PictureManager.Database {
 
       foreach (var viewer in All.OrderBy(x => x.Title)) {
         // reference to IncludedFolders
-        if (viewer.Csv[2] != string.Empty)
+        if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
-            var f = ACore.Folders.AllDic[int.Parse(folderId)];
+            var f = App.Core.Folders.AllDic[int.Parse(folderId)];
             viewer.AddFolder(f, true);
           }
 
         // reference to ExcludedFolders
-        if (viewer.Csv[3] != string.Empty)
+        if (!string.IsNullOrEmpty(viewer.Csv[3]))
           foreach (var folderId in viewer.Csv[3].Split(',')) {
-            var f = ACore.Folders.AllDic[int.Parse(folderId)];
+            var f = App.Core.Folders.AllDic[int.Parse(folderId)];
             viewer.AddFolder(f, false);
           }
 
@@ -69,9 +69,9 @@ namespace PictureManager.Database {
     private void CreateViewer(string name) {
       var viewer = new Viewer(Helper.GetNextId(), name, this);
       AddRecord(viewer);
-      ACore.Sdb.SaveAllTables();
+      App.Core.Sdb.SaveAllTables();
       ItemSetInPlace(this, true, viewer);
-      AppCore.WMain.MenuViewers.Visibility = Visibility.Visible;
+      App.WMain.MenuViewers.Visibility = Visibility.Visible;
     }
 
     public override void ItemNewOrRename(BaseTreeViewItem item, bool rename) {
@@ -111,7 +111,7 @@ namespace PictureManager.Database {
       Helper.IsModifed = true;
 
       // Collapse Viewers menu on title bar if Viewers == 0
-      if (Items.Count == 0) AppCore.WMain.MenuViewers.Visibility = Visibility.Collapsed;
+      if (Items.Count == 0) App.WMain.MenuViewers.Visibility = Visibility.Collapsed;
     }
 
     public static void RemoveFolder(BaseTreeViewItem folder) {

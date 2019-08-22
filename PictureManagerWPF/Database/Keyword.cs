@@ -7,7 +7,7 @@ namespace PictureManager.Database {
     public string[] Csv { get; set; }
     public int Id { get; set; }
     public int Idx { get; set; }
-    public List<MediaItem> MediaItems { get; set; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
 
     public string FullPath => GetFullPath();
 
