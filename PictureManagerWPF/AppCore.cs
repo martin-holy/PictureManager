@@ -37,7 +37,6 @@ namespace PictureManager {
 
     public SimpleDb Sdb { get; } = new SimpleDb();
     public MediaItems MediaItems { get; }
-    public static Collection<string> IncorrectChars { get; } = new Collection<string> {"\\", "/", ":", "*", "?", "\"", "<", ">", "|", ";", "\n"};
     public AppInfo AppInfo { get; } = new AppInfo();
     public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
     public BackgroundWorker ThumbsWorker { get; set; }

@@ -22,8 +22,15 @@ namespace PictureManager {
       
       //var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
       //var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
-
+      CommentChars();
       var x = $"appbar{Regex.Replace(IconName.DriveError.ToString(), @"([A-Z])", "_$1").ToLower()}";
+    }
+
+    public void CommentChars() {
+      var text = "Nějaký text @&#_+-$():;!?=% \" |/";
+      var commentAllowedChars = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
+      var comment = new string(text.Where(x => char.IsLetterOrDigit(x) || commentAllowedChars.Contains(x)).ToArray());
+
     }
 
     public void GetByPathTest() {

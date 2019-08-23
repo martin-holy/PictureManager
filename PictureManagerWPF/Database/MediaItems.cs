@@ -591,6 +591,14 @@ namespace PictureManager.Database {
       }
     }
 
+    private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
+
+    public static string NormalizeComment(string comment) {
+      return string.IsNullOrEmpty(comment)
+        ? null
+        : new string(comment.Where(x => char.IsLetterOrDigit(x) || CommentAllowedCharacters.Contains(x)).ToArray());
+    }
+
     public static bool IsSupportedFileType(string filePath) {
       return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
     }

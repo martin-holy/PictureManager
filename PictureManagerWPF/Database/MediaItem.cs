@@ -297,8 +297,7 @@ namespace PictureManager.Database {
 
             metadata.Rating = Rating;
             metadata.Comment = Comment ?? string.Empty;
-            // TODO test it
-            metadata.Keywords = Keywords == null ? null : new ReadOnlyCollection<string>(Keywords.Select(k => k.Title).ToList());
+            metadata.Keywords = new ReadOnlyCollection<string>(Keywords?.Select(k => k.Title).ToList() ?? new List<string>());
 
             //GeoNameId
             if (GeoName == null)
@@ -419,9 +418,7 @@ namespace PictureManager.Database {
           Rating = bm.Rating;
 
           //Comment
-          Comment = bm.Comment == null
-            ? null
-            : new string(bm.Comment.Where(char.IsLetterOrDigit).ToArray());
+          Comment = MediaItems.NormalizeComment(bm.Comment);
 
           //Orientation 1: 0, 3: 180, 6: 270, 8: 90
           var orientation = bm.GetQuery("System.Photo.Orientation") ?? (ushort) 1;

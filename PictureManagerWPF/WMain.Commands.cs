@@ -462,18 +462,13 @@ namespace PictureManager {
           return;
         }
 
-        if (AppCore.IncorrectChars.Any(inputDialog.TxtAnswer.Text.Contains)) {
-          inputDialog.ShowErrorMessage("Comment contains incorrect character(s)!");
-          return;
-        }
-
         inputDialog.DialogResult = true;
       };
 
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      current.Comment = string.IsNullOrEmpty(inputDialog.TxtAnswer.Text) ? null : inputDialog.TxtAnswer.Text;
+      current.Comment = Database.MediaItems.NormalizeComment(inputDialog.TxtAnswer.Text);
       current.TryWriteMetadata();
       current.SetInfoBox();
       App.Core.UpdateStatusBarInfo();

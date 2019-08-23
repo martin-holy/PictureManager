@@ -617,207 +617,203 @@
     </controls:FlyoutsControl>
   </controls:MetroWindow.Flyouts>
 
-  <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
-    <Grid x:Name="GridMain" Margin="0">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="350" />
-        <ColumnDefinition Width="3" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
 
-      <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
-        Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+  <Grid x:Name="GridMain" Margin="0">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="350" />
+      <ColumnDefinition Width="3" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
 
-      <!-- Thumbnails and Full Media -->
-      <Grid Grid.Column="2" >
+    <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
+      Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+
+    <!-- Thumbnails and Full Media -->
+    <Grid Grid.Column="2" >
+
+      <!-- Thumbnails -->
+      <Grid>
+        <Grid.Style>
+          <Style TargetType="{x:Type Grid}">
+            <Setter Property="Visibility" Value="Hidden" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Grid.Style>
 
         <!-- Thumbnails -->
+        <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplitedItems, Source={x:Static pm:App.Core}}"
+                      VirtualizingStackPanel.IsVirtualizing="True" 
+                      VirtualizingPanel.ScrollUnit="Pixel" 
+                      ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <ItemsControl ItemsSource="{Binding}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <!-- Thumbnail -->
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
+                            MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
+                            MouseMove="Thumb_OnMouseMove">
+                      <Border.Style>
+                        <Style TargetType="{x:Type Border}">
+                          <Setter Property="BorderBrush" Value="Black" />
+                          <Setter Property="BorderThickness" Value="2" />
+                          <Setter Property="Margin" Value="2,0,0,2" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                              <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                          <Style.Resources>
+                            <Style TargetType="{x:Type ItemsControl}">
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
+                                  <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
+                                  <Setter Property="Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </Style.Resources>
+                        </Style>
+                      </Border.Style>
+
+                      <Grid>
+                        <!-- Thumbnail Image -->
+                        <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
+
+                        <!-- Video overlayer -->
+                        <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77">
+                          <ContentControl.Style>
+                            <Style>
+                              <Style.Triggers>
+                                <DataTrigger Binding="{Binding MediaType}" Value="0">
+                                  <Setter Property="ContentControl.Visibility" Value="Hidden"/>
+                                </DataTrigger>
+                              </Style.Triggers>
+                            </Style>
+                          </ContentControl.Style>
+                        </ContentControl>
+
+                        <!-- Thumbnail Info Box -->
+                        <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
+                          <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                              <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
+                          <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                              <Border Style="{StaticResource SBorderInfoBoxThumb}">
+                                <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+                              </Border>
+                            </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                      </Grid>
+                    </Border>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+
+          <ItemsControl.Template>
+            <ControlTemplate>
+              <ScrollViewer x:Name="ThumbsBoxScrollViewer">
+                <ItemsPresenter />
+              </ScrollViewer>
+            </ControlTemplate>
+          </ItemsControl.Template>
+        </ItemsControl>
+      </Grid>
+
+      <!-- Full Media -->
+      <Grid x:Name="PanelFullScreen" Background="Transparent" 
+            MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel">
+        <Grid.Style>
+          <Style TargetType="{x:Type Grid}">
+            <Setter Property="Visibility" Value="Hidden" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Grid.Style>
         <Grid>
-          <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-              <Setter Property="Visibility" Value="Hidden" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                  <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Grid.Style>
 
-          <!-- Thumbnails -->
-          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplitedItems, Source={x:Static pm:App.Core}}"
-                        VirtualizingStackPanel.IsVirtualizing="True" 
-                        VirtualizingPanel.ScrollUnit="Pixel" 
-                        ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <ItemsControl ItemsSource="{Binding}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-
-                  <!-- Thumbnail -->
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
-                              MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                              MouseMove="Thumb_OnMouseMove">
-                        <Border.Style>
-                          <Style TargetType="{x:Type Border}">
-                            <Setter Property="BorderBrush" Value="Black" />
-                            <Setter Property="BorderThickness" Value="2" />
-                            <Setter Property="Margin" Value="2,0,0,2" />
-                            <Style.Triggers>
-                              <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                              </DataTrigger>
-                            </Style.Triggers>
-                            <Style.Resources>
-                              <Style TargetType="{x:Type ItemsControl}">
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                  <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </Style.Resources>
-                          </Style>
-                        </Border.Style>
-
-                        <Grid>
-                          <!-- Thumbnail Image -->
-                          <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
-
-                          <!-- Video overlayer -->
-                          <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
-                                          VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77">
-                            <ContentControl.Style>
-                              <Style>
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding MediaType}" Value="0">
-                                    <Setter Property="ContentControl.Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </ContentControl.Style>
-                          </ContentControl>
-
-                          <!-- Thumbnail Info Box -->
-                          <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
-                            <ItemsControl.ItemsPanel>
-                              <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                              </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                              <DataTemplate>
-                                <Border Style="{StaticResource SBorderInfoBoxThumb}">
-                                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
-                                </Border>
-                              </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                          </ItemsControl>
-                        </Grid>
-                      </Border>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-
-            <ItemsControl.Template>
-              <ControlTemplate>
-                <ScrollViewer x:Name="ThumbsBoxScrollViewer">
-                  <ItemsPresenter />
-                </ScrollViewer>
-              </ControlTemplate>
-            </ItemsControl.Template>
-          </ItemsControl>
-        </Grid>
-
-        <!-- Full Media -->
-        <Grid x:Name="PanelFullScreen" Background="Transparent" 
-              MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel">
-          <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-              <Setter Property="Visibility" Value="Hidden" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
-                  <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Grid.Style>
+          <!-- Full Media Image -->
           <Grid>
+            <Grid.Style>
+              <Style TargetType="{x:Type Grid}">
+                <Setter Property="Visibility" Value="Hidden" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="0">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Grid.Style>
 
-            <!-- Full Media Image -->
-            <Grid>
-              <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                  <Setter Property="Visibility" Value="Hidden" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="0">
-                      <Setter Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Grid.Style>
+            <userControls:ZoomImageBox x:Name="FullImage" />
+          </Grid>
 
-              <userControls:ZoomImageBox x:Name="FullImage" />
-            </Grid>
+          <!-- Full Media Video -->
+          <Grid>
+            <Grid.Style>
+              <Style TargetType="{x:Type Grid}">
+                <Setter Property="Visibility" Value="Hidden" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
+                    <Setter Property="Visibility" Value="Visible" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Grid.Style>
 
-            <!-- Full Media Video -->
-            <Grid>
-              <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                  <Setter Property="Visibility" Value="Hidden" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
-                      <Setter Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Grid.Style>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
+            <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
+              ScrubbingEnabled="True" MediaEnded="FullMedia_OnMediaEnded" />
+
+            <Grid Grid.Row="0" VerticalAlignment="Bottom">
               <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
               </Grid.RowDefinitions>
 
-              <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
-                ScrubbingEnabled="True" MediaEnded="FullMedia_OnMediaEnded" />
-
-              <Grid Grid.Row="0" VerticalAlignment="Bottom">
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto" />
-                  <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Slider x:Name="ProgressSlider" Grid.Row="0" Minimum="0"
-                  media:Drag.PauseWhileDragging="{Binding ElementName=FullMedia}"
-                  IsEnabled="{Binding ElementName=FullMedia, Path=HasMedia}"
-                  Maximum="{Binding ElementName=FullMedia, Path=Length, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}"
-                  Style="{StaticResource {x:Static media:Styles.ProgressSliderStyleKey}}"
-                  Value="{Binding ElementName=FullMedia, Path=Position, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}" />
-              </Grid>
+              <Slider x:Name="ProgressSlider" Grid.Row="0" Minimum="0"
+                media:Drag.PauseWhileDragging="{Binding ElementName=FullMedia}"
+                IsEnabled="{Binding ElementName=FullMedia, Path=HasMedia}"
+                Maximum="{Binding ElementName=FullMedia, Path=Length, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}"
+                Style="{StaticResource {x:Static media:Styles.ProgressSliderStyleKey}}"
+                Value="{Binding ElementName=FullMedia, Path=Position, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}" />
             </Grid>
           </Grid>
         </Grid>
       </Grid>
     </Grid>
-
-    
-
   </Grid>
 </controls:MetroWindow>
