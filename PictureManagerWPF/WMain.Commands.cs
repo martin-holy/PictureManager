@@ -146,7 +146,13 @@ namespace PictureManager {
     }
 
     private static void MediaItemsSelectNotModifed() {
-      App.Core.MediaItems.SelectNotModifed();
+      App.Core.MediaItems.Current = null;
+
+      foreach (var mi in App.Core.MediaItems.Items) {
+        if (mi.IsSelected) mi.IsSelected = false;
+        if (!mi.IsModifed) mi.IsSelected = true;
+      }
+
       App.Core.UpdateStatusBarInfo();
       App.Core.MarkUsedKeywordsAndPeople();
     }

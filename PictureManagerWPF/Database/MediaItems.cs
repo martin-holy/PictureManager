@@ -158,13 +158,7 @@ namespace PictureManager.Database {
     }
 
     public void SelectAll() {
-      foreach (var mi in Items)
-        mi.IsSelected = true;
-    }
-
-    public void SelectNotModifed() {
-      DeselectAll();
-      foreach (var mi in Items.Where(x => !x.IsModifed))
+      foreach (var mi in Items.Where(x => !x.IsSelected))
         mi.IsSelected = true;
     }
 
