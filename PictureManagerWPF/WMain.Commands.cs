@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 
@@ -44,6 +46,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.KeywordsCancel, HandleExecute(KeywordsCancel), HandleCanExecute(CanKeywordsCancel)));
       CommandBindings.Add(new CommandBinding(Commands.KeywordsComment, HandleExecute(KeywordsComment), HandleCanExecute(CanKeywordsComment)));
       CommandBindings.Add(new CommandBinding(Commands.CompressPictures, HandleExecute(CompressPictures), HandleCanExecute(CanCompressPictures)));
+      CommandBindings.Add(new CommandBinding(Commands.RotatePictures, HandleExecute(RotatePictures), HandleCanExecute(CanRotatePictures)));
       CommandBindings.Add(new CommandBinding(Commands.TestButton, HandleExecute(TestButton)));
       CommandBindings.Add(new CommandBinding(Commands.ReloadMetadata, HandleExecute(ReloadMetadata)));
       CommandBindings.Add(new CommandBinding(Commands.RebuildThumbnails, HandleExecute(RebuildThumbnails)));
@@ -303,6 +306,16 @@ namespace PictureManager {
       compress.ShowDialog();
     }
 
+    private static bool CanRotatePictures() {
+      return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
+    }
+
+    private static void RotatePictures() {
+      var rotation = RotationDialog.Show();
+      if (rotation == Rotation.Rotate0) return;
+      App.Core.MediaItems.SetOrientation(App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), rotation);
+    }
+
     private void OpenSettings() {
       var settings = new WSettings {Owner = this};
       if (settings.ShowDialog() ?? true) {
@@ -479,8 +492,8 @@ namespace PictureManager {
       var progress = new ProgressBarDialog {Owner = this};
 
       progress.Worker.RunWorkerCompleted += delegate {
-        progress.Close();
         App.Core.Sdb.SaveAllTables();
+        progress.Close();
       };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
@@ -514,16 +527,24 @@ namespace PictureManager {
       progress.Show();
     }
 
-    private void RebuildThumbnails(object parameter) {
+    public void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var progress = new ProgressBarDialog {Owner = this};
 
-      progress.Worker.RunWorkerCompleted += delegate { progress.Close(); };
+      progress.Worker.RunWorkerCompleted += delegate {
+        progress.Close();
+        App.Core.MediaItems.SplitedItemsReload();
+        App.Core.MediaItems.ScrollToCurrent();
+      };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var mediaItems = parameter is Database.Folder folder
-          ? folder.GetMediaItems(recursive)
-          : App.Core.MediaItems.GetSelectedOrAll();
+        List<Database.MediaItem> mediaItems;
+        switch (parameter) {
+          case Database.Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
+          case List<Database.MediaItem> items: mediaItems = items; break;
+          default: mediaItems = App.Core.MediaItems.GetSelectedOrAll(); break;
+        }
+
         var worker = (BackgroundWorker)o;
         var count = mediaItems.Count;
         var done = 0;

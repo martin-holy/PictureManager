@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
@@ -597,6 +598,71 @@ namespace PictureManager.Database {
       return string.IsNullOrEmpty(comment)
         ? null
         : new string(comment.Where(x => char.IsLetterOrDigit(x) || CommentAllowedCharacters.Contains(x)).ToArray());
+    }
+
+    public void SetOrientation(List<MediaItem> mediaItems, Rotation rotation) {
+      var progress = new Dialogs.ProgressBarDialog {Owner = App.WMain};
+
+      Helper.IsModifed = true;
+
+      progress.Worker.RunWorkerCompleted += delegate {
+        progress.Close();
+        App.Core.MediaItems.SplitedItemsReload();
+        App.Core.MediaItems.ScrollToCurrent();
+        App.Core.UpdateStatusBarInfo();
+        App.Core.Sdb.SaveAllTables();
+      };
+
+      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)o;
+        var count = mediaItems.Count;
+        var done = 0;
+
+        foreach (var mi in mediaItems) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
+          
+          var newOrientation = 0;
+          switch ((MediaOrientation) mi.Orientation) {
+            case MediaOrientation.Rotate90: newOrientation = 90; break;
+            case MediaOrientation.Rotate180: newOrientation = 180; break;
+            case MediaOrientation.Rotate270: newOrientation = 270; break;
+          }
+
+          switch (rotation) {
+            case Rotation.Rotate90: newOrientation += 90; break;
+            case Rotation.Rotate180: newOrientation += 180; break;
+            case Rotation.Rotate270: newOrientation += 270; break;
+          }
+
+          if (newOrientation >= 360) newOrientation -= 360;
+
+          switch (newOrientation) {
+            case 0: mi.Orientation = (int) MediaOrientation.Normal; break;
+            case 90: mi.Orientation = (int) MediaOrientation.Rotate90; break;
+            case 180: mi.Orientation = (int) MediaOrientation.Rotate180; break;
+            case 270: mi.Orientation = (int) MediaOrientation.Rotate270; break;
+          }
+
+          mi.TryWriteMetadata();
+          
+          Application.Current.Dispatcher.Invoke(delegate {
+            mi.SetThumbSize();
+            mi.SetInfoBox();
+          });
+
+          File.Delete(mi.FilePathCache);
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.Show();
     }
 
     public static bool IsSupportedFileType(string filePath) {

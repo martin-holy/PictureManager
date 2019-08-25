@@ -298,6 +298,7 @@ namespace PictureManager.Database {
             metadata.Rating = Rating;
             metadata.Comment = Comment ?? string.Empty;
             metadata.Keywords = new ReadOnlyCollection<string>(Keywords?.Select(k => k.Title).ToList() ?? new List<string>());
+            metadata.SetQuery("System.Photo.Orientation", (ushort) Orientation);
 
             //GeoNameId
             if (GeoName == null)

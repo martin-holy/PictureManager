@@ -40,6 +40,7 @@ namespace PictureManager {
     public static RoutedUICommand KeywordsCancel { get; } = new RoutedUICommand {Text = "Cancel"};
     public static RoutedUICommand KeywordsComment { get; } = new RoutedUICommand {Text = "Comment"};
     public static RoutedUICommand CompressPictures { get; } = new RoutedUICommand {Text = "Compress Pictures"};
+    public static RoutedUICommand RotatePictures { get; } = new RoutedUICommand {Text = "Rotate Pictures"};
     public static RoutedUICommand TestButton { get; } = new RoutedUICommand {Text = "Test Button"};
     public static RoutedUICommand ReloadMetadata { get; } = new RoutedUICommand {Text = "Reload Metadata"};
     public static RoutedUICommand RebuildThumbnails { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };

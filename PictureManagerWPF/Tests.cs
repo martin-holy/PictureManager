@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace PictureManager {
   public class Tests {
@@ -22,8 +26,36 @@ namespace PictureManager {
       
       //var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
       //var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
-      CommentChars();
-      var x = $"appbar{Regex.Replace(IconName.DriveError.ToString(), @"([A-Z])", "_$1").ToLower()}";
+      //CommentChars();
+      //var x = $"appbar{Regex.Replace(IconName.DriveError.ToString(), @"([A-Z])", "_$1").ToLower()}";
+
+      var test = Text2Path("⤸");
+      var test2 = Text2Path("⤺");
+      var test3 = Text2Path("⤺", false, true);
+    }
+
+    public string Text2Path(string text, bool flipVertically = false, bool flipHorizontally = false) {
+      var formattedText = new FormattedText(text,
+        CultureInfo.GetCultureInfo("en-us"),
+        FlowDirection.LeftToRight,
+        new Typeface(
+          new FontFamily("Segoe UI Symbol"),
+          FontStyles.Normal,
+          FontWeights.Bold,
+          FontStretches.Normal),
+        16, Brushes.Black);
+
+      var geometry = formattedText.BuildGeometry(new Point(0, 0));
+      var gb = geometry.Bounds;
+
+      if (flipVertically)
+        geometry.Transform = new ScaleTransform(1, -1, 0, (gb.Bottom - gb.Top) / 2.0);
+      if (flipHorizontally)
+        geometry.Transform = new ScaleTransform(-1, 1, 0, (gb.Right - gb.Left) / 2.0);
+
+      var data = geometry.GetFlattenedPathGeometry().ToString().Replace(",", ".").Replace(";", ",");
+
+      return $"<Path Width=\"{(int) gb.Width}\" Height=\"{(int) gb.Height}\" Canvas.Left=\"{(int) gb.Left}\" Canvas.Top=\"{(int) gb.Top}\" Stretch=\"Fill\" Fill=\"{{DynamicResource BlackBrush}}\" Data=\"{data}\" />";
     }
 
     public void CommentChars() {
