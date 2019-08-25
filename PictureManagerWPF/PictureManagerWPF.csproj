@@ -165,9 +165,6 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WPicTransform.xaml.cs">
-      <DependentUpon>WPicTransform.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WSettings.xaml.cs">
       <DependentUpon>WSettings.xaml</DependentUpon>
     </Compile>
@@ -242,10 +239,6 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WPicTransform.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="WSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
