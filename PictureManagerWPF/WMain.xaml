@@ -42,8 +42,8 @@
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsEdit" InputGestureText="Ctrl+E" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="{x:Static pm:Commands.KeywordsSave}" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.KeywordsCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>

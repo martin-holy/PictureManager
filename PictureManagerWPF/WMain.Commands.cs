@@ -13,8 +13,8 @@ namespace PictureManager {
 
     private void AddCommandBindings() {
       //Window Commands
-      CommandBindings.Add(new CommandBinding(Commands.SwitchToFullScreen, HandleExecute(SwitchToFullScreen)));
-      CommandBindings.Add(new CommandBinding(Commands.SwitchToBrowser, HandleExecute(SwitchToBrowser)));
+      CommandBindings.Add(new CommandBinding(Commands.SwitchToFullScreen, HandleExecute(SwitchToFullScreen), HandleCanExecute(CanSwitchToFullScreen)));
+      CommandBindings.Add(new CommandBinding(Commands.SwitchToBrowser, HandleExecute(SwitchToBrowser), HandleCanExecute(CanSwitchToBrowser)));
       //MediaItems Commands
       CommandBindings.Add(new CommandBinding(Commands.MediaItemNext, HandleExecute(MediaItemNext), HandleCanExecute(CanMediaItemNext)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
@@ -59,27 +59,16 @@ namespace PictureManager {
     }
 
     private void AddInputBindings() {
-      AddInputBinding(Commands.ShowHideTabMain, new KeyGesture(Key.T, ModifierKeys.Control));
-      AddInputBinding(Commands.SwitchToBrowser, new KeyGesture(Key.Escape), PanelFullScreen);
-      AddInputBinding(Commands.MediaItemNext, new KeyGesture(Key.Right), PanelFullScreen);
-      AddInputBinding(Commands.MediaItemPrevious, new KeyGesture(Key.Left), PanelFullScreen);
-      AddInputBinding(Commands.MediaItemsSelectAll, new KeyGesture(Key.A, ModifierKeys.Control), ThumbsBox);
-      AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete), PanelFullScreen);
-      AddInputBinding(Commands.MediaItemsDelete, new KeyGesture(Key.Delete, ModifierKeys.Shift), PanelFullScreen);
-      AddInputBinding(Commands.Presentation, new KeyGesture(Key.P, ModifierKeys.Control), PanelFullScreen);
-      AddInputBinding(MediaCommands.TogglePlayPause, new KeyGesture(Key.Space), FullMedia);
-      AddInputBinding(MediaCommands.TogglePlayPause, new MouseGesture(MouseAction.LeftClick), FullMedia);
-      
-      AddInputBinding(Commands.KeywordsEdit, new KeyGesture(Key.E, ModifierKeys.Control));
-      AddInputBinding(Commands.KeywordsSave, new KeyGesture(Key.S, ModifierKeys.Control));
-      AddInputBinding(Commands.KeywordsCancel, new KeyGesture(Key.Q, ModifierKeys.Control));
-      AddInputBinding(Commands.KeywordsComment, new KeyGesture(Key.K, ModifierKeys.Control));
+      MediaCommands.TogglePlayPause.InputGestures.Add(new KeyGesture(Key.Space));
+      MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
 
-      AddInputBinding(Commands.TestButton, new KeyGesture(Key.D, ModifierKeys.Control));
+      SetTargetToCommand(MediaCommands.TogglePlayPause, FullMedia);
+      SetTargetToCommand(Commands.MediaItemsSelectAll, ThumbsBox);
     }
 
-    private void AddInputBinding(ICommand command, InputGesture gesture, IInputElement commandTarget = null) {
-      InputBindings.Add(new InputBinding(command, gesture) {CommandTarget = commandTarget});
+    private void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {
+      foreach (InputGesture ig in command.InputGestures)
+        InputBindings.Add(new InputBinding(command, ig) {CommandTarget = commandTarget});
     }
 
     private static ExecutedRoutedEventHandler HandleExecute(Action action) {
@@ -111,7 +100,8 @@ namespace PictureManager {
     }*/
 
     private static bool CanMediaItemNext() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current?.Index + 1 < App.Core.MediaItems.Items.Count;
+      return App.Core.AppInfo.AppMode == AppMode.Viewer &&
+             App.Core.MediaItems.Current?.Index + 1 < App.Core.MediaItems.Items.Count;
     }
 
     private void MediaItemNext() {
@@ -616,6 +606,10 @@ namespace PictureManager {
       App.Core.FolderKeywords.Load();
     }
 
+    private static bool CanSwitchToFullScreen() {
+      return App.Core.AppInfo.AppMode == AppMode.Browser;
+    }
+
     private void SwitchToFullScreen() {
       if (App.Core.MediaItems.Current == null) return;
       App.Core.AppInfo.AppMode = AppMode.Viewer;
@@ -624,6 +618,10 @@ namespace PictureManager {
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
+    }
+
+    private static bool CanSwitchToBrowser() {
+      return App.Core.AppInfo.AppMode == AppMode.Viewer;
     }
 
     private void SwitchToBrowser() {
