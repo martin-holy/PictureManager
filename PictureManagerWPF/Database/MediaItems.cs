@@ -662,7 +662,7 @@ namespace PictureManager.Database {
       };
 
       progress.Worker.RunWorkerAsync();
-      progress.Show();
+      progress.ShowDialog();
     }
 
     public static bool IsSupportedFileType(string filePath) {

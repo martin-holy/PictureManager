@@ -427,7 +427,7 @@ namespace PictureManager {
       };
 
       progress.Worker.RunWorkerAsync();
-      progress.Show();
+      progress.ShowDialog();
     }
 
     private static bool CanKeywordsCancel() {
