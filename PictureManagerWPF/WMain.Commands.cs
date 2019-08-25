@@ -396,44 +396,38 @@ namespace PictureManager {
 
     private void KeywordsSave() {
       var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
+      var progress = new ProgressBarDialog { Owner = this };
 
-      App.Core.AppInfo.ProgressBarIsIndeterminate = false;
-      App.Core.AppInfo.ProgressBarValue = 0;
+      progress.Worker.RunWorkerCompleted += delegate {
+        App.Core.MediaItems.IsEditModeOn = false;
+        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
+          TabFolders.IsSelected = true;
+        }
 
-      using (var bw = new BackgroundWorker {WorkerReportsProgress = true}) {
-        bw.ProgressChanged += delegate(object bwsender, ProgressChangedEventArgs bwe) {
-          App.Core.AppInfo.ProgressBarValue = bwe.ProgressPercentage;
-        };
+        foreach (var mi in App.Core.MediaItems.Items.Where(mi => mi.IsModifed)) {
+          mi.IsModifed = false;
+        }
 
-        bw.DoWork += delegate(object bwsender, DoWorkEventArgs bwe) {
-          var worker = (BackgroundWorker) bwsender;
-          var count = items.Count;
-          var done = 0;
-          bwe.Result = bwe.Argument;
+        App.Core.MediaItems.IsEditModeOn = false;
+        App.Core.UpdateStatusBarInfo();
+        progress.Close();
+      };
 
-          foreach (var item in items) {
-            item.TryWriteMetadata();
-            done++;
-            worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), item.Index);
-          }
-        };
+      progress.Worker.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
+        var worker = (BackgroundWorker)bwsender;
+        var count = items.Count;
+        var done = 0;
+        bwe.Result = bwe.Argument;
 
-        bw.RunWorkerCompleted += delegate {
-          App.Core.MediaItems.IsEditModeOn = false;
-          if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
-            TabFolders.IsSelected = true;
-          }
+        foreach (var item in items) {
+          item.TryWriteMetadata();
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), item.Index);
+        }
+      };
 
-          foreach (var mi in App.Core.MediaItems.Items.Where(mi => mi.IsModifed)) {
-            mi.IsModifed = false;
-          }
-
-          App.Core.MediaItems.IsEditModeOn = false;
-          App.Core.UpdateStatusBarInfo();
-        };
-
-        bw.RunWorkerAsync();
-      }
+      progress.Worker.RunWorkerAsync();
+      progress.Show();
     }
 
     private static bool CanKeywordsCancel() {
