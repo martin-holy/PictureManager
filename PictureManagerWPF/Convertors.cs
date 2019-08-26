@@ -90,6 +90,34 @@ namespace PictureManager {
     }
   }
 
+  public class AllToVisibilityConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) return Visibility.Collapsed;
+      var result = false;
+
+      switch (value) {
+        case string s: {
+          result = !string.IsNullOrEmpty(s);
+          break;
+        }
+        case bool b: {
+          result = b;
+          break;
+        }
+        case int i: {
+          result = i > 0;
+          break;
+        }
+      }
+
+      return result ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
   public class BackgroundColorConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();

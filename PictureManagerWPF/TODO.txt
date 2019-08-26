@@ -13,5 +13,4 @@
 - vlastni error dialog
 - pripinacek na tab
 - zobrazit nejak zafiltrovany keywords, people, rating
-- klavesovy zkratky
 - ikony

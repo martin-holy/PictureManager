@@ -18,8 +18,9 @@
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
       <Grid>
-        <ProgressBar Width="250" Height="22" Value="{Binding AppInfo.ProgressBarValue, Source={x:Static pm:App.Core}}" 
-                     IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate, Source={x:Static pm:App.Core}}" Maximum="100" />
+        <ProgressBar Width="250" Height="22" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+                     Value="{Binding AppInfo.ProgressBarValue}" 
+                     IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
                    FontFamily="{DynamicResource HeaderFontFamily}" />
@@ -379,39 +380,32 @@
 
       <!-- Status Panel -->
       <controls:Flyout x:Name="FlyoutStatusPanel" Position="Bottom" Height="Auto" IsOpen="True" 
-        Background="Transparent" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed">
+                       Background="Transparent" TitleVisibility="Collapsed" 
+                       CloseButtonVisibility="Collapsed" DataContext="{x:Static pm:App.Core}">
         <controls:Flyout.Style>
           <Style>
             <Setter Property="controls:Flyout.Margin" Value="0,0,0,0" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
+              <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="0">
                 <Setter Property="controls:Flyout.Margin" Value="0,0,15,0" />
               </DataTrigger>
             </Style.Triggers>
           </Style>
         </controls:Flyout.Style>
+
         <WrapPanel x:Name="StatusPanel" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
           <WrapPanel.Style>
             <Style>
               <Style.Resources>
                 <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}" />
+                <Style TargetType="TextBlock" BasedOn="{StaticResource STextBlockInfoBox}" />
               </Style.Resources>
             </Style>
           </WrapPanel.Style>
 
           <!-- PositionSlashCount -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding MediaItems.Items.Count, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.PositionSlashCount, Source={x:Static pm:App.Core}}" />
+          <Border Visibility="{Binding MediaItems.Items.Count, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding AppInfo.PositionSlashCount}" />
           </Border>
 
           <!-- Selected -->
@@ -419,79 +413,37 @@
             <Border.Style>
               <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
+                  <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="1">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding MediaItems.Items.Count, Source={x:Static pm:App.Core}}" Value="0">
+                  <DataTrigger Binding="{Binding MediaItems.Items.Count}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.Selected, Source={x:Static pm:App.Core}}" />
+            <TextBlock Text="{Binding AppInfo.Selected}" />
           </Border>
 
           <!-- Modifed -->
-          <Border Background="#CA5100">
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding MediaItems.IsEditModeOn, Source={x:Static pm:App.Core}}" Value="False">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.Modifed, Source={x:Static pm:App.Core}}" />
+          <Border Background="#CA5100" 
+                  Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding AppInfo.Modifed}" />
           </Border>
 
           <!-- Dimension -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.Dimension, Source={x:Static pm:App.Core}}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.Dimension, Source={x:Static pm:App.Core}}" />
+          <Border Visibility="{Binding AppInfo.Dimension, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding AppInfo.Dimension}" />
           </Border>
 
           <!-- ImageActualZoom -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
+          <Border Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
           </Border>
 
           <!-- Rating -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.Rating.Count, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <ItemsControl ItemsSource="{Binding AppInfo.Rating, Source={x:Static pm:App.Core}}">
+          <Border Visibility="{Binding AppInfo.Rating.Count, Converter={StaticResource AllToVisibilityConverter}}">
+            <ItemsControl ItemsSource="{Binding AppInfo.Rating}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <StackPanel Orientation="Horizontal" />
@@ -506,52 +458,20 @@
           </Border>
 
           <!-- GeoName -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.GeoName, Source={x:Static pm:App.Core}}" Value="{x:Null}">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-                <Setter Property="ToolTip" Value="{Binding AppInfo.FullGeoName, Source={x:Static pm:App.Core}}" />
-              </Style>
-            </Border.Style>
+          <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                  ToolTip="{Binding AppInfo.FullGeoName}">
             <Rectangle Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource IconRect2}" />
           </Border>
 
           <!-- FilePath -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
-                    <Setter Property="ToolTip" Value="{Binding AppInfo.CurrentMediaItem.FilePath, Source={x:Static pm:App.Core}}" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding AppInfo.FilePath, Source={x:Static pm:App.Core}}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.FilePath, Source={x:Static pm:App.Core}}" />
+          <Border Visibility="{Binding AppInfo.FilePath, Converter={StaticResource AllToVisibilityConverter}}"
+                  ToolTip="{Binding AppInfo.CurrentMediaItem.FilePath}">
+            <TextBlock Text="{Binding AppInfo.FilePath}" />
           </Border>
 
           <!-- People -->
-          <ItemsControl ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople, Source={x:Static pm:App.Core}}">
-            <ItemsControl.Style>
-              <Style TargetType="ItemsControl">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople, Source={x:Static pm:App.Core}}" Value="{x:Null}">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </ItemsControl.Style>
+          <ItemsControl Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" />
@@ -560,26 +480,15 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+                  <TextBlock Text="{Binding}" />
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
           <!-- Keywords -->
-          <ItemsControl ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords, Source={x:Static pm:App.Core}}">
-            <ItemsControl.Style>
-              <Style TargetType="ItemsControl">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords, Source={x:Static pm:App.Core}}" Value="{x:Null}">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </ItemsControl.Style>
+          <ItemsControl Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal" />
@@ -588,28 +497,15 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+                  <TextBlock Text="{Binding}" />
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
 
           <!-- Comment -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding AppInfo.Comment, Source={x:Static pm:App.Core}}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" 
-                       Text="{Binding AppInfo.Comment, Source={x:Static pm:App.Core}}" />
+          <Border Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding AppInfo.Comment}" />
           </Border>
 
         </WrapPanel>
@@ -619,7 +515,7 @@
   </controls:MetroWindow.Flyouts>
 
 
-  <Grid x:Name="GridMain" Margin="0">
+  <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="350" />
       <ColumnDefinition Width="3" />
@@ -638,7 +534,7 @@
           <Style TargetType="{x:Type Grid}">
             <Setter Property="Visibility" Value="Hidden" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
+              <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="0">
                 <Setter Property="Visibility" Value="Visible" />
               </DataTrigger>
             </Style.Triggers>
@@ -646,7 +542,7 @@
         </Grid.Style>
 
         <!-- Thumbnails -->
-        <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplitedItems, Source={x:Static pm:App.Core}}"
+        <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplitedItems}"
                       VirtualizingStackPanel.IsVirtualizing="True" 
                       VirtualizingPanel.ScrollUnit="Pixel" 
                       ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
@@ -748,13 +644,13 @@
       </Grid>
 
       <!-- Full Media -->
-      <Grid x:Name="PanelFullScreen" Background="Transparent" 
+      <Grid x:Name="PanelFullScreen" Background="Transparent"
             MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel">
         <Grid.Style>
           <Style TargetType="{x:Type Grid}">
             <Setter Property="Visibility" Value="Hidden" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="1">
+              <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="1">
                 <Setter Property="Visibility" Value="Visible" />
               </DataTrigger>
             </Style.Triggers>
@@ -768,7 +664,7 @@
               <Style TargetType="{x:Type Grid}">
                 <Setter Property="Visibility" Value="Hidden" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="0">
+                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType}" Value="0">
                     <Setter Property="Visibility" Value="Visible" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -784,7 +680,7 @@
               <Style TargetType="{x:Type Grid}">
                 <Setter Property="Visibility" Value="Hidden" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType, Source={x:Static pm:App.Core}}" Value="1">
+                  <DataTrigger Binding="{Binding MediaItems.Current.MediaType}" Value="1">
                     <Setter Property="Visibility" Value="Visible" />
                   </DataTrigger>
                 </Style.Triggers>

@@ -46,7 +46,6 @@ namespace PictureManager.Database {
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
-    public string CommentEscaped => Comment?.Replace("'", "''") ?? string.Empty;
     public int Index { get; set; }
     public int ThumbSize { get; set; }
     public double? Lat { get; set; }
@@ -179,6 +178,10 @@ namespace PictureManager.Database {
           }
         }
       }
+
+      OnPropertyChanged(nameof(InfoBoxThumb));
+      OnPropertyChanged(nameof(InfoBoxPeople));
+      OnPropertyChanged(nameof(InfoBoxKeywords));
     }
 
     public MediaItem CopyTo(Folder folder, string fileName) {

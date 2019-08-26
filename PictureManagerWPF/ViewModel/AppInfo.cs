@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
+using System.IO;
 using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
@@ -19,6 +19,9 @@ namespace PictureManager.ViewModel {
     private AppMode _appMode;
     private bool _isThumbInfoVisible = true;
     private int _mediaItemsCount;
+    private string _comment = string.Empty;
+    private string _dimension = string.Empty;
+    private string _fullGeoName = string.Empty;
 
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
@@ -27,18 +30,28 @@ namespace PictureManager.ViewModel {
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
-    public string Comment { get; set; } = string.Empty;
-    public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
     public AppMode AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }
-    public string Dimension { get; set; } = string.Empty;
-    public string FullGeoName { get; set; } = string.Empty;
+    public string Comment { get => _comment; set { _comment = value; OnPropertyChanged(); } }
+    public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
+    public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
+    public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
+
+    public bool IsGeoNameVisible => CurrentMediaItem?.GeoName != null;
+    public bool IsCommentVisible => AppMode == AppMode.Viewer && !string.IsNullOrEmpty(Comment);
+    public bool IsInfoBoxPeopleVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxPeople != null;
+    public bool IsInfoBoxKeywordsVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxKeywords != null;
+    public bool IsImageActualZoomVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.MediaType == MediaType.Image;
+
     public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
 
     public string FilePath {
       get {
         if (CurrentMediaItem == null) return string.Empty;
-        if (AppMode == AppMode.Viewer && CurrentMediaItem.Folder.FolderKeyword != null) 
-          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}\\{CurrentMediaItem.FileName}";
+        if (AppMode == AppMode.Viewer && CurrentMediaItem.Folder.FolderKeyword != null)
+          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}{Path.DirectorySeparatorChar}{CurrentMediaItem.FileName}";
         return CurrentMediaItem.FilePath;
       }
     }
@@ -48,25 +61,23 @@ namespace PictureManager.ViewModel {
       set {
         _currentMediaItem = value;
         OnPropertyChanged();
-        OnPropertyChanged($"FilePath");
+        
 
         Rating.Clear();
         for (var i = 0; i < _currentMediaItem?.Rating; i++) 
-          Rating.Add(new AppInfoRating {IconName = IconName.Star });
+          Rating.Add(new AppInfoRating {IconName = IconName.Star});
 
-        Comment = _currentMediaItem == null ? string.Empty : _currentMediaItem.CommentEscaped;
-        OnPropertyChanged($"Comment");
-
+        Comment = _currentMediaItem?.Comment?.Replace("'", "''") ?? string.Empty;
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
-        OnPropertyChanged($"Dimension");
-
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
-        OnPropertyChanged($"FullGeoName");
-      }
-    }
 
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        OnPropertyChanged(nameof(IsGeoNameVisible));
+        OnPropertyChanged(nameof(IsCommentVisible));
+        OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
+        OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
+        OnPropertyChanged(nameof(IsImageActualZoomVisible));
+        OnPropertyChanged(nameof(FilePath));
+      }
     }
   }
 }
