@@ -301,10 +301,13 @@ namespace PictureManager {
       return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
     }
 
-    private static void RotatePictures() {
+    private void RotatePictures() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
       App.Core.MediaItems.SetOrientation(App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), rotation);
+
+      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
+      SetMediaItemSource();
     }
 
     private void OpenSettings() {
