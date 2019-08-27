@@ -117,7 +117,6 @@ namespace PictureManager {
       }
 
       App.Core.MarkUsedKeywordsAndPeople();
-      App.Core.UpdateStatusBarInfo();
     }
 
     private static bool CanMediaItemPrevious() {
@@ -128,7 +127,6 @@ namespace PictureManager {
       App.Core.MediaItems.Current = App.Core.MediaItems.Items[App.Core.MediaItems.Current.Index - 1];
       SetMediaItemSource();
       App.Core.MarkUsedKeywordsAndPeople();
-      App.Core.UpdateStatusBarInfo();
     }
 
     private static bool CanMediaItemsSelectAll() {
@@ -137,7 +135,6 @@ namespace PictureManager {
 
     private static void MediaItemsSelectAll() {
       App.Core.MediaItems.SelectAll();
-      App.Core.UpdateStatusBarInfo();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -149,16 +146,16 @@ namespace PictureManager {
       App.Core.MediaItems.Current = null;
 
       foreach (var mi in App.Core.MediaItems.Items) {
-        if (mi.IsSelected) mi.IsSelected = false;
-        if (!mi.IsModifed) mi.IsSelected = true;
+        App.Core.MediaItems.SetSelected(mi, false);
+        if (!mi.IsModifed)
+          App.Core.MediaItems.SetSelected(mi, true);
       }
 
-      App.Core.UpdateStatusBarInfo();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanMediaItemsDelete() {
-      return App.Core.AppInfo.Selected > 0;
+      return App.Core.MediaItems.Selected > 0;
     }
 
     private void MediaItemsDelete() {
@@ -174,8 +171,6 @@ namespace PictureManager {
         else
           SwitchToBrowser();
       }
-
-      App.Core.UpdateStatusBarInfo();
     }
 
     private static void MediaItemsLoadByTag(object parameter) {
@@ -401,11 +396,10 @@ namespace PictureManager {
         }
 
         foreach (var mi in App.Core.MediaItems.Items.Where(mi => mi.IsModifed)) {
-          mi.IsModifed = false;
+          App.Core.MediaItems.SetModifed(mi, false);
         }
 
         App.Core.MediaItems.IsEditModeOn = false;
-        App.Core.UpdateStatusBarInfo();
         progress.Close();
       };
 
@@ -433,7 +427,7 @@ namespace PictureManager {
     private void KeywordsCancel() {
       foreach (var mi in App.Core.MediaItems.Items.Where(x => x.IsModifed)) {
         mi.ReadMetadata();
-        mi.IsModifed = false;
+        App.Core.MediaItems.SetModifed(mi, false);
         mi.SetInfoBox();
       }
 
@@ -474,7 +468,8 @@ namespace PictureManager {
       current.Comment = Database.MediaItems.NormalizeComment(inputDialog.TxtAnswer.Text);
       current.TryWriteMetadata();
       current.SetInfoBox();
-      App.Core.UpdateStatusBarInfo();
+      current.OnPropertyChanged(nameof(current.Comment));
+      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsCommentVisible));
     }
 
     private void ReloadMetadata(object parameter) {
@@ -620,7 +615,6 @@ namespace PictureManager {
       if (App.Core.MediaItems.Current == null) return;
       App.Core.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
-      App.Core.UpdateStatusBarInfo();
       UseNoneWindowStyle = true;
       IgnoreTaskbarOnMaximize = true;
       MainMenu.Visibility = Visibility.Hidden;
@@ -637,7 +631,6 @@ namespace PictureManager {
       App.Core.MediaItems.SplitedItemsReload();
       App.Core.MediaItems.ScrollToCurrent();
       App.Core.MarkUsedKeywordsAndPeople();
-      App.Core.UpdateStatusBarInfo();
       UseNoneWindowStyle = false;
       ShowTitleBar = true;
       IgnoreTaskbarOnMaximize = false;

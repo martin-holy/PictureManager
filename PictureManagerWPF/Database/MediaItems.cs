@@ -19,6 +19,8 @@ namespace PictureManager.Database {
 
     private MediaItem _current;
     private bool _isEditModeOn;
+    private int _selected;
+    private int _modifed;
 
     public ObservableCollection<MediaItem> Items { get; } = new ObservableCollection<MediaItem>();
     public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
@@ -26,10 +28,11 @@ namespace PictureManager.Database {
     public MediaItem Current {
       get => _current;
       set {
-        if (_current != null) _current.IsSelected = false;
+        if (_current != null) SetSelected(_current, false);
         _current = value;
-        if (_current != null) _current.IsSelected = true;
+        if (_current != null) SetSelected(_current, true);
         OnPropertyChanged();
+        App.Core.AppInfo.CurrentMediaItem = value;
       }
     }
 
@@ -38,6 +41,8 @@ namespace PictureManager.Database {
     public static string[] SuportedVideoExts = { ".mp4", ".mkv" };
 
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
+    public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
+    public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
 
     private BackgroundWorker _loadByTagWorker;
 
@@ -152,26 +157,38 @@ namespace PictureManager.Database {
       Helper.IsModifed = true;
     }
 
+    public void SetSelected(MediaItem mi, bool value) {
+      if (mi.IsSelected == value) return;
+      mi.IsSelected = value;
+      if (value) Selected++; else Selected--;
+    }
+
+    public void SetModifed(MediaItem mi, bool value) {
+      if (mi.IsModifed == value) return;
+      mi.IsModifed = value;
+      if (value) Modifed++; else Modifed--;
+    }
+
     public List<MediaItem> GetSelectedOrAll() {
       var mediaItems = Items.Where(x => x.IsSelected).ToList();
       return mediaItems.Count == 0 ? Items.ToList() : mediaItems;
     }
 
     public void SelectAll() {
+      Current = null;
       foreach (var mi in Items.Where(x => !x.IsSelected))
-        mi.IsSelected = true;
+        SetSelected(mi, true);
     }
 
     public void DeselectAll() {
-      foreach (var mi in Items.Where(x => x.IsSelected))
-        mi.IsSelected = false;
-
       Current = null;
+      foreach (var mi in Items.Where(x => x.IsSelected))
+        SetSelected(mi, false);
     }
 
     public void SetMetadata(object tag) {
       foreach (var mi in Items.Where(x => x.IsSelected)) {
-        mi.IsModifed = true;
+        SetModifed(mi, true);
 
         switch (tag) {
           case Person p: {
@@ -246,7 +263,7 @@ namespace PictureManager.Database {
     private void ClearItBeforeLoad() {
       Current = null;
       foreach (var item in Items) {
-        if (item.IsSelected) item.IsSelected = false;
+        SetSelected(item, false);
         item.InfoBoxThumb = null;
         item.InfoBoxPeople = null;
         item.InfoBoxKeywords = null;
@@ -371,7 +388,7 @@ namespace PictureManager.Database {
       }
 
       App.Core.SetMediaItemSizesLoadedRange();
-      App.Core.UpdateStatusBarInfo();
+      App.Core.AppInfo.PositionSlashCount = Items.Count.ToString();
     }
 
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
@@ -433,7 +450,7 @@ namespace PictureManager.Database {
             Items.Add(item);
 
           App.Core.SetMediaItemSizesLoadedRange();
-          App.Core.UpdateStatusBarInfo();
+          App.Core.AppInfo.PositionSlashCount = Items.Count.ToString();
           ScrollTo(0);
           App.Core.LoadThumbnails();
         };
@@ -508,7 +525,7 @@ namespace PictureManager.Database {
           cache.Add(item.FilePathCache);
           Delete(item);
         }
-        else item.IsSelected = false;
+        else SetSelected(item, false);
       }
 
       if (delete) {
@@ -603,7 +620,6 @@ namespace PictureManager.Database {
         progress.Close();
         App.Core.MediaItems.SplitedItemsReload();
         App.Core.MediaItems.ScrollToCurrent();
-        App.Core.UpdateStatusBarInfo();
         App.Core.Sdb.SaveAllTables();
       };
 
@@ -695,7 +711,9 @@ namespace PictureManager.Database {
             var result = AppCore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
 
             if (result == Dialogs.FileOperationCollisionDialog.CollisionResult.Skip) {
-              mi.IsSelected = false;
+              Application.Current.Dispatcher.Invoke(delegate {
+                App.Core.MediaItems.SetSelected(mi, false);
+              });
               continue;
             }
           }
@@ -748,7 +766,6 @@ namespace PictureManager.Database {
       if (mode == FileOperationMode.Move) {
         RemoveSelected(false);
         Current = null;
-        App.Core.UpdateStatusBarInfo();
       }
     }
 

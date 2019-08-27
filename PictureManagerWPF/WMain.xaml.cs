@@ -343,7 +343,9 @@ namespace PictureManager {
         App.Core.MediaItems.Current = mi;
       }
       else {
-        if (isCtrlOn) mi.IsSelected = !mi.IsSelected;
+        if (isCtrlOn)
+          App.Core.MediaItems.SetSelected(mi, !mi.IsSelected);
+
         if (isShiftOn && App.Core.MediaItems.Current != null) {
           var from = App.Core.MediaItems.Current.Index;
           var to = mi.Index;
@@ -353,12 +355,21 @@ namespace PictureManager {
           }
 
           for (var i = from; i < to + 1; i++) {
-            App.Core.MediaItems.Items[i].IsSelected = true;
+            App.Core.MediaItems.SetSelected(App.Core.MediaItems.Items[i], true);
           }
+        }
+
+        if (App.Core.MediaItems.Selected == 0)
+          App.Core.MediaItems.Current = null;
+        else if (App.Core.MediaItems.Selected > 1) {
+          var current = App.Core.MediaItems.Current;
+          var currentSelected = current?.IsSelected ?? false;
+          App.Core.MediaItems.Current = null;
+          if (currentSelected)
+            App.Core.MediaItems.SetSelected(current, true);
         }
       }
 
-      App.Core.UpdateStatusBarInfo();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 

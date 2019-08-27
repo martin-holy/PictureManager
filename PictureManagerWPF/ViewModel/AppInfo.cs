@@ -10,8 +10,6 @@ namespace PictureManager.ViewModel {
   }
 
   public class AppInfo : INotifyPropertyChanged {
-    private int _selected;
-    private int _modifed;
     private int _progressBarValue;
     private bool _progressBarIsIndeterminate;
     private string _positionSlashCount;
@@ -19,25 +17,20 @@ namespace PictureManager.ViewModel {
     private AppMode _appMode;
     private bool _isThumbInfoVisible = true;
     private int _mediaItemsCount;
-    private string _comment = string.Empty;
     private string _dimension = string.Empty;
     private string _fullGeoName = string.Empty;
 
-    public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
-    public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
     public int ProgressBarValue { get => _progressBarValue; set { _progressBarValue = value; OnPropertyChanged(); } }
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
-    public AppMode AppMode { get => _appMode; set { _appMode = value; OnPropertyChanged(); } }
-    public string Comment { get => _comment; set { _comment = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
 
     public bool IsGeoNameVisible => CurrentMediaItem?.GeoName != null;
-    public bool IsCommentVisible => AppMode == AppMode.Viewer && !string.IsNullOrEmpty(Comment);
+    public bool IsCommentVisible => AppMode == AppMode.Viewer && !string.IsNullOrEmpty(CurrentMediaItem?.Comment);
     public bool IsInfoBoxPeopleVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxPeople != null;
     public bool IsInfoBoxKeywordsVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxKeywords != null;
     public bool IsImageActualZoomVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.MediaType == MediaType.Image;
@@ -45,6 +38,18 @@ namespace PictureManager.ViewModel {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    public AppMode AppMode {
+      get => _appMode;
+      set {
+        _appMode = value;
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(IsCommentVisible));
+        OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
+        OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
+        OnPropertyChanged(nameof(IsImageActualZoomVisible));
+      }
     }
 
     public string FilePath {
@@ -61,15 +66,16 @@ namespace PictureManager.ViewModel {
       set {
         _currentMediaItem = value;
         OnPropertyChanged();
-        
 
         Rating.Clear();
         for (var i = 0; i < _currentMediaItem?.Rating; i++) 
           Rating.Add(new AppInfoRating {IconName = IconName.Star});
 
-        Comment = _currentMediaItem?.Comment?.Replace("'", "''") ?? string.Empty;
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
+        PositionSlashCount = _currentMediaItem == null
+          ? App.Core.MediaItems.Items.Count.ToString()
+          : $"{_currentMediaItem.Index + 1}/{App.Core.MediaItems.Items.Count}";
 
         OnPropertyChanged(nameof(IsGeoNameVisible));
         OnPropertyChanged(nameof(IsCommentVisible));

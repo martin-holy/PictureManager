@@ -101,15 +101,6 @@ namespace PictureManager {
       AppInfo.MediaItemsCount = MediaItems.All.Count;
     }
 
-    public void UpdateStatusBarInfo() {
-      AppInfo.PositionSlashCount = MediaItems.Current == null
-        ? MediaItems.Items.Count.ToString()
-        : $"{MediaItems.Current.Index + 1}/{MediaItems.Items.Count}";
-      AppInfo.Selected = MediaItems.Items.Count(x => x.IsSelected);
-      AppInfo.Modifed = MediaItems.IsEditModeOn ? MediaItems.Items.Count(x => x.IsModifed) : 0;
-      AppInfo.CurrentMediaItem = MediaItems.Current;
-    }
-
     public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
       if (item is BaseCategoryItem || item is CategoryGroup) return;
 
@@ -129,7 +120,6 @@ namespace PictureManager {
             MediaItems.SetMetadata(item);
 
             MarkUsedKeywordsAndPeople();
-            UpdateStatusBarInfo();
             break;
           }
           default: {
@@ -336,8 +326,8 @@ namespace PictureManager {
             Sdb.SaveAllTables();
 
           if (MediaItems.Current != null) {
-            MediaItems.Current.IsSelected = false;
-            MediaItems.Current.IsSelected = true;
+            MediaItems.SetSelected(MediaItems.Current, false);
+            MediaItems.SetSelected(MediaItems.Current, true);
           }
 
           MarkUsedKeywordsAndPeople();

@@ -182,6 +182,8 @@ namespace PictureManager.Database {
       OnPropertyChanged(nameof(InfoBoxThumb));
       OnPropertyChanged(nameof(InfoBoxPeople));
       OnPropertyChanged(nameof(InfoBoxKeywords));
+      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsInfoBoxPeopleVisible));
+      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsInfoBoxKeywordsVisible));
     }
 
     public MediaItem CopyTo(Folder folder, string fileName) {

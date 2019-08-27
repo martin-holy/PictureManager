@@ -422,13 +422,13 @@
                 </Style.Triggers>
               </Style>
             </Border.Style>
-            <TextBlock Text="{Binding AppInfo.Selected}" />
+            <TextBlock Text="{Binding MediaItems.Selected}" />
           </Border>
 
           <!-- Modifed -->
           <Border Background="#CA5100" 
                   Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding AppInfo.Modifed}" />
+            <TextBlock Text="{Binding MediaItems.Modifed}" />
           </Border>
 
           <!-- Dimension -->
@@ -505,7 +505,7 @@
 
           <!-- Comment -->
           <Border Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding AppInfo.Comment}" />
+            <TextBlock Text="{Binding AppInfo.CurrentMediaItem.Comment}" />
           </Border>
 
         </WrapPanel>
