@@ -76,9 +76,9 @@ namespace PictureManager.Dialogs {
       var newFilePath = Path.Combine(DestFileInfo.DirectoryName, FileName);
       if (File.Exists(newFilePath)) {
         DestFileInfo = new FileInfo(newFilePath);
-        OnPropertyChanged("DestFilePathCacheUri");
-        OnPropertyChanged("DestFileSize");
-        OnPropertyChanged("DestFileModified");
+        OnPropertyChanged(nameof(DestFilePathCacheUri));
+        OnPropertyChanged(nameof(DestFileSize));
+        OnPropertyChanged(nameof(DestFileModified));
         return;
       }
 

@@ -31,7 +31,7 @@ namespace PictureManager.UserControls {
       set {
         _zoomActual = value;
         OnPropertyChanged();
-        OnPropertyChanged($"ZoomActualFormated");
+        OnPropertyChanged(nameof(ZoomActualFormated));
       }
     }
 

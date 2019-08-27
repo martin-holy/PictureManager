@@ -62,8 +62,8 @@ namespace PictureManager {
       PbCompressProgress.Value = 0;
       _totalSourceSize = 0;
       _totalCompressedSize = 0;
-      OnPropertyChanged("TotalSourceSize");
-      OnPropertyChanged("TotalCompressedSize");
+      OnPropertyChanged(nameof(TotalSourceSize));
+      OnPropertyChanged(nameof(TotalCompressedSize));
 
       _compress = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
       _compress.DoWork += Compress_DoWork;
@@ -143,8 +143,8 @@ namespace PictureManager {
       if (e.UserState == null) return;
       _totalSourceSize += ((long[]) e.UserState)[0];
       _totalCompressedSize += ((long[])e.UserState)[1];
-      OnPropertyChanged("TotalSourceSize");
-      OnPropertyChanged("TotalCompressedSize");
+      OnPropertyChanged(nameof(TotalSourceSize));
+      OnPropertyChanged(nameof(TotalCompressedSize));
     }
 
     private void Compress_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
