@@ -383,7 +383,7 @@ namespace PictureManager.Database {
           Width = frame.PixelWidth;
           Height = frame.PixelHeight;
           var bm = (BitmapMetadata) frame.Metadata;
-          if (bm == null) return false;
+          if (bm == null) return true;
 
           //Lat Lng
           var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
@@ -457,6 +457,10 @@ namespace PictureManager.Database {
         App.Core.MediaItems.Helper.IsModifed = true;
       }
       catch (Exception ex) {
+        // media item doesn't have metadata
+        if (ex is NotSupportedException)
+          return true;
+
         AppCore.ShowErrorDialog(ex, FilePath);
         return false;
       }
