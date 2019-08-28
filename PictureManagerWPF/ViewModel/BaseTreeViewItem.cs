@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows;
 using System.Windows.Data;
 
 namespace PictureManager.ViewModel {
@@ -50,6 +49,7 @@ namespace PictureManager.ViewModel {
     }
 
     public static void ExpandTo(BaseTreeViewItem item) {
+      item.IsExpanded = true;
       var parent = item.Parent;
       while (parent != null) {
         parent.IsExpanded = true;
