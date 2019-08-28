@@ -480,7 +480,7 @@ namespace PictureManager {
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
       App.Core.MediaItems.SplitedItemsReload();
-      App.Core.MediaItems.ScrollTo(App.Core.MediaItems.Current?.Index ?? 0);
+      App.Core.MediaItems.ScrollToCurrent();
     }
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {

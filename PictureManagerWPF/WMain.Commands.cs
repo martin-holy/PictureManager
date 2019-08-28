@@ -363,7 +363,7 @@ namespace PictureManager {
 
       if (reload) {
         App.Core.MediaItems.SplitedItemsReload();
-        App.Core.MediaItems.ScrollTo(App.Core.MediaItems.Current?.Index ?? 0);
+        App.Core.MediaItems.ScrollToCurrent();
       }
     }
 
@@ -390,32 +390,42 @@ namespace PictureManager {
 
     private void KeywordsSave() {
       var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
-      var progress = new ProgressBarDialog { Owner = this };
+      var progress = new ProgressBarDialog(this, true);
 
-      progress.Worker.RunWorkerCompleted += delegate {
-        App.Core.MediaItems.IsEditModeOn = false;
-        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
+      progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
+        if (e.Cancelled) {
+          progress.Close();
+          KeywordsCancel();
+          return;
+        }
+
+        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)])
           TabFolders.IsSelected = true;
-        }
-
-        foreach (var mi in App.Core.MediaItems.Items.Where(mi => mi.IsModifed)) {
-          App.Core.MediaItems.SetModifed(mi, false);
-        }
 
         App.Core.MediaItems.IsEditModeOn = false;
         progress.Close();
       };
 
-      progress.Worker.DoWork += delegate (object bwsender, DoWorkEventArgs bwe) {
-        var worker = (BackgroundWorker)bwsender;
+      progress.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)sender;
         var count = items.Count;
         var done = 0;
-        bwe.Result = bwe.Argument;
 
-        foreach (var item in items) {
-          item.TryWriteMetadata();
+        foreach (var mi in items) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          mi.TryWriteMetadata();
+
+          Application.Current.Dispatcher.Invoke(delegate {
+            App.Core.MediaItems.SetModifed(mi, false);
+          });
+          
           done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), item.Index);
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
         }
       };
 
@@ -428,18 +438,50 @@ namespace PictureManager {
     }
 
     private void KeywordsCancel() {
-      foreach (var mi in App.Core.MediaItems.Items.Where(x => x.IsModifed)) {
-        mi.ReadMetadata();
-        App.Core.MediaItems.SetModifed(mi, false);
-        mi.SetInfoBox();
-      }
+      var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
+      var progress = new ProgressBarDialog(this, true);
 
-      App.Core.Sdb.SaveAllTables();
-      App.Core.MarkUsedKeywordsAndPeople();
-      App.Core.MediaItems.IsEditModeOn = false;
-      if ((bool) Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)]) {
-        TabFolders.IsSelected = true;
-      }
+      progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
+        if (e.Cancelled) {
+          progress.Close();
+          return;
+        }
+
+        App.Core.Sdb.SaveAllTables();
+        App.Core.MarkUsedKeywordsAndPeople();
+        App.Core.MediaItems.IsEditModeOn = false;
+        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)])
+          TabFolders.IsSelected = true;
+
+        progress.Close();
+      };
+
+      progress.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)sender;
+        var count = items.Count;
+        var done = 0;
+
+        foreach (var mi in items) {
+          if (worker.CancellationPending) {
+            e.Cancel = true;
+            break;
+          }
+
+          mi.ReadMetadata();
+
+          Application.Current.Dispatcher.Invoke(delegate {
+            App.Core.MediaItems.SetModifed(mi, false);
+            mi.SetInfoBox();
+          });
+
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.ShowDialog();
     }
 
     private static bool CanKeywordsComment() {
@@ -477,7 +519,7 @@ namespace PictureManager {
 
     private void ReloadMetadata(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var progress = new ProgressBarDialog {Owner = this};
+      var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate {
         App.Core.Sdb.SaveAllTables();
@@ -517,7 +559,7 @@ namespace PictureManager {
 
     public void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var progress = new ProgressBarDialog {Owner = this};
+      var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate {
         progress.Close();
@@ -560,9 +602,12 @@ namespace PictureManager {
     }
 
     private void AddGeoNamesFromFiles() {
-      var progress = new ProgressBarDialog {Owner = this};
+      var progress = new ProgressBarDialog(this, true);
 
-      progress.Worker.RunWorkerCompleted += delegate { progress.Close(); };
+      progress.Worker.RunWorkerCompleted += delegate {
+        App.Core.Sdb.SaveAllTables();
+        progress.Close();
+      };
 
       progress.Worker.DoWork += delegate(object o, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) o;
@@ -593,7 +638,6 @@ namespace PictureManager {
 
       progress.Worker.RunWorkerAsync();
       progress.ShowDialog();
-      App.Core.Sdb.SaveAllTables();
     }
 
     private void ViewerChange(object parameter) {

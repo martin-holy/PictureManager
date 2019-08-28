@@ -378,14 +378,30 @@ namespace PictureManager.Database {
           });
         }
         else {
-          var decoder = BitmapDecoder.Create(new Uri(FilePath), BitmapCreateOptions.None, BitmapCacheOption.None);
-          var frame = decoder.Frames[0];
-          Width = frame.PixelWidth;
-          Height = frame.PixelHeight;
+          BitmapFrame frame;
+          try {
+            var decoder = BitmapDecoder.Create(new Uri(FilePath), BitmapCreateOptions.None, BitmapCacheOption.None);
+            frame = decoder.Frames[0];
+            Width = frame.PixelWidth;
+            Height = frame.PixelHeight;
+          }
+          catch {
+            return false;
+          }
+          
           var bm = (BitmapMetadata) frame.Metadata;
           if (bm == null) return true;
 
-          //Lat Lng
+          try {
+            // Rating
+            Rating = bm.Rating;
+          }
+          catch {
+            // return true if media item doesn't have any metadata
+            return true;
+          }
+
+          // Lat Lng
           var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
           if (tmpLat != null) {
             var vals = tmpLat.Substring(0, tmpLat.Length - 1).Split(',');
@@ -402,7 +418,7 @@ namespace PictureManager.Database {
 
           if (gpsOnly) return true;
 
-          //People
+          // People
           People = null;
           const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
           const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
@@ -420,21 +436,18 @@ namespace PictureManager.Database {
             }
           }
 
-          //Rating
-          Rating = bm.Rating;
-
-          //Comment
+          // Comment
           Comment = MediaItems.NormalizeComment(bm.Comment);
 
-          //Orientation 1: 0, 3: 180, 6: 270, 8: 90
+          // Orientation 1: 0, 3: 180, 6: 270, 8: 90
           var orientation = bm.GetQuery("System.Photo.Orientation") ?? (ushort) 1;
           Orientation = (ushort) orientation;
 
-          //Keywords
+          // Keywords
           Keywords = null;
           if (bm.Keywords != null) {
             Keywords = new List<Keyword>();
-            //Filter out duplicities
+            // Filter out duplicities
             foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
               if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
               var keyword = App.Core.Keywords.GetByFullPath(k);
@@ -443,7 +456,7 @@ namespace PictureManager.Database {
             }
           }
 
-          //GeoNameId
+          // GeoNameId
           var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
           if (!string.IsNullOrEmpty(tmpGId as string)) {
             // TODO dohledani/vytvoreni geoname
@@ -457,10 +470,6 @@ namespace PictureManager.Database {
         App.Core.MediaItems.Helper.IsModifed = true;
       }
       catch (Exception ex) {
-        // media item doesn't have metadata
-        if (ex is NotSupportedException)
-          return true;
-
         AppCore.ShowErrorDialog(ex, FilePath);
         return false;
       }

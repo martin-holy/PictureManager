@@ -179,7 +179,7 @@ namespace PictureManager {
             LastSelectedSourceRecursive = recursive;
 
             AppInfo.AppMode = AppMode.Browser;
-            MediaItems.ScrollTo(0);
+            MediaItems.ScrollToTop();
             MediaItems.Load(LastSelectedSource, recursive);
             LoadThumbnails();
             break;
@@ -318,6 +318,10 @@ namespace PictureManager {
         ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
           if (e.Cancelled) {
             // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
+
+            // remove new not processed media items
+            MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
+
             ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
             return;
           }

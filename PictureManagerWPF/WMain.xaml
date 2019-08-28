@@ -548,7 +548,7 @@
                       ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
+              <VirtualizingStackPanel Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
 
@@ -572,7 +572,7 @@
                         <Style TargetType="{x:Type Border}">
                           <Setter Property="BorderBrush" Value="Black" />
                           <Setter Property="BorderThickness" Value="2" />
-                          <Setter Property="Margin" Value="2,0,0,2" />
+                          <Setter Property="Margin" Value="1" />
                           <Style.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
                               <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />

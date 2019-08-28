@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
+using PictureManager.Dialogs;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
 
@@ -155,6 +156,31 @@ namespace PictureManager.Database {
 
       // set MediaItems table as modifed
       Helper.IsModifed = true;
+    }
+
+    public void Delete(MediaItem[] items) {
+      var progress = new ProgressBarDialog(App.WMain, false) {Title = "Removing Media Items from database ..."};
+
+      progress.Worker.RunWorkerCompleted += delegate {
+        progress.Close();
+      };
+
+      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
+        var worker = (BackgroundWorker)o;
+        var count = items.Length;
+        var done = 0;
+
+        foreach (var mi in items) {
+          done++;
+          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
+            $"Processing file {done} of {count} ({mi.FileName})");
+
+          Delete(mi);
+        }
+      };
+
+      progress.Worker.RunWorkerAsync();
+      progress.ShowDialog();
     }
 
     public void SetSelected(MediaItem mi, bool value) {
@@ -451,7 +477,7 @@ namespace PictureManager.Database {
 
           App.Core.SetMediaItemSizesLoadedRange();
           App.Core.AppInfo.PositionSlashCount = Items.Count.ToString();
-          ScrollTo(0);
+          ScrollToTop();
           App.Core.LoadThumbnails();
         };
       }
@@ -465,50 +491,25 @@ namespace PictureManager.Database {
     }
 
     public void ScrollToCurrent() {
-      if (Current == null) return;
-      ScrollTo(Current.Index);
+      if (Current == null)
+        ScrollToTop();
+      else
+        ScrollTo(Current);
     }
 
-    public void ScrollTo2(int index) {
-      var count = 0;
+    public void ScrollToTop() {
+      App.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToTop();
+    }
+
+    public void ScrollTo(MediaItem mi) {
       var rowIndex = 0;
-
       foreach (var row in SplitedItems) {
-        count += row.Count;
-        if (count < index) {
-          rowIndex++;
-          continue;
-        }
-
-        break;
+        if (row.Any(x => x.Id.Equals(mi.Id)))
+          break;
+        rowIndex++;
       }
 
-      var itemContainer = App.WMain.ThumbsBox.ItemContainerGenerator.ContainerFromIndex(rowIndex) as ContentPresenter;
-      itemContainer?.BringIntoView();
-    }
-
-    public void ScrollTo(int index) {
-      var scroll = App.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer");
-      if (index == 0) {
-        scroll.ScrollToTop();
-        return;
-      }
-
-      var count = 0;
-      var rowsHeight = 0;
-      const int itemOffset = 5; //BorderThickness, Margin 
-      foreach (var row in SplitedItems) {
-        count += row.Count;
-        if (count < index) {
-          rowsHeight += row.Max(x => x.ThumbHeight) + itemOffset;
-          continue;
-        }
-
-        break;
-      }
-
-      scroll.ScrollToVerticalOffset(rowsHeight);
-      ScrollTo2(index);
+      App.WMain.ThumbsBox.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel").BringIndexIntoViewPublic(rowIndex);
     }
 
     public void RemoveSelected(bool delete) {
@@ -612,7 +613,7 @@ namespace PictureManager.Database {
     }
 
     public void SetOrientation(List<MediaItem> mediaItems, Rotation rotation) {
-      var progress = new Dialogs.ProgressBarDialog {Owner = App.WMain};
+      var progress = new ProgressBarDialog(App.WMain, true);
       Helper.IsModifed = true;
 
       progress.Worker.RunWorkerCompleted += delegate {
@@ -685,7 +686,7 @@ namespace PictureManager.Database {
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
     public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
-      var fop = new Dialogs.FileOperationDialog { Owner = App.WMain };
+      var fop = new FileOperationDialog {Owner = App.WMain};
 
       fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
         var worker = (BackgroundWorker)sender;
@@ -709,7 +710,7 @@ namespace PictureManager.Database {
           if (File.Exists(destFilePath)) {
             var result = AppCore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
 
-            if (result == Dialogs.FileOperationCollisionDialog.CollisionResult.Skip) {
+            if (result == FileOperationCollisionDialog.CollisionResult.Skip) {
               Application.Current.Dispatcher.Invoke(delegate {
                 App.Core.MediaItems.SetSelected(mi, false);
               });

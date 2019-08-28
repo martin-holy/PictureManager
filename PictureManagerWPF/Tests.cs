@@ -29,9 +29,12 @@ namespace PictureManager {
       //CommentChars();
       //var x = $"appbar{Regex.Replace(IconName.DriveError.ToString(), @"([A-Z])", "_$1").ToLower()}";
 
+      /*
       var test = Text2Path("⤸");
       var test2 = Text2Path("⤺");
-      var test3 = Text2Path("⤺", false, true);
+      var test3 = Text2Path("⤺", false, true);*/
+
+      var items = App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray();
     }
 
     public string Text2Path(string text, bool flipVertically = false, bool flipHorizontally = false) {

@@ -8,10 +8,13 @@ namespace PictureManager.Dialogs {
   public partial class ProgressBarDialog {
     public BackgroundWorker Worker;
 
-    public ProgressBarDialog() {
+    public ProgressBarDialog(Window owner, bool canCancel) {
       InitializeComponent();
-      Worker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      Owner = owner;
+      Worker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = canCancel};
       Worker.ProgressChanged += worker_ProgressChanged;
+      if (!canCancel)
+        BtnCancel.Visibility = Visibility.Collapsed;
     }
 
     private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
