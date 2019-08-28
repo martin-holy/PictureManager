@@ -7,7 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace PictureManager {
   /// <summary>
@@ -461,46 +460,6 @@ namespace PictureManager {
         FullMedia.Rewind();
         FullMedia.Play();
       }
-    }
-
-    public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
-      var original = new FileInfo(filePath);
-      if (!original.Exists) return false;
-      var temp = new FileInfo(original.FullName.Replace(".", "_temp."));
-
-      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-
-      try {
-        using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = quality, Rotation = rotation };
-
-          //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
-          //is a KEY to lossless jpeg edit if the QualityLevel is the same
-          encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
-
-          using (Stream newFileStream = File.Open(temp.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-            encoder.Save(newFileStream);
-          }
-        }
-      }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
-      catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
-        return false;
-      }
-
-      try {
-        temp.CreationTime = original.CreationTime;
-        original.Delete();
-        temp.MoveTo(original.FullName);
-      }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
-      catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
-        return false;
-      }
-
-      return true;
     }
 
     private void TestButton() {

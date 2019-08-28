@@ -613,7 +613,6 @@ namespace PictureManager.Database {
 
     public void SetOrientation(List<MediaItem> mediaItems, Rotation rotation) {
       var progress = new Dialogs.ProgressBarDialog {Owner = App.WMain};
-
       Helper.IsModifed = true;
 
       progress.Worker.RunWorkerCompleted += delegate {
@@ -724,7 +723,7 @@ namespace PictureManager.Database {
                 // create object copy
                 var miCopy = mi.CopyTo(destFolder, miNewFileName);
                 // copy MediaItem and cache on file system
-                Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache));
+                Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
                 File.Copy(mi.FilePath, miCopy.FilePath, true);
                 File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
                 break;
@@ -744,7 +743,7 @@ namespace PictureManager.Database {
                 // Cache
                 if (File.Exists(mi.FilePathCache))
                   File.Delete(mi.FilePathCache);
-                Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache));
+                Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
                 File.Move(srcFilePathCache, mi.FilePathCache);
                 break;
               }
