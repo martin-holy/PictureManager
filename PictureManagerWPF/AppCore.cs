@@ -135,7 +135,7 @@ namespace PictureManager {
             BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
             var visibleTreeIndex = 0;
             Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
-            var offset = (FavoriteFolders.Items.Count + 1 + visibleTreeIndex) * 25;
+            var offset = (FavoriteFolders.Items.Count + visibleTreeIndex) * 25;
             App.WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
             break;
           }
