@@ -38,8 +38,7 @@ namespace PictureManager.ViewModel {
         LoadRecursive(fi, fk);
       }
 
-      // TODO tohle zpomaluje start z 3.7s na 4.2s
-      folder.Items.Sort(x => x.Title);
+      folderKeyword.Items.Sort(x => x.Title);
     }
   }
 }
