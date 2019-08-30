@@ -6,14 +6,14 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
-        xmlns:database="clr-namespace:PictureManager.Database"
         xmlns:userControls="clr-namespace:PictureManager.UserControls"
         xmlns:media="https://github.com/JohanLarsson/Gu.Wpf.Media"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
-        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing">
+        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing"
+        MouseLeftButtonUp="WMain_OnMouseLeftButtonUp">
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
@@ -43,8 +43,8 @@
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
         <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.KeywordsEdit" InputGestureText="Ctrl+E" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="{x:Static pm:Commands.KeywordsSave}" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.KeywordsSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.KeywordsCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
         </MenuItem>
@@ -82,26 +82,6 @@
       </Style.Triggers>
     </Style>
 
-    <!-- TreeViewStackPanel -->
-    <Style x:Key="TreeViewStackPanel" TargetType="StackPanel">
-      <Setter Property="Orientation" Value="Horizontal" />
-      <Setter Property="Background" Value="Transparent" />
-      <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
-      <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
-    </Style>
-
-    <!-- TreeViewKeywordsStackPanelWithDragDrop -->
-    <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewStackPanel}" TargetType="StackPanel">
-      <Setter Property="AllowDrop" Value="True" />
-      <EventSetter Event="Drop" Handler="TvKeywords_OnDrop" />
-      <EventSetter Event="MouseLeftButtonDown" Handler="TvKeywords_OnMouseLeftButtonDown" />
-      <EventSetter Event="MouseLeftButtonUp" Handler="TvKeywords_OnMouseLeftButtonUp" />
-      <EventSetter Event="MouseMove" Handler="TvKeywords_OnMouseMove" />
-      <EventSetter Event="DragEnter" Handler="TvKeywords_AllowDropCheck" />
-      <EventSetter Event="DragLeave" Handler="TvKeywords_AllowDropCheck" />
-      <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
-    </Style>
-
     <!-- SBorderInfoBoxThumb SBorderInfoBoxStatusBar STextBlockInfoBox -->
     <Style x:Key="SBorderInfoBoxThumb" TargetType="Border">
       <Setter Property="BorderThickness" Value="1" />
@@ -120,12 +100,24 @@
       <Setter Property="Foreground" Value="White" />
       <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
+    
+    <DataTemplate x:Key="DtInfoBoxStatusBar">
+      <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
+        <TextBlock Text="{Binding}" Style="{StaticResource STextBlockInfoBox}" />
+      </Border>
+    </DataTemplate>
+
+    <ItemsPanelTemplate x:Key="IptHorizontalStackPanel">
+      <StackPanel Orientation="Horizontal" />
+    </ItemsPanelTemplate>
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.Flyouts>
     <controls:FlyoutsControl>
+      <!-- TabControl wiht TreeView Folders, Keywords and Viewers -->
       <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" IsPinned="True" 
         Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
+        
         <controls:Flyout.Style>
           <Style TargetType="controls:Flyout">
             <Setter Property="Margin" Value="0" />
@@ -136,6 +128,7 @@
             </Style.Triggers>
           </Style>
         </controls:Flyout.Style>
+
         <Grid>
           <Grid.RowDefinitions>
             <RowDefinition />
@@ -155,18 +148,70 @@
 
           <!-- TreeView Forders, Keywords and Filters -->
           <TabControl x:Name="TcMain" Grid.Row="0" Background="Transparent" BorderThickness="0">
+            <TabControl.Resources>
+              <!-- STreeViewItem -->
+              <Style TargetType="{x:Type TreeViewItem}" x:Key="STreeViewItem" BasedOn="{StaticResource MetroTreeViewItem}">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+              </Style>
+
+              <!-- STreeViewStackPanel -->
+              <Style x:Key="STreeViewStackPanel" TargetType="{x:Type StackPanel}">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Background" Value="Transparent" />
+                <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
+                <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
+              </Style>
+
+              <!-- STreeViewStackPanelWithDrag -->
+              <Style x:Key="STreeViewStackPanelWithDrag" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
+                <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
+                <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
+              </Style>
+
+              <!-- STreeViewKeywordsStackPanelWithDrop -->
+              <Style x:Key="STreeViewStackPanelWithDrop" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
+                <Setter Property="AllowDrop" Value="True" />
+                <EventSetter Event="Drop" Handler="TreeView_OnDrop" />
+                <EventSetter Event="DragEnter" Handler="TreeView_AllowDropCheck" />
+                <EventSetter Event="DragLeave" Handler="TreeView_AllowDropCheck" />
+                <EventSetter Event="DragOver" Handler="TreeView_AllowDropCheck" />
+              </Style>
+
+              <!-- STreeViewKeywordsStackPanelWithDragDrop -->
+              <Style x:Key="STreeViewStackPanelWithDragDrop" BasedOn="{StaticResource STreeViewStackPanelWithDrop}" TargetType="{x:Type StackPanel}">
+                <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
+                <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
+              </Style>
+
+              <!-- BaseTreeViewItem -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- BaseTreeViewTagItem -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
+                  <Rectangle Style="{StaticResource IconRect}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TabControl.Resources>
+
             <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
               <!-- TreeView Folders -->
               <TreeView x:Name="TvFolders" Background="Transparent" 
                       ItemsSource="{Binding FoldersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Background" Value="Transparent" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Style.Triggers>
                       <DataTrigger Binding="{Binding IsHidden}" Value="True">
                         <Setter Property="Visibility" Value="Collapsed" />
@@ -174,35 +219,6 @@
                     </Style.Triggers>
                   </Style>
                 </TreeView.ItemContainerStyle>
-
-                <TreeView.Resources>
-                  <!-- TreeView Folders - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Orientation="Horizontal" Background="Transparent" 
-                            PreviewMouseRightButtonDown="AttachContextMenu" 
-                            PreviewMouseUp="TreeView_Select">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Folders - Folder -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:Folder}" ItemsSource="{Binding Items}">
-                    <StackPanel Orientation="Horizontal" Background="Transparent" AllowDrop="True"
-                            MouseLeftButtonUp="TvFolders_OnMouseLeftButtonUp"
-                            MouseLeftButtonDown="TvFolders_OnMouseLeftButtonDown"
-                            PreviewMouseRightButtonDown="AttachContextMenu"
-                            PreviewMouseUp="TreeView_Select" 
-                            Drop="TvFolders_OnDrop" 
-                            MouseMove="TvFolders_OnMouseMove" 
-                            DragEnter="TvFolders_AllowDropCheck" 
-                            DragLeave="TvFolders_AllowDropCheck"
-                            DragOver="TvFolders_AllowDropCheck">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-                </TreeView.Resources>
               </TreeView>
             </TabItem>
 
@@ -212,11 +228,7 @@
                       ItemsSource="{Binding KeywordsRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
                     <Style.Triggers>
                       <MultiDataTrigger>
@@ -231,62 +243,9 @@
                 </TreeView.ItemContainerStyle>
 
                 <TreeView.Resources>
-                  <!-- TreeView Keywords - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - Keyword -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:Keyword}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - FolderKeyword -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderKeyword}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - GeoName -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:GeoName}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - CategoryGroup -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:CategoryGroup}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - Person -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:Person}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
                   <!-- TreeView Keywords - Rating -->
                   <HierarchicalDataTemplate DataType="{x:Type viewModel:Rating}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
+                    <StackPanel Style="{StaticResource STreeViewStackPanel}">
                       <StackPanel Orientation="Horizontal">
                         <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
                         <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
@@ -300,7 +259,7 @@
 
                   <!-- TreeView Keywords - MediaItemSize -->
                   <HierarchicalDataTemplate DataType="{x:Type viewModel:MediaItemSize}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}" Margin="0,0,3,3">
+                    <StackPanel Style="{StaticResource STreeViewStackPanel}" Margin="0,0,3,3">
                       <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
                         <Grid.RowDefinitions>
                           <RowDefinition />
@@ -338,13 +297,8 @@
                       ItemsSource="{Binding FiltersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Background" Value="Transparent" />
                     <Style.Triggers>
                       <DataTrigger Binding="{Binding IsMarked}" Value="True">
                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
@@ -352,25 +306,6 @@
                     </Style.Triggers>
                   </Style>
                 </TreeView.ItemContainerStyle>
-
-                <TreeView.Resources>
-                  <!-- TreeView Filters - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Filters - Viewer -->
-                  <HierarchicalDataTemplate DataType="{x:Type database:Viewer}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-                </TreeView.Resources>
-
               </TreeView>
             </TabItem>
           </TabControl>
@@ -443,12 +378,7 @@
 
           <!-- Rating -->
           <Border Visibility="{Binding AppInfo.Rating.Count, Converter={StaticResource AllToVisibilityConverter}}">
-            <ItemsControl ItemsSource="{Binding AppInfo.Rating}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
+            <ItemsControl ItemsSource="{Binding AppInfo.Rating}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <Rectangle Style="{StaticResource IconRect}" />
@@ -471,37 +401,15 @@
 
           <!-- People -->
           <ItemsControl Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Text="{Binding}" />
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}"
+                        ItemsPanel="{StaticResource IptHorizontalStackPanel}"
+                        ItemTemplate="{StaticResource DtInfoBoxStatusBar}" />
 
           <!-- Keywords -->
           <ItemsControl Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Text="{Binding}" />
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+                        ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}"
+                        ItemsPanel="{StaticResource IptHorizontalStackPanel}"
+                        ItemTemplate="{StaticResource DtInfoBoxStatusBar}" />
 
           <!-- Comment -->
           <Border Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}">
@@ -532,7 +440,7 @@
       <Grid>
         <Grid.Style>
           <Style TargetType="{x:Type Grid}">
-            <Setter Property="Visibility" Value="Hidden" />
+            <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="0">
                 <Setter Property="Visibility" Value="Visible" />
@@ -548,19 +456,13 @@
                       ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <VirtualizingStackPanel Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
+              <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
 
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <ItemsControl ItemsSource="{Binding}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal" />
-                    <!-- <UniformGrid Rows="1" /> -->
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+              <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
 
                 <!-- Thumbnail -->
                 <ItemsControl.ItemTemplate>

@@ -220,7 +220,6 @@ namespace PictureManager.Database {
       }
 
       Helper.IsModifed = true;
-      App.Core.Sdb.SaveAllTables();
     }
   }
 }

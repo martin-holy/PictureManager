@@ -3,6 +3,8 @@
 - pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- kdyz zmenim viewera, tak jsou folder keywords nesetrizeny
+- zakazat presunuti/kopirovani slozky do podslozky
 
 #New
 - on "presentation start" show slider how many seconds

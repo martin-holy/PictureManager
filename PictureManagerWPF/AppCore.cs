@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Database;
@@ -101,7 +104,7 @@ namespace PictureManager {
       AppInfo.MediaItemsCount = MediaItems.All.Count;
     }
 
-    public void TreeView_Select(object item, bool and, bool hide, bool recursive) {
+    public void TreeView_Select(object item, bool and, bool hide, bool recursive, object sender = null) {
       if (item is BaseCategoryItem || item is CategoryGroup) return;
 
       if (MediaItems.IsEditModeOn) {
@@ -133,10 +136,14 @@ namespace PictureManager {
         switch (item) {
           case FavoriteFolder favoriteFolder: {
             BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
+            
+            // scroll to folder
             var visibleTreeIndex = 0;
             Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
             var offset = (FavoriteFolders.Items.Count + visibleTreeIndex) * 25;
-            App.WMain.TvFoldersScrollViewer.ScrollToVerticalOffset(offset);
+            var border = VisualTreeHelper.GetChild(App.WMain.TvFolders, 0);
+            var scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+            scrollViewer?.ScrollToVerticalOffset(offset);
             break;
           }
           case Rating _:

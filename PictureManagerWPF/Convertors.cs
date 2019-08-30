@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -42,6 +43,31 @@ namespace PictureManager {
         case IconName.FolderOpen: return "\U0001F4C2";
         case IconName.Ruler: return "\U0001F4CF";
         default: return "";
+      }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class TypeToStyleConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) throw new ArgumentNullException();
+      var dataContext = ((StackPanel) value).DataContext;
+
+      switch (dataContext) {
+        case Database.Keyword _:
+        case Database.Folder _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDragDrop");
+        case Database.Person _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrag");
+        case Database.CategoryGroup _:
+        case Database.Keywords _:
+        case Database.People _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrop");
+        default:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanel");
       }
     }
 

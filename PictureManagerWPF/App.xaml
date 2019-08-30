@@ -24,6 +24,7 @@
       <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
       <pm:IconSymbolConverter x:Key="IconSymbolConverter" />
       <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
+      <pm:TypeToStyleConverter x:Key="TypeToStyleConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />

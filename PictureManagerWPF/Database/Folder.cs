@@ -281,6 +281,17 @@ namespace PictureManager.Database {
       App.Core.Sdb.SaveAllTables();
     }
 
+    public bool HasThisParent(Folder parent) {
+      var p = Parent as Folder;
+      while (p != null) {
+        if (p.Id.Equals(parent.Id))
+          return true;
+        p = p.Parent as Folder;
+      }
+
+      return false;
+    }
+
     /// <param name="path">full or partial folder path with no direcotry separator on the end</param>
     /// <param name="withReload">try with reload if not the path was not found</param>
     public Folder GetByPath(string path, bool withReload = false) {
