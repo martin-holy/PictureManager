@@ -384,6 +384,9 @@ namespace PictureManager.Database {
             frame = decoder.Frames[0];
             Width = frame.PixelWidth;
             Height = frame.PixelHeight;
+
+            SetThumbSize();
+            App.Core.MediaItems.Helper.IsModifed = true;
           }
           catch {
             return false;
@@ -391,15 +394,6 @@ namespace PictureManager.Database {
           
           var bm = (BitmapMetadata) frame.Metadata;
           if (bm == null) return true;
-
-          try {
-            // Rating
-            Rating = bm.Rating;
-          }
-          catch {
-            // return true if media item doesn't have any metadata
-            return true;
-          }
 
           // Lat Lng
           var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
@@ -436,6 +430,9 @@ namespace PictureManager.Database {
             }
           }
 
+          // Rating
+          Rating = bm.Rating;
+
           // Comment
           Comment = MediaItems.NormalizeComment(bm.Comment);
 
@@ -464,14 +461,11 @@ namespace PictureManager.Database {
             GeoName = geoname;
           }
         }
-
-        SetThumbSize();
-
-        App.Core.MediaItems.Helper.IsModifed = true;
       }
       catch (Exception ex) {
         AppCore.ShowErrorDialog(ex, FilePath);
-        return false;
+        // true because only media item dimensions are required
+        return true;
       }
       return true;
     }

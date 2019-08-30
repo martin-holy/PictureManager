@@ -16,3 +16,4 @@
 - pripinacek na tab
 - zobrazit nejak zafiltrovany keywords, people, rating
 - ikony
+- dialog s errorama, na liste nekde ikonka a misto messageboxu to davat tam
