@@ -52,6 +52,7 @@ namespace PictureManager {
     public static RoutedUICommand AddGeoNamesFromFiles { get; } = new RoutedUICommand {Text = "GeoNames"};
     public static RoutedUICommand ViewerChange { get; } = new RoutedUICommand {Text = ""};
     public static RoutedUICommand OpenFolderKeywordsList { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
+    public static RoutedUICommand OpenLog { get; } = new RoutedUICommand { Text = "Log" };
 
     private static RoutedUICommand CreateCommand(string text, string name, InputGesture inputGesture) {
       return new RoutedUICommand(text, name, typeof(Commands),

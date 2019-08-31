@@ -56,6 +56,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.OpenAbout, HandleExecute(OpenAbout)));
       CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
       CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
+      CommandBindings.Add(new CommandBinding(Commands.OpenLog, HandleExecute(OpenLog)));
     }
 
     private void AddInputBindings() {
@@ -685,6 +686,11 @@ namespace PictureManager {
       FullImage.SetSource(null);
       FullImage.Stop();
       FullMedia.Source = null;
+    }
+
+    private void OpenLog() {
+      var log = new LogDialog {Owner = this};
+      log.ShowDialog();
     }
   }
 }

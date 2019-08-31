@@ -101,6 +101,9 @@
     <Compile Include="Dialogs\FolderKeywordList.xaml.cs">
       <DependentUpon>FolderKeywordList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\LogDialog.xaml.cs">
+      <DependentUpon>LogDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\MessageDialog.xaml.cs">
       <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
@@ -145,6 +148,7 @@
     <Compile Include="VersionInfo.cs" />
     <Compile Include="ViewModel\BaseTreeViewItem.cs" />
     <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
+    <Compile Include="ViewModel\LogItem.cs" />
     <Compile Include="ViewModel\MediaItemSize.cs" />
     <Compile Include="ViewModel\MediaItemSizes.cs" />
     <Compile Include="ViewModel\Rating.cs" />
@@ -188,6 +192,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LogDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -48,6 +48,7 @@ namespace PictureManager {
     public double ThumbScale { get; set; } = 1.0;
     public bool LastSelectedSourceRecursive { get; set; }
     public BaseTreeViewItem LastSelectedSource { get; set; }
+    public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -418,8 +419,10 @@ namespace PictureManager {
       }
     }
 
-    public static void ShowErrorDialog(Exception ex, string msg = "") {
-      MessageBox.Show($"{msg}\n{ex.Message}\n{ex.StackTrace}");
+    public void LogError(Exception ex, string msg = "") {
+      Application.Current.Invoke(delegate {
+        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}"));
+      });
     }
   }
 }

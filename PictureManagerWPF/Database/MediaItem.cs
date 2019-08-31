@@ -236,7 +236,7 @@ namespace PictureManager.Database {
       }
       catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
-        AppCore.ShowErrorDialog(ex);
+        App.Core.LogError(ex);
       }
     }
 
@@ -347,7 +347,7 @@ namespace PictureManager.Database {
               }
               catch (Exception ex) {
                 bSuccess = false;
-                AppCore.ShowErrorDialog(ex);
+                App.Core.LogError(ex);
               }
             }
           }
@@ -373,7 +373,7 @@ namespace PictureManager.Database {
               Orientation = size[2];
             }
             catch (Exception ex) {
-              AppCore.ShowErrorDialog(ex);
+              App.Core.LogError(ex);
             }
           });
         }
@@ -463,7 +463,7 @@ namespace PictureManager.Database {
         }
       }
       catch (Exception ex) {
-        AppCore.ShowErrorDialog(ex, FilePath);
+        App.Core.LogError(ex, FilePath);
         // true because only media item dimensions are required
         return true;
       }

@@ -321,7 +321,7 @@ namespace PictureManager.Database {
         }
       }
       catch (Exception ex) {
-        AppCore.ShowErrorDialog(ex);
+        App.Core.LogError(ex);
       }
     }
   }

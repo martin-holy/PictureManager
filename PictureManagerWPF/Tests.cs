@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using PictureManager.Dialogs;
+using PictureManager.ViewModel;
 
 namespace PictureManager {
   public class Tests {
@@ -34,7 +36,23 @@ namespace PictureManager {
       var test2 = Text2Path("⤺");
       var test3 = Text2Path("⤺", false, true);*/
 
-      var items = App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray();
+      //var items = App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray();
+
+      LogTest();
+    }
+
+    public void LogTest() {
+      App.Core.Log.Clear();
+      App.Core.Log.Add(new LogItem("1 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "1 foreach (var mi in aCore.MediaItems.All\n.Where(x => x.MediaType == \nMediaType.Image && x.Width == 0))"));
+      App.Core.Log.Add(new LogItem("2 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "2 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Core.Log.Add(new LogItem("3 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "3 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Core.Log.Add(new LogItem("4 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "4 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Core.Log.Add(new LogItem("5 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "5 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Core.Log.Add(new LogItem("6 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "6 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+
+      var dlg = new LogDialog();
+      dlg.ShowDialog();
+       
     }
 
     public string Text2Path(string text, bool flipVertically = false, bool flipHorizontally = false) {
