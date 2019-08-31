@@ -60,7 +60,6 @@
           </MenuItem.ItemContainerStyle>
         </MenuItem>
         <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
-        <MenuItem Command="pm:Commands.ShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
       <TextBlock Text="{Binding AppInfo.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
     </controls:WindowCommands>
@@ -307,6 +306,18 @@
                   </Style>
                 </TreeView.ItemContainerStyle>
               </TreeView>
+            </TabItem>
+            
+            <!-- button to close/open flyout panel -->
+            <TabItem HorizontalAlignment="Right">
+              <TabItem.HeaderTemplate>
+                <DataTemplate>
+                  <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
+                          Cursor="{x:Static Cursors.Hand}" Command="{x:Static pm:Commands.ShowHideTabMain}">
+                    <Rectangle Style="{StaticResource IconRect2}" Tag="{x:Static pm:IconName.Pin}" />
+                  </Button>
+                </DataTemplate>
+              </TabItem.HeaderTemplate>
             </TabItem>
           </TabControl>
 

@@ -54,7 +54,7 @@
         <Setter Property="Width" Value="18" />
         <Setter Property="Height" Value="18" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"></Setter>
+        <Setter Property="DataContext" Value="{Binding RelativeSource={RelativeSource Self}}" />
         <Setter Property="Fill" Value="{Binding Tag, Converter={StaticResource IconNameToBrush}}" />
         <Setter Property="OpacityMask">
           <Setter.Value>

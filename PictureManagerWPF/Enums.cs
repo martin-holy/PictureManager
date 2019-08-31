@@ -35,6 +35,7 @@
     Information,
     RotateClockwise,
     RotateLeft,
-    RotateRight
+    RotateRight,
+    Pin
   }
 }
