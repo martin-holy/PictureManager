@@ -38,7 +38,7 @@ namespace PictureManager {
 
       //var items = App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray();
 
-      LogTest();
+      ErrorDialog.Show(new ArgumentNullException("message 1", new AggregateException()), "Test");
     }
 
     public void LogTest() {

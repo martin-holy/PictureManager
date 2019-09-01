@@ -95,6 +95,9 @@
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\FileOperationCollisionDialog.xaml.cs">
       <DependentUpon>FileOperationCollisionDialog.xaml</DependentUpon>
     </Compile>
@@ -182,6 +185,10 @@
     <Page Include="Dialogs\DirectorySelectDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\ErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\FileOperationCollisionDialog.xaml">
       <SubType>Designer</SubType>
