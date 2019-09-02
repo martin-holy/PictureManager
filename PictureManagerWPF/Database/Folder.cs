@@ -48,7 +48,8 @@ namespace PictureManager.Database {
 
     private void Rename(string newName) {
       Directory.Move(FullPath, Extensions.PathCombine(((Folder) Parent).FullPath, newName));
-      Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
+      if (Directory.Exists(FullPathCache))
+        Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
       Title = newName;
       App.Core.Folders.Helper.IsModifed = true;
 

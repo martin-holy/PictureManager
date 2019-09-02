@@ -1,6 +1,5 @@
 ﻿#Bugs
-- focus to newly created folder
-- pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
+- pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak => kdyz se klikne na expand/collapse, tak by to melo zustat na miste
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 
@@ -12,3 +11,4 @@
 - pri potvrzovani mazani zobrazit nazev souboru/slozky
 - zobrazit nejak zafiltrovany keywords, people, rating
 - ikony
+- zmenit title na favorite folder
