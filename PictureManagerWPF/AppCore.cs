@@ -419,7 +419,11 @@ namespace PictureManager {
       }
     }
 
-    public void LogError(Exception ex, string msg = "") {
+    public void LogError(Exception ex) {
+      LogError(ex, string.Empty);
+    }
+
+    public void LogError(Exception ex, string msg) {
       Application.Current.Invoke(delegate {
         Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}"));
       });

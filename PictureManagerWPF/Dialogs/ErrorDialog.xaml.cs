@@ -25,6 +25,10 @@ namespace PictureManager.Dialogs {
       InitializeComponent();
     }
 
+    public static void Show(Exception ex) {
+      Show(ex, string.Empty);
+    }
+
     public static void Show(Exception ex, string title) {
       var ed = new ErrorDialog {
         Owner = App.WMain,

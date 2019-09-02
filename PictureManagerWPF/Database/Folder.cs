@@ -242,7 +242,7 @@ namespace PictureManager.Database {
         return item;
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        ErrorDialog.Show(ex);
         return null;
       }
     }

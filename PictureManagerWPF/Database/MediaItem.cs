@@ -236,7 +236,7 @@ namespace PictureManager.Database {
       }
       catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
-        App.Core.LogError(ex);
+        App.Core.LogError(ex, FilePath);
       }
     }
 
@@ -325,7 +325,7 @@ namespace PictureManager.Database {
             catch (Exception ex) {
               hResult = ex.HResult;
               if (hResult != -2146233033)
-                MessageBox.Show(ex.Message);
+                App.Core.LogError(ex, FilePath);
               bSuccess = false;
             }
 
@@ -347,7 +347,7 @@ namespace PictureManager.Database {
               }
               catch (Exception ex) {
                 bSuccess = false;
-                App.Core.LogError(ex);
+                App.Core.LogError(ex, FilePath);
               }
             }
           }
@@ -373,7 +373,7 @@ namespace PictureManager.Database {
               Orientation = size[2];
             }
             catch (Exception ex) {
-              App.Core.LogError(ex);
+              App.Core.LogError(ex, FilePath);
             }
           });
         }
