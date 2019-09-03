@@ -154,6 +154,8 @@ namespace PictureManager.Database {
       // remove from DB
       All.Remove(item);
 
+      App.Core.AppInfo.MediaItemsCount--;
+
       // set MediaItems table as modifed
       Helper.IsModifed = true;
     }

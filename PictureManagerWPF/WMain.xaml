@@ -61,6 +61,8 @@
         </MenuItem>
         <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
       </Menu>
+
+      <!-- Media Items Count -->
       <TextBlock Text="{Binding AppInfo.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
       
       <!-- Log Button -->
