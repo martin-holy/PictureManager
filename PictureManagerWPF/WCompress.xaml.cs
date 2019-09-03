@@ -105,10 +105,8 @@ namespace PictureManager {
             bSuccess = true;
           }
         }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
         catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
-          // ignored
+          App.Core.LogError(ex);
         }
 
         if (bSuccess) {
@@ -118,7 +116,7 @@ namespace PictureManager {
 
             newFile.CreationTime = original.CreationTime;
 
-            using (var fo = new ShellStuff.FileOperation()) {
+            using (var fo = new FileOperation()) {
               const FileOperationFlags flags = FileOperationFlags.FOF_SILENT | FileOperationFlags.FOFX_RECYCLEONDELETE | FileOperationFlags.FOF_NOERRORUI;
               fo.SetOperationFlags(flags);
               fo.DeleteItem(original.FullName);
@@ -129,10 +127,8 @@ namespace PictureManager {
             
             worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), fileSizes);
           }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
           catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
-            // ignored
+            App.Core.LogError(ex);
           }
         }
       }
