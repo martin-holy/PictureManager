@@ -5,41 +5,30 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using PictureManager.ShellStuff;
 
-namespace PictureManager {
+namespace PictureManager.Dialogs {
   /// <summary>
   /// Interaction logic for WCompress.xaml
   /// </summary>
-  public partial class WCompress : INotifyPropertyChanged {
+  public partial class CompressDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
-    private readonly AppCore _appCore;
     private BackgroundWorker _compress;
 
     private int _jpegQualityLevel;
     private long _totalSourceSize;
     private long _totalCompressedSize;
 
-    public int JpegQualityLevel {
-      get => _jpegQualityLevel;
-      set {
-        _jpegQualityLevel = value;
-        OnPropertyChanged();
-      }
-    }
-
+    public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
     public string TotalSourceSize => FormatSize(_totalSourceSize);
     public string TotalCompressedSize => FormatSize(_totalCompressedSize);
 
-    public WCompress(AppCore appCore) {
+    public CompressDialog() {
       InitializeComponent();
-      _appCore = appCore;
       JpegQualityLevel = Properties.Settings.Default.JpegQualityLevel;
     }
 
@@ -70,16 +59,15 @@ namespace PictureManager {
       _compress.ProgressChanged += Compress_ProgressChanged;
       _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? _appCore.MediaItems.Items.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
-        : _appCore.MediaItems.Items.ToList());
+        ? App.Core.MediaItems.Items.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
+        : App.Core.MediaItems.Items.ToList());
     }
 
-    private void Compress_DoWork(object sender, DoWorkEventArgs e) {
+    private static void Compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
       var mis = (List<Database.MediaItem>) e.Argument;
       var count = mis.Count;
       var done = 0;
-      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
       foreach (var mi in mis) {
         if (worker.CancellationPending) {
@@ -87,50 +75,12 @@ namespace PictureManager {
           break;
         }
 
-        var original = new FileInfo(mi.FilePath);
-        var newFile = new FileInfo(mi.FilePath.Replace(".", "_newFile."));
-        var bSuccess = false;
-
-        try {
-          using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-            var encoder = new JpegBitmapEncoder { QualityLevel = _jpegQualityLevel };
-            //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
-            //is a KEY to lossless jpeg edit if the QualityLevel is the same
-            encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
-
-            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-              encoder.Save(newFileStream);
-            }
-
-            bSuccess = true;
-          }
-        }
-        catch (Exception ex) {
-          App.Core.LogError(ex);
-        }
-
-        if (bSuccess) {
-          try {
-            long[] fileSizes = { original.Length, newFile.Length };
-            done++;
-
-            newFile.CreationTime = original.CreationTime;
-
-            using (var fo = new FileOperation()) {
-              const FileOperationFlags flags = FileOperationFlags.FOF_SILENT | FileOperationFlags.FOFX_RECYCLEONDELETE | FileOperationFlags.FOF_NOERRORUI;
-              fo.SetOperationFlags(flags);
-              fo.DeleteItem(original.FullName);
-              fo.PerformOperations();
-            }
-
-            newFile.MoveTo(original.FullName);
-            
-            worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), fileSizes);
-          }
-          catch (Exception ex) {
-            App.Core.LogError(ex);
-          }
-        }
+        var originalSize = new FileInfo(mi.FilePath).Length;
+        var bSuccess = mi.TryWriteMetadata();
+        var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
+        long[] fileSizes = {originalSize, newSize};
+        done++;
+        worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), fileSizes);
       }
     }
 
@@ -152,6 +102,11 @@ namespace PictureManager {
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
       _compress.CancelAsync();
       Close();
+    }
+
+    public static void ShowDialog(Window owner) {
+      var compress = new CompressDialog {Owner = owner};
+      compress.ShowDialog();
     }
   }
 }

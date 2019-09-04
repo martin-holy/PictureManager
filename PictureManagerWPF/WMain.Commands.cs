@@ -294,8 +294,7 @@ namespace PictureManager {
     }
 
     private void CompressPictures() {
-      var compress = new WCompress(App.Core) {Owner = this};
-      compress.ShowDialog();
+      CompressDialog.ShowDialog(this);
     }
 
     private static bool CanRotatePictures() {
