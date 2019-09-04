@@ -149,7 +149,7 @@ namespace PictureManager.Database {
 
       var dirNames = new HashSet<string>();
       var fullPathLength = FullPath.Length + 1;
-      if (IconName == IconName.Drive) fullPathLength--;
+      if (!FullPath.Contains(Path.DirectorySeparatorChar)) fullPathLength--;
       foreach (var dir in Directory.EnumerateDirectories(FullPath)) {
         var isNew = false;
         var dirName = dir.Substring(fullPathLength);

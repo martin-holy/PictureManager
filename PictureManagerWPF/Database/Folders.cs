@@ -147,14 +147,14 @@ namespace PictureManager.Database {
           Items.Add(item);
         }
 
+        item.IsAccessible = di.IsReady;
+        item.IconName = driveImage;
+
         // if Viewer can't see this Drive set it as hidden and continue
         if (!Viewers.CanViewerSeeThisDirectory(App.Core.CurrentViewer ,item)) {
           item.IsHidden = true;
           continue;
         }
-
-        item.IsAccessible = di.IsReady;
-        item.IconName = driveImage; 
 
         // add placeholder so the Drive can be expanded
         if (di.IsReady && item.Items.Count == 0)
