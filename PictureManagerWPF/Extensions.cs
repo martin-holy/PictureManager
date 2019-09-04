@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -62,6 +63,22 @@ namespace PictureManager {
     /// <returns></returns>
     public static string PathCombine(string path1, string path2) {
       return path1 + Path.DirectorySeparatorChar + path2;
+    }
+
+    private static Random _random;
+
+    public static void Shuffle<T>(this IList<T> list) {
+      if (_random == null)
+        _random = new Random();
+
+      var n = list.Count;
+      while (n > 1) {
+        n--;
+        var k = _random.Next(n + 1);
+        var value = list[k];
+        list[k] = list[n];
+        list[n] = value;
+      }
     }
   }
 }

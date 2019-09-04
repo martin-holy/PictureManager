@@ -36,6 +36,7 @@
           <MenuItem Command="pm:Commands.RotatePictures" />
           <MenuItem Command="pm:Commands.ReloadMetadata" />
           <MenuItem Command="pm:Commands.RebuildThumbnails" />
+          <MenuItem Command="pm:Commands.MediaItemsShuffle" />
           <MenuItem Command="pm:Commands.OpenFolderKeywordsList" />
           <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />

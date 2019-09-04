@@ -53,6 +53,7 @@ namespace PictureManager {
     public static RoutedUICommand ViewerChange { get; } = new RoutedUICommand {Text = ""};
     public static RoutedUICommand OpenFolderKeywordsList { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
     public static RoutedUICommand OpenLog { get; } = new RoutedUICommand { Text = "Log" };
+    public static RoutedUICommand MediaItemsShuffle { get; } = new RoutedUICommand { Text = "Shuffle" };
 
     private static RoutedUICommand CreateCommand(string text, string name, InputGesture inputGesture) {
       return new RoutedUICommand(text, name, typeof(Commands),

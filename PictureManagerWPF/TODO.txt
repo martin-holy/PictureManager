@@ -6,7 +6,6 @@
 - on "presentation start" show slider how many seconds
 - na prehravani panoramat zmensit obrazek na vysku obrazovky
 - zmensovat hodne velky obrazky pri prohlizeni
-- funkci zobraz random x obrazku 
 - pri potvrzovani mazani zobrazit nazev souboru/slozky
 - zobrazit nejak zafiltrovany keywords, people, rating
 - ikony

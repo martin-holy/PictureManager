@@ -57,6 +57,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
       CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
       CommandBindings.Add(new CommandBinding(Commands.OpenLog, HandleExecute(OpenLog)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsShuffle, HandleExecute(MediaItemsShuffle), HandleCanExecute(CanMediaItemsShuffle)));
     }
 
     private void AddInputBindings() {
@@ -171,6 +172,15 @@ namespace PictureManager {
         else
           SwitchToBrowser();
       }
+    }
+
+    private static bool CanMediaItemsShuffle() {
+      return App.Core.MediaItems.Items.Count > 0;
+    }
+
+    private static void MediaItemsShuffle() {
+      App.Core.MediaItems.Items.Shuffle();
+      App.Core.MediaItems.SplitedItemsReload();
     }
 
     private static void MediaItemsLoadByTag(object parameter) {
