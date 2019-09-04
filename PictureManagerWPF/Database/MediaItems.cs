@@ -22,6 +22,7 @@ namespace PictureManager.Database {
     private bool _isEditModeOn;
     private int _selected;
     private int _modifed;
+    private int? _indexOfCurrent;
 
     public ObservableCollection<MediaItem> Items { get; } = new ObservableCollection<MediaItem>();
     public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
@@ -32,6 +33,7 @@ namespace PictureManager.Database {
         if (_current != null) SetSelected(_current, false);
         _current = value;
         if (_current != null) SetSelected(_current, true);
+        _indexOfCurrent = value == null ? null : (int?) Items.IndexOf(value);
         OnPropertyChanged();
         App.Core.AppInfo.CurrentMediaItem = value;
       }
@@ -44,6 +46,7 @@ namespace PictureManager.Database {
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
+    public string PositionSlashCount => Current == null ? Items.Count.ToString() : $"{_indexOfCurrent + 1}/{Items.Count}";
 
     private BackgroundWorker _loadByTagWorker;
 
@@ -408,10 +411,8 @@ namespace PictureManager.Database {
 
       #endregion
 
-      var i = 0;
       foreach (var mi in mediaItems.OrderBy(x => x.FileName)) {
         mi.SetThumbSize();
-        mi.Index = i++;
         Items.Add(mi);
       }
 
@@ -451,7 +452,6 @@ namespace PictureManager.Database {
           var dirs = (from mi in allItems select mi.Folder).Distinct()
             .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
 
-          var i = -1;
           foreach (var item in allItems.OrderBy(x => x.FileName)) {
             if (!dirs.ContainsKey(item.Folder.Id)) continue;
             if (!File.Exists(item.FilePath)) continue;
@@ -459,7 +459,6 @@ namespace PictureManager.Database {
             // Filter by Viewer
             if (!Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, item.FilePath)) continue;
 
-            item.Index = ++i;
             item.SetThumbSize();
             resultItems.Add(item);
           }
@@ -515,8 +514,9 @@ namespace PictureManager.Database {
     }
 
     public void RemoveSelected(bool delete) {
-      var firstIndex = Items.FirstOrDefault(x => x.IsSelected)?.Index;
-      if (firstIndex == null) return;
+      var firstSelected = Items.FirstOrDefault(x => x.IsSelected);
+      if (firstSelected == null) return;
+      var indexOfFirstSelected = Items.IndexOf(firstSelected);
 
       var files = new List<string>();
       var cache = new List<string>();
@@ -536,21 +536,15 @@ namespace PictureManager.Database {
         cache.ForEach(File.Delete);
       }
 
-      //update index
-      var index = 0;
-      foreach (var mi in Items) {
-        mi.Index = index;
-        index++;
-      }
-
       SplitedItemsReload();
       Current = null;
+
+      // set new current
       var count = Items.Count;
-      if (count > 0) {
-        if (count == firstIndex) firstIndex--;
-        Current = Items[(int)firstIndex];
-        ScrollToCurrent();
-      }
+      if (count == 0) return;
+      if (count == indexOfFirstSelected) indexOfFirstSelected--;
+      Current = Items[indexOfFirstSelected];
+      ScrollToCurrent();
     }
 
     public void SplitedItemsAdd(MediaItem mi) {
@@ -771,5 +765,52 @@ namespace PictureManager.Database {
       }
     }
 
+
+    public MediaItem GetNext() {
+      if (Current == null || _indexOfCurrent == null || Items.Count <= _indexOfCurrent + 1) return null;
+
+      return Items[(int) _indexOfCurrent + 1];
+    }
+
+    public MediaItem GetPrevious() {
+      if (Current == null || _indexOfCurrent == null || _indexOfCurrent < 1) return null;
+
+      return Items[(int) _indexOfCurrent - 1];
+    }
+
+    public void Select(bool isCtrlOn, bool isShiftOn, MediaItem mi) {
+      if (!isCtrlOn && !isShiftOn) {
+        DeselectAll();
+        Current = mi;
+      }
+      else {
+        if (isCtrlOn)
+          SetSelected(mi, !mi.IsSelected);
+
+        if (isShiftOn && Current != null && _indexOfCurrent != null) {
+          var from = (int) _indexOfCurrent;
+          var indexOfMi = Items.IndexOf(mi);
+          var to = indexOfMi;
+          if (from > to) {
+            to = from;
+            from = indexOfMi;
+          }
+
+          for (var i = from; i < to + 1; i++) {
+            SetSelected(Items[i], true);
+          }
+        }
+
+        if (Selected == 0)
+          Current = null;
+        else if (Selected > 1) {
+          var current = Current;
+          var currentSelected = current?.IsSelected ?? false;
+          Current = null;
+          if (currentSelected)
+            SetSelected(current, true);
+        }
+      }
+    }
   }
 }

@@ -289,40 +289,9 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var mi = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      var mi = (Database.MediaItem) ((FrameworkElement) sender).DataContext;
 
-      if (!isCtrlOn && !isShiftOn) {
-        App.Core.MediaItems.DeselectAll();
-        App.Core.MediaItems.Current = mi;
-      }
-      else {
-        if (isCtrlOn)
-          App.Core.MediaItems.SetSelected(mi, !mi.IsSelected);
-
-        if (isShiftOn && App.Core.MediaItems.Current != null) {
-          var from = App.Core.MediaItems.Current.Index;
-          var to = mi.Index;
-          if (from > to) {
-            to = from;
-            from = mi.Index;
-          }
-
-          for (var i = from; i < to + 1; i++) {
-            App.Core.MediaItems.SetSelected(App.Core.MediaItems.Items[i], true);
-          }
-        }
-
-        if (App.Core.MediaItems.Selected == 0)
-          App.Core.MediaItems.Current = null;
-        else if (App.Core.MediaItems.Selected > 1) {
-          var current = App.Core.MediaItems.Current;
-          var currentSelected = current?.IsSelected ?? false;
-          App.Core.MediaItems.Current = null;
-          if (currentSelected)
-            App.Core.MediaItems.SetSelected(current, true);
-        }
-      }
-
+      App.Core.MediaItems.Select(isCtrlOn, isShiftOn, mi);
       App.Core.MarkUsedKeywordsAndPeople();
     }
 

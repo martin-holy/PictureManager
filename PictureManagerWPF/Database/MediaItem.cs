@@ -46,7 +46,6 @@ namespace PictureManager.Database {
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
-    public int Index { get; set; }
     public int ThumbSize { get; set; }
     public double? Lat { get; set; }
     public double? Lng { get; set; }

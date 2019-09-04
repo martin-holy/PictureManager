@@ -101,12 +101,11 @@ namespace PictureManager {
     }*/
 
     private static bool CanMediaItemNext() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer &&
-             App.Core.MediaItems.Current?.Index + 1 < App.Core.MediaItems.Items.Count;
+      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.GetNext() != null;
     }
 
     private void MediaItemNext() {
-      var current = App.Core.MediaItems.Items[App.Core.MediaItems.Current.Index + 1];
+      var current = App.Core.MediaItems.GetNext();
       App.Core.MediaItems.Current = current;
       SetMediaItemSource();
       if (_presentationTimer.Enabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
@@ -121,11 +120,11 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemPrevious() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current?.Index > 0;
+      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.GetPrevious() != null;
     }
 
     private void MediaItemPrevious() {
-      App.Core.MediaItems.Current = App.Core.MediaItems.Items[App.Core.MediaItems.Current.Index - 1];
+      App.Core.MediaItems.Current = App.Core.MediaItems.GetPrevious();
       SetMediaItemSource();
       App.Core.MarkUsedKeywordsAndPeople();
     }

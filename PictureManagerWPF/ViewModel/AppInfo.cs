@@ -73,9 +73,7 @@ namespace PictureManager.ViewModel {
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
-        PositionSlashCount = _currentMediaItem == null
-          ? App.Core.MediaItems.Items.Count.ToString()
-          : $"{_currentMediaItem.Index + 1}/{App.Core.MediaItems.Items.Count}";
+        PositionSlashCount = App.Core.MediaItems.PositionSlashCount;
 
         OnPropertyChanged(nameof(IsGeoNameVisible));
         OnPropertyChanged(nameof(IsCommentVisible));
