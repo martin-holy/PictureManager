@@ -136,6 +136,7 @@ namespace PictureManager {
         var bti = item as BaseTreeViewItem;
         switch (item) {
           case FavoriteFolder favoriteFolder: {
+            if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
             BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
             
             // scroll to folder
