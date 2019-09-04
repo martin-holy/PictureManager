@@ -1,9 +1,6 @@
 ﻿#Bugs
-- pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak => kdyz se klikne na expand/collapse, tak by to melo zustat na miste
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- celkovy pocet MI se neaktualizuje kdyz se maze
-- zpusob jakym zapisuju metadata si poradi s "poskozenejma" souborama z compress dialogu
 
 #New
 - on "presentation start" show slider how many seconds

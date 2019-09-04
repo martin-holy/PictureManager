@@ -218,7 +218,7 @@
 
             <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
               <!-- TreeView Folders -->
-              <TreeView x:Name="TvFolders" Background="Transparent" 
+              <TreeView x:Name="TvFolders" Background="Transparent" FocusManager.IsFocusScope="True"
                       ItemsSource="{Binding FoldersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
@@ -235,7 +235,7 @@
 
             <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
               <!-- TreeView Keywords -->
-              <TreeView x:Name="TvKeywords" Background="Transparent"
+              <TreeView x:Name="TvKeywords" Background="Transparent" FocusManager.IsFocusScope="True"
                       ItemsSource="{Binding KeywordsRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
