@@ -52,7 +52,7 @@ namespace PictureManager.Dialogs {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        AppCore.CreateThumbnail(filePath, thumbPath, Settings.Default.ThumbnailSize);
+        App.Core.CreateThumbnail(filePath, thumbPath, Settings.Default.ThumbnailSize);
       }
 
       return new Uri(thumbPath);

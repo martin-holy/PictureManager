@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -569,6 +570,7 @@ namespace PictureManager {
     public void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var progress = new ProgressBarDialog(this, true);
+      App.Core.ThumbProcessCounter = 0;
 
       progress.Worker.RunWorkerCompleted += delegate {
         progress.Close();
@@ -598,7 +600,8 @@ namespace PictureManager {
           worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
             $"Processing file {done} of {count} ({mi.FileName})");
 
-          AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          while (App.Core.ThumbProcessCounter > 10) Thread.Sleep(100);
+          App.Core.CreateThumbnail(mi);
         }
       };
 

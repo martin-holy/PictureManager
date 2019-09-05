@@ -51,7 +51,7 @@ namespace PictureManager {
     public BaseTreeViewItem LastSelectedSource { get; set; }
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
 
-    private volatile int _thumbCounter;
+    public volatile int ThumbProcessCounter;
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -273,7 +273,7 @@ namespace PictureManager {
     public void LoadThumbnails() {
       AppInfo.ProgressBarIsIndeterminate = false;
       AppInfo.ProgressBarValue = 0;
-      _thumbCounter = 0;
+      ThumbProcessCounter = 0;
 
       if (ThumbsWorker == null) {
         ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
@@ -319,7 +319,7 @@ namespace PictureManager {
             }
 
             if (!File.Exists(mi.FilePathCache)) {
-              while (_thumbCounter > 10) Thread.Sleep(100);
+              while (ThumbProcessCounter > 10) Thread.Sleep(100);
               CreateThumbnail(mi);
             }
 
@@ -403,14 +403,22 @@ namespace PictureManager {
       return fops.FileOperationResult;
     }
 
+    public void CreateThumbnail(string srcPath, string destPath, int size) {
+      CreateThumbnail(null, srcPath, destPath, size);
+    }
+
     public void CreateThumbnail(MediaItem mi) {
-      var dir = Path.GetDirectoryName(mi.FilePathCache);
+      CreateThumbnail(mi, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+    }
+
+    public void CreateThumbnail(MediaItem mi, string srcPath, string destPath, int size) {
+      var dir = Path.GetDirectoryName(destPath);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
 
       var process = new Process {
         StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{mi.FilePath}\" dest|\"{mi.FilePathCache}\" quality|\"{80}\" size|\"{mi.ThumbSize}\"",
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
           FileName = "ThumbnailCreator.exe",
           UseShellExecute = false,
           CreateNoWindow = true
@@ -418,12 +426,15 @@ namespace PictureManager {
         EnableRaisingEvents = true
       };
 
-      process.Exited += delegate {
-        mi.ReloadThumbnail();
-        _thumbCounter--;
-      };
+      if (mi != null) {
+        process.Exited += delegate {
+          mi.ReloadThumbnail();
+          ThumbProcessCounter--;
+        };
 
-      _thumbCounter++;
+        ThumbProcessCounter++;
+      }
+
       process.Start();
     }
 
