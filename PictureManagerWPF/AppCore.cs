@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -49,6 +50,8 @@ namespace PictureManager {
     public bool LastSelectedSourceRecursive { get; set; }
     public BaseTreeViewItem LastSelectedSource { get; set; }
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
+
+    private volatile int _thumbCounter;
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -270,6 +273,7 @@ namespace PictureManager {
     public void LoadThumbnails() {
       AppInfo.ProgressBarIsIndeterminate = false;
       AppInfo.ProgressBarValue = 0;
+      _thumbCounter = 0;
 
       if (ThumbsWorker == null) {
         ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
@@ -314,8 +318,10 @@ namespace PictureManager {
               e.Result = true;
             }
 
-            if (!File.Exists(mi.FilePathCache))
-              CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+            if (!File.Exists(mi.FilePathCache)) {
+              while (_thumbCounter > 10) Thread.Sleep(100);
+              CreateThumbnail(mi);
+            }
 
             Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
 
@@ -397,27 +403,28 @@ namespace PictureManager {
       return fops.FileOperationResult;
     }
 
-    public static void CreateThumbnail(string srcPath, string destPath, int size) {
-      var dir = Path.GetDirectoryName(destPath);
+    public void CreateThumbnail(MediaItem mi) {
+      var dir = Path.GetDirectoryName(mi.FilePathCache);
       if (dir == null) return;
       Directory.CreateDirectory(dir);
-      Process process = null;
 
-      try {
-        process = new Process {
-          StartInfo = new ProcessStartInfo {
-            Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
-            FileName = "ThumbnailCreator.exe",
-            UseShellExecute = false,
-            CreateNoWindow = true
-          }
-        };
-        process.Start();
-        process.WaitForExit(2000);
-      }
-      finally {
-        process?.Dispose();
-      }
+      var process = new Process {
+        StartInfo = new ProcessStartInfo {
+          Arguments = $"src|\"{mi.FilePath}\" dest|\"{mi.FilePathCache}\" quality|\"{80}\" size|\"{mi.ThumbSize}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        },
+        EnableRaisingEvents = true
+      };
+
+      process.Exited += delegate {
+        mi.ReloadThumbnail();
+        _thumbCounter--;
+      };
+
+      _thumbCounter++;
+      process.Start();
     }
 
     public void LogError(Exception ex) {

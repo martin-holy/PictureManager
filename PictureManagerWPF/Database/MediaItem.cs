@@ -468,5 +468,9 @@ namespace PictureManager.Database {
       }
       return true;
     }
+
+    public void ReloadThumbnail() {
+      OnPropertyChanged(nameof(FilePathCacheUri));
+    }
   }
 }

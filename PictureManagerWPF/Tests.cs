@@ -36,8 +36,9 @@ namespace PictureManager {
       var test2 = Text2Path("⤺");
       var test3 = Text2Path("⤺", false, true);*/
 
-      App.Core.MediaItems.Items.Shuffle();
-      App.Core.MediaItems.SplitedItemsReload();
+      foreach (var mi in App.Core.MediaItems.Items) {
+        mi.ReloadThumbnail();
+      }
 
 
       //ErrorDialog.Show(new ArgumentNullException("message 1", new AggregateException()), "Test");

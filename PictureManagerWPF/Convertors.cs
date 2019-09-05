@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -174,9 +175,14 @@ namespace PictureManager {
   public class ImageSourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       try {
+        var uriValue = value as Uri;
+        if (uriValue == null) return null;
+
+        if (!File.Exists(uriValue.LocalPath)) return null;
+
         var src = new BitmapImage();
         src.BeginInit();
-        src.UriSource = (Uri)value;
+        src.UriSource = uriValue;
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.EndInit();
         return src;
