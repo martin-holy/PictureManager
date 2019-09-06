@@ -121,6 +121,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Tests.cs" />
+    <Compile Include="UserControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />

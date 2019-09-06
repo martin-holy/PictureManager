@@ -562,9 +562,9 @@
 
           <ItemsControl.Template>
             <ControlTemplate>
-              <ScrollViewer x:Name="ThumbsBoxScrollViewer">
+              <userControls:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
                 <ItemsPresenter />
-              </ScrollViewer>
+              </userControls:WheelSpeedScrollViewer>
             </ControlTemplate>
           </ItemsControl.Template>
         </ItemsControl>

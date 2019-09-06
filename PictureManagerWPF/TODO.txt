@@ -10,4 +10,3 @@
 - zobrazit nejak zafiltrovany keywords, people, rating
 - ikony
 - zmenit title na favorite folder
-- vetsi posunuti na scroll
