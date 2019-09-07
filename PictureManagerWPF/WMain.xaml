@@ -79,21 +79,6 @@
   </controls:MetroWindow.LeftWindowCommands>
 
   <controls:MetroWindow.Resources>
-    <!-- KeywordsPicCountStyle -->
-    <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
-      <Setter Property="Text" Value="{Binding PicCount}" />
-      <Setter Property="Visibility" Value="Collapsed"/>
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="5,0,0,0" />
-      <Setter Property="Padding" Value="5,0" />
-      <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-      <Style.Triggers>
-        <DataTrigger Binding="{Binding IsMarked}" Value="True">
-          <Setter Property="Visibility" Value="Visible"/>
-        </DataTrigger>
-      </Style.Triggers>
-    </Style>
-
     <!-- SBorderInfoBoxThumb SBorderInfoBoxStatusBar STextBlockInfoBox -->
     <Style x:Key="SBorderInfoBoxThumb" TargetType="Border">
       <Setter Property="BorderThickness" Value="1" />
@@ -161,6 +146,21 @@
           <!-- TreeView Forders, Keywords and Filters -->
           <TabControl x:Name="TcMain" Grid.Row="0" Background="Transparent" BorderThickness="0">
             <TabControl.Resources>
+              <!-- KeywordsPicCountStyle -->
+              <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="Text" Value="{Binding PicCount}" />
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="5,0,0,0" />
+                <Setter Property="Padding" Value="5,0" />
+                <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsMarked}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+
               <!-- STreeViewItem -->
               <Style TargetType="{x:Type TreeViewItem}" x:Key="STreeViewItem" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
@@ -221,7 +221,6 @@
               <!-- TreeView Folders -->
               <TreeView x:Name="TvFolders" Background="Transparent" FocusManager.IsFocusScope="True"
                       ItemsSource="{Binding FoldersRoot, Source={x:Static pm:App.Core}}">
-
                 <TreeView.ItemContainerStyle>
                   <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Style.Triggers>
@@ -246,7 +245,7 @@
                       <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                           <Condition Binding="{Binding IsMarked}" Value="True" />
-                          <Condition Binding="{Binding BgBrush}" Value="0" />
+                          <Condition Binding="{Binding BackgroundBrush}" Value="0" />
                         </MultiDataTrigger.Conditions>
                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                       </MultiDataTrigger>

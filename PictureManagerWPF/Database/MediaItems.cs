@@ -657,13 +657,8 @@ namespace PictureManager.Database {
           }
 
           mi.TryWriteMetadata();
-          
-          Application.Current.Dispatcher.Invoke(delegate {
-            mi.SetThumbSize();
-            mi.SetInfoBox();
-          });
-
-          File.Delete(mi.FilePathCache);
+          mi.SetThumbSize();
+          App.Core.CreateThumbnail(mi);
         }
       };
 

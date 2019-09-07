@@ -1,6 +1,8 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- kategorie ani grupa by nemeli jit oznacit
+- setridit keywords
 
 #New
 - on "presentation start" show slider how many seconds
