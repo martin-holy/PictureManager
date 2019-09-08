@@ -233,9 +233,9 @@ namespace PictureManager {
     }
 
     private static void TagItemDelete(object parameter) {
-      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
-      var item = parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
+      if (!(parameter is ViewModel.BaseTreeViewItem item)) return;
+      if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{item.Title}'?", true)) return;
+      (item.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
     }
 
     private static void ViewerIncludeFolder(object parameter) {

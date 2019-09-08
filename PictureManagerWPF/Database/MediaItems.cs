@@ -227,9 +227,11 @@ namespace PictureManager.Database {
               if (mi.People == null)
                 mi.People = new List<Person>();
               mi.People.Add(p);
+              p.MediaItems.Add(mi);
             }
             else {
               mi.People.Remove(p);
+              p.MediaItems.Remove(mi);
               if (mi.People.Count == 0)
                 mi.People = null;
             }
@@ -238,11 +240,11 @@ namespace PictureManager.Database {
           case Keyword k: {
             if (!k.IsMarked && mi.Keywords != null) {
               mi.Keywords.Remove(k);
+              k.MediaItems.Remove(mi);
               if (mi.Keywords.Count == 0)
                 mi.Keywords = null;
               break;
             }
-
             
             if (mi.Keywords != null) {
               // skip if any Parent of MediaItem Keywords is marked Keyword
@@ -267,6 +269,7 @@ namespace PictureManager.Database {
                   tmpMarkedK = parent;
                   if (!parent.Id.Equals(miKeyword.Id)) continue;
                   mi.Keywords.Remove(miKeyword);
+                  miKeyword.MediaItems.Remove(mi);
                 }
               }
             }
@@ -274,6 +277,7 @@ namespace PictureManager.Database {
             if (mi.Keywords == null)
               mi.Keywords = new List<Keyword>();
             mi.Keywords.Add(k);
+            k.MediaItems.Add(mi);
 
             break;
           }
@@ -282,7 +286,9 @@ namespace PictureManager.Database {
             break;
           }
           case GeoName g: {
+            mi.GeoName?.MediaItems.Remove(mi);
             mi.GeoName = g;
+            g.MediaItems.Add(mi);
             break;
           }
         }

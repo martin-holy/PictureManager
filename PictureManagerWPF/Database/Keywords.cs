@@ -171,6 +171,12 @@ namespace PictureManager.Database {
       // remove Keyword from the tree
       keyword.Parent.Items.Remove(keyword);
 
+      // remove Keyword from the group
+      if (keyword.Parent is CategoryGroup group) {
+        group.Items.Remove(keyword);
+        App.Core.CategoryGroups.Helper.IsModifed = true;
+      }
+
       // get all descending keywords
       var keywords = new List<BaseTreeViewItem>();
       keyword.GetThisAndItemsRecursive(ref keywords);
@@ -196,7 +202,6 @@ namespace PictureManager.Database {
       }
 
       Helper.IsModifed = true;
-      
     }
 
     public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
