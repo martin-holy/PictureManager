@@ -1,8 +1,8 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- kategorie ani grupa by nemeli jit oznacit
-- setridit keywords
+- setridit keywords po pridani novych z metadat
+- menu v treeview je disabled pokud neni nejdriv treeview focused
 
 #New
 - on "presentation start" show slider how many seconds

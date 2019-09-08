@@ -109,7 +109,10 @@ namespace PictureManager {
     }
 
     public void TreeView_Select(object item, bool and, bool hide, bool recursive, object sender = null) {
-      if (item is BaseCategoryItem || item is CategoryGroup) return;
+      if (item is BaseCategoryItem || item is CategoryGroup) {
+        ((BaseTreeViewItem) item).IsSelected = false;
+        return;
+      }
 
       if (MediaItems.IsEditModeOn) {
         if (!(item is BaseTreeViewTagItem bti)) return;
