@@ -363,7 +363,7 @@
 
           <!-- PositionSlashCount -->
           <Border Visibility="{Binding MediaItems.Items.Count, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding AppInfo.PositionSlashCount}" />
+            <TextBlock Text="{Binding MediaItems.PositionSlashCount}" />
           </Border>
 
           <!-- Selected -->

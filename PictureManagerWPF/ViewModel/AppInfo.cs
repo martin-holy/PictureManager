@@ -12,7 +12,6 @@ namespace PictureManager.ViewModel {
   public class AppInfo : INotifyPropertyChanged {
     private int _progressBarValue;
     private bool _progressBarIsIndeterminate;
-    private string _positionSlashCount;
     private MediaItem _currentMediaItem;
     private AppMode _appMode;
     private bool _isThumbInfoVisible = true;
@@ -22,7 +21,6 @@ namespace PictureManager.ViewModel {
 
     public int ProgressBarValue { get => _progressBarValue; set { _progressBarValue = value; OnPropertyChanged(); } }
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
-    public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
@@ -73,7 +71,6 @@ namespace PictureManager.ViewModel {
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
-        PositionSlashCount = App.Core.MediaItems.PositionSlashCount;
 
         OnPropertyChanged(nameof(IsGeoNameVisible));
         OnPropertyChanged(nameof(IsCommentVisible));

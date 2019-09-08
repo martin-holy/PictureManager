@@ -34,6 +34,7 @@ namespace PictureManager.Database {
         if (_current != null) SetSelected(_current, true);
         _indexOfCurrent = value == null ? null : (int?) Items.IndexOf(value);
         OnPropertyChanged();
+        OnPropertyChanged(nameof(PositionSlashCount));
         App.Core.AppInfo.CurrentMediaItem = value;
       }
     }
@@ -428,7 +429,7 @@ namespace PictureManager.Database {
       }
 
       App.Core.SetMediaItemSizesLoadedRange();
-      App.Core.AppInfo.PositionSlashCount = Items.Count.ToString();
+      OnPropertyChanged(nameof(PositionSlashCount));
     }
 
     public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
@@ -488,7 +489,7 @@ namespace PictureManager.Database {
             Items.Add(item);
 
           App.Core.SetMediaItemSizesLoadedRange();
-          App.Core.AppInfo.PositionSlashCount = Items.Count.ToString();
+          OnPropertyChanged(nameof(PositionSlashCount));
           ScrollToTop();
           App.Core.LoadThumbnails();
         };
@@ -606,9 +607,8 @@ namespace PictureManager.Database {
     }
 
     public void ResetThumbsSize() {
-      foreach (var item in Items) {
+      foreach (var item in Items)
         item.SetThumbSize();
-      }
     }
 
     private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
