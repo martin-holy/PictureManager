@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
@@ -58,14 +59,9 @@ namespace PictureManager {
       App.SplashScreen.LoadComplete();
       Activate();
 
-      // TreeViews needs to have FocusManager.IsFocusScope="True" so they don't jump on item expand
-      // but because of that they need to get focus otherwise ContextMenu items are disabled
-      TvFolders.Focus();
-      TvKeywords.Focus();
-
       if (!File.Exists(_argPicFile)) {
         App.Core.AppInfo.AppMode = AppMode.Browser;
-        return;
+        //return;
       }
 
       //app opened with argument
@@ -91,10 +87,15 @@ namespace PictureManager {
       if (stackPanel.ContextMenu != null) return;
 
       var item = stackPanel.DataContext;
-      var menu = new ContextMenu { Tag = item };
+      var menu = new ContextMenu {Tag = item};
+      var binding = new Binding("PlacementTarget") {
+        RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1)
+      };
 
       void AddMenuItem(ICommand command) {
-        menu.Items.Add(new MenuItem {Command = command, CommandParameter = item});
+        var menuItem = new MenuItem {Command = command, CommandParameter = item};
+        menuItem.SetBinding(MenuItem.CommandTargetProperty, binding);
+        menu.Items.Add(menuItem);
       }
 
       if ((item as ViewModel.BaseTreeViewItem)?.GetTopParent() is ViewModel.BaseCategoryItem category) {

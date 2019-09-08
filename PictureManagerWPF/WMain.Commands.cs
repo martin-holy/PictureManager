@@ -395,11 +395,11 @@ namespace PictureManager {
     }
 
     private static bool CanKeywordsSave() {
-      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.Items.Count(p => p.IsModifed) > 0;
+      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifedItems.Count > 0;
     }
 
     private void KeywordsSave() {
-      var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
+      var items = App.Core.MediaItems.ModifedItems.ToList();
       var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
@@ -448,7 +448,7 @@ namespace PictureManager {
     }
 
     private void KeywordsCancel() {
-      var items = App.Core.MediaItems.Items.Where(p => p.IsModifed).ToList();
+      var items = App.Core.MediaItems.ModifedItems.ToList();
       var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
