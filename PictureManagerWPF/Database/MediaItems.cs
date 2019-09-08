@@ -236,7 +236,7 @@ namespace PictureManager.Database {
             break;
           }
           case Keyword k: {
-            if (!k.IsMarked) {
+            if (!k.IsMarked && mi.Keywords != null) {
               mi.Keywords.Remove(k);
               if (mi.Keywords.Count == 0)
                 mi.Keywords = null;

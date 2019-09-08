@@ -124,8 +124,10 @@ namespace PictureManager {
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
               MarkedTags.Add(bti);
-            else
+            else {
               MarkedTags.Remove(bti);
+              bti.PicCount = 0;
+            }
 
             MediaItems.SetMetadata(item);
 
@@ -208,15 +210,15 @@ namespace PictureManager {
       }
     }
 
-    private void MarkedTagsAddWithIncrease(BaseTreeViewTagItem item) {
-      item.PicCount++;
-      if (item.IsMarked) return;
-      item.IsMarked = true;
-      MarkedTags.Add(item);
-    }
-
     public void MarkUsedKeywordsAndPeople() {
       //can by Person, Keyword, FolderKeyword, Rating or GeoName
+
+      void MarkedTagsAddWithIncrease(BaseTreeViewTagItem item) {
+        item.PicCount++;
+        if (item.IsMarked) return;
+        item.IsMarked = true;
+        MarkedTags.Add(item);
+      }
 
       // clear previous marked tags
       foreach (var item in MarkedTags) {
