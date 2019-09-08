@@ -125,7 +125,7 @@ namespace PictureManager.Database {
 
       // add new Keyword to the database and to the tree
       AddRecord(keyword);
-      root.Items.Add(keyword);
+      ItemSetInPlace(root, true, keyword);
 
       if (root is CategoryGroup)
         App.Core.CategoryGroups.Helper.IsModifed = true;

@@ -1,7 +1,6 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- setridit keywords po pridani novych z metadat
 - menu v treeview je disabled pokud neni nejdriv treeview focused
 
 #New
