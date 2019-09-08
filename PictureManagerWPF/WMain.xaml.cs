@@ -58,6 +58,11 @@ namespace PictureManager {
       App.SplashScreen.LoadComplete();
       Activate();
 
+      // TreeViews needs to have FocusManager.IsFocusScope="True" so they don't jump on item expand
+      // but because of that they need to get focus otherwise ContextMenu items are disabled
+      TvFolders.Focus();
+      TvKeywords.Focus();
+
       if (!File.Exists(_argPicFile)) {
         App.Core.AppInfo.AppMode = AppMode.Browser;
         return;
