@@ -386,7 +386,7 @@
           <!-- Modifed -->
           <Border Background="#CA5100" 
                   Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding MediaItems.Modifed}" />
+            <TextBlock Text="{Binding MediaItems.ModifedCount}" />
           </Border>
 
           <!-- Dimension -->

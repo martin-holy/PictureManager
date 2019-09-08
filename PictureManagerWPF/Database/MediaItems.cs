@@ -21,7 +21,6 @@ namespace PictureManager.Database {
     private MediaItem _current;
     private bool _isEditModeOn;
     private int _selected;
-    private int _modifed;
     private int? _indexOfCurrent;
 
     public ObservableCollection<MediaItem> Items { get; } = new ObservableCollection<MediaItem>();
@@ -45,8 +44,8 @@ namespace PictureManager.Database {
 
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
-    public int Modifed { get => _modifed; set { _modifed = value; OnPropertyChanged(); } }
     public string PositionSlashCount => Current == null ? Items.Count.ToString() : $"{_indexOfCurrent + 1}/{Items.Count}";
+    public int ModifedCount => ModifedItems.Count;
     public List<MediaItem> ModifedItems = new List<MediaItem>();
 
     private BackgroundWorker _loadByTagWorker;
@@ -198,14 +197,12 @@ namespace PictureManager.Database {
     public void SetModifed(MediaItem mi, bool value) {
       if (mi.IsModifed == value) return;
       mi.IsModifed = value;
-      if (value) {
-        Modifed++;
+      if (value)
         ModifedItems.Add(mi);
-      }
-      else {
-        Modifed--;
+      else
         ModifedItems.Remove(mi);
-      }
+
+      OnPropertyChanged(nameof(ModifedCount));
     }
 
     public List<MediaItem> GetSelectedOrAll() {
