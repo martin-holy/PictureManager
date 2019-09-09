@@ -11,6 +11,7 @@ using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.ViewModel;
 using PictureManager.Database;
+using PictureManager.Dialogs;
 
 namespace PictureManager {
   /// <summary>
@@ -422,6 +423,10 @@ namespace PictureManager {
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
+      if (App.Core.MediaItems.ModifedItems.Count > 0 &&
+          MessageDialog.Show("Metadata Edit", "Some Media Items are modifed, do you want to save them?", true)) {
+        KeywordsSave();
+      }
       App.Core.Sdb.SaveAllTables();
     }
 

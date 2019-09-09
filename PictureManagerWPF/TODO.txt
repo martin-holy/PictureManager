@@ -2,7 +2,6 @@
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - na onClose dat jesli ulozit nebo zrusit editaci keywords
-- prejmenovat KeywordsEdit|Save|Cancel... na neco jinyho
 
 #New
 - on "presentation start" show slider how many seconds
@@ -11,5 +10,5 @@
 - zobrazit nejak zafiltrovany keywords, people, rating
 - ikony
 - zmenit title na favorite folder
-- Delete not used keywords na grupě
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
+- prejmenovat KeywordsEdit|Save|Cancel... na neco jinyho
