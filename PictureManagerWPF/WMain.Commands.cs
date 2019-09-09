@@ -8,6 +8,8 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using PictureManager.ViewModel;
+using PictureManager.Database;
 
 namespace PictureManager {
   public partial class WMain {
@@ -31,6 +33,7 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.TagItemNew, HandleExecute(TagItemNew)));
       CommandBindings.Add(new CommandBinding(Commands.TagItemRename, HandleExecute(TagItemRename)));
       CommandBindings.Add(new CommandBinding(Commands.TagItemDelete, HandleExecute(TagItemDelete)));
+      CommandBindings.Add(new CommandBinding(Commands.TagItemDeleteNotUsed, HandleExecute(TagItemDeleteNotUsed)));
       CommandBindings.Add(new CommandBinding(Commands.FolderNew, HandleExecute(FolderNew)));
       CommandBindings.Add(new CommandBinding(Commands.FolderRename, HandleExecute(FolderRename)));
       CommandBindings.Add(new CommandBinding(Commands.FolderDelete, HandleExecute(FolderDelete)));
@@ -185,7 +188,7 @@ namespace PictureManager {
     }
 
     private static void MediaItemsLoadByTag(object parameter) {
-      App.Core.MediaItems.LoadByTag((ViewModel.BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
+      App.Core.MediaItems.LoadByTag((BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
     private static bool CanPresentation() {
@@ -209,57 +212,80 @@ namespace PictureManager {
     }
 
     private static void CategoryGroupNew(object parameter) {
-      (parameter as ViewModel.BaseCategoryItem)?.GroupNewOrRename(null, false);
+      (parameter as BaseCategoryItem)?.GroupNewOrRename(null, false);
     }
 
     private static void CategoryGroupRename(object parameter) {
-      var group = parameter as Database.CategoryGroup;
-      (group?.Parent as ViewModel.BaseCategoryItem)?.GroupNewOrRename(group, true);
+      var group = parameter as CategoryGroup;
+      (group?.Parent as BaseCategoryItem)?.GroupNewOrRename(group, true);
     }
 
     private static void CategoryGroupDelete(object parameter) {
-      var group = parameter as Database.CategoryGroup;
-      (group?.Parent as ViewModel.BaseCategoryItem)?.GroupDelete(group);
+      var group = parameter as CategoryGroup;
+      (group?.Parent as BaseCategoryItem)?.GroupDelete(group);
     }
 
     private static void TagItemNew(object parameter) {
-      var item = parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemNewOrRename(item, false);
+      var item = parameter as BaseTreeViewItem;
+      (item?.GetTopParent() as BaseCategoryItem)?.ItemNewOrRename(item, false);
     }
 
     private static void TagItemRename(object parameter) {
-      var item = parameter as ViewModel.BaseTreeViewItem;
-      (item?.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemNewOrRename(item, true);
+      var item = parameter as BaseTreeViewItem;
+      (item?.GetTopParent() as BaseCategoryItem)?.ItemNewOrRename(item, true);
     }
 
     private static void TagItemDelete(object parameter) {
-      if (!(parameter is ViewModel.BaseTreeViewItem item)) return;
+      if (!(parameter is BaseTreeViewItem item)) return;
       if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{item.Title}'?", true)) return;
-      (item.GetTopParent() as ViewModel.BaseCategoryItem)?.ItemDelete(item);
+      (item.GetTopParent() as BaseCategoryItem)?.ItemDelete(item);
+    }
+
+    private static void TagItemDeleteNotUsed(object parameter) {
+      if (!(parameter is BaseTreeViewItem item)) return;
+      if (!(item.GetTopParent() is BaseCategoryItem topParent)) return;
+
+      if (!MessageDialog.Show("Delete Confirmation",
+        $"Do you realy want to delete not used items in '{item.Title}'?", true)) return;
+
+      switch (topParent.Category) {
+        case Category.People: {
+          foreach (var person in item.Items.Cast<Person>().Where(x => x.MediaItems.Count == 0).ToArray())
+            topParent.ItemDelete(person);
+
+          break;
+        }
+        case Category.Keywords: {
+          foreach (var keyword in item.Items.Cast<Keyword>().Where(x => x.MediaItems.Count == 0).ToArray())
+            topParent.ItemDelete(keyword);
+
+          break;
+        }
+      }
     }
 
     private static void ViewerIncludeFolder(object parameter) {
-      ((Database.Viewer) parameter).AddFolder(true);
+      ((Viewer) parameter).AddFolder(true);
     }
 
     private static void ViewerExcludeFolder(object parameter) {
-      ((Database.Viewer) parameter).AddFolder(false);
+      ((Viewer) parameter).AddFolder(false);
     }
 
     private static void ViewerRemoveFolder(object parameter) {
-      Database.Viewers.RemoveFolder((ViewModel.BaseTreeViewItem) parameter);
+      Viewers.RemoveFolder((BaseTreeViewItem) parameter);
     }
 
     private static void FolderNew(object parameter) {
-      ((Database.Folder) parameter).NewOrRename(false);
+      ((Folder) parameter).NewOrRename(false);
     }
 
     private static void FolderRename(object parameter) {
-      ((Database.Folder) parameter).NewOrRename(true);
+      ((Folder) parameter).NewOrRename(true);
     }
 
     private static void FolderDelete(object parameter) {
-      var folder = (Database.Folder) parameter;
+      var folder = (Folder) parameter;
       if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{folder.Title}' folder?", true)) return;
 
       App.Core.Folders.DeleteRecord(folder, true);
@@ -268,15 +294,15 @@ namespace PictureManager {
     }
 
     private static void FolderAddToFavorites(object parameter) {
-      App.Core.FavoriteFolders.Add((Database.Folder) parameter);
+      App.Core.FavoriteFolders.Add((Folder) parameter);
     }
 
     private static void FolderRemoveFromFavorites(object parameter) {
-      App.Core.FavoriteFolders.Remove((Database.FavoriteFolder) parameter);
+      App.Core.FavoriteFolders.Remove((FavoriteFolder) parameter);
     }
 
     private static void FolderSetAsFolderKeyword(object parameter) {
-      ((Database.Folder) parameter).IsFolderKeyword = true;
+      ((Folder) parameter).IsFolderKeyword = true;
       App.Core.Folders.Helper.Table.SaveToFile();
       App.Core.FolderKeywords.Load();
     }
@@ -295,7 +321,7 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (inputDialog.ShowDialog() ?? true) {
-        ((Database.GeoNames) parameter).New(inputDialog.Answer);
+        ((GeoNames) parameter).New(inputDialog.Answer);
       }
     }
 
@@ -520,7 +546,7 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      current.Comment = Database.MediaItems.NormalizeComment(inputDialog.TxtAnswer.Text);
+      current.Comment = MediaItems.NormalizeComment(inputDialog.TxtAnswer.Text);
       current.TryWriteMetadata();
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
@@ -537,7 +563,7 @@ namespace PictureManager {
       };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var folder = parameter as Database.Folder;
+        var folder = parameter as Folder;
         var mediaItems = folder != null
           ? folder.GetMediaItems(recursive)
           : App.Core.MediaItems.GetSelectedOrAll();
@@ -579,10 +605,10 @@ namespace PictureManager {
       };
 
       progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        List<Database.MediaItem> mediaItems;
+        List<MediaItem> mediaItems;
         switch (parameter) {
-          case Database.Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
-          case List<Database.MediaItem> items: mediaItems = items; break;
+          case Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
+          case List<MediaItem> items: mediaItems = items; break;
           default: mediaItems = App.Core.MediaItems.GetSelectedOrAll(); break;
         }
 
@@ -656,7 +682,7 @@ namespace PictureManager {
       if (App.Core.CurrentViewer != null)
         App.Core.CurrentViewer.IsDefault = false;
 
-      var viewer = (Database.Viewer) parameter;
+      var viewer = (Viewer) parameter;
       viewer.IsDefault = true;
       App.Core.Viewers.Helper.Table.SaveToFile();
 

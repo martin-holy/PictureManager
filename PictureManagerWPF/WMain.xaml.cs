@@ -9,6 +9,8 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
+using PictureManager.ViewModel;
+using PictureManager.Database;
 
 namespace PictureManager {
   /// <summary>
@@ -98,19 +100,21 @@ namespace PictureManager {
         menu.Items.Add(menuItem);
       }
 
-      if ((item as ViewModel.BaseTreeViewItem)?.GetTopParent() is ViewModel.BaseCategoryItem category) {
+      if ((item as BaseTreeViewItem)?.GetTopParent() is BaseCategoryItem category) {
 
-        if (item is ViewModel.BaseCategoryItem && category.Category == Category.GeoNames)
+        if (item is BaseCategoryItem && category.Category == Category.GeoNames)
           AddMenuItem(Commands.GeoNameNew);
 
         if (category.CanModifyItems) {
-          var cat = item as ViewModel.BaseCategoryItem;
-          var group = item as Database.CategoryGroup;
+          var cat = item as BaseCategoryItem;
+          var group = item as CategoryGroup;
 
-          if (cat != null || group != null || category.CanHaveSubItems)
+          if (cat != null || group != null || category.CanHaveSubItems) {
             AddMenuItem(Commands.TagItemNew);
+            AddMenuItem(Commands.TagItemDeleteNotUsed);
+          }
 
-          if (item is ViewModel.BaseTreeViewTagItem && group == null || item is Database.Viewer) {
+          if (item is BaseTreeViewTagItem && group == null || item is Viewer) {
             AddMenuItem(Commands.TagItemRename);
             AddMenuItem(Commands.TagItemDelete);
           }
@@ -126,7 +130,7 @@ namespace PictureManager {
       }
 
       switch (item) {
-        case Database.Folder folder: {
+        case Folder folder: {
           AddMenuItem(Commands.FolderNew);
 
           if (folder.Parent != null) {
@@ -140,22 +144,22 @@ namespace PictureManager {
           AddMenuItem(Commands.RebuildThumbnails);
           break;
         }
-        case Database.FavoriteFolder _: {
+        case FavoriteFolder _: {
           AddMenuItem(Commands.FolderRemoveFromFavorites);
           break;
         }
-        case Database.Viewer _: {
+        case Viewer _: {
           AddMenuItem(Commands.ViewerIncludeFolder);
           AddMenuItem(Commands.ViewerExcludeFolder);
           break;
         }
-        case Database.Person _:
-        case Database.Keyword _:
-        case Database.GeoName _: {
+        case Person _:
+        case Keyword _:
+        case GeoName _: {
           AddMenuItem(Commands.MediaItemsLoadByTag);
           break;
         }
-        case ViewModel.FolderKeywords _: {
+        case FolderKeywords _: {
           AddMenuItem(Commands.OpenFolderKeywordsList);
           break;
         }
@@ -195,43 +199,43 @@ namespace PictureManager {
 
     private void TreeView_OnDrop(object sender, DragEventArgs e) {
       var panel = (StackPanel) sender;
-      if (!(panel.DataContext is ViewModel.BaseTreeViewItem destData)) return;
+      if (!(panel.DataContext is BaseTreeViewItem destData)) return;
 
       // MediaItems
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
         App.Core.MediaItems.CopyMove(
-          foMode, App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), (Database.Folder) destData);
+          foMode, App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), (Folder) destData);
         App.Core.MediaItems.Helper.IsModifed = true;
       }
       // Folder
-      else if (e.Data.GetDataPresent(typeof(Database.Folder))) {
+      else if (e.Data.GetDataPresent(typeof(Folder))) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
-        var srcData = (Database.Folder) e.Data.GetData(typeof(Database.Folder));
+        var srcData = (Folder) e.Data.GetData(typeof(Folder));
 
-        App.Core.Folders.CopyMove(foMode, srcData, (Database.Folder) destData);
+        App.Core.Folders.CopyMove(foMode, srcData, (Folder) destData);
         App.Core.MediaItems.Helper.IsModifed = true;
         App.Core.Folders.Helper.IsModifed = true;
         App.Core.FolderKeywords.Load();
 
         // reload last selected source if was moved
         if (foMode == FileOperationMode.Move && srcData == App.Core.LastSelectedSource) {
-          var folder = ((Database.Folder) destData).GetByPath(srcData?.Title);
+          var folder = ((Folder) destData).GetByPath(srcData?.Title);
           if (folder == null) return;
-          ViewModel.BaseTreeViewItem.ExpandTo(folder);
+          BaseTreeViewItem.ExpandTo(folder);
           App.Core.TreeView_Select(folder, false, false, false);
         }
       }
       // Keyword
-      else if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
-        var srcData = (Database.Keyword) e.Data.GetData(typeof(Database.Keyword));
+      else if (e.Data.GetDataPresent(typeof(Keyword))) {
+        var srcData = (Keyword) e.Data.GetData(typeof(Keyword));
         if (srcData == null) return;
         var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
         App.Core.Keywords.ItemMove(srcData, destData, dropOnTop);
       }
       // Person
-      else if (e.Data.GetDataPresent(typeof(Database.Person))) {
-        var srcData = (Database.Person) e.Data.GetData(typeof(Database.Person));
+      else if (e.Data.GetDataPresent(typeof(Person))) {
+        var srcData = (Person) e.Data.GetData(typeof(Person));
         if (srcData == null) return;
         App.Core.People.ItemMove(srcData, destData);
       }
@@ -264,26 +268,26 @@ namespace PictureManager {
         var selected = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
         if (dragged != null && selected.SequenceEqual(dragged) && 
-            dataContext is Database.Folder destData && destData.IsAccessible) return;
+            dataContext is Folder destData && destData.IsAccessible) return;
       }
       else // Folder
-      if (e.Data.GetDataPresent(typeof(Database.Folder))) {
-        var srcData = (Database.Folder)e.Data.GetData(typeof(Database.Folder));
+      if (e.Data.GetDataPresent(typeof(Folder))) {
+        var srcData = (Folder)e.Data.GetData(typeof(Folder));
 
-        if (srcData != null && dataContext is Database.Folder destData && !destData.HasThisParent(srcData) && 
+        if (srcData != null && dataContext is Folder destData && !destData.HasThisParent(srcData) && 
             srcData != destData && destData.IsAccessible && srcData.Parent != destData) return;
       }
       else // Keyword
-      if (e.Data.GetDataPresent(typeof(Database.Keyword))) {
-        if (dataContext is ViewModel.BaseTreeViewItem destData &&
-            (destData.GetTopParent() as ViewModel.BaseCategoryItem)?.Category == Category.Keywords) return;
+      if (e.Data.GetDataPresent(typeof(Keyword))) {
+        if (dataContext is BaseTreeViewItem destData &&
+            (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.Keywords) return;
       }
       else // Person
-      if (e.Data.GetDataPresent(typeof(Database.Person))) {
-        var srcData = (Database.Person) e.Data.GetData(typeof(Database.Person));
+      if (e.Data.GetDataPresent(typeof(Person))) {
+        var srcData = (Person) e.Data.GetData(typeof(Person));
 
-        if (dataContext is ViewModel.BaseTreeViewItem destData && srcData?.Parent != destData &&
-            (destData.GetTopParent() as ViewModel.BaseCategoryItem)?.Category == Category.People) return;
+        if (dataContext is BaseTreeViewItem destData && srcData?.Parent != destData &&
+            (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.People) return;
       }
 
       // can't be droped
@@ -295,7 +299,7 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var mi = (Database.MediaItem) ((FrameworkElement) sender).DataContext;
+      var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
 
       App.Core.MediaItems.Select(isCtrlOn, isShiftOn, mi);
       App.Core.MarkUsedKeywordsAndPeople();
@@ -305,7 +309,7 @@ namespace PictureManager {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
       App.Core.MediaItems.DeselectAll();
-      App.Core.MediaItems.Current = (Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      App.Core.MediaItems.Current = (MediaItem) ((Grid) ((Border) sender).Child).DataContext;
       SwitchToFullScreen();
       SetMediaItemSource();
     }
@@ -315,7 +319,7 @@ namespace PictureManager {
       var dob = new DataObject();
       var data = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
-        data.Add(((Database.MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+        data.Add(((MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
@@ -391,8 +395,9 @@ namespace PictureManager {
       }
     }
 
-    private void TestButton() {
-      var tests = new Tests(App.Core);
+    private static void TestButton() {
+      var tests = new Tests();
+      tests.Run();
     }
 
     private void WMain_OnMouseMove(object sender, MouseEventArgs e) {

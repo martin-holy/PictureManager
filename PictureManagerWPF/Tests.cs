@@ -14,18 +14,15 @@ using PictureManager.ViewModel;
 
 namespace PictureManager {
   public class Tests {
-    public AppCore ACore;
 
-    public Tests(AppCore aCore) {
-      ACore = aCore;
-
+    public void Run() {
       //GetByPathTest();
       /*foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0)) {
         mi.ReadMetadata();
       }
       aCore.Sdb.SaveAllTables();*/
       //var count = aCore.MediaItems.All.Where(x => x.InfoBoxThumb.Count > 0);
-      
+
       //var result = Dialogs.MessageDialog.Show("Test title", "Test Message", false);
       //var result2 = Dialogs.MessageDialog.Show("Test title", "Test Message", true);
       //CommentChars();
@@ -90,7 +87,7 @@ namespace PictureManager {
     }
 
     public void GetByPathTest() {
-      var f = ACore.Folders.GetByPath(@"D:\!test2");
+      var f = App.Core.Folders.GetByPath(@"D:\!test2");
       var f2 = f.GetByPath(@"D:\!test2\2019");
     }
 
@@ -121,7 +118,6 @@ namespace PictureManager {
       //var focd = new FileOperationCollisionDialog(@"d:\!test2\20150410_220526_Martin.jpg", @"d:\!test2\aaa\20150410_220526_Martin.jpg") {Owner = this};
       //focd.ShowDialog();
 
-      var acore = ACore;
 
 #pragma warning disable CS0219 // The variable 'mkv' is assigned but its value is never used
       var mkv = @"d:\!test2\vid\20190324_145306_Kos a veverka_lq.mkv";

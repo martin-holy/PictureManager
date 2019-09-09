@@ -2,6 +2,7 @@
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - na onClose dat jesli ulozit nebo zrusit editaci keywords
+- prejmenovat KeywordsEdit|Save|Cancel... na neco jinyho
 
 #New
 - on "presentation start" show slider how many seconds

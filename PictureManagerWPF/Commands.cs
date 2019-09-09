@@ -21,6 +21,7 @@ namespace PictureManager {
     public static RoutedUICommand TagItemNew { get; } = new RoutedUICommand {Text = "New"};
     public static RoutedUICommand TagItemRename { get; } = new RoutedUICommand {Text = "Rename"};
     public static RoutedUICommand TagItemDelete { get; } = new RoutedUICommand {Text = "Delete"};
+    public static RoutedUICommand TagItemDeleteNotUsed { get; } = new RoutedUICommand { Text = "Delete not used" };
     public static RoutedUICommand FolderNew { get; } = new RoutedUICommand {Text = "New folder"};
     public static RoutedUICommand FolderRename { get; } = new RoutedUICommand {Text = "Rename"};
     public static RoutedUICommand FolderDelete { get; } = new RoutedUICommand {Text = "Delete"};
