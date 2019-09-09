@@ -423,7 +423,9 @@ namespace PictureManager.Database {
               foreach (var region in regions) {
                 var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
                 if (personDisplayName != null) {
-                  People.Add(App.Core.People.GetPerson(personDisplayName.ToString(), true));
+                  var person = App.Core.People.GetPerson(personDisplayName.ToString(), true);
+                  person.MediaItems.Add(this);
+                  People.Add(person);
                 }
               }
             }
@@ -447,8 +449,10 @@ namespace PictureManager.Database {
             foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
               if (Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
               var keyword = App.Core.Keywords.GetByFullPath(k);
-              if (keyword != null)
+              if (keyword != null) {
+                keyword.MediaItems.Add(this);
                 Keywords.Add(keyword);
+              }
             }
           }
 
