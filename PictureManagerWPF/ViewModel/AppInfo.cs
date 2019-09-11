@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.IO;
+using System.Linq;
 using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
@@ -32,6 +33,10 @@ namespace PictureManager.ViewModel {
     public bool IsInfoBoxPeopleVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxPeople != null;
     public bool IsInfoBoxKeywordsVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxKeywords != null;
     public bool IsImageActualZoomVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.MediaType == MediaType.Image;
+
+    public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
+    public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
+    public string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
@@ -79,6 +84,11 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(FilePath));
       }
+    }
+
+    private static string GetActiveFilterCountFor(BackgroundBrush bgb) {
+      var count = App.Core.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
+      return count == 0 ? string.Empty : count.ToString();
     }
   }
 }

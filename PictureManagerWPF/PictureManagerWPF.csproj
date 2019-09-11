@@ -179,6 +179,9 @@
     <Compile Include="WSplashScreen.xaml.cs">
       <DependentUpon>WSplashScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WTest.xaml.cs">
+      <DependentUpon>WTest.xaml</DependentUpon>
+    </Compile>
     <Page Include="Dialogs\DirectoryListDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -260,6 +263,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

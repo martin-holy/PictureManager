@@ -321,6 +321,7 @@ namespace PictureManager.Database {
     }
 
     public void Load(BaseTreeViewItem tag, bool recursive) {
+      // TODO na filter pouzivat App.Core.ActivFilterItems
       ClearItBeforeLoad();
 
       // get top folders

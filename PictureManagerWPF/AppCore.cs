@@ -50,6 +50,7 @@ namespace PictureManager {
     public bool LastSelectedSourceRecursive { get; set; }
     public BaseTreeViewItem LastSelectedSource { get; set; }
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
+    public Collection<BaseTreeViewItem> ActiveFilterItems { get; } = new Collection<BaseTreeViewItem>();
 
     public volatile int ThumbProcessCounter;
 
@@ -108,10 +109,26 @@ namespace PictureManager {
       AppInfo.MediaItemsCount = MediaItems.All.Count;
     }
 
-    public void TreeView_Select(object item, bool and, bool hide, bool recursive, object sender = null) {
-      if (item is BaseCategoryItem || item is CategoryGroup) {
-        ((BaseTreeViewItem) item).IsSelected = false;
-        return;
+    public void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive, object sender = null) {
+      switch (item) {
+        case null:
+          return;
+        case BaseCategoryItem _:
+        case CategoryGroup _:
+          item.IsSelected = false;
+          return;
+      }
+
+      void SetBackgroundBrush(BackgroundBrush backgroundBrush) {
+        item.BackgroundBrush = backgroundBrush;
+        if (backgroundBrush == BackgroundBrush.Default)
+          ActiveFilterItems.Remove(item);
+        else
+          ActiveFilterItems.Add(item);
+
+        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
+        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
+        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
       }
 
       if (MediaItems.IsEditModeOn) {
@@ -141,7 +158,6 @@ namespace PictureManager {
         }
       }
       else {
-        var bti = item as BaseTreeViewItem;
         switch (item) {
           case FavoriteFolder favoriteFolder: {
             if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
@@ -160,20 +176,19 @@ namespace PictureManager {
           case Person _:
           case Keyword _:
           case GeoName _: {
-            if (bti == null) return;
-            if (bti.BackgroundBrush != BackgroundBrush.Default)
-              bti.BackgroundBrush = BackgroundBrush.Default;
+            if (item.BackgroundBrush != BackgroundBrush.Default)
+              SetBackgroundBrush(BackgroundBrush.Default);
             else {
               if (item is Rating && !and && !hide)
-                bti.BackgroundBrush = BackgroundBrush.OrThis;
+                SetBackgroundBrush(BackgroundBrush.OrThis);
               else {
-                if (!and && !hide) bti.BackgroundBrush = BackgroundBrush.OrThis;
-                if (and && !hide) bti.BackgroundBrush = BackgroundBrush.AndThis;
-                if (!and && hide) bti.BackgroundBrush = BackgroundBrush.Hidden;
+                if (!and && !hide) SetBackgroundBrush(BackgroundBrush.OrThis);
+                if (and && !hide) SetBackgroundBrush(BackgroundBrush.AndThis);
+                if (!and && hide) SetBackgroundBrush(BackgroundBrush.Hidden);
               }
             }
 
-            bti.IsSelected = false;
+            item.IsSelected = false;
             if (LastSelectedSource != null) {
               LastSelectedSource.IsSelected = true;
               item = LastSelectedSource;
@@ -191,7 +206,7 @@ namespace PictureManager {
               return;
             }
 
-            LastSelectedSource = (BaseTreeViewItem) item;
+            LastSelectedSource = item;
             LastSelectedSource.IsSelected = true;
             LastSelectedSourceRecursive = recursive;
 
@@ -202,8 +217,7 @@ namespace PictureManager {
             break;
           }
           default: {
-            if (bti == null) return;
-            bti.IsSelected = false;
+            item.IsSelected = false;
             break;
           }
         }

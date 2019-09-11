@@ -179,7 +179,7 @@ namespace PictureManager {
        (Rating)(filter) => MBL => OR between ratings, AND in files
        */
       if (e.ChangedButton != MouseButton.Left) return;
-      App.Core.TreeView_Select(((StackPanel)sender).DataContext,
+      App.Core.TreeView_Select(((StackPanel)sender).DataContext as BaseTreeViewItem, 
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0,
