@@ -319,7 +319,9 @@ namespace PictureManager {
 
             if (mi.IsNew) {
               mi.IsNew = false;
-              
+
+              Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
+
               if (!mi.ReadMetadata()) { // delete corupted MediaItems
                 Application.Current.Dispatcher.Invoke(delegate {
                   MediaItems.Items.Remove(mi);
@@ -333,7 +335,6 @@ namespace PictureManager {
               }
 
               mi.SetThumbSize();
-              Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
               e.Result = true;
             }
 
