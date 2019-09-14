@@ -25,12 +25,9 @@
       </Border>
     </Grid>
 
-    <Grid Margin="2,0">
-      <Border Style="{StaticResource SBorderLabelShadow}" />
-      <Border Background="#8EC163" Style="{StaticResource SBorderLabelBase}">
-        <Label Content="0" Style="{StaticResource SBorderLabelLabel}" />
-      </Border>
-    </Grid>
+
+
+
 
   </StackPanel>
 </Window>

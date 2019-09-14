@@ -69,28 +69,19 @@
       <!-- Filters Panel -->
       <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Core}">
         <!-- And -->
-        <Grid Margin="2,0">
-          
-          <Border Background="#8EC163" Style="{StaticResource SBorderLabelBase}">
-            <Label Content="{Binding AppInfo.FilterAndCount}" Style="{StaticResource SBorderLabelLabel}" />
-          </Border>
-        </Grid>
+        <Border Background="#8EC163" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterAndCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
 
         <!-- Or -->
-        <Grid Margin="2,0">
-          <Border Style="{StaticResource SBorderLabelShadow}" />
-          <Border Background="#1585B5" Style="{StaticResource SBorderLabelBase}">
-            <Label Content="{Binding AppInfo.FilterOrCount}" Style="{StaticResource SBorderLabelLabel}" />
-          </Border>
-        </Grid>
+        <Border Background="#1585B5" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterOrCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
 
         <!-- Hidden -->
-        <Grid Margin="2,0">
-          <Border Style="{StaticResource SBorderLabelShadow}" />
-          <Border Background="#DE573A" Style="{StaticResource SBorderLabelBase}">
-            <Label Content="{Binding AppInfo.FilterHiddenCount}" Style="{StaticResource SBorderLabelLabel}" />
-          </Border>
-        </Grid>
+        <Border Background="#DE573A" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterHiddenCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
       </StackPanel>
 
       <!-- Log Button -->

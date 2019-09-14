@@ -126,28 +126,28 @@
         <Setter Property="HorizontalAlignment" Value="Center" />
       </Style>
 
-      <Style x:Key="SBorderLabelBase" TargetType="Border">
+      <!-- SBorderActiveFilter -->
+      <Style x:Key="SBorderActiveFilter" TargetType="Border">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="Black" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="MinWidth" Value="20" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="MinWidth" Value="22" />
         <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="2,0,0,0" />
       </Style>
 
-      <Style x:Key="SBorderLabelShadow" TargetType="Border" BasedOn="{StaticResource SBorderLabelBase}">
-        <Setter Property="BorderThickness" Value="3" />
-        <Setter Property="Effect">
-          <Setter.Value>
-            <DropShadowEffect BlurRadius="5" Color="Black" Opacity="0.7" ShadowDepth="3" />
-          </Setter.Value>
-        </Setter>
-      </Style>
-
-      <Style x:Key="SBorderLabelLabel" TargetType="Label">
+      <!-- SShadowLabel -->
+      <Style x:Key="SShadowLabel" TargetType="Label">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="-1,-1,0,0" />
         <Setter Property="Padding" Value="2,0" />
         <Setter Property="Foreground" Value="White" />
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
+          </Setter.Value>
+        </Setter>
       </Style>
 
     </ResourceDictionary>
