@@ -32,22 +32,24 @@
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.CompressPictures" />
-          <MenuItem Command="pm:Commands.RotatePictures" />
-          <MenuItem Command="pm:Commands.ReloadMetadata" />
-          <MenuItem Command="pm:Commands.RebuildThumbnails" />
-          <MenuItem Command="pm:Commands.MediaItemsShuffle" />
           <MenuItem Command="pm:Commands.OpenFolderKeywordsList" />
           <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MediaItemsSelectNotModifed" />
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
-        <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+        <MenuItem Header="Media Items" Style="{StaticResource RootMenuStyle}">
+          <MenuItem Command="pm:Commands.MediaItemsCompress" />
+          <MenuItem Command="pm:Commands.MediaItemsRebuildThumbnails" />
+          <MenuItem Command="pm:Commands.MediaItemsRotate" />
+          <MenuItem Command="pm:Commands.MediaItemsSelectNotModifed" />
+          <MenuItem Command="pm:Commands.MediaItemsShuffle" />
+        </MenuItem>
+        <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
+          <MenuItem Command="pm:Commands.MetadataEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataReload" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
                   Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}">

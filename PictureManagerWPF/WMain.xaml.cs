@@ -141,8 +141,8 @@ namespace PictureManager {
           }
 
           AddMenuItem(Commands.FolderSetAsFolderKeyword);
-          AddMenuItem(Commands.ReloadMetadata);
-          AddMenuItem(Commands.RebuildThumbnails);
+          AddMenuItem(Commands.MetadataReload2);
+          AddMenuItem(Commands.MediaItemsRebuildThumbnails);
           break;
         }
         case FavoriteFolder _: {
@@ -425,7 +425,7 @@ namespace PictureManager {
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
       if (App.Core.MediaItems.ModifedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modifed, do you want to save them?", true)) {
-        KeywordsSave();
+        MetadataSave();
       }
       App.Core.Sdb.SaveAllTables();
     }

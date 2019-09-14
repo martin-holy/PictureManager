@@ -15,10 +15,11 @@ namespace PictureManager {
   public partial class WMain {
 
     private void AddCommandBindings() {
-      //Window Commands
+      // Window Commands
       CommandBindings.Add(new CommandBinding(Commands.SwitchToFullScreen, HandleExecute(SwitchToFullScreen), HandleCanExecute(CanSwitchToFullScreen)));
       CommandBindings.Add(new CommandBinding(Commands.SwitchToBrowser, HandleExecute(SwitchToBrowser), HandleCanExecute(CanSwitchToBrowser)));
-      //MediaItems Commands
+      
+      // MediaItems Commands
       CommandBindings.Add(new CommandBinding(Commands.MediaItemNext, HandleExecute(MediaItemNext), HandleCanExecute(CanMediaItemNext)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectAll, HandleExecute(MediaItemsSelectAll), HandleCanExecute(CanMediaItemsSelectAll)));
@@ -26,7 +27,12 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsDelete, HandleExecute(MediaItemsDelete), HandleCanExecute(CanMediaItemsDelete)));
       CommandBindings.Add(new CommandBinding(Commands.MediaItemsLoadByTag, HandleExecute(MediaItemsLoadByTag)));
       CommandBindings.Add(new CommandBinding(Commands.Presentation, HandleExecute(Presentation), HandleCanExecute(CanPresentation)));
-      //TreeView Commands
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsCompress, HandleExecute(MediaItemsCompress), HandleCanExecute(CanMediaItemsCompress)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsRotate, HandleExecute(MediaItemsRotate), HandleCanExecute(CanMediaItemsRotate)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsRebuildThumbnails, HandleExecute(MediaItemsRebuildThumbnails), HandleCanExecute(CanMediaItemsRebuildThumbnails)));
+      CommandBindings.Add(new CommandBinding(Commands.MediaItemsShuffle, HandleExecute(MediaItemsShuffle), HandleCanExecute(CanMediaItemsShuffle)));
+      
+      // TreeView Commands
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupNew, HandleExecute(CategoryGroupNew)));
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupRename, HandleExecute(CategoryGroupRename)));
       CommandBindings.Add(new CommandBinding(Commands.CategoryGroupDelete, HandleExecute(CategoryGroupDelete)));
@@ -44,16 +50,16 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.ViewerExcludeFolder, HandleExecute(ViewerExcludeFolder)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerRemoveFolder, HandleExecute(ViewerRemoveFolder)));
       CommandBindings.Add(new CommandBinding(Commands.GeoNameNew, HandleExecute(GeoNameNew)));
-      //Menu Commands
-      CommandBindings.Add(new CommandBinding(Commands.KeywordsEdit, HandleExecute(KeywordsEdit), HandleCanExecute(CanKeywordsEdit)));
-      CommandBindings.Add(new CommandBinding(Commands.KeywordsSave, HandleExecute(KeywordsSave), HandleCanExecute(CanKeywordsSave)));
-      CommandBindings.Add(new CommandBinding(Commands.KeywordsCancel, HandleExecute(KeywordsCancel), HandleCanExecute(CanKeywordsCancel)));
-      CommandBindings.Add(new CommandBinding(Commands.KeywordsComment, HandleExecute(KeywordsComment), HandleCanExecute(CanKeywordsComment)));
-      CommandBindings.Add(new CommandBinding(Commands.CompressPictures, HandleExecute(CompressPictures), HandleCanExecute(CanCompressPictures)));
-      CommandBindings.Add(new CommandBinding(Commands.RotatePictures, HandleExecute(RotatePictures), HandleCanExecute(CanRotatePictures)));
+      
+      // Metadata Commands
+      CommandBindings.Add(new CommandBinding(Commands.MetadataEdit, HandleExecute(MetadataEdit), HandleCanExecute(CanMetadataEdit)));
+      CommandBindings.Add(new CommandBinding(Commands.MetadataSave, HandleExecute(MetadataSave), HandleCanExecute(CanMetadataSave)));
+      CommandBindings.Add(new CommandBinding(Commands.MetadataCancel, HandleExecute(MetadataCancel), HandleCanExecute(CanMetadataCancel)));
+      CommandBindings.Add(new CommandBinding(Commands.MetadataComment, HandleExecute(MetadataComment), HandleCanExecute(CanMetadataComment)));
+      CommandBindings.Add(new CommandBinding(Commands.MetadataReload, HandleExecute(MetadataReload), HandleCanExecute(CanMetadataReload)));
+      CommandBindings.Add(new CommandBinding(Commands.MetadataReload2, HandleExecute(MetadataReload), HandleCanExecute(CanMetadataReload)));
+      
       CommandBindings.Add(new CommandBinding(Commands.TestButton, HandleExecute(TestButton)));
-      CommandBindings.Add(new CommandBinding(Commands.ReloadMetadata, HandleExecute(ReloadMetadata)));
-      CommandBindings.Add(new CommandBinding(Commands.RebuildThumbnails, HandleExecute(RebuildThumbnails)));
       CommandBindings.Add(new CommandBinding(Commands.OpenSettings, HandleExecute(OpenSettings)));
       CommandBindings.Add(new CommandBinding(Commands.AddGeoNamesFromFiles, HandleExecute(AddGeoNamesFromFiles), HandleCanExecute(CanAddGeoNamesFromFiles)));
       CommandBindings.Add(new CommandBinding(Commands.ViewerChange, HandleExecute(ViewerChange)));
@@ -61,7 +67,6 @@ namespace PictureManager {
       CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
       CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
       CommandBindings.Add(new CommandBinding(Commands.OpenLog, HandleExecute(OpenLog)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsShuffle, HandleExecute(MediaItemsShuffle), HandleCanExecute(CanMediaItemsShuffle)));
     }
 
     private void AddInputBindings() {
@@ -98,12 +103,12 @@ namespace PictureManager {
       };
     }
 
-    /*private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
+    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
       return (o, e) => {
         e.CanExecute = canExecute(e.Parameter);
         e.Handled = true;
       };
-    }*/
+    }
 
     private static bool CanMediaItemNext() {
       return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.GetNext() != null;
@@ -325,19 +330,19 @@ namespace PictureManager {
       }
     }
 
-    private static bool CanCompressPictures() {
+    private static bool CanMediaItemsCompress() {
       return App.Core.MediaItems.Items.Count > 0;
     }
 
-    private void CompressPictures() {
+    private void MediaItemsCompress() {
       CompressDialog.ShowDialog(this);
     }
 
-    private static bool CanRotatePictures() {
+    private static bool CanMediaItemsRotate() {
       return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
     }
 
-    private void RotatePictures() {
+    private void MediaItemsRotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
       App.Core.MediaItems.SetOrientation(App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), rotation);
@@ -408,11 +413,11 @@ namespace PictureManager {
       fkl.ShowDialog();
     }
 
-    private static bool CanKeywordsEdit() {
+    private static bool CanMetadataEdit() {
       return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.Items.Count > 0;
     }
 
-    private void KeywordsEdit() {
+    private void MetadataEdit() {
       Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)] = TabFolders.IsSelected;
       if (App.Core.LastSelectedSource != null)
         App.Core.LastSelectedSource.IsSelected = TabFolders.IsSelected;
@@ -420,18 +425,18 @@ namespace PictureManager {
       App.Core.MediaItems.IsEditModeOn = true;
     }
 
-    private static bool CanKeywordsSave() {
+    private static bool CanMetadataSave() {
       return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifedItems.Count > 0;
     }
 
-    private void KeywordsSave() {
+    private void MetadataSave() {
       var items = App.Core.MediaItems.ModifedItems.ToList();
       var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
         if (e.Cancelled) {
           progress.Close();
-          KeywordsCancel();
+          MetadataCancel();
           return;
         }
 
@@ -469,11 +474,11 @@ namespace PictureManager {
       progress.ShowDialog();
     }
 
-    private static bool CanKeywordsCancel() {
+    private static bool CanMetadataCancel() {
       return App.Core.MediaItems.IsEditModeOn;
     }
 
-    private void KeywordsCancel() {
+    private void MetadataCancel() {
       var items = App.Core.MediaItems.ModifedItems.ToList();
       var progress = new ProgressBarDialog(this, true);
 
@@ -520,11 +525,11 @@ namespace PictureManager {
       progress.ShowDialog();
     }
 
-    private static bool CanKeywordsComment() {
+    private static bool CanMetadataComment() {
       return App.Core.MediaItems.Items.Count(x => x.IsSelected) == 1;
     }
 
-    private void KeywordsComment() {
+    private void MetadataComment() {
       var current = App.Core.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = this,
@@ -553,7 +558,11 @@ namespace PictureManager {
       App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsCommentVisible));
     }
 
-    private void ReloadMetadata(object parameter) {
+    private bool CanMetadataReload(object parameter) {
+      return parameter is Folder || App.Core.MediaItems.Items.Count > 0;
+    }
+
+    private void MetadataReload(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var progress = new ProgressBarDialog(this, true);
 
@@ -593,7 +602,11 @@ namespace PictureManager {
       progress.Show();
     }
 
-    public void RebuildThumbnails(object parameter) {
+    public bool CanMediaItemsRebuildThumbnails(object parameter) {
+      return parameter is Folder || App.Core.MediaItems.Items.Count > 0;
+    }
+
+    public void MediaItemsRebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var progress = new ProgressBarDialog(this, true);
       App.Core.ThumbProcessCounter = 0;
