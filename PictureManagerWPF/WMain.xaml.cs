@@ -182,8 +182,7 @@ namespace PictureManager {
       App.Core.TreeView_Select(((StackPanel)sender).DataContext as BaseTreeViewItem, 
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
-        (Keyboard.Modifiers & ModifierKeys.Shift) > 0,
-        sender);
+        (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
     private void TreeView_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

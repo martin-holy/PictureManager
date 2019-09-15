@@ -121,23 +121,31 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive, object sender = null) {
-      switch (item) {
-        case null:
-          return;
-        case BaseCategoryItem _:
-        case CategoryGroup _:
-          item.IsSelected = false;
-          return;
-      }
+    public void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive) {
+      if (item == null) return;
+      item.IsSelected = false;
 
-      if (MediaItems.IsEditModeOn) {
-        if (!(item is BaseTreeViewTagItem bti)) return;
-        switch (item) {
-          case Rating _:
-          case Person _:
-          case Keyword _:
-          case GeoName _: {
+      switch (item) {
+        case FavoriteFolder favoriteFolder: {
+          if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
+          BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
+
+          // scroll to folder
+          var visibleTreeIndex = 0;
+          Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
+          var offset = (FavoriteFolders.Items.Count + visibleTreeIndex) * 25;
+          var border = VisualTreeHelper.GetChild(App.WMain.TvFolders, 0);
+          var scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
+          scrollViewer?.ScrollToVerticalOffset(offset);
+          break;
+        }
+        case Rating _:
+        case Person _:
+        case Keyword _:
+        case GeoName _: {
+          if (MediaItems.IsEditModeOn) {
+            if (!(item is BaseTreeViewTagItem bti)) return;
+
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
               MarkedTags.Add(bti);
@@ -149,33 +157,8 @@ namespace PictureManager {
             MediaItems.SetMetadata(item);
 
             MarkUsedKeywordsAndPeople();
-            break;
           }
-          default: {
-            bti.IsSelected = false;
-            break;
-          }
-        }
-      }
-      else {
-        switch (item) {
-          case FavoriteFolder favoriteFolder: {
-            if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
-            BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
-            
-            // scroll to folder
-            var visibleTreeIndex = 0;
-            Folders.GetVisibleTreeIndexFor(Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
-            var offset = (FavoriteFolders.Items.Count + visibleTreeIndex) * 25;
-            var border = VisualTreeHelper.GetChild(App.WMain.TvFolders, 0);
-            var scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-            scrollViewer?.ScrollToVerticalOffset(offset);
-            break;
-          }
-          case Rating _:
-          case Person _:
-          case Keyword _:
-          case GeoName _: {
+          else {
             if (item.BackgroundBrush != BackgroundBrush.Default)
               SetBackgroundBrush(item, BackgroundBrush.Default);
             else {
@@ -188,38 +171,25 @@ namespace PictureManager {
               }
             }
 
-            item.IsSelected = false;
-            if (LastSelectedSource != null) {
-              LastSelectedSource.IsSelected = true;
-              item = LastSelectedSource;
-              recursive = LastSelectedSourceRecursive;
-            }
-            break;
+            // reload with new filter
+            TreeView_Select(LastSelectedSource, false, false, LastSelectedSourceRecursive);
           }
+
+          break;
         }
+        case Folder _:
+        case FolderKeyword _: {
+          if (item is Folder folder && !folder.IsAccessible) return;
 
-        switch (item) {
-          case Folder _:
-          case FolderKeyword _: {
-            if (item is Folder folder && !folder.IsAccessible) {
-              folder.IsSelected = false;
-              return;
-            }
+          LastSelectedSource = item;
+          LastSelectedSource.IsSelected = true;
+          LastSelectedSourceRecursive = recursive;
 
-            LastSelectedSource = item;
-            LastSelectedSource.IsSelected = true;
-            LastSelectedSourceRecursive = recursive;
-
-            AppInfo.AppMode = AppMode.Browser;
-            MediaItems.ScrollToTop();
-            MediaItems.Load(LastSelectedSource, recursive);
-            LoadThumbnails();
-            break;
-          }
-          default: {
-            item.IsSelected = false;
-            break;
-          }
+          AppInfo.AppMode = AppMode.Browser;
+          MediaItems.ScrollToTop();
+          MediaItems.Load(LastSelectedSource, recursive);
+          LoadThumbnails();
+          break;
         }
       }
     }

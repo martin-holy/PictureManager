@@ -353,12 +353,10 @@ namespace PictureManager {
 
     private void OpenSettings() {
       var settings = new WSettings {Owner = this};
-      if (settings.ShowDialog() ?? true) {
+      if (settings.ShowDialog() ?? true)
         Settings.Default.Save();
-      }
-      else {
+      else
         Settings.Default.Reload();
-      }
     }
 
     private void OpenAbout() {
@@ -558,7 +556,7 @@ namespace PictureManager {
       App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsCommentVisible));
     }
 
-    private bool CanMetadataReload(object parameter) {
+    private static bool CanMetadataReload(object parameter) {
       return parameter is Folder || App.Core.MediaItems.Items.Count > 0;
     }
 
