@@ -320,8 +320,65 @@ namespace PictureManager.Database {
       SplitedItems.Clear();
     }
 
+    private static List<MediaItem> Filter(List<MediaItem> mediaItems) {
+      //Ratings
+      var chosenRatings = App.Core.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
+      if (chosenRatings.Any())
+        mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
+
+      //MediaItemSizes
+      if (!App.Core.MediaItemSizes.Size.AllSizes())
+        mediaItems = mediaItems.Where(mi => mi.IsNew || App.Core.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
+
+      //People
+      var orPeople = App.Core.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andPeople = App.Core.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notPeople = App.Core.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andPeopleAny = andPeople.Any();
+      var orPeopleAny = orPeople.Any();
+      if (orPeopleAny || andPeopleAny || notPeople.Any()) {
+        mediaItems = mediaItems.Where(mi => {
+          if (mi.IsNew)
+            return true;
+          if (mi.People != null && notPeople.Any(p => mi.People.Any(x => x == p)))
+            return false;
+          if (!andPeopleAny && !orPeopleAny)
+            return true;
+          if (mi.People != null && andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p)))
+            return true;
+          if (mi.People != null && orPeople.Any(p => mi.People.Any(x => x == p)))
+            return true;
+
+          return false;
+        }).ToList();
+      }
+
+      //Keywords
+      var orKeywords = App.Core.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andKeywords = App.Core.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notKeywords = App.Core.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andKeywordsAny = andKeywords.Any();
+      var orKeywordsAny = orKeywords.Any();
+      if (orKeywordsAny || andKeywordsAny || notKeywords.Any()) {
+        mediaItems = mediaItems.Where(mi => {
+          if (mi.IsNew)
+            return true;
+          if (mi.Keywords != null && notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return false;
+          if (!andKeywordsAny && !orKeywordsAny)
+            return true;
+          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return true;
+          if (mi.Keywords != null && orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
+            return true;
+          return false;
+        }).ToList();
+      }
+
+      return mediaItems;
+    }
+
     public void Load(BaseTreeViewItem tag, bool recursive) {
-      // TODO na filter pouzivat App.Core.ActivFilterItems
       ClearItBeforeLoad();
 
       // get top folders
@@ -366,63 +423,7 @@ namespace PictureManager.Database {
         }
       }
 
-      #region Filtering
-
-      //Ratings
-      var chosenRatings = App.Core.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
-      if (chosenRatings.Any())
-        mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
-
-      //MediaItemSizes
-      if (!App.Core.MediaItemSizes.Size.AllSizes())
-        mediaItems = mediaItems.Where(mi => mi.IsNew || App.Core.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
-
-      //People
-      var orPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notPeople = App.Core.People.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andPeopleAny = andPeople.Any();
-      var orPeopleAny = orPeople.Any();
-      if (orPeopleAny || andPeopleAny || notPeople.Any()) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.People != null && notPeople.Any(p => mi.People.Any(x => x == p)))
-            return false;
-          if (!andPeopleAny && !orPeopleAny)
-            return true;
-          if (mi.People != null && andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p)))
-            return true;
-          if (mi.People != null && orPeople.Any(p => mi.People.Any(x => x == p)))
-            return true;
-
-          return false;
-        }).ToList();
-      }
-
-      //Keywords
-      var orKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notKeywords = App.Core.Keywords.All.Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andKeywordsAny = andKeywords.Any();
-      var orKeywordsAny = orKeywords.Any();
-      if (orKeywordsAny || andKeywordsAny || notKeywords.Any()) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.Keywords != null && notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return false;
-          if (!andKeywordsAny && !orKeywordsAny)
-            return true;
-          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return true;
-          if (mi.Keywords != null && orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return true;
-          return false;
-        }).ToList();
-      }
-
-      #endregion
+      mediaItems = Filter(mediaItems);
 
       foreach (var mi in mediaItems.OrderBy(x => x.FileName)) {
         mi.SetThumbSize();
@@ -486,7 +487,11 @@ namespace PictureManager.Database {
             return;
           }
 
-          foreach (var item in (List<MediaItem>) e.Result)
+          // add tag to ActiveFilterItems 
+          App.Core.SetBackgroundBrush(tag, BackgroundBrush.AndThis);
+
+          // add filtered items
+          foreach (var item in Filter((List<MediaItem>)e.Result))
             Items.Add(item);
 
           App.Core.SetMediaItemSizesLoadedRange();

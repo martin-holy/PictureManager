@@ -50,7 +50,7 @@ namespace PictureManager {
     public bool LastSelectedSourceRecursive { get; set; }
     public BaseTreeViewItem LastSelectedSource { get; set; }
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
-    public Collection<BaseTreeViewItem> ActiveFilterItems { get; } = new Collection<BaseTreeViewItem>();
+    public HashSet<BaseTreeViewItem> ActiveFilterItems { get; } = new HashSet<BaseTreeViewItem>();
 
     public volatile int ThumbProcessCounter;
 
@@ -109,6 +109,18 @@ namespace PictureManager {
       AppInfo.MediaItemsCount = MediaItems.All.Count;
     }
 
+    public void SetBackgroundBrush(BaseTreeViewItem item, BackgroundBrush backgroundBrush) {
+      item.BackgroundBrush = backgroundBrush;
+      if (backgroundBrush == BackgroundBrush.Default)
+        ActiveFilterItems.Remove(item);
+      else
+        ActiveFilterItems.Add(item);
+
+      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
+      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
+      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
+    }
+
     public void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive, object sender = null) {
       switch (item) {
         case null:
@@ -117,18 +129,6 @@ namespace PictureManager {
         case CategoryGroup _:
           item.IsSelected = false;
           return;
-      }
-
-      void SetBackgroundBrush(BackgroundBrush backgroundBrush) {
-        item.BackgroundBrush = backgroundBrush;
-        if (backgroundBrush == BackgroundBrush.Default)
-          ActiveFilterItems.Remove(item);
-        else
-          ActiveFilterItems.Add(item);
-
-        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
-        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
-        AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
       }
 
       if (MediaItems.IsEditModeOn) {
@@ -177,14 +177,14 @@ namespace PictureManager {
           case Keyword _:
           case GeoName _: {
             if (item.BackgroundBrush != BackgroundBrush.Default)
-              SetBackgroundBrush(BackgroundBrush.Default);
+              SetBackgroundBrush(item, BackgroundBrush.Default);
             else {
               if (item is Rating && !and && !hide)
-                SetBackgroundBrush(BackgroundBrush.OrThis);
+                SetBackgroundBrush(item, BackgroundBrush.OrThis);
               else {
-                if (!and && !hide) SetBackgroundBrush(BackgroundBrush.OrThis);
-                if (and && !hide) SetBackgroundBrush(BackgroundBrush.AndThis);
-                if (!and && hide) SetBackgroundBrush(BackgroundBrush.Hidden);
+                if (!and && !hide) SetBackgroundBrush(item, BackgroundBrush.OrThis);
+                if (and && !hide) SetBackgroundBrush(item, BackgroundBrush.AndThis);
+                if (!and && hide) SetBackgroundBrush(item, BackgroundBrush.Hidden);
               }
             }
 

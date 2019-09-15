@@ -10,4 +10,3 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
-- prejmenovat KeywordsEdit|Save|Cancel... na neco jinyho
