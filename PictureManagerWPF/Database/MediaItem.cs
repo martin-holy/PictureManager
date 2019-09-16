@@ -322,10 +322,9 @@ namespace PictureManager.Database {
               bSuccess = true;
             }
             catch (Exception ex) {
-              hResult = ex.HResult;
-              if (hResult != -2146233033)
-                App.Core.LogError(ex, FilePath);
               bSuccess = false;
+              hResult = ex.HResult;
+              App.Core.LogError(ex, FilePath);
             }
 
             //There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
