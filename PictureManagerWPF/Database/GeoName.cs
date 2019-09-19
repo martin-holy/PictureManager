@@ -5,7 +5,7 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class GeoName : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; } // this is GeoNameId not just DB Id
+    public int Id { get; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();

@@ -13,11 +13,11 @@ using PictureManager.Properties;
 using Application = System.Windows.Application;
 
 namespace PictureManager.Database {
-  public class MediaItem : INotifyPropertyChanged, IRecord {
+  public class MediaItem : INotifyPropertyChanged, IRecord, IEquatable<MediaItem> {
     public string[] Csv { get; set; }
 
     // DB Fields
-    public int Id { get; set; }
+    public int Id { get; }
     public Folder Folder { get; set; }
     public string FileName { get; set; }
     public int Width { get; set; }
@@ -68,6 +68,30 @@ namespace PictureManager.Database {
         ? MediaType.Image
         : MediaType.Video;
     }
+
+    #region IEquatable implementation
+
+    public bool Equals(MediaItem other) {
+      return Id == other?.Id;
+    }
+
+    public override bool Equals(object obj) {
+      return Equals(obj as MediaItem);
+    }
+
+    public override int GetHashCode() {
+      return Id;
+    }
+
+    public static bool operator ==(MediaItem mi1, MediaItem mi2) {
+      return mi1?.Equals(mi2) ?? ReferenceEquals(mi2, null);
+    }
+
+    public static bool operator !=(MediaItem mi1, MediaItem mi2) {
+      return !(mi1 == mi2);
+    }
+
+    #endregion
 
     public string ToCsv() {
       // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords
@@ -186,14 +210,32 @@ namespace PictureManager.Database {
     }
 
     public MediaItem CopyTo(Folder folder, string fileName) {
-      var copy = (MediaItem)MemberwiseClone();
-      copy.Id = App.Core.MediaItems.Helper.GetNextId();
-      copy.FileName = fileName;
-      copy.Folder = folder;
+      var copy = new MediaItem(App.Core.MediaItems.Helper.GetNextId(), folder, fileName) {
+        Width = Width,
+        Height = Height,
+        Orientation = Orientation,
+        Rating = Rating,
+        Comment = Comment,
+        GeoName = GeoName,
+        Lat = Lat,
+        Lng = Lng
+      };
+
+      if (People != null) {
+        copy.People = new List<Person>(People);
+        copy.People.ForEach(x => x.MediaItems.Add(copy));
+      }
+
+      if (Keywords != null) {
+        copy.Keywords = new List<Keyword>(Keywords);
+        copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
+      }
+
       copy.Folder.MediaItems.Add(copy);
       copy.GeoName?.MediaItems.Add(copy);
-      copy.People?.ForEach(x => x.MediaItems.Add(copy));
-      copy.Keywords?.ForEach(x => x.MediaItems.Add(copy));
+      
+      copy.SetThumbSize();
+      copy.SetInfoBox();
 
       App.Core.MediaItems.AddRecord(copy);
       App.Core.AppInfo.MediaItemsCount++;

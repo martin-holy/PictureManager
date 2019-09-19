@@ -4,7 +4,7 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class CategoryGroup : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
     public Category Category { get; set; }
 
     public CategoryGroup(int id, string name, Category category) {

@@ -4,7 +4,7 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class Person : BaseTreeViewTagItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
 
     public Person(int id, string name) {

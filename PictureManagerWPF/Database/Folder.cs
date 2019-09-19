@@ -9,7 +9,7 @@ using PictureManager.Properties;
 namespace PictureManager.Database {
   public sealed class Folder : BaseTreeViewItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
     public bool IsFolderKeyword { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public FolderKeyword FolderKeyword { get; set; }

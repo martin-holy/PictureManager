@@ -140,7 +140,7 @@ namespace PictureManager.Database {
   }
 
   public interface IRecord {
-    int Id { get; set; }
+    int Id { get; }
     string[] Csv { get; set; }
     string ToCsv();
   }

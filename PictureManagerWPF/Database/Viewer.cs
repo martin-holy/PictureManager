@@ -6,7 +6,7 @@ using PictureManager.ViewModel;
 namespace PictureManager.Database {
   public sealed class Viewer : BaseTreeViewItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
     public bool IsDefault { get; set; } 
 
     public BaseTreeViewItem IncludedFolders { get; }

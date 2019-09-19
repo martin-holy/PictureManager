@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using PictureManager.Database;
 using PictureManager.Dialogs;
 using PictureManager.ViewModel;
 
@@ -33,9 +34,9 @@ namespace PictureManager {
       var test2 = Text2Path("⤺");
       var test3 = Text2Path("⤺", false, true);*/
 
-      foreach (var mi in App.Core.MediaItems.Items) {
+      /*foreach (var mi in App.Core.MediaItems.Items) {
         mi.ReloadThumbnail();
-      }
+      }*/
 
 
       //ErrorDialog.Show(new ArgumentNullException("message 1", new AggregateException()), "Test");

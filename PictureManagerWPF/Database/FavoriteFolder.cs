@@ -3,7 +3,7 @@
 namespace PictureManager.Database {
   public class FavoriteFolder : BaseTreeViewItem, IRecord {
     public string[] Csv { get; set; }
-    public int Id { get; set; }
+    public int Id { get; }
     public Folder Folder { get; set; }
 
     public FavoriteFolder(int id) {
