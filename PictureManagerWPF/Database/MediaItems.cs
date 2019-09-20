@@ -402,12 +402,14 @@ namespace PictureManager.Database {
 
       // get all MediaItems
       var mediaItems = new List<MediaItem>();
+      var folderMediaItems = new List<MediaItem>();
       foreach (var folder in allFolders.Cast<Folder>()) {
+        folderMediaItems.Clear();
 
         // add MediaItems from current Folder to dictionary for faster search
         var fmis = new Dictionary<string, MediaItem>();
         folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
-
+        
         foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
           if (!IsSupportedFileType(file) || !Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, file)) continue;
 
@@ -419,7 +421,15 @@ namespace PictureManager.Database {
             AddRecord(inDbFile);
             folder.MediaItems.Add(inDbFile);
           }
-          mediaItems.Add(inDbFile);
+          folderMediaItems.Add(inDbFile);
+        }
+
+        mediaItems.AddRange(folderMediaItems);
+
+        // remove MediaItems deleted outside of this application
+        foreach (var fmi in folder.MediaItems.ToArray()) {
+          if (folderMediaItems.Contains(fmi)) continue;
+          Delete(fmi);
         }
       }
 
