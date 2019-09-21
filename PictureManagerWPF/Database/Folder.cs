@@ -7,7 +7,7 @@ using PictureManager.Dialogs;
 using PictureManager.Properties;
 
 namespace PictureManager.Database {
-  public sealed class Folder : BaseTreeViewItem, IRecord {
+  public sealed class Folder : BaseTreeViewItem, IRecord, IEquatable<Folder> {
     public string[] Csv { get; set; }
     public int Id { get; }
     public bool IsFolderKeyword { get; set; }
@@ -46,6 +46,30 @@ namespace PictureManager.Database {
         IsFolderKeyword ? "1" : string.Empty);
     }
 
+    #region IEquatable implementation
+
+    public bool Equals(Folder other) {
+      return Id == other?.Id;
+    }
+
+    public override bool Equals(object obj) {
+      return Equals(obj as Folder);
+    }
+
+    public override int GetHashCode() {
+      return Id;
+    }
+
+    public static bool operator ==(Folder f1, Folder f2) {
+      return f1?.Equals(f2) ?? ReferenceEquals(f2, null);
+    }
+
+    public static bool operator !=(Folder f1, Folder f2) {
+      return !(f1 == f2);
+    }
+
+    #endregion
+
     private void Rename(string newName) {
       Directory.Move(FullPath, Extensions.PathCombine(((Folder) Parent).FullPath, newName));
       if (Directory.Exists(FullPathCache))
@@ -54,7 +78,7 @@ namespace PictureManager.Database {
       App.Core.Folders.Helper.IsModifed = true;
 
       // reload if the folder was selected before
-      if (App.Core.LastSelectedSource == this)
+      if (App.Core.LastSelectedSource is Folder folder && folder == this)
         App.Core.TreeView_Select(this, false, false, App.Core.LastSelectedSourceRecursive);
     }
 
