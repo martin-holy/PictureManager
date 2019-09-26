@@ -1,6 +1,7 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- MediaItems 501 App.Core.SetBackgroundBrush(tag, BackgroundBrush.AndThis); tag neobsahuje tag za kterej se loaduje
 
 #New
 - on "presentation start" show slider how many seconds

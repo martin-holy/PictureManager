@@ -471,7 +471,7 @@ namespace PictureManager.Database {
             return;
           }
 
-          var allItems = (MediaItem[]) e.Argument;
+          var allItems = (MediaItem[]) ((object[]) e.Argument)[0];
           var resultItems = new List<MediaItem>();
           var dirs = (from mi in allItems select mi.Folder).Distinct()
             .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
@@ -487,6 +487,9 @@ namespace PictureManager.Database {
             resultItems.Add(item);
           }
 
+          // add tag to ActiveFilterItems 
+          App.Core.SetBackgroundBrush((BaseTreeViewItem) ((object[]) e.Argument)[1], BackgroundBrush.AndThis);
+
           e.Result = resultItems;
         };
 
@@ -496,9 +499,6 @@ namespace PictureManager.Database {
             _loadByTagWorker.RunWorkerAsync(items);
             return;
           }
-
-          // add tag to ActiveFilterItems 
-          App.Core.SetBackgroundBrush(tag, BackgroundBrush.AndThis);
 
           // add filtered items
           foreach (var item in Filter((List<MediaItem>)e.Result))
@@ -516,7 +516,7 @@ namespace PictureManager.Database {
         return;
       }
 
-      _loadByTagWorker.RunWorkerAsync(items);
+      _loadByTagWorker.RunWorkerAsync(new object[] {items, tag});
     }
 
     public void ScrollToCurrent() {
