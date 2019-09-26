@@ -23,7 +23,8 @@ namespace PictureManager.Database {
     private int _selected;
     private int? _indexOfCurrent;
 
-    public ObservableCollection<MediaItem> Items { get; } = new ObservableCollection<MediaItem>();
+    public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
+    public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
     public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
 
     public MediaItem Current {
@@ -32,7 +33,7 @@ namespace PictureManager.Database {
         if (_current != null) SetSelected(_current, false);
         _current = value;
         if (_current != null) SetSelected(_current, true);
-        _indexOfCurrent = value == null ? null : (int?) Items.IndexOf(value);
+        _indexOfCurrent = value == null ? null : (int?) FilteredItems.IndexOf(value);
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
         App.Core.AppInfo.CurrentMediaItem = value;
@@ -45,7 +46,8 @@ namespace PictureManager.Database {
 
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
-    public string PositionSlashCount => Current == null ? Items.Count.ToString() : $"{_indexOfCurrent + 1}/{Items.Count}";
+    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
+
     public int ModifedCount => ModifedItems.Count;
     public List<MediaItem> ModifedItems = new List<MediaItem>();
 
@@ -207,24 +209,33 @@ namespace PictureManager.Database {
     }
 
     public List<MediaItem> GetSelectedOrAll() {
-      var mediaItems = Items.Where(x => x.IsSelected).ToList();
-      return mediaItems.Count == 0 ? Items.ToList() : mediaItems;
+      var mediaItems = FilteredItems.Where(x => x.IsSelected).ToList();
+      return mediaItems.Count == 0 ? FilteredItems.ToList() : mediaItems;
     }
 
     public void SelectAll() {
       Current = null;
-      foreach (var mi in Items.Where(x => !x.IsSelected))
+      foreach (var mi in FilteredItems)
         SetSelected(mi, true);
     }
 
     public void DeselectAll() {
       Current = null;
-      foreach (var mi in Items.Where(x => x.IsSelected))
+      foreach (var mi in LoadedItems)
         SetSelected(mi, false);
     }
 
-    public void SetMetadata(object tag) {
-      foreach (var mi in Items.Where(x => x.IsSelected)) {
+    public void SelectNotModifed() {
+      Current = null;
+      foreach (var mi in FilteredItems) {
+        SetSelected(mi, false);
+        if (!mi.IsModifed)
+          SetSelected(mi, true);
+      }
+    }
+
+  public void SetMetadata(object tag) {
+      foreach (var mi in FilteredItems.Where(x => x.IsSelected)) {
         SetModifed(mi, true);
 
         switch (tag) {
@@ -305,19 +316,34 @@ namespace PictureManager.Database {
 
     private void ClearItBeforeLoad() {
       Current = null;
-      foreach (var item in Items) {
+      foreach (var item in LoadedItems) {
         SetSelected(item, false);
         item.InfoBoxThumb = null;
         item.InfoBoxPeople = null;
         item.InfoBoxKeywords = null;
       }
 
-      Items.Clear();
-      foreach (var splitedItem in SplitedItems) {
+      LoadedItems.Clear();
+      FilteredItems.Clear();
+
+      foreach (var splitedItem in SplitedItems)
         splitedItem.Clear();
-      }
 
       SplitedItems.Clear();
+    }
+
+    public void ReapplyFilter() {
+      Current = null;
+      ScrollToTop();
+      FilteredItems.Clear();
+
+      foreach (var mi in Filter(LoadedItems))
+        FilteredItems.Add(mi);
+
+      OnPropertyChanged(nameof(PositionSlashCount));
+      App.Core.MarkUsedKeywordsAndPeople();
+
+      SplitedItemsReload();
     }
 
     private static List<MediaItem> Filter(List<MediaItem> mediaItems) {
@@ -433,12 +459,13 @@ namespace PictureManager.Database {
         }
       }
 
-      mediaItems = Filter(mediaItems);
-
       foreach (var mi in mediaItems.OrderBy(x => x.FileName)) {
         mi.SetThumbSize();
-        Items.Add(mi);
+        LoadedItems.Add(mi);
       }
+
+      foreach (var mi in Filter(LoadedItems))
+        FilteredItems.Add(mi);
 
       App.Core.SetMediaItemSizesLoadedRange();
       OnPropertyChanged(nameof(PositionSlashCount));
@@ -500,9 +527,13 @@ namespace PictureManager.Database {
             return;
           }
 
+          // add loaded items
+          foreach (var mi in (List<MediaItem>)e.Result)
+            LoadedItems.Add(mi);
+
           // add filtered items
-          foreach (var item in Filter((List<MediaItem>)e.Result))
-            Items.Add(item);
+          foreach (var mi in Filter(LoadedItems))
+            FilteredItems.Add(mi);
 
           App.Core.SetMediaItemSizesLoadedRange();
           OnPropertyChanged(nameof(PositionSlashCount));
@@ -542,21 +573,22 @@ namespace PictureManager.Database {
     }
 
     public void RemoveSelected(bool delete) {
-      var firstSelected = Items.FirstOrDefault(x => x.IsSelected);
+      var firstSelected = FilteredItems.FirstOrDefault(x => x.IsSelected);
       if (firstSelected == null) return;
-      var indexOfFirstSelected = Items.IndexOf(firstSelected);
+      var indexOfFirstSelected = FilteredItems.IndexOf(firstSelected);
 
       var files = new List<string>();
       var cache = new List<string>();
 
-      foreach (var item in Items.Where(x => x.IsSelected).ToList()) {
-        Items.Remove(item);
+      foreach (var mi in FilteredItems.Where(x => x.IsSelected).ToList()) {
+        LoadedItems.Remove(mi);
+        FilteredItems.Remove(mi);
         if (delete) {
-          files.Add(item.FilePath);
-          cache.Add(item.FilePathCache);
-          Delete(item);
+          files.Add(mi.FilePath);
+          cache.Add(mi.FilePathCache);
+          Delete(mi);
         }
-        else SetSelected(item, false);
+        else SetSelected(mi, false);
       }
 
       if (delete) {
@@ -568,10 +600,10 @@ namespace PictureManager.Database {
       Current = null;
 
       // set new current
-      var count = Items.Count;
+      var count = FilteredItems.Count;
       if (count == 0) return;
       if (count == indexOfFirstSelected) indexOfFirstSelected--;
-      Current = Items[indexOfFirstSelected];
+      Current = FilteredItems[indexOfFirstSelected];
       ScrollToCurrent();
     }
 
@@ -600,22 +632,23 @@ namespace PictureManager.Database {
         itemsRow.Clear();
 
       SplitedItems.Clear();
-
       App.WMain.UpdateLayout();
+
+      var row = new ObservableCollection<MediaItem>();
+      var rowWidth = 0;
       var rowMaxWidth = App.WMain.ActualWidth - App.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 -
                         SystemParameters.VerticalScrollBarWidth;
-      var rowWidth = 0;
       const int itemOffset = 6; //border, margin, padding, ...
-      var row = new ObservableCollection<MediaItem>();
-      foreach (var item in Items) {
-        if (item.ThumbWidth + itemOffset <= rowMaxWidth - rowWidth) {
-          row.Add(item);
-          rowWidth += item.ThumbWidth + itemOffset;
+
+      foreach (var mi in FilteredItems) {
+        if (mi.ThumbWidth + itemOffset <= rowMaxWidth - rowWidth) {
+          row.Add(mi);
+          rowWidth += mi.ThumbWidth + itemOffset;
         }
         else {
           SplitedItems.Add(row);
-          row = new ObservableCollection<MediaItem> { item };
-          rowWidth = item.ThumbWidth + itemOffset;
+          row = new ObservableCollection<MediaItem> { mi };
+          rowWidth = mi.ThumbWidth + itemOffset;
         }
       }
 
@@ -623,7 +656,7 @@ namespace PictureManager.Database {
     }
 
     public void ResetThumbsSize() {
-      foreach (var item in Items)
+      foreach (var item in LoadedItems)
         item.SetThumbSize();
     }
 
@@ -789,15 +822,15 @@ namespace PictureManager.Database {
 
 
     public MediaItem GetNext() {
-      if (Current == null || _indexOfCurrent == null || Items.Count <= _indexOfCurrent + 1) return null;
+      if (Current == null || _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1) return null;
 
-      return Items[(int) _indexOfCurrent + 1];
+      return FilteredItems[(int) _indexOfCurrent + 1];
     }
 
     public MediaItem GetPrevious() {
       if (Current == null || _indexOfCurrent == null || _indexOfCurrent < 1) return null;
 
-      return Items[(int) _indexOfCurrent - 1];
+      return FilteredItems[(int) _indexOfCurrent - 1];
     }
 
     public void Select(bool isCtrlOn, bool isShiftOn, MediaItem mi) {
@@ -811,7 +844,7 @@ namespace PictureManager.Database {
 
         if (isShiftOn && Current != null && _indexOfCurrent != null) {
           var from = (int) _indexOfCurrent;
-          var indexOfMi = Items.IndexOf(mi);
+          var indexOfMi = FilteredItems.IndexOf(mi);
           var to = indexOfMi;
           if (from > to) {
             to = from;
@@ -819,7 +852,7 @@ namespace PictureManager.Database {
           }
 
           for (var i = from; i < to + 1; i++) {
-            SetSelected(Items[i], true);
+            SetSelected(FilteredItems[i], true);
           }
         }
 

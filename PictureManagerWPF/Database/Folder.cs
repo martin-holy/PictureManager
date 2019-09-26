@@ -78,8 +78,8 @@ namespace PictureManager.Database {
       App.Core.Folders.Helper.IsModifed = true;
 
       // reload if the folder was selected before
-      if (App.Core.LastSelectedSource is Folder folder && folder == this)
-        App.Core.TreeView_Select(this, false, false, App.Core.LastSelectedSourceRecursive);
+      if (IsSelected)
+        App.Core.TreeView_Select(this, false, false, false);
     }
 
     public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {

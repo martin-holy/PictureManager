@@ -205,13 +205,14 @@ namespace PictureManager {
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
         App.Core.MediaItems.CopyMove(
-          foMode, App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), (Folder) destData);
+          foMode, App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
         App.Core.MediaItems.Helper.IsModifed = true;
       }
       // Folder
       else if (e.Data.GetDataPresent(typeof(Folder))) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
         var srcData = (Folder) e.Data.GetData(typeof(Folder));
+        if (srcData == null) return;
 
         App.Core.Folders.CopyMove(foMode, srcData, (Folder) destData);
         App.Core.MediaItems.Helper.IsModifed = true;
@@ -219,8 +220,8 @@ namespace PictureManager {
         App.Core.FolderKeywords.Load();
 
         // reload last selected source if was moved
-        if (foMode == FileOperationMode.Move && srcData == App.Core.LastSelectedSource) {
-          var folder = ((Folder) destData).GetByPath(srcData?.Title);
+        if (foMode == FileOperationMode.Move && srcData.IsSelected) {
+          var folder = ((Folder) destData).GetByPath(srcData.Title);
           if (folder == null) return;
           BaseTreeViewItem.ExpandTo(folder);
           App.Core.TreeView_Select(folder, false, false, false);
@@ -265,7 +266,7 @@ namespace PictureManager {
       // MediaItems
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var dragged = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
-        var selected = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        var selected = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
         if (dragged != null && selected.SequenceEqual(dragged) && 
             dataContext is Folder destData && destData.IsAccessible) return;
@@ -275,7 +276,7 @@ namespace PictureManager {
         var srcData = (Folder)e.Data.GetData(typeof(Folder));
 
         if (srcData != null && dataContext is Folder destData && !destData.HasThisParent(srcData) && 
-            srcData != destData && destData.IsAccessible && srcData.Parent != destData) return;
+            srcData != destData && destData.IsAccessible && (Folder)srcData.Parent != destData) return;
       }
       else // Keyword
       if (e.Data.GetDataPresent(typeof(Keyword))) {
@@ -317,7 +318,7 @@ namespace PictureManager {
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       var dob = new DataObject();
-      var data = App.Core.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      var data = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
         data.Add(((MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
@@ -337,7 +338,7 @@ namespace PictureManager {
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
       App.Core.MediaItemSizes.Size.SliderChanged = true;
-      App.Core.TreeView_Select(App.Core.LastSelectedSource, false, false, App.Core.LastSelectedSourceRecursive);
+      App.Core.MediaItems.ReapplyFilter();
     }
 
     private bool IsDragDropStarted(MouseEventArgs e) {

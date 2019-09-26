@@ -363,7 +363,7 @@
           </WrapPanel.Style>
 
           <!-- PositionSlashCount -->
-          <Border Visibility="{Binding MediaItems.Items.Count, Converter={StaticResource AllToVisibilityConverter}}">
+          <Border Visibility="{Binding MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
             <TextBlock Text="{Binding MediaItems.PositionSlashCount}" />
           </Border>
 
@@ -375,7 +375,7 @@
                   <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="1">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
-                  <DataTrigger Binding="{Binding MediaItems.Items.Count}" Value="0">
+                  <DataTrigger Binding="{Binding MediaItems.FilteredItems.Count}" Value="0">
                     <Setter Property="Visibility" Value="Collapsed" />
                   </DataTrigger>
                 </Style.Triggers>

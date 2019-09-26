@@ -140,7 +140,7 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemsSelectAll() {
-      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.Items.Count > 0;
+      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private static void MediaItemsSelectAll() {
@@ -149,18 +149,11 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemsSelectNotModifed() {
-      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.Items.Count > 0;
+      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private static void MediaItemsSelectNotModifed() {
-      App.Core.MediaItems.Current = null;
-
-      foreach (var mi in App.Core.MediaItems.Items) {
-        App.Core.MediaItems.SetSelected(mi, false);
-        if (!mi.IsModifed)
-          App.Core.MediaItems.SetSelected(mi, true);
-      }
-
+      App.Core.MediaItems.SelectNotModifed();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -169,7 +162,7 @@ namespace PictureManager {
     }
 
     private void MediaItemsDelete() {
-      var count = App.Core.MediaItems.Items.Count(x => x.IsSelected);
+      var count = App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected);
       if (!MessageDialog.Show("Delete Confirmation", 
         $"Do you realy want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
@@ -184,11 +177,11 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemsShuffle() {
-      return App.Core.MediaItems.Items.Count > 0;
+      return App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private static void MediaItemsShuffle() {
-      App.Core.MediaItems.Items.Shuffle();
+      App.Core.MediaItems.FilteredItems.Shuffle();
       App.Core.MediaItems.SplitedItemsReload();
     }
 
@@ -331,7 +324,7 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemsCompress() {
-      return App.Core.MediaItems.Items.Count > 0;
+      return App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private void MediaItemsCompress() {
@@ -339,13 +332,13 @@ namespace PictureManager {
     }
 
     private static bool CanMediaItemsRotate() {
-      return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void MediaItemsRotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
-      App.Core.MediaItems.SetOrientation(App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList(), rotation);
+      App.Core.MediaItems.SetOrientation(App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), rotation);
 
       if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
       SetMediaItemSource();
@@ -412,13 +405,11 @@ namespace PictureManager {
     }
 
     private static bool CanMetadataEdit() {
-      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.Items.Count > 0;
+      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private void MetadataEdit() {
-      Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)] = TabFolders.IsSelected;
-      if (App.Core.LastSelectedSource != null)
-        App.Core.LastSelectedSource.IsSelected = TabFolders.IsSelected;
+      Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)] = TabFolders.IsSelected;
       TabKeywords.IsSelected = true;
       App.Core.MediaItems.IsEditModeOn = true;
     }
@@ -438,7 +429,7 @@ namespace PictureManager {
           return;
         }
 
-        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)])
+        if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
           TabFolders.IsSelected = true;
 
         App.Core.MediaItems.IsEditModeOn = false;
@@ -489,7 +480,7 @@ namespace PictureManager {
         App.Core.Sdb.SaveAllTables();
         App.Core.MarkUsedKeywordsAndPeople();
         App.Core.MediaItems.IsEditModeOn = false;
-        if ((bool)Application.Current.Properties[nameof(AppProperty.EditKeywordsFromFolders)])
+        if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
           TabFolders.IsSelected = true;
 
         progress.Close();
@@ -524,7 +515,7 @@ namespace PictureManager {
     }
 
     private static bool CanMetadataComment() {
-      return App.Core.MediaItems.Items.Count(x => x.IsSelected) == 1;
+      return App.Core.MediaItems.Current != null;
     }
 
     private void MetadataComment() {
@@ -557,7 +548,7 @@ namespace PictureManager {
     }
 
     private static bool CanMetadataReload(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.Items.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     private void MetadataReload(object parameter) {
@@ -601,7 +592,7 @@ namespace PictureManager {
     }
 
     public bool CanMediaItemsRebuildThumbnails(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.Items.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
     public void MediaItemsRebuildThumbnails(object parameter) {
@@ -647,7 +638,7 @@ namespace PictureManager {
     }
 
     private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.MediaItems.Items.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {
@@ -660,7 +651,7 @@ namespace PictureManager {
 
       progress.Worker.DoWork += delegate(object o, DoWorkEventArgs e) {
         var worker = (BackgroundWorker) o;
-        var mis = App.Core.MediaItems.Items.Where(x => x.IsSelected).ToList();
+        var mis = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList();
         var count = mis.Count;
         var done = 0;
 

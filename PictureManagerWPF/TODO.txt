@@ -1,7 +1,6 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- MediaItems 501 App.Core.SetBackgroundBrush(tag, BackgroundBrush.AndThis); tag neobsahuje tag za kterej se loaduje
 
 #New
 - on "presentation start" show slider how many seconds
@@ -11,3 +10,4 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
+- zmenit nacteny items. mit 2 listy, v jednom je LastSelectedSource result a v druhym je result s aplikovanym filrem

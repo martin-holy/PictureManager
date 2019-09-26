@@ -47,8 +47,6 @@ namespace PictureManager {
     public Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
     public double ThumbScale { get; set; } = 1.0;
-    public bool LastSelectedSourceRecursive { get; set; }
-    public BaseTreeViewItem LastSelectedSource { get; set; }
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
     public HashSet<BaseTreeViewItem> ActiveFilterItems { get; } = new HashSet<BaseTreeViewItem>();
 
@@ -172,7 +170,7 @@ namespace PictureManager {
             }
 
             // reload with new filter
-            TreeView_Select(LastSelectedSource, false, false, LastSelectedSourceRecursive);
+            MediaItems.ReapplyFilter();
           }
 
           break;
@@ -181,13 +179,10 @@ namespace PictureManager {
         case FolderKeyword _: {
           if (item is Folder folder && !folder.IsAccessible) return;
 
-          LastSelectedSource = item;
-          LastSelectedSource.IsSelected = true;
-          LastSelectedSourceRecursive = recursive;
-
+          item.IsSelected = true;
           AppInfo.AppMode = AppMode.Browser;
           MediaItems.ScrollToTop();
-          MediaItems.Load(LastSelectedSource, recursive);
+          MediaItems.Load(item, recursive);
           LoadThumbnails();
           break;
         }
@@ -294,7 +289,8 @@ namespace PictureManager {
 
               if (!mi.ReadMetadata()) { // delete corupted MediaItems
                 Application.Current.Dispatcher.Invoke(delegate {
-                  MediaItems.Items.Remove(mi);
+                  MediaItems.LoadedItems.Remove(mi);
+                  MediaItems.FilteredItems.Remove(mi);
                   MediaItems.Delete(mi);
                 });
 
@@ -327,7 +323,7 @@ namespace PictureManager {
             // remove new not processed media items
             MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
 
-            ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
+            ThumbsWorker.RunWorkerAsync(MediaItems.FilteredItems.ToList());
             return;
           }
 
@@ -350,13 +346,13 @@ namespace PictureManager {
         return;
       }
 
-      ThumbsWorker.RunWorkerAsync(MediaItems.Items.ToList());
+      ThumbsWorker.RunWorkerAsync(MediaItems.FilteredItems.ToList());
     }
 
     public void SetMediaItemSizesLoadedRange() {
-      var zeroItems = MediaItems.Items.Count == 0;
-      var min = zeroItems ? 0 : MediaItems.Items.Min(x => x.Width * x.Height);
-      var max = zeroItems ? 0 : MediaItems.Items.Max(x => x.Width * x.Height);
+      var zeroItems = MediaItems.FilteredItems.Count == 0;
+      var min = zeroItems ? 0 : MediaItems.FilteredItems.Min(x => x.Width * x.Height);
+      var max = zeroItems ? 0 : MediaItems.FilteredItems.Max(x => x.Width * x.Height);
       MediaItemSizes.Size.SetLoadedRange(min, max);
     }
 
