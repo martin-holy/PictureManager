@@ -16,57 +16,57 @@ namespace PictureManager {
 
     private void AddCommandBindings() {
       // Window Commands
-      CommandBindings.Add(new CommandBinding(Commands.SwitchToFullScreen, HandleExecute(SwitchToFullScreen), HandleCanExecute(CanSwitchToFullScreen)));
-      CommandBindings.Add(new CommandBinding(Commands.SwitchToBrowser, HandleExecute(SwitchToBrowser), HandleCanExecute(CanSwitchToBrowser)));
+      Commands.AddCommandBinding(CommandBindings, Commands.SwitchToFullScreen, SwitchToFullScreen, CanSwitchToFullScreen);
+      Commands.AddCommandBinding(CommandBindings, Commands.SwitchToBrowser, SwitchToBrowser, CanSwitchToBrowser);
       
       // MediaItems Commands
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemNext, HandleExecute(MediaItemNext), HandleCanExecute(CanMediaItemNext)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemPrevious, HandleExecute(MediaItemPrevious), HandleCanExecute(CanMediaItemPrevious)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectAll, HandleExecute(MediaItemsSelectAll), HandleCanExecute(CanMediaItemsSelectAll)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsSelectNotModifed, HandleExecute(MediaItemsSelectNotModifed), HandleCanExecute(CanMediaItemsSelectNotModifed)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsDelete, HandleExecute(MediaItemsDelete), HandleCanExecute(CanMediaItemsDelete)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsLoadByTag, HandleExecute(MediaItemsLoadByTag)));
-      CommandBindings.Add(new CommandBinding(Commands.Presentation, HandleExecute(Presentation), HandleCanExecute(CanPresentation)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsCompress, HandleExecute(MediaItemsCompress), HandleCanExecute(CanMediaItemsCompress)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsRotate, HandleExecute(MediaItemsRotate), HandleCanExecute(CanMediaItemsRotate)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsRebuildThumbnails, HandleExecute(MediaItemsRebuildThumbnails), HandleCanExecute(CanMediaItemsRebuildThumbnails)));
-      CommandBindings.Add(new CommandBinding(Commands.MediaItemsShuffle, HandleExecute(MediaItemsShuffle), HandleCanExecute(CanMediaItemsShuffle)));
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemNext, MediaItemNext, CanMediaItemNext);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemPrevious, MediaItemPrevious, CanMediaItemPrevious);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectAll, MediaItemsSelectAll, CanMediaItemsSelectAll);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectNotModifed, MediaItemsSelectNotModifed, CanMediaItemsSelectNotModifed);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsDelete, MediaItemsDelete, CanMediaItemsDelete);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsLoadByTag, MediaItemsLoadByTag);
+      Commands.AddCommandBinding(CommandBindings, Commands.Presentation, Presentation, CanPresentation);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsCompress, MediaItemsCompress, CanMediaItemsCompress);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRotate, MediaItemsRotate, CanMediaItemsRotate);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRebuildThumbnails, MediaItemsRebuildThumbnails, CanMediaItemsRebuildThumbnails);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsShuffle, MediaItemsShuffle, CanMediaItemsShuffle);
       
       // TreeView Commands
-      CommandBindings.Add(new CommandBinding(Commands.CategoryGroupNew, HandleExecute(CategoryGroupNew)));
-      CommandBindings.Add(new CommandBinding(Commands.CategoryGroupRename, HandleExecute(CategoryGroupRename)));
-      CommandBindings.Add(new CommandBinding(Commands.CategoryGroupDelete, HandleExecute(CategoryGroupDelete)));
-      CommandBindings.Add(new CommandBinding(Commands.TagItemNew, HandleExecute(TagItemNew)));
-      CommandBindings.Add(new CommandBinding(Commands.TagItemRename, HandleExecute(TagItemRename)));
-      CommandBindings.Add(new CommandBinding(Commands.TagItemDelete, HandleExecute(TagItemDelete)));
-      CommandBindings.Add(new CommandBinding(Commands.TagItemDeleteNotUsed, HandleExecute(TagItemDeleteNotUsed)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderNew, HandleExecute(FolderNew)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderRename, HandleExecute(FolderRename)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderDelete, HandleExecute(FolderDelete)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderAddToFavorites, HandleExecute(FolderAddToFavorites)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderRemoveFromFavorites, HandleExecute(FolderRemoveFromFavorites)));
-      CommandBindings.Add(new CommandBinding(Commands.FolderSetAsFolderKeyword, HandleExecute(FolderSetAsFolderKeyword)));
-      CommandBindings.Add(new CommandBinding(Commands.ViewerIncludeFolder, HandleExecute(ViewerIncludeFolder)));
-      CommandBindings.Add(new CommandBinding(Commands.ViewerExcludeFolder, HandleExecute(ViewerExcludeFolder)));
-      CommandBindings.Add(new CommandBinding(Commands.ViewerRemoveFolder, HandleExecute(ViewerRemoveFolder)));
-      CommandBindings.Add(new CommandBinding(Commands.GeoNameNew, HandleExecute(GeoNameNew)));
+      Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupNew, CategoryGroupNew);
+      Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupRename, CategoryGroupRename);
+      Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupDelete, CategoryGroupDelete);
+      Commands.AddCommandBinding(CommandBindings, Commands.TagItemNew, TagItemNew);
+      Commands.AddCommandBinding(CommandBindings, Commands.TagItemRename, TagItemRename);
+      Commands.AddCommandBinding(CommandBindings, Commands.TagItemDelete, TagItemDelete);
+      Commands.AddCommandBinding(CommandBindings, Commands.TagItemDeleteNotUsed, TagItemDeleteNotUsed);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderNew, FolderNew);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderRename, FolderRename);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderDelete, FolderDelete);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderAddToFavorites, FolderAddToFavorites);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderRemoveFromFavorites, FolderRemoveFromFavorites);
+      Commands.AddCommandBinding(CommandBindings, Commands.FolderSetAsFolderKeyword, FolderSetAsFolderKeyword);
+      Commands.AddCommandBinding(CommandBindings, Commands.ViewerIncludeFolder, ViewerIncludeFolder);
+      Commands.AddCommandBinding(CommandBindings, Commands.ViewerExcludeFolder, ViewerExcludeFolder);
+      Commands.AddCommandBinding(CommandBindings, Commands.ViewerRemoveFolder, ViewerRemoveFolder);
+      Commands.AddCommandBinding(CommandBindings, Commands.GeoNameNew, GeoNameNew);
       
       // Metadata Commands
-      CommandBindings.Add(new CommandBinding(Commands.MetadataEdit, HandleExecute(MetadataEdit), HandleCanExecute(CanMetadataEdit)));
-      CommandBindings.Add(new CommandBinding(Commands.MetadataSave, HandleExecute(MetadataSave), HandleCanExecute(CanMetadataSave)));
-      CommandBindings.Add(new CommandBinding(Commands.MetadataCancel, HandleExecute(MetadataCancel), HandleCanExecute(CanMetadataCancel)));
-      CommandBindings.Add(new CommandBinding(Commands.MetadataComment, HandleExecute(MetadataComment), HandleCanExecute(CanMetadataComment)));
-      CommandBindings.Add(new CommandBinding(Commands.MetadataReload, HandleExecute(MetadataReload), HandleCanExecute(CanMetadataReload)));
-      CommandBindings.Add(new CommandBinding(Commands.MetadataReload2, HandleExecute(MetadataReload), HandleCanExecute(CanMetadataReload)));
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataEdit, MetadataEdit, CanMetadataEdit);
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataSave, MetadataSave, CanMetadataSave);
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataCancel, MetadataCancel, CanMetadataCancel);
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataComment, MetadataComment, CanMetadataComment);
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataReload, MetadataReload, CanMetadataReload);
+      Commands.AddCommandBinding(CommandBindings, Commands.MetadataReload2, MetadataReload, CanMetadataReload);
       
-      CommandBindings.Add(new CommandBinding(Commands.TestButton, HandleExecute(TestButton)));
-      CommandBindings.Add(new CommandBinding(Commands.OpenSettings, HandleExecute(OpenSettings)));
-      CommandBindings.Add(new CommandBinding(Commands.AddGeoNamesFromFiles, HandleExecute(AddGeoNamesFromFiles), HandleCanExecute(CanAddGeoNamesFromFiles)));
-      CommandBindings.Add(new CommandBinding(Commands.ViewerChange, HandleExecute(ViewerChange)));
-      CommandBindings.Add(new CommandBinding(Commands.OpenAbout, HandleExecute(OpenAbout)));
-      CommandBindings.Add(new CommandBinding(Commands.OpenFolderKeywordsList, HandleExecute(OpenFolderKeywordsList)));
-      CommandBindings.Add(new CommandBinding(Commands.ShowHideTabMain, HandleExecute(ShowHideTabMain)));
-      CommandBindings.Add(new CommandBinding(Commands.OpenLog, HandleExecute(OpenLog)));
+      Commands.AddCommandBinding(CommandBindings, Commands.TestButton, TestButton);
+      Commands.AddCommandBinding(CommandBindings, Commands.OpenSettings, OpenSettings);
+      Commands.AddCommandBinding(CommandBindings, Commands.AddGeoNamesFromFiles, AddGeoNamesFromFiles, CanAddGeoNamesFromFiles);
+      Commands.AddCommandBinding(CommandBindings, Commands.ViewerChange, ViewerChange);
+      Commands.AddCommandBinding(CommandBindings, Commands.OpenAbout, OpenAbout);
+      Commands.AddCommandBinding(CommandBindings, Commands.OpenFolderKeywordsList, OpenFolderKeywordsList);
+      Commands.AddCommandBinding(CommandBindings, Commands.ShowHideTabMain, ShowHideTabMain);
+      Commands.AddCommandBinding(CommandBindings, Commands.OpenLog, OpenLog);
     }
 
     private void AddInputBindings() {
@@ -80,34 +80,6 @@ namespace PictureManager {
     private void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {
       foreach (InputGesture ig in command.InputGestures)
         InputBindings.Add(new InputBinding(command, ig) {CommandTarget = commandTarget});
-    }
-
-    private static ExecutedRoutedEventHandler HandleExecute(Action action) {
-      return (o, e) => {
-        action();
-        e.Handled = true;
-      };
-    }
-
-    private static ExecutedRoutedEventHandler HandleExecute(Action<object> action) {
-      return (o, e) => {
-        action(e.Parameter);
-        e.Handled = true;
-      };
-    }
-
-    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<bool> canExecute) {
-      return (o, e) => {
-        e.CanExecute = canExecute();
-        e.Handled = true;
-      };
-    }
-
-    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
-      return (o, e) => {
-        e.CanExecute = canExecute(e.Parameter);
-        e.Handled = true;
-      };
     }
 
     private static bool CanMediaItemNext() {

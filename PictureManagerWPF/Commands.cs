@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows.Input;
 
 namespace PictureManager {
@@ -64,6 +65,50 @@ namespace PictureManager {
     private static RoutedUICommand CreateCommand(string text, string name, InputGesture inputGesture) {
       return new RoutedUICommand(text, name, typeof(Commands),
         inputGesture == null ? null : new InputGestureCollection(new List<InputGesture> { inputGesture }));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action executed, Func<bool> canExecute) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action executed) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed, Func<object, bool> canExecute) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed)));
+    }
+
+    private static ExecutedRoutedEventHandler HandleExecute(Action action) {
+      return (o, e) => {
+        action();
+        e.Handled = true;
+      };
+    }
+
+    private static ExecutedRoutedEventHandler HandleExecute(Action<object> action) {
+      return (o, e) => {
+        action(e.Parameter);
+        e.Handled = true;
+      };
+    }
+
+    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<bool> canExecute) {
+      return (o, e) => {
+        e.CanExecute = canExecute();
+        e.Handled = true;
+      };
+    }
+
+    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
+      return (o, e) => {
+        e.CanExecute = canExecute(e.Parameter);
+        e.Handled = true;
+      };
     }
   }
 }

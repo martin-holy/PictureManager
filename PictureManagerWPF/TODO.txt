@@ -1,6 +1,8 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- nektery videa maj porad 0x0 velikost, reload metadata asi nenastavuje IsModifed na true
+- nahledy videii jsou full size!!!
 
 #New
 - on "presentation start" show slider how many seconds
@@ -10,4 +12,3 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
-- zmenit nacteny items. mit 2 listy, v jednom je LastSelectedSource result a v druhym je result s aplikovanym filrem
