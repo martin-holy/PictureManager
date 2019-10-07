@@ -7,7 +7,6 @@
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
         xmlns:userControls="clr-namespace:PictureManager.UserControls"
-        xmlns:media="https://github.com/JohanLarsson/Gu.Wpf.Media"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
@@ -614,6 +613,9 @@
               </Style>
             </Grid.Style>
 
+            <userControls:MediaElementControl x:Name="FullMedia" />
+
+            <!--
             <Grid.RowDefinitions>
               <RowDefinition Height="Auto" />
               <RowDefinition Height="*" />
@@ -634,7 +636,7 @@
                 Maximum="{Binding ElementName=FullMedia, Path=Length, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}"
                 Style="{StaticResource {x:Static media:Styles.ProgressSliderStyleKey}}"
                 Value="{Binding ElementName=FullMedia, Path=Position, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}" />
-            </Grid>
+            </Grid>-->
           </Grid>
         </Grid>
       </Grid>

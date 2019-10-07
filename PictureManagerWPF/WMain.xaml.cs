@@ -29,6 +29,8 @@ namespace PictureManager {
 
     public WMain(string picFile) {
       InitializeComponent();
+      FullMedia.MediaElement.MediaEnded += FullMedia_OnMediaEnded;
+
       AddCommandBindings();
       AddInputBindings();
 
@@ -353,14 +355,16 @@ namespace PictureManager {
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current);
-          FullMedia.Source = null;
+          FullMedia.MediaElement.Source = null;
+          FullMedia.IsPlaying = false;
           break;
         }
         case MediaType.Video: {
           var isBigger = FullMedia.ActualHeight < current.Height ||
                          FullMedia.ActualWidth < current.Width;
-          FullMedia.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
-          FullMedia.Source = current.FilePathUri;
+          FullMedia.MediaElement.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
+          FullMedia.MediaElement.Source = current.FilePathUri;
+          FullMedia.IsPlaying = true;
           break;
         }
       }
@@ -390,9 +394,8 @@ namespace PictureManager {
         StartPresentationTimer(false);
       }
       else {
-        FullMedia.Stop();
-        FullMedia.Rewind();
-        FullMedia.Play();
+        FullMedia.MediaElement.Stop();
+        FullMedia.MediaElement.Play();
       }
     }
 

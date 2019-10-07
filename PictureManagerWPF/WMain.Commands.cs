@@ -696,7 +696,8 @@ namespace PictureManager {
       MainMenu.Visibility = Visibility.Visible;
       FullImage.SetSource(null);
       FullImage.Stop();
-      FullMedia.Source = null;
+      FullMedia.MediaElement.Source = null;
+      FullMedia.IsPlaying = false;
     }
 
     private void OpenLog() {
