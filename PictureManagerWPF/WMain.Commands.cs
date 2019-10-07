@@ -528,6 +528,7 @@ namespace PictureManager {
       var progress = new ProgressBarDialog(this, true);
 
       progress.Worker.RunWorkerCompleted += delegate {
+        App.Core.MediaItems.Helper.IsModifed = true;
         App.Core.Sdb.SaveAllTables();
         progress.Close();
       };
