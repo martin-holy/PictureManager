@@ -602,6 +602,7 @@ namespace PictureManager {
             $"Processing file {done} of {count} ({mi.FileName})");
 
           while (App.Core.ThumbProcessCounter > 10) Thread.Sleep(100);
+          mi.SetThumbSize();
           App.Core.CreateThumbnail(mi);
         }
       };
