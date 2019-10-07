@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="Work in progress ..." SizeToContent="WidthAndHeight" MinWidth="450"
+        Title="Work in progress ..." SizeToContent="Height" Width="550"
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
         ShowInTaskbar="False" FontSize="13.333" 
         ShowMaxRestoreButton="False" ShowMinButton="False" ShowCloseButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
   <StackPanel Margin="5">
-    <Label x:Name="LblProgress" Content="" />
+    <TextBlock x:Name="TbProgress" Text="" Foreground="White" TextWrapping="Wrap" />
     <ProgressBar x:Name="PbWorkerProgress" Height="20" Margin="5" />
     <StackPanel Style="{StaticResource DialogButtons}">
       <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />

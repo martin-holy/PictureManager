@@ -19,7 +19,7 @@ namespace PictureManager.Dialogs {
 
     private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbWorkerProgress.Value = e.ProgressPercentage;
-      LblProgress.Content = e.UserState;
+      TbProgress.Text = (string) e.UserState;
     }
 
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
