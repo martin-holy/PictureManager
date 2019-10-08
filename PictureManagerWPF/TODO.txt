@@ -1,8 +1,9 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- nektery videa maj porad 0x0 velikost, reload metadata asi nenastavuje IsModifed na true
-- nahledy videii jsou full size!!!
+- neda se odstranit slozka s Viewera
+
+#Update
 
 #New
 - on "presentation start" show slider how many seconds
@@ -12,3 +13,4 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
+- vlastni dialog na vyber slozky u Viewera
