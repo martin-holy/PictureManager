@@ -24,13 +24,16 @@
           </Style.Triggers>
         </Style>
       </Grid.Style>
+
       <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
         <StackPanel.Resources>
+          <!-- TextBlock style -->
           <Style TargetType="{x:Type TextBlock}">
             <Setter Property="Margin" Value="5" />
             <Setter Property="VerticalAlignment" Value="Center" />
           </Style>
 
+          <!-- Slider style -->
           <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource {x:Type Slider}}">
             <Setter Property="IsTabStop" Value="False" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -82,9 +85,9 @@
 
           <!-- Play/Pause -->
           <Button Click="PlayPauseToggle">
-            <Path Margin="3" Stretch="Uniform" Fill="White">
+            <Path>
               <Path.Style>
-                <Style TargetType="{x:Type Path}">
+                <Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}">
                   <Setter Property="Data" Value="F1M8.8,7.4L11.1,7.4 11.1,17.7 8.8,17.7 8.8,7.4z M4.8,7.4L7.1,7.4 7.1,17.7 4.8,17.7 4.8,7.4z" />
                   <Style.Triggers>
                     <DataTrigger Binding="{Binding IsPlaying}" Value="False">
@@ -107,14 +110,17 @@
           </Button>
         </StackPanel>
 
+        <!-- Volume -->
         <TextBlock>Volume</TextBlock>
         <Slider Name="VolumeSlider" ValueChanged="ChangeMediaVolume" Minimum="0" Maximum="1" Value="0.5" Width="70" />
 
+        <!-- Speed -->
         <TextBlock>Speed</TextBlock>
         <Slider Name="SpeedSlider" ValueChanged="ChangeMediaSpeed" Value="1" Width="70"
                 Minimum="0.1" Maximum="3" TickFrequency="0.1" IsSnapToTickEnabled="True" 
                 AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="1"/>
 
+        <!-- Seek To -->
         <TextBlock>Seek To</TextBlock>
         <Slider Name="TimelineSlider" Margin="5" Width="270" 
                 IsMoveToPointEnabled="True" LargeChange="1000" SmallChange="30" 
@@ -122,6 +128,7 @@
                 PreviewMouseLeftButtonDown="TimelineSlider_OnPreviewMouseLeftButtonDown"
                 PreviewMouseLeftButtonUp="TimelineSlider_OnPreviewMouseLeftButtonUp"/>
 
+        <!-- Time -->
         <TextBlock Text="{Binding PositionSlahsDuration}" />
 
       </StackPanel>
