@@ -95,7 +95,7 @@ namespace PictureManager.Database {
         var viewer = (Viewer)item;
         viewer.Title = inputDialog.Answer;
         ItemSetInPlace(viewer.Parent, false, viewer);
-        Helper.IsModifed = true;
+        Helper.Table.SaveToFile();
       }
       else CreateViewer(inputDialog.Answer);
     }
@@ -108,14 +108,10 @@ namespace PictureManager.Database {
 
       // remove Viewer from DB
       All.Remove(viewer);
-      Helper.IsModifed = true;
+      Helper.Table.SaveToFile();
 
       // Collapse Viewers menu on title bar if Viewers == 0
       if (Items.Count == 0) App.WMain.MenuViewers.Visibility = Visibility.Collapsed;
-    }
-
-    public static void RemoveFolder(BaseTreeViewItem folder) {
-      folder.Parent.Items.Remove(folder);
     }
 
     public static bool CanViewerSeeThisFile(Viewer viewer, string filePath) {

@@ -243,7 +243,9 @@ namespace PictureManager {
     }
 
     private static void ViewerRemoveFolder(object parameter) {
-      Viewers.RemoveFolder((BaseTreeViewItem) parameter);
+      var folder = (BaseTreeViewItem) parameter;
+      folder.Parent?.Items.Remove(folder);
+      App.Core.Viewers.Helper.Table.SaveToFile();
     }
 
     private static void FolderNew(object parameter) {

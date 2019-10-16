@@ -166,6 +166,11 @@ namespace PictureManager {
           AddMenuItem(Commands.OpenFolderKeywordsList);
           break;
         }
+        case BaseTreeViewItem bti: {
+          if (bti.Parent?.Parent is Viewer)
+            AddMenuItem(Commands.ViewerRemoveFolder);
+          break;
+        }
       }
 
       if (menu.Items.Count > 0)
