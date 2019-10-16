@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
+using PictureManager.Properties;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
 
@@ -167,28 +170,9 @@ namespace PictureManager.Database {
     }
 
     public void Delete(MediaItem[] items) {
-      var progress = new ProgressBarDialog(App.WMain, false) {Title = "Removing Media Items from database ..."};
-
-      progress.Worker.RunWorkerCompleted += delegate {
-        progress.Close();
-      };
-
-      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)o;
-        var count = items.Length;
-        var done = 0;
-
-        foreach (var mi in items) {
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-
-          Delete(mi);
-        }
-      };
-
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
+      var progress = new ProgressBarDialog(App.WMain, false, 1, "Removing Media Items from database ...");
+      progress.AddEvents(items, null, Delete, mi => mi.FilePath, null);
+      progress.StartDialog();
     }
 
     public void SetSelected(MediaItem mi, bool value) {
@@ -668,34 +652,17 @@ namespace PictureManager.Database {
         : new string(comment.Where(x => char.IsLetterOrDigit(x) || CommentAllowedCharacters.Contains(x)).ToArray());
     }
 
-    public void SetOrientation(List<MediaItem> mediaItems, Rotation rotation) {
-      var progress = new ProgressBarDialog(App.WMain, true);
+    public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
       Helper.IsModifed = true;
 
-      progress.Worker.RunWorkerCompleted += delegate {
-        progress.Close();
-        App.Core.MediaItems.SplitedItemsReload();
-        App.Core.MediaItems.ScrollToCurrent();
-        App.Core.Sdb.SaveAllTables();
-      };
-
-      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)o;
-        var count = mediaItems.Count;
-        var done = 0;
-
-        foreach (var mi in mediaItems) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-          
+      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
+      progress.AddEvents(
+        mediaItems,
+        null,
+        // action
+        delegate(MediaItem mi) {
           var newOrientation = 0;
-          switch ((MediaOrientation) mi.Orientation) {
+          switch ((MediaOrientation)mi.Orientation) {
             case MediaOrientation.Rotate90: newOrientation = 90; break;
             case MediaOrientation.Rotate180: newOrientation = 180; break;
             case MediaOrientation.Rotate270: newOrientation = 270; break;
@@ -719,11 +686,16 @@ namespace PictureManager.Database {
           mi.TryWriteMetadata();
           mi.SetThumbSize();
           App.Core.CreateThumbnail(mi);
-        }
-      };
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          SplitedItemsReload();
+          ScrollToCurrent();
+          App.Core.Sdb.SaveAllTables();
+        });
 
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
+      progress.StartDialog();
     }
 
     public static bool IsSupportedFileType(string filePath) {
@@ -820,7 +792,6 @@ namespace PictureManager.Database {
       }
     }
 
-
     public MediaItem GetNext() {
       if (Current == null || _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1) return null;
 
@@ -865,6 +836,73 @@ namespace PictureManager.Database {
           if (currentSelected)
             SetSelected(current, true);
         }
+      }
+    }
+
+    public static void Resize(string src, string dest, int px, bool withMetadata, bool withThumbnail) {
+      int GreatestCommonDivisor(int a, int b) {
+        while (a != 0 && b != 0) {
+          if (a > b)
+            a %= b;
+          else
+            b %= a;
+        }
+
+        return a == 0 ? b : a;
+      }
+
+      void SetIfContainsQuery(BitmapMetadata bm, string query, object value) {
+        if (bm.ContainsQuery(query))
+          bm.SetQuery(query, value);
+      }
+
+      var srcFile = new FileInfo(src);
+      var destFile = new FileInfo(dest);
+
+      using (Stream srcFileStream = File.Open(srcFile.FullName, FileMode.Open, FileAccess.Read)) {
+        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
+
+        var firstFrame = decoder.Frames[0];
+
+        var pxw = firstFrame.PixelWidth; // image width
+        var pxh = firstFrame.PixelHeight; // image height
+        var gcd = GreatestCommonDivisor(pxw, pxh);
+        var rw = pxw / gcd; // image ratio
+        var rh = pxh / gcd; // image ratio
+        var q = Math.Sqrt((double) px / (rw * rh)); // Bulgarian constant
+        var stw = (q * rw) / pxw; // scale transform X
+        var sth = (q * rh) / pxh; // scale transform Y
+
+        var resized = new TransformedBitmap(firstFrame, new ScaleTransform(stw, sth, 0, 0));
+        var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata : new BitmapMetadata("jpg");
+        var thumbnail = withThumbnail ? firstFrame.Thumbnail : null;
+
+        if (!withMetadata) {
+          // even when withMetadata == false, set orientation
+          var orientation = ((BitmapMetadata) firstFrame.Metadata)?.GetQuery("System.Photo.Orientation") ?? (ushort) 1;
+          metadata.SetQuery("System.Photo.Orientation", orientation);
+        }
+
+        // ifd ImageWidth a ImageHeight
+        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=256}", resized.PixelWidth);
+        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=257}", resized.PixelHeight);
+        // exif ExifImageWidth a ExifImageHeight
+        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40962}", resized.PixelWidth);
+        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40963}", resized.PixelHeight);
+
+        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+
+        encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
+
+        using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+          encoder.Save(destFileStream);
+        }
+
+        var dateTaken = ((BitmapMetadata) firstFrame.Metadata)?.DateTaken;
+        if (dateTaken != null && DateTime.TryParse(dateTaken, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+          destFile.CreationTime = date;
+
       }
     }
   }

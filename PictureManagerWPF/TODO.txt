@@ -5,6 +5,7 @@
 
 #Update
 
+
 #New
 - on "presentation start" show slider how many seconds
 - na prehravani panoramat zmensit obrazek na vysku obrazovky

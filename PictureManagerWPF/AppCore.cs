@@ -305,7 +305,7 @@ namespace PictureManager {
             }
 
             if (!File.Exists(mi.FilePathCache)) {
-              while (ThumbProcessCounter > 10) Thread.Sleep(100);
+              while (ThumbProcessCounter > Environment.ProcessorCount - 1) Thread.Sleep(100);
               CreateThumbnail(mi);
             }
 

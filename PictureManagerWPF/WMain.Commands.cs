@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -310,7 +310,7 @@ namespace PictureManager {
     private void MediaItemsRotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
-      App.Core.MediaItems.SetOrientation(App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), rotation);
+      App.Core.MediaItems.SetOrientation(App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
       SetMediaItemSource();
@@ -391,48 +391,33 @@ namespace PictureManager {
     }
 
     private void MetadataSave() {
-      var items = App.Core.MediaItems.ModifedItems.ToList();
-      var progress = new ProgressBarDialog(this, true);
-
-      progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
-        if (e.Cancelled) {
-          progress.Close();
-          MetadataCancel();
-          return;
-        }
-
-        if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
-          TabFolders.IsSelected = true;
-
-        App.Core.MediaItems.IsEditModeOn = false;
-        progress.Close();
-      };
-
-      progress.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)sender;
-        var count = items.Count;
-        var done = 0;
-
-        foreach (var mi in items) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
+      var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Saving metadata ...");
+      progress.AddEvents(
+        App.Core.MediaItems.ModifedItems.ToArray(),
+        null,
+        // action
+        delegate(MediaItem mi) {
           mi.TryWriteMetadata();
 
           Application.Current.Dispatcher.Invoke(delegate {
             App.Core.MediaItems.SetModifed(mi, false);
           });
-          
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-        }
-      };
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate (object sender, RunWorkerCompletedEventArgs e) {
+          if (e.Cancelled) {
+            MetadataCancel();
+          }
+          else {
+            if ((bool) Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
+              TabFolders.IsSelected = true;
 
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
+            App.Core.MediaItems.IsEditModeOn = false;
+          }
+        });
+
+      progress.StartDialog();
     }
 
     private static bool CanMetadataCancel() {
@@ -440,50 +425,30 @@ namespace PictureManager {
     }
 
     private void MetadataCancel() {
-      var items = App.Core.MediaItems.ModifedItems.ToList();
-      var progress = new ProgressBarDialog(this, true);
-
-      progress.Worker.RunWorkerCompleted += delegate (object sender, RunWorkerCompletedEventArgs e) {
-        if (e.Cancelled) {
-          progress.Close();
-          return;
-        }
-
-        App.Core.Sdb.SaveAllTables();
-        App.Core.MarkUsedKeywordsAndPeople();
-        App.Core.MediaItems.IsEditModeOn = false;
-        if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
-          TabFolders.IsSelected = true;
-
-        progress.Close();
-      };
-
-      progress.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)sender;
-        var count = items.Count;
-        var done = 0;
-
-        foreach (var mi in items) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
+      var progress = new ProgressBarDialog(this, false, Environment.ProcessorCount, "Reloading metadata ...");
+      progress.AddEvents(
+        App.Core.MediaItems.ModifedItems.ToArray(),
+        null,
+        // action
+        delegate(MediaItem mi) {
           mi.ReadMetadata();
 
           Application.Current.Dispatcher.Invoke(delegate {
             App.Core.MediaItems.SetModifed(mi, false);
             mi.SetInfoBox();
           });
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          App.Core.Sdb.SaveAllTables();
+          App.Core.MarkUsedKeywordsAndPeople();
+          App.Core.MediaItems.IsEditModeOn = false;
+          if ((bool) Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
+            TabFolders.IsSelected = true;
+        });
 
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-        }
-      };
-
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
+      progress.StartDialog();
     }
 
     private static bool CanMetadataComment() {
@@ -525,43 +490,31 @@ namespace PictureManager {
 
     private void MetadataReload(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var progress = new ProgressBarDialog(this, true);
+      var folder = parameter as Folder;
+      var mediaItems = folder != null
+        ? folder.GetMediaItems(recursive)
+        : App.Core.MediaItems.GetSelectedOrAll();
 
-      progress.Worker.RunWorkerCompleted += delegate {
-        App.Core.MediaItems.Helper.IsModifed = true;
-        App.Core.Sdb.SaveAllTables();
-        progress.Close();
-      };
-
-      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        var folder = parameter as Folder;
-        var mediaItems = folder != null
-          ? folder.GetMediaItems(recursive)
-          : App.Core.MediaItems.GetSelectedOrAll();
-        var worker = (BackgroundWorker) o;
-        var count = mediaItems.Count;
-        var done = 0;
-
-        foreach (var mi in mediaItems.ToArray()) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-
+      var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Reloading metadata ...");
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        // action
+        delegate(MediaItem mi) {
           mi.ReadMetadata();
 
           // set info box just for loaded media items
           if (folder == null)
-            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
-        }
-      };
+            Application.Current.Dispatcher.Invoke(mi.SetInfoBox);
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          App.Core.MediaItems.Helper.IsModifed = true;
+          App.Core.Sdb.SaveAllTables();
+        });
 
-      progress.Worker.RunWorkerAsync();
-      progress.Show();
+      progress.Start();
     }
 
     public bool CanMediaItemsRebuildThumbnails(object parameter) {
@@ -570,45 +523,66 @@ namespace PictureManager {
 
     public void MediaItemsRebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var progress = new ProgressBarDialog(this, true);
-      App.Core.ThumbProcessCounter = 0;
+      List<MediaItem> mediaItems;
 
-      progress.Worker.RunWorkerCompleted += delegate {
-        progress.Close();
-        App.Core.MediaItems.SplitedItemsReload();
-        App.Core.MediaItems.ScrollToCurrent();
-      };
+      switch (parameter) {
+        case Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
+        case List<MediaItem> items: mediaItems = items; break;
+        default: mediaItems = App.Core.MediaItems.GetSelectedOrAll(); break;
+      }
 
-      progress.Worker.DoWork += delegate (object o, DoWorkEventArgs e) {
-        List<MediaItem> mediaItems;
-        switch (parameter) {
-          case Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
-          case List<MediaItem> items: mediaItems = items; break;
-          default: mediaItems = App.Core.MediaItems.GetSelectedOrAll(); break;
-        }
-
-        var worker = (BackgroundWorker)o;
-        var count = mediaItems.Count;
-        var done = 0;
-
-        foreach (var mi in mediaItems.ToArray()) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-
-          while (App.Core.ThumbProcessCounter > 10) Thread.Sleep(100);
+      var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        delegate(MediaItem mi) {
           mi.SetThumbSize();
           App.Core.CreateThumbnail(mi);
-        }
-      };
+        },
+        mi => mi.FilePath,
+        delegate {
+          App.Core.MediaItems.SplitedItemsReload();
+          App.Core.MediaItems.ScrollToCurrent();
+        });
 
-      progress.Worker.RunWorkerAsync();
-      progress.Show();
+      progress.Start();
+    }
+
+    public void MediaItemsResize(MediaItem[] items, int px, string destination, bool withMetadata, bool withThumbnail) {
+      var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Resizing Images ...");
+
+      progress.AddEvents(
+        items,
+        // doBeforeLoop
+        delegate {
+          try {
+            Directory.CreateDirectory(destination);
+            return true;
+          }
+          catch (Exception ex) {
+            App.Core.LogError(ex, destination);
+            return false;
+          }
+        },
+        // action
+        delegate (MediaItem mi) {
+          if (mi.MediaType == MediaType.Video) return;
+
+          try {
+            var src = mi.FilePath;
+            var dest = Path.Combine(destination, mi.FileName);
+            MediaItems.Resize(src, dest, px, withMetadata, withThumbnail);
+          }
+          catch (Exception ex) {
+            App.Core.LogError(ex, mi.FilePath);
+          }
+        },
+        // customMessage
+        mi => mi.FilePath,
+        // onCompleted
+        null);
+
+      progress.Start();
     }
 
     private static bool CanAddGeoNamesFromFiles() {
@@ -616,42 +590,28 @@ namespace PictureManager {
     }
 
     private void AddGeoNamesFromFiles() {
-      var progress = new ProgressBarDialog(this, true);
-
-      progress.Worker.RunWorkerCompleted += delegate {
-        App.Core.Sdb.SaveAllTables();
-        progress.Close();
-      };
-
-      progress.Worker.DoWork += delegate(object o, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker) o;
-        var mis = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList();
-        var count = mis.Count;
-        var done = 0;
-
-        foreach (var mi in mis) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
-          done++;
-          worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100),
-            $"Processing file {done} of {count} ({mi.FileName})");
-
+      var progress = new ProgressBarDialog(this, true, 1, "Adding geonames ...");
+      progress.AddEvents(
+        App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        null,
+        // action
+        delegate(MediaItem mi) {
           if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata(true);
-          if (mi.Lat == null || mi.Lng == null) continue;
+          if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double) mi.Lat, (double) mi.Lng);
-          if (lastGeoName == null) continue;
+          if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
           mi.TryWriteMetadata();
-        }
-      };
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          App.Core.Sdb.SaveAllTables();
+        });
 
-      progress.Worker.RunWorkerAsync();
-      progress.ShowDialog();
+      progress.StartDialog();
     }
 
     private void ViewerChange(object parameter) {
