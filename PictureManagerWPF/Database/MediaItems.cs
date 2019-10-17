@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -899,10 +900,19 @@ namespace PictureManager.Database {
           encoder.Save(destFileStream);
         }
 
+        // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
         var dateTaken = ((BitmapMetadata) firstFrame.Metadata)?.DateTaken;
-        if (dateTaken != null && DateTime.TryParse(dateTaken, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
-          destFile.CreationTime = date;
+        DateTime.TryParse(dateTaken, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date);
 
+        if (date == DateTime.MinValue) {
+          // try to get date from file name
+          var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
+          if (match.Success)
+            DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+        }
+
+        if (date != DateTime.MinValue)
+          destFile.LastWriteTime = date;
       }
     }
   }
