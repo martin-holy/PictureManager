@@ -901,16 +901,19 @@ namespace PictureManager.Database {
         }
 
         // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
-        var dateTaken = ((BitmapMetadata) firstFrame.Metadata)?.DateTaken;
-        DateTime.TryParse(dateTaken, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date);
+        var date = DateTime.MinValue;
+        
+        // try to first get dateTaken from file name
+        var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
+        if (match.Success)
+          DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
 
+        // try to get dateTaken from metadata
         if (date == DateTime.MinValue) {
-          // try to get date from file name
-          var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
-          if (match.Success)
-            DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+          var dateTaken = ((BitmapMetadata)firstFrame.Metadata)?.DateTaken;
+          DateTime.TryParse(dateTaken, out date);
         }
-
+        
         if (date != DateTime.MinValue)
           destFile.LastWriteTime = date;
       }
