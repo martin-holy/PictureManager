@@ -337,8 +337,8 @@ namespace PictureManager {
       if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
       App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
       App.Core.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
-      App.Core.MediaItems.SplitedItemsReload();
       App.Core.MediaItems.ResetThumbsSize();
+      App.Core.MediaItems.SplitedItemsReload();
     }
 
     #endregion
