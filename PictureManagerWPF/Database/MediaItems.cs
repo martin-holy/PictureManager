@@ -523,7 +523,7 @@ namespace PictureManager.Database {
           App.Core.SetMediaItemSizesLoadedRange();
           OnPropertyChanged(nameof(PositionSlashCount));
           ScrollToTop();
-          App.Core.LoadThumbnails();
+          App.Core.LoadThumbnails(App.Core.MediaItems.FilteredItems.ToArray());
         };
       }
 
@@ -917,6 +917,31 @@ namespace PictureManager.Database {
         if (date != DateTime.MinValue)
           destFile.LastWriteTime = date;
       }
+    }
+
+    // TODO vyuzit tohle v MediaItem.SetThumbSize
+    public static Size GetThumbSize(double width, double height, int desiredSize) {
+      var size = new Size();
+
+      if (width > height) {
+        //panorama
+        if (width / height > 16.0 / 9.0) {
+          const int maxWidth = 1100;
+          var panoramaHeight = desiredSize / 16.0 * 9;
+          var tooBig = panoramaHeight / height * width > maxWidth;
+          size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
+          size.Width = tooBig ? maxWidth : panoramaHeight / height * width;
+          return size;
+        }
+
+        size.Height = desiredSize / width * height;
+        size.Width = desiredSize;
+        return size;
+      }
+
+      size.Height = desiredSize;
+      size.Width = desiredSize / height * width;
+      return size;
     }
   }
 }

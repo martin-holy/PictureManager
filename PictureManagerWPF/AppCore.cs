@@ -6,13 +6,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Database;
+using PictureManager.Properties;
 using PictureManager.ViewModel;
 using Directory = System.IO.Directory;
 
@@ -50,7 +53,8 @@ namespace PictureManager {
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
     public HashSet<BaseTreeViewItem> ActiveFilterItems { get; } = new HashSet<BaseTreeViewItem>();
 
-    public volatile int ThumbProcessCounter;
+    private CancellationTokenSource _thumbCts;
+    private Task<bool> _thumbTask;
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -183,7 +187,7 @@ namespace PictureManager {
           AppInfo.AppMode = AppMode.Browser;
           MediaItems.ScrollToTop();
           MediaItems.Load(item, recursive);
-          LoadThumbnails();
+          LoadThumbnails(MediaItems.FilteredItems.ToArray());
           break;
         }
       }
@@ -254,99 +258,123 @@ namespace PictureManager {
       }
     }
 
-    public void LoadThumbnails() {
+    public async void LoadThumbnails(MediaItem[] items) {
+      // cancel previous work
+      if (_thumbCts != null) {
+        _thumbCts.Cancel();
+        await _thumbTask;
+      }
+
       AppInfo.ProgressBarIsIndeterminate = false;
       AppInfo.ProgressBarValue = 0;
-      ThumbProcessCounter = 0;
 
-      if (ThumbsWorker == null) {
-        ThumbsWorker = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      try {
+        _thumbTask = new Task<bool>(() => {
+          var mediaItemsModifed = false;
 
-        ThumbsWorker.ProgressChanged += delegate(object sender, ProgressChangedEventArgs e) {
-          AppInfo.ProgressBarValue = e.ProgressPercentage;
-          if (((BackgroundWorker) sender).CancellationPending || e.UserState == null) return;
-          MediaItems.SplitedItemsAdd((MediaItem) e.UserState);
-        };
+          try {
+            _thumbCts = new CancellationTokenSource();
+            var token = _thumbCts.Token;
+            var count = items.Length;
+  
+            // create thumbnails in separate thread
+            Task.Run(() => {
+              try {
+                var thumbsDone = 0;
+                var po = new ParallelOptions {
+                  MaxDegreeOfParallelism = Environment.ProcessorCount,
+                  CancellationToken = token
+                };
 
-        ThumbsWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
-          var worker = (BackgroundWorker) sender;
-          var items = (List<MediaItem>) e.Argument;
-          var count = items.Count;
-          var done = 0;
+                Parallel.ForEach(items, po, mi => {
+                  if (File.Exists(mi.FilePathCache)) return;
 
-          e.Result = false;
+                  if (mi.MediaType == MediaType.Image) {
+                    CreateImageThumbnail(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+                    mi.ReloadThumbnail();
+                  }
+                  else {
+                    CreateThumbnail(mi);
+                  }
 
-          foreach (var mi in items) {
-            if (worker.CancellationPending) {
-              e.Cancel = true;
-              break;
-            }
-
-            if (mi.IsNew) {
-              mi.IsNew = false;
-
-              Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
-
-              if (!mi.ReadMetadata()) { // delete corupted MediaItems
-                Application.Current.Dispatcher.Invoke(delegate {
-                  MediaItems.LoadedItems.Remove(mi);
-                  MediaItems.FilteredItems.Remove(mi);
-                  MediaItems.Delete(mi);
+                  thumbsDone++;
+                  Application.Current.Dispatcher.Invoke(delegate {
+                    AppInfo.ProgressBarValue = Convert.ToInt32((double) thumbsDone / count * 100);
+                  });
                 });
+              }
+              catch (OperationCanceledException) { }
+            });
 
-                done++;
-                worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), null);
+            // read metadata for new items and add thumbnails to grid
+            var workingOn = 0;
+            foreach (var mi in items) {
+              token.ThrowIfCancellationRequested();
 
-                continue;
+              workingOn++;
+              var percent = Convert.ToInt32((double) workingOn / count * 100);
+
+              if (mi.IsNew) {
+                mi.IsNew = false;
+
+                Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
+
+                if (!mi.ReadMetadata()) {
+                  // delete corupted MediaItems
+                  Application.Current.Dispatcher.Invoke(delegate {
+                    MediaItems.LoadedItems.Remove(mi);
+                    MediaItems.FilteredItems.Remove(mi);
+                    MediaItems.Delete(mi);
+                    AppInfo.ProgressBarValue = percent;
+                  });
+
+                  continue;
+                }
+
+                mi.SetThumbSize();
+                mediaItemsModifed = true;
               }
 
-              mi.SetThumbSize();
-              e.Result = true;
+              Application.Current.Dispatcher.Invoke(delegate {
+                mi.SetInfoBox();
+                MediaItems.SplitedItemsAdd(mi);
+                AppInfo.ProgressBarValue = percent;
+              });
             }
 
-            if (!File.Exists(mi.FilePathCache)) {
-              while (ThumbProcessCounter > Environment.ProcessorCount - 1) Thread.Sleep(100);
-              CreateThumbnail(mi);
-            }
-
-            Application.Current.Dispatcher.Invoke(delegate { mi.SetInfoBox(); });
-
-            done++;
-            worker.ReportProgress(Convert.ToInt32(((double) done / count) * 100), mi);
+            return mediaItemsModifed;
           }
-        };
-
-        ThumbsWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-          if (e.Cancelled) {
-            // reason for cancelation was stop processing current MediaItems and start processing new MediaItems
-
+          catch (OperationCanceledException) {
             // remove new not processed media items
-            MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
+            Application.Current.Dispatcher.Invoke(delegate {
+              MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
+            });
 
-            ThumbsWorker.RunWorkerAsync(MediaItems.FilteredItems.ToList());
-            return;
+            return mediaItemsModifed;
           }
-
-          if ((bool) e.Result)
-            Sdb.SaveAllTables();
-
-          if (MediaItems.Current != null) {
-            MediaItems.SetSelected(MediaItems.Current, false);
-            MediaItems.SetSelected(MediaItems.Current, true);
+          finally {
+            _thumbCts?.Dispose();
+            _thumbCts = null;
           }
+        });
 
-          MarkUsedKeywordsAndPeople();
-          GC.Collect();
-        }; 
+        _thumbTask.Start();
+        var result = await _thumbTask;
+
+        if (result)
+          Sdb.SaveAllTables();
+
+        if (MediaItems.Current != null) {
+          MediaItems.SetSelected(MediaItems.Current, false);
+          MediaItems.SetSelected(MediaItems.Current, true);
+        }
+
+        MarkUsedKeywordsAndPeople();
+        GC.Collect();
       }
-
-      // worker will be started after cancel is done from RunWorkerCompleted
-      if (ThumbsWorker.IsBusy) {
-        ThumbsWorker.CancelAsync();
-        return;
+      finally {
+        _thumbTask.Dispose();
       }
-
-      ThumbsWorker.RunWorkerAsync(MediaItems.FilteredItems.ToList());
     }
 
     public void SetMediaItemSizesLoadedRange() {
@@ -389,6 +417,39 @@ namespace PictureManager {
       return fops.FileOperationResult;
     }
 
+    public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) return;
+      Directory.CreateDirectory(dir);
+
+      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read)) {
+        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
+
+        var frame = decoder.Frames[0];
+        var orientation = (ushort?) ((BitmapMetadata) frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1;
+        var rotated = orientation == (int) MediaOrientation.Rotate90 ||
+                      orientation == (int) MediaOrientation.Rotate270;
+        var pxw = (double) (rotated ? frame.PixelHeight : frame.PixelWidth);
+        var pxh = (double) (rotated ? frame.PixelWidth : frame.PixelHeight);
+        var size = MediaItems.GetThumbSize(pxw, pxh, desiredSize);
+        var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
+
+        if (rotated) {
+          // yes, angles 90 and 270 are switched
+          var angle = orientation == (int) MediaOrientation.Rotate90 ? 270 : 90;
+          output = new TransformedBitmap(output, new RotateTransform(angle));
+        }
+
+        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+        encoder.Frames.Add(BitmapFrame.Create(output));
+
+        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
+          encoder.Save(destFileStream);
+        }
+      }
+    }
+
     public void CreateThumbnail(string srcPath, string destPath, int size) {
       CreateThumbnail(null, srcPath, destPath, size);
     }
@@ -415,10 +476,7 @@ namespace PictureManager {
       if (mi != null) {
         process.Exited += delegate {
           mi.ReloadThumbnail();
-          ThumbProcessCounter--;
         };
-
-        ThumbProcessCounter++;
       }
 
       process.Start();
