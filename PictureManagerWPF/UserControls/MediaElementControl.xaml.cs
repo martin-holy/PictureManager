@@ -98,7 +98,9 @@ namespace PictureManager.UserControls {
 
     private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e) {
       if (!MediaElement.HasVideo) return;
-      TimelineSlider.Maximum = MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds;
+      TimelineSlider.Maximum = MediaElement.NaturalDuration.HasTimeSpan
+        ? MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds
+        : 0;
       IsPlaying = true;
     }
 

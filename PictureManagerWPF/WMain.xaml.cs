@@ -365,9 +365,9 @@ namespace PictureManager {
           break;
         }
         case MediaType.Video: {
-          var isBigger = FullMedia.ActualHeight < current.Height ||
+          /*var isBigger = FullMedia.ActualHeight < current.Height ||
                          FullMedia.ActualWidth < current.Width;
-          FullMedia.MediaElement.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
+          FullMedia.MediaElement.Stretch = isBigger ? Stretch.Uniform : Stretch.None;*/
           FullMedia.MediaElement.Source = current.FilePathUri;
           FullMedia.IsPlaying = true;
           break;
