@@ -49,7 +49,9 @@ namespace PictureManager.ViewModel {
     }
 
     public static void ExpandTo(BaseTreeViewItem item) {
-      item.IsExpanded = true;
+      // expand item as well if it has any sub item and not just placeholder
+      if (item.Items.Count > 0 && item.Items[0].Title != null)
+        item.IsExpanded = true;
       var parent = item.Parent;
       while (parent != null) {
         parent.IsExpanded = true;
