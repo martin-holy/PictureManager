@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Properties;
 using PictureManager.ViewModel;
 
 namespace PictureManager {
@@ -40,6 +41,107 @@ namespace PictureManager {
 
 
       //ErrorDialog.Show(new ArgumentNullException("message 1", new AggregateException()), "Test");
+      //BackdoorManipulations();
+      //ResizeTest();
+      //ProgressBarTest();
+
+      //ChangeDate();
+
+      //TestThumbnails();
+      //ResizeToPhoneAndWeb();
+      
+    }
+
+
+    private void ChangeDate() {
+      var progress = new ProgressBarDialog(App.WMain, true, 1, "Change date");
+      progress.AddEvents(
+        Directory.GetFiles(@"d:\fotos", "*.jpg", SearchOption.AllDirectories),
+        null,
+        delegate(string path) {
+          var fi = new FileInfo(path);
+          var match = Regex.Match(fi.Name, "[0-9]{8}_[0-9]{6}");
+          if (match.Success && DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var date)) {
+            fi.LastWriteTime = date;
+            fi.CreationTime = date;
+          }
+          else {
+            Console.WriteLine($"Date not recognited {path}");
+          }
+        },
+        x => x,
+        null);
+      progress.StartDialog();
+    }
+
+    private void ProgressBarTest() {
+      //var folder = App.Core.Folders.GetByPath(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018");
+      //var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).ToArray();
+
+      var progress = new ProgressBarDialog(App.WMain, true, 1, "Test");
+      progress.AddEvents(
+        new []{1,2,3,4,5,6,7},
+        () => true,
+        delegate (int i) { System.Threading.Thread.Sleep(1000); },
+        mi => mi.ToString(),
+        null);
+
+      progress.StartDialog();
+    }
+
+    private void ResizeToPhoneAndWeb() {
+      var src = "D:\\Pictures\\01 Digital_Foto\\-=Sklad";
+      var destPhone = "D:\\Pictures\\01 Digital_Foto\\-=Sklad\\ToPhone";
+      var destWeb = "D:\\Pictures\\01 Digital_Foto\\-=Sklad\\CarryOnTheRoad";
+
+      Directory.CreateDirectory(destPhone);
+      Directory.CreateDirectory(destWeb);
+
+      var folder = App.Core.Folders.GetByPath(src);
+
+      //var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).ToArray();
+      //App.WMain.MediaItemsResize(items, 2500000, destPhone, true, false);
+
+      var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 3).ToArray();
+      App.WMain.MediaItemsResize(items, 1500000, destWeb, false, false);
+    }
+
+    private void ResizeTest() {
+      //App.WMain.MediaItemsResize(new List<MediaItem> {App.Core.MediaItems.All.Single(x => x.Id == 1861) }, 1500000, @"D:\", true, false);
+
+      //, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
+
+      try {
+        /*var year = 2010;
+        var folder = App.Core.Folders.GetByPath($"D:\\Pictures\\01 Digital_Foto\\-=Hotovo\\{year}");
+        var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).OrderBy(x => x.FilePath).ToArray();
+        App.WMain.MediaItemsResize(items, 2500000, $"D:\\{year}", true, false);*/
+
+        Directory.CreateDirectory(@"D:\000");
+        
+        MediaItems.Resize(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180108_201028_Martin.jpg", @"D:\000\20180108_201028_Martin.jpg", 2500000, true, false);
+        //MediaItems.Resize(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180101_133736_Martin.jpg", @"D:\000\20180101_133736_Martin.jpg", 2500000, true, false);
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex);
+      }
+      
+    }
+
+    private void BackdoorManipulations() {
+      /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
+      foreach (var mi in items) {
+        mi.ReadMetadata();
+      }
+      App.Core.MediaItems.Helper.IsModifed = true;
+      App.Core.Sdb.SaveAllTables();*/
+
+      /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video).ToList();
+      foreach (var mi in items) {
+        mi.SetThumbSize();
+      }
+      App.WMain.MediaItemsRebuildThumbnails(items);*/
     }
 
     public void LogTest() {
@@ -56,30 +158,6 @@ namespace PictureManager {
        
     }
 
-    public string Text2Path(string text, bool flipVertically = false, bool flipHorizontally = false) {
-      var formattedText = new FormattedText(text,
-        CultureInfo.GetCultureInfo("en-us"),
-        FlowDirection.LeftToRight,
-        new Typeface(
-          new FontFamily("Segoe UI Symbol"),
-          FontStyles.Normal,
-          FontWeights.Bold,
-          FontStretches.Normal),
-        16, Brushes.Black);
-
-      var geometry = formattedText.BuildGeometry(new Point(0, 0));
-      var gb = geometry.Bounds;
-
-      if (flipVertically)
-        geometry.Transform = new ScaleTransform(1, -1, 0, (gb.Bottom - gb.Top) / 2.0);
-      if (flipHorizontally)
-        geometry.Transform = new ScaleTransform(-1, 1, 0, (gb.Right - gb.Left) / 2.0);
-
-      var data = geometry.GetFlattenedPathGeometry().ToString().Replace(",", ".").Replace(";", ",");
-
-      return $"<Path Width=\"{(int) gb.Width}\" Height=\"{(int) gb.Height}\" Canvas.Left=\"{(int) gb.Left}\" Canvas.Top=\"{(int) gb.Top}\" Stretch=\"Fill\" Fill=\"{{DynamicResource BlackBrush}}\" Data=\"{data}\" />";
-    }
-
     public void CommentChars() {
       var text = "Nějaký text @&#_+-$():;!?=% \" |/";
       var commentAllowedChars = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
@@ -94,78 +172,18 @@ namespace PictureManager {
 
     public void OldTests() {
 
-      /*ACore.FileOperationDelete(new List<string> {@"d:\!test2\deltest1"}, true, true);*/
-      //Directory.Delete(@"d:\!test2\deltest2", true);
 
-      //File.Move(@"d:\!test2\20140206_175827_Martin.jpg", @"d:\!test2\aaa\20140206_175827_Martin.jpg");
-      //AppCore.MoveDirectory(@"d:\!test2\2019", @"d:\!test2\newfolder\2019");
-
-      //AppCore.MoveDirectory(@"d:\!test2\2019", @"d:\!test2\newF\blabla\bleble\2019");
-
-      //File.Move(@"d:\!test2\deltest1\20140206_175827_Martin.jpg", @"d:\!test2\deltest1\20140206_175827_Martin.jpg");
-
-      /*var paths = new List<string>();
-      for (var i = 0; i < 20; i++) {
-        paths.Add($"d:\\!test2\\RecycleBinTest\\file{i}.txt");
-      }
-      foreach (var path in paths) {
-        using (var file = new StreamWriter(path)) {
-          file.WriteLine("Delete to Recycle Bin test");
-        }
-      }
-
-      ACore.FileOperationDelete(paths, true, true);*/
-
-      //var focd = new FileOperationCollisionDialog(@"d:\!test2\20150410_220526_Martin.jpg", @"d:\!test2\aaa\20150410_220526_Martin.jpg") {Owner = this};
-      //focd.ShowDialog();
-
-
-#pragma warning disable CS0219 // The variable 'mkv' is assigned but its value is never used
       var mkv = @"d:\!test2\vid\20190324_145306_Kos a veverka_lq.mkv";
-#pragma warning restore CS0219 // The variable 'mkv' is assigned but its value is never used
-#pragma warning disable CS0219 // The variable 'mp4' is assigned but its value is never used
       var mp4 = @"d:\!test2\vid\20190715_105711.mp4";
-#pragma warning restore CS0219 // The variable 'mp4' is assigned but its value is never used
 
       //var fileInfoMkv = ShellStuff.FileInformation.GetFileIdInfo(mkv);
       //var fileInfoMp4 = ShellStuff.FileInformation.GetFileIdInfo(mp4);
-
       //var metadataMkv = ShellStuff.FileInformation.GetVideoMetadata(mkv);
       //var metadataMp4 = ShellStuff.FileInformation.GetVideoMetadata(mp4);
-
-
-
       //var getAllMp4 = ShellStuff.FileInformation.GetAllVideoMetadata(mp4);
       //var getAllMkv = ShellStuff.FileInformation.GetAllVideoMetadata(mkv);
 
       Console.WriteLine("bla");
-
-
-
-
-
-      //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
-      //var x = GetFileProps(@"d:\video.mp4");
-      //var xx = ShellStuff.FileInformation.GetVideoMetadata(@"d:\video.mp4");
-
-      /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
-      var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
-      var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
-      //3659174697441353
-      var filePath = @"d:\!test\20150831_114319_Martin.jpg";
-      var fileInfo = new FileInfo(filePath);*/
-
-      /*var formattedText = new FormattedText(
-        "\U0001F4CF",
-        CultureInfo.GetCultureInfo("en-us"),
-        FlowDirection.LeftToRight,
-        new Typeface("Segoe UI Symbol"),
-        32,
-        Brushes.Black);
-      var buildGeometry = formattedText.BuildGeometry(new Point(0, 0));
-      var p = buildGeometry.GetFlattenedPathGeometry();*/
-
-
 
     }
   }

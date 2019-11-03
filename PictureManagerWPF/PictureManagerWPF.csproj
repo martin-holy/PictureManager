@@ -110,6 +110,9 @@
     <Compile Include="Dialogs\ProgressBarDialog.xaml.cs">
       <DependentUpon>ProgressBarDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ResizeImagesDialog.xaml.cs">
+      <DependentUpon>ResizeImagesDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\RotationDialog.xaml.cs">
       <DependentUpon>RotationDialog.xaml</DependentUpon>
     </Compile>
@@ -215,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ProgressBarDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ResizeImagesDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

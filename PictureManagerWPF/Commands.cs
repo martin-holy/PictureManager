@@ -20,6 +20,7 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemsRotate { get; } = CreateCommand("Rotate", "RotatePictures", new KeyGesture(Key.R, ModifierKeys.Control));
     public static RoutedUICommand MediaItemsRebuildThumbnails { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };
     public static RoutedUICommand MediaItemsShuffle { get; } = new RoutedUICommand { Text = "Shuffle" };
+    public static RoutedUICommand MediaItemsResizeImages { get; } = new RoutedUICommand { Text = "Resize Images" };
 
     // TreeView Commands
     public static RoutedUICommand CategoryGroupNew { get; } = new RoutedUICommand {Text = "New Group"};

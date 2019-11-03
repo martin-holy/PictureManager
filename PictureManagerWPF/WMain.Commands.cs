@@ -31,7 +31,8 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRotate, MediaItemsRotate, CanMediaItemsRotate);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRebuildThumbnails, MediaItemsRebuildThumbnails, CanMediaItemsRebuildThumbnails);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsShuffle, MediaItemsShuffle, CanMediaItemsShuffle);
-      
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsResizeImages, MediaItemsResizeImages, CanMediaItemsResizeImages);
+
       // TreeView Commands
       Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupNew, CategoryGroupNew);
       Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupRename, CategoryGroupRename);
@@ -155,6 +156,14 @@ namespace PictureManager {
     private static void MediaItemsShuffle() {
       App.Core.MediaItems.FilteredItems.Shuffle();
       App.Core.MediaItems.SplitedItemsReload();
+    }
+
+    private static bool CanMediaItemsResizeImages() {
+      return App.Core.MediaItems.FilteredItems.Count > 0;
+    }
+
+    private static void MediaItemsResizeImages() {
+      ResizeImagesDialog.Show(App.WMain, App.Core.MediaItems.GetSelectedOrAll());
     }
 
     private static void MediaItemsLoadByTag(object parameter) {

@@ -1,0 +1,80 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.ResizeImagesDialog"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:pm="clr-namespace:PictureManager"
+  mc:Ignorable="d"
+  Title="Resize Images" SizeToContent="Height" Width="515" 
+  BorderBrush="{DynamicResource AccentColorBrush}" 
+  Background="{DynamicResource WhiteBrush}" 
+  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
+  WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
+  DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0">
+  
+  <controls:MetroWindow.Resources>
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="5" />
+    </Style>
+
+    <Style x:Key="ErrorStyle" TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding Path=Error}" Value="True">
+          <Setter Property="Background" Value="#7FFF0000" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+  </controls:MetroWindow.Resources>
+  
+  <StackPanel Margin="5">
+    
+    <Grid Margin="0,0,0,15">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="40" />
+        <RowDefinition Height="40" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Preserve Thumbnail/Metadata -->
+      <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0" />
+      <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" >
+        <CheckBox x:Name="ChbWithThumbnail" Content="Thumbnail" />
+        <CheckBox x:Name="ChbWithMetadata" Content="Metadata" Margin="15,0,0,0" />
+      </StackPanel>
+
+      <!-- Resize to -->
+      <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0" />
+      <DockPanel Grid.Row="1" Grid.Column="1">
+        <Button x:Name="BtnOpenDirectoryPicker" Width="30" Height="30" DockPanel.Dock="Right" 
+                Margin="5,0,0,0" Click="BtnOpenDirectoryPicker_OnClick">
+          <Rectangle Tag="{x:Static pm:IconName.Folder}" Style="{StaticResource IconRect2}" />
+        </Button>
+        <ComboBox ItemsSource="{Binding DirPaths}" x:Name="CmbDirPaths" Style="{StaticResource ErrorStyle}" 
+                  SelectionChanged="CmbDirPaths_OnSelectionChanged" Height="30" />
+      </DockPanel>
+
+      <!-- Slider MPx -->
+      <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding ElementName=SldMpx, Path=Value, StringFormat={}{0:F1} MPx}" />
+      <Slider x:Name="SldMpx" Grid.Row="2" Grid.Column="1" Maximum="{Binding MaxMpx}" Minimum="0.1" 
+              TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Center" />
+    </Grid>
+    
+    <!-- File name -->
+    <TextBlock x:Name="TbFileName" Text="{Binding FileName}" />
+
+    <!-- ProgressBar -->
+    <ProgressBar x:Name="PbProgress" Height="20" Margin="5" />
+    
+    <!-- Buttons -->
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnResize" Style="{StaticResource DialogButton}" Content="Resize" Click="BtnResize_OnClick" />
+    </StackPanel>
+  </StackPanel>
+</controls:MetroWindow>

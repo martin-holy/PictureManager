@@ -42,6 +42,7 @@
           <MenuItem Command="pm:Commands.MediaItemsRotate" />
           <MenuItem Command="pm:Commands.MediaItemsSelectNotModifed" />
           <MenuItem Command="pm:Commands.MediaItemsShuffle" />
+          <MenuItem Command="pm:Commands.MediaItemsResizeImages" />
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:Commands.MetadataEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />

@@ -6,11 +6,12 @@
 
 
 #New
-- on "presentation start" show slider how many seconds
+- on "presentation start" show slider how many seconds a (prehravat video x krat kdyz je kratsi nez, zoom to fit)
 - na prehravani panoramat zmensit obrazek na vysku obrazovky
 - zmensovat hodne velky obrazky pri prohlizeni
 - active filters panel => pridat clear all
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
-- vlastni dialog na vyber slozky u Viewera
+- vlastni dialog na vyber slozky u Viewera a ResizeImages
+- vytvareni miniatur pres windows universal apps. with OS detection for other methods
