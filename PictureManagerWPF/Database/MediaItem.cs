@@ -419,7 +419,7 @@ namespace PictureManager.Database {
           });
         }
         else {
-          using (Stream srcFileStream = File.Open(FilePath, FileMode.Open, FileAccess.Read)) {
+          using (Stream srcFileStream = File.Open(FilePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
             var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
             var frame = decoder.Frames[0];
             Width = frame.PixelWidth;

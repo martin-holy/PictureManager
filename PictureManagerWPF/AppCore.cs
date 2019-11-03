@@ -422,7 +422,7 @@ namespace PictureManager {
       if (dir == null) return;
       Directory.CreateDirectory(dir);
 
-      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read)) {
+      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
         var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
         if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
 
