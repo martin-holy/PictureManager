@@ -125,7 +125,6 @@ namespace PictureManager {
 
     public void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive) {
       if (item == null) return;
-      item.IsSelected = false;
 
       switch (item) {
         case FavoriteFolder favoriteFolder: {

@@ -165,7 +165,7 @@
               <!-- STreeViewItem -->
               <Style TargetType="{x:Type TreeViewItem}" x:Key="STreeViewItem" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                 <Setter Property="Background" Value="Transparent" />
