@@ -1,7 +1,6 @@
 ﻿#Bugs
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- zase se projevilo to, ze neslo nacist metadata, protoze se vytvarela miniatura pro ten samej soubor :(
 - video kratsi jak 1s se nechce prehravat opakovane
 
 #Update
