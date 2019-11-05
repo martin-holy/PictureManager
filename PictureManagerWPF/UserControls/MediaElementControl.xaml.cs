@@ -18,6 +18,10 @@ namespace PictureManager.UserControls {
 
     private readonly DispatcherTimer _timelineTimer;
     private bool _isTimelineTimerExecuting;
+    private int _repeatCount;
+
+    public int RepeatForMilliseconds; // 0 => infinity
+    public Action RepeatEnded;
 
     public string PositionSlahsDuration {
       get {
@@ -98,10 +102,24 @@ namespace PictureManager.UserControls {
 
     private void MediaElement_OnMediaOpened(object sender, RoutedEventArgs e) {
       if (!MediaElement.HasVideo) return;
-      TimelineSlider.Maximum = MediaElement.NaturalDuration.HasTimeSpan
-        ? MediaElement.NaturalDuration.TimeSpan.TotalMilliseconds
-        : 0;
+
+      var nd = MediaElement.NaturalDuration;
+      _repeatCount = (int) Math.Round(RepeatForMilliseconds / (nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000), 0);
+
+      TimelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds: 0;
       IsPlaying = true;
+    }
+
+    private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {
+      // if video doesn't have TimeSpan than is probably less than 1s long and can't be repeated
+      if ((_repeatCount > 0 || RepeatForMilliseconds == 0) && MediaElement.NaturalDuration.HasTimeSpan) {
+        _repeatCount--;
+        MediaElement.Stop();
+        MediaElement.Play();
+        return;
+      }
+
+      RepeatEnded();
     }
 
     private void MediaElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {

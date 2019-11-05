@@ -10,8 +10,10 @@
              Foreground="White" Focusable="True">
   <Grid>
     <MediaElement Name="MediaElement" LoadedBehavior="Manual" UnloadedBehavior="Stop" ScrubbingEnabled="True"
-                  MediaOpened="MediaElement_OnMediaOpened" Stretch="Uniform" StretchDirection="Both"
-                  MouseLeftButtonUp="MediaElement_OnMouseLeftButtonUp"  />
+                  Stretch="Uniform" StretchDirection="Both"
+                  MediaOpened="MediaElement_OnMediaOpened" 
+                  MediaEnded="MediaElement_OnMediaEnded"
+                  MouseLeftButtonUp="MediaElement_OnMouseLeftButtonUp" />
 
     <Grid Height="40" VerticalAlignment="Top" Background="#88000000">
       <Grid.Style>

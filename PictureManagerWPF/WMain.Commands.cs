@@ -91,12 +91,12 @@ namespace PictureManager {
       var current = App.Core.MediaItems.GetNext();
       App.Core.MediaItems.Current = current;
       SetMediaItemSource();
+
       if (_presentationTimer.Enabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
-        _presentationTimer.Enabled = false;
-        _presentationTimerPaused = true;
+        PresentationPause();
 
         if (current.MediaType == MediaType.Image && current.IsPanoramatic)
-          FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
+          PresentationStart(true);
       }
 
       App.Core.MarkUsedKeywordsAndPeople();
@@ -177,17 +177,41 @@ namespace PictureManager {
     private void Presentation() {
       if (FullImage.IsAnimationOn) {
         FullImage.Stop();
+        PresentationStop();
         return;
       }
       
       if (_presentationTimer.Enabled)
-        _presentationTimer.Enabled = false;
-      else {
-        if (App.Core.MediaItems.Current.MediaType == MediaType.Image && App.Core.MediaItems.Current.IsPanoramatic)
-          FullImage.Play(PresentationInterval, delegate { StartPresentationTimer(false); });
-        else
-          StartPresentationTimer(true);
+        PresentationStop();
+      else
+        PresentationStart(true);
+    }
+
+    private void PresentationStart(bool delay) {
+      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
+
+      var current = App.Core.MediaItems.Current;
+      if (delay && current.MediaType == MediaType.Image && current.IsPanoramatic) {
+        PresentationPause();
+        FullImage.Play(PresentationInterval, delegate { PresentationStart(false); });
+        return;
       }
+
+      _presentationTimerPaused = false;
+      _presentationTimer.Interval = delay ? PresentationInterval : 1;
+      _presentationTimer.Enabled = true;
+      FullMedia.RepeatForMilliseconds = PresentationInterval;
+    }
+
+    private void PresentationStop() {
+      _presentationTimerPaused = false;
+      _presentationTimer.Enabled = false;
+      FullMedia.RepeatForMilliseconds = 0; // infinity
+    }
+
+    private void PresentationPause() {
+      _presentationTimerPaused = true;
+      _presentationTimer.Enabled = false;
     }
 
     private static void CategoryGroupNew(object parameter) {
@@ -657,7 +681,7 @@ namespace PictureManager {
     }
 
     private void SwitchToBrowser() {
-      _presentationTimer.Enabled = false;
+      PresentationStop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
       App.Core.MediaItems.SplitedItemsReload();

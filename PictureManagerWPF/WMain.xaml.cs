@@ -29,10 +29,14 @@ namespace PictureManager {
 
     public WMain(string picFile) {
       InitializeComponent();
-      FullMedia.MediaElement.MediaEnded += FullMedia_OnMediaEnded;
 
       AddCommandBindings();
       AddInputBindings();
+
+      FullMedia.RepeatEnded += delegate {
+        if (!_presentationTimerPaused) return;
+        PresentationStart(false);
+      };
 
       _presentationTimer = new System.Timers.Timer();
       _presentationTimer.Elapsed += (o, e) => {
@@ -41,7 +45,7 @@ namespace PictureManager {
           if (CanMediaItemNext())
             MediaItemNext();
           else
-            _presentationTimer.Enabled = false;
+            PresentationStop();
         });
       };
 
@@ -77,12 +81,6 @@ namespace PictureManager {
       if (App.Core.MediaItems.Current != null) App.Core.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
       App.Core.LoadThumbnails();*/
-    }
-
-    private void StartPresentationTimer(bool delay) {
-      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
-      _presentationTimer.Interval = delay ? PresentationInterval : 1;
-      _presentationTimer.Enabled = true;
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
@@ -390,17 +388,6 @@ namespace PictureManager {
       else {
         if (CanMediaItemPrevious())
           MediaItemPrevious();
-      }
-    }
-
-    private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
-      if (_presentationTimerPaused) {
-        _presentationTimerPaused = false;
-        StartPresentationTimer(false);
-      }
-      else {
-        FullMedia.MediaElement.Stop();
-        FullMedia.MediaElement.Play();
       }
     }
 
