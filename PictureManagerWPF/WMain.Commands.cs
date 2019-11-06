@@ -92,11 +92,11 @@ namespace PictureManager {
       App.Core.MediaItems.Current = current;
       SetMediaItemSource();
 
-      if (_presentationTimer.Enabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
-        PresentationPause();
+      if (_presentation.IsEnabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
+        _presentation.Pause();
 
         if (current.MediaType == MediaType.Image && current.IsPanoramatic)
-          PresentationStart(true);
+          _presentation.Start(true);
       }
 
       App.Core.MarkUsedKeywordsAndPeople();
@@ -177,41 +177,14 @@ namespace PictureManager {
     private void Presentation() {
       if (FullImage.IsAnimationOn) {
         FullImage.Stop();
-        PresentationStop();
+        _presentation.Stop();
         return;
       }
       
-      if (_presentationTimer.Enabled)
-        PresentationStop();
+      if (_presentation.IsEnabled)
+        _presentation.Stop();
       else
-        PresentationStart(true);
-    }
-
-    private void PresentationStart(bool delay) {
-      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
-
-      var current = App.Core.MediaItems.Current;
-      if (delay && current.MediaType == MediaType.Image && current.IsPanoramatic) {
-        PresentationPause();
-        FullImage.Play(PresentationInterval, delegate { PresentationStart(false); });
-        return;
-      }
-
-      _presentationTimerPaused = false;
-      _presentationTimer.Interval = delay ? PresentationInterval : 1;
-      _presentationTimer.Enabled = true;
-      FullMedia.RepeatForMilliseconds = PresentationInterval;
-    }
-
-    private void PresentationStop() {
-      _presentationTimerPaused = false;
-      _presentationTimer.Enabled = false;
-      FullMedia.RepeatForMilliseconds = 0; // infinity
-    }
-
-    private void PresentationPause() {
-      _presentationTimerPaused = true;
-      _presentationTimer.Enabled = false;
+        _presentation.Start(true);
     }
 
     private static void CategoryGroupNew(object parameter) {
@@ -681,7 +654,7 @@ namespace PictureManager {
     }
 
     private void SwitchToBrowser() {
-      PresentationStop();
+      _presentation.Stop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
       App.Core.MediaItems.SplitedItemsReload();

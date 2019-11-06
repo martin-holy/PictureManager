@@ -21,11 +21,9 @@ namespace PictureManager {
     private readonly string _argPicFile;
     private Point _dragDropStartPosition;
     private object _dragDropObject;
-    private readonly System.Timers.Timer _presentationTimer;
-    private bool _presentationTimerPaused;
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
-    private const int PresentationInterval = 3000;
+    private readonly PresentationHelper _presentation;
 
     public WMain(string picFile) {
       InitializeComponent();
@@ -33,30 +31,26 @@ namespace PictureManager {
       AddCommandBindings();
       AddInputBindings();
 
-      FullMedia.RepeatEnded += delegate {
-        if (!_presentationTimerPaused) return;
-        PresentationStart(false);
+      _presentation = new PresentationHelper {
+        Elapsed = delegate {
+          Application.Current.Dispatcher.Invoke(delegate {
+            if (CanMediaItemNext())
+              MediaItemNext();
+            else
+              _presentation.Stop();
+          });
+        }
       };
 
-      _presentationTimer = new System.Timers.Timer();
-      _presentationTimer.Elapsed += (o, e) => {
-        if (_presentationTimer.Interval == 1) _presentationTimer.Interval = PresentationInterval;
-        Application.Current.Dispatcher.Invoke(delegate {
-          if (CanMediaItemNext())
-            MediaItemNext();
-          else
-            PresentationStop();
-        });
+      FullMedia.RepeatEnded += delegate {
+        if (!_presentation.IsPaused) return;
+        _presentation.Start(false);
       };
 
       /*var ver = Assembly.GetEntryAssembly().GetName().Version;
       Title = $"{Title} {ver.Major}.{ver.Minor}";*/
 
       _argPicFile = picFile;
-    }
-
-    ~WMain() {
-      _presentationTimer?.Dispose();
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -175,6 +169,7 @@ namespace PictureManager {
         stackPanel.ContextMenu = menu;
     }
 
+    #region TreeView
     //this is PreviewMouseUp on StackPanel in TreeView Folders, Keywords and Filters
     private void TreeView_Select(object sender, MouseButtonEventArgs e) {
       /*
@@ -300,6 +295,7 @@ namespace PictureManager {
       e.Effects = DragDropEffects.None;
       e.Handled = true;
     }
+    #endregion
 
     #region Thumbnail
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
