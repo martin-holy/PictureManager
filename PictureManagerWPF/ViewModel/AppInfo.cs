@@ -11,7 +11,8 @@ namespace PictureManager.ViewModel {
   }
 
   public class AppInfo : INotifyPropertyChanged {
-    private int _progressBarValue;
+    private int _progressBarValueA;
+    private int _progressBarValueB;
     private bool _progressBarIsIndeterminate;
     private MediaItem _currentMediaItem;
     private AppMode _appMode;
@@ -20,7 +21,8 @@ namespace PictureManager.ViewModel {
     private string _dimension = string.Empty;
     private string _fullGeoName = string.Empty;
 
-    public int ProgressBarValue { get => _progressBarValue; set { _progressBarValue = value; OnPropertyChanged(); } }
+    public int ProgressBarValueA { get => _progressBarValueA; set { _progressBarValueA = value; OnPropertyChanged(); } }
+    public int ProgressBarValueB { get => _progressBarValueB; set { _progressBarValueB = value; OnPropertyChanged(); } }
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }

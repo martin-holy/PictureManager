@@ -17,9 +17,14 @@
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
       <Grid>
-        <ProgressBar Width="250" Height="22" Maximum="100" DataContext="{x:Static pm:App.Core}" 
-                     Value="{Binding AppInfo.ProgressBarValue}" 
-                     IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
+        <StackPanel Orientation="Vertical">
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+                       Value="{Binding AppInfo.ProgressBarValueA}" BorderThickness="1,1,1,0"
+                       IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+                       Value="{Binding AppInfo.ProgressBarValueB}" BorderThickness="1,0,1,1"
+                       IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
+        </StackPanel>
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
                    FontFamily="{DynamicResource HeaderFontFamily}" />

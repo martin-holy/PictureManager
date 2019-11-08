@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
@@ -46,7 +46,6 @@ namespace PictureManager {
     public MediaItems MediaItems { get; }
     public AppInfo AppInfo { get; } = new AppInfo();
     public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
-    public BackgroundWorker ThumbsWorker { get; set; }
     public Viewer CurrentViewer { get; set; }
     public double WindowsDisplayScale { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -54,7 +53,7 @@ namespace PictureManager {
     public HashSet<BaseTreeViewItem> ActiveFilterItems { get; } = new HashSet<BaseTreeViewItem>();
 
     private CancellationTokenSource _thumbCts;
-    private Task<bool> _thumbTask;
+    private Task _thumbTask;
 
     public AppCore() {
       #region TreeView Roots and Categories
@@ -81,9 +80,10 @@ namespace PictureManager {
     }
 
     ~AppCore() {
-      if (ThumbsWorker == null) return;
-      ThumbsWorker.Dispose();
-      ThumbsWorker = null;
+      if (_thumbCts != null) {
+        _thumbCts.Dispose();
+        _thumbCts = null;
+      }
     }
 
     public void Init() {
@@ -257,6 +257,84 @@ namespace PictureManager {
       }
     }
 
+    private Task CreateThumbnailsAsync(MediaItem[] items, CancellationToken token) {
+      return Task.Run(async () => {
+        var count = items.Length;
+        var workingOn = 0;
+
+        await Task.WhenAll(
+          from partition in Partitioner.Create(items).GetPartitions(Environment.ProcessorCount)
+          select Task.Run(async delegate {
+            using (partition) {
+              while (partition.MoveNext()) {
+                if (token.IsCancellationRequested) break;
+
+                workingOn++;
+                var workingOnInt = workingOn;
+                Application.Current.Dispatcher.Invoke(delegate {
+                  AppInfo.ProgressBarValueB = Convert.ToInt32((double) workingOnInt / count * 100);
+                });
+
+                var mi = partition.Current;
+                if (mi == null) continue;
+                if (File.Exists(mi.FilePathCache)) continue;
+
+                if (mi.MediaType == MediaType.Image)
+                  CreateImageThumbnail(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+                else
+                  await CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+
+                mi.ReloadThumbnail();
+              }
+            }
+          }));
+      });
+    }
+
+    private Task<bool> ReadMetadataAndListThumbsAsync(MediaItem[] items, CancellationToken token) {
+      return Task.Run(() => {
+        var mediaItemsModifed = false;
+        var count = items.Length;
+        var workingOn = 0;
+
+        foreach (var mi in items) {
+          if (token.IsCancellationRequested) break;
+
+          workingOn++;
+          var percent = Convert.ToInt32((double) workingOn / count * 100);
+
+          if (mi.IsNew) {
+            mi.IsNew = false;
+
+            Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
+
+            if (!mi.ReadMetadata()) {
+              // delete corupted MediaItems
+              Application.Current.Dispatcher.Invoke(delegate {
+                MediaItems.LoadedItems.Remove(mi);
+                MediaItems.FilteredItems.Remove(mi);
+                MediaItems.Delete(mi);
+                AppInfo.ProgressBarValueA = percent;
+              });
+
+              continue;
+            }
+
+            mi.SetThumbSize();
+            mediaItemsModifed = true;
+          }
+
+          Application.Current.Dispatcher.Invoke(delegate {
+            mi.SetInfoBox();
+            MediaItems.SplitedItemsAdd(mi);
+            AppInfo.ProgressBarValueA = percent;
+          });
+        }
+
+        return mediaItemsModifed;
+      });
+    }
+
     public async void LoadThumbnails(MediaItem[] items) {
       // cancel previous work
       if (_thumbCts != null) {
@@ -265,115 +343,44 @@ namespace PictureManager {
       }
 
       AppInfo.ProgressBarIsIndeterminate = false;
-      AppInfo.ProgressBarValue = 0;
+      AppInfo.ProgressBarValueA = 0;
+      AppInfo.ProgressBarValueB = 0;
 
-      try {
-        _thumbTask = new Task<bool>(() => {
-          var mediaItemsModifed = false;
+      _thumbTask = new Task(async () => {
+        _thumbCts?.Dispose();
+        _thumbCts = new CancellationTokenSource();
+        var token = _thumbCts.Token;
 
-          try {
-            _thumbCts = new CancellationTokenSource();
-            var token = _thumbCts.Token;
-            var count = items.Length;
-  
-            // create thumbnails in separate thread
-            Task.Run(() => {
-              try {
-                var thumbsDone = 0;
-                var po = new ParallelOptions {
-                  MaxDegreeOfParallelism = Environment.ProcessorCount,
-                  CancellationToken = token
-                };
+        // create thumbnails
+        var thumbs = CreateThumbnailsAsync(items, token);
+        // read metadata for new items and add thumbnails to grid
+        var metadata = ReadMetadataAndListThumbsAsync(items, token);
 
-                Parallel.ForEach(items, po, mi => {
-                  if (File.Exists(mi.FilePathCache)) return;
+        await Task.WhenAll(thumbs, metadata);
 
-                  if (mi.MediaType == MediaType.Image) {
-                    CreateImageThumbnail(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
-                    mi.ReloadThumbnail();
-                  }
-                  else {
-                    CreateThumbnail(mi);
-                  }
+        var saveDb = metadata.Result;
 
-                  thumbsDone++;
-                  Application.Current.Dispatcher.Invoke(delegate {
-                    AppInfo.ProgressBarValue = Convert.ToInt32((double) thumbsDone / count * 100);
-                  });
-                });
-              }
-              catch (OperationCanceledException) { }
-            });
-
-            // read metadata for new items and add thumbnails to grid
-            var workingOn = 0;
-            foreach (var mi in items) {
-              token.ThrowIfCancellationRequested();
-
-              workingOn++;
-              var percent = Convert.ToInt32((double) workingOn / count * 100);
-
-              if (mi.IsNew) {
-                mi.IsNew = false;
-
-                Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
-
-                if (!mi.ReadMetadata()) {
-                  // delete corupted MediaItems
-                  Application.Current.Dispatcher.Invoke(delegate {
-                    MediaItems.LoadedItems.Remove(mi);
-                    MediaItems.FilteredItems.Remove(mi);
-                    MediaItems.Delete(mi);
-                    AppInfo.ProgressBarValue = percent;
-                  });
-
-                  continue;
-                }
-
-                mi.SetThumbSize();
-                mediaItemsModifed = true;
-              }
-
-              Application.Current.Dispatcher.Invoke(delegate {
-                mi.SetInfoBox();
-                MediaItems.SplitedItemsAdd(mi);
-                AppInfo.ProgressBarValue = percent;
-              });
-            }
-
-            return mediaItemsModifed;
-          }
-          catch (OperationCanceledException) {
-            // remove new not processed media items
-            Application.Current.Dispatcher.Invoke(delegate {
-              MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
-            });
-
-            return mediaItemsModifed;
-          }
-          finally {
-            _thumbCts?.Dispose();
-            _thumbCts = null;
-          }
-        });
-
-        _thumbTask.Start();
-        var result = await _thumbTask;
-
-        if (result)
-          Sdb.SaveAllTables();
-
-        if (MediaItems.Current != null) {
-          MediaItems.SetSelected(MediaItems.Current, false);
-          MediaItems.SetSelected(MediaItems.Current, true);
+        if (token.IsCancellationRequested) {
+          saveDb = true;
+          await Application.Current.Dispatcher.InvokeAsync(delegate {
+            MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
+          });
         }
 
-        MarkUsedKeywordsAndPeople();
-        GC.Collect();
+        if (saveDb)
+          Sdb.SaveAllTables();
+      });
+
+      _thumbTask.Start();
+      await _thumbTask;
+
+      if (MediaItems.Current != null) {
+        MediaItems.SetSelected(MediaItems.Current, false);
+        MediaItems.SetSelected(MediaItems.Current, true);
       }
-      finally {
-        _thumbTask.Dispose();
-      }
+
+      MarkUsedKeywordsAndPeople();
+      GC.Collect();
     }
 
     public void SetMediaItemSizesLoadedRange() {
@@ -455,6 +462,31 @@ namespace PictureManager {
 
     public void CreateThumbnail(MediaItem mi) {
       CreateThumbnail(mi, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+    }
+
+    public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) return Task.CompletedTask;
+      Directory.CreateDirectory(dir);
+
+      var tcs = new TaskCompletionSource<bool>();
+      var process = new Process {
+        EnableRaisingEvents = true,
+        StartInfo = new ProcessStartInfo {
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
+
+      process.Exited += (s, e) => {
+        tcs.TrySetResult(true);
+        process.Dispose();
+      };
+
+      process.Start();
+      return tcs.Task;
     }
 
     public void CreateThumbnail(MediaItem mi, string srcPath, string destPath, int size) {

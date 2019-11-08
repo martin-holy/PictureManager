@@ -55,7 +55,8 @@ namespace PictureManager {
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       App.Core.Init();
-      App.Core.AppInfo.ProgressBarValue = 100;
+      App.Core.AppInfo.ProgressBarValueA = 100;
+      App.Core.AppInfo.ProgressBarValueB = 100;
       App.Core.Folders.IsExpanded = true;
       MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
 
