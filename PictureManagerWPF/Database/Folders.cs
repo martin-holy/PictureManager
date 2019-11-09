@@ -119,26 +119,9 @@ namespace PictureManager.Database {
 
       foreach (var drive in drives) {
         var di = new DriveInfo(drive);
+        var driveImage = GetDriveIconName(di.DriveType);
         var driveName = di.Name.TrimEnd(Path.DirectorySeparatorChar);
         drivesNames.Add(driveName);
-        IconName driveImage;
-
-        // set drive icon
-        switch (di.DriveType) {
-          case DriveType.CDRom:
-            driveImage = IconName.Cd;
-            break;
-          case DriveType.Network:
-            driveImage = IconName.Drive;
-            break;
-          case DriveType.NoRootDirectory:
-          case DriveType.Unknown:
-            driveImage = IconName.DriveError;
-            break;
-          default:
-            driveImage = IconName.Drive;
-            break;
-        }
 
         // add Drive to the database and to the tree if not already exists
         if (!(Items.SingleOrDefault(x => x.Title.Equals(driveName)) is Folder item)) {
@@ -165,6 +148,20 @@ namespace PictureManager.Database {
       foreach (var item in Items) {
         if (drivesNames.Any(x => x.Equals(item.Title))) continue;
         ((Folder) item).IsHidden = true;
+      }
+    }
+
+    public static IconName GetDriveIconName(DriveType type) {
+      switch (type) {
+        case DriveType.CDRom:
+          return IconName.Cd;
+        case DriveType.Network:
+          return IconName.Drive;
+        case DriveType.NoRootDirectory:
+        case DriveType.Unknown:
+          return IconName.DriveError;
+        default:
+          return IconName.Drive;
       }
     }
 
