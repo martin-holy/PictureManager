@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -49,9 +50,53 @@ namespace PictureManager {
 
       //TestThumbnails();
       //ResizeToPhoneAndWeb();
-      
+      CreateThumbnailAsyncTest();
     }
 
+    private async void Test() {
+      /*Func<Task> t = async () => {
+        var thumbs = new Task(() => { });
+        var metadata = new Task<bool>(() => { return true; });
+        await Task.WhenAll(thumbs, metadata);
+        return true;
+      };
+      Task<bool> p = async () => {
+        var thumbs = new Task(() => { });
+        var metadata = new Task<bool>(() => { return true; });
+        await Task.WhenAll(thumbs, metadata);
+        //return await metadata.Result;
+      };
+      var task = new Task<bool>(p);
+
+      task.Start();
+      var result = await task;*/
+    }
+
+    private void CreateThumbnailAsyncTest() {
+      var folder = App.Core.Folders.GetByPath(@"D:\!test");
+      var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Video).ToArray();
+      var index = 0;
+
+      Task.WhenAll(
+        from partition in Partitioner.Create(items).GetPartitions(2)
+        select Task.Run(async delegate {
+          using (partition) {
+            while (partition.MoveNext()) {
+              Console.WriteLine("loop before");
+              var mi = partition.Current;
+              await App.Core.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+              Console.WriteLine("loop after");
+            }
+          }
+        }));
+
+      /*Parallel.ForEach(items, new ParallelOptions {MaxDegreeOfParallelism = 1}, async mi => {
+        Console.WriteLine("loop before");
+        await App.Core.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+        Console.WriteLine("loop after");
+      });*/
+
+    }
 
     private void ChangeDate() {
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Change date");

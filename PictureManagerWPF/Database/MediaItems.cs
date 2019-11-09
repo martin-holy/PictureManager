@@ -661,7 +661,7 @@ namespace PictureManager.Database {
         mediaItems,
         null,
         // action
-        delegate(MediaItem mi) {
+        async delegate(MediaItem mi) {
           var newOrientation = 0;
           switch ((MediaOrientation)mi.Orientation) {
             case MediaOrientation.Rotate90: newOrientation = 90; break;
@@ -686,7 +686,8 @@ namespace PictureManager.Database {
 
           mi.TryWriteMetadata();
           mi.SetThumbSize();
-          App.Core.CreateThumbnail(mi);
+          await App.Core.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
         // onCompleted
@@ -701,6 +702,13 @@ namespace PictureManager.Database {
 
     public static bool IsSupportedFileType(string filePath) {
       return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static MediaType GetMediaType(string filePath) {
+      return SuportedImageExts.Any(
+        x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
+        ? MediaType.Image
+        : MediaType.Video;
     }
 
     /// <summary>

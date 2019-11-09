@@ -257,6 +257,71 @@ namespace PictureManager {
       }
     }
 
+
+    public Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size) {
+      return type == MediaType.Image
+        ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size))
+        : CreateThumbnailAsync(srcPath, destPath, size);
+    }
+
+    public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) return;
+      Directory.CreateDirectory(dir);
+
+      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
+
+        var frame = decoder.Frames[0];
+        var orientation = (ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1;
+        var rotated = orientation == (int)MediaOrientation.Rotate90 ||
+                      orientation == (int)MediaOrientation.Rotate270;
+        var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
+        var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
+        var size = MediaItems.GetThumbSize(pxw, pxh, desiredSize);
+        var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
+
+        if (rotated) {
+          // yes, angles 90 and 270 are switched
+          var angle = orientation == (int)MediaOrientation.Rotate90 ? 270 : 90;
+          output = new TransformedBitmap(output, new RotateTransform(angle));
+        }
+
+        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+        encoder.Frames.Add(BitmapFrame.Create(output));
+
+        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
+          encoder.Save(destFileStream);
+        }
+      }
+    }
+
+    public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) return Task.CompletedTask;
+      Directory.CreateDirectory(dir);
+
+      var tcs = new TaskCompletionSource<bool>();
+      var process = new Process {
+        EnableRaisingEvents = true,
+        StartInfo = new ProcessStartInfo {
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
+
+      process.Exited += (s, e) => {
+        tcs.TrySetResult(true);
+        process.Dispose();
+      };
+
+      process.Start();
+      return tcs.Task;
+    }
+
     private Task CreateThumbnailsAsync(MediaItem[] items, CancellationToken token) {
       return Task.Run(async () => {
         var count = items.Length;
@@ -279,10 +344,7 @@ namespace PictureManager {
                 if (mi == null) continue;
                 if (File.Exists(mi.FilePathCache)) continue;
 
-                if (mi.MediaType == MediaType.Image)
-                  CreateImageThumbnail(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
-                else
-                  await CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
 
                 mi.ReloadThumbnail();
               }
@@ -421,96 +483,6 @@ namespace PictureManager {
       }
 
       return fops.FileOperationResult;
-    }
-
-    public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) return;
-      Directory.CreateDirectory(dir);
-
-      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
-
-        var frame = decoder.Frames[0];
-        var orientation = (ushort?) ((BitmapMetadata) frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1;
-        var rotated = orientation == (int) MediaOrientation.Rotate90 ||
-                      orientation == (int) MediaOrientation.Rotate270;
-        var pxw = (double) (rotated ? frame.PixelHeight : frame.PixelWidth);
-        var pxh = (double) (rotated ? frame.PixelWidth : frame.PixelHeight);
-        var size = MediaItems.GetThumbSize(pxw, pxh, desiredSize);
-        var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
-
-        if (rotated) {
-          // yes, angles 90 and 270 are switched
-          var angle = orientation == (int) MediaOrientation.Rotate90 ? 270 : 90;
-          output = new TransformedBitmap(output, new RotateTransform(angle));
-        }
-
-        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-        encoder.Frames.Add(BitmapFrame.Create(output));
-
-        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
-          encoder.Save(destFileStream);
-        }
-      }
-    }
-
-    public void CreateThumbnail(string srcPath, string destPath, int size) {
-      CreateThumbnail(null, srcPath, destPath, size);
-    }
-
-    public void CreateThumbnail(MediaItem mi) {
-      CreateThumbnail(mi, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
-    }
-
-    public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) return Task.CompletedTask;
-      Directory.CreateDirectory(dir);
-
-      var tcs = new TaskCompletionSource<bool>();
-      var process = new Process {
-        EnableRaisingEvents = true,
-        StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
-          FileName = "ThumbnailCreator.exe",
-          UseShellExecute = false,
-          CreateNoWindow = true
-        }
-      };
-
-      process.Exited += (s, e) => {
-        tcs.TrySetResult(true);
-        process.Dispose();
-      };
-
-      process.Start();
-      return tcs.Task;
-    }
-
-    public void CreateThumbnail(MediaItem mi, string srcPath, string destPath, int size) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) return;
-      Directory.CreateDirectory(dir);
-
-      var process = new Process {
-        StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
-          FileName = "ThumbnailCreator.exe",
-          UseShellExecute = false,
-          CreateNoWindow = true
-        },
-        EnableRaisingEvents = true
-      };
-
-      if (mi != null) {
-        process.Exited += delegate {
-          mi.ReloadThumbnail();
-        };
-      }
-
-      process.Start();
     }
 
     public void LogError(Exception ex) {

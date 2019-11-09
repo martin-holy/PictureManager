@@ -64,10 +64,7 @@ namespace PictureManager.Database {
       Folder = folder;
       FileName = fileName;
       IsNew = isNew;
-      MediaType = MediaItems.SuportedImageExts.Any(
-        x => FileName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
-        ? MediaType.Image
-        : MediaType.Video;
+      MediaType = MediaItems.GetMediaType(fileName);
     }
 
     #region IEquatable implementation

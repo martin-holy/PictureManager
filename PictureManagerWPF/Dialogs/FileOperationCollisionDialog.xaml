@@ -45,12 +45,12 @@
       </Grid.ColumnDefinitions>
       
       <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource ThumbBorder}">
-        <Image Source="{Binding SrcFilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" 
+        <Image Source="{Binding SrcFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" 
                Stretch="Uniform" ToolTip="{Binding SrcFileInfo.FullName}"  />
       </Border>
 
       <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource ThumbBorder}">
-        <Image Source="{Binding DestFilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" 
+        <Image Source="{Binding DestFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" 
                Stretch="Uniform" ToolTip="{Binding DestFileInfo.FullName}" x:Name="DestThumb" />
       </Border>
 

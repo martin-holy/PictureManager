@@ -4,7 +4,9 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows;
+using PictureManager.Database;
 using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
@@ -30,9 +32,8 @@ namespace PictureManager.Dialogs {
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
     public FileInfo SrcFileInfo { get => _srcFileInfo; set { _srcFileInfo = value; OnPropertyChanged(); } }
     public FileInfo DestFileInfo { get => _destFileInfo; set { _destFileInfo = value; OnPropertyChanged(); } }
-
-    public Uri SrcFilePathCacheUri => GetThumbFilePath(SrcFileInfo.FullName);
-    public Uri DestFilePathCacheUri => GetThumbFilePath(DestFileInfo.FullName);
+    public Uri SrcFilePathCacheUri => GetThumbFilePath(SrcFileInfo.FullName).Result;
+    public Uri DestFilePathCacheUri => GetThumbFilePath(DestFileInfo.FullName).Result;
     public string SrcFileSize => $"File size: {SrcFileInfo.Length} B";
     public string DestFileSize => $"File size: {DestFileInfo.Length} B";
     public string SrcFileModified => $"Modified: {SrcFileInfo.LastWriteTime}";
@@ -48,11 +49,12 @@ namespace PictureManager.Dialogs {
       InitializeComponent();
     }
 
-    private Uri GetThumbFilePath(string filePath) {
+    private async Task<Uri> GetThumbFilePath(string filePath) {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        App.Core.CreateThumbnail(filePath, thumbPath, Settings.Default.ThumbnailSize);
+        await App.Core.CreateThumbnailAsync(MediaItems.GetMediaType(filePath), filePath, thumbPath,
+          Settings.Default.ThumbnailSize);
       }
 
       return new Uri(thumbPath);

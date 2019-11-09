@@ -542,10 +542,11 @@ namespace PictureManager {
       var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
       progress.AddEvents(
         mediaItems.ToArray(),
-        null,
-        delegate(MediaItem mi) {
+        null, 
+         async delegate(MediaItem mi) {
           mi.SetThumbSize();
-          App.Core.CreateThumbnail(mi);
+          await App.Core.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
         delegate {
