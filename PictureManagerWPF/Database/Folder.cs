@@ -172,11 +172,11 @@ namespace PictureManager.Database {
       if (Items.Count == 1 && Items[0].Title == null) Items.Clear();
 
       var dirNames = new HashSet<string>();
-      var fullPathLength = FullPath.Length + 1;
-      if (!FullPath.Contains(Path.DirectorySeparatorChar)) fullPathLength--;
-      foreach (var dir in Directory.EnumerateDirectories(FullPath)) {
+      var fullPath = FullPath + Path.DirectorySeparatorChar;
+
+      foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var isNew = false;
-        var dirName = dir.Substring(fullPathLength);
+        var dirName = dir.Substring(fullPath.Length);
         dirNames.Add(dirName);
 
         // get existing Folder in the tree
