@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Forms;
 using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
@@ -41,17 +40,17 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnBrowseDir_OnClick(object sender, RoutedEventArgs e) {
-      var dir = new FolderBrowserDialog();
-      if (dir.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-        var paths = Settings.Default.DirectorySelectFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
-        if (!paths.Contains(dir.SelectedPath)) {
-          paths.Insert(0, dir.SelectedPath);
-        }
-        Settings.Default.DirectorySelectFolders = string.Join(Environment.NewLine, paths);
-        Settings.Default.Save();
-        LoadFolders();
-        Answer = dir.SelectedPath;
+      var dir = new FolderBrowserDialog(App.WMain);
+      if (!(dir.ShowDialog() ?? true)) return;
+
+      var paths = Settings.Default.DirectorySelectFolders.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).ToList();
+      if (!paths.Contains(dir.SelectedPath)) {
+        paths.Insert(0, dir.SelectedPath);
       }
+      Settings.Default.DirectorySelectFolders = string.Join(Environment.NewLine, paths);
+      Settings.Default.Save();
+      LoadFolders();
+      Answer = dir.SelectedPath;
     }
 
     private void LoadFolders() {

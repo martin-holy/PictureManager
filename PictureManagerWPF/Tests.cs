@@ -50,26 +50,14 @@ namespace PictureManager {
 
       //TestThumbnails();
       //ResizeToPhoneAndWeb();
-      CreateThumbnailAsyncTest();
+      //CreateThumbnailAsyncTest();
+      TestFolderBrowserDialog();
     }
 
-    private async void Test() {
-      /*Func<Task> t = async () => {
-        var thumbs = new Task(() => { });
-        var metadata = new Task<bool>(() => { return true; });
-        await Task.WhenAll(thumbs, metadata);
-        return true;
-      };
-      Task<bool> p = async () => {
-        var thumbs = new Task(() => { });
-        var metadata = new Task<bool>(() => { return true; });
-        await Task.WhenAll(thumbs, metadata);
-        //return await metadata.Result;
-      };
-      var task = new Task<bool>(p);
-
-      task.Start();
-      var result = await task;*/
+    private void TestFolderBrowserDialog() {
+      var fbd = new FolderBrowserDialog(App.WMain);
+      if (!(fbd.ShowDialog() ?? true)) return;
+      var path = fbd.SelectedPath;
     }
 
     private void CreateThumbnailAsyncTest() {

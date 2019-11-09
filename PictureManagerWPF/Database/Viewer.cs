@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using PictureManager.Dialogs;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -37,14 +37,13 @@ namespace PictureManager.Database {
     }
 
     public void AddFolder(bool included) {
-      // TODO vlastni dialog na vyber slozky
-      var dir = new FolderBrowserDialog();
-      if (dir.ShowDialog() != DialogResult.OK) return;
+      var dir = new FolderBrowserDialog(App.WMain);
+      if (!(dir.ShowDialog() ?? true)) return;
       if ((included ? IncludedFolders : ExcludedFolders).Items.Any(x => x.ToolTip.Equals(dir.SelectedPath))) return;
 
       var folder = App.Core.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
       if (folder == null) {
-        Dialogs.MessageDialog.Show("Information", @"Select this folder in Folders tree first.", false);
+        MessageDialog.Show("Information", @"Select this folder in Folders tree first.", false);
         return;
       }
 

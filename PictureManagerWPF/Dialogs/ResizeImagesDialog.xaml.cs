@@ -9,7 +9,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
 using PictureManager.Database;
 using PictureManager.Properties;
 using Application = System.Windows.Application;
@@ -126,8 +125,8 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnOpenDirectoryPicker_OnClick(object sender, RoutedEventArgs e) {
-      var dir = new FolderBrowserDialog();
-      if (dir.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
+      var dir = new FolderBrowserDialog(App.WMain);
+      if (!(dir.ShowDialog() ?? true)) return;
 
       if (!DirPaths.Contains(dir.SelectedPath)) {
         DirPaths.Insert(0, dir.SelectedPath);

@@ -98,6 +98,9 @@
     <Compile Include="Dialogs\FileOperationCollisionDialog.xaml.cs">
       <DependentUpon>FileOperationCollisionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\FolderBrowserDialog.xaml.cs">
+      <DependentUpon>FolderBrowserDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\FolderKeywordList.xaml.cs">
       <DependentUpon>FolderKeywordList.xaml</DependentUpon>
     </Compile>
@@ -133,9 +136,6 @@
     <Compile Include="Database\FavoriteFolders.cs" />
     <Compile Include="ViewModel\FolderKeyword.cs" />
     <Compile Include="ViewModel\FolderKeywords.cs" />
-    <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
-      <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
@@ -150,9 +150,6 @@
     <Compile Include="ShellStuff\Interfaces\IShellItem.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
     <Compile Include="ShellStuff\ShellCommon.cs" />
-    <Compile Include="UserControls\DirectoryList.xaml.cs">
-      <DependentUpon>DirectoryList.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VersionInfo.cs" />
     <Compile Include="ViewModel\BaseTreeViewItem.cs" />
     <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
@@ -186,10 +183,6 @@
     <Compile Include="WTest.xaml.cs">
       <DependentUpon>WTest.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dialogs\DirectoryListDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Dialogs\DirectorySelectDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -201,6 +194,10 @@
     <Page Include="Dialogs\FileOperationCollisionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FolderBrowserDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\FolderKeywordList.xaml">
       <SubType>Designer</SubType>
@@ -233,10 +230,6 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\DirectoryList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MediaElementControl.xaml">
       <SubType>Designer</SubType>
