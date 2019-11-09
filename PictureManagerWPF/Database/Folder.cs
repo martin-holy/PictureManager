@@ -172,9 +172,11 @@ namespace PictureManager.Database {
       if (Items.Count == 1 && Items[0].Title == null) Items.Clear();
 
       var dirNames = new HashSet<string>();
-      var fullPathLength = FullPath.Length + 1;
-      if (!FullPath.Contains(Path.DirectorySeparatorChar)) fullPathLength--;
-      foreach (var dir in Directory.EnumerateDirectories(FullPath)) {
+      var fullPath = FullPath;
+      fullPath = fullPath.Contains(Path.DirectorySeparatorChar) ? fullPath : fullPath + Path.DirectorySeparatorChar;
+      var fullPathLength = fullPath.Length;
+
+      foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var isNew = false;
         var dirName = dir.Substring(fullPathLength);
         dirNames.Add(dirName);
