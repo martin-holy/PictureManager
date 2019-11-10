@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows;
+using PictureManager.Dialogs;
 
 namespace PictureManager {
   /// <summary>
@@ -46,7 +47,7 @@ namespace PictureManager {
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
-      var wError = new WError {TbError = {Text = ((Exception) e.ExceptionObject).ToString()}};
+      var wError = new UnhandledErrorDialog { TbError = {Text = ((Exception) e.ExceptionObject).ToString()}};
       wError.ShowDialog();
     }
   }

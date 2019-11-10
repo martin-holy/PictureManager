@@ -1,4 +1,4 @@
-﻿<controls:MetroWindow x:Class="PictureManager.WAbout"
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.AboutDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,7 +12,7 @@
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
         ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner" TitleCaps="False" ResizeMode="NoResize">
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
   <controls:MetroWindow.Resources>
     <Style TargetType="{x:Type Hyperlink}">
       <Style.Triggers>
@@ -59,7 +59,8 @@
                 </Rectangle.Fill>
               </Rectangle>
               <Rectangle x:Name="rectangle" RadiusX="15" RadiusY="15" Fill="#142E61" Margin="1" Opacity="0"/>
-              <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" Margin="{TemplateBinding Padding}"/>
+              <ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                IsHitTestVisible="False" Margin="{TemplateBinding Padding}"/>
             </Grid>
           </ControlTemplate>
         </Setter.Value>
@@ -73,15 +74,11 @@
     </StackPanel>
     <StackPanel>
       <Label Content="Picture Manager" FontSize="26.667" />
-      <!--<StackPanel Orientation="Horizontal">
-        <Label Content="Version:" />
-        <Label Content="{Binding Mode=OneTime, Path=Version}" />
-      </StackPanel>-->
       <StackPanel Orientation="Horizontal">
         <Label Content="File Version:" />
-        <Label Content="{Binding Mode=OneTime, Path=FileVersion}" />
+        <Label Content="{Binding Path=FileVersion}" />
       </StackPanel>
-      <Label Content="{Binding Mode=OneTime, Path=Copyright}" />
+      <Label Content="{Binding Path=LegalCopyright}" />
       <Label>
         <Hyperlink NavigateUri="https://github.com/martin-holy/PictureManager" RequestNavigate="Homepage_OnRequestNavigate">
           <TextBlock Text="https://github.com/martin-holy/PictureManager" />

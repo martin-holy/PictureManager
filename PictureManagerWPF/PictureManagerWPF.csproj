@@ -158,14 +158,14 @@
     <Compile Include="ViewModel\MediaItemSizes.cs" />
     <Compile Include="ViewModel\Rating.cs" />
     <Compile Include="ViewModel\Ratings.cs" />
-    <Compile Include="WAbout.xaml.cs">
-      <DependentUpon>WAbout.xaml</DependentUpon>
+    <Compile Include="Dialogs\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\CompressDialog.xaml.cs">
       <DependentUpon>CompressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WError.xaml.cs">
-      <DependentUpon>WError.xaml</DependentUpon>
+    <Compile Include="Dialogs\UnhandledErrorDialog.xaml.cs">
+      <DependentUpon>UnhandledErrorDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\FileOperationDialog.xaml.cs">
       <DependentUpon>FileOperationDialog.xaml</DependentUpon>
@@ -174,8 +174,8 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WSettings.xaml.cs">
-      <DependentUpon>WSettings.xaml</DependentUpon>
+    <Compile Include="Dialogs\SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="WSplashScreen.xaml.cs">
       <DependentUpon>WSplashScreen.xaml</DependentUpon>
@@ -235,7 +235,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WAbout.xaml">
+    <Page Include="Dialogs\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -243,7 +243,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WError.xaml">
+    <Page Include="Dialogs\UnhandledErrorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -263,7 +263,7 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WSettings.xaml">
+    <Page Include="Dialogs\SettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

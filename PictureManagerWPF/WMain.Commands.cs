@@ -325,7 +325,7 @@ namespace PictureManager {
     }
 
     private void OpenSettings() {
-      var settings = new WSettings {Owner = this};
+      var settings = new SettingsDialog {Owner = this};
       if (settings.ShowDialog() ?? true)
         Settings.Default.Save();
       else
@@ -333,7 +333,7 @@ namespace PictureManager {
     }
 
     private void OpenAbout() {
-      var about = new WAbout {Owner = this};
+      var about = new AboutDialog {Owner = this};
       about.ShowDialog();
     }
 

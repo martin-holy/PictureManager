@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 
-namespace PictureManager {
+namespace PictureManager.Dialogs {
   /// <summary>
   /// Interaction logic for WSettings.xaml
   /// </summary>
-  public partial class WSettings {
-    public WSettings() {
+  public partial class SettingsDialog {
+    public SettingsDialog() {
       InitializeComponent();
     }
 
