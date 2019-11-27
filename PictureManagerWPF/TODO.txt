@@ -14,7 +14,6 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
-- vlastni dialog na vyber slozky u Viewera a ResizeImages
 - vytvareni miniatur pres windows universal apps. with OS detection for other methods
 
 #Code Cleaning
