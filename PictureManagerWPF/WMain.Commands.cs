@@ -23,7 +23,7 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemNext, MediaItemNext, CanMediaItemNext);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemPrevious, MediaItemPrevious, CanMediaItemPrevious);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectAll, MediaItemsSelectAll, CanMediaItemsSelectAll);
-      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectNotModifed, MediaItemsSelectNotModifed, CanMediaItemsSelectNotModifed);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectNotModified, MediaItemsSelectNotModified, CanMediaItemsSelectNotModified);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsDelete, MediaItemsDelete, CanMediaItemsDelete);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsLoadByTag, MediaItemsLoadByTag);
       Commands.AddCommandBinding(CommandBindings, Commands.Presentation, Presentation, CanPresentation);
@@ -121,12 +121,12 @@ namespace PictureManager {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanMediaItemsSelectNotModifed() {
+    private static bool CanMediaItemsSelectNotModified() {
       return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
-    private static void MediaItemsSelectNotModifed() {
-      App.Core.MediaItems.SelectNotModifed();
+    private static void MediaItemsSelectNotModified() {
+      App.Core.MediaItems.SelectNotModified();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -137,7 +137,7 @@ namespace PictureManager {
     private void MediaItemsDelete() {
       var count = App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected);
       if (!MessageDialog.Show("Delete Confirmation", 
-        $"Do you realy want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
+        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
       App.Core.MediaItems.RemoveSelected(true);
 
@@ -155,7 +155,7 @@ namespace PictureManager {
 
     private static void MediaItemsShuffle() {
       App.Core.MediaItems.FilteredItems.Shuffle();
-      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.SplittedItemsReload();
     }
 
     private static bool CanMediaItemsResizeImages() {
@@ -213,7 +213,7 @@ namespace PictureManager {
 
     private static void TagItemDelete(object parameter) {
       if (!(parameter is BaseTreeViewItem item)) return;
-      if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{item.Title}'?", true)) return;
+      if (!MessageDialog.Show("Delete Confirmation", $"Do you really want to delete '{item.Title}'?", true)) return;
       (item.GetTopParent() as BaseCategoryItem)?.ItemDelete(item);
     }
 
@@ -222,7 +222,7 @@ namespace PictureManager {
       if (!(item.GetTopParent() is BaseCategoryItem topParent)) return;
 
       if (!MessageDialog.Show("Delete Confirmation",
-        $"Do you realy want to delete not used items in '{item.Title}'?", true)) return;
+        $"Do you really want to delete not used items in '{item.Title}'?", true)) return;
 
       switch (topParent.Category) {
         case Category.People: {
@@ -264,7 +264,7 @@ namespace PictureManager {
 
     private static void FolderDelete(object parameter) {
       var folder = (Folder) parameter;
-      if (!MessageDialog.Show("Delete Confirmation", $"Do you realy want to delete '{folder.Title}' folder?", true)) return;
+      if (!MessageDialog.Show("Delete Confirmation", $"Do you really want to delete '{folder.Title}' folder?", true)) return;
 
       App.Core.Folders.DeleteRecord(folder, true);
       // reload FolderKeywords
@@ -374,7 +374,7 @@ namespace PictureManager {
       }
 
       if (reload) {
-        App.Core.MediaItems.SplitedItemsReload();
+        App.Core.MediaItems.SplittedItemsReload();
         App.Core.MediaItems.ScrollToCurrent();
       }
     }
@@ -395,20 +395,20 @@ namespace PictureManager {
     }
 
     private static bool CanMetadataSave() {
-      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifedItems.Count > 0;
+      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
     }
 
     private void MetadataSave() {
       var progress = new ProgressBarDialog(this, true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifedItems.ToArray(),
+        App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate(MediaItem mi) {
           mi.TryWriteMetadata();
 
           Application.Current.Dispatcher.Invoke(delegate {
-            App.Core.MediaItems.SetModifed(mi, false);
+            App.Core.MediaItems.SetModified(mi, false);
           });
         },
         mi => mi.FilePath,
@@ -435,14 +435,14 @@ namespace PictureManager {
     private void MetadataCancel() {
       var progress = new ProgressBarDialog(this, false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifedItems.ToArray(),
+        App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate(MediaItem mi) {
           mi.ReadMetadata();
 
           Application.Current.Dispatcher.Invoke(delegate {
-            App.Core.MediaItems.SetModifed(mi, false);
+            App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
         },
@@ -518,7 +518,7 @@ namespace PictureManager {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.MediaItems.Helper.IsModifed = true;
+          App.Core.MediaItems.Helper.IsModified = true;
           App.Core.Sdb.SaveAllTables();
         });
 
@@ -550,7 +550,7 @@ namespace PictureManager {
         },
         mi => mi.FilePath,
         delegate {
-          App.Core.MediaItems.SplitedItemsReload();
+          App.Core.MediaItems.SplittedItemsReload();
           App.Core.MediaItems.ScrollToCurrent();
         });
 
@@ -599,7 +599,7 @@ namespace PictureManager {
     }
 
     private void AddGeoNamesFromFiles() {
-      var progress = new ProgressBarDialog(this, true, 1, "Adding geonames ...");
+      var progress = new ProgressBarDialog(this, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
         App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
@@ -658,7 +658,7 @@ namespace PictureManager {
       _presentation.Stop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.SplittedItemsReload();
       App.Core.MediaItems.ScrollToCurrent();
       App.Core.MarkUsedKeywordsAndPeople();
       UseNoneWindowStyle = false;

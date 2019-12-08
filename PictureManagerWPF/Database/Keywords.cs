@@ -128,7 +128,7 @@ namespace PictureManager.Database {
       ItemSetInPlace(root, true, keyword);
 
       if (root is CategoryGroup)
-        App.Core.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModified = true;
 
       Mut.ReleaseMutex();
 
@@ -174,7 +174,7 @@ namespace PictureManager.Database {
       // remove Keyword from the group
       if (keyword.Parent is CategoryGroup group) {
         group.Items.Remove(keyword);
-        App.Core.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModified = true;
       }
 
       // get all descending keywords
@@ -191,7 +191,7 @@ namespace PictureManager.Database {
               mi.Keywords = null;
           }
 
-          App.Core.MediaItems.Helper.IsModifed = true;
+          App.Core.MediaItems.Helper.IsModified = true;
         }
 
         k.Parent = null;
@@ -201,12 +201,11 @@ namespace PictureManager.Database {
         AllDic.Remove(k.Id);
       }
 
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
     }
 
     public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
-      //if (item.Parent == dest.Parent) => postun ve skupine, tzn. zmenit keyword.index
-      //if (item.Parent != dest.Parent) => posun mezi skupinama, tzn. resetovat keyword.index a zaradit podle jmena
+      // move in a group
       if (dest is Keyword && item.Parent == dest.Parent) {
         var items = item.Parent.Items;
         var srcIndex = items.IndexOf(item);
@@ -218,14 +217,15 @@ namespace PictureManager.Database {
         var i = 0;
         foreach (var itm in items.OfType<Keyword>()) itm.Idx = i++;
       }
-      else {
+      // move between groups
+      else { 
         if (!(item is Keyword keyword)) return;
 
         keyword.Idx = 0;
         ItemMove(item, dest);
       }
 
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
     }
   }
 }

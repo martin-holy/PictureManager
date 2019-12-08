@@ -64,7 +64,7 @@ namespace PictureManager.Database {
 
     public void DeleteRecord(CategoryGroup record) {
       All.Remove(record);
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
     }
   }
 }

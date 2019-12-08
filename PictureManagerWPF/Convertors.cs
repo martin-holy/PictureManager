@@ -122,20 +122,23 @@ namespace PictureManager {
       if (value == null) return Visibility.Collapsed;
       var result = false;
 
-      switch (value) {
-        case string s: {
-          result = !string.IsNullOrEmpty(s);
-          break;
+      if (parameter != null)
+        result = value.Equals(parameter);
+      else
+        switch (value) {
+          case string s: {
+            result = !string.IsNullOrEmpty(s);
+            break;
+          }
+          case bool b: {
+            result = b;
+            break;
+          }
+          case int i: {
+            result = i > 0;
+            break;
+          }
         }
-        case bool b: {
-          result = b;
-          break;
-        }
-        case int i: {
-          result = i > 0;
-          break;
-        }
-      }
 
       return result ? Visibility.Visible : Visibility.Collapsed;
     }

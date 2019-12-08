@@ -75,7 +75,7 @@ namespace PictureManager.Database {
       if (Directory.Exists(FullPathCache))
         Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
       Title = newName;
-      App.Core.Folders.Helper.IsModifed = true;
+      App.Core.Folders.Helper.IsModified = true;
 
       // reload if the folder was selected before
       if (IsSelected)
@@ -317,7 +317,7 @@ namespace PictureManager.Database {
       return false;
     }
 
-    /// <param name="path">full or partial folder path with no direcotry separator on the end</param>
+    /// <param name="path">full or partial folder path with no directory separator on the end</param>
     /// <param name="withReload">try with reload if not the path was not found</param>
     public Folder GetByPath(string path, bool withReload = false) {
       if (string.IsNullOrEmpty(path)) return null;

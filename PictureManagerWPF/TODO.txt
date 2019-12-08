@@ -2,6 +2,8 @@
 - pri nacteni nove slozky se miniatury posouvaj, pokud predtim byly nejak posunuty
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - video kratsi jak 1s se nechce prehravat opakovane
+- kdyz se video posouva posuvnikem, tak dat pak play jen pokud bylo video pusteny
+- v geonames nepouzivat muj ucet
 
 #Update
 

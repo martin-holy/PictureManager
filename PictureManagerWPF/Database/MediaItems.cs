@@ -29,7 +29,7 @@ namespace PictureManager.Database {
 
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
     public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
-    public ObservableCollection<ObservableCollection<MediaItem>> SplitedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
+    public ObservableCollection<ObservableCollection<MediaItem>> SplittedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
 
     public MediaItem Current {
       get => _current;
@@ -44,16 +44,16 @@ namespace PictureManager.Database {
       }
     }
 
-    public static string[] SuportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
-    public static string[] SuportedImageExts = { ".jpg", ".jpeg" };
-    public static string[] SuportedVideoExts = { ".mp4", ".mkv" };
+    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
+    public static string[] SupportedImageExts = { ".jpg", ".jpeg" };
+    public static string[] SupportedVideoExts = { ".mp4", ".mkv" };
 
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
 
-    public int ModifedCount => ModifedItems.Count;
-    public List<MediaItem> ModifedItems = new List<MediaItem>();
+    public int ModifiedCount => ModifiedItems.Count;
+    public List<MediaItem> ModifiedItems = new List<MediaItem>();
 
     private BackgroundWorker _loadByTagWorker;
 
@@ -166,8 +166,8 @@ namespace PictureManager.Database {
 
       App.Core.AppInfo.MediaItemsCount--;
 
-      // set MediaItems table as modifed
-      Helper.IsModifed = true;
+      // set MediaItems table as modified
+      Helper.IsModified = true;
     }
 
     public void Delete(MediaItem[] items) {
@@ -182,15 +182,15 @@ namespace PictureManager.Database {
       if (value) Selected++; else Selected--;
     }
 
-    public void SetModifed(MediaItem mi, bool value) {
-      if (mi.IsModifed == value) return;
-      mi.IsModifed = value;
+    public void SetModified(MediaItem mi, bool value) {
+      if (mi.IsModified == value) return;
+      mi.IsModified = value;
       if (value)
-        ModifedItems.Add(mi);
+        ModifiedItems.Add(mi);
       else
-        ModifedItems.Remove(mi);
+        ModifiedItems.Remove(mi);
 
-      OnPropertyChanged(nameof(ModifedCount));
+      OnPropertyChanged(nameof(ModifiedCount));
     }
 
     public List<MediaItem> GetSelectedOrAll() {
@@ -210,18 +210,18 @@ namespace PictureManager.Database {
         SetSelected(mi, false);
     }
 
-    public void SelectNotModifed() {
+    public void SelectNotModified() {
       Current = null;
       foreach (var mi in FilteredItems) {
         SetSelected(mi, false);
-        if (!mi.IsModifed)
+        if (!mi.IsModified)
           SetSelected(mi, true);
       }
     }
 
   public void SetMetadata(object tag) {
       foreach (var mi in FilteredItems.Where(x => x.IsSelected)) {
-        SetModifed(mi, true);
+        SetModified(mi, true);
 
         switch (tag) {
           case Person p: {
@@ -263,7 +263,7 @@ namespace PictureManager.Database {
 
               if (skip) break;
 
-              // remove potencial redundant keywords 
+              // remove possible redundant keywords 
               // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
               foreach (var miKeyword in mi.Keywords.ToArray()) {
                 var tmpMarkedK = k;
@@ -311,10 +311,10 @@ namespace PictureManager.Database {
       LoadedItems.Clear();
       FilteredItems.Clear();
 
-      foreach (var splitedItem in SplitedItems)
-        splitedItem.Clear();
+      foreach (var splittedItem in SplittedItems)
+        splittedItem.Clear();
 
-      SplitedItems.Clear();
+      SplittedItems.Clear();
     }
 
     public void ReapplyFilter() {
@@ -328,7 +328,7 @@ namespace PictureManager.Database {
       OnPropertyChanged(nameof(PositionSlashCount));
       App.Core.MarkUsedKeywordsAndPeople();
 
-      SplitedItemsReload();
+      SplittedItemsReload();
     }
 
     private static List<MediaItem> Filter(List<MediaItem> mediaItems) {
@@ -548,7 +548,7 @@ namespace PictureManager.Database {
 
     public void ScrollTo(MediaItem mi) {
       var rowIndex = 0;
-      foreach (var row in SplitedItems) {
+      foreach (var row in SplittedItems) {
         if (row.Any(x => x.Id.Equals(mi.Id)))
           break;
         rowIndex++;
@@ -581,7 +581,7 @@ namespace PictureManager.Database {
         cache.ForEach(File.Delete);
       }
 
-      SplitedItemsReload();
+      SplittedItemsReload();
       Current = null;
 
       // set new current
@@ -592,31 +592,31 @@ namespace PictureManager.Database {
       ScrollToCurrent();
     }
 
-    public void SplitedItemsAdd(MediaItem mi) {
-      var lastIndex = SplitedItems.Count - 1;
+    public void SplittedItemsAdd(MediaItem mi) {
+      var lastIndex = SplittedItems.Count - 1;
       if (lastIndex == -1) {
-        SplitedItems.Add(new ObservableCollection<MediaItem>());
+        SplittedItems.Add(new ObservableCollection<MediaItem>());
         lastIndex++;
       }
 
       var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
-      var rowWidth = SplitedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
+      var rowWidth = SplittedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
       if (mi.ThumbWidth <= rowMaxWidth - rowWidth) {
-        SplitedItems[lastIndex].Add(mi);
+        SplittedItems[lastIndex].Add(mi);
       }
       else {
-        SplitedItems.Add(new ObservableCollection<MediaItem>());
-        SplitedItems[lastIndex + 1].Add(mi);
+        SplittedItems.Add(new ObservableCollection<MediaItem>());
+        SplittedItems[lastIndex + 1].Add(mi);
       }
     }
 
-    public void SplitedItemsReload() {
-      foreach (var itemsRow in SplitedItems)
+    public void SplittedItemsReload() {
+      foreach (var itemsRow in SplittedItems)
         itemsRow.Clear();
 
-      SplitedItems.Clear();
+      SplittedItems.Clear();
       App.WMain.UpdateLayout();
 
       var row = new ObservableCollection<MediaItem>();
@@ -631,13 +631,13 @@ namespace PictureManager.Database {
           rowWidth += mi.ThumbWidth + itemOffset;
         }
         else {
-          SplitedItems.Add(row);
+          SplittedItems.Add(row);
           row = new ObservableCollection<MediaItem> { mi };
           rowWidth = mi.ThumbWidth + itemOffset;
         }
       }
 
-      SplitedItems.Add(row);
+      SplittedItems.Add(row);
     }
 
     public void ResetThumbsSize() {
@@ -654,7 +654,7 @@ namespace PictureManager.Database {
     }
 
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
       progress.AddEvents(
@@ -692,7 +692,7 @@ namespace PictureManager.Database {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          SplitedItemsReload();
+          SplittedItemsReload();
           ScrollToCurrent();
           App.Core.Sdb.SaveAllTables();
         });
@@ -701,11 +701,11 @@ namespace PictureManager.Database {
     }
 
     public static bool IsSupportedFileType(string filePath) {
-      return SuportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
+      return SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
     }
 
     public static MediaType GetMediaType(string filePath) {
-      return SuportedImageExts.Any(
+      return SupportedImageExts.Any(
         x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
         ? MediaType.Image
         : MediaType.Video;

@@ -76,7 +76,7 @@ namespace PictureManager.Database {
       // remove Folder from the Tree
       folder.Parent.Items.Remove(folder);
 
-      // colapse parent if doesn't have any subfolders
+      // collapse parent if doesn't have any subfolders
       if (folder.Parent.Items.Count == 0)
         folder.Parent.IsExpanded = false;
 
@@ -107,8 +107,8 @@ namespace PictureManager.Database {
         if (ff != null) App.Core.FavoriteFolders.Remove(ff);
       }
 
-      // set Folders table as modifed
-      Helper.IsModifed = true;
+      // set Folders table as modified
+      Helper.IsModified = true;
     }
 
     public void AddDrives() {

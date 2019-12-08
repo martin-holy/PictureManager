@@ -23,7 +23,7 @@ namespace PictureManager.UserControls {
     public int RepeatForMilliseconds; // 0 => infinity
     public Action RepeatEnded;
 
-    public string PositionSlahsDuration {
+    public string PositionSlashDuration {
       get {
         var pos = new TimeSpan(0, 0, 0, (int)Math.Round(MediaElement.Position.TotalSeconds), 0).ToString();
         var dur = MediaElement.NaturalDuration.HasTimeSpan ? MediaElement.NaturalDuration.TimeSpan.ToString() : "00:00:00";
@@ -143,7 +143,7 @@ namespace PictureManager.UserControls {
     }
 
     private void TimelineSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      OnPropertyChanged(nameof(PositionSlahsDuration));
+      OnPropertyChanged(nameof(PositionSlashDuration));
 
       if (_isTimelineTimerExecuting) return;
 

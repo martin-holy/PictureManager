@@ -24,12 +24,12 @@ namespace PictureManager.ViewModel {
       };
 
       App.Core.CategoryGroups.AddRecord(cg);
-      GroupSetInPalce(cg, true);
+      GroupSetInPlace(cg, true);
       App.Core.Sdb.SaveAllTables();
       return cg;
     }
 
-    private void GroupSetInPalce(CategoryGroup group, bool isNew) {
+    private void GroupSetInPlace(CategoryGroup group, bool isNew) {
       var idx = App.Core.CategoryGroups.All.Where(x => x.Category == Category).OrderBy(x => x.Title).ToList().IndexOf(group);
       
       if (isNew)
@@ -67,8 +67,8 @@ namespace PictureManager.ViewModel {
       if (!(inputDialog.ShowDialog() ?? true)) return;
       if (rename) {
         group.Title = inputDialog.Answer;
-        GroupSetInPalce(group, false);
-        App.Core.CategoryGroups.Helper.IsModifed = true;
+        GroupSetInPlace(group, false);
+        App.Core.CategoryGroups.Helper.IsModified = true;
       } else GroupCreate(inputDialog.Answer);
     }
 
@@ -123,7 +123,7 @@ namespace PictureManager.ViewModel {
       ItemSetInPlace(dest, true, item);
 
       if (item.Parent is CategoryGroup || dest is CategoryGroup)
-        App.Core.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModified = true;
     }
 
     public void ItemSetInPlace(BaseTreeViewItem root, bool isNew, BaseTreeViewItem item) {

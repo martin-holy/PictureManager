@@ -50,7 +50,7 @@ namespace PictureManager.Database {
     public int ThumbSize { get; set; }
     public double? Lat { get; set; }
     public double? Lng { get; set; }
-    public bool IsModifed { get; set; }
+    public bool IsModified { get; set; }
     public bool IsNew { get; set; }
     public bool IsPanoramatic { get; set; }
 
@@ -280,7 +280,7 @@ namespace PictureManager.Database {
     }
 
     public bool TryWriteMetadata() {
-      App.Core.MediaItems.Helper.IsModifed = true;
+      App.Core.MediaItems.Helper.IsModified = true;
       if (WriteMetadata()) return true;
       ReSave();
       return WriteMetadata();
@@ -423,7 +423,7 @@ namespace PictureManager.Database {
             Height = frame.PixelHeight;
 
             SetThumbSize();
-            App.Core.MediaItems.Helper.IsModifed = true;
+            App.Core.MediaItems.Helper.IsModified = true;
 
             // true because only media item dimensions are required
             if (!(frame.Metadata is BitmapMetadata bm)) return true;

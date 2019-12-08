@@ -51,7 +51,7 @@ namespace PictureManager.Database {
       All.Remove(folder);
 
       folder.Folder = null;
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
     }
 
     public void Add(Folder folder) {

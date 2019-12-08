@@ -78,7 +78,7 @@ namespace PictureManager.Database {
       ItemSetInPlace(root, true, person);
 
       if (root is CategoryGroup)
-        App.Core.CategoryGroups.Helper.IsModifed = true;
+        App.Core.CategoryGroups.Helper.IsModified = true;
 
       Mut.ReleaseMutex();
 
@@ -131,9 +131,9 @@ namespace PictureManager.Database {
       All.Remove(person);
       AllDic.Remove(person.Id);
 
-      Helper.IsModifed = true;
+      Helper.IsModified = true;
       if (person.MediaItems.Count > 0)
-        App.Core.MediaItems.Helper.IsModifed = true;
+        App.Core.MediaItems.Helper.IsModified = true;
     }
   }
 }

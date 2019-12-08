@@ -31,11 +31,11 @@ namespace PictureManager.UserControls {
       set {
         _zoomActual = value;
         OnPropertyChanged();
-        OnPropertyChanged(nameof(ZoomActualFormated));
+        OnPropertyChanged(nameof(ZoomActualFormatted));
       }
     }
 
-    public string ZoomActualFormated => $"{_zoomActual:####}%";
+    public string ZoomActualFormatted => $"{_zoomActual:####}%";
 
     public ZoomImageBox() {
       _scaleTransform = new ScaleTransform();
@@ -107,14 +107,14 @@ namespace PictureManager.UserControls {
     }
 
     private void SetScale(double zoom, Point relative) {
-      var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
-      var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
+      var absoluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
+      var absoluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
 
       _scaleTransform.ScaleX = zoom;
       _scaleTransform.ScaleY = zoom;
 
-      _translateTransform.X = abosuluteX - relative.X * _scaleTransform.ScaleX;
-      _translateTransform.Y = abosuluteY - relative.Y * _scaleTransform.ScaleY;
+      _translateTransform.X = absoluteX - relative.X * _scaleTransform.ScaleX;
+      _translateTransform.Y = absoluteY - relative.Y * _scaleTransform.ScaleY;
 
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }

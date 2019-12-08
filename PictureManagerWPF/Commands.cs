@@ -12,7 +12,7 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemNext { get; } = CreateCommand("Next", "MediaItemNext", new KeyGesture(Key.Right));
     public static RoutedUICommand MediaItemPrevious { get; } = CreateCommand("Previous", "MediaItemPrevious", new KeyGesture(Key.Left));
     public static RoutedUICommand MediaItemsSelectAll { get; } = CreateCommand("Select All", "MediaItemsSelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
-    public static RoutedUICommand MediaItemsSelectNotModifed { get; } = new RoutedUICommand { Text = "Select Not Modifed" };
+    public static RoutedUICommand MediaItemsSelectNotModified { get; } = new RoutedUICommand { Text = "Select Not Modified" };
     public static RoutedUICommand MediaItemsDelete { get; } = CreateCommand("Delete", "MediaItemsDelete", new KeyGesture(Key.Delete));
     public static RoutedUICommand MediaItemsLoadByTag { get; } = new RoutedUICommand { Text = "Load by this" };
     public static RoutedUICommand Presentation { get; } = CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));

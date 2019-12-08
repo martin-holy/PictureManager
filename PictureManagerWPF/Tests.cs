@@ -4,12 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
-using System.Windows.Media;
 using PictureManager.Database;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
@@ -167,7 +163,7 @@ namespace PictureManager {
       foreach (var mi in items) {
         mi.ReadMetadata();
       }
-      App.Core.MediaItems.Helper.IsModifed = true;
+      App.Core.MediaItems.Helper.IsModified = true;
       App.Core.Sdb.SaveAllTables();*/
 
       /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video).ToList();

@@ -131,7 +131,7 @@
                 PreviewMouseLeftButtonUp="TimelineSlider_OnPreviewMouseLeftButtonUp"/>
 
         <!-- Time -->
-        <TextBlock Text="{Binding PositionSlahsDuration}" />
+        <TextBlock Text="{Binding PositionSlashDuration}" />
 
       </StackPanel>
     </Grid>

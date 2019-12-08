@@ -207,7 +207,7 @@ namespace PictureManager {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
         App.Core.MediaItems.CopyMove(
           foMode, App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
-        App.Core.MediaItems.Helper.IsModifed = true;
+        App.Core.MediaItems.Helper.IsModified = true;
       }
       // Folder
       else if (e.Data.GetDataPresent(typeof(Folder))) {
@@ -216,8 +216,8 @@ namespace PictureManager {
         if (srcData == null) return;
 
         App.Core.Folders.CopyMove(foMode, srcData, (Folder) destData);
-        App.Core.MediaItems.Helper.IsModifed = true;
-        App.Core.Folders.Helper.IsModifed = true;
+        App.Core.MediaItems.Helper.IsModified = true;
+        App.Core.Folders.Helper.IsModified = true;
         App.Core.FolderKeywords.Load();
 
         // reload last selected source if was moved
@@ -246,7 +246,7 @@ namespace PictureManager {
     }
 
     private void TreeView_AllowDropCheck(object sender, DragEventArgs e) {
-      // scroll treeview when the mouse is near the top or bottom
+      // scroll treeView when the mouse is near the top or bottom
       var treeView = ((StackPanel) sender).TryFindParent<TreeView>();
       if (treeView != null) {
         var border = VisualTreeHelper.GetChild(treeView, 0);
@@ -261,7 +261,7 @@ namespace PictureManager {
         }
       }
 
-      // return if the data can be droped
+      // return if the data can be dropped
       var dataContext = ((StackPanel) sender).DataContext;
 
       // MediaItems
@@ -292,7 +292,7 @@ namespace PictureManager {
             (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.People) return;
       }
 
-      // can't be droped
+      // can't be dropped
       e.Effects = DragDropEffects.None;
       e.Handled = true;
     }
@@ -333,7 +333,7 @@ namespace PictureManager {
       App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
       App.Core.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
       App.Core.MediaItems.ResetThumbsSize();
-      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.SplittedItemsReload();
     }
 
     #endregion
@@ -406,7 +406,7 @@ namespace PictureManager {
 
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      App.Core.MediaItems.SplitedItemsReload();
+      App.Core.MediaItems.SplittedItemsReload();
       App.Core.MediaItems.ScrollToCurrent();
     }
 
@@ -415,8 +415,8 @@ namespace PictureManager {
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
-      if (App.Core.MediaItems.ModifedItems.Count > 0 &&
-          MessageDialog.Show("Metadata Edit", "Some Media Items are modifed, do you want to save them?", true)) {
+      if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
+          MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
         MetadataSave();
       }
       App.Core.Sdb.SaveAllTables();

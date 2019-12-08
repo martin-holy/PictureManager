@@ -51,13 +51,13 @@ namespace PictureManager.Dialogs {
     }
 
     private void SetMaxMpx() {
-      var maxpx = 0;
+      var maxPx = 0;
       foreach (var mi in _items) {
         var px = mi.Width * mi.Height;
-        if (px > maxpx) maxpx = px;
+        if (px > maxPx) maxPx = px;
       }
 
-      MaxMpx = Math.Round(maxpx / 1000000.0, 1);
+      MaxMpx = Math.Round(maxPx / 1000000.0, 1);
       SldMpx.Value = MaxMpx;
     }
 

@@ -78,7 +78,7 @@ namespace PictureManager.Database {
             parentGeoName);
 
           AddRecord(dbGeoName);
-          Helper.IsModifed = true;
+          Helper.IsModified = true;
         }
 
         parentGeoName = dbGeoName;

@@ -355,7 +355,7 @@ namespace PictureManager {
 
     private Task<bool> ReadMetadataAndListThumbsAsync(MediaItem[] items, CancellationToken token) {
       return Task.Run(() => {
-        var mediaItemsModifed = false;
+        var mediaItemsModified = false;
         var count = items.Length;
         var workingOn = 0;
 
@@ -371,7 +371,7 @@ namespace PictureManager {
             Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
 
             if (!mi.ReadMetadata()) {
-              // delete corupted MediaItems
+              // delete corrupted MediaItems
               Application.Current.Dispatcher.Invoke(delegate {
                 MediaItems.LoadedItems.Remove(mi);
                 MediaItems.FilteredItems.Remove(mi);
@@ -383,17 +383,17 @@ namespace PictureManager {
             }
 
             mi.SetThumbSize();
-            mediaItemsModifed = true;
+            mediaItemsModified = true;
           }
 
           Application.Current.Dispatcher.Invoke(delegate {
             mi.SetInfoBox();
-            MediaItems.SplitedItemsAdd(mi);
+            MediaItems.SplittedItemsAdd(mi);
             AppInfo.ProgressBarValueA = percent;
           });
         }
 
-        return mediaItemsModifed;
+        return mediaItemsModified;
       });
     }
 

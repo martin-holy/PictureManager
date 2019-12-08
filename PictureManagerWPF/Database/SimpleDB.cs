@@ -37,9 +37,9 @@ namespace PictureManager.Database {
 
     public void SaveAllTables() {
       Directory.CreateDirectory("db");
-      foreach (var helper in Tables.Values.Where(x => x.IsModifed)) {
+      foreach (var helper in Tables.Values.Where(x => x.IsModified)) {
         helper.Table.SaveToFile();
-        helper.IsModifed = false;
+        helper.IsModified = false;
       }
 
       SaveIdSequences();
@@ -65,14 +65,14 @@ namespace PictureManager.Database {
 
     public void SaveIdSequences() {
       // check if something changed
-      var isModifed = false;
+      var isModified = false;
       foreach (var table in Tables) {
         if (_idSequences[table.Key.Name] == table.Value.MaxId) continue;
         _idSequences[table.Key.Name] = table.Value.MaxId;
-        isModifed = true;
+        isModified = true;
       }
 
-      if (!isModifed) return;
+      if (!isModified) return;
 
       try {
         using (var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8)) {
@@ -89,7 +89,7 @@ namespace PictureManager.Database {
   public class TableHelper {
     public int MaxId { get; set; }
     public ITable Table { get; set; }
-    public bool IsModifed { get; set; }
+    public bool IsModified { get; set; }
     private readonly string _tableFilePath;
 
     public TableHelper(ITable table, int maxId) {
@@ -100,7 +100,7 @@ namespace PictureManager.Database {
     }
 
     public int GetNextId() {
-      IsModifed = true;
+      IsModified = true;
       return ++MaxId;
     }
 
