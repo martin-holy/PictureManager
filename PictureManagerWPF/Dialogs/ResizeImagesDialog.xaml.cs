@@ -74,7 +74,7 @@ namespace PictureManager.Dialogs {
 
           Parallel.ForEach(_items, po, mi => {
             index++;
-            Application.Current.Dispatcher.Invoke(delegate {
+            Application.Current.Dispatcher?.Invoke(delegate {
               PbProgress.Value = index;
               FileName = mi.FileName;
             });

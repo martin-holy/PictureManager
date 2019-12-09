@@ -35,7 +35,7 @@ namespace PictureManager {
 
       _presentation = new PresentationHelper {
         Elapsed = delegate {
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             if (CanMediaItemNext())
               MediaItemNext();
             else

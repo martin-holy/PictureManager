@@ -407,7 +407,7 @@ namespace PictureManager {
         delegate(MediaItem mi) {
           mi.TryWriteMetadata();
 
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             App.Core.MediaItems.SetModified(mi, false);
           });
         },
@@ -441,7 +441,7 @@ namespace PictureManager {
         delegate(MediaItem mi) {
           mi.ReadMetadata();
 
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -513,7 +513,7 @@ namespace PictureManager {
 
           // set info box just for loaded media items
           if (folder == null)
-            Application.Current.Dispatcher.Invoke(mi.SetInfoBox);
+            Application.Current.Dispatcher?.Invoke(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

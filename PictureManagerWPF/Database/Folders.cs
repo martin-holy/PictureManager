@@ -311,7 +311,7 @@ namespace PictureManager.Database {
         // Delete empty directory
         if (mode == FileOperationMode.Move) {
           // if this is done on worker thread => directory is not deleted until worker is finished
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             Extensions.DeleteDirectoryIfEmpty(srcDirPath);
             Extensions.DeleteDirectoryIfEmpty(srcDirPathCache);
           });

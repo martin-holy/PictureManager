@@ -18,11 +18,11 @@ namespace PictureManager {
     }
 
     public void AddMessage(string message) {
-      Dispatcher.Invoke(delegate { InfoText.Text = message; });
+      Dispatcher?.Invoke(delegate { InfoText.Text = message; });
     }
 
     public void LoadComplete() {
-      Dispatcher.InvokeShutdown();
+      Dispatcher?.InvokeShutdown();
     }
   }
 }

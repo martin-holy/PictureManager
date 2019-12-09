@@ -403,7 +403,7 @@ namespace PictureManager.Database {
     public bool ReadMetadata(bool gpsOnly = false) {
       try {
         if (MediaType == MediaType.Video) {
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             try {
               var size = ShellStuff.FileInformation.GetVideoMetadata(Folder.FullPath, FileName);
               Height = size[0];

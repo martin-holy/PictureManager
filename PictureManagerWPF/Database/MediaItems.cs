@@ -743,7 +743,7 @@ namespace PictureManager.Database {
             var result = AppCore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
 
             if (result == FileOperationCollisionDialog.CollisionResult.Skip) {
-              Application.Current.Dispatcher.Invoke(delegate {
+              Application.Current.Dispatcher?.Invoke(delegate {
                 App.Core.MediaItems.SetSelected(mi, false);
               });
               continue;

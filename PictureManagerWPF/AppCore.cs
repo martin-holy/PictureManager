@@ -336,7 +336,7 @@ namespace PictureManager {
 
                 workingOn++;
                 var workingOnInt = workingOn;
-                Application.Current.Dispatcher.Invoke(delegate {
+                Application.Current.Dispatcher?.Invoke(delegate {
                   AppInfo.ProgressBarValueB = Convert.ToInt32((double) workingOnInt / count * 100);
                 });
 
@@ -368,11 +368,11 @@ namespace PictureManager {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            Application.Current.Dispatcher.Invoke(delegate { AppInfo.MediaItemsCount++; });
+            Application.Current.Dispatcher?.Invoke(delegate { AppInfo.MediaItemsCount++; });
 
             if (!mi.ReadMetadata()) {
               // delete corrupted MediaItems
-              Application.Current.Dispatcher.Invoke(delegate {
+              Application.Current.Dispatcher?.Invoke(delegate {
                 MediaItems.LoadedItems.Remove(mi);
                 MediaItems.FilteredItems.Remove(mi);
                 MediaItems.Delete(mi);
@@ -386,7 +386,7 @@ namespace PictureManager {
             mediaItemsModified = true;
           }
 
-          Application.Current.Dispatcher.Invoke(delegate {
+          Application.Current.Dispatcher?.Invoke(delegate {
             mi.SetInfoBox();
             MediaItems.SplittedItemsAdd(mi);
             AppInfo.ProgressBarValueA = percent;
@@ -424,9 +424,10 @@ namespace PictureManager {
 
         if (token.IsCancellationRequested) {
           saveDb = true;
-          await Application.Current.Dispatcher.InvokeAsync(delegate {
-            MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
-          });
+          if (Application.Current.Dispatcher != null)
+            await Application.Current.Dispatcher.InvokeAsync(delegate {
+              MediaItems.Delete(MediaItems.All.Where(x => x.IsNew).ToArray());
+            });
         }
 
         if (saveDb)
@@ -456,7 +457,7 @@ namespace PictureManager {
       var result = FileOperationCollisionDialog.CollisionResult.Skip;
       var outFileName = fileName;
 
-      Application.Current.Dispatcher.Invoke(delegate {
+      Application.Current.Dispatcher?.Invoke(delegate {
         var focd = new FileOperationCollisionDialog(srcFilePath, destFilePath, owner);
         focd.ShowDialog();
         result = focd.Result;
