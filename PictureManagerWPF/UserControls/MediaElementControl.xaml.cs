@@ -18,6 +18,7 @@ namespace PictureManager.UserControls {
 
     private readonly DispatcherTimer _timelineTimer;
     private bool _isTimelineTimerExecuting;
+    private bool _wasPlaying;
     private int _repeatCount;
 
     public int RepeatForMilliseconds; // 0 => infinity
@@ -135,11 +136,12 @@ namespace PictureManager.UserControls {
     }
 
     private void TimelineSlider_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      IsPlaying = false;
+      _wasPlaying = IsPlaying;
+      if (IsPlaying) IsPlaying = false;
     }
 
     private void TimelineSlider_OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      IsPlaying = true;
+      if (_wasPlaying) IsPlaying = true;
     }
 
     private void TimelineSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
