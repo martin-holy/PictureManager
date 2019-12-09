@@ -490,7 +490,7 @@
                   <DataTemplate>
                     <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
                             MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                            MouseMove="Thumb_OnMouseMove">
+                            MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave">
                       <Border.Style>
                         <Style TargetType="{x:Type Border}">
                           <Setter Property="BorderBrush" Value="Black" />
@@ -522,16 +522,10 @@
 
                         <!-- Video over layer -->
                         <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77">
-                          <ContentControl.Style>
-                            <Style>
-                              <Style.Triggers>
-                                <DataTrigger Binding="{Binding MediaType}" Value="0">
-                                  <Setter Property="ContentControl.Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                              </Style.Triggers>
-                            </Style>
-                          </ContentControl.Style>
+                                        VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
+                                        Visibility="{Binding MediaType, 
+                                          Converter={StaticResource AllToVisibilityConverter},
+                                          ConverterParameter={x:Static pm:MediaType.Video}}">
                         </ContentControl>
 
                         <!-- Thumbnail Info Box -->
@@ -575,13 +569,13 @@
             ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
         <!-- Full Media Image -->
-        <userControls:ZoomImageBox x:Name="FullImage" 
+        <userControls:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}"
           Visibility="{Binding MediaItems.Current.MediaType, 
           Converter={StaticResource AllToVisibilityConverter}, 
           ConverterParameter={x:Static pm:MediaType.Image}}" />
 
         <!-- Full Media Video -->
-        <userControls:MediaElementControl x:Name="FullMedia" 
+        <userControls:MediaElementControl x:Name="FullMedia" DataContext="{x:Static pm:App.Core}"
           Visibility="{Binding MediaItems.Current.MediaType, 
           Converter={StaticResource AllToVisibilityConverter}, 
           ConverterParameter={x:Static pm:MediaType.Video}}" />

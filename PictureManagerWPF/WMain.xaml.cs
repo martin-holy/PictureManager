@@ -327,6 +327,38 @@ namespace PictureManager {
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
 
+    private void Thumb_OnMouseEnter(object sender, MouseEventArgs e) {
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = (MediaItem) grid.DataContext;
+      if (mi.MediaType != MediaType.Video) return;
+
+      var me = new MediaElement {
+        LoadedBehavior = MediaState.Manual, 
+        IsMuted = true, 
+        Source = mi.FilePathUri, 
+        Stretch = Stretch.Fill
+      };
+
+      me.MediaEnded += (o, args) => {
+        ((MediaElement) o).Stop();
+        ((MediaElement) o).Play();
+      };
+
+      grid.Children.Add(me);
+      me.Play();
+    }
+
+    private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = (MediaItem) grid.DataContext;
+      if (mi.MediaType != MediaType.Video) return;
+
+      var me = grid.Children.OfType<MediaElement>().FirstOrDefault();
+      if (me == null) return;
+      me.Source = null;
+      grid.Children.Remove(me);
+    }
+
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
       if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
