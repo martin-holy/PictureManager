@@ -25,6 +25,8 @@ namespace PictureManager {
     private bool _mainTreeViewIsPinnedInBrowser = true;
     private readonly PresentationHelper _presentation;
 
+    public MediaElement VideoThumbnailPreview;
+
     public WMain(string picFile) {
       InitializeComponent();
 
@@ -45,6 +47,17 @@ namespace PictureManager {
       FullMedia.RepeatEnded += delegate {
         if (!_presentation.IsPaused) return;
         _presentation.Start(false);
+      };
+
+      VideoThumbnailPreview = new MediaElement {
+        LoadedBehavior = MediaState.Manual,
+        IsMuted = true,
+        Stretch = Stretch.Fill
+      };
+
+      VideoThumbnailPreview.MediaEnded += (o, args) => {
+        ((MediaElement) o).Stop();
+        ((MediaElement) o).Play();
       };
 
       /*var ver = Assembly.GetEntryAssembly().GetName().Version;
@@ -332,20 +345,9 @@ namespace PictureManager {
       var mi = (MediaItem) grid.DataContext;
       if (mi.MediaType != MediaType.Video) return;
 
-      var me = new MediaElement {
-        LoadedBehavior = MediaState.Manual, 
-        IsMuted = true, 
-        Source = mi.FilePathUri, 
-        Stretch = Stretch.Fill
-      };
-
-      me.MediaEnded += (o, args) => {
-        ((MediaElement) o).Stop();
-        ((MediaElement) o).Play();
-      };
-
-      grid.Children.Add(me);
-      me.Play();
+      VideoThumbnailPreview.Source = mi.FilePathUri;
+      grid.Children.Add(VideoThumbnailPreview);
+      VideoThumbnailPreview.Play();
     }
 
     private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
@@ -353,10 +355,8 @@ namespace PictureManager {
       var mi = (MediaItem) grid.DataContext;
       if (mi.MediaType != MediaType.Video) return;
 
-      var me = grid.Children.OfType<MediaElement>().FirstOrDefault();
-      if (me == null) return;
-      me.Source = null;
-      grid.Children.Remove(me);
+      VideoThumbnailPreview.Source = null;
+      grid.Children.Remove(VideoThumbnailPreview);
     }
 
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
