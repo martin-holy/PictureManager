@@ -382,11 +382,11 @@ namespace PictureManager {
              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
     }
 
-    private void SetMediaItemSource() {
+    private void SetMediaItemSource(bool decoded = false) {
       var current = App.Core.MediaItems.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(current);
+          FullImage.SetSource(current, decoded);
           FullMedia.MediaElement.Source = null;
           FullMedia.IsPlaying = false;
           break;

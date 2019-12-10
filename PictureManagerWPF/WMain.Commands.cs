@@ -90,7 +90,8 @@ namespace PictureManager {
     private void MediaItemNext() {
       var current = App.Core.MediaItems.GetNext();
       App.Core.MediaItems.Current = current;
-      SetMediaItemSource();
+      var decoded = _presentation.IsEnabled && current.MediaType == MediaType.Image && current.IsPanoramatic;
+      SetMediaItemSource(decoded);
 
       if (_presentation.IsEnabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
         _presentation.Pause();

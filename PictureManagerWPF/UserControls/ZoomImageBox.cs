@@ -67,10 +67,8 @@ namespace PictureManager.UserControls {
       MouseWheel += (o, e) => {
         if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
 
-        if (_isDecoded) {
-          _isDecoded = false;
-          SetSource();
-        }
+        if (_isDecoded)
+          SetSource(false);
 
         if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4)) return;
 
@@ -119,13 +117,13 @@ namespace PictureManager.UserControls {
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
-    public void SetSource(Database.MediaItem currentMediaItem) {
+    public void SetSource(Database.MediaItem currentMediaItem, bool decoded = false) {
       _currentMediaItem = currentMediaItem;
-      _isDecoded = true;
-      SetSource();
+      SetSource(decoded);
     }
 
-    private void SetSource() {
+    private void SetSource(bool decoded) {
+      _isDecoded = decoded;
       Reset();
       if (_currentMediaItem == null) {
         Image.Source = null;
@@ -143,7 +141,21 @@ namespace PictureManager.UserControls {
       src.UriSource = _currentMediaItem.FilePathUri;
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-      
+
+      //bad quality with decoding
+      /*if (_isBigger && decoded) {
+        if (imgWidth > imgHeight)
+          if (rotated)
+            src.DecodePixelWidth = (int) ActualHeight;
+          else
+            src.DecodePixelHeight = (int) ActualHeight;
+        else
+          if (rotated)
+            src.DecodePixelHeight = (int) ActualWidth;
+          else
+            src.DecodePixelWidth = (int) ActualWidth;
+      }*/
+
       switch (_currentMediaItem.Orientation) {
         case (int) MediaOrientation.Rotate90: {
           src.Rotation = Rotation.Rotate270;
@@ -158,15 +170,6 @@ namespace PictureManager.UserControls {
           break;
         }
       }
-
-      //bad quality with decoding
-      _isDecoded = false;
-      /*if (isBigger && _isDecoded) {
-        if (decodeWidth)
-          src.DecodePixelWidth = (int) ActualWidth;
-        else
-          src.DecodePixelHeight = (int) ActualHeight;
-      }*/
 
       src.EndInit();
 
