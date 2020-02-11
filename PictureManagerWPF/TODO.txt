@@ -3,17 +3,25 @@
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - video kratsi jak 1s se nechce prehravat opakovane
 - v geonames nepouzivat muj ucet
+- zamrznuti pri mazani videa, kdyz se zrovna prehrava
+- pri nahledu na video nejdriv vypnout zvuk a pak pridat zdroj
+- pri posunu prehravani videa se vyresetuje speed
 
 #Update
-
+- pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek
+- ThumbnailCreator.exe by mel vytvaret destination folder
 
 #New
 - on "presentation start" show slider how many seconds a (prehravat video x krat kdyz je kratsi nez, zoom to fit)
-- na prehravani panoramat zmensit obrazek na vysku obrazovky
-- zmensovat hodne velky obrazky pri prohlizeni
+- na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
+- zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
 - active filters panel => pridat clear all
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
+- kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
+- pridat cas na prehravani videa
+- nacteni slozky ve favorites udelat async
+
 
 #Code Cleaning

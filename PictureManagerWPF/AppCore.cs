@@ -257,146 +257,6 @@ namespace PictureManager {
       }
     }
 
-
-    public Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size) {
-      return type == MediaType.Image
-        ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size))
-        : CreateThumbnailAsync(srcPath, destPath, size);
-    }
-
-    public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) return;
-      Directory.CreateDirectory(dir);
-
-      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
-
-        var frame = decoder.Frames[0];
-        var orientation = (ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1;
-        var rotated = orientation == (int)MediaOrientation.Rotate90 ||
-                      orientation == (int)MediaOrientation.Rotate270;
-        var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
-        var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
-        var size = MediaItems.GetThumbSize(pxw, pxh, desiredSize);
-        var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
-
-        if (rotated) {
-          // yes, angles 90 and 270 are switched
-          var angle = orientation == (int)MediaOrientation.Rotate90 ? 270 : 90;
-          output = new TransformedBitmap(output, new RotateTransform(angle));
-        }
-
-        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-        encoder.Frames.Add(BitmapFrame.Create(output));
-
-        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
-          encoder.Save(destFileStream);
-        }
-      }
-    }
-
-    public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) return Task.CompletedTask;
-      Directory.CreateDirectory(dir);
-
-      var tcs = new TaskCompletionSource<bool>();
-      var process = new Process {
-        EnableRaisingEvents = true,
-        StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
-          FileName = "ThumbnailCreator.exe",
-          UseShellExecute = false,
-          CreateNoWindow = true
-        }
-      };
-
-      process.Exited += (s, e) => {
-        tcs.TrySetResult(true);
-        process.Dispose();
-      };
-
-      process.Start();
-      return tcs.Task;
-    }
-
-    private Task CreateThumbnailsAsync(MediaItem[] items, CancellationToken token) {
-      return Task.Run(async () => {
-        var count = items.Length;
-        var workingOn = 0;
-
-        await Task.WhenAll(
-          from partition in Partitioner.Create(items).GetPartitions(Environment.ProcessorCount)
-          select Task.Run(async delegate {
-            using (partition) {
-              while (partition.MoveNext()) {
-                if (token.IsCancellationRequested) break;
-
-                workingOn++;
-                var workingOnInt = workingOn;
-                Application.Current.Dispatcher?.Invoke(delegate {
-                  AppInfo.ProgressBarValueB = Convert.ToInt32((double) workingOnInt / count * 100);
-                });
-
-                var mi = partition.Current;
-                if (mi == null) continue;
-                if (File.Exists(mi.FilePathCache)) continue;
-
-                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
-
-                mi.ReloadThumbnail();
-              }
-            }
-          }));
-      });
-    }
-
-    private Task<bool> ReadMetadataAndListThumbsAsync(MediaItem[] items, CancellationToken token) {
-      return Task.Run(() => {
-        var mediaItemsModified = false;
-        var count = items.Length;
-        var workingOn = 0;
-
-        foreach (var mi in items) {
-          if (token.IsCancellationRequested) break;
-
-          workingOn++;
-          var percent = Convert.ToInt32((double) workingOn / count * 100);
-
-          if (mi.IsNew) {
-            mi.IsNew = false;
-
-            Application.Current.Dispatcher?.Invoke(delegate { AppInfo.MediaItemsCount++; });
-
-            if (!mi.ReadMetadata()) {
-              // delete corrupted MediaItems
-              Application.Current.Dispatcher?.Invoke(delegate {
-                MediaItems.LoadedItems.Remove(mi);
-                MediaItems.FilteredItems.Remove(mi);
-                MediaItems.Delete(mi);
-                AppInfo.ProgressBarValueA = percent;
-              });
-
-              continue;
-            }
-
-            mi.SetThumbSize();
-            mediaItemsModified = true;
-          }
-
-          Application.Current.Dispatcher?.Invoke(delegate {
-            mi.SetInfoBox();
-            MediaItems.SplittedItemsAdd(mi);
-            AppInfo.ProgressBarValueA = percent;
-          });
-        }
-
-        return mediaItemsModified;
-      });
-    }
-
     public async void LoadThumbnails(MediaItem[] items) {
       // cancel previous work
       if (_thumbCts != null) {
@@ -444,6 +304,153 @@ namespace PictureManager {
 
       MarkUsedKeywordsAndPeople();
       GC.Collect();
+    }
+
+    private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      return Task.Run(() => {
+        var mediaItemsModified = false;
+        var count = items.Count;
+        var workingOn = 0;
+
+        foreach (var mi in items) {
+          if (token.IsCancellationRequested) break;
+
+          workingOn++;
+          var percent = Convert.ToInt32((double)workingOn / count * 100);
+
+          if (mi.IsNew) {
+            mi.IsNew = false;
+
+            Application.Current.Dispatcher?.Invoke(delegate { AppInfo.MediaItemsCount++; });
+
+            if (!mi.ReadMetadata()) {
+              // delete corrupted MediaItems
+              Application.Current.Dispatcher?.Invoke(delegate {
+                MediaItems.LoadedItems.Remove(mi);
+                MediaItems.FilteredItems.Remove(mi);
+                MediaItems.Delete(mi);
+                AppInfo.ProgressBarValueA = percent;
+              });
+
+              continue;
+            }
+
+            mi.SetThumbSize();
+            mediaItemsModified = true;
+          }
+
+          Application.Current.Dispatcher?.Invoke(delegate {
+            mi.SetInfoBox();
+            MediaItems.SplittedItemsAdd(mi);
+            AppInfo.ProgressBarValueA = percent;
+          });
+        }
+
+        return mediaItemsModified;
+      });
+    }
+
+    private Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      return Task.Run(async () => {
+        var count = items.Count;
+        var workingOn = 0;
+
+        await Task.WhenAll(
+          from partition in Partitioner.Create(items).GetPartitions(Environment.ProcessorCount)
+          select Task.Run(async delegate {
+            using (partition) {
+              while (partition.MoveNext()) {
+                if (token.IsCancellationRequested) break;
+
+                workingOn++;
+                var workingOnInt = workingOn;
+                Application.Current.Dispatcher?.Invoke(delegate {
+                  AppInfo.ProgressBarValueB = Convert.ToInt32((double)workingOnInt / count * 100);
+                });
+
+                var mi = partition.Current;
+                if (mi == null) continue;
+                if (File.Exists(mi.FilePathCache)) continue;
+                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+
+                mi.ReloadThumbnail();
+              }
+            }
+          }));
+      });
+    }
+
+    public Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size) {
+      return type == MediaType.Image
+        ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size))
+        : CreateThumbnailAsync(srcPath, destPath, size);
+    }
+
+    public static bool CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
+      try {
+        var dir = Path.GetDirectoryName(destPath);
+        if (dir == null) return false;
+        Directory.CreateDirectory(dir);
+
+        using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+          var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+          if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") ||
+              decoder.Frames[0] == null) return false;
+
+          var frame = decoder.Frames[0];
+          var orientation = (ushort?) ((BitmapMetadata) frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1;
+          var rotated = orientation == (int) MediaOrientation.Rotate90 ||
+                        orientation == (int) MediaOrientation.Rotate270;
+          var pxw = (double) (rotated ? frame.PixelHeight : frame.PixelWidth);
+          var pxh = (double) (rotated ? frame.PixelWidth : frame.PixelHeight);
+          var size = MediaItems.GetThumbSize(pxw, pxh, desiredSize);
+          var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
+
+          if (rotated) {
+            // yes, angles 90 and 270 are switched
+            var angle = orientation == (int) MediaOrientation.Rotate90 ? 270 : 90;
+            output = new TransformedBitmap(output, new RotateTransform(angle));
+          }
+
+          var encoder = new JpegBitmapEncoder {QualityLevel = Settings.Default.JpegQualityLevel};
+          encoder.Frames.Add(BitmapFrame.Create(output));
+
+          using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
+            encoder.Save(destFileStream);
+          }
+        }
+
+        return true;
+      }
+      catch (Exception) {
+        return false;
+      }
+    }
+
+    public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) 
+        return Task.CompletedTask;
+      Directory.CreateDirectory(dir);
+
+      var tcs = new TaskCompletionSource<bool>();
+      var process = new Process {
+        EnableRaisingEvents = true,
+        StartInfo = new ProcessStartInfo {
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
+
+      process.Exited += (s, e) => {
+        tcs.TrySetResult(true);
+        process.Dispose();
+      };
+
+      process.Start();
+      return tcs.Task;
     }
 
     public void SetMediaItemSizesLoadedRange() {
