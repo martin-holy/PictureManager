@@ -575,8 +575,9 @@
           ConverterParameter={x:Static pm:MediaType.Image}}" />
 
         <!-- Full Media Video -->
-        <userControls:MediaElementControl x:Name="FullMedia" DataContext="{x:Static pm:App.Core}"
-          Visibility="{Binding MediaItems.Current.MediaType, 
+        <userControls:MediaElementControl x:Name="FullMedia"
+          Visibility="{Binding MediaItems.Current.MediaType,
+          Source={x:Static pm:App.Core},
           Converter={StaticResource AllToVisibilityConverter}, 
           ConverterParameter={x:Static pm:MediaType.Video}}" />
       </Grid>

@@ -19,7 +19,6 @@
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
 - kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
-- pridat cas na prehravani videa
 - nacteni slozky ve favorites udelat async
 
 
