@@ -9,7 +9,6 @@
 
 #Update
 - pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek
-- ThumbnailCreator.exe by mel vytvaret destination folder
 
 #New
 - on "presentation start" show slider how many seconds a (prehravat video x krat kdyz je kratsi nez, zoom to fit)

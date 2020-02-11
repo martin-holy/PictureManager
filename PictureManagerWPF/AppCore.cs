@@ -428,11 +428,6 @@ namespace PictureManager {
     }
 
     public Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
-      var dir = Path.GetDirectoryName(destPath);
-      if (dir == null) 
-        return Task.CompletedTask;
-      Directory.CreateDirectory(dir);
-
       var tcs = new TaskCompletionSource<bool>();
       var process = new Process {
         EnableRaisingEvents = true,
