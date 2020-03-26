@@ -181,8 +181,8 @@ namespace PictureManager {
         _presentation.Stop();
         return;
       }
-      
-      if (_presentation.IsEnabled)
+
+      if (_presentation.IsEnabled || _presentation.IsPaused)
         _presentation.Stop();
       else
         _presentation.Start(true);

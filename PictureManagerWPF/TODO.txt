@@ -5,7 +5,6 @@
 - v geonames nepouzivat muj ucet
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava
 - pri posunu prehravani videa se vyresetuje speed
-- pri prehravani videa se neda zastavit prezentace
 - pri prejmenovani slozky se nezaradi podle abecedy
 - pri nacitani velkeho mnozstvi novych fotek (800) je rychnost vytvareni miniatur ~8MB/s a kdyz se to pak rozjede na ~50MB/s tak to spadne
 - error pri presunu slozky, asi kdyz uz slozka v cili existuje. nastalo pri presunu slozky 2019 s podlozkama do slozky -=hotovo a jedna z podlozek uz existovala
