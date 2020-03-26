@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -66,6 +68,15 @@ namespace PictureManager.ViewModel {
       }
     }
 
+    public string DateAndTime {
+      get {
+        var sdt = CurrentMediaItem?.FileName.Length < 15 ? string.Empty : CurrentMediaItem?.FileName.Substring(0, 15);
+        var success = DateTime.TryParseExact(sdt, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt);
+
+        return success ? dt.ToString("d. MMMM yyyy, H:mm:ss", CultureInfo.CurrentCulture) : string.Empty;
+      }
+    }
+
     public MediaItem CurrentMediaItem {
       get => _currentMediaItem;
       set {
@@ -85,6 +96,7 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(FilePath));
+        OnPropertyChanged(nameof(DateAndTime));
       }
     }
 

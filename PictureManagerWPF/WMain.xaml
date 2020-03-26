@@ -428,6 +428,11 @@
             <TextBlock Text="{Binding AppInfo.FilePath}" />
           </Border>
 
+          <!-- DateAndTime -->
+          <Border Visibility="{Binding AppInfo.DateAndTime, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding AppInfo.DateAndTime}" />
+          </Border>
+
           <!-- People -->
           <ItemsControl Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
                         ItemsSource="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}"
