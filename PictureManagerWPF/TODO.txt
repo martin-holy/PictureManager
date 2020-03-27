@@ -3,9 +3,8 @@
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - video kratsi jak 1s se nechce prehravat opakovane
 - v geonames nepouzivat muj ucet
-- zamrznuti pri mazani videa, kdyz se zrovna prehrava
+- zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - pri posunu prehravani videa se vyresetuje speed
-- pri prejmenovani slozky se nezaradi podle abecedy
 - pri nacitani velkeho mnozstvi novych fotek (800) je rychnost vytvareni miniatur ~8MB/s a kdyz se to pak rozjede na ~50MB/s tak to spadne
 - error pri presunu slozky, asi kdyz uz slozka v cili existuje. nastalo pri presunu slozky 2019 s podlozkama do slozky -=hotovo a jedna z podlozek uz existovala
 
@@ -23,6 +22,7 @@
 - kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
+- pridat to status baru ikony pro velikost, people, keywords, zoom, date, time, ...
 
 
 #Code Cleaning

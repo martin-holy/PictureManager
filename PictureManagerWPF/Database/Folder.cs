@@ -77,6 +77,11 @@ namespace PictureManager.Database {
       Title = newName;
       App.Core.Folders.Helper.IsModified = true;
 
+      // sort
+      var newIndex = ((Folder) Parent).Items.OrderBy(x => x.Title).ToList().IndexOf(this);
+      var oldIndex = ((Folder) Parent).Items.IndexOf(this);
+      ((Folder) Parent).Items.Move(oldIndex, newIndex);
+
       // reload if the folder was selected before
       if (IsSelected)
         App.Core.TreeView_Select(this, false, false, false);
