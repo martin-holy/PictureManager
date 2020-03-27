@@ -126,6 +126,9 @@
     <Compile Include="PresentationHelper.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Tests.cs" />
+    <Compile Include="UserControls\IconRect.xaml.cs">
+      <DependentUpon>IconRect.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MediaElementControl.xaml.cs">
       <DependentUpon>MediaElementControl.xaml</DependentUpon>
     </Compile>
@@ -231,6 +234,10 @@
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UserControls\IconRect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MediaElementControl.xaml">
       <SubType>Designer</SubType>

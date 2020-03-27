@@ -77,7 +77,7 @@ namespace PictureManager {
     }
   }
 
-  public class IconNameToBrush : IValueConverter {
+  public class IconNameToBrushConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();
 
