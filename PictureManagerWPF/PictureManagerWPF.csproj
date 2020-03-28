@@ -129,6 +129,9 @@
     <Compile Include="UserControls\IconRect.xaml.cs">
       <DependentUpon>IconRect.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\InfoPanel.xaml.cs">
+      <DependentUpon>InfoPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\MediaElementControl.xaml.cs">
       <DependentUpon>MediaElementControl.xaml</DependentUpon>
     </Compile>
@@ -236,6 +239,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\IconRect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\InfoPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="PictureManager.UserControls.InfoPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             x:Name="Ip">
+  <UserControl.Resources>
+    <Style TargetType="TextBlock" x:Key="SInfoPanelTextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <Style TargetType="Border" x:Key="SInfoPanelBorder">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Background" Value="#88000000" />
+      <Setter Property="VerticalAlignment" Value="Top"/>
+      <Setter Property="Padding" Value="2,1,2,2" />
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Margin" Value="3,0,0,0"/>
+      <Setter Property="MinWidth" Value="20" />
+    </Style>
+  </UserControl.Resources>
+
+  <Border Style="{StaticResource SInfoPanelBorder}" Padding="2">
+    <StackPanel Orientation="Horizontal">
+      <!-- Icon -->
+      <uc:IconRect IconName="{Binding ElementName=Ip, Path=IconName}" />
+      
+      <!-- Single Item -->
+      <Border Style="{StaticResource SInfoPanelBorder}" 
+              Visibility="{Binding ElementName=Ip, Path=Item, Converter={StaticResource AllToVisibilityConverter}}">
+        <TextBlock Style="{StaticResource SInfoPanelTextBlock}" Text="{Binding ElementName=Ip, Path=Item}" />
+      </Border>
+      
+      <!-- Collection of Items -->
+      <ItemsControl ItemsSource="{Binding ElementName=Ip, Path=Items}"
+                    Visibility="{Binding ElementName=Ip, Path=Items, Converter={StaticResource AllToVisibilityConverter}}">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Style="{StaticResource SInfoPanelBorder}">
+              <TextBlock Text="{Binding}" Style="{StaticResource SInfoPanelTextBlock}" />
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+    </StackPanel>
+  </Border>
+</UserControl>
