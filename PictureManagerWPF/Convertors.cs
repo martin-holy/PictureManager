@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -136,6 +137,10 @@ namespace PictureManager {
           }
           case int i: {
             result = i > 0;
+            break;
+          }
+          case Collection<string> c: {
+            result = c.Count > 0;
             break;
           }
         }
