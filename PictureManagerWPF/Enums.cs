@@ -36,6 +36,9 @@
     RotateClockwise,
     RotateLeft,
     RotateRight,
-    Pin
+    Pin,
+    Calendar,
+    Magnify,
+    ImageMultiple
   }
 }
