@@ -37,6 +37,7 @@ namespace PictureManager.ViewModel {
     public bool IsInfoBoxPeopleVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxPeople != null;
     public bool IsInfoBoxKeywordsVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxKeywords != null;
     public bool IsImageActualZoomVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.MediaType == MediaType.Image;
+    public bool IsSelectedCountVisible => AppMode == AppMode.Browser;
 
     public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
     public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
@@ -56,6 +57,7 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
+        OnPropertyChanged(nameof(IsSelectedCountVisible));
       }
     }
 
