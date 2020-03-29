@@ -103,25 +103,30 @@
         <Setter Property="Margin" Value="5" />
       </Style>
 
-      <!-- SBorderInfoBoxThumb -->
-      <Style x:Key="SBorderInfoBoxThumb" TargetType="Border">
+      <!-- SBorderText -->
+      <Style x:Key="SBorderText" TargetType="Border">
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="Black" />
         <Setter Property="Background" Value="#88000000" />
         <Setter Property="VerticalAlignment" Value="Top"/>
-        <Setter Property="Margin" Value="5,5,0,0"/>
         <Setter Property="Padding" Value="2,1,2,1" />
         <Setter Property="CornerRadius" Value="5" />
-      </Style>
-
-      <!-- SBorderInfoBoxStatusBar -->
-      <Style x:Key="SBorderInfoBoxStatusBar" TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxThumb}">
         <Setter Property="Margin" Value="3,0,0,0"/>
-        <Setter Property="MinWidth" Value="20" />
+        <Setter Property="MinWidth" Value="23.7" />
       </Style>
 
-      <!-- STextBlockInfoBox -->
-      <Style x:Key="STextBlockInfoBox" TargetType="TextBlock">
+      <!-- SBorderTextThumb -->
+      <Style x:Key="SBorderTextThumb" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+        <Setter Property="Margin" Value="5,5,0,0"/>
+      </Style>
+
+      <!-- SBorderGroup -->
+      <Style x:Key="SBorderGroup" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+        <Setter Property="Padding" Value="2" />
+      </Style>
+
+      <!-- STextBlock -->
+      <Style x:Key="STextBlock" TargetType="TextBlock">
         <Setter Property="Foreground" Value="White" />
         <Setter Property="HorizontalAlignment" Value="Center" />
       </Style>
