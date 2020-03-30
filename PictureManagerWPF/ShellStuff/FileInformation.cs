@@ -10,7 +10,8 @@ namespace PictureManager.ShellStuff {
       var shl = new Shell32.Shell();
       var fldr = shl.NameSpace(dirPath);
       var itm = fldr.ParseName(fileName);
-      string[] size = {fldr.GetDetailsOf(itm, 315), fldr.GetDetailsOf(itm, 317), fldr.GetDetailsOf(itm, 320)};
+      // INFO I am not sure, but it looks like that the iColumn numbers are not the same all the time
+      string[] size = {fldr.GetDetailsOf(itm, 314), fldr.GetDetailsOf(itm, 316), fldr.GetDetailsOf(itm, 319)};
       int.TryParse(size[0], out var h);
       int.TryParse(size[1], out var w);
       int.TryParse(size[2], out var o);
