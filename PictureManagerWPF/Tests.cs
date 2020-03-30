@@ -47,7 +47,7 @@ namespace PictureManager {
       //TestThumbnails();
       //ResizeToPhoneAndWeb();
       //CreateThumbnailAsyncTest();
-      TestFolderBrowserDialog();
+      //TestFolderBrowserDialog();
     }
 
     private void TestFolderBrowserDialog() {
@@ -96,7 +96,7 @@ namespace PictureManager {
             fi.CreationTime = date;
           }
           else {
-            Console.WriteLine($"Date not recognited {path}");
+            Console.WriteLine($"Date not recognized {path}");
           }
         },
         x => x,
@@ -159,12 +159,23 @@ namespace PictureManager {
     }
 
     private void BackdoorManipulations() {
-      /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
-      foreach (var mi in items) {
-        mi.ReadMetadata();
-      }
-      App.Core.MediaItems.Helper.IsModified = true;
-      App.Core.Sdb.SaveAllTables();*/
+      var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
+      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
+      progress.AddEvents(
+        items.ToArray(),
+        null,
+        // action
+        delegate (MediaItem mi) {
+          mi.ReadMetadata();
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          App.Core.MediaItems.Helper.IsModified = true;
+          App.Core.Sdb.SaveAllTables();
+        });
+
+      progress.Start();
 
       /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video).ToList();
       foreach (var mi in items) {
