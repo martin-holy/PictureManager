@@ -4,6 +4,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:uc="clr-namespace:PictureManager.UserControls"
   mc:Ignorable="d"
   Title="Folder Keywords" SizeToContent="Height" Width="400"
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -17,7 +18,7 @@
       <ListBox.ItemTemplate>
         <DataTemplate>
           <StackPanel Orientation="Horizontal" Background="Transparent" >
-            <Rectangle Style="{StaticResource IconRect}" />
+            <uc:IconRect IconName="{Binding IconName}" />
             <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0" />
           </StackPanel>
         </DataTemplate>

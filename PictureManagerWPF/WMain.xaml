@@ -202,7 +202,7 @@
               <!-- BaseTreeViewItem -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-                  <Rectangle Style="{StaticResource IconRect}" />
+                  <uc:IconRect IconName="{Binding IconName}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -210,7 +210,7 @@
               <!-- BaseTreeViewTagItem -->
               <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-                  <Rectangle Style="{StaticResource IconRect}" />
+                  <uc:IconRect IconName="{Binding IconName}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
@@ -326,7 +326,7 @@
                 <DataTemplate>
                   <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
                           Cursor="{x:Static Cursors.Hand}" Command="{x:Static pm:Commands.ShowHideTabMain}">
-                    <Rectangle Style="{StaticResource IconRect2}" Tag="{x:Static pm:IconName.Pin}" />
+                    <uc:IconRect IconName="{x:Static pm:IconName.Pin}" />
                   </Button>
                 </DataTemplate>
               </TabItem.HeaderTemplate>
