@@ -5,9 +5,9 @@
 - v geonames nepouzivat muj ucet
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - pri posunu prehravani videa se vyresetuje speed
-- pri nacitani velkeho mnozstvi novych fotek (800) je rychnost vytvareni miniatur ~8MB/s a kdyz se to pak rozjede na ~50MB/s tak to spadne
-- error pri presunu slozky, asi kdyz uz slozka v cili existuje. nastalo pri presunu slozky 2019 s podlozkama do slozky -=hotovo a jedna z podlozek uz existovala
-- u videi to zase necte rozliseni
+- error pri presunu slozky, asi kdyz uz slozka v cili existuje. 
+	nastalo pri presunu slozky 2019 s podlozkama do slozky -=hotovo a jedna z podlozek uz existovala
+	chyba je v Database.Folder.cs:333
 
 #Update
 - pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek, vertikalne vycentrovat nazev souboru
