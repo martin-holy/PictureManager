@@ -88,8 +88,11 @@ namespace PictureManager.Database {
     }
 
     public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
-      // get target folder with reload so that new folder is added
-      var targetFolder = destFolder.GetByPath(Title, true);
+      // reload destFolder so that new folder is added
+      destFolder.LoadSubFolders(false);
+
+      // get target folder
+      var targetFolder = destFolder.GetByPath(Title);
       if (targetFolder == null) return; // if folder doesn't exists => nothing was copied
 
       // Copy all MediaItems to target folder
@@ -145,9 +148,11 @@ namespace PictureManager.Database {
         return;
       }
 
-      // get target folder with reload so that new folder is added
-      if (targetFolder == null)
-        targetFolder = destFolder.GetByPath(Title, true);
+      if (targetFolder == null) {
+        // reload destFolder so that new folder is added
+        destFolder.LoadSubFolders(false);
+        targetFolder = destFolder.GetByPath(Title);
+      }
       if (targetFolder == null) throw new DirectoryNotFoundException();
 
       // Move all MediaItems to target folder
@@ -323,24 +328,19 @@ namespace PictureManager.Database {
     }
 
     /// <param name="path">full or partial folder path with no directory separator on the end</param>
-    /// <param name="withReload">try with reload if not the path was not found</param>
-    public Folder GetByPath(string path, bool withReload = false) {
+    public Folder GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
       if (FullPath.Equals(path)) return this;
 
       var root = this;
-      var pathParts = path.Substring(FullPath.Length + 1).Split(Path.DirectorySeparatorChar);
+      var pathParts = (path.StartsWith(FullPath) 
+        ? path.Substring(FullPath.Length + 1) 
+        : path)
+        .Split(Path.DirectorySeparatorChar);
 
       foreach (var pathPart in pathParts) {
         var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
-        if (folder == null) {
-          if (!withReload) return null;
-
-          // Reload SubFolders and try it again
-          root.LoadSubFolders(false);
-          folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
-          if (folder == null) return null;
-        }
+        if (folder == null) return null;
         root = (Folder) folder;
       }
 

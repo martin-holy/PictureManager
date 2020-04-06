@@ -235,7 +235,7 @@ namespace PictureManager {
 
         // reload last selected source if was moved
         if (foMode == FileOperationMode.Move && srcData.IsSelected) {
-          var folder = ((Folder) destData).GetByPath(srcData.FullPath);
+          var folder = ((Folder) destData).GetByPath(srcData.Title);
           if (folder == null) return;
           BaseTreeViewItem.ExpandTo(folder);
           App.Core.TreeView_Select(folder, false, false, false);

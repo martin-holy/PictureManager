@@ -165,11 +165,11 @@ namespace PictureManager.Database {
       }
     }
 
-    public Folder GetByPath(string path, bool withReload = false) {
+    public Folder GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
       var pathParts = path.Split(Path.DirectorySeparatorChar);
       var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0])) as Folder;
-      return pathParts.Length == 1 ? drive : drive?.GetByPath(path, withReload);
+      return pathParts.Length == 1 ? drive : drive?.GetByPath(path);
     }
 
     public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
@@ -180,15 +180,6 @@ namespace PictureManager.Database {
         if (GetVisibleTreeIndexFor(item.Items, folder, ref index)) return true;
       }
       return false;
-    }
-
-    public Folder GetFromDic(string folderPath, ref Dictionary<string, Folder> dic) {
-      if (dic.TryGetValue(folderPath, out var folder)) return folder;
-      folder = GetByPath(folderPath, true);
-      if (folder != null)
-        dic.Add(folderPath, folder);
-
-      return folder;
     }
 
     public void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder) {
