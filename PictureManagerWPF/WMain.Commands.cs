@@ -90,14 +90,17 @@ namespace PictureManager {
     private void MediaItemNext() {
       var current = App.Core.MediaItems.GetNext();
       App.Core.MediaItems.Current = current;
-      var decoded = _presentation.IsEnabled && current.MediaType == MediaType.Image && current.IsPanoramatic;
+      var decoded = PresentationPanel.IsRunning && current.MediaType == MediaType.Image && current.IsPanoramic;
       SetMediaItemSource(decoded);
 
-      if (_presentation.IsEnabled && (current.MediaType == MediaType.Video || current.IsPanoramatic)) {
-        _presentation.Pause();
+      if (PresentationPanel.IsRunning && (
+            current.MediaType == MediaType.Video ||
+            (current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
 
-        if (current.MediaType == MediaType.Image && current.IsPanoramatic)
-          _presentation.Start(true);
+        PresentationPanel.Pause();
+
+        if (current.MediaType == MediaType.Image && current.IsPanoramic)
+          PresentationPanel.Start(true);
       }
 
       App.Core.MarkUsedKeywordsAndPeople();
@@ -178,14 +181,14 @@ namespace PictureManager {
     private void Presentation() {
       if (FullImage.IsAnimationOn) {
         FullImage.Stop();
-        _presentation.Stop();
+        PresentationPanel.Stop();
         return;
       }
 
-      if (_presentation.IsEnabled || _presentation.IsPaused)
-        _presentation.Stop();
+      if (PresentationPanel.IsRunning || PresentationPanel.IsPaused)
+        PresentationPanel.Stop();
       else
-        _presentation.Start(true);
+        PresentationPanel.Start(true);
     }
 
     private static void CategoryGroupNew(object parameter) {
@@ -656,7 +659,7 @@ namespace PictureManager {
     }
 
     private void SwitchToBrowser() {
-      _presentation.Stop();
+      PresentationPanel.Stop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
       App.Core.MediaItems.SplittedItemsReload();

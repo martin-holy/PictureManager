@@ -123,7 +123,6 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="PresentationHelper.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="UserControls\IconRect.xaml.cs">
@@ -134,6 +133,9 @@
     </Compile>
     <Compile Include="UserControls\MediaElementControl.xaml.cs">
       <DependentUpon>MediaElementControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PresentationPanel.xaml.cs">
+      <DependentUpon>PresentationPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
@@ -263,6 +265,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\FileOperationDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\PresentationPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

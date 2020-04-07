@@ -567,10 +567,15 @@
             ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
         <!-- Full Media Image -->
-        <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}"
-          Visibility="{Binding MediaItems.Current.MediaType, 
+        <Grid Visibility="{Binding MediaItems.Current.MediaType, 
           Converter={StaticResource AllToVisibilityConverter}, 
-          ConverterParameter={x:Static pm:MediaType.Image}}" />
+          ConverterParameter={x:Static pm:MediaType.Image}}">
+
+          <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
+
+          <!-- Presentation Panel -->
+          <uc:PresentationPanel x:Name="PresentationPanel" />
+        </Grid>
 
         <!-- Full Media Video -->
         <uc:MediaElementControl x:Name="FullMedia"

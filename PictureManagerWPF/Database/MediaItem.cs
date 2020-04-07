@@ -52,7 +52,7 @@ namespace PictureManager.Database {
     public double? Lng { get; set; }
     public bool IsModified { get; set; }
     public bool IsNew { get; set; }
-    public bool IsPanoramatic { get; set; }
+    public bool IsPanoramic { get; set; }
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
@@ -133,7 +133,7 @@ namespace PictureManager.Database {
       if (width > height) {
         //panorama
         if (width / height > 16.0 / 9.0) {
-          IsPanoramatic = true;
+          IsPanoramic = true;
           const int maxWidth = 1100;
           var panoramaHeight = desiredSize / 16.0 * 9;
           var tooBig = panoramaHeight / height * width > maxWidth;

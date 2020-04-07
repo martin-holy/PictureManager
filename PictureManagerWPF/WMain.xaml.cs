@@ -23,7 +23,6 @@ namespace PictureManager {
     private object _dragDropObject;
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
-    private readonly PresentationHelper _presentation;
 
     public MediaElement VideoThumbnailPreview;
 
@@ -33,20 +32,18 @@ namespace PictureManager {
       AddCommandBindings();
       AddInputBindings();
 
-      _presentation = new PresentationHelper {
-        Elapsed = delegate {
-          Application.Current.Dispatcher?.Invoke(delegate {
-            if (CanMediaItemNext())
-              MediaItemNext();
-            else
-              _presentation.Stop();
-          });
-        }
+      PresentationPanel.Elapsed = delegate {
+        Application.Current.Dispatcher?.Invoke(delegate {
+          if (CanMediaItemNext())
+            MediaItemNext();
+          else
+            PresentationPanel.Stop();
+        });
       };
 
       FullMedia.RepeatEnded += delegate {
-        if (!_presentation.IsPaused) return;
-        _presentation.Start(false);
+        if (!PresentationPanel.IsPaused) return;
+        PresentationPanel.Start(false);
       };
 
       VideoThumbnailPreview = new MediaElement {
