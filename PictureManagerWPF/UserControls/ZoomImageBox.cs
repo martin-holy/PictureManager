@@ -32,6 +32,8 @@ namespace PictureManager.UserControls {
         _zoomActual = value;
         OnPropertyChanged();
         OnPropertyChanged(nameof(ZoomActualFormatted));
+        // TODO: find another way to do it
+        App.Core.AppInfo.OnPropertyChanged(nameof(ZoomActualFormatted));
       }
     }
 

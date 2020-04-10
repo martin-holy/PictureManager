@@ -372,10 +372,7 @@ namespace PictureManager {
       FlyoutMainTreeView.IsPinned = show;
       FlyoutMainTreeView.IsOpen = show;
 
-      if (show) {
-        FlyoutStatusPanel.IsOpen = false;
-        FlyoutStatusPanel.IsOpen = true;
-      }
+      SetFlyoutMainTreeViewMargin();
 
       if (reload) {
         App.Core.MediaItems.SplittedItemsReload();

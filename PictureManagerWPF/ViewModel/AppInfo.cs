@@ -29,6 +29,7 @@ namespace PictureManager.ViewModel {
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
+    public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
 
@@ -58,6 +59,7 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(IsSelectedCountVisible));
+        App.WMain.SetFlyoutMainTreeViewMargin();
       }
     }
 
@@ -91,7 +93,7 @@ namespace PictureManager.ViewModel {
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
-
+        
         OnPropertyChanged(nameof(IsGeoNameVisible));
         OnPropertyChanged(nameof(IsCommentVisible));
         OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));

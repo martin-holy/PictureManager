@@ -113,38 +113,12 @@
     <controls:FlyoutsControl>
       <!-- TabControl with TreeView Folders, Keywords and Viewers -->
       <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" IsPinned="True" 
-        Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
-        
-        <controls:Flyout.Style>
-          <Style TargetType="controls:Flyout">
-            <Setter Property="Margin" Value="0" />
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core}}" Value="0">
-                <Setter Property="Margin" Value="0,30,0,0" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </controls:Flyout.Style>
+        Background="#FF252525" Margin="{Binding FlyoutMainTreeViewMargin}"
+        TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
 
         <Grid>
-          <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition>
-              <RowDefinition.Style>
-                <Style TargetType="RowDefinition">
-                  <Setter Property="Height" Value="0" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding ElementName=FlyoutMainTreeView, Path=IsPinned}" Value="True">
-                      <Setter Property="Height" Value="{Binding ElementName=FlyoutStatusPanel, Path=ActualHeight}" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </RowDefinition.Style>
-            </RowDefinition>
-          </Grid.RowDefinitions>
-
           <!-- TreeView Folders, Keywords and Filters -->
-          <TabControl x:Name="TcMain" Grid.Row="0" Background="Transparent" BorderThickness="0">
+          <TabControl x:Name="TcMain" Background="Transparent" BorderThickness="0">
             <TabControl.Resources>
               <!-- KeywordsPicCountStyle -->
               <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
@@ -332,258 +306,151 @@
               </TabItem.HeaderTemplate>
             </TabItem>
           </TabControl>
-
         </Grid>
       </controls:Flyout>
-
-      <!-- Status Panel -->
-      <controls:Flyout x:Name="FlyoutStatusPanel" Position="Bottom" Height="Auto" IsOpen="True" 
-                       Background="Transparent" TitleVisibility="Collapsed" 
-                       CloseButtonVisibility="Collapsed" DataContext="{x:Static pm:App.Core}">
-        <controls:Flyout.Style>
-          <Style>
-            <Setter Property="controls:Flyout.Margin" Value="0,0,0,0" />
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding AppInfo.AppMode}" Value="0">
-                <Setter Property="controls:Flyout.Margin" Value="0,0,15,0" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </controls:Flyout.Style>
-
-        <WrapPanel x:Name="StatusPanel" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
-          <WrapPanel.Style>
-            <Style>
-              <Style.Resources>
-                <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}" />
-                <Style TargetType="TextBlock" BasedOn="{StaticResource STextBlock}" />
-              </Style.Resources>
-            </Style>
-          </WrapPanel.Style>
-
-          <!-- PositionSlashCount / Selected / Modified -->
-          <Border Style="{StaticResource SBorderGroup}"
-                  Visibility="{Binding MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
-            <StackPanel Orientation="Horizontal">
-              <!-- Icon -->
-              <uc:IconRect IconName="{x:Static pm:IconName.ImageMultiple}" />
-              
-              <!-- PositionSlashCount -->
-              <Border>
-                <TextBlock Text="{Binding MediaItems.PositionSlashCount}" />
-              </Border>
-
-              <!-- Selected -->
-              <Border Background="#1181B1"
-                      Visibility="{Binding AppInfo.IsSelectedCountVisible, Converter={StaticResource AllToVisibilityConverter}}">
-                <TextBlock Text="{Binding MediaItems.Selected}" />
-              </Border>
-
-              <!-- Modified -->
-              <Border Background="#CA5100" 
-                      Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
-                <TextBlock Text="{Binding MediaItems.ModifiedCount}" />
-              </Border>
-            </StackPanel>
-          </Border>
-
-          <!-- Dimension -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.Dimension, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.Ruler}"
-                        Item="{Binding AppInfo.Dimension}" />
-
-          <!-- ImageActualZoom -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.Magnify}"
-                        Item="{Binding ElementName=FullImage, Path=ZoomActualFormatted}" />
-
-          <!-- Rating -->
-          <Border Style="{StaticResource SBorderGroup}"
-                  Visibility="{Binding AppInfo.Rating.Count, Converter={StaticResource AllToVisibilityConverter}}">
-            <Border Margin="0">
-              <ItemsControl ItemsSource="{Binding AppInfo.Rating}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <uc:IconRect IconName="{Binding IconName}" />
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </Border>
-          </Border>
-
-          <!-- GeoName -->
-          <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                  ToolTip="{Binding AppInfo.FullGeoName}">
-            <uc:IconRect IconName="{x:Static pm:IconName.LocationCheckin}" />
-          </Border>
-
-          <!-- FilePath -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.FilePath, Converter={StaticResource AllToVisibilityConverter}}"
-                        ToolTip="{Binding AppInfo.CurrentMediaItem.FilePath}"
-                        IconName="{x:Static pm:IconName.Folder}"
-                        Item="{Binding AppInfo.FilePath}" />
-
-          <!-- DateAndTime -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.DateAndTime, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.Calendar}"
-                        Item="{Binding AppInfo.DateAndTime}" />
-
-          <!-- People -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.People}"
-                        Items="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}" />
-
-          <!-- Keywords -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.Tag}"
-                        Items="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}" />
-
-          <!-- Comment -->
-          <uc:InfoPanel Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                        IconName="{x:Static pm:IconName.Notification}"
-                        Item="{Binding AppInfo.CurrentMediaItem.Comment}" />
-
-        </WrapPanel>
-      </controls:Flyout>
-
     </controls:FlyoutsControl>
   </controls:MetroWindow.Flyouts>
 
+  <Grid>
+    <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="350" />
+        <ColumnDefinition Width="3" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
 
-  <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="350" />
-      <ColumnDefinition Width="3" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+      <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
+          Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
 
-    <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
-      Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <!-- Thumbnails and Full Media -->
+      <Grid Grid.Column="2" >
 
-    <!-- Thumbnails and Full Media -->
-    <Grid Grid.Column="2" >
-
-      <!-- Thumbnails -->
-      <Grid Visibility="{Binding AppInfo.AppMode, 
+        <!-- Thumbnails -->
+        <Grid Visibility="{Binding AppInfo.AppMode, 
             Converter={StaticResource AllToVisibilityConverter}, 
             ConverterParameter={x:Static pm:AppMode.Browser}}">
 
-        <!-- Thumbnails -->
-        <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplittedItems}"
-                      VirtualizingStackPanel.IsVirtualizing="True" 
-                      VirtualizingPanel.ScrollUnit="Pixel" 
-                      ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
+          <!-- Thumbnails -->
+          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplittedItems}"
+              VirtualizingStackPanel.IsVirtualizing="True" 
+              VirtualizingPanel.ScrollUnit="Pixel" 
+              ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
 
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
 
-                <!-- Thumbnail -->
-                <ItemsControl.ItemTemplate>
-                  <DataTemplate>
-                    <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
-                            MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                            MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave">
-                      <Border.Style>
-                        <Style TargetType="{x:Type Border}">
-                          <Setter Property="BorderBrush" Value="Black" />
-                          <Setter Property="BorderThickness" Value="2" />
-                          <Setter Property="Margin" Value="1" />
-                          <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                              <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                            </DataTrigger>
-                          </Style.Triggers>
-                          <Style.Resources>
-                            <Style TargetType="{x:Type ItemsControl}">
-                              <Style.Triggers>
-                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
-                                  <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
-                                  <Setter Property="Visibility" Value="Hidden"/>
-                                </DataTrigger>
-                              </Style.Triggers>
-                            </Style>
-                          </Style.Resources>
-                        </Style>
-                      </Border.Style>
+                  <!-- Thumbnail -->
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
+                          MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
+                          MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave">
+                        <Border.Style>
+                          <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="Black" />
+                            <Setter Property="BorderThickness" Value="2" />
+                            <Setter Property="Margin" Value="1" />
+                            <Style.Triggers>
+                              <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                              </DataTrigger>
+                            </Style.Triggers>
+                            <Style.Resources>
+                              <Style TargetType="{x:Type ItemsControl}">
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                  </DataTrigger>
+                                  <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
+                                    <Setter Property="Visibility" Value="Hidden"/>
+                                  </DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </Style.Resources>
+                          </Style>
+                        </Border.Style>
 
-                      <Grid>
-                        <!-- Thumbnail Image -->
-                        <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
+                        <Grid>
+                          <!-- Thumbnail Image -->
+                          <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
 
-                        <!-- Video over layer -->
-                        <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
-                                        Visibility="{Binding MediaType, 
-                                          Converter={StaticResource AllToVisibilityConverter},
-                                          ConverterParameter={x:Static pm:MediaType.Video}}">
-                        </ContentControl>
+                          <!-- Video over layer -->
+                          <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
+                              VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
+                              Visibility="{Binding MediaType, 
+                                Converter={StaticResource AllToVisibilityConverter},
+                                ConverterParameter={x:Static pm:MediaType.Video}}">
+                          </ContentControl>
 
-                        <!-- Thumbnail Info Box -->
-                        <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
-                          <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                              <WrapPanel Orientation="Horizontal" />
-                            </ItemsPanelTemplate>
-                          </ItemsControl.ItemsPanel>
-                          <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                              <Border Style="{StaticResource SBorderTextThumb}">
-                                <TextBlock Style="{StaticResource STextBlock}" Text="{Binding}" />
-                              </Border>
-                            </DataTemplate>
-                          </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                      </Grid>
-                    </Border>
-                  </DataTemplate>
-                </ItemsControl.ItemTemplate>
-              </ItemsControl>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
+                          <!-- Thumbnail Info Box -->
+                          <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
+                            <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                              </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                              <DataTemplate>
+                                <Border Style="{StaticResource SBorderTextThumb}">
+                                  <TextBlock Style="{StaticResource STextBlock}" Text="{Binding}" />
+                                </Border>
+                              </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                          </ItemsControl>
+                        </Grid>
+                      </Border>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
 
-          <ItemsControl.Template>
-            <ControlTemplate>
-              <uc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
-                <ItemsPresenter />
-              </uc:WheelSpeedScrollViewer>
-            </ControlTemplate>
-          </ItemsControl.Template>
-        </ItemsControl>
-      </Grid>
-
-      <!-- Full Media -->
-      <Grid x:Name="PanelFullScreen" Background="Transparent"
-            MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
-            Visibility="{Binding AppInfo.AppMode, 
-            Converter={StaticResource AllToVisibilityConverter}, 
-            ConverterParameter={x:Static pm:AppMode.Viewer}}">
-
-        <!-- Full Media Image -->
-        <Grid Visibility="{Binding MediaItems.Current.MediaType, 
-          Converter={StaticResource AllToVisibilityConverter}, 
-          ConverterParameter={x:Static pm:MediaType.Image}}">
-
-          <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
-
-          <!-- Presentation Panel -->
-          <uc:PresentationPanel x:Name="PresentationPanel" />
+            <ItemsControl.Template>
+              <ControlTemplate>
+                <uc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
+                  <ItemsPresenter />
+                </uc:WheelSpeedScrollViewer>
+              </ControlTemplate>
+            </ItemsControl.Template>
+          </ItemsControl>
         </Grid>
 
-        <!-- Full Media Video -->
-        <uc:MediaElementControl x:Name="FullMedia"
-          Visibility="{Binding MediaItems.Current.MediaType,
-          Source={x:Static pm:App.Core},
-          Converter={StaticResource AllToVisibilityConverter}, 
-          ConverterParameter={x:Static pm:MediaType.Video}}" />
+        <!-- Full Media -->
+        <Grid x:Name="PanelFullScreen" Background="Transparent"
+            MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
+            Visibility="{Binding AppInfo.AppMode, 
+              Converter={StaticResource AllToVisibilityConverter}, 
+              ConverterParameter={x:Static pm:AppMode.Viewer}}">
+
+          <!-- Full Media Image -->
+          <Grid Visibility="{Binding MediaItems.Current.MediaType, 
+              Converter={StaticResource AllToVisibilityConverter}, 
+              ConverterParameter={x:Static pm:MediaType.Image}}">
+
+            <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
+
+            <!-- Presentation Panel -->
+            <uc:PresentationPanel x:Name="PresentationPanel" />
+          </Grid>
+
+          <!-- Full Media Video -->
+          <uc:MediaElementControl x:Name="FullMedia"
+              Visibility="{Binding MediaItems.Current.MediaType,
+                Source={x:Static pm:App.Core},
+                Converter={StaticResource AllToVisibilityConverter}, 
+                ConverterParameter={x:Static pm:MediaType.Video}}" />
+        </Grid>
       </Grid>
     </Grid>
+
+    <!-- Status Panel -->
+    <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" MouseWheel="PanelFullScreen_OnMouseWheel" />
   </Grid>
+  
 </controls:MetroWindow>

@@ -26,6 +26,16 @@ namespace PictureManager {
 
     public MediaElement VideoThumbnailPreview;
 
+    #region DependencyProperties
+    public static readonly DependencyProperty FlyoutMainTreeViewMarginProperty = DependencyProperty.Register(
+      nameof(FlyoutMainTreeViewMargin), typeof(Thickness), typeof(WMain));
+
+    public Thickness FlyoutMainTreeViewMargin {
+      get => (Thickness) GetValue(FlyoutMainTreeViewMarginProperty);
+      set => SetValue(FlyoutMainTreeViewMarginProperty, value);
+    }
+    #endregion
+
     public WMain(string picFile) {
       InitializeComponent();
 
@@ -431,6 +441,12 @@ namespace PictureManager {
     private void FlyoutMainTreeView_OnMouseLeave(object sender, MouseEventArgs e) {
       if (!FlyoutMainTreeView.IsPinned)
         FlyoutMainTreeView.IsOpen = false;
+    }
+
+    public void SetFlyoutMainTreeViewMargin() {
+      var top = App.Core.AppInfo.AppMode == AppMode.Browser ? 30 : 0;
+      var bottom = FlyoutMainTreeView.IsPinned ? StatusPanel.ActualHeight : 0;
+      FlyoutMainTreeViewMargin = new Thickness(0, top, 0, bottom);
     }
 
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {

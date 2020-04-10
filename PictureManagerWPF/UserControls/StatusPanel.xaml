@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="PictureManager.UserControls.StatusPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             DataContext="{x:Static pm:App.Core}"
+             PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
+             Foreground="White" Focusable="True" VerticalAlignment="Bottom" Cursor="Hand">
+
+  <UserControl.Resources>
+    <Style x:Key="SOpacity" TargetType="{x:Type Grid}">
+      <Setter Property="Opacity" Value="0.3" />
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Opacity" Value="1" />
+        </Trigger>
+        <DataTrigger Binding="{Binding Path=IsPinned, RelativeSource={RelativeSource AncestorType={x:Type uc:StatusPanel}}}" Value="True">
+          <Setter Property="Opacity" Value="1" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+  </UserControl.Resources>
+
+  <Grid VerticalAlignment="Top" Background="#88000000" Style="{StaticResource SOpacity}"
+        SizeChanged="OnSizeChanged">
+
+    <WrapPanel VerticalAlignment="Bottom" Margin="0,2,0,1">
+      <WrapPanel.Style>
+        <Style TargetType="{x:Type WrapPanel}">
+          <Style.Resources>
+            <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}" />
+            <Style TargetType="TextBlock" BasedOn="{StaticResource STextBlock}" />
+          </Style.Resources>
+        </Style>
+      </WrapPanel.Style>
+
+      <!-- PositionSlashCount / Selected / Modified -->
+      <Border Style="{StaticResource SBorderGroup}"
+              Visibility="{Binding MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
+        <StackPanel Orientation="Horizontal">
+          <!-- Icon -->
+          <uc:IconRect IconName="{x:Static pm:IconName.ImageMultiple}" />
+
+          <!-- PositionSlashCount -->
+          <Border>
+            <TextBlock Text="{Binding MediaItems.PositionSlashCount}" />
+          </Border>
+
+          <!-- Selected -->
+          <Border Background="#1181B1"
+                  Visibility="{Binding AppInfo.IsSelectedCountVisible, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding MediaItems.Selected}" />
+          </Border>
+
+          <!-- Modified -->
+          <Border Background="#CA5100" 
+                  Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding MediaItems.ModifiedCount}" />
+          </Border>
+        </StackPanel>
+      </Border>
+
+      <!-- Dimension -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.Dimension, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.Ruler}"
+                    Item="{Binding AppInfo.Dimension}" />
+
+      <!-- ImageActualZoom -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.Magnify}"
+                    Item="{Binding AppInfo.ZoomActualFormatted}" />
+
+      <!-- Rating -->
+      <Border Style="{StaticResource SBorderGroup}"
+              Visibility="{Binding AppInfo.Rating.Count, Converter={StaticResource AllToVisibilityConverter}}">
+        <Border Margin="0">
+          <ItemsControl ItemsSource="{Binding AppInfo.Rating}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <uc:IconRect IconName="{Binding IconName}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Border>
+      </Border>
+
+      <!-- GeoName -->
+      <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
+              ToolTip="{Binding AppInfo.FullGeoName}">
+        <uc:IconRect IconName="{x:Static pm:IconName.LocationCheckin}" />
+      </Border>
+
+      <!-- FilePath -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.FilePath, Converter={StaticResource AllToVisibilityConverter}}"
+                    ToolTip="{Binding AppInfo.CurrentMediaItem.FilePath}"
+                    IconName="{x:Static pm:IconName.Folder}"
+                    Item="{Binding AppInfo.FilePath}" />
+
+      <!-- DateAndTime -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.DateAndTime, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.Calendar}"
+                    Item="{Binding AppInfo.DateAndTime}" />
+
+      <!-- People -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.People}"
+                    Items="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}" />
+
+      <!-- Keywords -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.Tag}"
+                    Items="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}" />
+
+      <!-- Comment -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.Notification}"
+                    Item="{Binding AppInfo.CurrentMediaItem.Comment}" />
+
+    </WrapPanel>
+  </Grid>
+</UserControl>
