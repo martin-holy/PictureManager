@@ -111,6 +111,9 @@ namespace PictureManager {
     }
 
     private void MediaItemPrevious() {
+      if (PresentationPanel.IsRunning)
+        PresentationPanel.Stop();
+
       App.Core.MediaItems.Current = App.Core.MediaItems.GetPrevious();
       SetMediaItemSource();
       App.Core.MarkUsedKeywordsAndPeople();
