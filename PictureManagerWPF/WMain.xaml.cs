@@ -359,7 +359,9 @@ namespace PictureManager {
 
     private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
       var grid = (Grid) ((Border) sender).Child;
-      var mi = (MediaItem) grid.DataContext;
+      var mi = grid.DataContext as MediaItem;
+
+      if (mi == null) return;
       if (mi.MediaType != MediaType.Video) return;
 
       VideoThumbnailPreview.Source = null;
