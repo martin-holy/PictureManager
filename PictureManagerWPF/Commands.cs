@@ -21,6 +21,7 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemsRebuildThumbnails { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };
     public static RoutedUICommand MediaItemsShuffle { get; } = new RoutedUICommand { Text = "Shuffle" };
     public static RoutedUICommand MediaItemsResizeImages { get; } = new RoutedUICommand { Text = "Resize Images" };
+    public static RoutedUICommand MediaItemsCopyPaths { get; } = new RoutedUICommand { Text = "Copy Paths" };
 
     // TreeView Commands
     public static RoutedUICommand CategoryGroupNew { get; } = new RoutedUICommand {Text = "New Group"};
