@@ -7,8 +7,7 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         mc:Ignorable="d"
         Title="Settings" 
-        Height="162.439" 
-        Width="497.561" 
+        SizeToContent="Height" Width="500" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
         ShowInTaskbar="False" 
@@ -17,35 +16,48 @@
         ShowMinButton="False" 
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal">
 
-  <Grid>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="28" />
-    </Grid.RowDefinitions>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <Label Grid.Row="0" Grid.Column="0" Content="Cache path:"/>
-    <Label Grid.Row="1" Grid.Column="0" Content="Jpeg quality level:"/>
-    <Label Grid.Row="2" Grid.Column="0" Content="Thumbnail size:"/>
+  <StackPanel Margin="5">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
 
-    <TextBox Grid.Column="1" Grid.Row="0" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=CachePath, Mode=TwoWay}" />
-    <DockPanel Grid.Column="1" Grid.Row="1">
-      <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}" />
-      <Slider Margin="3" Minimum="80" Maximum="95" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}"/>
-    </DockPanel>
-    <DockPanel Grid.Column="1" Grid.Row="2">
-      <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}" />
-      <Slider Margin="3" Minimum="200" Maximum="500" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}"/>
-    </DockPanel>
-    <StackPanel Grid.Column="1" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 3, 0">
-      <Button Margin="3, 0, 0, 3" Content="Save" IsDefault="True" MinWidth="60" Click="Save" />
-      <Button Margin="3, 0, 0, 3" Content="Cancel" IsCancel="True" MinWidth="60" />
+      <!-- Cache path -->
+      <Label Grid.Row="0" Grid.Column="0" Content="Cache path:"/>
+      <TextBox Grid.Row="0" Grid.Column="1" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=CachePath, Mode=TwoWay}" />
+
+      <!-- FFMPEG path -->
+      <Label Grid.Row="1" Grid.Column="0" Content="FFMPEG path:"/>
+      <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=FfmpegPath, Mode=TwoWay}" />
+
+      <!-- Jpeg quality level -->
+      <Label Grid.Row="2" Grid.Column="0" Content="Jpeg quality level:"/>
+      <DockPanel Grid.Row="2" Grid.Column="1">
+        <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}" />
+        <Slider Margin="3" Minimum="80" Maximum="95" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}"/>
+      </DockPanel>
+
+      <!-- Thumbnail size -->
+      <Label Grid.Row="3" Grid.Column="0" Content="Thumbnail size:"/>
+      <DockPanel Grid.Row="3" Grid.Column="1">
+        <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}" />
+        <Slider Margin="3" Minimum="200" Maximum="500" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}"/>
+      </DockPanel>
+
+    </Grid>
+
+    <!-- Buttons -->
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button Style="{StaticResource DialogButton}" IsDefault="True" Content="Save" Click="Save" />
+      <Button Style="{StaticResource DialogButton}" IsCancel="True" Content="Cancel" />
     </StackPanel>
-  </Grid>
-
+  </StackPanel>
 
 </controls:MetroWindow>
