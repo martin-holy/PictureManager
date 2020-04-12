@@ -39,6 +39,7 @@
     Pin,
     Calendar,
     Magnify,
-    ImageMultiple
+    ImageMultiple,
+    PageUpload
   }
 }
