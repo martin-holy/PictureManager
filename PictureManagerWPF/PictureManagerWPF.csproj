@@ -105,6 +105,9 @@
     <Compile Include="Dialogs\FolderKeywordList.xaml.cs">
       <DependentUpon>FolderKeywordList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ImagesToVideoDialog.xaml.cs">
+      <DependentUpon>ImagesToVideoDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\LogDialog.xaml.cs">
       <DependentUpon>LogDialog.xaml</DependentUpon>
     </Compile>
@@ -212,6 +215,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\FolderKeywordList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ImagesToVideoDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

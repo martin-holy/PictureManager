@@ -7,7 +7,7 @@
   <Grid Height="40" VerticalAlignment="Top" Background="#88000000">
     <Grid.Style>
       <Style TargetType="{x:Type Grid}">
-        <Setter Property="Opacity" Value="0.3" />
+        <Setter Property="Opacity" Value="0" />
         <Style.Triggers>
           <Trigger Property="IsMouseOver" Value="True">
             <Setter Property="Opacity" Value="1" />

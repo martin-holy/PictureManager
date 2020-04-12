@@ -32,6 +32,7 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRebuildThumbnails, MediaItemsRebuildThumbnails, CanMediaItemsRebuildThumbnails);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsShuffle, MediaItemsShuffle, CanMediaItemsShuffle);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsResizeImages, MediaItemsResizeImages, CanMediaItemsResizeImages);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsImagesToVideo, MediaItemsImagesToVideo, CanMediaItemsImagesToVideo);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsCopyPaths, MediaItemsCopyPaths, CanMediaItemsCopyPaths);
 
       // TreeView Commands
@@ -172,6 +173,15 @@ namespace PictureManager {
 
     private static void MediaItemsResizeImages() {
       ResizeImagesDialog.Show(App.WMain, App.Core.MediaItems.GetSelectedOrAll());
+    }
+
+    private static bool CanMediaItemsImagesToVideo() {
+      return App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
+    }
+
+    private static void MediaItemsImagesToVideo() {
+      ImagesToVideoDialog.Show(App.WMain,
+        App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image));
     }
 
     private static bool CanMediaItemsCopyPaths() {

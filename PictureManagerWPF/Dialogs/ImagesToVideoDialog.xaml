@@ -1,0 +1,77 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.ImagesToVideoDialog"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  mc:Ignorable="d"
+  Title="Images to Video" SizeToContent="Height" Width="515" 
+  BorderBrush="{DynamicResource AccentColorBrush}" 
+  Background="{DynamicResource WhiteBrush}" 
+  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
+  WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
+  DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0">
+
+  <controls:MetroWindow.Resources>
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="5" />
+    </Style>
+  </controls:MetroWindow.Resources>
+
+  <StackPanel Margin="5">
+
+    <Grid Margin="0,0,0,15">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40" />
+        <RowDefinition Height="40" />
+
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="110" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Speed -->
+      <Slider x:Name="SldSpeed" Grid.Row="0" Grid.Column="0" Maximum="5" Minimum="0.1" TickFrequency="0.05"
+              AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" IsSnapToTickEnabled="True"
+              VerticalAlignment="Center" Value="{Binding Speed}" Margin="5,0,0,0" />
+      <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
+                 Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat={}{0:0.00}s per Image}" />
+
+      <!-- Quality and Scale -->
+      <Grid Grid.Row="1" Grid.Column="0" ColumnSpan="2">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="50" />
+          <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Quality -->
+        <TextBlock Grid.Column="0" Text="{Binding ElementName=SldQuality, Path=Value, StringFormat={}Quality: {0}}" />
+        <Slider Grid.Column="1" x:Name="SldQuality"  Maximum="51" Minimum="0" AutoToolTipPlacement="BottomRight"
+                TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Value="{Binding Quality}" />
+
+        <!-- Scale -->
+        <TextBlock Grid.Column="2" Text="Scale:" TextAlignment="Right" />
+        <ComboBox Grid.Column="3" x:Name="CmbScale" ItemsSource="{Binding Scales}" Text="{Binding Scale}" 
+                  Height="30" IsEditable="True" Margin="0,0,5,0" />
+
+      </Grid>
+
+    </Grid>
+
+    <!-- ProgressBar -->
+    <ProgressBar x:Name="PbProgress" Height="20" Margin="5" />
+
+    <!-- Buttons -->
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnCreateVideo" Style="{StaticResource DialogButton}" Content="Create Video" Click="BtnCreateVideo_OnClick" />
+    </StackPanel>
+  </StackPanel>
+</controls:MetroWindow>
