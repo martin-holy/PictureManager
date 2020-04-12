@@ -80,5 +80,16 @@ namespace PictureManager {
         list[n] = value;
       }
     }
+
+    public static string FileSizeToString(long size) {
+      string[] sizes = { "B", "KB", "MB", "GB" };
+      var order = 0;
+      while (size >= 1024 && order + 1 < sizes.Length) {
+        order++;
+        size = size / 1024;
+      }
+
+      return $"{size:0.##} {sizes[order]}";
+    }
   }
 }

@@ -24,23 +24,12 @@ namespace PictureManager.Dialogs {
     private long _totalCompressedSize;
 
     public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
-    public string TotalSourceSize => FormatSize(_totalSourceSize);
-    public string TotalCompressedSize => FormatSize(_totalCompressedSize);
+    public string TotalSourceSize => Extensions.FileSizeToString(_totalSourceSize);
+    public string TotalCompressedSize => Extensions.FileSizeToString(_totalCompressedSize);
 
     public CompressDialog() {
       InitializeComponent();
       JpegQualityLevel = Properties.Settings.Default.JpegQualityLevel;
-    }
-
-    public string FormatSize(long size) {
-      string[] sizes = { "B", "KB", "MB", "GB" };
-      var order = 0;
-      while (size >= 1024 && order + 1 < sizes.Length) {
-        order++;
-        size = size / 1024;
-      }
-
-      return $"{size:0.##} {sizes[order]}";
     }
 
     private void BtnCompress_OnClick(object sender, RoutedEventArgs e) {
