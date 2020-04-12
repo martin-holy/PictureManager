@@ -73,6 +73,21 @@ namespace PictureManager.ViewModel {
       }
     }
 
+    public string FileSize {
+      get {
+        try {
+          if (CurrentMediaItem == null)
+            return string.Empty;
+
+          var fi = new FileInfo(CurrentMediaItem.FilePath);
+          return Extensions.FileSizeToString(fi.Length);
+        }
+        catch {
+          return string.Empty;
+        }
+      }
+    }
+
     public string DateAndTime {
       get {
         var sdt = CurrentMediaItem?.FileName.Length < 15 ? string.Empty : CurrentMediaItem?.FileName.Substring(0, 15);
@@ -101,6 +116,7 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(FilePath));
+        OnPropertyChanged(nameof(FileSize));
         OnPropertyChanged(nameof(DateAndTime));
       }
     }

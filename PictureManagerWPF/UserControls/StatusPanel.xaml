@@ -65,6 +65,11 @@
                     IconName="{x:Static pm:IconName.Ruler}"
                     Item="{Binding AppInfo.Dimension}" />
 
+      <!-- File Size -->
+      <uc:InfoPanel Visibility="{Binding AppInfo.FileSize, Converter={StaticResource AllToVisibilityConverter}}"
+                    IconName="{x:Static pm:IconName.PageUpload}"
+                    Item="{Binding AppInfo.FileSize}" />
+
       <!-- ImageActualZoom -->
       <uc:InfoPanel Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}"
                     IconName="{x:Static pm:IconName.Magnify}"
