@@ -59,6 +59,7 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(IsSelectedCountVisible));
+        OnPropertyChanged(nameof(FilePath));
         App.WMain.SetFlyoutMainTreeViewMargin();
       }
     }
