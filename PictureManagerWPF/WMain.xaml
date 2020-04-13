@@ -407,10 +407,16 @@
                           </ItemsControl>
 
                           <!-- Selected -->
-                          <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" 
-                                   HorizontalAlignment="Right" VerticalAlignment="Top"
-                                   Fill="{DynamicResource AccentColorBrush}"
-                                   Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}"/>
+                          <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
+                            <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" 
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Fill="{DynamicResource AccentColorBrush}"
+                                     Stroke="Black" StrokeThickness="2" />
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2"
+                                    BorderBrush="Black" />
+                          </Grid>
+                          
                         </Grid>
                       </Border>
                     </DataTemplate>
