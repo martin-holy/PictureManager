@@ -180,7 +180,7 @@ namespace PictureManager {
     }
 
     private static void MediaItemsImagesToVideo() {
-      ImagesToVideoDialog.Show(App.WMain,
+      ImagesToVideoDialog.ShowDialog(App.WMain,
         App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image));
     }
 

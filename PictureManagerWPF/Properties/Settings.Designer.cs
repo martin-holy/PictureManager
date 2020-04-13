@@ -94,5 +94,41 @@ namespace PictureManager.Properties {
                 this["FfmpegPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1080")]
+        public int ImagesToVideoHeight {
+            get {
+                return ((int)(this["ImagesToVideoHeight"]));
+            }
+            set {
+                this["ImagesToVideoHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("27")]
+        public int ImagesToVideoQuality {
+            get {
+                return ((int)(this["ImagesToVideoQuality"]));
+            }
+            set {
+                this["ImagesToVideoQuality"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        public double ImagesToVideoSpeed {
+            get {
+                return ((double)(this["ImagesToVideoSpeed"]));
+            }
+            set {
+                this["ImagesToVideoSpeed"] = value;
+            }
+        }
     }
 }

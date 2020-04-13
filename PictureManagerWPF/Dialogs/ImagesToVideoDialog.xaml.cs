@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,52 +11,23 @@ using PictureManager.Database;
 using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
-  public partial class ImagesToVideoDialog : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
-
+  public partial class ImagesToVideoDialog {
     private readonly MediaItem[] _items;
-    private int _quality;
-    private double _speed;
-    private string _scale;
-    private ObservableCollection<string> _scales;
     private Process _process;
     private readonly string _inputListPath;
     private readonly string _outputFilePath;
 
-    public int Quality { get => _quality; set { _quality = value; OnPropertyChanged(); } }
-    public double Speed { get => _speed; set { _speed = value; OnPropertyChanged(); } }
-    public string Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
-    public ObservableCollection<string> Scales { get => _scales; set { _scales = value; OnPropertyChanged(); } }
-
     public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items) {
       InitializeComponent();
       Owner = owner;
-      _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
+      _items = items.ToArray();
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
       _outputFilePath = _items.First().FilePath + ".mp4";
-
-      Scales = new ObservableCollection<string>(
-        Settings.Default.ImagesToVideoScales.Split(new[] { Environment.NewLine },
-          StringSplitOptions.RemoveEmptyEntries));
-
-      // Preset Default Values
-      if (Scales.Count == 0) {
-        Scales.Add("1440x1080");
-        Scales.Add("1920x1080");
-      }
-
-      Scale = Scales[0];
-      Speed = 0.25;
-      Quality = 27;
     }
 
-    public static void Show(Window owner, IEnumerable<MediaItem> items) {
+    public static void ShowDialog(Window owner, IEnumerable<MediaItem> items) {
       var dlg = new ImagesToVideoDialog(owner, items);
-      dlg.Show();
+      dlg.ShowDialog();
     }
 
     // create input list of items for FFMPEG
@@ -89,8 +57,26 @@ namespace PictureManager.Dialogs {
     }
 
     public Task CreateVideoAsync() {
-      var speedStr = Speed.ToString(CultureInfo.InvariantCulture);
-      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Quality} -vf \"scale={Scale},format=yuv420p\" \"{_outputFilePath}\"";
+      var mi = _items.First();
+
+      // Scale
+      var height = (double) Settings.Default.ImagesToVideoHeight;
+      var width = mi.Orientation == 6 || mi.Orientation == 8
+        ? mi.Height / (mi.Width / height)
+        : mi.Width / (mi.Height / height);
+      var scale = $"{Math.Round(width, 0)}x{height}";
+
+      // Rotate
+      // Orientation 1: 0, 3: 180, 6: 270, 8: 90
+      var rotation = string.Empty;
+      switch (mi.Orientation) {
+        case 3: rotation = "transpose=clock,transpose=clock,"; break;
+        case 6: rotation = "transpose=clock:passthrough=portrait,"; break;
+        case 8: rotation = "transpose=cclock:passthrough=portrait,"; break;
+      }
+
+      var speedStr = Settings.Default.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
+      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Settings.Default.ImagesToVideoQuality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
       var tcs = new TaskCompletionSource<bool>();
 
       _process = new Process {
@@ -121,11 +107,7 @@ namespace PictureManager.Dialogs {
         return;
       }
 
-      if (!Scales.Contains(Scale)) {
-        Scales.Insert(0, Scale);
-        Settings.Default.ImagesToVideoScales = string.Join(Environment.NewLine, Scales);
-        Settings.Default.Save();
-      }
+      Settings.Default.Save();
 
       // check for FFMPEG
       if (!File.Exists(Settings.Default.FfmpegPath)) {

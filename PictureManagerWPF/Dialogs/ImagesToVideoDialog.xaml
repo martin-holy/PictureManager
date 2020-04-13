@@ -4,6 +4,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:p="clr-namespace:PictureManager.Properties"
   mc:Ignorable="d"
   Title="Images to Video" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -36,7 +37,8 @@
       <!-- Speed -->
       <Slider x:Name="SldSpeed" Grid.Row="0" Grid.Column="0" Maximum="5" Minimum="0.1" TickFrequency="0.05"
               AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" IsSnapToTickEnabled="True"
-              VerticalAlignment="Center" Value="{Binding Speed}" Margin="5,0,0,0" />
+              VerticalAlignment="Center" Margin="5,0,0,0"
+              Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoSpeed, Mode=TwoWay}" />
       <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
                  Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat={}{0:0.00}s per Image}" />
 
@@ -48,19 +50,20 @@
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="80" />
           <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="50" />
+          <ColumnDefinition Width="60" />
           <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
 
         <!-- Quality -->
         <TextBlock Grid.Column="0" Text="{Binding ElementName=SldQuality, Path=Value, StringFormat={}Quality: {0}}" />
         <Slider Grid.Column="1" x:Name="SldQuality"  Maximum="51" Minimum="0" AutoToolTipPlacement="BottomRight"
-                TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" Value="{Binding Quality}" />
+                TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" 
+                Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoQuality, Mode=TwoWay}" />
 
-        <!-- Scale -->
-        <TextBlock Grid.Column="2" Text="Scale:" TextAlignment="Right" />
-        <ComboBox Grid.Column="3" x:Name="CmbScale" ItemsSource="{Binding Scales}" Text="{Binding Scale}" 
-                  Height="30" IsEditable="True" Margin="0,0,5,0" />
+        <!-- Height -->
+        <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right" />
+        <controls:NumericUpDown Grid.Column="3" FontSize="16" Minimum="100" Maximum="3000" Height="30"
+                                Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoHeight, Mode=TwoWay}" />
 
       </Grid>
 
