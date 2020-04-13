@@ -405,6 +405,12 @@
                               </DataTemplate>
                             </ItemsControl.ItemTemplate>
                           </ItemsControl>
+
+                          <!-- Selected -->
+                          <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" 
+                                   HorizontalAlignment="Right" VerticalAlignment="Top"
+                                   Fill="{DynamicResource AccentColorBrush}"
+                                   Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}"/>
                         </Grid>
                       </Border>
                     </DataTemplate>
