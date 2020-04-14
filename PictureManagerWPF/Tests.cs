@@ -48,6 +48,16 @@ namespace PictureManager {
       //ResizeToPhoneAndWeb();
       //CreateThumbnailAsyncTest();
       //TestFolderBrowserDialog();
+     //RemoveKeywordsFromAutoAddedCategory();
+    }
+
+    private void RemoveKeywordsFromAutoAddedCategory() {
+      var keywords = App.Core.CategoryGroups.All.Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>()
+        .ToArray();
+      foreach (var keyword in keywords) {
+        App.Core.Keywords.ItemDelete(keyword);
+      }
+      App.Core.Sdb.SaveAllTables();
     }
 
     private void TestFolderBrowserDialog() {
