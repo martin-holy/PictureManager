@@ -331,8 +331,19 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
+
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = grid.DataContext as MediaItem;
+
+      if (mi == null) return;
       App.Core.MediaItems.DeselectAll();
-      App.Core.MediaItems.Current = (MediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      App.Core.MediaItems.Current = mi;
+
+      if (mi.MediaType == MediaType.Video) {
+        VideoThumbnailPreview.Source = null;
+        grid.Children.Remove(VideoThumbnailPreview);
+      }
+
       SwitchToFullScreen();
       SetMediaItemSource();
     }
