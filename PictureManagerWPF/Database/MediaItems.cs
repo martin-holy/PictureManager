@@ -499,9 +499,6 @@ namespace PictureManager.Database {
             resultItems.Add(item);
           }
 
-          // add tag to ActiveFilterItems 
-          App.Core.SetBackgroundBrush((BaseTreeViewItem) ((object[]) e.Argument)[1], BackgroundBrush.AndThis);
-
           e.Result = resultItems;
         };
 
