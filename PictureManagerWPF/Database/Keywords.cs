@@ -185,12 +185,10 @@ namespace PictureManager.Database {
         // remove Keyword from MediaItems
         if (k.MediaItems.Count > 0) {
           foreach (var mi in k.MediaItems) {
-            if (mi.Keywords == null) continue;
             mi.Keywords.Remove(k);
             if (mi.Keywords.Count == 0)
               mi.Keywords = null;
           }
-
           App.Core.MediaItems.Helper.IsModified = true;
         }
 
