@@ -103,9 +103,7 @@ namespace PictureManager.ViewModel {
         _currentMediaItem = value;
         OnPropertyChanged();
 
-        Rating.Clear();
-        for (var i = 0; i < _currentMediaItem?.Rating; i++) 
-          Rating.Add(new AppInfoRating {IconName = IconName.Star});
+        UpdateRating();
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
@@ -119,6 +117,12 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(FileSize));
         OnPropertyChanged(nameof(DateAndTime));
       }
+    }
+
+    public void UpdateRating() {
+      Rating.Clear();
+      for (var i = 0; i < _currentMediaItem?.Rating; i++)
+        Rating.Add(new AppInfoRating { IconName = IconName.Star });
     }
 
     private static string GetActiveFilterCountFor(BackgroundBrush bgb) {
