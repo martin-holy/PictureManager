@@ -1,6 +1,5 @@
 ﻿#Bugs
 - pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim)
-  zkusit scroll to top jeste pred nactenim nove slozky
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - video kratsi jak 1s se nechce prehravat opakovane (nevim co s tim)
 - v geonames nepouzivat muj ucet
@@ -25,6 +24,7 @@
 - kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
+- rotate video just for view
 
 
 #Code Cleaning

@@ -153,31 +153,21 @@ namespace PictureManager.Database {
     }
 
     public void SetInfoBox() {
-      InfoBoxThumb?.Clear();
       InfoBoxPeople?.Clear();
       InfoBoxKeywords?.Clear();
+      InfoBoxThumb?.Clear();
+      InfoBoxThumb = new ObservableCollection<string>();
 
-      if (Rating != 0) {
-        if (InfoBoxThumb == null)
-          InfoBoxThumb = new ObservableCollection<string>();
+      if (Rating != 0)
         InfoBoxThumb.Add(Rating.ToString());
-      }
 
-      if (!string.IsNullOrEmpty(Comment)) {
-        if (InfoBoxThumb == null)
-          InfoBoxThumb = new ObservableCollection<string>();
+      if (!string.IsNullOrEmpty(Comment))
         InfoBoxThumb.Add(Comment);
-      }
 
-      if (GeoName != null) {
-        if (InfoBoxThumb == null)
-          InfoBoxThumb = new ObservableCollection<string>();
+      if (GeoName != null)
         InfoBoxThumb.Add(GeoName.Title);
-      }
 
       if (People != null) {
-        if (InfoBoxThumb == null)
-          InfoBoxThumb = new ObservableCollection<string>();
         InfoBoxPeople = new ObservableCollection<string>();
 
         foreach (var p in People.OrderBy(x => x.Title)) {
@@ -187,8 +177,6 @@ namespace PictureManager.Database {
       }
 
       if (Keywords != null) {
-        if (InfoBoxThumb == null)
-          InfoBoxThumb = new ObservableCollection<string>();
         InfoBoxKeywords = new ObservableCollection<string>();
 
         foreach (var keyword in Keywords) {
@@ -199,6 +187,9 @@ namespace PictureManager.Database {
           }
         }
       }
+
+      if (InfoBoxThumb.Count == 0)
+        InfoBoxThumb = null;
 
       OnPropertyChanged(nameof(InfoBoxThumb));
       OnPropertyChanged(nameof(InfoBoxPeople));
