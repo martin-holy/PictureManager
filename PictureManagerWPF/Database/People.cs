@@ -118,10 +118,13 @@ namespace PictureManager.Database {
       if (!(item is Person person)) return;
 
       // remove Person from MediaItems
-      foreach (var mi in person.MediaItems) {
-        mi.People.Remove(person);
-        if (mi.People.Count == 0)
-          mi.People = null;
+      if (person.MediaItems.Count > 0) {
+        foreach (var mi in person.MediaItems) {
+          mi.People.Remove(person);
+          if (mi.People.Count == 0)
+            mi.People = null;
+        }
+        App.Core.MediaItems.Helper.IsModified = true;
       }
 
       // remove Person from the tree
@@ -132,8 +135,6 @@ namespace PictureManager.Database {
       AllDic.Remove(person.Id);
 
       Helper.IsModified = true;
-      if (person.MediaItems.Count > 0)
-        App.Core.MediaItems.Helper.IsModified = true;
     }
   }
 }
