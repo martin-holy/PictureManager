@@ -12,7 +12,7 @@
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
         LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing"
-        MouseLeftButtonUp="WMain_OnMouseLeftButtonUp">
+        MouseLeftButtonUp="WMain_OnMouseLeftButtonUp" SizeChanged="WMain_OnSizeChanged">
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>

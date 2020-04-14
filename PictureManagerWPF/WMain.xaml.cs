@@ -472,5 +472,10 @@ namespace PictureManager {
     private void WMain_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       _dragDropObject = null;
     }
+
+    private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
+      App.Core.MediaItems.SplittedItemsReload();
+      App.Core.MediaItems.ScrollToCurrent();
+    }
   }
 }

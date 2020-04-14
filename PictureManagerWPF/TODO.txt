@@ -7,14 +7,11 @@
 - pri posunu prehravani videa se vyresetuje speed
 - nove vytvorena slozka nema folder keyword. kdyz jsem presunul soubory do nove vytvoreny slozky, tak pod folder keywordem nebyly
 - InfoPanel People, chce to wrap, kdyz jich tam je hodne. napr kolaz v M
-- nedela se reload thumbs na resize window
 
 #Update
 - pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek, vertikalne vycentrovat nazev souboru
 
 #New
-- on "presentation start" show slider how many seconds a (prehravat video x krat kdyz je kratsi nez, zoom to fit)
-- zastavit prezentaci kdyz se da zpet, mozna i vpred
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
 - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
 - active filters panel => pridat clear all
