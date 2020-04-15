@@ -6,6 +6,9 @@ _Usable but not tested by others yet!_
 
 Picture Manager is a simple image and video viewer with the ability of editting keywords like rating, people, hierarchical keywords, comments and geo names.
 
+![](./screenshot1.jpg)
+![](./screenshot2.jpg)
+
 ## Browser
 
 ### 1. Side bar
