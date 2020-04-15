@@ -18,6 +18,17 @@ namespace PictureManager {
       return int.TryParse(s, out var result) ? result : d;
     }
 
+    public static int FirstIndexOfLetter(this string s) {
+      var index = 0;
+      while (s.Length - 1 > index) {
+        if (char.IsLetter(s, index))
+          break;
+        index++;
+      }
+
+      return index;
+    }
+
     public static void DeleteDirectoryIfEmpty(string path) {
       if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext())
         Directory.Delete(path);
