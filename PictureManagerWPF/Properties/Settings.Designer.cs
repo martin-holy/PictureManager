@@ -12,7 +12,7 @@ namespace PictureManager.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.3.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -37,7 +37,7 @@ namespace PictureManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute(":\\Temp\\PictureManagerCache\\")]
+        [global::System.Configuration.DefaultSettingValueAttribute(":\\Temp\\PictureManagerCache")]
         public string CachePath {
             get {
                 return ((string)(this["CachePath"]));
@@ -61,66 +61,6 @@ namespace PictureManager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("#CoSpi")]
-        public string RootKeyword {
-            get {
-                return ((string)(this["RootKeyword"]));
-            }
-            set {
-                this["RootKeyword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FolderKeywordIngnoreList {
-            get {
-                return ((string)(this["FolderKeywordIngnoreList"]));
-            }
-            set {
-                this["FolderKeywordIngnoreList"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string FolderFavorites {
-            get {
-                return ((string)(this["FolderFavorites"]));
-            }
-            set {
-                this["FolderFavorites"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string CatalogFolders {
-            get {
-                return ((string)(this["CatalogFolders"]));
-            }
-            set {
-                this["CatalogFolders"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string Viewer {
-            get {
-                return ((string)(this["Viewer"]));
-            }
-            set {
-                this["Viewer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string DirectorySelectFolders {
             get {
@@ -128,6 +68,66 @@ namespace PictureManager.Properties {
             }
             set {
                 this["DirectorySelectFolders"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ImagesToVideoScales {
+            get {
+                return ((string)(this["ImagesToVideoScales"]));
+            }
+            set {
+                this["ImagesToVideoScales"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FfmpegPath {
+            get {
+                return ((string)(this["FfmpegPath"]));
+            }
+            set {
+                this["FfmpegPath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1080")]
+        public int ImagesToVideoHeight {
+            get {
+                return ((int)(this["ImagesToVideoHeight"]));
+            }
+            set {
+                this["ImagesToVideoHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("27")]
+        public int ImagesToVideoQuality {
+            get {
+                return ((int)(this["ImagesToVideoQuality"]));
+            }
+            set {
+                this["ImagesToVideoQuality"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.25")]
+        public double ImagesToVideoSpeed {
+            get {
+                return ((double)(this["ImagesToVideoSpeed"]));
+            }
+            set {
+                this["ImagesToVideoSpeed"] = value;
             }
         }
     }

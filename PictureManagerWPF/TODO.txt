@@ -1,11 +1,27 @@
-﻿- focus to newly created folder
-- on "presentation start" show slider how many seconds
-- fix compress pictures dialog design
-- zobrazovat progres pri kopirovaní/přesouvaní
-- pořešit scrolovaní ve složkách aby to neskákalo při expandu a tak
-- changing viewer takes too long
-- pri prechodu z viewera do browsera thumbs precuhujou. asi potom kdyz se ve vieweru neco smaze
-- reload metadata in new thread + reload thumbnails
-- neprerusi se nacitani
-- pri odstraneni osoby se neprepocita pocet na kategorii a zustava tam jeden i kdyz tam nic neni
-- pri nacteni za keyword MediaItems asi nemaj FolderKeyword
+﻿#Bugs
+- pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim)
+- pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- video kratsi jak 1s se nechce prehravat opakovane (nevim co s tim)
+- v geonames nepouzivat muj ucet
+- zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
+- pri posunu prehravani videa se vyresetuje speed
+- nove vytvorena slozka nema folder keyword. kdyz jsem presunul soubory do nove vytvoreny slozky, tak pod folder keywordem nebyly
+- InfoPanel People, chce to wrap, kdyz jich tam je hodne. napr kolaz v M
+
+#Update
+- pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek, vertikalne vycentrovat nazev souboru
+
+#New
+- na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
+- zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
+- active filters panel => pridat clear all
+- ikony
+- zmenit title na favorite folder
+- dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
+- kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
+- nacteni slozky ve favorites udelat async
+- poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
+- rotate video just for view
+
+
+#Code Cleaning

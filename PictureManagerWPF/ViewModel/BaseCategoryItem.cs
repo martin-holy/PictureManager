@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Windows;
+using PictureManager.Database;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModel {
@@ -18,21 +18,20 @@ namespace PictureManager.ViewModel {
 
     #region Group
     public CategoryGroup GroupCreate(string name) {
-      var dmCategoryGroup = new DataModel.CategoryGroup {
-        Id = ACore.Db.GetNextIdFor<DataModel.CategoryGroup>(),
-        Name = name,
-        Category = (int) Category
+      var cg = new CategoryGroup(App.Core.CategoryGroups.Helper.GetNextId(), name, Category) {
+        IconName = CategoryGroupIconName,
+        Parent = this
       };
 
-      ACore.Db.Insert(dmCategoryGroup);
-
-      var vmCategoryGroup = new CategoryGroup(dmCategoryGroup) {IconName = CategoryGroupIconName, Parent = this};
-      GroupSetInPalce(vmCategoryGroup, true);
-      return vmCategoryGroup;
+      App.Core.CategoryGroups.AddRecord(cg);
+      GroupSetInPlace(cg, true);
+      App.Core.Sdb.SaveAllTables();
+      return cg;
     }
 
-    private void GroupSetInPalce(CategoryGroup group, bool isNew) {
-      var idx = ACore.Db.CategoryGroups.Where(x => x.Category == (int) Category).OrderBy(x => x.Name).ToList().IndexOf(group.Data);
+    private void GroupSetInPlace(CategoryGroup group, bool isNew) {
+      var idx = App.Core.CategoryGroups.All.Where(x => x.Category == Category).OrderBy(x => x.Title).ToList().IndexOf(group);
+      
       if (isNew)
         Items.Insert(idx, group);
       else
@@ -41,7 +40,7 @@ namespace PictureManager.ViewModel {
 
     public void GroupNewOrRename(CategoryGroup group, bool rename) {
       var inputDialog = new InputDialog {
-        Owner = AppCore.WMain,
+        Owner = App.WMain,
         IconName = CategoryGroupIconName,
         Title = rename ? "Rename Group" : "New Group",
         Question = rename ? "Enter the new name for the group." : "Enter the name of the new group.",
@@ -55,7 +54,7 @@ namespace PictureManager.ViewModel {
         }
 
         var root = rename ? group.Parent : this;
-        if (root.Items.Where(x => x is CategoryGroup).SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
+        if (root.Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
           inputDialog.ShowErrorMessage("Group's name already exists!");
           return;
         }
@@ -65,39 +64,30 @@ namespace PictureManager.ViewModel {
 
       inputDialog.TxtAnswer.SelectAll();
 
-      if (inputDialog.ShowDialog() ?? true) {
-        if (rename) {
-          group.Data.Name = inputDialog.Answer;
-          ACore.Db.Update(group.Data);
-          GroupSetInPalce(group, false);
-        } else GroupCreate(inputDialog.Answer);
-      }
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+      if (rename) {
+        group.Title = inputDialog.Answer;
+        GroupSetInPlace(group, false);
+        App.Core.CategoryGroups.Helper.IsModified = true;
+      } else GroupCreate(inputDialog.Answer);
     }
 
     public void GroupDelete(CategoryGroup group) {
-      var result = MessageBox.Show("Are you sure?", "Delete Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
-      if (result != MessageBoxResult.Yes) return;
-      var lists = DataModel.PmDataContext.GetInsertUpdateDeleteLists();
+      if (!MessageDialog.Show("Delete Confirmation", "Are you sure?", true)) return;
 
-      foreach (var cgi in ACore.Db.CategoryGroupsItems.Where(x => x.CategoryGroupId == group.Data.Id)) {
-        DataModel.PmDataContext.DeleteOnSubmit(cgi, lists);
-      }
-
-      DataModel.PmDataContext.DeleteOnSubmit(group.Data, lists);
-      ACore.Db.SubmitChanges(lists);
-
-      foreach (var item in group.Items) {
+      // move Group items to the root
+      foreach (var item in group.Items)
         Items.Add(item);
-      }
 
       group.Items.Clear();
       Items.Remove(group);
+      App.Core.CategoryGroups.DeleteRecord(group);
     }
 
     public void LoadGroups() {
-      foreach (var g in ACore.Db.CategoryGroups.Where(x => x.Category == (int) Category).OrderBy(x => x.Name)
-        .Select(x => new CategoryGroup(x) {IconName = GetCategoryGroupIconName(), Parent = this})) {
-        Items.Add(g);
+      foreach (var cg in App.Core.CategoryGroups.All.Where(x => x.Category == Category).OrderBy(x => x.Title)) {
+        cg.IconName = GetCategoryGroupIconName();
+        Items.Add(cg);
       }
     }
 
@@ -127,26 +117,13 @@ namespace PictureManager.ViewModel {
       //implemented in inherited class
     }
 
-    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, int itemId) {
-      var srcGroup = item.Parent as CategoryGroup;
-      var destGroup = dest as CategoryGroup;
-      var cgi = ACore.Db.CategoryGroupsItems.SingleOrDefault(x => x.ItemId == itemId && x.CategoryGroupId == srcGroup?.Data.Id);
-      if (cgi != null) {
-        if (destGroup != null) {
-          cgi.CategoryGroupId = destGroup.Data.Id;
-          ACore.Db.Update(cgi);
-        } else {
-          ACore.Db.Delete(cgi);
-        }
-      } else {
-        if (destGroup != null) {
-          InsertCategoryGroupItem(destGroup, itemId);
-        }
-      }
-
+    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest) {
       item.Parent.Items.Remove(item);
       item.Parent = dest;
       ItemSetInPlace(dest, true, item);
+
+      if (item.Parent is CategoryGroup || dest is CategoryGroup)
+        App.Core.CategoryGroups.Helper.IsModified = true;
     }
 
     public void ItemSetInPlace(BaseTreeViewItem root, bool isNew, BaseTreeViewItem item) {
@@ -159,32 +136,15 @@ namespace PictureManager.ViewModel {
         root.Items.Move(root.Items.IndexOf(item), idx);
     }
 
-    public InputDialog ItemGetInputDialog(BaseTreeViewItem item, IconName iconName, string itemName, bool rename) {
+    public static InputDialog ItemGetInputDialog(BaseTreeViewItem item, IconName iconName, string itemName, bool rename) {
       var title = rename ? $"Rename {itemName}" : $"New {itemName}";
       var question = rename ? $"Enter the new name for the {itemName.ToLower()}." : $"Enter the name of the new {itemName.ToLower()}.";
-      var error = $"{itemName}'s name already exists!";
-
       var inputDialog = new InputDialog {
-        Owner = AppCore.WMain,
+        Owner = App.WMain,
         IconName = iconName,
         Title = title,
         Question = question,
         Answer = rename ? item.Title : string.Empty
-      };
-
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (rename && string.Compare(inputDialog.Answer, item.Title, StringComparison.OrdinalIgnoreCase) == 0) {
-          inputDialog.DialogResult = true;
-          return;
-        }
-
-        var root = rename ? item.Parent : item;
-        if (root.Items.Where(x => !(x is CategoryGroup)).SingleOrDefault(x => x.Title.Equals(inputDialog.Answer)) != null) {
-          inputDialog.ShowErrorMessage(error);
-          return;
-        }
-
-        inputDialog.DialogResult = true;
       };
 
       inputDialog.TxtAnswer.SelectAll();
@@ -193,15 +153,5 @@ namespace PictureManager.ViewModel {
     }
 
     #endregion
-
-    public void InsertCategoryGroupItem(BaseTreeViewItem root, int itemId) {
-      if (!(root is CategoryGroup cg)) return;
-      var dmCategoryGroupItem = new DataModel.CategoryGroupItem {
-        Id = ACore.Db.GetNextIdFor<DataModel.CategoryGroupItem>(),
-        CategoryGroupId = cg.Data.Id,
-        ItemId = itemId
-      };
-      ACore.Db.Insert(dmCategoryGroupItem);
-    }
   }
 }
