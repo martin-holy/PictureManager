@@ -1,13 +1,19 @@
 ﻿using System.Collections.Generic;
+using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
   public class FolderKeyword: BaseTreeViewTagItem {
-    public string FullPath;
-    public List<int> FolderIdList;
-    public string FolderIds => string.Join(",", FolderIdList);
+    public List<Folder> Folders { get; } = new List<Folder>();
+
+    public override bool IsExpanded {
+      get => base.IsExpanded;
+      set {
+        base.IsExpanded = value;
+        if (value) Folders.ForEach(x => x.LoadSubFolders(false));
+      }
+    }
 
     public FolderKeyword() {
-      FolderIdList = new List<int>();
       IconName = IconName.Folder;
     }
   }

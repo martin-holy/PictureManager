@@ -5,14 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="InputDialog" Height="150" Width="350" 
+        Title="InputDialog" SizeToContent="WidthAndHeight" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
         Background="{DynamicResource WhiteBrush}" 
-        ShowInTaskbar="False" 
-        FontSize="13.333" 
-        ShowMaxRestoreButton="False" 
-        ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner" TitleCaps="False" ResizeMode="NoResize" 
+        ShowInTaskbar="False" FontSize="13.333" 
+        ShowMaxRestoreButton="False" ShowMinButton="False"
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <controls:MetroWindow.Resources>
     <Style x:Key="ErrorStyle" TargetType="TextBox">
@@ -23,27 +21,23 @@
       </Style.Triggers>
     </Style>
   </controls:MetroWindow.Resources>
-  <Grid Margin="10">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
-    <Rectangle Width="32" Height="32" Grid.RowSpan="2" Margin="5,0,10,0" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
-      <Rectangle.OpacityMask>
-        <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
-      </Rectangle.OpacityMask>
-    </Rectangle>
-    <Label Name="LblQuestion" Grid.Column="1" Grid.Row="0" Content="{Binding Path=Question}"/>
-    <TextBox Name="TxtAnswer" Grid.Column="1" Grid.Row="1" MinWidth="250" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
 
-    <WrapPanel Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Margin="0,15,0,0">
-      <Button IsDefault="True" Name="BtnDialogOk" MinWidth="60" Margin="0,0,10,0">_Ok</Button>
-      <Button IsCancel="True" MinWidth="60">_Cancel</Button>
-    </WrapPanel>
-  </Grid>
+  <StackPanel>
+    <StackPanel Orientation="Horizontal">
+      <Rectangle Width="32" Height="32" Margin="10" Fill="{DynamicResource BlackBrush}">
+        <Rectangle.OpacityMask>
+          <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
+        </Rectangle.OpacityMask>
+      </Rectangle>
+      <StackPanel Orientation="Vertical">
+        <Label Name="LblQuestion" Content="{Binding Path=Question}"/>
+        <TextBox Name="TxtAnswer" MinWidth="300" Margin="5" Padding="2" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
+      </StackPanel>
+    </StackPanel>
+
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnDialogOk" Style="{StaticResource DialogButton}" Content="_Ok" IsDefault="True" />
+      <Button Style="{StaticResource DialogButton}" Content="_Cancel" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
 </controls:MetroWindow>

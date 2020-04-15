@@ -1,13 +1,17 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using MahApps.Metro.Controls;
+using PictureManager.ViewModel;
+using PictureManager.Database;
+using PictureManager.Dialogs;
 
 namespace PictureManager {
   /// <summary>
@@ -17,66 +21,81 @@ namespace PictureManager {
     private readonly string _argPicFile;
     private Point _dragDropStartPosition;
     private object _dragDropObject;
-    private readonly System.Timers.Timer _presentationTimer;
-    private bool _presentationTimerPaused;
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
-    private const int PresentationInterval = 3000;
+
+    public MediaElement VideoThumbnailPreview;
+
+    #region DependencyProperties
+    public static readonly DependencyProperty FlyoutMainTreeViewMarginProperty = DependencyProperty.Register(
+      nameof(FlyoutMainTreeViewMargin), typeof(Thickness), typeof(WMain));
+
+    public Thickness FlyoutMainTreeViewMargin {
+      get => (Thickness) GetValue(FlyoutMainTreeViewMarginProperty);
+      set => SetValue(FlyoutMainTreeViewMarginProperty, value);
+    }
+    #endregion
 
     public WMain(string picFile) {
-      ACore = new AppCore();
-      Application.Current.Properties[nameof(AppProperty.AppCore)] = ACore;
-      Application.Current.Properties[nameof(AppProperty.WMain)] = this;
       InitializeComponent();
+
       AddCommandBindings();
       AddInputBindings();
 
-      _presentationTimer = new System.Timers.Timer();
-      _presentationTimer.Elapsed += (o, e) => {
-        if (_presentationTimer.Interval == 1) _presentationTimer.Interval = PresentationInterval;
-        Application.Current.Dispatcher.Invoke(delegate {
+      PresentationPanel.Elapsed = delegate {
+        Application.Current.Dispatcher?.Invoke(delegate {
           if (CanMediaItemNext())
             MediaItemNext();
           else
-            _presentationTimer.Enabled = false;
+            PresentationPanel.Stop();
         });
       };
 
-      var ver = Assembly.GetEntryAssembly().GetName().Version;
-      Title = $"{Title} {ver.Major}.{ver.Minor}";
+      FullMedia.RepeatEnded += delegate {
+        if (!PresentationPanel.IsPaused) return;
+        PresentationPanel.Start(false);
+      };
+
+      VideoThumbnailPreview = new MediaElement {
+        LoadedBehavior = MediaState.Manual,
+        IsMuted = true,
+        Stretch = Stretch.Fill
+      };
+
+      VideoThumbnailPreview.MediaEnded += (o, args) => {
+        ((MediaElement) o).Stop();
+        ((MediaElement) o).Play();
+      };
+
+      /*var ver = Assembly.GetEntryAssembly().GetName().Version;
+      Title = $"{Title} {ver.Major}.{ver.Minor}";*/
 
       _argPicFile = picFile;
     }
 
-    public AppCore ACore { get; set; }
-
     private void Window_Loaded(object sender, RoutedEventArgs e) {
-      ACore.Init();
-      ACore.AppInfo.ProgressBarValue = 100;
-      ACore.Folders.IsExpanded = true;
-      MenuViewers.Header = ACore.CurrentViewer?.Title ?? "Viewer";
+      App.Core.Init();
+      App.Core.AppInfo.ProgressBarValueA = 100;
+      App.Core.AppInfo.ProgressBarValueB = 100;
+      App.Core.Folders.IsExpanded = true;
+      MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
 
       App.SplashScreen.LoadComplete();
       Activate();
 
       if (!File.Exists(_argPicFile)) {
-        ACore.AppInfo.AppMode = AppMode.Browser;
-        return;
+        App.Core.AppInfo.AppMode = AppMode.Browser;
+        //return;
       }
 
       //app opened with argument
-      ACore.AppInfo.AppMode = AppMode.Viewer;
-      ACore.MediaItems.Load(ACore.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
-      ACore.MediaItems.Current = ACore.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
-      if (ACore.MediaItems.Current != null) ACore.MediaItems.Current.IsSelected = true;
+      // TODO
+      /*App.Core.AppInfo.AppMode = AppMode.Viewer;
+      App.Core.MediaItems.Load(App.Core.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
+      App.Core.MediaItems.Current = App.Core.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
+      if (App.Core.MediaItems.Current != null) App.Core.MediaItems.Current.IsSelected = true;
       SwitchToFullScreen();
-      ACore.LoadThumbnails();
-    }
-
-    private void StartPresentationTimer(bool delay) {
-      if (ACore.AppInfo.AppMode != AppMode.Viewer) return;
-      _presentationTimer.Interval = delay ? PresentationInterval : 1;
-      _presentationTimer.Enabled = true;
+      App.Core.LoadThumbnails();*/
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
@@ -86,76 +105,83 @@ namespace PictureManager {
       if (stackPanel.ContextMenu != null) return;
 
       var item = stackPanel.DataContext;
-      var menu = new ContextMenu { Tag = item };
+      var menu = new ContextMenu {Tag = item};
+      var binding = new Binding("PlacementTarget") {
+        RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1)
+      };
 
-      if ((item as ViewModel.BaseTreeViewItem)?.GetTopParent() is ViewModel.BaseCategoryItem category) {
+      void AddMenuItem(ICommand command) {
+        var menuItem = new MenuItem {Command = command, CommandParameter = item};
+        menuItem.SetBinding(MenuItem.CommandTargetProperty, binding);
+        menu.Items.Add(menuItem);
+      }
 
-        if (item is ViewModel.BaseCategoryItem && category.Category == Category.GeoNames) {
-          menu.Items.Add(new MenuItem {Command = Commands.GeoNameNew, CommandParameter = item});
-        }
+      if ((item as BaseTreeViewItem)?.GetTopParent() is BaseCategoryItem category) {
+
+        if (item is BaseCategoryItem && category.Category == Category.GeoNames)
+          AddMenuItem(Commands.GeoNameNew);
 
         if (category.CanModifyItems) {
-          var cat = item as ViewModel.BaseCategoryItem;
-          var group = item as ViewModel.CategoryGroup;
+          var cat = item as BaseCategoryItem;
+          var group = item as CategoryGroup;
 
           if (cat != null || group != null || category.CanHaveSubItems) {
-            menu.Items.Add(new MenuItem { Command = Commands.TagItemNew, CommandParameter = item });
+            AddMenuItem(Commands.TagItemNew);
+            AddMenuItem(Commands.TagItemDeleteNotUsed);
           }
 
-          if (item is ViewModel.BaseTreeViewTagItem && group == null || item is ViewModel.Viewer) {
-            menu.Items.Add(new MenuItem { Command = Commands.TagItemRename, CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = Commands.TagItemDelete, CommandParameter = item });
+          if (item is BaseTreeViewTagItem && group == null || item is Viewer) {
+            AddMenuItem(Commands.TagItemRename);
+            AddMenuItem(Commands.TagItemDelete);
           }
 
-          if (category.CanHaveGroups && cat != null) {
-            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupNew, CommandParameter = item });
-          }
+          if (category.CanHaveGroups && cat != null)
+            AddMenuItem(Commands.CategoryGroupNew);
 
           if (group != null) {
-            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupRename, CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = Commands.CategoryGroupDelete, CommandParameter = item });
+            AddMenuItem(Commands.CategoryGroupRename);
+            AddMenuItem(Commands.CategoryGroupDelete);
           }
         }
       }
 
       switch (item) {
-        case ViewModel.Folder folder: {
-          menu.Items.Add(new MenuItem { Command = Commands.FolderNew, CommandParameter = item });
+        case Folder folder: {
+          AddMenuItem(Commands.FolderNew);
+
           if (folder.Parent != null) {
-            menu.Items.Add(new MenuItem { Command = Commands.FolderRename, CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = Commands.FolderDelete, CommandParameter = item });
-            menu.Items.Add(new MenuItem { Command = Commands.FolderAddToFavorites, CommandParameter = item });
+            AddMenuItem(Commands.FolderRename);
+            AddMenuItem(Commands.FolderDelete);
+            AddMenuItem(Commands.FolderAddToFavorites);
           }
+
+          AddMenuItem(Commands.FolderSetAsFolderKeyword);
+          AddMenuItem(Commands.MetadataReload2);
+          AddMenuItem(Commands.MediaItemsRebuildThumbnails);
           break;
         }
-        case ViewModel.FavoriteFolder _: {
-          menu.Items.Add(new MenuItem { Command = Commands.FolderRemoveFromFavorites, CommandParameter = item });
+        case FavoriteFolder _: {
+          AddMenuItem(Commands.FolderRemoveFromFavorites);
           break;
         }
-        case ViewModel.Filters _: {
-          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
+        case Viewer _: {
+          AddMenuItem(Commands.ViewerIncludeFolder);
+          AddMenuItem(Commands.ViewerExcludeFolder);
           break;
         }
-        case ViewModel.Filter _: {
-          menu.Items.Add(new MenuItem { Command = Commands.FilterNew, CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = Commands.FilterEdit, CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = Commands.FilterDelete, CommandParameter = item });
+        case Person _:
+        case Keyword _:
+        case GeoName _: {
+          AddMenuItem(Commands.MediaItemsLoadByTag);
           break;
         }
-        case ViewModel.Viewer _: {
-          menu.Items.Add(new MenuItem { Command = Commands.ViewerIncludeFolder, CommandParameter = item });
-          menu.Items.Add(new MenuItem { Command = Commands.ViewerExcludeFolder, CommandParameter = item });
-            break;
-        }
-        case ViewModel.Person _:
-        case ViewModel.Keyword _:
-        case ViewModel.GeoName _: {
-          menu.Items.Add(new MenuItem { Command = Commands.MediaItemsLoadByTag, CommandParameter = item });
+        case FolderKeywords _: {
+          AddMenuItem(Commands.OpenFolderKeywordsList);
           break;
         }
-        case ViewModel.BaseTreeViewItem btvi: {
-          if (btvi.Tag is DataModel.ViewerAccess)
-            menu.Items.Add(new MenuItem { Command = Commands.ViewerRemoveFolder, CommandParameter = item });
+        case BaseTreeViewItem bti: {
+          if (bti.Parent?.Parent is Viewer)
+            AddMenuItem(Commands.ViewerRemoveFolder);
           break;
         }
       }
@@ -164,6 +190,7 @@ namespace PictureManager {
         stackPanel.ContextMenu = menu;
     }
 
+    #region TreeView
     //this is PreviewMouseUp on StackPanel in TreeView Folders, Keywords and Filters
     private void TreeView_Select(object sender, MouseButtonEventArgs e) {
       /*
@@ -173,184 +200,121 @@ namespace PictureManager {
        (Rating)(filter) => MBL => OR between ratings, AND in files
        */
       if (e.ChangedButton != MouseButton.Left) return;
-      ACore.TreeView_Select(((StackPanel)sender).DataContext,
+      App.Core.TreeView_Select(((StackPanel)sender).DataContext as BaseTreeViewItem, 
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
-    #region TvFolders
-    private ScrollViewer _tvFoldersScrollViewer;
-    public ScrollViewer TvFoldersScrollViewer {
-      get {
-        if (_tvFoldersScrollViewer != null) return _tvFoldersScrollViewer;
-        var border = VisualTreeHelper.GetChild(TvFolders, 0);
-        _tvFoldersScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-
-        return _tvFoldersScrollViewer;
-      }
-    }
-
-    private void TvFolders_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+    private void TreeView_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       if (!(sender is StackPanel stackPanel)) return;
       _dragDropObject = stackPanel.DataContext;
       _dragDropStartPosition = e.GetPosition(null);
     }
 
-    private void TvFolders_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      _dragDropObject = null;
-    }
-
-    private void TvFolders_OnMouseMove(object sender, MouseEventArgs e) {
+    private void TreeView_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       if (!(e.OriginalSource is StackPanel stackPanel) || _dragDropObject == null) return;
       DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move | DragDropEffects.Copy);
     }
 
-    private void TvFolders_AllowDropCheck(object sender, DragEventArgs e) {
-      var pos = e.GetPosition(TvFolders);
-      if (pos.Y < 25) {
-        TvFoldersScrollViewer.ScrollToVerticalOffset(TvFoldersScrollViewer.VerticalOffset - 25);
+    private void TreeView_OnDrop(object sender, DragEventArgs e) {
+      var panel = (StackPanel) sender;
+      if (!(panel.DataContext is BaseTreeViewItem destData)) return;
+
+      // MediaItems
+      if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+        var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
+        App.Core.MediaItems.CopyMove(
+          foMode, App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
+        App.Core.MediaItems.Helper.IsModified = true;
       }
-      else if (TvFolders.ActualHeight - pos.Y < 25) {
-        TvFoldersScrollViewer.ScrollToVerticalOffset(TvFoldersScrollViewer.VerticalOffset + 25);
+      // Folder
+      else if (e.Data.GetDataPresent(typeof(Folder))) {
+        var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
+        var srcData = (Folder) e.Data.GetData(typeof(Folder));
+        if (srcData == null) return;
+
+        App.Core.Folders.CopyMove(foMode, srcData, (Folder) destData);
+        App.Core.MediaItems.Helper.IsModified = true;
+        App.Core.Folders.Helper.IsModified = true;
+        App.Core.FolderKeywords.Load();
+
+        // reload last selected source if was moved
+        if (foMode == FileOperationMode.Move && srcData.IsSelected) {
+          var folder = ((Folder) destData).GetByPath(srcData.Title);
+          if (folder == null) return;
+          BaseTreeViewItem.ExpandTo(folder);
+          App.Core.TreeView_Select(folder, false, false, false);
+        }
+      }
+      // Keyword
+      else if (e.Data.GetDataPresent(typeof(Keyword))) {
+        var srcData = (Keyword) e.Data.GetData(typeof(Keyword));
+        if (srcData == null) return;
+        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
+        App.Core.Keywords.ItemMove(srcData, destData, dropOnTop);
+      }
+      // Person
+      else if (e.Data.GetDataPresent(typeof(Person))) {
+        var srcData = (Person) e.Data.GetData(typeof(Person));
+        if (srcData == null) return;
+        App.Core.People.ItemMove(srcData, destData);
       }
 
-      var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
-      if (thumbs) {
-        var dragged = ((string[])e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
-        var selected = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
-        if (dragged != null) thumbs = selected.SequenceEqual(dragged);
-      }
-      var srcData = (ViewModel.Folder)e.Data.GetData(typeof(ViewModel.Folder));
-      var destData = (ViewModel.Folder)((StackPanel)sender).DataContext;
-      if ((srcData == null && !thumbs) || destData == null || srcData == destData || !destData.IsAccessible) {
-        e.Effects = DragDropEffects.None;
-        e.Handled = true;
-      }
+      App.Core.Sdb.SaveAllTables();
     }
 
-    private void TvFolders_OnDrop(object sender, DragEventArgs e) {
-      var thumbs = e.Data.GetDataPresent(DataFormats.FileDrop); //thumbnails drop
-      var srcData = (ViewModel.Folder)e.Data.GetData(typeof(ViewModel.Folder));
-      var destData = (ViewModel.Folder)((StackPanel)sender).DataContext;
-      var from = thumbs ? null : srcData?.FullPath;
-      var itemName = thumbs ? null : srcData?.FullPath.Substring(srcData.FullPath.LastIndexOf("\\", StringComparison.OrdinalIgnoreCase) + 1);
-
-      var flag = e.KeyStates == DragDropKeyStates.ControlKey ?
-        ACore.FileOperation(FileOperationMode.Copy, from, destData.FullPath, itemName) :
-        ACore.FileOperation(FileOperationMode.Move, from, destData.FullPath, itemName);
-      if (!flag) return;
-
-      if (thumbs) {
-        if (e.KeyStates != DragDropKeyStates.ControlKey) {
-          ACore.MediaItems.RemoveSelected(false);
-          ACore.MediaItems.Current = null;
-          ACore.UpdateStatusBarInfo();
-        }
-        return;
-      }
-
-      if (e.KeyStates != DragDropKeyStates.ControlKey) {
-        if (srcData != null) {
-          srcData.UpdateFullPath(((ViewModel.Folder)srcData.Parent).FullPath, destData.FullPath);
-          srcData.Parent.Items.Remove(srcData);
-
-          //check if was destination expanded
-          if (destData.Items.Count == 1 && destData.Items[0].Title == @"...") return;
-
-          srcData.Parent = destData;
-          var folder = destData.Items.Cast<ViewModel.Folder>().FirstOrDefault(f => string.Compare(f.Title, srcData.Title, StringComparison.OrdinalIgnoreCase) >= 0);
-          destData.Items.Insert(folder == null ? destData.Items.Count : destData.Items.IndexOf(folder), srcData);
-
-          if (srcData == ACore.LastSelectedSource) {
-            ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
-            ACore.Folders.ExpandTo(srcData.FullPath);
+    private void TreeView_AllowDropCheck(object sender, DragEventArgs e) {
+      // scroll treeView when the mouse is near the top or bottom
+      var treeView = ((StackPanel) sender).TryFindParent<TreeView>();
+      if (treeView != null) {
+        var border = VisualTreeHelper.GetChild(treeView, 0);
+        if (VisualTreeHelper.GetChild(border, 0) is ScrollViewer scrollViewer) {
+          var pos = e.GetPosition(treeView);
+          if (pos.Y < 25) {
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - 25);
+          }
+          else if (treeView.ActualHeight - pos.Y < 25) {
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset + 25);
           }
         }
       }
-      else {
-        destData.GetSubFolders(true);
+
+      // return if the data can be dropped
+      var dataContext = ((StackPanel) sender).DataContext;
+
+      // MediaItems
+      if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
+        var dragged = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
+        var selected = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+
+        if (dragged != null && selected.SequenceEqual(dragged) && 
+            dataContext is Folder destData && destData.IsAccessible) return;
       }
-    }
-    #endregion
+      else // Folder
+      if (e.Data.GetDataPresent(typeof(Folder))) {
+        var srcData = (Folder)e.Data.GetData(typeof(Folder));
 
-    #region TvKeywords
-    private ScrollViewer _tvKeywordsScrollViewer;
-    private ScrollViewer TvKeywordsScrollViewer {
-      get {
-        if (_tvKeywordsScrollViewer != null) return _tvKeywordsScrollViewer;
-        var border = VisualTreeHelper.GetChild(TvKeywords, 0);
-        _tvKeywordsScrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-
-        return _tvKeywordsScrollViewer;
+        if (srcData != null && dataContext is Folder destData && !destData.HasThisParent(srcData) && 
+            srcData != destData && destData.IsAccessible && (Folder)srcData.Parent != destData) return;
       }
-    }
-
-    private void TvKeywords_OnMouseLeftButtonDown(object sender, MouseEventArgs e) {
-      if (!(sender is StackPanel stackPanel)) return;
-      _dragDropObject = stackPanel.DataContext;
-      _dragDropStartPosition = e.GetPosition(null);
-    }
-
-    private void TvKeywords_OnMouseLeftButtonUp(object sender, MouseEventArgs e) {
-      _dragDropObject = null;
-    }
-
-    private void TvKeywords_OnMouseMove(object sender, MouseEventArgs e) {
-      if (!IsDragDropStarted(e)) return;
-      if (!(e.OriginalSource is StackPanel stackPanel) || _dragDropObject == null) return;
-      DragDrop.DoDragDrop(stackPanel, _dragDropObject, DragDropEffects.Move);
-    }
-
-    private void TvKeywords_AllowDropCheck(object sender, DragEventArgs e) {
-      var pos = e.GetPosition(TvKeywords);
-      if (pos.Y < 25) {
-        TvKeywordsScrollViewer.ScrollToVerticalOffset(TvKeywordsScrollViewer.VerticalOffset - 25);
+      else // Keyword
+      if (e.Data.GetDataPresent(typeof(Keyword))) {
+        if (dataContext is BaseTreeViewItem destData &&
+            (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.Keywords) return;
       }
-      else if (TvKeywords.ActualHeight - pos.Y < 25) {
-        TvKeywordsScrollViewer.ScrollToVerticalOffset(TvKeywordsScrollViewer.VerticalOffset + 25);
+      else // Person
+      if (e.Data.GetDataPresent(typeof(Person))) {
+        var srcData = (Person) e.Data.GetData(typeof(Person));
+
+        if (dataContext is BaseTreeViewItem destData && srcData?.Parent != destData &&
+            (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.People) return;
       }
 
-      var dest = ((StackPanel)sender).DataContext;
-      if (e.Data.GetDataPresent(typeof(ViewModel.Keyword))) {
-
-        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as ViewModel.CategoryGroup)?.Category) == Category.Keywords)
-          return;
-
-        var srcData = e.Data.GetData(typeof(ViewModel.Keyword)) as ViewModel.Keyword;
-        var destData = dest as ViewModel.Keyword;
-        if (destData?.Parent == srcData?.Parent) return;
-
-        e.Effects = DragDropEffects.None;
-        e.Handled = true;
-      }
-      else if (e.Data.GetDataPresent(typeof(ViewModel.Person))) {
-        if (((dest as ViewModel.BaseCategoryItem)?.Category ?? (dest as ViewModel.CategoryGroup)?.Category) == Category.People) {
-          var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
-          if (srcData != null && srcData.Parent != (ViewModel.BaseTreeViewItem)dest) return;
-        }
-        e.Effects = DragDropEffects.None;
-        e.Handled = true;
-      }
-    }
-
-    private void TvKeywords_OnDrop(object sender, DragEventArgs e) {
-      var panel = (StackPanel)sender;
-
-      if (e.Data.GetDataPresent(typeof(ViewModel.Keyword))) {
-        var srcData = (ViewModel.Keyword)e.Data.GetData(typeof(ViewModel.Keyword));
-        var destData = (ViewModel.BaseTreeViewItem)panel.DataContext;
-        var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
-        if (srcData == null || destData == null) return;
-        ACore.Keywords.ItemMove(srcData, destData, dropOnTop);
-      }
-      else if (e.Data.GetDataPresent(typeof(ViewModel.Person))) {
-        var srcData = (ViewModel.Person)e.Data.GetData(typeof(ViewModel.Person));
-        if (srcData == null) return;
-        var destData = panel.DataContext as ViewModel.BaseTreeViewItem;
-        ACore.People.ItemMove(srcData, destData, srcData.Data.Id);
-      }
+      // can't be dropped
+      e.Effects = DragDropEffects.None;
+      e.Handled = true;
     }
     #endregion
 
@@ -358,37 +322,28 @@ namespace PictureManager {
     private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var bmi = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+      var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
 
-      if (!isCtrlOn && !isShiftOn) {
-        ACore.MediaItems.DeselectAll();
-        ACore.MediaItems.Current = bmi;
-      }
-      else {
-        if (isCtrlOn) bmi.IsSelected = !bmi.IsSelected;
-        if (isShiftOn && ACore.MediaItems.Current != null) {
-          var from = ACore.MediaItems.Current.Index;
-          var to = bmi.Index;
-          if (from > to) {
-            to = from;
-            from = bmi.Index;
-          }
-
-          for (var i = from; i < to + 1; i++) {
-            ACore.MediaItems.Items[i].IsSelected = true;
-          }
-        }
-      }
-
-      ACore.UpdateStatusBarInfo();
-      ACore.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItems.Select(isCtrlOn, isShiftOn, mi);
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
-      ACore.MediaItems.DeselectAll();
-      ACore.MediaItems.Current = (ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext;
+
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = grid.DataContext as MediaItem;
+
+      if (mi == null) return;
+      App.Core.MediaItems.DeselectAll();
+      App.Core.MediaItems.Current = mi;
+
+      if (mi.MediaType == MediaType.Video) {
+        VideoThumbnailPreview.Source = null;
+        grid.Children.Remove(VideoThumbnailPreview);
+      }
+
       SwitchToFullScreen();
       SetMediaItemSource();
     }
@@ -396,27 +351,48 @@ namespace PictureManager {
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       var dob = new DataObject();
-      var data = ACore.MediaItems.Items.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      var data = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
-        data.Add(((ViewModel.BaseMediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+        data.Add(((MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
 
+    private void Thumb_OnMouseEnter(object sender, MouseEventArgs e) {
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = (MediaItem) grid.DataContext;
+      if (mi.MediaType != MediaType.Video) return;
+
+      VideoThumbnailPreview.Source = mi.FilePathUri;
+      grid.Children.Add(VideoThumbnailPreview);
+      VideoThumbnailPreview.Play();
+    }
+
+    private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
+      var grid = (Grid) ((Border) sender).Child;
+      var mi = grid.DataContext as MediaItem;
+
+      if (mi == null) return;
+      if (mi.MediaType != MediaType.Video) return;
+
+      VideoThumbnailPreview.Source = null;
+      grid.Children.Remove(VideoThumbnailPreview);
+    }
+
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
-      if (e.Delta < 0 && ACore.ThumbScale < .1) return;
-      ACore.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      ACore.AppInfo.IsThumbInfoVisible = ACore.ThumbScale > 0.5;
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ResetThumbsSize();
+      if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
+      App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      App.Core.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
+      App.Core.MediaItems.ResetThumbsSize();
+      App.Core.MediaItems.SplittedItemsReload();
     }
 
     #endregion
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      ACore.MediaItemSizes.Size.SliderChanged = true;
-      ACore.TreeView_Select(ACore.LastSelectedSource, false, false, ACore.LastSelectedSourceRecursive);
+      App.Core.MediaItemSizes.Size.SliderChanged = true;
+      App.Core.MediaItems.ReapplyFilter();
     }
 
     private bool IsDragDropStarted(MouseEventArgs e) {
@@ -426,19 +402,21 @@ namespace PictureManager {
              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
     }
 
-    private void SetMediaItemSource() {
-      var current = ACore.MediaItems.Current;
+    private void SetMediaItemSource(bool decoded = false) {
+      var current = App.Core.MediaItems.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(current);
-          FullMedia.Source = null;
+          FullImage.SetSource(current, decoded);
+          FullMedia.MediaElement.Source = null;
+          FullMedia.IsPlaying = false;
           break;
         }
         case MediaType.Video: {
-          var isBigger = FullMedia.ActualHeight < current.Data.Height ||
-                         FullMedia.ActualWidth < current.Data.Width;
-          FullMedia.Stretch = isBigger ? Stretch.Uniform : Stretch.None;
-          FullMedia.Source = current.FilePathUri;
+          /*var isBigger = FullMedia.ActualHeight < current.Height ||
+                         FullMedia.ActualWidth < current.Width;
+          FullMedia.MediaElement.Stretch = isBigger ? Stretch.Uniform : Stretch.None;*/
+          FullMedia.MediaElement.Source = current.FilePathUri;
+          FullMedia.IsPlaying = true;
           break;
         }
       }
@@ -462,108 +440,9 @@ namespace PictureManager {
       }
     }
 
-    private void FullMedia_OnMediaEnded(object sender, RoutedEventArgs e) {
-      if (_presentationTimerPaused) {
-        _presentationTimerPaused = false;
-        StartPresentationTimer(false);
-      }
-      else {
-        FullMedia.Stop();
-        FullMedia.Rewind();
-        FullMedia.Play();
-      }
-    }
-
-    public bool RotateJpeg(string filePath, int quality, Rotation rotation) {
-      var original = new FileInfo(filePath);
-      if (!original.Exists) return false;
-      var temp = new FileInfo(original.FullName.Replace(".", "_temp."));
-
-      const BitmapCreateOptions createOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-
-      try {
-        using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          JpegBitmapEncoder encoder = new JpegBitmapEncoder { QualityLevel = quality, Rotation = rotation };
-
-          //BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile and BitmapCacheOption.None
-          //is a KEY to lossless jpeg edit if the QualityLevel is the same
-          encoder.Frames.Add(BitmapFrame.Create(originalFileStream, createOptions, BitmapCacheOption.None));
-
-          using (Stream newFileStream = File.Open(temp.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-            encoder.Save(newFileStream);
-          }
-        }
-      }
-      catch (Exception) {
-        return false;
-      }
-
-      try {
-        temp.CreationTime = original.CreationTime;
-        original.Delete();
-        temp.MoveTo(original.FullName);
-      }
-      catch (Exception) {
-        return false;
-      }
-
-      return true;
-    }
-
-    private void TestButton() {
-      foreach (var item in ACore.MediaItems.AllItems) {
-        item.IsPanoramatic = true;
-      }
-      //var folder = new ViewModel.Folder { FullPath = @"d:\Pictures\01 Digital_Foto\-=Hotovo\2016" };
-      //var fk = ACore.FolderKeywords.GetFolderKeywordByFullPath(folder.FullPath);
-      //ACore.MediaItems.Load(folder, true);
-      //ACore.MediaItems.Load(fk, true);
-      //ACore.MediaItems.LoadByTag(fk, true);
-      //ACore.MediaItems.LoadByFolder(folder.FullPath, true);
-      //ACore.InitThumbsPagesControl();
-
-      //ACore.MediaItems.LoadPeople(ACore.MediaItems.Items.ToList());
-
-
-      //var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\video.mp4");
-      //var x = GetFileProps(@"d:\video.mp4");
-      //var xx = ShellStuff.FileInformation.GetVideoMetadata(@"d:\video.mp4");
-
-      /*var mediaItems = ACore.MediaItems.AllItems.Where(x => x.MediaType == MediaType.Image);
-      var panoramas = new List<ViewModel.BaseMediaItem>();
-      foreach (var mi in mediaItems) {
-        mi.SetThumbSize();
-        if (mi.ThumbWidth > 400 || mi.ThumbHeight > 400)
-          panoramas.Add(mi);
-      }
-
-      foreach (var mi in panoramas) {
-        if (File.Exists(mi.FilePath))
-          AppCore.CreateThumbnail(mi.FilePath, mi.FilePathCache, mi.ThumbSize);
-      }*/
-
-
-
-      //height 309, width 311
-
-      /*var file1 = ShellStuff.FileInformation.GetFileIdInfo(@"c:\20150831_114319_Martin.jpg");
-      var file2 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\!test\20150831_114319_Martin.jpg");
-      var file3 = ShellStuff.FileInformation.GetFileIdInfo(@"d:\Temp\20150831_114319_Martin.jpg");
-      //3659174697441353
-      var filePath = @"d:\!test\20150831_114319_Martin.jpg";
-      var fileInfo = new FileInfo(filePath);*/
-
-      /*var formattedText = new FormattedText(
-        "\U0001F4CF",
-        CultureInfo.GetCultureInfo("en-us"),
-        FlowDirection.LeftToRight,
-        new Typeface("Segoe UI Symbol"),
-        32,
-        Brushes.Black);
-      var buildGeometry = formattedText.BuildGeometry(new Point(0, 0));
-      var p = buildGeometry.GetFlattenedPathGeometry();*/
-
-
+    private static void TestButton() {
+      var tests = new Tests();
+      tests.Run();
     }
 
     private void WMain_OnMouseMove(object sender, MouseEventArgs e) {
@@ -577,14 +456,37 @@ namespace PictureManager {
         FlyoutMainTreeView.IsOpen = false;
     }
 
+    public void SetFlyoutMainTreeViewMargin() {
+      var top = App.Core.AppInfo.AppMode == AppMode.Browser ? 30 : 0;
+      var bottom = FlyoutMainTreeView.IsPinned ? StatusPanel.ActualHeight : 0;
+      FlyoutMainTreeViewMargin = new Thickness(0, top, 0, bottom);
+    }
+
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      ACore.MediaItems.SplitedItemsReload();
-      ACore.MediaItems.ScrollTo(ACore.MediaItems.Current?.Index ?? 0);
+      App.Core.MediaItems.SplittedItemsReload();
+      App.Core.MediaItems.ScrollToCurrent();
     }
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
       MainSplitter_OnDragDelta(null, null);
+    }
+
+    private void WMain_OnClosing(object sender, CancelEventArgs e) {
+      if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
+          MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
+        MetadataSave();
+      }
+      App.Core.Sdb.SaveAllTables();
+    }
+
+    private void WMain_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      _dragDropObject = null;
+    }
+
+    private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
+      App.Core.MediaItems.SplittedItemsReload();
+      App.Core.MediaItems.ScrollToCurrent();
     }
   }
 }
