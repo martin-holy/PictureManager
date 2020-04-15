@@ -104,7 +104,7 @@
       <uc:InfoPanel Visibility="{Binding AppInfo.FilePath, Converter={StaticResource AllToVisibilityConverter}}"
                     ToolTip="{Binding AppInfo.CurrentMediaItem.FilePath}"
                     IconName="{x:Static pm:IconName.Folder}"
-                    Item="{Binding AppInfo.FilePath}" />
+                    Items="{Binding AppInfo.FilePath}" />
 
       <!-- DateAndTime -->
       <uc:InfoPanel Visibility="{Binding AppInfo.DateAndTime, Converter={StaticResource AllToVisibilityConverter}}"

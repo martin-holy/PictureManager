@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
+using System.Windows.Controls;
 using PictureManager.Database;
 
 namespace PictureManager.ViewModel {
@@ -64,12 +66,34 @@ namespace PictureManager.ViewModel {
       }
     }
 
-    public string FilePath {
+    public ObservableCollection<string> FilePath {
       get {
-        if (CurrentMediaItem == null) return string.Empty;
-        if (AppMode == AppMode.Viewer && CurrentMediaItem.Folder.FolderKeyword != null)
-          return $"{CurrentMediaItem.Folder.FolderKeyword.Title}{Path.DirectorySeparatorChar}{CurrentMediaItem.FileName}";
-        return CurrentMediaItem.FilePath;
+        if (CurrentMediaItem == null) return null;
+        var paths = new ObservableCollection<string>();
+
+        if (AppMode == AppMode.Browser || CurrentMediaItem.Folder.FolderKeyword == null) {
+          paths.Add(CurrentMediaItem.FilePath);
+          return paths;
+        }
+
+        var fks = new List<BaseTreeViewItem>();
+        CurrentMediaItem.Folder.FolderKeyword.GetThisAndParentRecursive(ref fks);
+        fks.Reverse();
+        foreach (var fk in fks)
+          if (fk.Parent != null) {
+            var startIndex = fk.Title.FirstIndexOfLetter();
+
+            if (fk.Title.Length - 1 == startIndex) continue;
+
+            paths.Add(startIndex == 0 ? fk.Title : fk.Title.Substring(startIndex));
+          }
+
+        var fileName = string.IsNullOrEmpty(DateAndTime)
+          ? CurrentMediaItem.FileName
+          : CurrentMediaItem.FileName.Substring(15);
+        paths.Add(fileName);
+
+        return paths;
       }
     }
 
@@ -113,9 +137,9 @@ namespace PictureManager.ViewModel {
         OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
         OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
         OnPropertyChanged(nameof(IsImageActualZoomVisible));
+        OnPropertyChanged(nameof(DateAndTime));
         OnPropertyChanged(nameof(FilePath));
         OnPropertyChanged(nameof(FileSize));
-        OnPropertyChanged(nameof(DateAndTime));
       }
     }
 
