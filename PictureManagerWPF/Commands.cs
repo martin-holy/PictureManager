@@ -1,30 +1,43 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Input;
 
 namespace PictureManager {
   public static class Commands {
-    //Window Commands
+    // Window Commands
     public static RoutedUICommand SwitchToFullScreen { get; } = new RoutedUICommand();
-    public static RoutedUICommand SwitchToBrowser { get; } = new RoutedUICommand();
-    //MediaItems Commands
-    public static RoutedUICommand MediaItemNext { get; } = new RoutedUICommand {Text = "Next"};
-    public static RoutedUICommand MediaItemPrevious { get; } = new RoutedUICommand {Text = "Previous"};
-    public static RoutedUICommand MediaItemsSelectAll { get; } = new RoutedUICommand {Text = "Select All"};
-    public static RoutedUICommand MediaItemsSelectNotModifed { get; } = new RoutedUICommand { Text = "Select Not Modifed" };
-    public static RoutedUICommand MediaItemsDelete { get; } = new RoutedUICommand {Text = "Delete"};
+    public static RoutedUICommand SwitchToBrowser { get; } = CreateCommand("Switch to Browser", "SwitchToBrowser", new KeyGesture(Key.Escape));
+    
+    // MediaItems Commands
+    public static RoutedUICommand MediaItemNext { get; } = CreateCommand("Next", "MediaItemNext", new KeyGesture(Key.Right));
+    public static RoutedUICommand MediaItemPrevious { get; } = CreateCommand("Previous", "MediaItemPrevious", new KeyGesture(Key.Left));
+    public static RoutedUICommand MediaItemsSelectAll { get; } = CreateCommand("Select All", "MediaItemsSelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
+    public static RoutedUICommand MediaItemsSelectNotModified { get; } = new RoutedUICommand { Text = "Select Not Modified" };
+    public static RoutedUICommand MediaItemsDelete { get; } = CreateCommand("Delete", "MediaItemsDelete", new KeyGesture(Key.Delete));
     public static RoutedUICommand MediaItemsLoadByTag { get; } = new RoutedUICommand { Text = "Load by this" };
-    public static RoutedUICommand Presentation { get; } = new RoutedUICommand { Text = "Presentation" };
-    //TreeView Commands
+    public static RoutedUICommand Presentation { get; } = CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
+    public static RoutedUICommand MediaItemsCompress { get; } = new RoutedUICommand { Text = "Compress" };
+    public static RoutedUICommand MediaItemsRotate { get; } = CreateCommand("Rotate", "RotatePictures", new KeyGesture(Key.R, ModifierKeys.Control));
+    public static RoutedUICommand MediaItemsRebuildThumbnails { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };
+    public static RoutedUICommand MediaItemsShuffle { get; } = new RoutedUICommand { Text = "Shuffle" };
+    public static RoutedUICommand MediaItemsResizeImages { get; } = new RoutedUICommand { Text = "Resize Images" };
+    public static RoutedUICommand MediaItemsCopyPaths { get; } = new RoutedUICommand { Text = "Copy Paths" };
+    public static RoutedUICommand MediaItemsImagesToVideo { get; } = new RoutedUICommand { Text = "Images to Video" };
+
+    // TreeView Commands
     public static RoutedUICommand CategoryGroupNew { get; } = new RoutedUICommand {Text = "New Group"};
     public static RoutedUICommand CategoryGroupRename { get; } = new RoutedUICommand {Text = "Rename Group"};
     public static RoutedUICommand CategoryGroupDelete { get; } = new RoutedUICommand {Text = "Delete Group"};
     public static RoutedUICommand TagItemNew { get; } = new RoutedUICommand {Text = "New"};
     public static RoutedUICommand TagItemRename { get; } = new RoutedUICommand {Text = "Rename"};
     public static RoutedUICommand TagItemDelete { get; } = new RoutedUICommand {Text = "Delete"};
+    public static RoutedUICommand TagItemDeleteNotUsed { get; } = new RoutedUICommand { Text = "Delete not used" };
     public static RoutedUICommand FolderNew { get; } = new RoutedUICommand {Text = "New folder"};
     public static RoutedUICommand FolderRename { get; } = new RoutedUICommand {Text = "Rename"};
     public static RoutedUICommand FolderDelete { get; } = new RoutedUICommand {Text = "Delete"};
     public static RoutedUICommand FolderAddToFavorites { get; } = new RoutedUICommand {Text = "Add to Favorites"};
     public static RoutedUICommand FolderRemoveFromFavorites { get; } = new RoutedUICommand {Text = "Remove from Favorites"};
+    public static RoutedUICommand FolderSetAsFolderKeyword { get; } = new RoutedUICommand { Text = "Set as Folder Keyword" };
     public static RoutedUICommand FilterNew { get; } = new RoutedUICommand {Text = "New"};
     public static RoutedUICommand FilterEdit { get; } = new RoutedUICommand {Text = "Edit"};
     public static RoutedUICommand FilterDelete { get; } = new RoutedUICommand {Text = "Delete"};
@@ -33,19 +46,72 @@ namespace PictureManager {
     public static RoutedUICommand ViewerExcludeFolder { get; } = new RoutedUICommand {Text = "Exclude for Viewer"};
     public static RoutedUICommand ViewerRemoveFolder { get; } = new RoutedUICommand {Text = "Remove"};
     public static RoutedUICommand GeoNameNew { get; } = new RoutedUICommand {Text = "New"};
-    //Menu Commands
-    public static RoutedUICommand KeywordsEdit { get; } = new RoutedUICommand {Text = "Edit"};
-    public static RoutedUICommand KeywordsSave { get; } = new RoutedUICommand {Text = "Save"};
-    public static RoutedUICommand KeywordsCancel { get; } = new RoutedUICommand {Text = "Cancel"};
-    public static RoutedUICommand KeywordsComment { get; } = new RoutedUICommand {Text = "Comment"};
-    public static RoutedUICommand CompressPictures { get; } = new RoutedUICommand {Text = "Compress Pictures"};
-    public static RoutedUICommand TestButton { get; } = new RoutedUICommand {Text = "Test Button"};
-    public static RoutedUICommand ReloadMetadata { get; } = new RoutedUICommand {Text = "Reload Metadata"};
+    
+    // Metadata Commands
+    public static RoutedUICommand MetadataEdit { get; } = CreateCommand("Edit", "MetadataEdit", new KeyGesture(Key.E, ModifierKeys.Control));
+    public static RoutedUICommand MetadataSave { get; } = CreateCommand("Save", "MetadataSave", new KeyGesture(Key.S, ModifierKeys.Control));
+    public static RoutedUICommand MetadataCancel { get; } = CreateCommand("Cancel", "MetadataCancel", new KeyGesture(Key.Q, ModifierKeys.Control));
+    public static RoutedUICommand MetadataComment { get; } = CreateCommand("Comment", "MetadataComment", new KeyGesture(Key.K, ModifierKeys.Control));
+    public static RoutedUICommand MetadataReload { get; } = new RoutedUICommand {Text = "Reload"};
+    public static RoutedUICommand MetadataReload2 { get; } = new RoutedUICommand {Text = "Reload Metadata"};
+
+    
+    public static RoutedUICommand TestButton { get; } = CreateCommand("Test Button", "TestButton", new KeyGesture(Key.D, ModifierKeys.Control));
     public static RoutedUICommand OpenSettings { get; } = new RoutedUICommand {Text = "Settings"};
     public static RoutedUICommand OpenAbout { get; } = new RoutedUICommand {Text = "About"};
-    public static RoutedUICommand OpenCatalog { get; } = new RoutedUICommand {Text = "Catalog"};
-    public static RoutedUICommand ShowHideTabMain { get; } = new RoutedUICommand {Text = "S/H"};
+    public static RoutedUICommand ShowHideTabMain { get; } = CreateCommand("S/H", "ShowHideTabMain", new KeyGesture(Key.T, ModifierKeys.Control));
     public static RoutedUICommand AddGeoNamesFromFiles { get; } = new RoutedUICommand {Text = "GeoNames"};
     public static RoutedUICommand ViewerChange { get; } = new RoutedUICommand {Text = ""};
+    public static RoutedUICommand OpenFolderKeywordsList { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
+    public static RoutedUICommand OpenLog { get; } = new RoutedUICommand { Text = "Log" };
+
+    private static RoutedUICommand CreateCommand(string text, string name, InputGesture inputGesture) {
+      return new RoutedUICommand(text, name, typeof(Commands),
+        inputGesture == null ? null : new InputGestureCollection(new List<InputGesture> { inputGesture }));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action executed, Func<bool> canExecute) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action executed) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed, Func<object, bool> canExecute) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed)));
+    }
+
+    private static ExecutedRoutedEventHandler HandleExecute(Action action) {
+      return (o, e) => {
+        action();
+        e.Handled = true;
+      };
+    }
+
+    private static ExecutedRoutedEventHandler HandleExecute(Action<object> action) {
+      return (o, e) => {
+        action(e.Parameter);
+        e.Handled = true;
+      };
+    }
+
+    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<bool> canExecute) {
+      return (o, e) => {
+        e.CanExecute = canExecute();
+        e.Handled = true;
+      };
+    }
+
+    private static CanExecuteRoutedEventHandler HandleCanExecute(Func<object, bool> canExecute) {
+      return (o, e) => {
+        e.CanExecute = canExecute(e.Parameter);
+        e.Handled = true;
+      };
+    }
   }
 }

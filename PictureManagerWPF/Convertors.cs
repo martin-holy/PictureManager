@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,34 +23,11 @@ namespace PictureManager {
 
   public class IconNameToStaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
+      if (value == null)
+        value = IconName.Bug;
 
-      string resourceName;
-      switch ((IconName) value) {
-        case IconName.Folder: resourceName = "appbar_folder"; break;
-        case IconName.FolderStar: resourceName = "appbar_folder_star"; break;
-        case IconName.FolderLock: resourceName = "appbar_folder_lock"; break;
-        case IconName.FolderOpen: resourceName = "appbar_folder_open"; break;
-        case IconName.Star: resourceName = "appbar_star"; break;
-        case IconName.People: resourceName = "appbar_people"; break;
-        case IconName.PeopleMultiple: resourceName = "appbar_people_multiple"; break;
-        case IconName.Tag: resourceName = "appbar_tag"; break;
-        case IconName.TagLabel: resourceName = "appbar_tag_label"; break;
-        case IconName.Filter: resourceName = "appbar_filter"; break;
-        case IconName.Eye: resourceName = "appbar_eye"; break;
-        case IconName.DatabaseSql: resourceName = "appbar_database_sql"; break;
-        case IconName.Bug: resourceName = "appbar_bug"; break;
-        case IconName.LocationCheckin: resourceName = "appbar_location_checkin"; break;
-        case IconName.Notification: resourceName = "appbar_notification"; break;
-        case IconName.Cd: resourceName = "appbar_cd"; break;
-        case IconName.Drive: resourceName = "appbar_drive"; break;
-        case IconName.DriveError: resourceName = "appbar_drive_error"; break;
-        case IconName.Cancel: resourceName = "appbar_cancel"; break;
-        case IconName.Save: resourceName = "appbar_save"; break;
-        case IconName.Settings: resourceName = "appbar_settings"; break;
-        case IconName.Edit: resourceName = "appbar_edit"; break;
-        default: resourceName = "appbar_bug"; break;
-      }
+      var resourceName = $"appbar{Regex.Replace(((IconName) value).ToString(), @"([A-Z])", "_$1").ToLower()}";
+      
       return Application.Current.FindResource(resourceName);
     }
 
@@ -72,7 +53,32 @@ namespace PictureManager {
     }
   }
 
-  public class IconNameToBrush : IValueConverter {
+  public class TypeToStyleConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) throw new ArgumentNullException();
+      var dataContext = ((StackPanel) value).DataContext;
+
+      switch (dataContext) {
+        case Database.Keyword _:
+        case Database.Folder _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDragDrop");
+        case Database.Person _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrag");
+        case Database.CategoryGroup _:
+        case Database.Keywords _:
+        case Database.People _:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrop");
+        default:
+          return App.WMain.TcMain.FindResource("STreeViewStackPanel");
+      }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
+  public class IconNameToBrushConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();
 
@@ -112,6 +118,41 @@ namespace PictureManager {
     }
   }
 
+  public class AllToVisibilityConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null) return Visibility.Collapsed;
+      var result = false;
+
+      if (parameter != null)
+        result = value.Equals(parameter);
+      else
+        switch (value) {
+          case string s: {
+            result = !string.IsNullOrEmpty(s);
+            break;
+          }
+          case bool b: {
+            result = b;
+            break;
+          }
+          case int i: {
+            result = i > 0;
+            break;
+          }
+          case Collection<string> c: {
+            result = c.Count > 0;
+            break;
+          }
+        }
+
+      return result ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
+
   public class BackgroundColorConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();
@@ -141,12 +182,23 @@ namespace PictureManager {
 
   public class ImageSourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      var src = new BitmapImage();
-      src.BeginInit();
-      src.UriSource = (Uri) value;
-      src.CacheOption = BitmapCacheOption.OnLoad;
-      src.EndInit();
-      return src;
+      try {
+        var uriValue = value as Uri;
+        if (uriValue == null) return null;
+
+        if (!File.Exists(uriValue.LocalPath)) return null;
+
+        var src = new BitmapImage();
+        src.BeginInit();
+        src.UriSource = uriValue;
+        src.CacheOption = BitmapCacheOption.OnLoad;
+        src.EndInit();
+        return src;
+      }
+      catch (Exception ex) {
+        Console.WriteLine(ex);
+        return null;
+      }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

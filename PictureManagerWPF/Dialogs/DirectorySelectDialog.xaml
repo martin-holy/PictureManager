@@ -12,7 +12,7 @@
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
         ShowMinButton="False" 
-        WindowStartupLocation="CenterOwner" TitleCaps="False" ResizeMode="NoResize" 
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Closing="DirectorySelectDialog_OnClosing">
   <controls:MetroWindow.Resources>

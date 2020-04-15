@@ -20,7 +20,7 @@ namespace PictureManager.UserControls {
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
-    private ViewModel.BaseMediaItem _currentMediaItem;
+    private Database.MediaItem _currentMediaItem;
 
     public Image Image;
     public event PropertyChangedEventHandler PropertyChanged;
@@ -31,11 +31,13 @@ namespace PictureManager.UserControls {
       set {
         _zoomActual = value;
         OnPropertyChanged();
-        OnPropertyChanged($"ZoomActualFormated");
+        OnPropertyChanged(nameof(ZoomActualFormatted));
+        // TODO: find another way to do it
+        App.Core.AppInfo.OnPropertyChanged(nameof(ZoomActualFormatted));
       }
     }
 
-    public string ZoomActualFormated => $"{_zoomActual:####}%";
+    public string ZoomActualFormatted => $"{_zoomActual:####}%";
 
     public ZoomImageBox() {
       _scaleTransform = new ScaleTransform();
@@ -67,10 +69,8 @@ namespace PictureManager.UserControls {
       MouseWheel += (o, e) => {
         if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
 
-        if (_isDecoded) {
-          _isDecoded = false;
-          SetSource();
-        }
+        if (_isDecoded)
+          SetSource(false);
 
         if (!(e.Delta > 0) && (_scaleTransform.ScaleX < .4 || _scaleTransform.ScaleY < .4)) return;
 
@@ -107,35 +107,35 @@ namespace PictureManager.UserControls {
     }
 
     private void SetScale(double zoom, Point relative) {
-      var abosuluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
-      var abosuluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
+      var absoluteX = relative.X * _scaleTransform.ScaleX + _translateTransform.X;
+      var absoluteY = relative.Y * _scaleTransform.ScaleY + _translateTransform.Y;
 
       _scaleTransform.ScaleX = zoom;
       _scaleTransform.ScaleY = zoom;
 
-      _translateTransform.X = abosuluteX - relative.X * _scaleTransform.ScaleX;
-      _translateTransform.Y = abosuluteY - relative.Y * _scaleTransform.ScaleY;
+      _translateTransform.X = absoluteX - relative.X * _scaleTransform.ScaleX;
+      _translateTransform.Y = absoluteY - relative.Y * _scaleTransform.ScaleY;
 
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
-    public void SetSource(ViewModel.BaseMediaItem currentMediaItem) {
+    public void SetSource(Database.MediaItem currentMediaItem, bool decoded = false) {
       _currentMediaItem = currentMediaItem;
-      _isDecoded = true;
-      SetSource();
+      SetSource(decoded);
     }
 
-    private void SetSource() {
+    private void SetSource(bool decoded) {
+      _isDecoded = decoded;
       Reset();
       if (_currentMediaItem == null) {
         Image.Source = null;
         return;
       }
 
-      var rotated = _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate90 || 
-                    _currentMediaItem.Data.Orientation == (int) MediaOrientation.Rotate270;
-      var imgWidth = rotated ? _currentMediaItem.Data.Height : _currentMediaItem.Data.Width;
-      var imgHeight = rotated ? _currentMediaItem.Data.Width : _currentMediaItem.Data.Height;
+      var rotated = _currentMediaItem.Orientation == (int) MediaOrientation.Rotate90 || 
+                    _currentMediaItem.Orientation == (int) MediaOrientation.Rotate270;
+      var imgWidth = rotated ? _currentMediaItem.Height : _currentMediaItem.Width;
+      var imgHeight = rotated ? _currentMediaItem.Width : _currentMediaItem.Height;
       _isBigger = ActualWidth < imgWidth || ActualHeight < imgHeight;
 
       var src = new BitmapImage();
@@ -143,8 +143,22 @@ namespace PictureManager.UserControls {
       src.UriSource = _currentMediaItem.FilePathUri;
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
-      
-      switch (_currentMediaItem.Data.Orientation) {
+
+      //bad quality with decoding
+      /*if (_isBigger && decoded) {
+        if (imgWidth > imgHeight)
+          if (rotated)
+            src.DecodePixelWidth = (int) ActualHeight;
+          else
+            src.DecodePixelHeight = (int) ActualHeight;
+        else
+          if (rotated)
+            src.DecodePixelHeight = (int) ActualWidth;
+          else
+            src.DecodePixelWidth = (int) ActualWidth;
+      }*/
+
+      switch (_currentMediaItem.Orientation) {
         case (int) MediaOrientation.Rotate90: {
           src.Rotation = Rotation.Rotate270;
           break;
@@ -158,15 +172,6 @@ namespace PictureManager.UserControls {
           break;
         }
       }
-
-      //bad quality with decoding
-      _isDecoded = false;
-      /*if (isBigger && _isDecoded) {
-        if (decodeWidth)
-          src.DecodePixelWidth = (int) ActualWidth;
-        else
-          src.DecodePixelHeight = (int) ActualHeight;
-      }*/
 
       src.EndInit();
 

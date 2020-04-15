@@ -1,0 +1,37 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.RotationDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:pm="clr-namespace:PictureManager"
+        xmlns:uc="clr-namespace:PictureManager.UserControls"
+        mc:Ignorable="d"
+        Title="Rotation" SizeToContent="WidthAndHeight"
+        BorderBrush="{DynamicResource AccentColorBrush}" 
+        Background="{DynamicResource WhiteBrush}" 
+        ShowInTaskbar="False" FontSize="13.333" 
+        ShowMaxRestoreButton="False" ShowMinButton="False"
+        WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
+        DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+  <controls:MetroWindow.Resources>
+    <Style x:Key="ButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="MinWidth" Value="60" />
+      <Setter Property="MinHeight" Value="60" />
+      <Setter Property="Margin" Value="5" />
+    </Style>
+  </controls:MetroWindow.Resources>
+
+  <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="5">
+    <Button x:Name="Btn90" Style="{StaticResource ButtonStyle}">
+      <uc:IconRect IconName="{x:Static pm:IconName.RotateLeft}" />
+    </Button>
+    <Button x:Name="Btn180" Style="{StaticResource ButtonStyle}">
+      <uc:IconRect IconName="{x:Static pm:IconName.RotateClockwise}" />
+    </Button>
+    <Button x:Name="Btn270" Style="{StaticResource ButtonStyle}">
+      <uc:IconRect IconName="{x:Static pm:IconName.RotateRight}" />
+    </Button>
+  </StackPanel>
+</controls:MetroWindow>
