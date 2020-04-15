@@ -48,6 +48,11 @@ namespace PictureManager.ViewModel {
         item.GetThisAndItemsRecursive(ref items);
     }
 
+    public void GetThisAndParentRecursive(ref List<BaseTreeViewItem> items) {
+      items.Add(this);
+      Parent?.GetThisAndParentRecursive(ref items);
+    }
+
     public static void ExpandTo(BaseTreeViewItem item) {
       // expand item as well if it has any sub item and not just placeholder
       if (item.Items.Count > 0 && item.Items[0].Title != null)
