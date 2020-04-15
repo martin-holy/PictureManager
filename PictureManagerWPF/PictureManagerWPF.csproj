@@ -9,13 +9,14 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>PictureManager</RootNamespace>
     <AssemblyName>PictureManager</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -27,11 +28,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <LangVersion>default</LangVersion>
-    <CodeAnalysisRuleSet>
-    </CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -45,19 +45,12 @@
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
     </Reference>
-    <Reference Include="Gu.Wpf.Media, Version=0.5.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Gu.Wpf.Media.0.5.0.2\lib\net45\Gu.Wpf.Media.dll</HintPath>
-    </Reference>
-    <Reference Include="MahApps.Metro, Version=1.6.0.362, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.1.6.0\lib\net45\MahApps.Metro.dll</HintPath>
+    <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.6.5\lib\net47\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.99.0\lib\net46\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -82,39 +75,82 @@
     <Compile Include="AppCore.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Convertors.cs" />
-    <Compile Include="DataModel\DataModel.cs" />
+    <Compile Include="Database\MediaItem.cs" />
+    <Compile Include="Database\CategoryGroup.cs" />
+    <Compile Include="Database\CategoryGroups.cs" />
+    <Compile Include="Database\Folder.cs" />
+    <Compile Include="Database\Folders.cs" />
+    <Compile Include="Database\GeoName.cs" />
+    <Compile Include="Database\GeoNames.cs" />
+    <Compile Include="Database\Keyword.cs" />
+    <Compile Include="Database\Keywords.cs" />
+    <Compile Include="Database\MediaItems.cs" />
+    <Compile Include="Database\People.cs" />
+    <Compile Include="Database\Person.cs" />
+    <Compile Include="Database\SimpleDB.cs" />
+    <Compile Include="Database\Viewer.cs" />
+    <Compile Include="Database\Viewers.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SqlQueryDialog.xaml.cs">
-      <DependentUpon>SqlQueryDialog.xaml</DependentUpon>
+    <Compile Include="Dialogs\ErrorDialog.xaml.cs">
+      <DependentUpon>ErrorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FileOperationCollisionDialog.xaml.cs">
+      <DependentUpon>FileOperationCollisionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FolderBrowserDialog.xaml.cs">
+      <DependentUpon>FolderBrowserDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FolderKeywordList.xaml.cs">
+      <DependentUpon>FolderKeywordList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ImagesToVideoDialog.xaml.cs">
+      <DependentUpon>ImagesToVideoDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\LogDialog.xaml.cs">
+      <DependentUpon>LogDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MessageDialog.xaml.cs">
+      <DependentUpon>MessageDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\ProgressBarDialog.xaml.cs">
       <DependentUpon>ProgressBarDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ResizeImagesDialog.xaml.cs">
+      <DependentUpon>ResizeImagesDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RotationDialog.xaml.cs">
+      <DependentUpon>RotationDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Enums.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
+    <Compile Include="Tests.cs" />
+    <Compile Include="UserControls\IconRect.xaml.cs">
+      <DependentUpon>IconRect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\InfoPanel.xaml.cs">
+      <DependentUpon>InfoPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MediaElementControl.xaml.cs">
+      <DependentUpon>MediaElementControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PresentationPanel.xaml.cs">
+      <DependentUpon>PresentationPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\StatusPanel.xaml.cs">
+      <DependentUpon>StatusPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />
-    <Compile Include="ViewModel\BaseMediaItem.cs" />
-    <Compile Include="ViewModel\CategoryGroup.cs" />
-    <Compile Include="ViewModel\FavoriteFolder.cs" />
-    <Compile Include="ViewModel\FavoriteFolders.cs" />
-    <Compile Include="ViewModel\Filter.cs" />
-    <Compile Include="ViewModel\Filters.cs" />
-    <Compile Include="ViewModel\Folder.cs" />
+    <Compile Include="Database\FavoriteFolder.cs" />
+    <Compile Include="Database\FavoriteFolders.cs" />
     <Compile Include="ViewModel\FolderKeyword.cs" />
     <Compile Include="ViewModel\FolderKeywords.cs" />
-    <Compile Include="ViewModel\Folders.cs" />
-    <Compile Include="ViewModel\GeoName.cs" />
-    <Compile Include="ViewModel\GeoNames.cs" />
-    <Compile Include="ViewModel\IDbItem.cs" />
-    <Compile Include="ViewModel\MediaItems.cs" />
-    <Compile Include="Dialogs\DirectoryListDialog.xaml.cs">
-      <DependentUpon>DirectoryListDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
@@ -129,65 +165,72 @@
     <Compile Include="ShellStuff\Interfaces\IShellItem.cs" />
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
     <Compile Include="ShellStuff\ShellCommon.cs" />
-    <Compile Include="UserControls\DirectoryList.xaml.cs">
-      <DependentUpon>DirectoryList.xaml</DependentUpon>
-    </Compile>
     <Compile Include="VersionInfo.cs" />
     <Compile Include="ViewModel\BaseTreeViewItem.cs" />
     <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
-    <Compile Include="ViewModel\Keyword.cs" />
-    <Compile Include="ViewModel\Keywords.cs" />
+    <Compile Include="ViewModel\LogItem.cs" />
     <Compile Include="ViewModel\MediaItemSize.cs" />
     <Compile Include="ViewModel\MediaItemSizes.cs" />
-    <Compile Include="ViewModel\People.cs" />
-    <Compile Include="ViewModel\Person.cs" />
     <Compile Include="ViewModel\Rating.cs" />
     <Compile Include="ViewModel\Ratings.cs" />
-    <Compile Include="ViewModel\SqlQueries.cs" />
-    <Compile Include="ViewModel\SqlQuery.cs" />
-    <Compile Include="ViewModel\Viewer.cs" />
-    <Compile Include="ViewModel\Viewers.cs" />
-    <Compile Include="WAbout.xaml.cs">
-      <DependentUpon>WAbout.xaml</DependentUpon>
+    <Compile Include="Dialogs\AboutDialog.xaml.cs">
+      <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WCatalog.xaml.cs">
-      <DependentUpon>WCatalog.xaml</DependentUpon>
+    <Compile Include="Dialogs\CompressDialog.xaml.cs">
+      <DependentUpon>CompressDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WCompress.xaml.cs">
-      <DependentUpon>WCompress.xaml</DependentUpon>
+    <Compile Include="Dialogs\UnhandledErrorDialog.xaml.cs">
+      <DependentUpon>UnhandledErrorDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="WError.xaml.cs">
-      <DependentUpon>WError.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WFilterBuilder.xaml.cs">
-      <DependentUpon>WFilterBuilder.xaml</DependentUpon>
+    <Compile Include="Dialogs\FileOperationDialog.xaml.cs">
+      <DependentUpon>FileOperationDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="WMain.Commands.cs">
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="WPicTransform.xaml.cs">
-      <DependentUpon>WPicTransform.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WSettings.xaml.cs">
-      <DependentUpon>WSettings.xaml</DependentUpon>
+    <Compile Include="Dialogs\SettingsDialog.xaml.cs">
+      <DependentUpon>SettingsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="WSplashScreen.xaml.cs">
       <DependentUpon>WSplashScreen.xaml</DependentUpon>
     </Compile>
-    <Page Include="Dialogs\DirectoryListDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="WTest.xaml.cs">
+      <DependentUpon>WTest.xaml</DependentUpon>
+    </Compile>
     <Page Include="Dialogs\DirectorySelectDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\SqlQueryDialog.xaml">
+    <Page Include="Dialogs\ErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FileOperationCollisionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FolderBrowserDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Dialogs\FolderKeywordList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ImagesToVideoDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\InputDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LogDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\MessageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -195,31 +238,51 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\ResizeImagesDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\RotationDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="UserControls\DirectoryList.xaml">
+    <Page Include="UserControls\IconRect.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WAbout.xaml">
+    <Page Include="UserControls\InfoPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WCatalog.xaml">
+    <Page Include="UserControls\MediaElementControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WCompress.xaml">
+    <Page Include="Dialogs\AboutDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WError.xaml">
+    <Page Include="Dialogs\CompressDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="WFilterBuilder.xaml">
+    <Page Include="Dialogs\UnhandledErrorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FileOperationDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\PresentationPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\StatusPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -235,15 +298,15 @@
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="WPicTransform.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WSettings.xaml">
+    <Page Include="Dialogs\SettingsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="WSplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WTest.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -274,7 +337,7 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="ViewModel\ClassDiagram1.cd" />
+    <None Include="ViewModel\ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -282,7 +345,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="SQL.sql" />
     <Content Include="ThumbnailCreator.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -302,6 +364,7 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -320,12 +383,5 @@
   <Target Name="BeforeBuild">
     <Delete Files="VersionInfo.cs" />
     <WriteLinesToFile File="VersionInfo.cs" Lines="$(AssemblyFileVersionAttribute)" Overwrite="true" />
-  </Target>
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.99.0\build\net46\System.Data.SQLite.Core.targets'))" />
   </Target>
 </Project>

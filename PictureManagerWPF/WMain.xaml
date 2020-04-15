@@ -1,4 +1,4 @@
-﻿<controls:MetroWindow x:Name="MainWindow" x:Class="PictureManager.WMain"
+﻿<controls:MetroWindow x:Class="PictureManager.WMain"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,18 +6,25 @@
         xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
-        xmlns:userControls="clr-namespace:PictureManager.UserControls"
-        xmlns:media="https://github.com/JohanLarsson/Gu.Wpf.Media"
+        xmlns:uc="clr-namespace:PictureManager.UserControls"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
-        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove">
+        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing"
+        MouseLeftButtonUp="WMain_OnMouseLeftButtonUp" SizeChanged="WMain_OnSizeChanged">
 
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
-      <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
-        <ProgressBar Width="250" Height="22" Value="{Binding ACore.AppInfo.ProgressBarValue}" Maximum="100" />
+      <Grid>
+        <StackPanel Orientation="Vertical">
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+                       Value="{Binding AppInfo.ProgressBarValueA}" BorderThickness="1,1,1,0"
+                       IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+                       Value="{Binding AppInfo.ProgressBarValueB}" BorderThickness="1,0,1,1"
+                       IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
+        </StackPanel>
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
                    Margin="8 -1 8 0" FontWeight="Bold" FontSize="{DynamicResource WindowTitleFontSize}"
                    FontFamily="{DynamicResource HeaderFontFamily}" />
@@ -29,22 +36,30 @@
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.CompressPictures" />
-          <MenuItem Command="pm:Commands.ReloadMetadata" />
-          <MenuItem Command="pm:Commands.OpenCatalog" />
+          <MenuItem Command="pm:Commands.OpenFolderKeywordsList" />
           <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
           <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MediaItemsSelectNotModifed" />
           <MenuItem Command="pm:Commands.TestButton" />
         </MenuItem>
-        <MenuItem Header="Keywords" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.KeywordsEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.KeywordsComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+        <MenuItem Header="Media Items" Style="{StaticResource RootMenuStyle}">
+          <MenuItem Command="pm:Commands.MediaItemsCompress" />
+          <MenuItem Command="pm:Commands.MediaItemsRebuildThumbnails" />
+          <MenuItem Command="pm:Commands.MediaItemsRotate" />
+          <MenuItem Command="pm:Commands.MediaItemsSelectNotModified" />
+          <MenuItem Command="pm:Commands.MediaItemsShuffle" />
+          <MenuItem Command="pm:Commands.MediaItemsResizeImages" />
+          <MenuItem Command="pm:Commands.MediaItemsImagesToVideo" />
+          <MenuItem Command="pm:Commands.MediaItemsCopyPaths" />
+        </MenuItem>
+        <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
+          <MenuItem Command="pm:Commands.MetadataEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="pm:Commands.MetadataReload" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
-                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.Viewers.Items}">
+                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
@@ -55,163 +70,158 @@
           </MenuItem.ItemContainerStyle>
         </MenuItem>
         <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
-        <MenuItem Command="pm:Commands.ShowHideTabMain" Style="{StaticResource RootMenuStyle}" />
       </Menu>
+
+      <!-- Media Items Count -->
+      <TextBlock Text="{Binding AppInfo.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
+      
+      <!-- Filters Panel -->
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Core}">
+        <!-- And -->
+        <Border Background="#8EC163" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterAndCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
+
+        <!-- Or -->
+        <Border Background="#1585B5" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterOrCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
+
+        <!-- Hidden -->
+        <Border Background="#DE573A" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterHiddenCount}" Style="{StaticResource SShadowLabel}" />
+        </Border>
+      </StackPanel>
+
+      <!-- Log Button -->
+      <Button Background="Red" Command="pm:Commands.OpenLog" Height="24" Margin="2,0,2,0"
+        Visibility="{Binding Log.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="Log " />
+          <TextBlock Text="{Binding Log.Count, Source={x:Static pm:App.Core}}" />
+        </StackPanel>
+      </Button>
+
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
 
   <controls:MetroWindow.Resources>
-    <!-- KeywordsPicCountStyle -->
-    <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
-      <Setter Property="Text" Value="{Binding PicCount}" />
-      <Setter Property="Visibility" Value="Collapsed"/>
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="5,0,0,0" />
-      <Setter Property="Padding" Value="5,0" />
-      <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-      <Style.Triggers>
-        <DataTrigger Binding="{Binding IsMarked}" Value="True">
-          <Setter Property="Visibility" Value="Visible"/>
-        </DataTrigger>
-      </Style.Triggers>
-    </Style>
-
-    <!-- TreeViewStackPanel -->
-    <Style x:Key="TreeViewStackPanel" TargetType="StackPanel">
-      <Setter Property="Orientation" Value="Horizontal" />
-      <Setter Property="Background" Value="Transparent" />
-      <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
-      <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
-    </Style>
-
-    <!-- TreeViewKeywordsStackPanelWithDragDrop -->
-    <Style x:Key="TreeViewKeywordsStackPanelWithDragDrop" BasedOn="{StaticResource TreeViewStackPanel}" TargetType="StackPanel">
-      <Setter Property="AllowDrop" Value="True" />
-      <EventSetter Event="Drop" Handler="TvKeywords_OnDrop" />
-      <EventSetter Event="MouseLeftButtonDown" Handler="TvKeywords_OnMouseLeftButtonDown" />
-      <EventSetter Event="MouseLeftButtonUp" Handler="TvKeywords_OnMouseLeftButtonUp" />
-      <EventSetter Event="MouseMove" Handler="TvKeywords_OnMouseMove" />
-      <EventSetter Event="DragEnter" Handler="TvKeywords_AllowDropCheck" />
-      <EventSetter Event="DragLeave" Handler="TvKeywords_AllowDropCheck" />
-      <EventSetter Event="DragOver" Handler="TvKeywords_AllowDropCheck" />
-    </Style>
-
-    <!-- SBorderInfoBoxThumb SBorderInfoBoxStatusBar STextBlockInfoBox -->
-    <Style x:Key="SBorderInfoBoxThumb" TargetType="Border">
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="Black" />
-      <Setter Property="Background" Value="#88000000" />
-      <Setter Property="VerticalAlignment" Value="Top"/>
-      <Setter Property="Margin" Value="5,5,0,0"/>
-      <Setter Property="Padding" Value="2,0,2,1" />
-      <Setter Property="CornerRadius" Value="5" />
-    </Style>
-    <Style x:Key="SBorderInfoBoxStatusBar" TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxThumb}">
-      <Setter Property="Margin" Value="3,0,0,3"/>
-      <Setter Property="MinWidth" Value="20" />
-    </Style>
-    <Style x:Key="STextBlockInfoBox" TargetType="TextBlock">
-      <Setter Property="Foreground" Value="White" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
-    </Style>
+    <ItemsPanelTemplate x:Key="IptHorizontalStackPanel">
+      <StackPanel Orientation="Horizontal" />
+    </ItemsPanelTemplate>
   </controls:MetroWindow.Resources>
 
   <controls:MetroWindow.Flyouts>
     <controls:FlyoutsControl>
+      <!-- TabControl with TreeView Folders, Keywords and Viewers -->
       <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" IsPinned="True" 
-        Background="#FF252525" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
-        <controls:Flyout.Style>
-          <Style TargetType="controls:Flyout">
-            <Setter Property="Margin" Value="0" />
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                <Setter Property="Margin" Value="0,30,0,0" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </controls:Flyout.Style>
-        <Grid>
-          <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition>
-              <RowDefinition.Style>
-                <Style TargetType="RowDefinition">
-                  <Setter Property="Height" Value="0" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding ElementName=FlyoutMainTreeView, Path=IsPinned}" Value="True">
-                      <Setter Property="Height" Value="{Binding ElementName=FlyoutStatusPanel, Path=ActualHeight}" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </RowDefinition.Style>
-            </RowDefinition>
-          </Grid.RowDefinitions>
+        Background="#FF252525" Margin="{Binding FlyoutMainTreeViewMargin}"
+        TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
 
-          <!-- TreeView Forders, Keywords and Filters -->
-          <TabControl x:Name="TcMain" Grid.Row="0" Background="Transparent" BorderThickness="0">
+        <Grid>
+          <!-- TreeView Folders, Keywords and Filters -->
+          <TabControl x:Name="TcMain" Background="Transparent" BorderThickness="0">
+            <TabControl.Resources>
+              <!-- KeywordsPicCountStyle -->
+              <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
+                <Setter Property="Text" Value="{Binding PicCount}" />
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="Margin" Value="5,0,0,0" />
+                <Setter Property="Padding" Value="5,0" />
+                <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsMarked}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+
+              <!-- STreeViewItem -->
+              <Style TargetType="{x:Type TreeViewItem}" x:Key="STreeViewItem" BasedOn="{StaticResource MetroTreeViewItem}">
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
+                <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="Background" Value="Transparent" />
+              </Style>
+
+              <!-- STreeViewStackPanel -->
+              <Style x:Key="STreeViewStackPanel" TargetType="{x:Type StackPanel}">
+                <Setter Property="Orientation" Value="Horizontal" />
+                <Setter Property="Background" Value="Transparent" />
+                <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
+                <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
+              </Style>
+
+              <!-- STreeViewStackPanelWithDrag -->
+              <Style x:Key="STreeViewStackPanelWithDrag" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
+                <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
+                <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
+              </Style>
+
+              <!-- STreeViewKeywordsStackPanelWithDrop -->
+              <Style x:Key="STreeViewStackPanelWithDrop" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
+                <Setter Property="AllowDrop" Value="True" />
+                <EventSetter Event="Drop" Handler="TreeView_OnDrop" />
+                <EventSetter Event="DragEnter" Handler="TreeView_AllowDropCheck" />
+                <EventSetter Event="DragLeave" Handler="TreeView_AllowDropCheck" />
+                <EventSetter Event="DragOver" Handler="TreeView_AllowDropCheck" />
+              </Style>
+
+              <!-- STreeViewKeywordsStackPanelWithDragDrop -->
+              <Style x:Key="STreeViewStackPanelWithDragDrop" BasedOn="{StaticResource STreeViewStackPanelWithDrop}" TargetType="{x:Type StackPanel}">
+                <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
+                <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
+              </Style>
+
+              <!-- BaseTreeViewItem -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
+                  <uc:IconRect IconName="{Binding IconName}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+
+              <!-- BaseTreeViewTagItem -->
+              <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
+                <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
+                  <uc:IconRect IconName="{Binding IconName}" />
+                  <TextBlock Style="{StaticResource TreeViewTitle}" />
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TabControl.Resources>
+
             <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
               <!-- TreeView Folders -->
-              <TreeView x:Name="TvFolders" Background="Transparent" 
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FoldersRoot}">
-
+              <TreeView x:Name="TvFolders" Background="Transparent" FocusManager.IsFocusScope="True"
+                      ItemsSource="{Binding FoldersRoot, Source={x:Static pm:App.Core}}">
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Background" Value="Transparent" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                        <Setter Property="Visibility" Value="Collapsed" />
+                      </DataTrigger>
+                    </Style.Triggers>
                   </Style>
                 </TreeView.ItemContainerStyle>
-
-                <TreeView.Resources>
-                  <!-- TreeView Folders - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Orientation="Horizontal" Background="Transparent" 
-                            PreviewMouseRightButtonDown="AttachContextMenu" 
-                            PreviewMouseUp="TreeView_Select">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Folders - Folder -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Folder}" ItemsSource="{Binding Items}">
-                    <StackPanel Orientation="Horizontal" Background="Transparent" AllowDrop="True"
-                            MouseLeftButtonUp="TvFolders_OnMouseLeftButtonUp"
-                            MouseLeftButtonDown="TvFolders_OnMouseLeftButtonDown"
-                            PreviewMouseRightButtonDown="AttachContextMenu"
-                            PreviewMouseUp="TreeView_Select" 
-                            Drop="TvFolders_OnDrop" 
-                            MouseMove="TvFolders_OnMouseMove" 
-                            DragEnter="TvFolders_AllowDropCheck" 
-                            DragLeave="TvFolders_AllowDropCheck"
-                            DragOver="TvFolders_AllowDropCheck">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-                </TreeView.Resources>
               </TreeView>
             </TabItem>
 
             <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
               <!-- TreeView Keywords -->
-              <TreeView x:Name="TvKeywords" Background="Transparent"
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.KeywordsRoot}">
+              <TreeView x:Name="TvKeywords" Background="Transparent" FocusManager.IsFocusScope="True"
+                      ItemsSource="{Binding KeywordsRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
                     <Style.Triggers>
                       <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                           <Condition Binding="{Binding IsMarked}" Value="True" />
-                          <Condition Binding="{Binding BgBrush}" Value="0" />
+                          <Condition Binding="{Binding BackgroundBrush}" Value="0" />
                         </MultiDataTrigger.Conditions>
                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
                       </MultiDataTrigger>
@@ -220,62 +230,9 @@
                 </TreeView.ItemContainerStyle>
 
                 <TreeView.Resources>
-                  <!-- TreeView Keywords - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - Keyword -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Keyword}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - FolderKeyword -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:FolderKeyword}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - GeoName -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:GeoName}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - CategoryGroup -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:CategoryGroup}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - Person -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Person}">
-                    <StackPanel Style="{StaticResource TreeViewKeywordsStackPanelWithDragDrop}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
                   <!-- TreeView Keywords - Rating -->
                   <HierarchicalDataTemplate DataType="{x:Type viewModel:Rating}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
+                    <StackPanel Style="{StaticResource STreeViewStackPanel}">
                       <StackPanel Orientation="Horizontal">
                         <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
                         <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
@@ -289,7 +246,7 @@
 
                   <!-- TreeView Keywords - MediaItemSize -->
                   <HierarchicalDataTemplate DataType="{x:Type viewModel:MediaItemSize}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}" Margin="0,0,3,3">
+                    <StackPanel Style="{StaticResource STreeViewStackPanel}" Margin="0,0,3,3">
                       <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
                         <Grid.RowDefinitions>
                           <RowDefinition />
@@ -324,16 +281,11 @@
             <TabItem Header="Filters" HorizontalAlignment="Left">
               <!-- TreeView Filters -->
               <TreeView x:Name="TvFilters" Background="Transparent"
-                      ItemsSource="{Binding ElementName=MainWindow, Path=DataContext.ACore.FiltersRoot}">
+                      ItemsSource="{Binding FiltersRoot, Source={x:Static pm:App.Core}}">
 
                 <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
-                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                    <Setter Property="Background" Value="Transparent" />
                     <Style.Triggers>
                       <DataTrigger Binding="{Binding IsMarked}" Value="True">
                         <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
@@ -341,285 +293,28 @@
                     </Style.Triggers>
                   </Style>
                 </TreeView.ItemContainerStyle>
-
-                <TreeView.Resources>
-                  <!-- TreeView Filters - BaseItem (Category) -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Filters - Filter -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Filter}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Filters - Viewer -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:Viewer}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Filters - SqlQuery -->
-                  <HierarchicalDataTemplate DataType="{x:Type viewModel:SqlQuery}" ItemsSource="{Binding Items}">
-                    <StackPanel Style="{StaticResource TreeViewStackPanel}">
-                      <Rectangle Style="{StaticResource IconRect}" />
-                      <TextBlock Style="{StaticResource TreeViewTitle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-                </TreeView.Resources>
-
               </TreeView>
             </TabItem>
+            
+            <!-- button to close/open flyout panel -->
+            <TabItem HorizontalAlignment="Right">
+              <TabItem.HeaderTemplate>
+                <DataTemplate>
+                  <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
+                          Cursor="{x:Static Cursors.Hand}" Command="{x:Static pm:Commands.ShowHideTabMain}">
+                    <uc:IconRect IconName="{x:Static pm:IconName.Pin}" />
+                  </Button>
+                </DataTemplate>
+              </TabItem.HeaderTemplate>
+            </TabItem>
           </TabControl>
-
         </Grid>
       </controls:Flyout>
-
-      <!-- Status Panel -->
-      <controls:Flyout x:Name="FlyoutStatusPanel" Position="Bottom" Height="Auto" IsOpen="True" 
-        Background="Transparent" TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed">
-        <controls:Flyout.Style>
-          <Style>
-            <Setter Property="controls:Flyout.Margin" Value="0,0,0,0" />
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                <Setter Property="controls:Flyout.Margin" Value="0,0,15,0" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </controls:Flyout.Style>
-        <WrapPanel x:Name="StatusPanel" VerticalAlignment="Bottom" Height="Auto" Margin="0,0,0,1">
-          <WrapPanel.Style>
-            <Style>
-              <Style.Resources>
-                <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}" />
-              </Style.Resources>
-            </Style>
-          </WrapPanel.Style>
-
-          <!-- PositionSlashCount -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.PositionSlashCount}" />
-          </Border>
-
-          <!-- Selected -->
-          <Border Background="{DynamicResource AccentColorBrush}">
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Items.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Selected}" />
-          </Border>
-
-          <!-- Modifed -->
-          <Border Background="#CA5100">
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.IsEditModeOn}" Value="False">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Modifed}" />
-          </Border>
-
-          <!-- Dimension -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Dimension}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Dimension}" />
-          </Border>
-
-          <!-- ImageActualZoom -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ElementName=FullImage, Path=ZoomActualFormated}" />
-          </Border>
-
-          <!-- Rating -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Rating.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <ItemsControl ItemsSource="{Binding ACore.AppInfo.Rating}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Rectangle Style="{StaticResource IconRect}" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </Border>
-
-          <!-- GeoName -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.Data.GeoNameId}" Value="{x:Null}">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-                <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.FullGeoName}" />
-              </Style>
-            </Border.Style>
-            <Rectangle Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource IconRect2}" />
-          </Border>
-
-          <!-- FilePath -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
-                    <Setter Property="ToolTip" Value="{Binding ACore.AppInfo.CurrentMediaItem.FilePath}" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.FilePath}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.FilePath}" />
-          </Border>
-
-          <!-- People -->
-          <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople}">
-            <ItemsControl.Style>
-              <Style TargetType="ItemsControl">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxPeople.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </ItemsControl.Style>
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-
-          <!-- Keywords -->
-          <ItemsControl ItemsSource="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords}">
-            <ItemsControl.Style>
-              <Style TargetType="ItemsControl">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.CurrentMediaItem.InfoBoxKeywords.Count}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </ItemsControl.Style>
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <Border Style="{StaticResource SBorderInfoBoxStatusBar}">
-                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
-                </Border>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
-
-          <!-- Comment -->
-          <Border>
-            <Border.Style>
-              <Style TargetType="Border" BasedOn="{StaticResource SBorderInfoBoxStatusBar}">
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.Comment}" Value="">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                    <Setter Property="Visibility" Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-            <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding ACore.AppInfo.Comment}" />
-          </Border>
-
-        </WrapPanel>
-      </controls:Flyout>
-
     </controls:FlyoutsControl>
   </controls:MetroWindow.Flyouts>
 
-  <Grid DataContext="{Binding ElementName=MainWindow, Path=DataContext}">
-    <Grid x:Name="GridMain" Margin="0">
+  <Grid>
+    <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="350" />
         <ColumnDefinition Width="3" />
@@ -627,55 +322,42 @@
       </Grid.ColumnDefinitions>
 
       <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
-        Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+          Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
 
       <!-- Thumbnails and Full Media -->
       <Grid Grid.Column="2" >
 
         <!-- Thumbnails -->
-        <Grid>
-          <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-              <Setter Property="Visibility" Value="Hidden" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="0">
-                  <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Grid.Style>
+        <Grid Visibility="{Binding AppInfo.AppMode, 
+            Converter={StaticResource AllToVisibilityConverter}, 
+            ConverterParameter={x:Static pm:AppMode.Browser}}">
 
           <!-- Thumbnails -->
-          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding ACore.MediaItems.SplitedItems}"
-                        VirtualizingStackPanel.IsVirtualizing="True" 
-                        VirtualizingPanel.ScrollUnit="Pixel" 
-                        ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
+          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItems.SplittedItems}"
+              VirtualizingStackPanel.IsVirtualizing="True" 
+              VirtualizingPanel.ScrollUnit="Pixel" 
+              ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
+                <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <ItemsControl ItemsSource="{Binding}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
+                <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
 
                   <!-- Thumbnail -->
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
-                              MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                              MouseMove="Thumb_OnMouseMove">
+                          MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
+                          MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave">
                         <Border.Style>
                           <Style TargetType="{x:Type Border}">
                             <Setter Property="BorderBrush" Value="Black" />
                             <Setter Property="BorderThickness" Value="2" />
-                            <Setter Property="Margin" Value="2,0,0,2" />
+                            <Setter Property="Margin" Value="1" />
                             <Style.Triggers>
                               <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                 <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
@@ -687,7 +369,7 @@
                                   <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
-                                  <DataTrigger Binding="{Binding ElementName=MainWindow, Path=DataContext.ACore.AppInfo.IsThumbInfoVisible}" Value="False">
+                                  <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
                                     <Setter Property="Visibility" Value="Hidden"/>
                                   </DataTrigger>
                                 </Style.Triggers>
@@ -700,18 +382,12 @@
                           <!-- Thumbnail Image -->
                           <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
 
-                          <!-- Video overlayer -->
+                          <!-- Video over layer -->
                           <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
-                                          VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77">
-                            <ContentControl.Style>
-                              <Style>
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding MediaType}" Value="0">
-                                    <Setter Property="ContentControl.Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </ContentControl.Style>
+                              VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
+                              Visibility="{Binding MediaType, 
+                                Converter={StaticResource AllToVisibilityConverter},
+                                ConverterParameter={x:Static pm:MediaType.Video}}">
                           </ContentControl>
 
                           <!-- Thumbnail Info Box -->
@@ -723,12 +399,24 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                               <DataTemplate>
-                                <Border Style="{StaticResource SBorderInfoBoxThumb}">
-                                  <TextBlock Style="{StaticResource STextBlockInfoBox}" Text="{Binding}" />
+                                <Border Style="{StaticResource SBorderTextThumb}">
+                                  <TextBlock Style="{StaticResource STextBlock}" Text="{Binding}" />
                                 </Border>
                               </DataTemplate>
                             </ItemsControl.ItemTemplate>
                           </ItemsControl>
+
+                          <!-- Selected -->
+                          <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
+                            <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" 
+                                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                                     Fill="{DynamicResource AccentColorBrush}"
+                                     Stroke="Black" StrokeThickness="2" />
+
+                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2"
+                                    BorderBrush="Black" />
+                          </Grid>
+                          
                         </Grid>
                       </Border>
                     </DataTemplate>
@@ -739,86 +427,44 @@
 
             <ItemsControl.Template>
               <ControlTemplate>
-                <ScrollViewer x:Name="ThumbsBoxScrollViewer">
+                <uc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
                   <ItemsPresenter />
-                </ScrollViewer>
+                </uc:WheelSpeedScrollViewer>
               </ControlTemplate>
             </ItemsControl.Template>
           </ItemsControl>
         </Grid>
 
         <!-- Full Media -->
-        <Grid x:Name="PanelFullScreen" Background="Transparent" 
-              MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel">
-          <Grid.Style>
-            <Style TargetType="{x:Type Grid}">
-              <Setter Property="Visibility" Value="Hidden" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding ACore.AppInfo.AppMode}" Value="1">
-                  <Setter Property="Visibility" Value="Visible" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Grid.Style>
-          <Grid>
+        <Grid x:Name="PanelFullScreen" Background="Transparent"
+            MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
+            Visibility="{Binding AppInfo.AppMode, 
+              Converter={StaticResource AllToVisibilityConverter}, 
+              ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
-            <!-- Full Media Image -->
-            <Grid>
-              <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                  <Setter Property="Visibility" Value="Hidden" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="0">
-                      <Setter Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Grid.Style>
+          <!-- Full Media Image -->
+          <Grid Visibility="{Binding MediaItems.Current.MediaType, 
+              Converter={StaticResource AllToVisibilityConverter}, 
+              ConverterParameter={x:Static pm:MediaType.Image}}">
 
-              <userControls:ZoomImageBox x:Name="FullImage" />
-            </Grid>
+            <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
 
-            <!-- Full Media Video -->
-            <Grid>
-              <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                  <Setter Property="Visibility" Value="Hidden" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding ACore.MediaItems.Current.MediaType}" Value="1">
-                      <Setter Property="Visibility" Value="Visible" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Grid.Style>
-
-              <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-              </Grid.RowDefinitions>
-
-              <media:MediaElementWrapper x:Name="FullMedia" Grid.Row="0" Grid.RowSpan="2" LoadedBehavior="Play"
-                ScrubbingEnabled="True" MediaEnded="FullMedia_OnMediaEnded" />
-
-              <Grid Grid.Row="0" VerticalAlignment="Bottom">
-                <Grid.RowDefinitions>
-                  <RowDefinition Height="Auto" />
-                  <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-
-                <Slider x:Name="ProgressSlider" Grid.Row="0" Minimum="0"
-                  media:Drag.PauseWhileDragging="{Binding ElementName=FullMedia}"
-                  IsEnabled="{Binding ElementName=FullMedia, Path=HasMedia}"
-                  Maximum="{Binding ElementName=FullMedia, Path=Length, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}"
-                  Style="{StaticResource {x:Static media:Styles.ProgressSliderStyleKey}}"
-                  Value="{Binding ElementName=FullMedia, Path=Position, Converter={x:Static media:NullableTimeSpanToSecondsConverter.Default}}" />
-              </Grid>
-            </Grid>
+            <!-- Presentation Panel -->
+            <uc:PresentationPanel x:Name="PresentationPanel" />
           </Grid>
+
+          <!-- Full Media Video -->
+          <uc:MediaElementControl x:Name="FullMedia"
+              Visibility="{Binding MediaItems.Current.MediaType,
+                Source={x:Static pm:App.Core},
+                Converter={StaticResource AllToVisibilityConverter}, 
+                ConverterParameter={x:Static pm:MediaType.Video}}" />
         </Grid>
       </Grid>
     </Grid>
 
-    
-
+    <!-- Status Panel -->
+    <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" MouseWheel="PanelFullScreen_OnMouseWheel" />
   </Grid>
+  
 </controls:MetroWindow>

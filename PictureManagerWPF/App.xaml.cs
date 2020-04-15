@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows;
+using PictureManager.Dialogs;
 
 namespace PictureManager {
   /// <summary>
@@ -8,6 +9,9 @@ namespace PictureManager {
   /// </summary>
   public partial class App {
     public static ISplashScreen SplashScreen;
+    public static AppCore Core => (AppCore) Current.Properties[nameof(AppProperty.AppCore)];
+    public static WMain WMain => (WMain) Current.Properties[nameof(AppProperty.WMain)];
+
     private ManualResetEvent _resetSplashCreated;
     private Thread _splashThread;
 
@@ -15,8 +19,11 @@ namespace PictureManager {
       AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
       var argument = "";
       if (e.Args.Length != 0) argument = e.Args[0];
-      var wMain = new WMain(argument);
-      wMain.Show();
+
+      Current.Properties[nameof(AppProperty.AppCore)] = new AppCore();
+      Current.Properties[nameof(AppProperty.WMain)] = new WMain(argument);
+
+      WMain.Show();
     }
 
     protected override void OnStartup(StartupEventArgs e) {
@@ -40,7 +47,7 @@ namespace PictureManager {
     }
 
     private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
-      var wError = new WError {TbError = {Text = ((Exception) e.ExceptionObject).ToString()}};
+      var wError = new UnhandledErrorDialog { TbError = {Text = ((Exception) e.ExceptionObject).ToString()}};
       wError.ShowDialog();
     }
   }

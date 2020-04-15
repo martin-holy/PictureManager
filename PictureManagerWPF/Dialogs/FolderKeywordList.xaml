@@ -1,0 +1,34 @@
+﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.FolderKeywordList"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:uc="clr-namespace:PictureManager.UserControls"
+  mc:Ignorable="d"
+  Title="Folder Keywords" SizeToContent="Height" Width="400"
+  BorderBrush="{DynamicResource AccentColorBrush}" 
+  Background="{DynamicResource WhiteBrush}" 
+  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
+  WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
+  DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+  <StackPanel Orientation="Vertical">
+    <ListBox x:Name="LbFolderKeywords" SelectionMode="Multiple" ItemsSource="{Binding Items}" Margin="5" Height="200">
+      <ListBox.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Horizontal" Background="Transparent" >
+            <uc:IconRect IconName="{Binding IconName}" />
+            <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0" />
+          </StackPanel>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <StackPanel Style="{StaticResource DialogButtons}">
+      <Button x:Name="BtnRemove" Style="{StaticResource DialogButton}" Content="_Remove" Click="BtnRemove_OnClick" />
+      <Button Style="{StaticResource DialogButton}" Content="_Close" IsCancel="True" />
+    </StackPanel>
+  </StackPanel>
+
+</controls:MetroWindow>

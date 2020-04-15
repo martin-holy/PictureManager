@@ -15,7 +15,7 @@
       </ResourceDictionary.MergedDictionaries>
       
       <pm:StaticResourceConverter x:Key="StaticResourceConverter"/>
-      <pm:IconNameToBrush x:Key="IconNameToBrush" />
+      <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
       <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
       <pm:RatingConverter x:Key="RatingConverter" />
       <pm:BackgroundColorConverter x:Key="BgColorConverter" />
@@ -23,6 +23,8 @@
       <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
       <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
       <pm:IconSymbolConverter x:Key="IconSymbolConverter" />
+      <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
+      <pm:TypeToStyleConverter x:Key="TypeToStyleConverter" />
 
       <Style x:Key="RootMenuStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />
@@ -39,24 +41,10 @@
         <Setter Property="Width" Value="18" />
         <Setter Property="Height" Value="18" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrush}}" />
+        <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}" />
         <Setter Property="OpacityMask">
           <Setter.Value>
             <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
-          </Setter.Value>
-        </Setter>
-      </Style>
-
-      <!-- IconRect2 -->
-      <Style x:Key="IconRect2" TargetType="Rectangle">
-        <Setter Property="Width" Value="18" />
-        <Setter Property="Height" Value="18" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="DataContext" Value="{Binding RelativeSource={RelativeSource Self}}"></Setter>
-        <Setter Property="Fill" Value="{Binding Tag, Converter={StaticResource IconNameToBrush}}" />
-        <Setter Property="OpacityMask">
-          <Setter.Value>
-            <VisualBrush Stretch="Uniform" Visual="{Binding Tag, Converter={StaticResource IconNameToStaticResourceConverter}}" />
           </Setter.Value>
         </Setter>
       </Style>
@@ -86,6 +74,71 @@
 
       <Style x:Key="MenuItemIcon" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
         <Setter Property="Icon" Value="{StaticResource MenuItemIconRect}"/>
+      </Style>
+      
+      <!-- DialogButtons -->
+      <Style x:Key="DialogButtons" TargetType="StackPanel">
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="Margin" Value="5" />
+      </Style>
+
+      <!-- DialogButton -->
+      <Style x:Key="DialogButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="MinWidth" Value="60" />
+        <Setter Property="Margin" Value="5" />
+      </Style>
+
+      <!-- SBorderText -->
+      <Style x:Key="SBorderText" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="Background" Value="#88000000" />
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Padding" Value="2,1,2,1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="3,0,0,0"/>
+        <Setter Property="MinWidth" Value="23.7" />
+      </Style>
+
+      <!-- SBorderTextThumb -->
+      <Style x:Key="SBorderTextThumb" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+        <Setter Property="Margin" Value="5,5,0,0"/>
+      </Style>
+
+      <!-- SBorderGroup -->
+      <Style x:Key="SBorderGroup" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+        <Setter Property="Padding" Value="2" />
+      </Style>
+
+      <!-- STextBlock -->
+      <Style x:Key="STextBlock" TargetType="TextBlock">
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+      </Style>
+
+      <!-- SBorderActiveFilter -->
+      <Style x:Key="SBorderActiveFilter" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="MinWidth" Value="22" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Margin" Value="2,0,0,0" />
+      </Style>
+
+      <!-- SShadowLabel -->
+      <Style x:Key="SShadowLabel" TargetType="Label">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Margin" Value="-1,-1,0,0" />
+        <Setter Property="Padding" Value="2,0" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
+          </Setter.Value>
+        </Setter>
       </Style>
 
     </ResourceDictionary>
