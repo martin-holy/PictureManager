@@ -364,6 +364,7 @@ namespace PictureManager {
       if (mi.MediaType != MediaType.Video) return;
 
       VideoThumbnailPreview.Source = mi.FilePathUri;
+      (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
       grid.Children.Add(VideoThumbnailPreview);
       VideoThumbnailPreview.Play();
     }
