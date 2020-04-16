@@ -61,18 +61,19 @@ namespace PictureManager.Dialogs {
 
       // Scale
       var height = (double) Settings.Default.ImagesToVideoHeight;
-      var width = mi.Orientation == 6 || mi.Orientation == 8
-        ? mi.Height / (mi.Width / height)
-        : mi.Width / (mi.Height / height);
-      var scale = $"{Math.Round(width, 0)}x{height}";
+      var width = mi.Orientation == (int) MediaOrientation.Rotate270 ||
+                  mi.Orientation == (int) MediaOrientation.Rotate90
+        ? Math.Round(mi.Height / (mi.Width / height), 0)
+        : Math.Round(mi.Width / (mi.Height / height), 0);
+      if (width % 2 != 0) width++;
+      var scale = $"{width}x{height}";
 
       // Rotate
-      // Orientation 1: 0, 3: 180, 6: 270, 8: 90
       var rotation = string.Empty;
-      switch (mi.Orientation) {
-        case 3: rotation = "transpose=clock,transpose=clock,"; break;
-        case 6: rotation = "transpose=clock:passthrough=portrait,"; break;
-        case 8: rotation = "transpose=cclock:passthrough=portrait,"; break;
+      switch ((MediaOrientation) mi.Orientation) {
+        case MediaOrientation.Rotate180: rotation = "transpose=clock,transpose=clock,"; break;
+        case MediaOrientation.Rotate270: rotation = "transpose=clock:passthrough=portrait,"; break;
+        case MediaOrientation.Rotate90: rotation = "transpose=cclock:passthrough=portrait,"; break;
       }
 
       var speedStr = Settings.Default.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
