@@ -328,6 +328,14 @@ namespace PictureManager {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
+    private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      if (e.ChangedButton != MouseButton.Middle) return;
+      // use middle button like CTRL + left button
+      var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
+      App.Core.MediaItems.Select(true, false, mi);
+      App.Core.MarkUsedKeywordsAndPeople();
+    }
+
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
