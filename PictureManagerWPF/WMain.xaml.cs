@@ -373,7 +373,7 @@ namespace PictureManager {
 
       VideoThumbnailPreview.Source = mi.FilePathUri;
       (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
-      grid.Children.Add(VideoThumbnailPreview);
+      grid.Children.Insert(grid.Children.Count - 2, VideoThumbnailPreview);
       VideoThumbnailPreview.Play();
     }
 
