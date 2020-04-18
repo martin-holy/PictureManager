@@ -352,7 +352,8 @@
                     <DataTemplate>
                       <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
                           MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                          MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave">
+                          MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave"
+                          PreviewMouseUp="Thumb_OnPreviewMouseUp">
                         <Border.Style>
                           <Style TargetType="{x:Type Border}">
                             <Setter Property="BorderBrush" Value="Black" />
