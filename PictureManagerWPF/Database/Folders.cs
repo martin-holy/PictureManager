@@ -43,8 +43,6 @@ namespace PictureManager.Database {
         // csv array is not needed any more
         folder.Csv = null;
       }
-
-      AddDrives();
     }
 
     public void SaveToFile() {
@@ -132,9 +130,10 @@ namespace PictureManager.Database {
 
         item.IsAccessible = di.IsReady;
         item.IconName = driveImage;
+        item.IsExpanded = false;
 
         // if Viewer can't see this Drive set it as hidden and continue
-        if (!Viewers.CanViewerSeeThisDirectory(App.Core.CurrentViewer ,item)) {
+        if (!App.Core.CurrentViewer.CanSeeThisFolder(item)) {
           item.IsHidden = true;
           continue;
         }

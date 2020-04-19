@@ -90,10 +90,10 @@ namespace PictureManager {
       WindowsDisplayScale = PresentationSource.FromVisual(App.WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
 
       Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
-      Sdb.AddTable(Viewers); // needs to be before Folders
+      Sdb.AddTable(Folders); // needs to be before Viewers
+      Sdb.AddTable(Viewers);
       Sdb.AddTable(People);
       Sdb.AddTable(Keywords);
-      Sdb.AddTable(Folders);
       Sdb.AddTable(GeoNames);
       Sdb.AddTable(MediaItems);
       Sdb.AddTable(FavoriteFolders);
@@ -101,6 +101,8 @@ namespace PictureManager {
       Sdb.LoadAllTables();
       Sdb.LinkReferences();
 
+      App.SplashScreen.AddMessage("Loading Drives");
+      Folders.AddDrives();
       App.SplashScreen.AddMessage("Loading Folder Keywords");
       FolderKeywords.Load();
       App.SplashScreen.AddMessage("Loading Ratings");
