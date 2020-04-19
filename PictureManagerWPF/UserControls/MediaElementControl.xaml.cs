@@ -107,16 +107,18 @@ namespace PictureManager.UserControls {
       var nd = MediaElement.NaturalDuration;
       _repeatCount = (int) Math.Round(RepeatForMilliseconds / (nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000), 0);
 
-      TimelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds: 0;
+      TimelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000;
       IsPlaying = true;
     }
 
     private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {
-      // if video doesn't have TimeSpan than is probably less than 1s long and can't be repeated
-      if ((_repeatCount > 0 || RepeatForMilliseconds == 0) && MediaElement.NaturalDuration.HasTimeSpan) {
+      if (_repeatCount > 0 || RepeatForMilliseconds == 0) {
         _repeatCount--;
-        MediaElement.Stop();
-        MediaElement.Play();
+
+        // if video doesn't have TimeSpan than is probably less than 1s long
+        // and can't be repeated with MediaElement.Stop()/MediaElement.Play()
+        MediaElement.Position = TimeSpan.FromMilliseconds(1);
+
         return;
       }
 

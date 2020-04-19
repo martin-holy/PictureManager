@@ -63,8 +63,8 @@ namespace PictureManager {
       };
 
       VideoThumbnailPreview.MediaEnded += (o, args) => {
-        ((MediaElement) o).Stop();
-        ((MediaElement) o).Play();
+        // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
+        ((MediaElement) o).Position = TimeSpan.FromMilliseconds(1);
       };
 
       /*var ver = Assembly.GetEntryAssembly().GetName().Version;
