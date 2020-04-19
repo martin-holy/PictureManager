@@ -198,7 +198,7 @@ namespace PictureManager.Database {
         }
 
         // if Viewer can't see this Folder set it as hidden and continue
-        if (!Viewers.CanViewerSeeThisDirectory(App.Core.CurrentViewer, folder)) {
+        if (!App.Core.CurrentViewer.CanSeeThisFolder(folder)) {
           if (!isNew) folder.IsHidden = true;
           continue;
         }

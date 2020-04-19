@@ -415,6 +415,7 @@ namespace PictureManager.Database {
       var mediaItems = new List<MediaItem>();
       var folderMediaItems = new List<MediaItem>();
       foreach (var folder in allFolders.Cast<Folder>()) {
+        if (!App.Core.CurrentViewer.CanSeeContentOfThisFolder(folder)) continue;
         folderMediaItems.Clear();
 
         // add MediaItems from current Folder to dictionary for faster search
@@ -422,7 +423,7 @@ namespace PictureManager.Database {
         folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
         
         foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-          if (!IsSupportedFileType(file) || !Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, file)) continue;
+          if (!IsSupportedFileType(file)) continue;
 
           // check if the MediaItem is already in DB, if not put it there
           var fileName = Path.GetFileName(file) ?? string.Empty;
@@ -486,14 +487,11 @@ namespace PictureManager.Database {
           var allItems = (MediaItem[]) ((object[]) e.Argument)[0];
           var resultItems = new List<MediaItem>();
           var dirs = (from mi in allItems select mi.Folder).Distinct()
-            .Where(dir => Directory.Exists(dir.FullPath)).ToDictionary(dir => dir.Id);
+            .Where(dir => App.Core.CurrentViewer.CanSeeContentOfThisFolder(dir) && Directory.Exists(dir.FullPath))
+            .ToDictionary(dir => dir.Id);
 
-          foreach (var item in allItems.OrderBy(x => x.FileName)) {
-            if (!dirs.ContainsKey(item.Folder.Id)) continue;
+          foreach (var item in allItems.Where(x => dirs.ContainsKey(x.Folder.Id)).OrderBy(x => x.FileName)) {
             if (!File.Exists(item.FilePath)) continue;
-
-            // Filter by Viewer
-            if (!Viewers.CanViewerSeeThisFile(App.Core.CurrentViewer, item.FilePath)) continue;
 
             item.SetThumbSize();
             resultItems.Add(item);
