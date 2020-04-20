@@ -314,6 +314,8 @@ namespace PictureManager.Database {
       else New(inputDialog.Answer);
 
       App.Core.Sdb.SaveAllTables();
+      if (FolderKeyword != null)
+        App.Core.FolderKeywords.Load();
     }
 
     public bool HasThisParent(Folder parent) {
