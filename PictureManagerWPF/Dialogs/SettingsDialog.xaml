@@ -23,6 +23,7 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
@@ -37,16 +38,20 @@
       <Label Grid.Row="1" Grid.Column="0" Content="FFMPEG path:"/>
       <TextBox Grid.Row="1" Grid.Column="1" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=FfmpegPath, Mode=TwoWay}" />
 
+      <!-- GeoNames User Name -->
+      <Label Grid.Row="2" Grid.Column="0" Content="GeoNames User:"/>
+      <TextBox Grid.Row="2" Grid.Column="1" Margin="3" Text="{Binding Source={x:Static p:Settings.Default}, Path=GeoNamesUserName, Mode=TwoWay}" />
+
       <!-- Jpeg quality level -->
-      <Label Grid.Row="2" Grid.Column="0" Content="Jpeg quality level:"/>
-      <DockPanel Grid.Row="2" Grid.Column="1">
+      <Label Grid.Row="3" Grid.Column="0" Content="Jpeg quality level:"/>
+      <DockPanel Grid.Row="3" Grid.Column="1">
         <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}" />
         <Slider Margin="3" Minimum="80" Maximum="95" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=JpegQualityLevel, Mode=TwoWay}"/>
       </DockPanel>
 
       <!-- Thumbnail size -->
-      <Label Grid.Row="3" Grid.Column="0" Content="Thumbnail size:"/>
-      <DockPanel Grid.Row="3" Grid.Column="1">
+      <Label Grid.Row="4" Grid.Column="0" Content="Thumbnail size:"/>
+      <DockPanel Grid.Row="4" Grid.Column="1">
         <Label Margin="3" DockPanel.Dock="Left" MinWidth="40" Content="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}" />
         <Slider Margin="3" Minimum="200" Maximum="500" VerticalAlignment="Center" IsTabStop="True" SmallChange="1" Value="{Binding Source={x:Static p:Settings.Default}, Path=ThumbnailSize, Mode=TwoWay}"/>
       </DockPanel>

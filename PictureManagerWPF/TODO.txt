@@ -1,7 +1,6 @@
 ﻿#Bugs
 - pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim)
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-- v geonames nepouzivat muj ucet
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - pri posunu prehravani videa se vyresetuje speed
 - nove vytvorena slozka nema folder keyword. kdyz jsem presunul soubory do nove vytvoreny slozky, tak pod folder keywordem nebyly
