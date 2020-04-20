@@ -314,6 +314,8 @@ namespace PictureManager {
     }
 
     private void GeoNameNew(object parameter) {
+      if (!GeoNames.AreSettingsSet()) return;
+
       var inputDialog = new InputDialog {
         Owner = this,
         IconName = IconName.LocationCheckin,
@@ -624,6 +626,8 @@ namespace PictureManager {
     }
 
     private void AddGeoNamesFromFiles() {
+      if (!GeoNames.AreSettingsSet()) return;
+
       var progress = new ProgressBarDialog(this, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
         App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
@@ -643,6 +647,10 @@ namespace PictureManager {
         // onCompleted
         delegate {
           App.Core.Sdb.SaveAllTables();
+          
+          var info = App.Core.AppInfo;
+          info.FullGeoName = info.CurrentMediaItem?.GeoName?.GetFullPath("\n");
+          info.OnPropertyChanged(nameof(info.IsGeoNameVisible));
         });
 
       progress.StartDialog();

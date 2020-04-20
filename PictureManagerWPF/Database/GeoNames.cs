@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using PictureManager.Dialogs;
+using PictureManager.Properties;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Database {
@@ -59,9 +61,9 @@ namespace PictureManager.Database {
     }
 
     public GeoName InsertGeoNameHierarchy(double lat, double lng) {
-      var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username=cospi".Replace(",", ".");
+      var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={Settings.Default.GeoNamesUserName}".Replace(",", ".");
       var xml = new XmlDocument();
-      xml.Load(string.Format(url, lat, lng));
+      xml.Load(url);
       var geonames = xml.SelectNodes("/geonames/geoname");
       if (geonames == null) return null;
 
@@ -93,6 +95,16 @@ namespace PictureManager.Database {
 
       InsertGeoNameHierarchy(lat, lng);
       SaveToFile();
+    }
+    public static bool AreSettingsSet() {
+      if (!string.IsNullOrEmpty(Settings.Default.GeoNamesUserName)) return true;
+
+      MessageDialog.Show(
+        "GeoNames User Name",
+        "GeoNames user name was not found.\nPlease register at geonames.org and set your user name in the settings.",
+        false);
+
+      return false;
     }
   }
 }

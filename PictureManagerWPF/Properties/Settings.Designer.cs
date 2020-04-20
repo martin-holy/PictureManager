@@ -130,5 +130,17 @@ namespace PictureManager.Properties {
                 this["ImagesToVideoSpeed"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GeoNamesUserName {
+            get {
+                return ((string)(this["GeoNamesUserName"]));
+            }
+            set {
+                this["GeoNamesUserName"] = value;
+            }
+        }
     }
 }
