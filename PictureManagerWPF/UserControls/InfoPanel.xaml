@@ -5,7 +5,7 @@
              x:Name="Ip">
 
   <Border Style="{StaticResource SBorderGroup}">
-    <StackPanel Orientation="Horizontal">
+    <WrapPanel Orientation="Horizontal">
       <!-- Icon -->
       <uc:IconRect IconName="{Binding ElementName=Ip, Path=IconName}" />
       
@@ -20,7 +20,7 @@
                     Visibility="{Binding ElementName=Ip, Path=Items.Count, Converter={StaticResource AllToVisibilityConverter}}">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
-            <StackPanel Orientation="Horizontal" />
+            <WrapPanel Orientation="Horizontal" />
           </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
@@ -32,6 +32,6 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
 
-    </StackPanel>
+    </WrapPanel>
   </Border>
 </UserControl>
