@@ -50,6 +50,7 @@
           <MenuItem Command="pm:Commands.MediaItemsResizeImages" />
           <MenuItem Command="pm:Commands.MediaItemsImagesToVideo" />
           <MenuItem Command="pm:Commands.MediaItemsCopyPaths" />
+          <MenuItem Command="pm:Commands.MediaItemsCompare" />
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="pm:Commands.MetadataEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />

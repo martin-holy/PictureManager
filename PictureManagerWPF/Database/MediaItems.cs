@@ -457,17 +457,8 @@ namespace PictureManager.Database {
       OnPropertyChanged(nameof(PositionSlashCount));
     }
 
-    public void LoadByTag(BaseTreeViewItem tag, bool recursive) {
+    public void LoadItems(MediaItem[] items, bool sorted = true) {
       ClearItBeforeLoad();
-
-      // get items by tag
-      MediaItem[] items = null;
-
-      switch (tag) {
-        case Keyword keyword: items = keyword.GetMediaItems(recursive); break;
-        case Person person: items = person.MediaItems.ToArray(); break;
-        case GeoName geoName: items = geoName.GetMediaItems(recursive); break;
-      }
 
       if (items == null) return;
 
@@ -484,13 +475,15 @@ namespace PictureManager.Database {
             return;
           }
 
-          var allItems = (MediaItem[]) ((object[]) e.Argument)[0];
+          var allItems = (MediaItem[]) e.Argument;
           var resultItems = new List<MediaItem>();
           var dirs = (from mi in allItems select mi.Folder).Distinct()
             .Where(dir => App.Core.CurrentViewer.CanSeeContentOfThisFolder(dir) && Directory.Exists(dir.FullPath))
             .ToDictionary(dir => dir.Id);
+          var finalItems = allItems.Where(x => dirs.ContainsKey(x.Folder.Id));
+          if (sorted) finalItems = finalItems.OrderBy(x => x.FileName);
 
-          foreach (var item in allItems.Where(x => dirs.ContainsKey(x.Folder.Id)).OrderBy(x => x.FileName)) {
+          foreach (var item in finalItems) {
             if (!File.Exists(item.FilePath)) continue;
 
             item.SetThumbSize();
@@ -527,7 +520,7 @@ namespace PictureManager.Database {
         return;
       }
 
-      _loadByTagWorker.RunWorkerAsync(new object[] {items, tag});
+      _loadByTagWorker.RunWorkerAsync(items);
     }
 
     public void ScrollToCurrent() {

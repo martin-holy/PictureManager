@@ -34,6 +34,7 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsResizeImages, MediaItemsResizeImages, CanMediaItemsResizeImages);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsImagesToVideo, MediaItemsImagesToVideo, CanMediaItemsImagesToVideo);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsCopyPaths, MediaItemsCopyPaths, CanMediaItemsCopyPaths);
+      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsCompare, MediaItemsCompare, CanMediaItemsCompare);
 
       // TreeView Commands
       Commands.AddCommandBinding(CommandBindings, Commands.CategoryGroupNew, CategoryGroupNew);
@@ -194,8 +195,26 @@ namespace PictureManager {
           App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath)));
     }
 
+    private static bool CanMediaItemsCompare() {
+      return App.Core.MediaItems.FilteredItems.Count > 0;
+    }
+
+    private static void MediaItemsCompare() {
+      var similar = ImageComparer.GetSimilar(App.Core.MediaItems.FilteredItems.ToArray(), 2);
+      App.Core.MediaItems.LoadItems(similar.ToArray(), false);
+    }
+
     private static void MediaItemsLoadByTag(object parameter) {
-      App.Core.MediaItems.LoadByTag((BaseTreeViewTagItem) parameter, (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
+      // get items by tag
+      MediaItem[] items = null;
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+
+      switch ((BaseTreeViewTagItem)parameter) {
+        case Keyword keyword: items = keyword.GetMediaItems(recursive); break;
+        case Person person: items = person.MediaItems.ToArray(); break;
+        case GeoName geoName: items = geoName.GetMediaItems(recursive); break;
+      }
+      App.Core.MediaItems.LoadItems(items);
     }
 
     private static bool CanPresentation() {
