@@ -10,6 +10,7 @@ using PictureManager.Dialogs;
 using PictureManager.Properties;
 using PictureManager.ViewModel;
 using PictureManager.Database;
+using PictureManager.Utils;
 
 namespace PictureManager {
   public partial class WMain {
@@ -199,22 +200,22 @@ namespace PictureManager {
       return App.Core.MediaItems.FilteredItems.Count > 0;
     }
 
-    private static void MediaItemsCompare() {
+    private static async void MediaItemsCompare() {
       var similar = ImageComparer.GetSimilar(App.Core.MediaItems.FilteredItems.ToArray(), 2);
-      App.Core.MediaItems.LoadItems(similar.ToArray(), false);
+      await App.Core.MediaItems.LoadAsync(similar, null, false);
     }
 
-    private static void MediaItemsLoadByTag(object parameter) {
+    private static async void MediaItemsLoadByTag(object parameter) {
       // get items by tag
-      MediaItem[] items = null;
+      List<MediaItem> items = null;
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
 
       switch ((BaseTreeViewTagItem)parameter) {
-        case Keyword keyword: items = keyword.GetMediaItems(recursive); break;
-        case Person person: items = person.MediaItems.ToArray(); break;
-        case GeoName geoName: items = geoName.GetMediaItems(recursive); break;
+        case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
+        case Person person: items = person.MediaItems; break;
+        case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
       }
-      App.Core.MediaItems.LoadItems(items);
+      await App.Core.MediaItems.LoadAsync(items, null);
     }
 
     private static bool CanPresentation() {
@@ -531,7 +532,7 @@ namespace PictureManager {
       inputDialog.TxtAnswer.SelectAll();
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
-      current.Comment = MediaItems.NormalizeComment(inputDialog.TxtAnswer.Text);
+      current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
       current.TryWriteMetadata();
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
@@ -591,7 +592,7 @@ namespace PictureManager {
         null, 
          async delegate(MediaItem mi) {
           mi.SetThumbSize();
-          await App.Core.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
@@ -626,7 +627,7 @@ namespace PictureManager {
           try {
             var src = mi.FilePath;
             var dest = Path.Combine(destination, mi.FileName);
-            MediaItems.Resize(src, dest, px, withMetadata, withThumbnail);
+            Imaging.ResizeJpg(src, dest, px, withMetadata, withThumbnail);
           }
           catch (Exception ex) {
             App.Core.LogError(ex, mi.FilePath);
@@ -706,7 +707,7 @@ namespace PictureManager {
       return App.Core.AppInfo.AppMode == AppMode.Viewer;
     }
 
-    private void SwitchToBrowser() {
+    public void SwitchToBrowser() {
       PresentationPanel.Stop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);

@@ -146,6 +146,8 @@
     </Compile>
     <Compile Include="UserControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="UserControls\ZoomImageBox.cs" />
+    <Compile Include="Utils\Imaging.cs" />
+    <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModel\AppInfo.cs" />
     <Compile Include="ViewModel\BaseCategoryItem.cs" />
     <Compile Include="Database\FavoriteFolder.cs" />

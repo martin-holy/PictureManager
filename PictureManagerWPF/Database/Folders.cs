@@ -133,7 +133,7 @@ namespace PictureManager.Database {
         item.IsExpanded = false;
 
         // if Viewer can't see this Drive set it as hidden and continue
-        if (!App.Core.CurrentViewer.CanSeeThisFolder(item)) {
+        if (!App.Core.CanViewerSeeThisFolder(item)) {
           item.IsHidden = true;
           continue;
         }
