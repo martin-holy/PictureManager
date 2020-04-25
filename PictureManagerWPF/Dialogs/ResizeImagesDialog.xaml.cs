@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using PictureManager.Database;
 using PictureManager.Properties;
+using PictureManager.Utils;
 using Application = System.Windows.Application;
 
 namespace PictureManager.Dialogs {
@@ -81,7 +82,7 @@ namespace PictureManager.Dialogs {
 
             try {
               var dest = Path.Combine(destination, mi.FileName);
-              MediaItems.Resize(mi.FilePath, dest, px, withMetadata, withThumbnail);
+              Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail);
             }
             catch (Exception ex) {
               App.Core.LogError(ex, mi.FilePath);

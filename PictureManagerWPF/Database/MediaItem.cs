@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
+using PictureManager.Utils;
 using Application = System.Windows.Application;
 
 namespace PictureManager.Database {
@@ -64,7 +63,7 @@ namespace PictureManager.Database {
       Folder = folder;
       FileName = fileName;
       IsNew = isNew;
-      MediaType = MediaItems.GetMediaType(fileName);
+      MediaType = Imaging.GetMediaType(fileName);
     }
 
     #region IEquatable implementation
@@ -108,48 +107,24 @@ namespace PictureManager.Database {
     }
 
     public void SetThumbSize() {
-      var size = GetThumbSize();
-      ThumbWidth = (int)size.Width;
-      ThumbHeight = (int)size.Height;
-      ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * App.Core.WindowsDisplayScale / 100 / App.Core.ThumbScale);
-    }
-
-    private Size GetThumbSize() {
-      var size = new Size();
-      var desiredSize = Settings.Default.ThumbnailSize / App.Core.WindowsDisplayScale * 100 * App.Core.ThumbScale;
+      // TODO: move next and last line calculation elsewhere
+      var desiredSize = (int) (Settings.Default.ThumbnailSize / App.Core.WindowsDisplayScale * 100 * App.Core.ThumbScale);
 
       if (Width == 0 || Height == 0) {
-        size.Width = desiredSize;
-        size.Height = desiredSize;
-        return size;
+        ThumbWidth = desiredSize;
+        ThumbHeight = desiredSize;
+      }
+      else {
+        var rotated = Orientation == (int) MediaOrientation.Rotate90 ||
+                      Orientation == (int) MediaOrientation.Rotate270;
+        var size = Imaging.GetThumbSize(rotated ? Height : Width, rotated ? Width : Height, desiredSize);
+
+        IsPanoramic = size.Width > desiredSize;
+        ThumbWidth = (int) size.Width;
+        ThumbHeight = (int) size.Height;
       }
 
-      var rotated = Orientation == (int)MediaOrientation.Rotate90 ||
-                    Orientation == (int)MediaOrientation.Rotate270;
-      var width = (double)(rotated ? Height : Width);
-      var height = (double)(rotated ? Width : Height);
-
-
-      if (width > height) {
-        //panorama
-        if (width / height > 16.0 / 9.0) {
-          IsPanoramic = true;
-          const int maxWidth = 1100;
-          var panoramaHeight = desiredSize / 16.0 * 9;
-          var tooBig = panoramaHeight / height * width > maxWidth;
-          size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
-          size.Width = tooBig ? maxWidth : panoramaHeight / height * width;
-          return size;
-        }
-
-        size.Height = desiredSize / width * height;
-        size.Width = desiredSize;
-        return size;
-      }
-
-      size.Height = desiredSize;
-      size.Width = desiredSize / height * width;
-      return size;
+      ThumbSize = (int) ((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * App.Core.WindowsDisplayScale / 100 / App.Core.ThumbScale);
     }
 
     public void SetInfoBox() {
@@ -243,38 +218,10 @@ namespace PictureManager.Database {
       Folder.MediaItems.Add(this);
     }
 
-    public void ReSave() {
-      //TODO: try to preserve EXIF information
-      var original = new FileInfo(FilePath);
-      var newFile = new FileInfo(FilePath + "_newFile");
-      try {
-        using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          using (var bmp = new System.Drawing.Bitmap(originalFileStream)) {
-            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-              var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
-              if (encoder == null) return;
-              var encParams = new EncoderParameters(1) {
-                Param = { [0] = new EncoderParameter(Encoder.Quality, Settings.Default.JpegQualityLevel) }
-              };
-              bmp.Save(newFileStream, encoder, encParams);
-            }
-          }
-        }
-
-        newFile.CreationTime = original.CreationTime;
-        original.Delete();
-        newFile.MoveTo(original.FullName);
-      }
-      catch (Exception ex) {
-        if (newFile.Exists) newFile.Delete();
-        App.Core.LogError(ex, FilePath);
-      }
-    }
-
     public bool TryWriteMetadata() {
       App.Core.MediaItems.Helper.IsModified = true;
       if (WriteMetadata()) return true;
-      ReSave();
+      Imaging.ReSaveImage(FilePath);
       return WriteMetadata();
     }
 
@@ -461,7 +408,7 @@ namespace PictureManager.Database {
             Rating = bm.Rating;
 
             // Comment
-            Comment = MediaItems.NormalizeComment(bm.Comment);
+            Comment = StringUtils.NormalizeComment(bm.Comment);
 
             // Orientation 1: 0, 3: 180, 6: 270, 8: 90
             Orientation = (ushort?) bm.GetQuery("System.Photo.Orientation") ?? 1;

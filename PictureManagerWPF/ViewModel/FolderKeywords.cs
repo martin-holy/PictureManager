@@ -21,7 +21,7 @@ namespace PictureManager.ViewModel {
 
     private static void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
       foreach (var fi in folder.Items.OfType<Folder>()) {
-        if (!App.Core.CurrentViewer.CanSeeThisFolder(fi)) continue;
+        if (!App.Core.CanViewerSeeThisFolder(fi)) continue;
         if (fi.IsThisOrParentHidden()) continue;
 
         // create new FolderKeyword if doesn't exists

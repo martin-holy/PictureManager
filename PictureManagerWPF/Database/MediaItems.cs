@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
-using PictureManager.Properties;
+using PictureManager.Utils;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
 
@@ -44,10 +43,6 @@ namespace PictureManager.Database {
       }
     }
 
-    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
-    public static string[] SupportedImageExts = { ".jpg", ".jpeg" };
-    public static string[] SupportedVideoExts = { ".mp4", ".mkv" };
-
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
@@ -55,7 +50,8 @@ namespace PictureManager.Database {
     public int ModifiedCount => ModifiedItems.Count;
     public List<MediaItem> ModifiedItems = new List<MediaItem>();
 
-    private BackgroundWorker _loadByTagWorker;
+    private CancellationTokenSource _loadCts;
+    private Task _loadTask;
 
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -64,9 +60,10 @@ namespace PictureManager.Database {
     }
 
     ~MediaItems() {
-      if (_loadByTagWorker == null) return;
-      _loadByTagWorker.Dispose();
-      _loadByTagWorker = null;
+      if (_loadCts != null) {
+        _loadCts.Dispose();
+        _loadCts = null;
+      }
     }
 
     public void NewFromCsv(string csv) {
@@ -219,7 +216,7 @@ namespace PictureManager.Database {
       }
     }
 
-  public void SetMetadata(object tag) {
+    public void SetMetadata(object tag) {
       foreach (var mi in FilteredItems.Where(x => x.IsSelected)) {
         SetModified(mi, true);
 
@@ -331,7 +328,7 @@ namespace PictureManager.Database {
       SplittedItemsReload();
     }
 
-    private static List<MediaItem> Filter(List<MediaItem> mediaItems) {
+    private static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {
       //Ratings
       var chosenRatings = App.Core.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
@@ -389,138 +386,199 @@ namespace PictureManager.Database {
       return mediaItems;
     }
 
-    public void Load(BaseTreeViewItem tag, bool recursive) {
-      ClearItBeforeLoad();
+    private async Task<List<MediaItem>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<Folder> folders, CancellationToken token) {
+      var output = new List<MediaItem>();
 
-      // get top folders
-      var topFolders = new List<Folder>();
-      switch (tag) {
-        case Folder f: topFolders.Add(f); break;
-        case FolderKeyword fk: topFolders.AddRange(fk.Folders); break;
-      }
+      await Task.Run(() => {
+        foreach (var folder in folders.Where(x => x.IsHidden == false)) {
+          if (token.IsCancellationRequested) break;
+          var folderMediaItems = new List<MediaItem>();
 
-      // get all folders
-      var allFolders = new List<BaseTreeViewItem>();
-      foreach (var topFolder in topFolders) {
-        if (recursive) {
-          topFolder.LoadSubFolders(true);
-          topFolder.GetThisAndItemsRecursive(ref allFolders);
-        }
-        else {
-          allFolders.Add(topFolder);
-        }
-      }
+          // add MediaItems from current Folder to dictionary for faster search
+          var fmis = new Dictionary<string, MediaItem>();
+          folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
 
-      // get all MediaItems
-      var mediaItems = new List<MediaItem>();
-      var folderMediaItems = new List<MediaItem>();
-      foreach (var folder in allFolders.Cast<Folder>()) {
-        if (!App.Core.CurrentViewer.CanSeeContentOfThisFolder(folder)) continue;
-        folderMediaItems.Clear();
+          foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
+            if (token.IsCancellationRequested) break;
+            if (Imaging.IsSupportedFileType(file) == false) continue;
 
-        // add MediaItems from current Folder to dictionary for faster search
-        var fmis = new Dictionary<string, MediaItem>();
-        folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
-        
-        foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-          if (!IsSupportedFileType(file)) continue;
-
-          // check if the MediaItem is already in DB, if not put it there
-          var fileName = Path.GetFileName(file) ?? string.Empty;
-          fmis.TryGetValue(fileName, out var inDbFile);
-          if (inDbFile == null) {
-            inDbFile = new MediaItem(Helper.GetNextId(), folder, fileName, true);
-            AddRecord(inDbFile);
-            folder.MediaItems.Add(inDbFile);
+            // check if the MediaItem is already in DB, if not put it there
+            var fileName = Path.GetFileName(file) ?? string.Empty;
+            fmis.TryGetValue(fileName, out var inDbFile);
+            if (inDbFile == null) {
+              inDbFile = new MediaItem(Helper.GetNextId(), folder, fileName, true);
+              AddRecord(inDbFile);
+              folder.MediaItems.Add(inDbFile);
+            }
+            folderMediaItems.Add(inDbFile);
           }
-          folderMediaItems.Add(inDbFile);
+
+          if (token.IsCancellationRequested) break;
+
+          output.AddRange(folderMediaItems);
+
+          // remove MediaItems deleted outside of this application
+          foreach (var fmi in folder.MediaItems.ToArray()) {
+            if (folderMediaItems.Contains(fmi)) continue;
+            Delete(fmi);
+          }
         }
+      });
 
-        mediaItems.AddRange(folderMediaItems);
-
-        // remove MediaItems deleted outside of this application
-        foreach (var fmi in folder.MediaItems.ToArray()) {
-          if (folderMediaItems.Contains(fmi)) continue;
-          Delete(fmi);
-        }
-      }
-
-      foreach (var mi in mediaItems.OrderBy(x => x.FileName)) {
-        mi.SetThumbSize();
-        LoadedItems.Add(mi);
-      }
-
-      foreach (var mi in Filter(LoadedItems))
-        FilteredItems.Add(mi);
-
-      App.Core.SetMediaItemSizesLoadedRange();
-      OnPropertyChanged(nameof(PositionSlashCount));
+      return output;
     }
 
-    public void LoadItems(MediaItem[] items, bool sorted = true) {
+    private static async Task<List<MediaItem>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      var output = new List<MediaItem>();
+
+      await Task.Run(() => {
+        var folders = (from mi in items select mi.Folder).Distinct();
+        var foldersSet = new HashSet<int>();
+
+        foreach (var folder in folders) {
+          if (token.IsCancellationRequested) break;
+          if (App.Core.CanViewerSeeContentOfThisFolder(folder) == false) continue;
+          if (Directory.Exists(folder.FullPath) == false) continue;
+          foldersSet.Add(folder.Id);
+        }
+
+        foreach (var mi in items) {
+          if (token.IsCancellationRequested) break;
+          if (foldersSet.Contains(mi.Folder.Id) == false) continue;
+          if (File.Exists(mi.FilePath) == false) continue;
+          output.Add(mi);
+        }
+      });
+
+      return output;
+    }
+
+    public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, bool sorted = true) {
+      // cancel previous work
+      if (_loadCts != null) {
+        _loadCts.Cancel();
+        await _loadTask;
+      }
+
+      ScrollToTop();
       ClearItBeforeLoad();
-
-      if (items == null) return;
-
-      // filter out items if directory or file not exists or Viewer can not see items
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
 
-      if (_loadByTagWorker == null) {
-        _loadByTagWorker = new BackgroundWorker {WorkerSupportsCancellation = true};
+      _loadTask = Task.Run(async () => {
+        _loadCts?.Dispose();
+        _loadCts = new CancellationTokenSource();
+        var token = _loadCts.Token;
+        var items = new List<MediaItem>();
 
-        _loadByTagWorker.DoWork += delegate(object sender, DoWorkEventArgs e) {
-          var worker = (BackgroundWorker) sender;
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            return;
-          }
+        if (mediaItems != null) {
+          // filter out items if directory or file not exists or Viewer can not see items
+          items = await VerifyAccessibilityOfMediaItemsAsync(mediaItems, token);
+        }
 
-          var allItems = (MediaItem[]) e.Argument;
-          var resultItems = new List<MediaItem>();
-          var dirs = (from mi in allItems select mi.Folder).Distinct()
-            .Where(dir => App.Core.CurrentViewer.CanSeeContentOfThisFolder(dir) && Directory.Exists(dir.FullPath))
-            .ToDictionary(dir => dir.Id);
-          var finalItems = allItems.Where(x => dirs.ContainsKey(x.Folder.Id));
-          if (sorted) finalItems = finalItems.OrderBy(x => x.FileName);
+        if (folders != null) {
+          items = await GetMediaItemsFromFoldersAsync(folders, token);
+        }
 
-          foreach (var item in finalItems) {
-            if (!File.Exists(item.FilePath)) continue;
+        if (sorted)
+          items = items.OrderBy(x => x.FileName).ToList();
 
-            item.SetThumbSize();
-            resultItems.Add(item);
-          }
+        // set thumb size and add Media Items to LoadedItems
+        foreach (var mi in items) {
+          mi.SetThumbSize();
+          LoadedItems.Add(mi);
+        }
 
-          e.Result = resultItems;
-        };
+        // filter Media Items and them to FilteredItems
+        foreach (var mi in Filter(LoadedItems)) {
+          FilteredItems.Add(mi);
+        }
 
-        _loadByTagWorker.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e) {
-          if (e.Cancelled) {
-            // run with new items
-            _loadByTagWorker.RunWorkerAsync(items);
-            return;
-          }
+        OnPropertyChanged(nameof(PositionSlashCount));
+        App.Core.SetMediaItemSizesLoadedRange();
+        await LoadThumbnailsAsync(FilteredItems.ToArray(), token);
+      });
 
-          // add loaded items
-          foreach (var mi in (List<MediaItem>)e.Result)
-            LoadedItems.Add(mi);
+      await _loadTask;
+    }
 
-          // add filtered items
-          foreach (var mi in Filter(LoadedItems))
-            FilteredItems.Add(mi);
+    private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      App.Core.AppInfo.ProgressBarIsIndeterminate = false;
+      App.Core.AppInfo.ProgressBarValueA = 0;
+      App.Core.AppInfo.ProgressBarValueB = 0;
 
-          App.Core.SetMediaItemSizesLoadedRange();
-          OnPropertyChanged(nameof(PositionSlashCount));
-          ScrollToTop();
-          App.Core.LoadThumbnails(App.Core.MediaItems.FilteredItems.ToArray());
-        };
+      await Task.Run(async () => {
+        // read metadata for new items and add thumbnails to grid
+        var metadata = ReadMetadataAndListThumbsAsync(items, token);
+        // create thumbnails
+        var thumbs = Imaging.CreateThumbnailsAsync(items, token);
+
+        await Task.WhenAll(metadata, thumbs);
+
+        var saveDb = metadata.Result;
+
+        if (token.IsCancellationRequested) {
+          saveDb = true;
+          if (Application.Current.Dispatcher != null)
+            await Application.Current.Dispatcher.InvokeAsync(delegate {
+              Delete(All.Where(x => x.IsNew).ToArray());
+            });
+        }
+
+        if (saveDb)
+          App.Core.Sdb.SaveAllTables();
+      });
+
+      if (Current != null) {
+        SetSelected(Current, false);
+        SetSelected(Current, true);
       }
 
-      if (_loadByTagWorker.IsBusy) {
-        _loadByTagWorker.CancelAsync();
-        return;
-      }
+      App.Core.MarkUsedKeywordsAndPeople();
+      GC.Collect();
+    }
 
-      _loadByTagWorker.RunWorkerAsync(items);
+    private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      return Task.Run(() => {
+        var mediaItemsModified = false;
+        var count = items.Count;
+        var workingOn = 0;
+
+        foreach (var mi in items) {
+          if (token.IsCancellationRequested) break;
+
+          workingOn++;
+          var percent = Convert.ToInt32((double)workingOn / count * 100);
+
+          if (mi.IsNew) {
+            mi.IsNew = false;
+
+            Application.Current.Dispatcher?.Invoke(delegate { App.Core.AppInfo.MediaItemsCount++; });
+
+            if (!mi.ReadMetadata()) {
+              // delete corrupted MediaItems
+              Application.Current.Dispatcher?.Invoke(delegate {
+                LoadedItems.Remove(mi);
+                FilteredItems.Remove(mi);
+                Delete(mi);
+                App.Core.AppInfo.ProgressBarValueA = percent;
+              });
+
+              continue;
+            }
+
+            mi.SetThumbSize();
+            mediaItemsModified = true;
+          }
+
+          Application.Current.Dispatcher?.Invoke(delegate {
+            mi.SetInfoBox();
+            SplittedItemsAdd(mi);
+            App.Core.AppInfo.ProgressBarValueA = percent;
+          });
+        }
+
+        return mediaItemsModified;
+      });
     }
 
     public void ScrollToCurrent() {
@@ -633,14 +691,6 @@ namespace PictureManager.Database {
         item.SetThumbSize();
     }
 
-    private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
-
-    public static string NormalizeComment(string comment) {
-      return string.IsNullOrEmpty(comment)
-        ? null
-        : new string(comment.Where(x => char.IsLetterOrDigit(x) || CommentAllowedCharacters.Contains(x)).ToArray());
-    }
-
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
       Helper.IsModified = true;
 
@@ -674,7 +724,7 @@ namespace PictureManager.Database {
 
           mi.TryWriteMetadata();
           mi.SetThumbSize();
-          await App.Core.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
@@ -686,17 +736,6 @@ namespace PictureManager.Database {
         });
 
       progress.StartDialog();
-    }
-
-    public static bool IsSupportedFileType(string filePath) {
-      return SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static MediaType GetMediaType(string filePath) {
-      return SupportedImageExts.Any(
-        x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
-        ? MediaType.Image
-        : MediaType.Video;
     }
 
     /// <summary>
@@ -834,110 +873,6 @@ namespace PictureManager.Database {
             SetSelected(current, true);
         }
       }
-    }
-
-    public static void Resize(string src, string dest, int px, bool withMetadata, bool withThumbnail) {
-      int GreatestCommonDivisor(int a, int b) {
-        while (a != 0 && b != 0) {
-          if (a > b)
-            a %= b;
-          else
-            b %= a;
-        }
-
-        return a == 0 ? b : a;
-      }
-
-      void SetIfContainsQuery(BitmapMetadata bm, string query, object value) {
-        if (bm.ContainsQuery(query))
-          bm.SetQuery(query, value);
-      }
-
-      var srcFile = new FileInfo(src);
-      var destFile = new FileInfo(dest);
-
-      using (Stream srcFileStream = File.Open(srcFile.FullName, FileMode.Open, FileAccess.Read)) {
-        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
-
-        var firstFrame = decoder.Frames[0];
-
-        var pxw = firstFrame.PixelWidth; // image width
-        var pxh = firstFrame.PixelHeight; // image height
-        var gcd = GreatestCommonDivisor(pxw, pxh);
-        var rw = pxw / gcd; // image ratio
-        var rh = pxh / gcd; // image ratio
-        var q = Math.Sqrt((double) px / (rw * rh)); // Bulgarian constant
-        var stw = (q * rw) / pxw; // scale transform X
-        var sth = (q * rh) / pxh; // scale transform Y
-
-        var resized = new TransformedBitmap(firstFrame, new ScaleTransform(stw, sth, 0, 0));
-        var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata : new BitmapMetadata("jpg");
-        var thumbnail = withThumbnail ? firstFrame.Thumbnail : null;
-
-        if (!withMetadata) {
-          // even when withMetadata == false, set orientation
-          var orientation = ((BitmapMetadata) firstFrame.Metadata)?.GetQuery("System.Photo.Orientation") ?? (ushort) 1;
-          metadata.SetQuery("System.Photo.Orientation", orientation);
-        }
-
-        // ifd ImageWidth a ImageHeight
-        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=256}", resized.PixelWidth);
-        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=257}", resized.PixelHeight);
-        // exif ExifImageWidth a ExifImageHeight
-        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40962}", resized.PixelWidth);
-        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40963}", resized.PixelHeight);
-
-        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-
-        encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
-
-        using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-          encoder.Save(destFileStream);
-        }
-
-        // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
-        var date = DateTime.MinValue;
-        
-        // try to first get dateTaken from file name
-        var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
-        if (match.Success)
-          DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
-
-        // try to get dateTaken from metadata
-        if (date == DateTime.MinValue) {
-          var dateTaken = ((BitmapMetadata)firstFrame.Metadata)?.DateTaken;
-          DateTime.TryParse(dateTaken, out date);
-        }
-        
-        if (date != DateTime.MinValue)
-          destFile.LastWriteTime = date;
-      }
-    }
-
-    // TODO vyuzit tohle v MediaItem.SetThumbSize
-    public static Size GetThumbSize(double width, double height, int desiredSize) {
-      var size = new Size();
-
-      if (width > height) {
-        //panorama
-        if (width / height > 16.0 / 9.0) {
-          const int maxWidth = 1100;
-          var panoramaHeight = desiredSize / 16.0 * 9;
-          var tooBig = panoramaHeight / height * width > maxWidth;
-          size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
-          size.Width = tooBig ? maxWidth : panoramaHeight / height * width;
-          return size;
-        }
-
-        size.Height = desiredSize / width * height;
-        size.Width = desiredSize;
-        return size;
-      }
-
-      size.Height = desiredSize;
-      size.Width = desiredSize / height * width;
-      return size;
     }
   }
 }

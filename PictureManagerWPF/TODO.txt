@@ -1,10 +1,8 @@
 ﻿#Bugs
-- pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim)
+- pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim) => zkusit nastavit current na thumb v prvni rade, aby byl focus nahore
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
-- pri posunu prehravani videa se vyresetuje speed
-- nove vytvorena slozka nema folder keyword. kdyz jsem presunul soubory do nove vytvoreny slozky, tak pod folder keywordem nebyly
-- InfoPanel People, chce to wrap, kdyz jich tam je hodne. napr kolaz v M
+- MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
 
 #Update
 - pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek, vertikalne vycentrovat nazev souboru
@@ -16,7 +14,6 @@
 - ikony
 - zmenit title na favorite folder
 - dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
-- kdyz je video kratsi jak 1s tak ho zkusit prehrat tam a zpatky a to opakovat
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
 - rotate video just for view

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using PictureManager.Database;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using PictureManager.Utils;
 using PictureManager.ViewModel;
 
 namespace PictureManager {
@@ -78,7 +79,7 @@ namespace PictureManager {
             while (partition.MoveNext()) {
               Console.WriteLine("loop before");
               var mi = partition.Current;
-              await App.Core.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+              await Imaging.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
               Console.WriteLine("loop after");
             }
           }
@@ -158,8 +159,8 @@ namespace PictureManager {
         App.WMain.MediaItemsResize(items, 2500000, $"D:\\{year}", true, false);*/
 
         Directory.CreateDirectory(@"D:\000");
-        
-        MediaItems.Resize(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180108_201028_Martin.jpg", @"D:\000\20180108_201028_Martin.jpg", 2500000, true, false);
+
+        Imaging.ResizeJpg(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180108_201028_Martin.jpg", @"D:\000\20180108_201028_Martin.jpg", 2500000, true, false);
         //MediaItems.Resize(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180101_133736_Martin.jpg", @"D:\000\20180101_133736_Martin.jpg", 2500000, true, false);
       }
       catch (Exception ex) {

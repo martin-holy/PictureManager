@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using PictureManager.Database;
 using PictureManager.Properties;
+using PictureManager.Utils;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -53,7 +54,7 @@ namespace PictureManager.Dialogs {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        await App.Core.CreateThumbnailAsync(MediaItems.GetMediaType(filePath), filePath, thumbPath,
+        await Imaging.CreateThumbnailAsync(Imaging.GetMediaType(filePath), filePath, thumbPath,
           Settings.Default.ThumbnailSize);
       }
 

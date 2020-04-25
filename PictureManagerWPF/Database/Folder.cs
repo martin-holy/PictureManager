@@ -198,7 +198,7 @@ namespace PictureManager.Database {
         }
 
         // if Viewer can't see this Folder set it as hidden and continue
-        if (!App.Core.CurrentViewer.CanSeeThisFolder(folder)) {
+        if (!App.Core.CanViewerSeeThisFolder(folder)) {
           if (!isNew) folder.IsHidden = true;
           continue;
         }
@@ -384,6 +384,18 @@ namespace PictureManager.Database {
       } while (f != null);
 
       return false;
+    }
+
+    public static List<Folder> GetFolders(List<Folder> roots, bool recursive) {
+      if (!recursive) return roots;
+
+      var output = new List<BaseTreeViewItem>();
+      foreach (var root in roots) {
+        root.LoadSubFolders(true);
+        root.GetThisAndItemsRecursive(ref output);
+      }
+
+      return output.Cast<Folder>().ToList();
     }
   }
 }
