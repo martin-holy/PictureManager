@@ -460,7 +460,10 @@ namespace PictureManager.Database {
         await _loadTask;
       }
 
-      ScrollToTop();
+      // scroll to top to fix funny loading
+      if (FilteredItems.Count > 0)
+        ScrollTo(FilteredItems[0]);
+
       ClearItBeforeLoad();
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
 
