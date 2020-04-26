@@ -329,11 +329,12 @@ namespace PictureManager {
     }
 
     private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
-      if (e.ChangedButton != MouseButton.Middle) return;
-      // use middle button like CTRL + left button
-      var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
-      App.Core.MediaItems.Select(true, false, mi);
-      App.Core.MarkUsedKeywordsAndPeople();
+      // use middle and right button like CTRL + left button
+      if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Right) {
+        var mi = (MediaItem)((FrameworkElement)sender).DataContext;
+        App.Core.MediaItems.Select(true, false, mi);
+        App.Core.MarkUsedKeywordsAndPeople();
+      }
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
