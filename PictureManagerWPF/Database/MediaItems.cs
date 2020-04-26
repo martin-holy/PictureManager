@@ -488,7 +488,7 @@ namespace PictureManager.Database {
           LoadedItems.Add(mi);
         }
 
-        // filter Media Items and them to FilteredItems
+        // filter Media Items and add them to FilteredItems
         foreach (var mi in Filter(LoadedItems)) {
           FilteredItems.Add(mi);
         }
@@ -604,14 +604,17 @@ namespace PictureManager.Database {
     }
 
     public void RemoveSelected(bool delete) {
-      var firstSelected = FilteredItems.FirstOrDefault(x => x.IsSelected);
-      if (firstSelected == null) return;
-      var indexOfFirstSelected = FilteredItems.IndexOf(firstSelected);
+      var items = FilteredItems.Where(x => x.IsSelected).ToList();
+      if (items.Count == 0) return;
+
+      // set Current to next MediaItem after last selected or null
+      var indexOfNewCurrent = FilteredItems.IndexOf(items[items.Count - 1]) + 1;
+      Current = FilteredItems.Count > indexOfNewCurrent ? FilteredItems[indexOfNewCurrent] : null;
 
       var files = new List<string>();
       var cache = new List<string>();
 
-      foreach (var mi in FilteredItems.Where(x => x.IsSelected).ToList()) {
+      foreach (var mi in items) {
         LoadedItems.Remove(mi);
         FilteredItems.Remove(mi);
         if (delete) {
@@ -628,13 +631,12 @@ namespace PictureManager.Database {
       }
 
       SplittedItemsReload();
-      Current = null;
 
-      // set new current
-      var count = FilteredItems.Count;
-      if (count == 0) return;
-      if (count == indexOfFirstSelected) indexOfFirstSelected--;
-      Current = FilteredItems[indexOfFirstSelected];
+      // set Current to last MediaItem if is null
+      if (Current == null && FilteredItems.Count > 0) {
+        Current = FilteredItems[FilteredItems.Count - 1];
+      }
+
       ScrollToCurrent();
     }
 
