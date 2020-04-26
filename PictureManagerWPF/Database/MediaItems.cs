@@ -640,23 +640,23 @@ namespace PictureManager.Database {
       ScrollToCurrent();
     }
 
-    public void SplittedItemsAdd(MediaItem mi) {
-      var lastIndex = SplittedItems.Count - 1;
-      if (lastIndex == -1) {
+    private void SplittedItemsAdd(MediaItem mi) {
+      var lastRowIndex = SplittedItems.Count - 1;
+      if (lastRowIndex == -1) {
         SplittedItems.Add(new ObservableCollection<MediaItem>());
-        lastIndex++;
+        lastRowIndex++;
       }
 
       var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
-      var rowWidth = SplittedItems[lastIndex].Sum(x => x.ThumbWidth + itemOffset);
+      var rowWidth = SplittedItems[lastRowIndex].Sum(x => x.ThumbWidth + itemOffset);
       if (mi.ThumbWidth <= rowMaxWidth - rowWidth) {
-        SplittedItems[lastIndex].Add(mi);
+        SplittedItems[lastRowIndex].Add(mi);
       }
       else {
         SplittedItems.Add(new ObservableCollection<MediaItem>());
-        SplittedItems[lastIndex + 1].Add(mi);
+        SplittedItems[lastRowIndex + 1].Add(mi);
       }
     }
 
@@ -669,8 +669,8 @@ namespace PictureManager.Database {
 
       var row = new ObservableCollection<MediaItem>();
       var rowWidth = 0;
-      var rowMaxWidth = App.WMain.ActualWidth - App.WMain.GridMain.ColumnDefinitions[0].ActualWidth - 3 -
-                        SystemParameters.VerticalScrollBarWidth;
+      var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
+
       const int itemOffset = 6; //border, margin, padding, ...
 
       foreach (var mi in FilteredItems) {
