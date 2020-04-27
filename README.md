@@ -25,13 +25,13 @@ Picture Manager is a simple image and video viewer with the ability of editting 
 
 Keywords are additional data for media items. Media items can be filtered or loaded in this category only if they have been imported through `left-click` on the Folder.
 
-Media items can be loaded by choosing **Load by this** from the `right-click` menu on _People_, _Keywords_ and _GeoNames_ or the `left-click` on the _Folder Keywords_. Loading can also be applied to subdirectories with the `Shift + left-click`.
+Media items can be loaded by `left-click` on the _Ratings_, _People_, _Folder Keywords_, _Keywords_ and _GeoNames_. Loading can also be applied to subdirectories with the `Shift + left-click`.
 
-The filter is applied to the previously loaded media items and can by edited by:
+The filter is applied to the previously loaded media items and can by edited from `right-click` menu on _Ratings_, _People_, _Keywords_ and _GeoNames_:
 
-- `left-click` for one or more selected keywords on loaded media items
-- `Ctrl + left-click` for having all selected keywords on loaded media items
-- `Alt + left-click` for excluding media items with selected keywords
+- _Filter And_: for having all selected keywords on loaded media items
+- _Filter Or_: for one or more selected keywords on loaded media items
+- _Filter Not_: for excluding media items with selected keywords
 
 The Keywords on media items can be edited by entering the edit mode with `Ctrl + E`. In this mode the Keywords will be added or removed from selected media items by `left-click` on _Rating_, _Person_, _Keyword_ or _GeoName_. The edit can be saved with `Ctrl + S` or canceled with `Ctrl + Q`.
 

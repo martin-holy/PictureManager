@@ -14,7 +14,6 @@ namespace PictureManager {
     public static RoutedUICommand MediaItemsSelectAll { get; } = CreateCommand("Select All", "MediaItemsSelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
     public static RoutedUICommand MediaItemsSelectNotModified { get; } = new RoutedUICommand { Text = "Select Not Modified" };
     public static RoutedUICommand MediaItemsDelete { get; } = CreateCommand("Delete", "MediaItemsDelete", new KeyGesture(Key.Delete));
-    public static RoutedUICommand MediaItemsLoadByTag { get; } = new RoutedUICommand { Text = "Load by this" };
     public static RoutedUICommand Presentation { get; } = CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
     public static RoutedUICommand MediaItemsCompress { get; } = new RoutedUICommand { Text = "Compress" };
     public static RoutedUICommand MediaItemsRotate { get; } = CreateCommand("Rotate", "RotatePictures", new KeyGesture(Key.R, ModifierKeys.Control));
@@ -47,7 +46,10 @@ namespace PictureManager {
     public static RoutedUICommand ViewerExcludeFolder { get; } = new RoutedUICommand {Text = "Exclude for Viewer"};
     public static RoutedUICommand ViewerRemoveFolder { get; } = new RoutedUICommand {Text = "Remove"};
     public static RoutedUICommand GeoNameNew { get; } = new RoutedUICommand {Text = "New"};
-    
+    public static RoutedUICommand ActivateFilterAnd { get; } = new RoutedUICommand {Text = "Filter And"};
+    public static RoutedUICommand ActivateFilterOr { get; } = new RoutedUICommand { Text = "Filter Or" };
+    public static RoutedUICommand ActivateFilterNot { get; } = new RoutedUICommand { Text = "Filter Not" };
+
     // Metadata Commands
     public static RoutedUICommand MetadataEdit { get; } = CreateCommand("Edit", "MetadataEdit", new KeyGesture(Key.E, ModifierKeys.Control));
     public static RoutedUICommand MetadataSave { get; } = CreateCommand("Save", "MetadataSave", new KeyGesture(Key.S, ModifierKeys.Control));

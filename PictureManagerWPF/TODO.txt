@@ -1,22 +1,21 @@
 ﻿#Bugs
-- pri nacteni nove slozky se nekdy miniatury posouvaj, pokud predtim byly nejak posunuty (nevim co s tim) => zkusit nastavit current na thumb v prvni rade, aby byl focus nahore
-- pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
+- pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka (neni to tim ze se dela ReloadThumbnail v jinem vlakne?)
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
 
 #Update
 - pri prepisu souboru ukazovat taky rozliseni a asi dat oramovani na obazek, vertikalne vycentrovat nazev souboru
+- na File Operation Dialog pridat copy/move/delete
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
 - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
-- active filters panel => pridat clear all
 - ikony
 - zmenit title na favorite folder
-- dat na listu indikator stinskuntych klaves s vyznamem, napr: shift => recursive, u keywords vypisovat and/or/not, ...
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
 - rotate video just for view
+- vymyslet to tak, zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
 
 
 #Code Cleaning

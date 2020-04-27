@@ -77,7 +77,8 @@
       <TextBlock Text="{Binding AppInfo.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
       
       <!-- Filters Panel -->
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Core}">
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Core}"
+                  ToolTip="Clear filters" Cursor="Hand" PreviewMouseLeftButtonUp="FiltersPanel_ClearFilters">
         <!-- And -->
         <Border Background="#8EC163" Style="{StaticResource SBorderActiveFilter}">
           <Label Content="{Binding AppInfo.FilterAndCount}" Style="{StaticResource SShadowLabel}" />

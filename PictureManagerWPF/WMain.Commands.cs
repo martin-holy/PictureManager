@@ -26,7 +26,6 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectAll, MediaItemsSelectAll, CanMediaItemsSelectAll);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsSelectNotModified, MediaItemsSelectNotModified, CanMediaItemsSelectNotModified);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsDelete, MediaItemsDelete, CanMediaItemsDelete);
-      Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsLoadByTag, MediaItemsLoadByTag);
       Commands.AddCommandBinding(CommandBindings, Commands.Presentation, Presentation, CanPresentation);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsCompress, MediaItemsCompress, CanMediaItemsCompress);
       Commands.AddCommandBinding(CommandBindings, Commands.MediaItemsRotate, MediaItemsRotate, CanMediaItemsRotate);
@@ -55,7 +54,10 @@ namespace PictureManager {
       Commands.AddCommandBinding(CommandBindings, Commands.ViewerExcludeFolder, ViewerExcludeFolder);
       Commands.AddCommandBinding(CommandBindings, Commands.ViewerRemoveFolder, ViewerRemoveFolder);
       Commands.AddCommandBinding(CommandBindings, Commands.GeoNameNew, GeoNameNew);
-      
+      Commands.AddCommandBinding(CommandBindings, Commands.ActivateFilterAnd, ActivateFilterAnd);
+      Commands.AddCommandBinding(CommandBindings, Commands.ActivateFilterOr, ActivateFilterOr);
+      Commands.AddCommandBinding(CommandBindings, Commands.ActivateFilterNot, ActivateFilterNot);
+
       // Metadata Commands
       Commands.AddCommandBinding(CommandBindings, Commands.MetadataEdit, MetadataEdit, CanMetadataEdit);
       Commands.AddCommandBinding(CommandBindings, Commands.MetadataSave, MetadataSave, CanMetadataSave);
@@ -205,19 +207,6 @@ namespace PictureManager {
       await App.Core.MediaItems.LoadAsync(similar, null, false);
     }
 
-    private static async void MediaItemsLoadByTag(object parameter) {
-      // get items by tag
-      List<MediaItem> items = null;
-      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-
-      switch ((BaseTreeViewTagItem)parameter) {
-        case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
-        case Person person: items = person.MediaItems; break;
-        case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
-      }
-      await App.Core.MediaItems.LoadAsync(items, null);
-    }
-
     private static bool CanPresentation() {
       return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.Current != null;
     }
@@ -351,6 +340,18 @@ namespace PictureManager {
       if (inputDialog.ShowDialog() ?? true) {
         ((GeoNames) parameter).New(inputDialog.Answer);
       }
+    }
+
+    private static void ActivateFilterAnd(object parameter) {
+      App.Core.ActivateFilter((BaseTreeViewItem)parameter, BackgroundBrush.AndThis);
+    }
+
+    private static void ActivateFilterOr(object parameter) {
+      App.Core.ActivateFilter((BaseTreeViewItem)parameter, BackgroundBrush.OrThis);
+    }
+
+    private static void ActivateFilterNot(object parameter) {
+      App.Core.ActivateFilter((BaseTreeViewItem)parameter, BackgroundBrush.Hidden);
     }
 
     private static bool CanMediaItemsCompress() {

@@ -152,20 +152,16 @@ namespace PictureManager {
             MarkUsedKeywordsAndPeople();
           }
           else {
-            if (item.BackgroundBrush != BackgroundBrush.Default)
-              SetBackgroundBrush(item, BackgroundBrush.Default);
-            else {
-              if (item is Rating && !and && !hide)
-                SetBackgroundBrush(item, BackgroundBrush.OrThis);
-              else {
-                if (!and && !hide) SetBackgroundBrush(item, BackgroundBrush.OrThis);
-                if (and && !hide) SetBackgroundBrush(item, BackgroundBrush.AndThis);
-                if (!and && hide) SetBackgroundBrush(item, BackgroundBrush.Hidden);
-              }
-            }
+            // get items by tag
+            List<MediaItem> items = null;
 
-            // reload with new filter
-            MediaItems.ReapplyFilter();
+            switch ((BaseTreeViewTagItem)item) {
+              case Rating rating: items = MediaItems.All.Where(x => x.Rating == rating.Value).ToList(); break;
+              case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
+              case Person person: items = person.MediaItems; break;
+              case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
+            }
+            await MediaItems.LoadAsync(items, null);
           }
 
           break;
@@ -187,6 +183,21 @@ namespace PictureManager {
           break;
         }
       }
+    }
+
+    public void ActivateFilter(BaseTreeViewItem item, BackgroundBrush mode) {
+      SetBackgroundBrush(item, item.BackgroundBrush != BackgroundBrush.Default ? BackgroundBrush.Default : mode);
+
+      // reload with new filter
+      MediaItems.ReapplyFilter();
+    }
+
+    public void ClearFilters() {
+      foreach (var item in ActiveFilterItems.ToArray())
+        SetBackgroundBrush(item, BackgroundBrush.Default);
+
+      // reload with new filter
+      MediaItems.ReapplyFilter();
     }
 
     public void MarkUsedKeywordsAndPeople() {

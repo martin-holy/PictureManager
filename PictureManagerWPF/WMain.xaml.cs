@@ -169,10 +169,13 @@ namespace PictureManager {
           AddMenuItem(Commands.ViewerExcludeFolder);
           break;
         }
+        case Rating _:
         case Person _:
         case Keyword _:
         case GeoName _: {
-          AddMenuItem(Commands.MediaItemsLoadByTag);
+          AddMenuItem(Commands.ActivateFilterAnd);
+          AddMenuItem(Commands.ActivateFilterOr);
+          AddMenuItem(Commands.ActivateFilterNot);
           break;
         }
         case FolderKeywords _: {
@@ -497,6 +500,10 @@ namespace PictureManager {
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       App.Core.MediaItems.SplittedItemsReload();
       App.Core.MediaItems.ScrollToCurrent();
+    }
+
+    private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
+      App.Core.ClearFilters();
     }
   }
 }
