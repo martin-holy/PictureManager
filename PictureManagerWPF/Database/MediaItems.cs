@@ -316,7 +316,6 @@ namespace PictureManager.Database {
 
     public void ReapplyFilter() {
       Current = null;
-      ScrollToTop();
       FilteredItems.Clear();
 
       foreach (var mi in Filter(LoadedItems))
@@ -324,8 +323,8 @@ namespace PictureManager.Database {
 
       OnPropertyChanged(nameof(PositionSlashCount));
       App.Core.MarkUsedKeywordsAndPeople();
-
       SplittedItemsReload();
+      ScrollToTop();
     }
 
     private static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {
