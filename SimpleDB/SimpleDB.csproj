@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Martin Holý</Authors>
+    <Company>Martin Holý</Company>
+    <Description>DB using CSV files for storage</Description>
+  </PropertyGroup>
+
+</Project>
