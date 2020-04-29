@@ -261,5 +261,20 @@ namespace PictureManager.Utils {
       process.Start();
       return tcs.Task;
     }
+
+    public static Task<int[]> GetImageDimensionsAsync(string filePath) {
+      return Task.Run(() => {
+        try {
+          using (Stream srcFileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+            var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+            var frame = decoder.Frames[0];
+            return new[] { frame.PixelWidth, frame.PixelHeight };
+          }
+        }
+        catch (Exception) {
+          return null;
+        }
+      });
+    }
   }
 }
