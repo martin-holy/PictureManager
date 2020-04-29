@@ -9,7 +9,7 @@
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
-  WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
+  WindowStartupLocation="CenterScreen" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0"
   Closing="OnClosing">
 
@@ -58,19 +58,22 @@
       <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
         <Label Content="{Binding SrcFileSize}" />
         <Label Content="{Binding SrcFileModified}" />
+        <Label Content="{Binding SrcDimensions}" />
       </StackPanel>
 
       <!-- Destination File Info -->
       <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
         <Label Content="{Binding DestFileSize}" />
         <Label Content="{Binding DestFileModified}" />
+        <Label Content="{Binding DestDimensions}" />
       </StackPanel>
     </Grid>
     
     <!-- File Name -->
     <StackPanel Orientation="Horizontal">
       <Label Content="File name:" />
-      <TextBox Text="{Binding FileName}" x:Name="TxtFileName" Margin="5,0" MinWidth="200" Style="{StaticResource ErrorStyle}" />
+      <TextBox Text="{Binding FileName}" x:Name="TxtFileName" Margin="5,0" MinWidth="200" 
+               VerticalAlignment="Center" Height="24" Style="{StaticResource ErrorStyle}" />
     </StackPanel>
 
     <!-- Buttons -->
