@@ -60,7 +60,8 @@
           <MenuItem Command="pm:Commands.MetadataReload" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
-                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}">
+                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}"
+                  Visibility="{Binding Viewers.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />

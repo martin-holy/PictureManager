@@ -21,16 +21,16 @@ namespace PictureManager.Database {
       Tables.Add(table.GetType(), new TableHelper(table, maxId));
     }
 
-    public void LoadAllTables() {
+    public void LoadAllTables(IProgress<string> progress) {
       foreach (var table in Tables) {
-        App.SplashScreen.AddMessage($"Loading data for {table.Key.Name}");
+        progress.Report($"Loading data for {table.Key.Name}");
         table.Value.Table.LoadFromFile();
       }
     }
 
-    public void LinkReferences() {
+    public void LinkReferences(IProgress<string> progress) {
       foreach (var table in Tables) {
-        App.SplashScreen.AddMessage($"Linking references for {table.Key.Name}");
+        progress.Report($"Loading data for {table.Key.Name}");
         table.Value.Table.LinkReferences();
       }
     }

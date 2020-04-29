@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +17,6 @@ namespace PictureManager {
   /// Interaction logic for WMain.xaml
   /// </summary>
   public partial class WMain {
-    private readonly string _argPicFile;
     private Point _dragDropStartPosition;
     private object _dragDropObject;
     private bool _mainTreeViewIsPinnedInViewer;
@@ -36,7 +34,7 @@ namespace PictureManager {
     }
     #endregion
 
-    public WMain(string picFile) {
+    public WMain() {
       InitializeComponent();
 
       AddCommandBindings();
@@ -66,36 +64,11 @@ namespace PictureManager {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
         ((MediaElement) o).Position = TimeSpan.FromMilliseconds(1);
       };
-
-      /*var ver = Assembly.GetEntryAssembly().GetName().Version;
-      Title = $"{Title} {ver.Major}.{ver.Minor}";*/
-
-      _argPicFile = picFile;
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
-      App.Core.Init();
-      App.Core.AppInfo.ProgressBarValueA = 100;
-      App.Core.AppInfo.ProgressBarValueB = 100;
-      App.Core.Folders.IsExpanded = true;
+      App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
-
-      App.SplashScreen.LoadComplete();
-      Activate();
-
-      if (!File.Exists(_argPicFile)) {
-        App.Core.AppInfo.AppMode = AppMode.Browser;
-        //return;
-      }
-
-      //app opened with argument
-      // TODO
-      /*App.Core.AppInfo.AppMode = AppMode.Viewer;
-      App.Core.MediaItems.Load(App.Core.Folders.ExpandTo(Path.GetDirectoryName(_argPicFile)), false);
-      App.Core.MediaItems.Current = App.Core.MediaItems.Items.SingleOrDefault(x => x.FilePath.Equals(_argPicFile));
-      if (App.Core.MediaItems.Current != null) App.Core.MediaItems.Current.IsSelected = true;
-      SwitchToFullScreen();
-      App.Core.LoadThumbnails();*/
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
