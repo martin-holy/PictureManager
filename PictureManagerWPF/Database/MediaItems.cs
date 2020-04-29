@@ -15,6 +15,7 @@ using PictureManager.Dialogs;
 using PictureManager.Utils;
 using Directory = System.IO.Directory;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public class MediaItems : INotifyPropertyChanged, ITable {

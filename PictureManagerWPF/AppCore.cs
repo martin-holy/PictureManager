@@ -11,9 +11,10 @@ using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Database;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager {
-  public class AppCore {
+  public class AppCore: ILogger {
 
     #region TreeView Roots and Categories
     // Folders
@@ -35,7 +36,7 @@ namespace PictureManager {
     public CategoryGroups CategoryGroups { get; }
     #endregion
 
-    public SimpleDb Sdb { get; } = new SimpleDb();
+    public SimpleDB.SimpleDB Sdb { get; private set; }
     public MediaItems MediaItems { get; }
     public AppInfo AppInfo { get; } = new AppInfo();
     public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
@@ -71,6 +72,8 @@ namespace PictureManager {
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
+        Sdb = new SimpleDB.SimpleDB(this);
+
         Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
         Sdb.AddTable(Folders); // needs to be before Viewers
         Sdb.AddTable(Viewers);

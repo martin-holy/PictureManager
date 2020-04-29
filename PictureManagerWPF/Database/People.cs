@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class People : BaseCategoryItem, ITable {

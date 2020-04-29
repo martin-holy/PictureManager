@@ -1,4 +1,5 @@
 ﻿using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public class FavoriteFolder : BaseTreeViewItem, IRecord {

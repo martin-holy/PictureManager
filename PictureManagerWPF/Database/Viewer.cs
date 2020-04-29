@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using PictureManager.Dialogs;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class Viewer : BaseTreeViewItem, IRecord {

@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Media.Imaging;
 using PictureManager.Properties;
 using PictureManager.Utils;
+using SimpleDB;
 using Application = System.Windows.Application;
 
 namespace PictureManager.Database {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using PictureManager.ViewModel;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class Folder : BaseTreeViewItem, IRecord, IEquatable<Folder> {

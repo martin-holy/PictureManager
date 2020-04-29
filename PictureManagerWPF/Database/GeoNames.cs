@@ -5,6 +5,7 @@ using System.Xml;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class GeoNames : BaseCategoryItem, ITable {

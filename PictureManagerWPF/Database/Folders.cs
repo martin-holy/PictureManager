@@ -8,6 +8,7 @@ using System.Windows;
 using PictureManager.Dialogs;
 using PictureManager.Properties;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class Folders : BaseCategoryItem, ITable {
