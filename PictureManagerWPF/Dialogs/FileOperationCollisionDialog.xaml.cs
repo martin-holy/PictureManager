@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using PictureManager.Database;
 using PictureManager.Properties;
 using PictureManager.Utils;
 
@@ -39,6 +38,9 @@ namespace PictureManager.Dialogs {
     public string DestFileSize => $"File size: {DestFileInfo.Length} B";
     public string SrcFileModified => $"Modified: {SrcFileInfo.LastWriteTime}";
     public string DestFileModified => $"Modified: {DestFileInfo.LastWriteTime}";
+    public string SrcDimensions => GetDimensions(SrcFileInfo.FullName);
+    public string DestDimensions => GetDimensions(DestFileInfo.FullName);
+
     public CollisionResult Result;
 
     public FileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner) {
@@ -48,6 +50,11 @@ namespace PictureManager.Dialogs {
       Owner = owner;
       Result = CollisionResult.Skip;
       InitializeComponent();
+    }
+
+    private static string GetDimensions(string filePath) {
+      var size = Imaging.GetImageDimensionsAsync(filePath).Result;
+      return size == null ? string.Empty : $"Dimensions: {size[0]} x {size[1]}";
     }
 
     private async Task<Uri> GetThumbFilePath(string filePath) {
