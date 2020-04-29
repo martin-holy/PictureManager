@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class Keyword : BaseTreeViewTagItem, IRecord {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public class CategoryGroups : ITable {

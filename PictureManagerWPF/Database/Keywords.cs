@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class Keywords : BaseCategoryItem, ITable {

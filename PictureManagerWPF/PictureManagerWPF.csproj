@@ -87,7 +87,6 @@
     <Compile Include="Database\MediaItems.cs" />
     <Compile Include="Database\People.cs" />
     <Compile Include="Database\Person.cs" />
-    <Compile Include="Database\SimpleDB.cs" />
     <Compile Include="Database\Viewer.cs" />
     <Compile Include="Database\Viewers.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
@@ -367,7 +366,12 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj">
+      <Project>{4fa81047-f292-421a-924b-c085a383d740}</Project>
+      <Name>SimpleDB</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

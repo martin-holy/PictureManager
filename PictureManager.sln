@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManagerWPF", "Pictur
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManagerWPF.UnitTests", "PictureManagerWPF.UnitTests\PictureManagerWPF.UnitTests.csproj", "{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDB", "SimpleDB\SimpleDB.csproj", "{4FA81047-F292-421A-924B-C085A383D740}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA81047-F292-421A-924B-C085A383D740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA81047-F292-421A-924B-C085A383D740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA81047-F292-421A-924B-C085A383D740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA81047-F292-421A-924B-C085A383D740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

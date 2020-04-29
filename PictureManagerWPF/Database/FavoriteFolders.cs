@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PictureManager.ViewModel;
+using SimpleDB;
 
 namespace PictureManager.Database {
   public sealed class FavoriteFolders : BaseCategoryItem, ITable {
