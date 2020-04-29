@@ -188,15 +188,15 @@
     <Compile Include="Dialogs\FileOperationDialog.xaml.cs">
       <DependentUpon>FileOperationDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SplashScreen.xaml.cs">
+      <DependentUpon>SplashScreen.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WMain.Commands.cs">
       <DependentUpon>WMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dialogs\SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WSplashScreen.xaml.cs">
-      <DependentUpon>WSplashScreen.xaml</DependentUpon>
     </Compile>
     <Compile Include="WTest.xaml.cs">
       <DependentUpon>WTest.xaml</DependentUpon>
@@ -289,6 +289,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SplashScreen.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="WMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -302,10 +306,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Dialogs\SettingsDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="WSplashScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

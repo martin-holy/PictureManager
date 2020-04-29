@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -68,31 +69,32 @@ namespace PictureManager {
       MediaItems = new MediaItems();
     }
 
-    public void Init() {
-      WindowsDisplayScale = PresentationSource.FromVisual(App.WMain)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
+    public Task InitAsync(IProgress<string> progress) {
+      return Task.Run(() => {
+        Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
+        Sdb.AddTable(Folders); // needs to be before Viewers
+        Sdb.AddTable(Viewers);
+        Sdb.AddTable(People);
+        Sdb.AddTable(Keywords);
+        Sdb.AddTable(GeoNames);
+        Sdb.AddTable(MediaItems);
+        Sdb.AddTable(FavoriteFolders);
 
-      Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
-      Sdb.AddTable(Folders); // needs to be before Viewers
-      Sdb.AddTable(Viewers);
-      Sdb.AddTable(People);
-      Sdb.AddTable(Keywords);
-      Sdb.AddTable(GeoNames);
-      Sdb.AddTable(MediaItems);
-      Sdb.AddTable(FavoriteFolders);
+        Sdb.LoadAllTables(progress);
+        Sdb.LinkReferences(progress);
 
-      Sdb.LoadAllTables();
-      Sdb.LinkReferences();
+        progress.Report("Loading Drives");
+        Folders.AddDrives();
+        progress.Report("Loading Folder Keywords");
+        FolderKeywords.Load();
+        progress.Report("Loading Ratings");
+        Ratings.Load();
 
-      App.SplashScreen.AddMessage("Loading Drives");
-      Folders.AddDrives();
-      App.SplashScreen.AddMessage("Loading Folder Keywords");
-      FolderKeywords.Load();
-      App.SplashScreen.AddMessage("Loading Ratings");
-      Ratings.Load();
-
-      if (Viewers.Items.Count == 0) App.WMain.MenuViewers.Visibility = Visibility.Collapsed;
-
-      AppInfo.MediaItemsCount = MediaItems.All.Count;
+        AppInfo.MediaItemsCount = MediaItems.All.Count;
+        AppInfo.ProgressBarValueA = 100;
+        AppInfo.ProgressBarValueB = 100;
+        Folders.IsExpanded = true;
+      });
     }
 
     public bool CanViewerSeeThisFolder(Folder folder) {
