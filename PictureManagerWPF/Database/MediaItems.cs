@@ -536,7 +536,6 @@ namespace PictureManager.Database {
         SetSelected(Current, true);
       }
 
-      App.Core.MarkUsedKeywordsAndPeople();
       GC.Collect();
     }
 

@@ -167,6 +167,7 @@ namespace PictureManager {
               case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
             }
             await MediaItems.LoadAsync(items, null);
+            MarkUsedKeywordsAndPeople();
           }
 
           break;
@@ -185,6 +186,7 @@ namespace PictureManager {
           var folders = Folder.GetFolders(roots, recursive);
           
           await MediaItems.LoadAsync(null, folders);
+          MarkUsedKeywordsAndPeople();
           break;
         }
       }
