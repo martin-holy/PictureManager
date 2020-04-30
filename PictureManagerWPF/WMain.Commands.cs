@@ -205,6 +205,7 @@ namespace PictureManager {
     private static async void MediaItemsCompare() {
       var similar = ImageComparer.GetSimilar(App.Core.MediaItems.FilteredItems.ToArray(), 2);
       await App.Core.MediaItems.LoadAsync(similar, null, false);
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanPresentation() {
