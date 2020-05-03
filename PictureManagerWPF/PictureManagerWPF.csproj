@@ -73,7 +73,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppCore.cs" />
-    <Compile Include="Commands.cs" />
+    <Compile Include="Commands\CommandsController.cs" />
+    <Compile Include="Commands\MediaItemsCommands.cs" />
+    <Compile Include="Commands\MetadataCommands.cs" />
+    <Compile Include="Commands\TreeViewCommands.cs" />
+    <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
     <Compile Include="Database\MediaItem.cs" />
     <Compile Include="Database\CategoryGroup.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ImageComparer.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
+    <Compile Include="Patterns\SingletonBase.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="UserControls\IconRect.xaml.cs">
       <DependentUpon>IconRect.xaml</DependentUpon>
@@ -189,10 +194,6 @@
     </Compile>
     <Compile Include="Views\SplashScreen.xaml.cs">
       <DependentUpon>SplashScreen.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="WMain.Commands.cs">
-      <DependentUpon>WMain.xaml</DependentUpon>
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="Dialogs\SettingsDialog.xaml.cs">
       <DependentUpon>SettingsDialog.xaml</DependentUpon>
@@ -371,6 +372,9 @@
       <Project>{4fa81047-f292-421a-924b-c085a383d740}</Project>
       <Name>SimpleDB</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

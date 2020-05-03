@@ -179,7 +179,7 @@ namespace PictureManager {
           item.IsSelected = true;
 
           if (AppInfo.AppMode == AppMode.Viewer) {
-            App.WMain.SwitchToBrowser();
+            App.WMain.CommandsController.WindowCommands.SwitchToBrowser();
           }
 
           var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> {(Folder) item};

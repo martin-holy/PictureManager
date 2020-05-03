@@ -144,7 +144,7 @@ namespace PictureManager {
       //App.WMain.MediaItemsResize(items, 2500000, destPhone, true, false);
 
       var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 3).ToArray();
-      App.WMain.MediaItemsResize(items, 1500000, destWeb, false, false);
+      App.WMain.CommandsController.MediaItemsCommands.Resize(items, 1500000, destWeb, false, false);
     }
 
     private void ResizeTest() {
