@@ -7,6 +7,7 @@
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:viewModel="clr-namespace:PictureManager.ViewModel"
         xmlns:uc="clr-namespace:PictureManager.UserControls"
+        xmlns:cmd="clr-namespace:PictureManager.Commands"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
@@ -36,28 +37,28 @@
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
         <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.OpenFolderKeywordsList" />
-          <MenuItem Command="pm:Commands.OpenSettings" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.AddGeoNamesFromFiles" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.TestButton" />
+          <MenuItem Command="cmd:WindowCommands.OpenFolderKeywordsListCommand" />
+          <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand" Tag="{x:Static pm:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:WindowCommands.AddGeoNamesFromFilesCommand" Tag="{x:Static pm:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:WindowCommands.TestButtonCommand" />
         </MenuItem>
         <MenuItem Header="Media Items" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.MediaItemsCompress" />
-          <MenuItem Command="pm:Commands.MediaItemsRebuildThumbnails" />
-          <MenuItem Command="pm:Commands.MediaItemsRotate" />
-          <MenuItem Command="pm:Commands.MediaItemsSelectNotModified" />
-          <MenuItem Command="pm:Commands.MediaItemsShuffle" />
-          <MenuItem Command="pm:Commands.MediaItemsResizeImages" />
-          <MenuItem Command="pm:Commands.MediaItemsImagesToVideo" />
-          <MenuItem Command="pm:Commands.MediaItemsCopyPaths" />
-          <MenuItem Command="pm:Commands.MediaItemsCompare" />
+          <MenuItem Command="cmd:MediaItemsCommands.CompressCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.RebuildThumbnailsCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.RotateCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.SelectNotModifiedCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.ShuffleCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.ResizeImagesCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.ImagesToVideoCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.CopyPathsCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="pm:Commands.MetadataEdit" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MetadataSave" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MetadataCancel" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MetadataComment" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="pm:Commands.MetadataReload" />
+          <MenuItem Command="cmd:MetadataCommands.EditCommand" Tag="{x:Static pm:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:MetadataCommands.SaveCommand" Tag="{x:Static pm:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:MetadataCommands.CancelCommand" Tag="{x:Static pm:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:MetadataCommands.CommentCommand" Tag="{x:Static pm:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pm:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
                   Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}"
@@ -66,12 +67,12 @@
             <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
               <Setter Property="Header" Value="{Binding Title}" />
               <Setter Property="Tag" Value="{x:Static pm:IconName.Eye}" />
-              <Setter Property="Command" Value="pm:Commands.ViewerChange" />
+              <Setter Property="Command" Value="cmd:WindowCommands.ViewerChangeCommand" />
               <Setter Property="CommandParameter" Value="{Binding}" />
             </Style>
           </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Command="pm:Commands.OpenAbout" Style="{StaticResource RootMenuStyle}" />
+        <MenuItem Command="cmd:WindowCommands.OpenAboutCommand" Style="{StaticResource RootMenuStyle}" />
       </Menu>
 
       <!-- Media Items Count -->
@@ -97,7 +98,7 @@
       </StackPanel>
 
       <!-- Log Button -->
-      <Button Background="Red" Command="pm:Commands.OpenLog" Height="24" Margin="2,0,2,0"
+      <Button Background="Red" Command="cmd:WindowCommands.OpenLogCommand" Height="24" Margin="2,0,2,0"
         Visibility="{Binding Log.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <TextBlock Text="Log " />
@@ -304,7 +305,7 @@
               <TabItem.HeaderTemplate>
                 <DataTemplate>
                   <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
-                          Cursor="{x:Static Cursors.Hand}" Command="{x:Static pm:Commands.ShowHideTabMain}">
+                          Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
                     <uc:IconRect IconName="{x:Static pm:IconName.Pin}" />
                   </Button>
                 </DataTemplate>

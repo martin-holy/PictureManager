@@ -8,6 +8,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
+using PictureManager.Commands;
 using PictureManager.ViewModel;
 using PictureManager.Database;
 using PictureManager.Dialogs;
@@ -19,10 +20,10 @@ namespace PictureManager {
   public partial class WMain {
     private Point _dragDropStartPosition;
     private object _dragDropObject;
-    private bool _mainTreeViewIsPinnedInViewer;
-    private bool _mainTreeViewIsPinnedInBrowser = true;
 
     public MediaElement VideoThumbnailPreview;
+
+    public CommandsController CommandsController => CommandsController.Instance;
 
     #region DependencyProperties
     public static readonly DependencyProperty FlyoutMainTreeViewMarginProperty = DependencyProperty.Register(
@@ -37,13 +38,10 @@ namespace PictureManager {
     public WMain() {
       InitializeComponent();
 
-      AddCommandBindings();
-      AddInputBindings();
-
       PresentationPanel.Elapsed = delegate {
         Application.Current.Dispatcher?.Invoke(delegate {
-          if (CanMediaItemNext())
-            MediaItemNext();
+          if (MediaItemsCommands.CanNext())
+            CommandsController.MediaItemsCommands.Next();
           else
             PresentationPanel.Stop();
         });
@@ -67,6 +65,8 @@ namespace PictureManager {
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
+      CommandsController.AddCommandBindings(CommandBindings);
+      CommandsController.AddInputBindings();
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
     }
@@ -92,72 +92,72 @@ namespace PictureManager {
       if ((item as BaseTreeViewItem)?.GetTopParent() is BaseCategoryItem category) {
 
         if (item is BaseCategoryItem && category.Category == Category.GeoNames)
-          AddMenuItem(Commands.GeoNameNew);
+          AddMenuItem(TreeViewCommands.GeoNameNewCommand);
 
         if (category.CanModifyItems) {
           var cat = item as BaseCategoryItem;
           var group = item as CategoryGroup;
 
           if (cat != null || group != null || category.CanHaveSubItems) {
-            AddMenuItem(Commands.TagItemNew);
-            AddMenuItem(Commands.TagItemDeleteNotUsed);
+            AddMenuItem(TreeViewCommands.TagItemNewCommand);
+            AddMenuItem(TreeViewCommands.TagItemDeleteNotUsedCommand);
           }
 
           if (item is BaseTreeViewTagItem && group == null || item is Viewer) {
-            AddMenuItem(Commands.TagItemRename);
-            AddMenuItem(Commands.TagItemDelete);
+            AddMenuItem(TreeViewCommands.TagItemRenameCommand);
+            AddMenuItem(TreeViewCommands.TagItemDeleteCommand);
           }
 
           if (category.CanHaveGroups && cat != null)
-            AddMenuItem(Commands.CategoryGroupNew);
+            AddMenuItem(TreeViewCommands.CategoryGroupNewCommand);
 
           if (group != null) {
-            AddMenuItem(Commands.CategoryGroupRename);
-            AddMenuItem(Commands.CategoryGroupDelete);
+            AddMenuItem(TreeViewCommands.CategoryGroupRenameCommand);
+            AddMenuItem(TreeViewCommands.CategoryGroupDeleteCommand);
           }
         }
       }
 
       switch (item) {
         case Folder folder: {
-          AddMenuItem(Commands.FolderNew);
+          AddMenuItem(TreeViewCommands.FolderNewCommand);
 
           if (folder.Parent != null) {
-            AddMenuItem(Commands.FolderRename);
-            AddMenuItem(Commands.FolderDelete);
-            AddMenuItem(Commands.FolderAddToFavorites);
+            AddMenuItem(TreeViewCommands.FolderRenameCommand);
+            AddMenuItem(TreeViewCommands.FolderDeleteCommand);
+            AddMenuItem(TreeViewCommands.FolderAddToFavoritesCommand);
           }
 
-          AddMenuItem(Commands.FolderSetAsFolderKeyword);
-          AddMenuItem(Commands.MetadataReload2);
-          AddMenuItem(Commands.MediaItemsRebuildThumbnails);
+          AddMenuItem(TreeViewCommands.FolderSetAsFolderKeywordCommand);
+          AddMenuItem(MetadataCommands.Reload2Command);
+          AddMenuItem(MediaItemsCommands.RebuildThumbnailsCommand);
           break;
         }
         case FavoriteFolder _: {
-          AddMenuItem(Commands.FolderRemoveFromFavorites);
+          AddMenuItem(TreeViewCommands.FolderRemoveFromFavoritesCommand);
           break;
         }
         case Viewer _: {
-          AddMenuItem(Commands.ViewerIncludeFolder);
-          AddMenuItem(Commands.ViewerExcludeFolder);
+          AddMenuItem(TreeViewCommands.ViewerIncludeFolderCommand);
+          AddMenuItem(TreeViewCommands.ViewerExcludeFolderCommand);
           break;
         }
         case Rating _:
         case Person _:
         case Keyword _:
         case GeoName _: {
-          AddMenuItem(Commands.ActivateFilterAnd);
-          AddMenuItem(Commands.ActivateFilterOr);
-          AddMenuItem(Commands.ActivateFilterNot);
+          AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
+          AddMenuItem(TreeViewCommands.ActivateFilterOrCommand);
+          AddMenuItem(TreeViewCommands.ActivateFilterNotCommand);
           break;
         }
         case FolderKeywords _: {
-          AddMenuItem(Commands.OpenFolderKeywordsList);
+          AddMenuItem(Commands.WindowCommands.OpenFolderKeywordsListCommand);
           break;
         }
         case BaseTreeViewItem bti: {
           if (bti.Parent?.Parent is Viewer)
-            AddMenuItem(Commands.ViewerRemoveFolder);
+            AddMenuItem(TreeViewCommands.ViewerRemoveFolderCommand);
           break;
         }
       }
@@ -329,7 +329,7 @@ namespace PictureManager {
         grid.Children.Remove(VideoThumbnailPreview);
       }
 
-      SwitchToFullScreen();
+      CommandsController.WindowCommands.SwitchToFullScreen();
       SetMediaItemSource();
     }
 
@@ -388,7 +388,7 @@ namespace PictureManager {
              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
     }
 
-    private void SetMediaItemSource(bool decoded = false) {
+    public void SetMediaItemSource(bool decoded = false) {
       var current = App.Core.MediaItems.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
@@ -410,25 +410,20 @@ namespace PictureManager {
 
     private void PanelFullScreen_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       if (e.ClickCount == 2) {
-        SwitchToBrowser();
+        CommandsController.WindowCommands.SwitchToBrowser();
       }
     }
 
     private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return;
       if (e.Delta < 0) {
-        if (CanMediaItemNext())
-          MediaItemNext();
+        if (MediaItemsCommands.CanNext())
+          CommandsController.MediaItemsCommands.Next();
       }
       else {
-        if (CanMediaItemPrevious())
-          MediaItemPrevious();
+        if (MediaItemsCommands.CanPrevious())
+          CommandsController.MediaItemsCommands.Previous();
       }
-    }
-
-    private static void TestButton() {
-      var tests = new Tests();
-      tests.Run();
     }
 
     private void WMain_OnMouseMove(object sender, MouseEventArgs e) {
@@ -461,7 +456,7 @@ namespace PictureManager {
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
       if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
-        MetadataSave();
+        CommandsController.MetadataCommands.Save();
       }
       App.Core.Sdb.SaveAllTables();
     }

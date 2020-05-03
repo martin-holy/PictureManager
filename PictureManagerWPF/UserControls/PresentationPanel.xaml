@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.PresentationPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:cmd="clr-namespace:PictureManager.Commands"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Foreground="White" Focusable="True">
   <Grid Height="40" VerticalAlignment="Top" Background="#88000000">
@@ -63,7 +63,7 @@
       <TextBlock FontSize="20">Presentation</TextBlock>
 
       <!-- Play/Pause -->
-      <Button Command="pm:Commands.Presentation" Cursor="Hand">
+      <Button Command="cmd:MediaItemsCommands.PresentationCommand" Cursor="Hand">
         <Path>
           <Path.Style>
             <Style TargetType="{x:Type Path}" BasedOn="{StaticResource {x:Type Path}}">
