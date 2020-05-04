@@ -6,7 +6,7 @@ using PictureManager.Patterns;
 using PictureManager.ViewModel;
 
 namespace PictureManager.Commands {
-  public class TreeViewCommands: SingletonBase<TreeViewCommands> {
+  public class TreeViewCommands: Singleton<TreeViewCommands> {
     public static RoutedUICommand CategoryGroupNewCommand { get; } = new RoutedUICommand { Text = "New Group" };
     public static RoutedUICommand CategoryGroupRenameCommand { get; } = new RoutedUICommand { Text = "Rename Group" };
     public static RoutedUICommand CategoryGroupDeleteCommand { get; } = new RoutedUICommand { Text = "Delete Group" };

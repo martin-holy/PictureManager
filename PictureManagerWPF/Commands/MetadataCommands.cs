@@ -8,7 +8,7 @@ using PictureManager.Patterns;
 using PictureManager.Utils;
 
 namespace PictureManager.Commands {
-  public class MetadataCommands : SingletonBase<MetadataCommands> {
+  public class MetadataCommands : Singleton<MetadataCommands> {
     public static RoutedUICommand EditCommand { get; } = CommandsController.CreateCommand("Edit", "MetadataEdit", new KeyGesture(Key.E, ModifierKeys.Control));
     public static RoutedUICommand SaveCommand { get; } = CommandsController.CreateCommand("Save", "MetadataSave", new KeyGesture(Key.S, ModifierKeys.Control));
     public static RoutedUICommand CancelCommand { get; } = CommandsController.CreateCommand("Cancel", "MetadataCancel", new KeyGesture(Key.Q, ModifierKeys.Control));

@@ -7,7 +7,7 @@ using PictureManager.Patterns;
 using PictureManager.Properties;
 
 namespace PictureManager.Commands {
-  public class WindowCommands: SingletonBase<WindowCommands> {
+  public class WindowCommands: Singleton<WindowCommands> {
     public static RoutedUICommand SwitchToFullScreenCommand { get; } = new RoutedUICommand();
     public static RoutedUICommand SwitchToBrowserCommand { get; } = CommandsController.CreateCommand("Switch to Browser", "SwitchToBrowser", new KeyGesture(Key.Escape));
     public static RoutedUICommand TestButtonCommand { get; } = CommandsController.CreateCommand("Test Button", "TestButton", new KeyGesture(Key.D, ModifierKeys.Control));
