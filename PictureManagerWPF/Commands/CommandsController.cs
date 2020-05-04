@@ -5,7 +5,7 @@ using System.Windows.Input;
 using PictureManager.Patterns;
 
 namespace PictureManager.Commands {
-  public class CommandsController: SingletonBase<CommandsController> {
+  public class CommandsController: Singleton<CommandsController> {
     public MediaItemsCommands MediaItemsCommands => MediaItemsCommands.Instance;
     public TreeViewCommands TreeViewCommands => TreeViewCommands.Instance;
     public MetadataCommands MetadataCommands => MetadataCommands.Instance;

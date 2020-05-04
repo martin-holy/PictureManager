@@ -11,7 +11,7 @@ using PictureManager.Patterns;
 using PictureManager.Utils;
 
 namespace PictureManager.Commands {
-  public class MediaItemsCommands: SingletonBase<MediaItemsCommands> {
+  public class MediaItemsCommands: Singleton<MediaItemsCommands> {
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
     public static RoutedUICommand PreviousCommand { get; } = CommandsController.CreateCommand("Previous", "Previous", new KeyGesture(Key.Left));
     public static RoutedUICommand SelectAllCommand { get; } = CommandsController.CreateCommand("Select All", "SelectAll", new KeyGesture(Key.A, ModifierKeys.Control));

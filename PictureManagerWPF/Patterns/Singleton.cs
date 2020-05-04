@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace PictureManager.Patterns {
-  public abstract class SingletonBase<T> where T : class {
+  public abstract class Singleton<T> where T : class {
     private static T _instance;
     private static readonly object Lock = new object();
     public static T Instance {
