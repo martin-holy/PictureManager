@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using PictureManager.Domain;
 using PictureManager.Properties;
 using PictureManager.Utils;
 
@@ -19,8 +20,6 @@ namespace PictureManager.Dialogs {
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
-
-    public enum CollisionResult { Rename, Replace, Skip }
 
     private readonly List<string> _tempThumbs = new List<string>();
     private bool _error;
@@ -61,7 +60,7 @@ namespace PictureManager.Dialogs {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        await Imaging.CreateThumbnailAsync(Imaging.GetMediaType(filePath), filePath, thumbPath,
+        await Imaging.CreateThumbnailAsync(Domain.Utils.Imaging.GetMediaType(filePath), filePath, thumbPath,
           Settings.Default.ThumbnailSize);
       }
 

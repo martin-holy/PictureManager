@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using PictureManager.Database;
+using PictureManager.Domain.Models;
 
 namespace PictureManagerWPF.UnitTests.Database {
   [TestClass]

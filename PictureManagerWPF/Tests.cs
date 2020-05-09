@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.Utils;
-using PictureManager.ViewModel;
+using PictureManager.Models;
+using PictureManager.ViewModels;
 
 namespace PictureManager {
   public class Tests {
@@ -53,12 +55,12 @@ namespace PictureManager {
     }
 
     private void RemoveKeywordsFromAutoAddedCategory() {
-      var keywords = App.Core.CategoryGroups.All.Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>()
+      var keywords = App.Core.Model.CategoryGroups.All.Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>()
         .ToArray();
       foreach (var keyword in keywords) {
-        App.Core.Keywords.ItemDelete(keyword);
+        App.Core.Model.Keywords.ItemDelete(keyword);
       }
-      App.Core.Sdb.SaveAllTables();
+      App.Core.Model.Sdb.SaveAllTables();
     }
 
     private void TestFolderBrowserDialog() {
@@ -68,7 +70,7 @@ namespace PictureManager {
     }
 
     private void CreateThumbnailAsyncTest() {
-      var folder = App.Core.Folders.GetByPath(@"D:\!test");
+      var folder = App.Core.Model.Folders.GetByPath(@"D:\!test");
       var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Video).ToArray();
       var index = 0;
 
@@ -138,7 +140,7 @@ namespace PictureManager {
       Directory.CreateDirectory(destPhone);
       Directory.CreateDirectory(destWeb);
 
-      var folder = App.Core.Folders.GetByPath(src);
+      var folder = App.Core.Model.Folders.GetByPath(src);
 
       //var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).ToArray();
       //App.WMain.MediaItemsResize(items, 2500000, destPhone, true, false);
@@ -170,20 +172,20 @@ namespace PictureManager {
     }
 
     private void BackdoorManipulations() {
-      var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
+      var items = App.Core.Model.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         items.ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
-          mi.ReadMetadata();
+          MediaItemsViewModel.ReadMetadata(mi);
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.MediaItems.Helper.IsModified = true;
-          App.Core.Sdb.SaveAllTables();
+          App.Core.Model.MediaItems.Helper.IsModified = true;
+          App.Core.Model.Sdb.SaveAllTables();
         });
 
       progress.Start();
@@ -217,7 +219,7 @@ namespace PictureManager {
     }
 
     public void GetByPathTest() {
-      var f = App.Core.Folders.GetByPath(@"D:\!test2");
+      var f = App.Core.Model.Folders.GetByPath(@"D:\!test2");
       var f2 = f.GetByPath(@"D:\!test2\2019");
     }
 

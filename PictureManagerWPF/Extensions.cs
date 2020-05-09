@@ -1,23 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 
 namespace PictureManager {
   static class Extensions {
-    public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection,
-      Func<TSource, TKey> keySelector) {
-      var sorted = collection.OrderBy(keySelector).ToList();
-      for (var i = 0; i < sorted.Count; i++) {
-        collection.Move(collection.IndexOf(sorted[i]), i);
-      }
-    }
-
-    public static int IntParseOrDefault(this string s, int d) {
-      return int.TryParse(s, out var result) ? result : d;
-    }
-
     public static int FirstIndexOfLetter(this string s) {
       var index = 0;
       while (s.Length - 1 > index) {
@@ -27,11 +13,6 @@ namespace PictureManager {
       }
 
       return index;
-    }
-
-    public static void DeleteDirectoryIfEmpty(string path) {
-      if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext())
-        Directory.Delete(path);
     }
 
     /// <summary>
@@ -64,16 +45,6 @@ namespace PictureManager {
         Directory.CreateDirectory(destParentPath);
         Directory.Move(srcPath, destPath);
       }
-    }
-
-    /// <summary>
-    /// Combine two paths with no checks!
-    /// </summary>
-    /// <param name="path1">path with no directory separator on the end</param>
-    /// <param name="path2"></param>
-    /// <returns></returns>
-    public static string PathCombine(string path1, string path2) {
-      return path1 + Path.DirectorySeparatorChar + path2;
     }
 
     private static Random _random;

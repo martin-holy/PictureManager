@@ -3,8 +3,16 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Authors>Martin Holý</Authors>
-    <Company>Martin Holý</Company>
+    <Company />
     <Description>DB using CSV files for storage</Description>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
+    <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
+    <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
+    <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
   </PropertyGroup>
 
 </Project>

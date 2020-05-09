@@ -12,50 +12,12 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.Database;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Properties;
 
 namespace PictureManager.Utils {
   public static class Imaging {
-    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
-    public static string[] SupportedImageExts = { ".jpg", ".jpeg" };
-    public static string[] SupportedVideoExts = { ".mp4", ".mkv" };
-
-    public static bool IsSupportedFileType(string filePath) {
-      return SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
-    }
-
-    public static MediaType GetMediaType(string filePath) {
-      return SupportedImageExts.Any(
-        x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
-        ? MediaType.Image
-        : MediaType.Video;
-    }
-
-    public static Size GetThumbSize(double width, double height, int desiredSize) {
-      var size = new Size();
-
-      if (width > height) {
-        //panorama
-        if (width / height > 16.0 / 9.0) {
-          const int maxWidth = 1100;
-          var panoramaHeight = desiredSize / 16.0 * 9;
-          var tooBig = panoramaHeight / height * width > maxWidth;
-          size.Height = tooBig ? maxWidth / width * height : panoramaHeight;
-          size.Width = tooBig ? maxWidth : panoramaHeight / height * width;
-          return size;
-        }
-
-        size.Height = desiredSize / width * height;
-        size.Width = desiredSize;
-        return size;
-      }
-
-      size.Height = desiredSize;
-      size.Width = desiredSize / height * width;
-      return size;
-    }
-
     public static void ResizeJpg(string src, string dest, int px, bool withMetadata, bool withThumbnail) {
       int GreatestCommonDivisor(int a, int b) {
         while (a != 0 && b != 0) {
@@ -217,8 +179,10 @@ namespace PictureManager.Utils {
                         orientation == MediaOrientation.Rotate270;
           var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
           var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
-          var size = GetThumbSize(pxw, pxh, desiredSize);
-          var output = new TransformedBitmap(frame, new ScaleTransform(size.Width / pxw, size.Height / pxh, 0, 0));
+          
+          Domain.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
+
+          var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
 
           if (rotated) {
             // yes, angles 90 and 270 are switched

@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.UserControls {
   public sealed class ZoomImageBox : Border, INotifyPropertyChanged {
@@ -20,7 +22,7 @@ namespace PictureManager.UserControls {
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     private readonly TranslateTransform _translateTransform;
-    private Database.MediaItem _currentMediaItem;
+    private MediaItem _currentMediaItem;
 
     public Image Image;
     public event PropertyChangedEventHandler PropertyChanged;
@@ -119,7 +121,7 @@ namespace PictureManager.UserControls {
       ZoomActual = ((Image.ActualWidth * zoom) / ((BitmapImage) Image.Source).PixelWidth) * 100;
     }
 
-    public void SetSource(Database.MediaItem currentMediaItem, bool decoded = false) {
+    public void SetSource(MediaItem currentMediaItem, bool decoded = false) {
       _currentMediaItem = currentMediaItem;
       SetSource(decoded);
     }

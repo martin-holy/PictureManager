@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public class StaticResourceConverter : IValueConverter {
@@ -59,14 +61,14 @@ namespace PictureManager {
       var dataContext = ((StackPanel) value).DataContext;
 
       switch (dataContext) {
-        case Database.Keyword _:
-        case Database.Folder _:
+        case Keyword _:
+        case Folder _:
           return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDragDrop");
-        case Database.Person _:
+        case Person _:
           return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrag");
-        case Database.CategoryGroup _:
-        case Database.Keywords _:
-        case Database.People _:
+        case CategoryGroup _:
+        case Keywords _:
+        case People _:
           return App.WMain.TcMain.FindResource("STreeViewStackPanelWithDrop");
         default:
           return App.WMain.TcMain.FindResource("STreeViewStackPanel");

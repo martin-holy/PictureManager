@@ -2,10 +2,12 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
-using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Patterns;
 using PictureManager.Utils;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public class MetadataCommands : Singleton<MetadataCommands> {
@@ -26,30 +28,30 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanEdit() {
-      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.FilteredItems.Count > 0;
+      return !App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.FilteredItems.Count > 0;
     }
 
     private void Edit() {
       Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)] = App.WMain.TabFolders.IsSelected;
       App.WMain.TabKeywords.IsSelected = true;
-      App.Core.MediaItems.IsEditModeOn = true;
+      App.Core.Model.MediaItems.IsEditModeOn = true;
     }
 
     private static bool CanSave() {
-      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
+      return App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.ModifiedItems.Count > 0;
     }
 
     public void Save() {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifiedItems.ToArray(),
+        App.Core.Model.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
-          mi.TryWriteMetadata();
+          MediaItemsViewModel.TryWriteMetadata(mi);
 
           Application.Current.Dispatcher?.Invoke(delegate {
-            App.Core.MediaItems.SetModified(mi, false);
+            App.Core.Model.MediaItems.SetModified(mi, false);
           });
         },
         mi => mi.FilePath,
@@ -62,7 +64,7 @@ namespace PictureManager.Commands {
             if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
               App.WMain.TabFolders.IsSelected = true;
 
-            App.Core.MediaItems.IsEditModeOn = false;
+            App.Core.Model.MediaItems.IsEditModeOn = false;
           }
         });
 
@@ -70,29 +72,29 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanCancel() {
-      return App.Core.MediaItems.IsEditModeOn;
+      return App.Core.Model.MediaItems.IsEditModeOn;
     }
 
     private void Cancel() {
       var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifiedItems.ToArray(),
+        App.Core.Model.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
-          mi.ReadMetadata();
+          MediaItemsViewModel.ReadMetadata(mi);
 
           Application.Current.Dispatcher?.Invoke(delegate {
-            App.Core.MediaItems.SetModified(mi, false);
+            App.Core.Model.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Sdb.SaveAllTables();
-          App.Core.MarkUsedKeywordsAndPeople();
-          App.Core.MediaItems.IsEditModeOn = false;
+          App.Core.Model.Sdb.SaveAllTables();
+          App.Core.Model.MarkUsedKeywordsAndPeople();
+          App.Core.Model.MediaItems.IsEditModeOn = false;
           if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
             App.WMain.TabFolders.IsSelected = true;
         });
@@ -101,11 +103,11 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanComment() {
-      return App.Core.MediaItems.Current != null;
+      return App.Core.Model.MediaItems.Current != null;
     }
 
     private void Comment() {
-      var current = App.Core.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -127,14 +129,14 @@ namespace PictureManager.Commands {
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
-      current.TryWriteMetadata();
+      MediaItemsViewModel.TryWriteMetadata(current);
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
       App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsCommentVisible));
     }
 
     private static bool CanReload(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.Model.MediaItems.FilteredItems.Count > 0;
     }
 
     private void Reload(object parameter) {
@@ -142,7 +144,7 @@ namespace PictureManager.Commands {
       var folder = parameter as Folder;
       var mediaItems = folder != null
         ? folder.GetMediaItems(recursive)
-        : App.Core.MediaItems.GetSelectedOrAll();
+        : App.Core.Model.MediaItems.GetSelectedOrAll();
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
@@ -150,7 +152,7 @@ namespace PictureManager.Commands {
         null,
         // action
         delegate (MediaItem mi) {
-          mi.ReadMetadata();
+          MediaItemsViewModel.ReadMetadata(mi);
 
           // set info box just for loaded media items
           if (folder == null)
@@ -159,8 +161,8 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.MediaItems.Helper.IsModified = true;
-          App.Core.Sdb.SaveAllTables();
+          App.Core.Model.MediaItems.Helper.IsModified = true;
+          App.Core.Model.Sdb.SaveAllTables();
         });
 
       progress.Start();

@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using PictureManager.Domain;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -35,6 +37,30 @@ namespace PictureManager.Dialogs {
 
     private void TxtAnswer_OnKeyUp(object sender, KeyEventArgs e) {
       Answer = TxtAnswer.Text;
+    }
+
+    public static bool Open(IconName iconName, string title, string question, string answer, Func<string, string> validator, out string output) {
+      var inputDialog = new InputDialog {
+        Owner = App.WMain,
+        IconName = iconName,
+        Title = title,
+        Question = question,
+        Answer = answer
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        var errorMessage = validator(inputDialog.Answer);
+        if (string.IsNullOrEmpty(errorMessage))
+          inputDialog.DialogResult = true;
+        else
+          inputDialog.ShowErrorMessage(errorMessage);
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      var result = inputDialog.ShowDialog();
+      output = inputDialog.Answer;
+      return result == true;
     }
   }
 }

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PictureManager.Database;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {

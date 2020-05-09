@@ -1,9 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Windows.Input;
-using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Patterns;
-using PictureManager.ViewModel;
+using PictureManager.Properties;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public class TreeViewCommands: Singleton<TreeViewCommands> {
@@ -52,33 +57,78 @@ namespace PictureManager.Commands {
     }
 
     private static void CategoryGroupNew(object parameter) {
-      (parameter as BaseCategoryItem)?.GroupNewOrRename(null, false);
+      if (!(parameter is BaseCategoryItem parent)) return;
+
+      var result = InputDialog.Open(
+        parent.CategoryGroupIconName,
+        "New Group",
+        "Enter the name of the new group.",
+        string.Empty,
+        answer => parent.ValidateNewGroupTitle(answer),
+        out var output);
+
+      if (!result) return;
+      parent.GroupCreate(output);
     }
 
     private static void CategoryGroupRename(object parameter) {
-      var group = parameter as CategoryGroup;
-      (group?.Parent as BaseCategoryItem)?.GroupNewOrRename(group, true);
+      if (!(parameter is CategoryGroup group) || !(group.Parent is BaseCategoryItem parent)) return;
+
+      var result = InputDialog.Open(
+        parent.CategoryGroupIconName,
+        "Rename Group",
+        "Enter the new name for the group.",
+        group.Title,
+        answer => ((BaseCategoryItem) group.Parent).ValidateNewGroupTitle(answer),
+        out var output);
+
+      if (!result) return;
+      parent.GroupRename(group, output);
     }
 
     private static void CategoryGroupDelete(object parameter) {
-      var group = parameter as CategoryGroup;
-      (group?.Parent as BaseCategoryItem)?.GroupDelete(group);
+      if (!(parameter is CategoryGroup group) || !(group.Parent is BaseCategoryItem parent)) return;
+      if (!MessageDialog.Show(
+        "Delete Confirmation", 
+        $"Do you really want to delete '{group.Title}' group?", 
+        true)) return;
+      parent.GroupDelete(group);
     }
 
     private static void TagItemNew(object parameter) {
-      var item = parameter as BaseTreeViewItem;
-      (item?.GetTopParent() as BaseCategoryItem)?.ItemNewOrRename(item, false);
+      if (!(parameter is BaseTreeViewItem item) || !(item.GetTopParent() is ICategoryItem parent)) return;
+
+      var result = InputDialog.Open(
+        parent.CategoryGroupIconName,
+        "New Item",
+        "Enter the name of the new Item.",
+        string.Empty,
+        answer => parent.ValidateNewItemTitle(item, answer),
+        out var output);
+
+      if (!result) return;
+      parent.ItemCreate(item, output);
     }
 
     private static void TagItemRename(object parameter) {
-      var item = parameter as BaseTreeViewItem;
-      (item?.GetTopParent() as BaseCategoryItem)?.ItemNewOrRename(item, true);
+      if (!(parameter is BaseTreeViewItem item) || !(item.GetTopParent() is ICategoryItem parent)) return;
+
+      var result = InputDialog.Open(
+        parent.CategoryGroupIconName,
+        "Rename Item",
+        "Enter the new name for the Item.",
+        item.Title,
+        answer => parent.ValidateNewItemTitle(item.Parent, answer),
+        out var output);
+
+      if (!result) return;
+      parent.ItemRename(item, output);
     }
 
     private static void TagItemDelete(object parameter) {
-      if (!(parameter is BaseTreeViewItem item)) return;
+      if (!(parameter is BaseTreeViewItem item) || !(item.GetTopParent() is ICategoryItem parent)) return;
       if (!MessageDialog.Show("Delete Confirmation", $"Do you really want to delete '{item.Title}'?", true)) return;
-      (item.GetTopParent() as BaseCategoryItem)?.ItemDelete(item);
+      parent.ItemDelete(item);
     }
 
     private static void TagItemDeleteNotUsed(object parameter) {
@@ -90,83 +140,125 @@ namespace PictureManager.Commands {
 
       switch (topParent.Category) {
         case Category.People: {
-            foreach (var person in item.Items.Cast<Person>().Where(x => x.MediaItems.Count == 0).ToArray())
-              topParent.ItemDelete(person);
+          foreach (var person in item.Items.Cast<Person>().Where(x => x.MediaItems.Count == 0).ToArray())
+            ((ICategoryItem) topParent).ItemDelete(person);
 
-            break;
-          }
+          break;
+        }
         case Category.Keywords: {
-            foreach (var keyword in item.Items.Cast<Keyword>().Where(x => x.MediaItems.Count == 0).ToArray())
-              topParent.ItemDelete(keyword);
+          foreach (var keyword in item.Items.Cast<Keyword>().Where(x => x.MediaItems.Count == 0).ToArray())
+            ((ICategoryItem) topParent).ItemDelete(keyword);
 
-            break;
-          }
+          break;
+        }
       }
     }
 
     private static void ViewerIncludeFolder(object parameter) {
-      ((Viewer)parameter).AddFolder(true);
+      ViewersViewModel.AddFolder((Viewer) parameter, true);
     }
 
     private static void ViewerExcludeFolder(object parameter) {
-      ((Viewer)parameter).AddFolder(false);
+      ViewersViewModel.AddFolder((Viewer) parameter, false);
     }
 
     private static void ViewerRemoveFolder(object parameter) {
       var folder = (BaseTreeViewItem)parameter;
       folder.Parent?.Items.Remove(folder);
-      App.Core.Viewers.Helper.Table.SaveToFile();
+      App.Core.Model.Viewers.Helper.Table.SaveToFile();
     }
 
     private static void FolderNew(object parameter) {
-      ((Folder)parameter).NewOrRename(false);
+      var folder = (Folder) parameter;
+      var result = InputDialog.Open(
+        IconName.Folder,
+        "New Folder",
+        "Enter the name of the new folder.",
+        string.Empty,
+        answer => folder.ValidateNewFolderName(answer, false),
+        out var output);
+
+      if (!result) return;
+      
+      try {
+        folder.New(output);
+      }
+      catch (Exception ex) {
+        ErrorDialog.Show(ex);
+      }
+      
+      App.Core.Model.Sdb.SaveAllTables();
+      if (folder.FolderKeyword != null)
+        App.Core.Model.FolderKeywords.Load();
     }
 
     private static void FolderRename(object parameter) {
-      ((Folder)parameter).NewOrRename(true);
+      var folder = (Folder) parameter;
+      var result = InputDialog.Open(
+        IconName.Folder,
+        "Rename Folder",
+        "Enter the new name for the folder.",
+        folder.Title,
+        answer => folder.ValidateNewFolderName(answer, true),
+        out var output);
+
+      if (!result) return;
+
+      try {
+        folder.Rename(output);
+      }
+      catch (Exception ex) {
+        ErrorDialog.Show(ex);
+      }
+
+      App.Core.Model.Sdb.SaveAllTables();
+      if (folder.FolderKeyword != null)
+        App.Core.Model.FolderKeywords.Load();
+
+      // reload if the folder was selected before
+      if (folder.IsSelected)
+        App.Core.TreeView_Select(folder, false, false, false);
     }
 
     private static void FolderDelete(object parameter) {
       var folder = (Folder)parameter;
       if (!MessageDialog.Show("Delete Confirmation", $"Do you really want to delete '{folder.Title}' folder?", true)) return;
 
-      App.Core.Folders.DeleteRecord(folder, true);
-      // reload FolderKeywords
-      App.Core.FolderKeywords.Load();
+      // delete folder, subfolders and mediaItems from file system
+      if (Directory.Exists(folder.FullPath))
+        AppCore.FileOperationDelete(new List<string> { folder.FullPath }, true, false);
+
+      App.Core.Model.Folders.DeleteRecord(folder);
+      App.Core.Model.FolderKeywords.Load();
     }
 
     private static void FolderAddToFavorites(object parameter) {
-      App.Core.FavoriteFolders.Add((Folder)parameter);
+      App.Core.Model.FavoriteFolders.Add((Folder)parameter);
     }
 
     private static void FolderRemoveFromFavorites(object parameter) {
-      App.Core.FavoriteFolders.Remove((FavoriteFolder)parameter);
+      App.Core.Model.FavoriteFolders.Remove((FavoriteFolder)parameter);
     }
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
-      App.Core.Folders.Helper.Table.SaveToFile();
-      App.Core.FolderKeywords.Load();
+      App.Core.Model.Folders.Helper.Table.SaveToFile();
+      App.Core.Model.FolderKeywords.Load();
     }
 
-    private void GeoNameNew(object parameter) {
-      if (!GeoNames.AreSettingsSet()) return;
+    private static void GeoNameNew(object parameter) {
+      if (!GeoNamesViewModel.IsGeoNamesUserNameInSettings()) return;
 
-      var inputDialog = new InputDialog {
-        Owner = App.WMain,
-        IconName = IconName.LocationCheckin,
-        Title = "GeoName latitude and longitude",
-        Question = "Enter in format: N36.75847,W3.84609",
-        Answer = ""
-      };
+      var result = InputDialog.Open(
+        IconName.LocationCheckin,
+        "GeoName latitude and longitude",
+        "Enter in format: N36.75847,W3.84609",
+        string.Empty,
+        answer => null,
+        out var output);
 
-      inputDialog.BtnDialogOk.Click += delegate { inputDialog.DialogResult = true; };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (inputDialog.ShowDialog() ?? true) {
-        ((GeoNames)parameter).New(inputDialog.Answer);
-      }
+      if (!result) return;
+      ((GeoNames) parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
     private static void ActivateFilterAnd(object parameter) {

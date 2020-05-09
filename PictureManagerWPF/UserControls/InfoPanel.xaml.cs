@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
+using PictureManager.Domain;
 
 namespace PictureManager.UserControls {
   public partial class InfoPanel {

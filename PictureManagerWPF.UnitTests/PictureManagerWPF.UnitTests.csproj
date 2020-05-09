@@ -56,6 +56,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PictureManager.Domain\PictureManager.Domain.csproj">
+      <Project>{69B135E7-8722-45ED-9F48-C769CD60B0FE}</Project>
+      <Name>PictureManager.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PictureManagerWPF\PictureManagerWPF.csproj">
       <Project>{47205205-AA5E-44D1-97FB-6950C11BBD76}</Project>
       <Name>PictureManagerWPF</Name>
