@@ -4,8 +4,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Database;
-using PictureManager.ViewModel;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
   public partial class FolderBrowserDialog : INotifyPropertyChanged {

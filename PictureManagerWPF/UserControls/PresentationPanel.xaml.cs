@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Timers;
 using System.Windows;
+using PictureManager.Domain;
 
 namespace PictureManager.UserControls {
   public partial class PresentationPanel {
@@ -61,7 +62,7 @@ namespace PictureManager.UserControls {
     public void Start(bool delay) {
       if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
 
-      var current = App.Core.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.Current;
       if (delay && current.MediaType == MediaType.Image && current.IsPanoramic && PlayPanoramicImages) {
         Pause();
         App.WMain.FullImage.Play(Interval, delegate { Start(false); });

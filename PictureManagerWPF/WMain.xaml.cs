@@ -9,9 +9,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.Commands;
-using PictureManager.ViewModel;
-using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
 
 namespace PictureManager {
   /// <summary>
@@ -67,8 +68,8 @@ namespace PictureManager {
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       CommandsController.AddCommandBindings(CommandBindings);
       CommandsController.AddInputBindings();
-      App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
-      MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
+      App.Core.Model.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
+      MenuViewers.Header = App.Core.Model.CurrentViewer?.Title ?? "Viewer";
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
@@ -201,9 +202,9 @@ namespace PictureManager {
       // MediaItems
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
-        App.Core.MediaItems.CopyMove(
-          foMode, App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
-        App.Core.MediaItems.Helper.IsModified = true;
+        App.Core.MediaItemsViewModel.CopyMove(
+          foMode, App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
+        App.Core.Model.MediaItems.Helper.IsModified = true;
       }
       // Folder
       else if (e.Data.GetDataPresent(typeof(Folder))) {
@@ -211,10 +212,10 @@ namespace PictureManager {
         var srcData = (Folder) e.Data.GetData(typeof(Folder));
         if (srcData == null) return;
 
-        App.Core.Folders.CopyMove(foMode, srcData, (Folder) destData);
-        App.Core.MediaItems.Helper.IsModified = true;
-        App.Core.Folders.Helper.IsModified = true;
-        App.Core.FolderKeywords.Load();
+        FoldersViewModel.CopyMove(foMode, srcData, (Folder)destData);
+        App.Core.Model.MediaItems.Helper.IsModified = true;
+        App.Core.Model.Folders.Helper.IsModified = true;
+        App.Core.Model.FolderKeywords.Load();
 
         // reload last selected source if was moved
         if (foMode == FileOperationMode.Move && srcData.IsSelected) {
@@ -229,16 +230,16 @@ namespace PictureManager {
         var srcData = (Keyword) e.Data.GetData(typeof(Keyword));
         if (srcData == null) return;
         var dropOnTop = e.GetPosition(panel).Y < panel.ActualHeight / 2;
-        App.Core.Keywords.ItemMove(srcData, destData, dropOnTop);
+        App.Core.Model.Keywords.ItemMove(srcData, destData, dropOnTop);
       }
       // Person
       else if (e.Data.GetDataPresent(typeof(Person))) {
         var srcData = (Person) e.Data.GetData(typeof(Person));
         if (srcData == null) return;
-        App.Core.People.ItemMove(srcData, destData);
+        App.Core.Model.People.ItemMove(srcData, destData);
       }
 
-      App.Core.Sdb.SaveAllTables();
+      App.Core.Model.Sdb.SaveAllTables();
     }
 
     private void TreeView_AllowDropCheck(object sender, DragEventArgs e) {
@@ -263,7 +264,7 @@ namespace PictureManager {
       // MediaItems
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var dragged = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
-        var selected = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        var selected = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
         if (dragged != null && selected.SequenceEqual(dragged) && 
             dataContext is Folder destData && destData.IsAccessible) return;
@@ -300,16 +301,16 @@ namespace PictureManager {
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
 
-      App.Core.MediaItems.Select(isCtrlOn, isShiftOn, mi);
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.Model.MediaItems.Select(isCtrlOn, isShiftOn, mi);
+      App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
       // use middle and right button like CTRL + left button
       if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Right) {
         var mi = (MediaItem)((FrameworkElement)sender).DataContext;
-        App.Core.MediaItems.Select(true, false, mi);
-        App.Core.MarkUsedKeywordsAndPeople();
+        App.Core.Model.MediaItems.Select(true, false, mi);
+        App.Core.Model.MarkUsedKeywordsAndPeople();
       }
     }
 
@@ -321,8 +322,8 @@ namespace PictureManager {
       var mi = grid.DataContext as MediaItem;
 
       if (mi == null) return;
-      App.Core.MediaItems.DeselectAll();
-      App.Core.MediaItems.Current = mi;
+      App.Core.Model.MediaItems.DeselectAll();
+      App.Core.Model.MediaItems.Current = mi;
 
       if (mi.MediaType == MediaType.Video) {
         VideoThumbnailPreview.Source = null;
@@ -336,7 +337,7 @@ namespace PictureManager {
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       var dob = new DataObject();
-      var data = App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      var data = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
         data.Add(((MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
@@ -367,18 +368,18 @@ namespace PictureManager {
 
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
-      if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
-      App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      App.Core.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
-      App.Core.MediaItems.ResetThumbsSize();
-      App.Core.MediaItems.SplittedItemsReload();
+      if (e.Delta < 0 && App.Core.Model.ThumbScale < .1) return;
+      App.Core.Model.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      App.Core.AppInfo.IsThumbInfoVisible = App.Core.Model.ThumbScale > 0.5;
+      App.Core.Model.MediaItems.ResetThumbsSize();
+      App.Core.MediaItemsViewModel.SplittedItemsReload();
     }
 
     #endregion
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      App.Core.MediaItemSizes.Size.SliderChanged = true;
-      App.Core.MediaItems.ReapplyFilter();
+      App.Core.Model.MediaItemSizes.Size.SliderChanged = true;
+      App.Core.MediaItemsViewModel.ReapplyFilter();
     }
 
     private bool IsDragDropStarted(MouseEventArgs e) {
@@ -389,7 +390,7 @@ namespace PictureManager {
     }
 
     public void SetMediaItemSource(bool decoded = false) {
-      var current = App.Core.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current, decoded);
@@ -445,8 +446,8 @@ namespace PictureManager {
 
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      App.Core.MediaItems.SplittedItemsReload();
-      App.Core.MediaItems.ScrollToCurrent();
+      App.Core.MediaItemsViewModel.SplittedItemsReload();
+      App.Core.MediaItemsViewModel.ScrollToCurrent();
     }
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
@@ -454,11 +455,11 @@ namespace PictureManager {
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
-      if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
+      if (App.Core.Model.MediaItems.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
         CommandsController.MetadataCommands.Save();
       }
-      App.Core.Sdb.SaveAllTables();
+      App.Core.Model.Sdb.SaveAllTables();
     }
 
     private void WMain_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
@@ -466,8 +467,8 @@ namespace PictureManager {
     }
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-      App.Core.MediaItems.SplittedItemsReload();
-      App.Core.MediaItems.ScrollToCurrent();
+      App.Core.MediaItemsViewModel.SplittedItemsReload();
+      App.Core.MediaItemsViewModel.ScrollToCurrent();
     }
 
     private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {

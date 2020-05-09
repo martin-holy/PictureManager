@@ -1,10 +1,11 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using PictureManager.Database;
 using PictureManager.Dialogs;
+using PictureManager.Domain.Models;
 using PictureManager.Patterns;
 using PictureManager.Properties;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public class WindowCommands: Singleton<WindowCommands> {
@@ -40,7 +41,7 @@ namespace PictureManager.Commands {
     }
 
     public void SwitchToFullScreen() {
-      if (App.Core.MediaItems.Current == null) return;
+      if (App.Core.Model.MediaItems.Current == null) return;
       App.Core.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
@@ -56,9 +57,9 @@ namespace PictureManager.Commands {
       App.WMain.PresentationPanel.Stop();
       App.Core.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Core.MediaItems.SplittedItemsReload();
-      App.Core.MediaItems.ScrollToCurrent();
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItemsViewModel.SplittedItemsReload();
+      App.Core.MediaItemsViewModel.ScrollToCurrent();
+      App.Core.Model.MarkUsedKeywordsAndPeople();
       App.WMain.UseNoneWindowStyle = false;
       App.WMain.ShowTitleBar = true;
       App.WMain.IgnoreTaskbarOnMaximize = false;
@@ -116,8 +117,8 @@ namespace PictureManager.Commands {
       App.WMain.SetFlyoutMainTreeViewMargin();
 
       if (reload) {
-        App.Core.MediaItems.SplittedItemsReload();
-        App.Core.MediaItems.ScrollToCurrent();
+        App.Core.MediaItemsViewModel.SplittedItemsReload();
+        App.Core.MediaItemsViewModel.ScrollToCurrent();
       }
     }
 
@@ -127,31 +128,31 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.MediaItems.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.Model.MediaItems.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {
-      if (!GeoNames.AreSettingsSet()) return;
+      if (!GeoNamesViewModel.IsGeoNamesUserNameInSettings()) return;
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
-        App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
-          if (mi.Lat == null || mi.Lng == null) mi.ReadMetadata(true);
+          if (mi.Lat == null || mi.Lng == null) MediaItemsViewModel.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
-          var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng);
+          var lastGeoName = App.Core.Model.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
-          mi.TryWriteMetadata();
+          MediaItemsViewModel.TryWriteMetadata(mi);
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Sdb.SaveAllTables();
+          App.Core.Model.Sdb.SaveAllTables();
 
           var info = App.Core.AppInfo;
           info.FullGeoName = info.CurrentMediaItem?.GeoName?.GetFullPath("\n");
@@ -162,17 +163,17 @@ namespace PictureManager.Commands {
     }
 
     private void ViewerChange(object parameter) {
-      if (App.Core.CurrentViewer != null)
-        App.Core.CurrentViewer.IsDefault = false;
+      if (App.Core.Model.CurrentViewer != null)
+        App.Core.Model.CurrentViewer.IsDefault = false;
 
       var viewer = (Viewer)parameter;
       viewer.IsDefault = true;
-      App.Core.Viewers.Helper.Table.SaveToFile();
+      App.Core.Model.Viewers.Helper.Table.SaveToFile();
 
       App.WMain.MenuViewers.Header = viewer.Title;
-      App.Core.CurrentViewer = viewer;
-      App.Core.Folders.AddDrives();
-      App.Core.FolderKeywords.Load();
+      App.Core.Model.CurrentViewer = viewer;
+      App.Core.Model.Folders.AddDrives();
+      App.Core.Model.FolderKeywords.Load();
     }
 
     private void OpenLog() {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.Database;
+using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public static class ImageComparer {

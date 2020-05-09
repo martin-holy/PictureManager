@@ -17,6 +17,21 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -79,20 +94,6 @@
     <Compile Include="Commands\TreeViewCommands.cs" />
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
-    <Compile Include="Database\MediaItem.cs" />
-    <Compile Include="Database\CategoryGroup.cs" />
-    <Compile Include="Database\CategoryGroups.cs" />
-    <Compile Include="Database\Folder.cs" />
-    <Compile Include="Database\Folders.cs" />
-    <Compile Include="Database\GeoName.cs" />
-    <Compile Include="Database\GeoNames.cs" />
-    <Compile Include="Database\Keyword.cs" />
-    <Compile Include="Database\Keywords.cs" />
-    <Compile Include="Database\MediaItems.cs" />
-    <Compile Include="Database\People.cs" />
-    <Compile Include="Database\Person.cs" />
-    <Compile Include="Database\Viewer.cs" />
-    <Compile Include="Database\Viewers.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -131,7 +132,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ImageComparer.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
-    <Compile Include="Patterns\SingletonBase.cs" />
+    <Compile Include="Patterns\Singleton.cs" />
     <Compile Include="Tests.cs" />
     <Compile Include="UserControls\IconRect.xaml.cs">
       <DependentUpon>IconRect.xaml</DependentUpon>
@@ -152,12 +153,11 @@
     <Compile Include="UserControls\ZoomImageBox.cs" />
     <Compile Include="Utils\Imaging.cs" />
     <Compile Include="Utils\StringUtils.cs" />
-    <Compile Include="ViewModel\AppInfo.cs" />
-    <Compile Include="ViewModel\BaseCategoryItem.cs" />
-    <Compile Include="Database\FavoriteFolder.cs" />
-    <Compile Include="Database\FavoriteFolders.cs" />
-    <Compile Include="ViewModel\FolderKeyword.cs" />
-    <Compile Include="ViewModel\FolderKeywords.cs" />
+    <Compile Include="ViewModels\FoldersViewModel.cs" />
+    <Compile Include="ViewModels\GeoNamesViewModel.cs" />
+    <Compile Include="ViewModels\MediaItemsViewModel.cs" />
+    <Compile Include="ViewModels\ViewersViewModel.cs" />
+    <Compile Include="ViewModels\AppInfo.cs" />
     <Compile Include="Dialogs\InputDialog.xaml.cs">
       <DependentUpon>InputDialog.xaml</DependentUpon>
     </Compile>
@@ -173,13 +173,7 @@
     <Compile Include="ShellStuff\PicFileOperationProgressSink.cs.cs" />
     <Compile Include="ShellStuff\ShellCommon.cs" />
     <Compile Include="VersionInfo.cs" />
-    <Compile Include="ViewModel\BaseTreeViewItem.cs" />
-    <Compile Include="ViewModel\BaseTreeViewTagItem.cs" />
-    <Compile Include="ViewModel\LogItem.cs" />
-    <Compile Include="ViewModel\MediaItemSize.cs" />
-    <Compile Include="ViewModel\MediaItemSizes.cs" />
-    <Compile Include="ViewModel\Rating.cs" />
-    <Compile Include="ViewModel\Ratings.cs" />
+    <Compile Include="Models\LogItem.cs" />
     <Compile Include="Dialogs\AboutDialog.xaml.cs">
       <DependentUpon>AboutDialog.xaml</DependentUpon>
     </Compile>
@@ -340,7 +334,6 @@
       <SubType>Designer</SubType>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="ViewModel\ClassDiagram2.cd" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -368,13 +361,26 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PictureManager.Domain\PictureManager.Domain.csproj">
+      <Project>{69B135E7-8722-45ED-9F48-C769CD60B0FE}</Project>
+      <Name>PictureManager.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SimpleDB\SimpleDB.csproj">
       <Project>{4fa81047-f292-421a-924b-c085a383d740}</Project>
       <Name>SimpleDB</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ViewModels\" />
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

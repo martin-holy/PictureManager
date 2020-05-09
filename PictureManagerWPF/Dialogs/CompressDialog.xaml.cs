@@ -5,6 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -48,13 +51,13 @@ namespace PictureManager.Dialogs {
       _compress.ProgressChanged += Compress_ProgressChanged;
       _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? App.Core.MediaItems.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
-        : App.Core.MediaItems.FilteredItems.ToList());
+        ? App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
+        : App.Core.Model.MediaItems.FilteredItems.ToList());
     }
 
     private static void Compress_DoWork(object sender, DoWorkEventArgs e) {
       var worker = (BackgroundWorker) sender;
-      var mis = (List<Database.MediaItem>) e.Argument;
+      var mis = (List<MediaItem>) e.Argument;
       var count = mis.Count;
       var done = 0;
 
@@ -65,7 +68,7 @@ namespace PictureManager.Dialogs {
         }
 
         var originalSize = new FileInfo(mi.FilePath).Length;
-        var bSuccess = mi.TryWriteMetadata();
+        var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
         var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
         long[] fileSizes = {originalSize, newSize};
         done++;

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pm="clr-namespace:PictureManager"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              DataContext="{x:Static pm:App.Core}"
              PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
              Foreground="White" Focusable="True" VerticalAlignment="Bottom" Cursor="Hand">
@@ -36,43 +37,43 @@
 
       <!-- PositionSlashCount / Selected / Modified -->
       <Border Style="{StaticResource SBorderGroup}"
-              Visibility="{Binding MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
+              Visibility="{Binding Model.MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <!-- Icon -->
-          <uc:IconRect IconName="{x:Static pm:IconName.ImageMultiple}" />
+          <uc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
 
           <!-- PositionSlashCount -->
           <Border>
-            <TextBlock Text="{Binding MediaItems.PositionSlashCount}" />
+            <TextBlock Text="{Binding Model.MediaItems.PositionSlashCount}" />
           </Border>
 
           <!-- Selected -->
           <Border Background="#1181B1"
                   Visibility="{Binding AppInfo.IsSelectedCountVisible, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding MediaItems.Selected}" />
+            <TextBlock Text="{Binding Model.MediaItems.Selected}" />
           </Border>
 
           <!-- Modified -->
           <Border Background="#CA5100" 
-                  Visibility="{Binding MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
-            <TextBlock Text="{Binding MediaItems.ModifiedCount}" />
+                  Visibility="{Binding Model.MediaItems.IsEditModeOn, Converter={StaticResource AllToVisibilityConverter}}">
+            <TextBlock Text="{Binding Model.MediaItems.ModifiedCount}" />
           </Border>
         </StackPanel>
       </Border>
 
       <!-- Dimension -->
       <uc:InfoPanel Visibility="{Binding AppInfo.Dimension, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.Ruler}"
+                    IconName="{x:Static pmd:IconName.Ruler}"
                     Item="{Binding AppInfo.Dimension}" />
 
       <!-- File Size -->
       <uc:InfoPanel Visibility="{Binding AppInfo.FileSize, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.PageUpload}"
+                    IconName="{x:Static pmd:IconName.PageUpload}"
                     Item="{Binding AppInfo.FileSize}" />
 
       <!-- ImageActualZoom -->
       <uc:InfoPanel Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.Magnify}"
+                    IconName="{x:Static pmd:IconName.Magnify}"
                     Item="{Binding AppInfo.ZoomActualFormatted}" />
 
       <!-- Rating -->
@@ -97,33 +98,33 @@
       <!-- GeoName -->
       <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
               ToolTip="{Binding AppInfo.FullGeoName}">
-        <uc:IconRect IconName="{x:Static pm:IconName.LocationCheckin}" />
+        <uc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
       </Border>
 
       <!-- FilePath -->
       <uc:InfoPanel Visibility="{Binding AppInfo.FilePath, Converter={StaticResource AllToVisibilityConverter}}"
                     ToolTip="{Binding AppInfo.CurrentMediaItem.FilePath}"
-                    IconName="{x:Static pm:IconName.Folder}"
+                    IconName="{x:Static pmd:IconName.Folder}"
                     Items="{Binding AppInfo.FilePath}" />
 
       <!-- DateAndTime -->
       <uc:InfoPanel Visibility="{Binding AppInfo.DateAndTime, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.Calendar}"
+                    IconName="{x:Static pmd:IconName.Calendar}"
                     Item="{Binding AppInfo.DateAndTime}" />
 
       <!-- People -->
       <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.People}"
+                    IconName="{x:Static pmd:IconName.People}"
                     Items="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}" />
 
       <!-- Keywords -->
       <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.Tag}"
+                    IconName="{x:Static pmd:IconName.Tag}"
                     Items="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}" />
 
       <!-- Comment -->
       <uc:InfoPanel Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pm:IconName.Notification}"
+                    IconName="{x:Static pmd:IconName.Notification}"
                     Item="{Binding AppInfo.CurrentMediaItem.Comment}" />
 
     </WrapPanel>

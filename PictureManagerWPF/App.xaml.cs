@@ -20,7 +20,7 @@ namespace PictureManager {
       splashScreen.Show();
 
       Current.Properties[nameof(AppProperty.AppCore)] = new AppCore();
-      await Core.InitAsync(splashScreen.ProgressMessage);
+      await Core.Model.InitAsync(splashScreen.ProgressMessage);
 
       Current.Properties[nameof(AppProperty.WMain)] = new WMain();
       MainWindow = WMain;

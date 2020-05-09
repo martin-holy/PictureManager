@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Database;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
   /// <summary>
@@ -19,7 +19,7 @@ namespace PictureManager.Dialogs {
     public ObservableCollection<Folder> Items { get; } = new ObservableCollection<Folder>();
 
     public FolderKeywordList() {
-      foreach (var folder in App.Core.Folders.All.Where(x => x.IsFolderKeyword)) {
+      foreach (var folder in App.Core.Model.Folders.All.Where(x => x.IsFolderKeyword)) {
         Items.Add(folder);
       }
 
@@ -35,8 +35,8 @@ namespace PictureManager.Dialogs {
         Items.Remove(item);
       }
 
-      App.Core.Folders.Helper.Table.SaveToFile();
-      App.Core.FolderKeywords.Load();
+      App.Core.Model.Folders.Helper.Table.SaveToFile();
+      App.Core.Model.FolderKeywords.Load();
     }
   }
 }
