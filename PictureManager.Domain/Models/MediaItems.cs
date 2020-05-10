@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -23,6 +24,7 @@ namespace PictureManager.Domain.Models {
 
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
     public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
+    public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public MediaItem Current {
       get => _current;
@@ -286,6 +288,67 @@ namespace PictureManager.Domain.Models {
 
       LoadedItems.Clear();
       FilteredItems.Clear();
+    }
+
+    public static void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder,
+      IProgress<object[]> progress, CollisionResolver collisionResolver, CancellationToken token) {
+      var count = items.Count;
+      var done = 0;
+
+      foreach (var mi in items) {
+        if (token.IsCancellationRequested)
+          break;
+
+        progress.Report(new object[]
+          {Convert.ToInt32(((double) done / count) * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName});
+
+        var miNewFileName = mi.FileName;
+        var destFilePath = Extensions.PathCombine(destFolder.FullPath, mi.FileName);
+
+        // if the file with the same name exists in the destination
+        // show dialog with options to Rename, Replace or Skip the file
+        if (File.Exists(destFilePath)) {
+          var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
+
+          if (result == CollisionResult.Skip) {
+            Core.Instance.RunOnUiThread(() => Core.Instance.MediaItems.SetSelected(mi, false));
+            continue;
+          }
+        }
+
+        switch (mode) {
+          case FileOperationMode.Copy: {
+              // create object copy
+              var miCopy = mi.CopyTo(destFolder, miNewFileName);
+              // copy MediaItem and cache on file system
+              Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
+              File.Copy(mi.FilePath, miCopy.FilePath, true);
+              File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+              break;
+            }
+          case FileOperationMode.Move: {
+              var srcFilePath = mi.FilePath;
+              var srcFilePathCache = mi.FilePathCache;
+
+              // DB
+              mi.MoveTo(destFolder, miNewFileName);
+
+              // File System
+              if (File.Exists(mi.FilePath))
+                File.Delete(mi.FilePath);
+              File.Move(srcFilePath, mi.FilePath);
+
+              // Cache
+              if (File.Exists(mi.FilePathCache))
+                File.Delete(mi.FilePathCache);
+              Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
+              File.Move(srcFilePathCache, mi.FilePathCache);
+              break;
+            }
+        }
+
+        done++;
+      }
     }
 
     public static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {

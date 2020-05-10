@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -284,7 +283,6 @@ namespace PictureManager.ViewModels {
 
       progress.StartDialog();
     }
-
     /// <summary>
     /// Copy or Move MediaItems (Files, Cache and DB)
     /// </summary>
@@ -292,81 +290,21 @@ namespace PictureManager.ViewModels {
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
     public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
-      var fop = new FileOperationDialog { Owner = App.WMain };
+      var fop = new FileOperationDialog { Owner = App.WMain, PbProgress = { IsIndeterminate = false, Value = 0 } };
+      fop.RunTask = Task.Run(() => {
+        fop.LoadCts = new CancellationTokenSource();
+        var token = fop.LoadCts.Token;
 
-      fop.Worker.DoWork += delegate (object sender, DoWorkEventArgs e) {
-        var worker = (BackgroundWorker)sender;
-        var mis = (List<MediaItem>)e.Argument;
-        var count = mis.Count;
-        var done = 0;
-
-        foreach (var mi in mis) {
-          if (worker.CancellationPending) {
-            e.Cancel = true;
-            break;
-          }
-
-          worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100),
-            new[] { mi.Folder.FullPath, destFolder.FullPath, mi.FileName });
-
-          var miNewFileName = mi.FileName;
-
-          // Open FileOperationCollisionDialog if file with the same name exists in destination
-          var destFilePath = Domain.Extensions.PathCombine(destFolder.FullPath, mi.FileName);
-          if (File.Exists(destFilePath)) {
-            var result = AppCore.ShowFileOperationCollisionDialog(mi.FilePath, destFilePath, fop, ref miNewFileName);
-
-            if (result == CollisionResult.Skip) {
-              Application.Current.Dispatcher?.Invoke(delegate {
-                App.Core.Model.MediaItems.SetSelected(mi, false);
-              });
-              continue;
-            }
-          }
-
-          try {
-            switch (mode) {
-              case FileOperationMode.Copy: {
-                  // create object copy
-                  var miCopy = mi.CopyTo(destFolder, miNewFileName);
-                  // copy MediaItem and cache on file system
-                  Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
-                  File.Copy(mi.FilePath, miCopy.FilePath, true);
-                  File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
-                  break;
-                }
-              case FileOperationMode.Move: {
-                  var srcFilePath = mi.FilePath;
-                  var srcFilePathCache = mi.FilePathCache;
-
-                  // DB
-                  mi.MoveTo(destFolder, miNewFileName);
-
-                  // File System
-                  if (File.Exists(mi.FilePath))
-                    File.Delete(mi.FilePath);
-                  File.Move(srcFilePath, mi.FilePath);
-
-                  // Cache
-                  if (File.Exists(mi.FilePathCache))
-                    File.Delete(mi.FilePathCache);
-                  Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
-                  File.Move(srcFilePathCache, mi.FilePathCache);
-                  break;
-                }
-            }
-          }
-          catch (Exception ex) {
-            ErrorDialog.Show(ex);
-          }
-
-          done++;
+        try {
+          MediaItems.CopyMove(mode, items, destFolder, fop.Progress,
+            (string srcFilePath, string destFilePath, ref string destFileName) =>
+              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
         }
-      };
+        catch (Exception ex) {
+          ErrorDialog.Show(ex);
+        }
+      }).ContinueWith(task => Core.Instance.RunOnUiThread(() => fop.Close()));
 
-      fop.PbProgress.IsIndeterminate = false;
-      fop.PbProgress.Value = 0;
-      fop.Worker.RunWorkerAsync(items);
       fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {

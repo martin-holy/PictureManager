@@ -173,10 +173,10 @@ namespace PictureManager.Domain.Models {
       return false;
     }
 
-    public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
+    
 
-    public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder, IProgress<string[]> progress,
-      CollisionResolver collisionResolver, CancellationToken token) {
+    public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder, IProgress<object[]> progress,
+      MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
 
@@ -204,8 +204,8 @@ namespace PictureManager.Domain.Models {
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
-      ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<string[]> progress,
-      CollisionResolver collisionResolver, CancellationToken token) {
+      ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress,
+      MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
 
       Directory.CreateDirectory(destDirPath);
       var srcDirPathLength = srcDirPath.Length + 1;
@@ -234,7 +234,7 @@ namespace PictureManager.Domain.Models {
         var srcFilePathCache = Extensions.PathCombine(srcDirPathCache, srcFileName);
         var destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
 
-        progress.Report(new[] {srcDirPath, destDirPath, srcFileName});
+        progress.Report(new object[] {0, srcDirPath, destDirPath, srcFileName});
 
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
