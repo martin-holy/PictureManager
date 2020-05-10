@@ -108,7 +108,9 @@ namespace PictureManager.Commands {
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      App.Core.MediaItemsViewModel.RemoveSelected(true);
+      App.Core.Model.MediaItems.RemoveSelected(true, AppCore.FileOperationDelete);
+      App.Core.MediaItemsViewModel.SplittedItemsReload();
+      App.Core.MediaItemsViewModel.ScrollToCurrent();
 
       if (App.Core.AppInfo.AppMode == AppMode.Viewer) {
         if (App.Core.Model.MediaItems.Current != null)
