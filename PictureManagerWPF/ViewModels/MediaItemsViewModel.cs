@@ -115,6 +115,7 @@ namespace PictureManager.ViewModels {
           App.Core.Model.Sdb.SaveAllTables();
       });
 
+      // TODO: is this necessary?
       if (App.Core.Model.MediaItems.Current != null) {
         App.Core.Model.MediaItems.SetSelected(App.Core.Model.MediaItems.Current, false);
         App.Core.Model.MediaItems.SetSelected(App.Core.Model.MediaItems.Current, true);
@@ -283,6 +284,7 @@ namespace PictureManager.ViewModels {
 
       progress.StartDialog();
     }
+
     /// <summary>
     /// Copy or Move MediaItems (Files, Cache and DB)
     /// </summary>
@@ -308,46 +310,10 @@ namespace PictureManager.ViewModels {
       fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {
-        RemoveSelected(false);
-        App.Core.Model.MediaItems.Current = null;
+        App.Core.Model.MediaItems.RemoveSelected(false, null);
+        SplittedItemsReload();
+        ScrollToCurrent();
       }
-    }
-
-    public void RemoveSelected(bool delete) {
-      var items = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList();
-      if (items.Count == 0) return;
-
-      // set Current to next MediaItem after last selected or null
-      var indexOfNewCurrent = App.Core.Model.MediaItems.FilteredItems.IndexOf(items[items.Count - 1]) + 1;
-      App.Core.Model.MediaItems.Current = App.Core.Model.MediaItems.FilteredItems.Count > indexOfNewCurrent ? App.Core.Model.MediaItems.FilteredItems[indexOfNewCurrent] : null;
-
-      var files = new List<string>();
-      var cache = new List<string>();
-
-      foreach (var mi in items) {
-        App.Core.Model.MediaItems.LoadedItems.Remove(mi);
-        App.Core.Model.MediaItems.FilteredItems.Remove(mi);
-        if (delete) {
-          files.Add(mi.FilePath);
-          cache.Add(mi.FilePathCache);
-          App.Core.Model.MediaItems.Delete(mi);
-        }
-        else App.Core.Model.MediaItems.SetSelected(mi, false);
-      }
-
-      if (delete) {
-        AppCore.FileOperationDelete(files, true, false);
-        cache.ForEach(File.Delete);
-      }
-
-      SplittedItemsReload();
-
-      // set Current to last MediaItem if is null
-      if (App.Core.Model.MediaItems.Current == null && App.Core.Model.MediaItems.FilteredItems.Count > 0) {
-        App.Core.Model.MediaItems.Current = App.Core.Model.MediaItems.FilteredItems[App.Core.Model.MediaItems.FilteredItems.Count - 1];
-      }
-
-      ScrollToCurrent();
     }
 
     public void Delete(MediaItem[] items) {

@@ -12,7 +12,7 @@ namespace PictureManager.ViewModels {
 
       var folder = App.Core.Model.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
       if (folder == null) {
-        MessageDialog.Show("Information", @"Select this folder in Folders tree first.", false);
+        MessageDialog.Show("Information", "Select this folder in Folders tree first.", false);
         return;
       }
 

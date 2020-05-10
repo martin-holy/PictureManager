@@ -25,6 +25,7 @@ namespace PictureManager.Domain.Models {
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
     public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
+    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
 
     public MediaItem Current {
       get => _current;
@@ -194,6 +195,36 @@ namespace PictureManager.Domain.Models {
         SetSelected(mi, false);
         if (!mi.IsModified)
           SetSelected(mi, true);
+      }
+    }
+
+    public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) {
+      var items = FilteredItems.Where(x => x.IsSelected).ToList();
+      if (items.Count == 0) return;
+
+      // set Current to next MediaItem after last selected or one before first selected or null
+      var indexOfNewCurrent = FilteredItems.IndexOf(items[items.Count - 1]) + 1;
+      if (indexOfNewCurrent == FilteredItems.Count)
+        indexOfNewCurrent = FilteredItems.IndexOf(items[0]) - 1;
+      Current = indexOfNewCurrent >= 0 ? FilteredItems[indexOfNewCurrent] : null;
+
+      var files = new List<string>();
+      var cache = new List<string>();
+
+      foreach (var mi in items) {
+        LoadedItems.Remove(mi);
+        FilteredItems.Remove(mi);
+        if (delete) {
+          files.Add(mi.FilePath);
+          cache.Add(mi.FilePathCache);
+          Delete(mi);
+        }
+        else SetSelected(mi, false);
+      }
+
+      if (delete) {
+        fileOperationDelete.Invoke(files, true, false);
+        cache.ForEach(File.Delete);
       }
     }
 
