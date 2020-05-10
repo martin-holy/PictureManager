@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
@@ -12,10 +13,14 @@ namespace PictureManager.ViewModels {
         fop.LoadCts = new CancellationTokenSource();
         var token = fop.LoadCts.Token;
 
-        Folders.CopyMove(mode, srcFolder, destFolder, fop.Progress,
-          (string srcFilePath, string destFilePath, ref string destFileName) =>
-            AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
-
+        try {
+          Folders.CopyMove(mode, srcFolder, destFolder, fop.Progress,
+            (string srcFilePath, string destFilePath, ref string destFileName) =>
+              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
+        }
+        catch (Exception ex) {
+          ErrorDialog.Show(ex);
+        }
       }).ContinueWith(task => Core.Instance.RunOnUiThread(() => fop.Close()));
 
       fop.ShowDialog();

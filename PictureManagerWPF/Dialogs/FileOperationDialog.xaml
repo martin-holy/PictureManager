@@ -10,7 +10,7 @@
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
-  DataContext="{Binding RelativeSource={RelativeSource Self}}" Closing="FileOperationDialog_OnClosing">
+  DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <StackPanel Orientation="Vertical">
     <!-- Directory From / To, FileName -->
