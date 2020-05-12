@@ -9,6 +9,7 @@
         xmlns:cmd="clr-namespace:PictureManager.Commands"
         xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
         xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+        xmlns:cc="clr-namespace:PictureManager.CustomControls"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
@@ -351,80 +352,16 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
-
                   <!-- Thumbnail -->
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                      <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True"
-                          MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp" MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                          MouseMove="Thumb_OnMouseMove" MouseEnter="Thumb_OnMouseEnter" MouseLeave="Thumb_OnMouseLeave"
-                          PreviewMouseUp="Thumb_OnPreviewMouseUp">
-                        <Border.Style>
-                          <Style TargetType="{x:Type Border}">
-                            <Setter Property="BorderBrush" Value="Black" />
-                            <Setter Property="BorderThickness" Value="2" />
-                            <Setter Property="Margin" Value="1" />
-                            <Style.Triggers>
-                              <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                              </DataTrigger>
-                            </Style.Triggers>
-                            <Style.Resources>
-                              <Style TargetType="{x:Type ItemsControl}">
-                                <Style.Triggers>
-                                  <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                  <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
-                                    <Setter Property="Visibility" Value="Hidden"/>
-                                  </DataTrigger>
-                                </Style.Triggers>
-                              </Style>
-                            </Style.Resources>
-                          </Style>
-                        </Border.Style>
-
-                        <Grid>
-                          <!-- Thumbnail Image -->
-                          <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
-
-                          <!-- Video over layer -->
-                          <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
-                              VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
-                              Visibility="{Binding MediaType, 
-                                Converter={StaticResource AllToVisibilityConverter},
-                                ConverterParameter={x:Static pmd:MediaType.Video}}">
-                          </ContentControl>
-
-                          <!-- Thumbnail Info Box -->
-                          <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
-                            <ItemsControl.ItemsPanel>
-                              <ItemsPanelTemplate>
-                                <WrapPanel Orientation="Horizontal" />
-                              </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                              <DataTemplate>
-                                <Border Style="{StaticResource SBorderTextThumb}">
-                                  <TextBlock Style="{StaticResource STextBlock}" Text="{Binding}" />
-                                </Border>
-                              </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                          </ItemsControl>
-
-                          <!-- Selected -->
-                          <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
-                            <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" 
-                                     HorizontalAlignment="Right" VerticalAlignment="Top"
-                                     Fill="{DynamicResource AccentColorBrush}"
-                                     Stroke="Black" StrokeThickness="2" />
-
-                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="2"
-                                    BorderBrush="Black" />
-                          </Grid>
-                          
-                        </Grid>
-                      </Border>
+                      <cc:MediaItemThumbnail DataContext="{Binding}" 
+                                             MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp"
+                                             MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
+                                             MouseMove="Thumb_OnMouseMove"
+                                             MouseEnter="Thumb_OnMouseEnter"
+                                             MouseLeave="Thumb_OnMouseLeave"
+                                             PreviewMouseUp="Thumb_OnPreviewMouseUp" />
                     </DataTemplate>
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -433,9 +370,9 @@
 
             <ItemsControl.Template>
               <ControlTemplate>
-                <uc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
+                <cc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
                   <ItemsPresenter />
-                </uc:WheelSpeedScrollViewer>
+                </cc:WheelSpeedScrollViewer>
               </ControlTemplate>
             </ItemsControl.Template>
           </ItemsControl>
@@ -453,7 +390,7 @@
               Converter={StaticResource AllToVisibilityConverter}, 
               ConverterParameter={x:Static pmd:MediaType.Image}}">
 
-            <uc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
+            <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
 
             <!-- Presentation Panel -->
             <uc:PresentationPanel x:Name="PresentationPanel" />

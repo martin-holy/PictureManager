@@ -1,0 +1,15 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:pm="clr-namespace:PictureManager">
+
+  <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
+  <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
+  <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
+  <pm:RatingConverter x:Key="RatingConverter" />
+  <pm:BackgroundColorConverter x:Key="BgColorConverter" />
+  <pm:DataBindingDebugConverter x:Key="DebugConverter" />
+  <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
+  <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
+  <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
+  <pm:TypeToStyleConverter x:Key="TypeToStyleConverter" />
+</ResourceDictionary>

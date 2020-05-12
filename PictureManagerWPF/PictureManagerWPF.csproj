@@ -94,6 +94,7 @@
     <Compile Include="Commands\TreeViewCommands.cs" />
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
+    <Compile Include="CustomControls\MediaItemThumbnail.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -149,8 +150,8 @@
     <Compile Include="UserControls\StatusPanel.xaml.cs">
       <DependentUpon>StatusPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\WheelSpeedScrollViewer.cs" />
-    <Compile Include="UserControls\ZoomImageBox.cs" />
+    <Compile Include="CustomControls\WheelSpeedScrollViewer.cs" />
+    <Compile Include="CustomControls\ZoomImageBox.cs" />
     <Compile Include="Utils\Imaging.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModels\FoldersViewModel.cs" />
@@ -195,6 +196,14 @@
     <Compile Include="WTest.xaml.cs">
       <DependentUpon>WTest.xaml</DependentUpon>
     </Compile>
+    <Page Include="ResourceDictionaries\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\MediaItemThumbnailStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\DirectorySelectDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -243,7 +252,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Resources\Icons.xaml">
+    <Page Include="ResourceDictionaries\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\BorderStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\ButtonStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\IconRectStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\LabelStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\MenuItemStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\StackPanelStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\NamedStyles\TextBlockStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -381,6 +422,10 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ResourceDictionaries\BaseControlStyles\" />
+    <Folder Include="ResourceDictionaries\Brushes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

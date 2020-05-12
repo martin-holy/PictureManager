@@ -54,20 +54,21 @@ namespace PictureManager.Commands {
     }
 
     public void SwitchToBrowser() {
-      App.WMain.PresentationPanel.Stop();
-      App.Core.AppInfo.AppMode = AppMode.Browser;
-      ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Core.MediaItemsViewModel.SplittedItemsReload();
-      App.Core.MediaItemsViewModel.ScrollToCurrent();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
       App.WMain.UseNoneWindowStyle = false;
       App.WMain.ShowTitleBar = true;
       App.WMain.IgnoreTaskbarOnMaximize = false;
       App.WMain.MainMenu.Visibility = Visibility.Visible;
-      App.WMain.FullImage.SetSource(null);
+
+      App.Core.AppInfo.AppMode = AppMode.Browser;
+      ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
+      App.Core.MediaItemsViewModel.ScrollToCurrent();
+      App.Core.Model.MarkUsedKeywordsAndPeople();
+
+      App.WMain.PresentationPanel.Stop();
       App.WMain.FullImage.Stop();
-      App.WMain.FullMedia.MediaElement.Source = null;
+      App.WMain.FullImage.SetSource(null);
       App.WMain.FullMedia.IsPlaying = false;
+      App.WMain.FullMedia.MediaElement.Source = null;
     }
 
     private void OpenSettings() {
