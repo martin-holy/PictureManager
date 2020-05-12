@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace PictureManager.UserControls {
+namespace PictureManager.CustomControls {
   public class WheelSpeedScrollViewer : ScrollViewer {
     public static readonly DependencyProperty SpeedFactorProperty = DependencyProperty.Register(nameof(SpeedFactor),
       typeof(double), typeof(WheelSpeedScrollViewer), new PropertyMetadata(2.5));

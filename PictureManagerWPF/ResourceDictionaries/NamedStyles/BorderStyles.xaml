@@ -1,0 +1,36 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- SBorderText -->
+  <Style x:Key="SBorderText" TargetType="Border">
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Black" />
+    <Setter Property="Background" Value="#88000000" />
+    <Setter Property="VerticalAlignment" Value="Top"/>
+    <Setter Property="Padding" Value="2,1,2,1" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Margin" Value="3,0,0,0"/>
+    <Setter Property="MinWidth" Value="23.7" />
+  </Style>
+
+  <!-- SBorderTextThumb -->
+  <Style x:Key="SBorderTextThumb" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+    <Setter Property="Margin" Value="5,5,0,0"/>
+  </Style>
+
+  <!-- SBorderGroup -->
+  <Style x:Key="SBorderGroup" TargetType="Border" BasedOn="{StaticResource SBorderText}">
+    <Setter Property="Padding" Value="2" />
+  </Style>
+
+  <!-- SBorderActiveFilter -->
+  <Style x:Key="SBorderActiveFilter" TargetType="Border">
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Black" />
+    <Setter Property="Height" Value="22" />
+    <Setter Property="MinWidth" Value="22" />
+    <Setter Property="CornerRadius" Value="5" />
+    <Setter Property="Margin" Value="2,0,0,0" />
+  </Style>
+
+</ResourceDictionary>

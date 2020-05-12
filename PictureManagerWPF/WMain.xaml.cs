@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.Commands;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -318,8 +319,9 @@ namespace PictureManager {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
 
-      var grid = (Grid) ((Border) sender).Child;
-      var mi = grid.DataContext as MediaItem;
+      //var grid = (Grid) ((Border) sender).Child;
+      //var mi = grid.DataContext as MediaItem;
+      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
 
       if (mi == null) return;
       App.Core.Model.MediaItems.DeselectAll();
@@ -327,7 +329,7 @@ namespace PictureManager {
 
       if (mi.MediaType == MediaType.Video) {
         VideoThumbnailPreview.Source = null;
-        grid.Children.Remove(VideoThumbnailPreview);
+        //grid.Children.Remove(VideoThumbnailPreview);
       }
 
       CommandsController.WindowCommands.SwitchToFullScreen();
@@ -339,31 +341,29 @@ namespace PictureManager {
       var dob = new DataObject();
       var data = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
-        data.Add(((MediaItem) ((Grid) ((Border) sender).Child).DataContext).FilePath);
+        data.Add(((MediaItem) ((FrameworkElement) sender).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());
       DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
     }
 
     private void Thumb_OnMouseEnter(object sender, MouseEventArgs e) {
-      var grid = (Grid) ((Border) sender).Child;
-      var mi = (MediaItem) grid.DataContext;
+      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
+      if (mi == null) return;
       if (mi.MediaType != MediaType.Video) return;
 
       VideoThumbnailPreview.Source = mi.FilePathUri;
       (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
-      grid.Children.Insert(grid.Children.Count - 2, VideoThumbnailPreview);
+      ((MediaItemThumbnail) sender).InsertPlayer(VideoThumbnailPreview);
       VideoThumbnailPreview.Play();
     }
 
     private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
-      var grid = (Grid) ((Border) sender).Child;
-      var mi = grid.DataContext as MediaItem;
-
+      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
       if (mi == null) return;
       if (mi.MediaType != MediaType.Video) return;
 
+      (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
       VideoThumbnailPreview.Source = null;
-      grid.Children.Remove(VideoThumbnailPreview);
     }
 
     private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
@@ -467,6 +467,7 @@ namespace PictureManager {
     }
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
+      if (App.Core.AppInfo.AppMode == AppMode.Viewer) return;
       App.Core.MediaItemsViewModel.SplittedItemsReload();
       App.Core.MediaItemsViewModel.ScrollToCurrent();
     }

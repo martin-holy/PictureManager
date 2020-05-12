@@ -10,7 +10,7 @@ using System.Windows.Media.Imaging;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
-namespace PictureManager.UserControls {
+namespace PictureManager.CustomControls {
   public sealed class ZoomImageBox : Border, INotifyPropertyChanged {
     private Point _origin;
     private Point _start;

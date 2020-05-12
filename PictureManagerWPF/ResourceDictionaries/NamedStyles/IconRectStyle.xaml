@@ -1,0 +1,16 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Style x:Key="IconRect" TargetType="Rectangle">
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}" />
+    <Setter Property="OpacityMask">
+      <Setter.Value>
+        <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>
