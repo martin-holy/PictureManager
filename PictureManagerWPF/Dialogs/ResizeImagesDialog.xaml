@@ -4,8 +4,8 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-  xmlns:uc="clr-namespace:PictureManager.UserControls"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:cc="clr-namespace:PictureManager.CustomControls"
   mc:Ignorable="d"
   Title="Resize Images" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -55,7 +55,7 @@
       <DockPanel Grid.Row="1" Grid.Column="1">
         <Button x:Name="BtnOpenDirectoryPicker" Width="30" Height="30" DockPanel.Dock="Right" 
                 Margin="5,0,0,0" Click="BtnOpenDirectoryPicker_OnClick">
-          <uc:IconRect IconName="{x:Static pmd:IconName.Folder}" />
+          <cc:IconRect IconName="{x:Static pmd:IconName.Folder}" />
         </Button>
         <ComboBox ItemsSource="{Binding DirPaths}" x:Name="CmbDirPaths" Style="{StaticResource ErrorStyle}" 
                   SelectionChanged="CmbDirPaths_OnSelectionChanged" Height="30" />

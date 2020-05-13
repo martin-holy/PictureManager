@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:uc="clr-namespace:PictureManager.UserControls"
         xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+        xmlns:cc="clr-namespace:PictureManager.CustomControls"
         mc:Ignorable="d"
         Title="Rotation" SizeToContent="WidthAndHeight"
         BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -25,13 +25,13 @@
 
   <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="5">
     <Button x:Name="Btn90" Style="{StaticResource ButtonStyle}">
-      <uc:IconRect IconName="{x:Static pmd:IconName.RotateLeft}" />
+      <cc:IconRect IconName="{x:Static pmd:IconName.RotateLeft}" />
     </Button>
     <Button x:Name="Btn180" Style="{StaticResource ButtonStyle}">
-      <uc:IconRect IconName="{x:Static pmd:IconName.RotateClockwise}" />
+      <cc:IconRect IconName="{x:Static pmd:IconName.RotateClockwise}" />
     </Button>
     <Button x:Name="Btn270" Style="{StaticResource ButtonStyle}">
-      <uc:IconRect IconName="{x:Static pmd:IconName.RotateRight}" />
+      <cc:IconRect IconName="{x:Static pmd:IconName.RotateRight}" />
     </Button>
   </StackPanel>
 </controls:MetroWindow>

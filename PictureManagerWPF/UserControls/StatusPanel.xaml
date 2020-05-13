@@ -4,6 +4,7 @@
              xmlns:pm="clr-namespace:PictureManager"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
              DataContext="{x:Static pm:App.Core}"
              PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
              Foreground="White" Focusable="True" VerticalAlignment="Bottom" Cursor="Hand">
@@ -40,7 +41,7 @@
               Visibility="{Binding Model.MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <!-- Icon -->
-          <uc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
+          <cc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
 
           <!-- PositionSlashCount -->
           <Border>
@@ -88,7 +89,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <uc:IconRect IconName="{Binding IconName}" />
+                <cc:IconRect IconName="{Binding IconName}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
@@ -98,7 +99,7 @@
       <!-- GeoName -->
       <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
               ToolTip="{Binding AppInfo.FullGeoName}">
-        <uc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
+        <cc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
       </Border>
 
       <!-- FilePath -->

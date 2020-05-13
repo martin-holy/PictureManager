@@ -5,7 +5,7 @@
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:dialogs="clr-namespace:PictureManager.Dialogs"
-                      xmlns:uc="clr-namespace:PictureManager.UserControls"
+                      xmlns:cc="clr-namespace:PictureManager.CustomControls"
                       mc:Ignorable="d"
                       Title="Browse For Folder" Width="300" Height="500"
                       BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -36,7 +36,7 @@
       <TreeView.ItemTemplate>
         <HierarchicalDataTemplate DataType="{x:Type dialogs:FolderTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent">
-            <uc:IconRect IconName="{Binding IconName}" />
+            <cc:IconRect IconName="{Binding IconName}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />
           </StackPanel>
         </HierarchicalDataTemplate>

@@ -20,6 +20,7 @@
 - FileOperatinDialog by mel mit info o Keywords, People, ... takze udelat control, kterej se pouzije jak pro thumbnails tak pro tohle
 - udelat tabs na thmbnails, moznost prejmenovat tab, a load je do aktivniho tabu
 - udelat do thumbnails kategorie podle slozek/datumu/...
+- wrap long coment
 
 
 #Code Cleaning
