@@ -184,7 +184,7 @@
               <!-- BaseTreeViewItem -->
               <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-                  <uc:IconRect IconName="{Binding IconName}" />
+                  <cc:IconRect IconName="{Binding IconName}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
@@ -192,7 +192,7 @@
               <!-- BaseTreeViewTagItem -->
               <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-                  <uc:IconRect IconName="{Binding IconName}" />
+                  <cc:IconRect IconName="{Binding IconName}" />
                   <TextBlock Style="{StaticResource TreeViewTitle}" />
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
@@ -308,7 +308,7 @@
                 <DataTemplate>
                   <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
                           Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-                    <uc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
+                    <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
                   </Button>
                 </DataTemplate>
               </TabItem.HeaderTemplate>
@@ -356,7 +356,6 @@
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <cc:MediaItemThumbnail DataContext="{Binding}" 
-                                             MouseLeftButtonUp="Thumb_OnMouseLeftButtonUp"
                                              MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
                                              MouseMove="Thumb_OnMouseMove"
                                              MouseEnter="Thumb_OnMouseEnter"

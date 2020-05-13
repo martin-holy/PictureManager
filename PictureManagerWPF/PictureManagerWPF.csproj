@@ -94,6 +94,7 @@
     <Compile Include="Commands\TreeViewCommands.cs" />
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
+    <Compile Include="CustomControls\IconRect.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
@@ -135,9 +136,6 @@
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Patterns\Singleton.cs" />
     <Compile Include="Tests.cs" />
-    <Compile Include="UserControls\IconRect.xaml.cs">
-      <DependentUpon>IconRect.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\InfoPanel.xaml.cs">
       <DependentUpon>InfoPanel.xaml</DependentUpon>
     </Compile>
@@ -197,6 +195,10 @@
       <DependentUpon>WTest.xaml</DependentUpon>
     </Compile>
     <Page Include="ResourceDictionaries\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\IconRectStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -287,10 +289,6 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="UserControls\IconRect.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\InfoPanel.xaml">
       <SubType>Designer</SubType>

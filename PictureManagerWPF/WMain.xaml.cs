@@ -297,30 +297,25 @@ namespace PictureManager {
     #endregion
 
     #region Thumbnail
-    private void Thumb_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+    private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
 
-      App.Core.Model.MediaItems.Select(isCtrlOn, isShiftOn, mi);
-      App.Core.Model.MarkUsedKeywordsAndPeople();
-    }
-
-    private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
       // use middle and right button like CTRL + left button
       if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Right) {
-        var mi = (MediaItem)((FrameworkElement)sender).DataContext;
-        App.Core.Model.MediaItems.Select(true, false, mi);
-        App.Core.Model.MarkUsedKeywordsAndPeople();
+        isCtrlOn = true;
+        isShiftOn = false;
       }
+
+      App.Core.Model.MediaItems.Select(isCtrlOn, isShiftOn, mi);
+      App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
       _dragDropStartPosition = e.GetPosition(null);
       if (e.ClickCount != 2) return;
 
-      //var grid = (Grid) ((Border) sender).Child;
-      //var mi = grid.DataContext as MediaItem;
       var mi = ((FrameworkElement) sender).DataContext as MediaItem;
 
       if (mi == null) return;
@@ -328,8 +323,8 @@ namespace PictureManager {
       App.Core.Model.MediaItems.Current = mi;
 
       if (mi.MediaType == MediaType.Video) {
+        (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
         VideoThumbnailPreview.Source = null;
-        //grid.Children.Remove(VideoThumbnailPreview);
       }
 
       CommandsController.WindowCommands.SwitchToFullScreen();
