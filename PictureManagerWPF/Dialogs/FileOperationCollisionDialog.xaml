@@ -4,8 +4,9 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:cc="clr-namespace:PictureManager.CustomControls"
   mc:Ignorable="d"
-  Title="The destination already has a file with this name" SizeToContent="Height" Width="515" 
+  Title="The destination already has a file with this name" SizeToContent="WidthAndHeight" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{DynamicResource WhiteBrush}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
@@ -26,6 +27,8 @@
       <Setter Property="BorderBrush" Value="Black" />
       <Setter Property="BorderThickness" Value="2" />
       <Setter Property="Margin" Value="0,0,0,0" />
+      <Setter Property="MaxWidth" Value="{Binding MaxThumbSize}" />
+      <Setter Property="MaxHeight" Value="{Binding MaxThumbSize}" />
     </Style>
   </controls:MetroWindow.Resources>
 
@@ -34,7 +37,7 @@
     <!-- Thumbnails -->
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="250" />
+        <RowDefinition Height="*" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
@@ -43,16 +46,28 @@
         <ColumnDefinition Width="5" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      
-      <Border Grid.Row="0" Grid.Column="0" Style="{StaticResource ThumbBorder}">
-        <Image Source="{Binding SrcFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" 
-               Stretch="Uniform" ToolTip="{Binding SrcFileInfo.FullName}"  />
-      </Border>
 
-      <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource ThumbBorder}">
-        <Image Source="{Binding DestFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" 
-               Stretch="Uniform" ToolTip="{Binding DestFileInfo.FullName}" x:Name="DestThumb" />
-      </Border>
+      <!-- Source Thumbnail -->
+      <Grid Grid.Row="0" Grid.Column="0" ToolTip="{Binding SrcFileInfo.FullName}">
+        <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding SrcThumbVisibility}">
+          <Image Stretch="Uniform" Source="{Binding SrcFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
+        </Border>
+
+        <Grid Visibility="{Binding SrcMediaItemThumbVisibility}">
+          <cc:MediaItemThumbnail DataContext="{Binding SrcMediaItem}" />
+        </Grid>
+      </Grid>
+
+      <!-- Destination Thumbnail -->
+      <Grid Grid.Row="0" Grid.Column="2" ToolTip="{Binding DestFileInfo.FullName}">
+        <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding DestThumbVisibility}">
+          <Image Stretch="Uniform" Source="{Binding DestFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
+        </Border>
+
+        <Grid Visibility="{Binding DestMediaItemThumbVisibility}" ToolTip="{Binding DestFileInfo.FullName}">
+          <cc:MediaItemThumbnail DataContext="{Binding DestMediaItem}" />
+        </Grid>
+      </Grid>
 
       <!-- Source File Info -->
       <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">

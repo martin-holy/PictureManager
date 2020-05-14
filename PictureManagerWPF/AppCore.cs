@@ -143,9 +143,16 @@ namespace PictureManager {
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
       var result = CollisionResult.Skip;
       var outFileName = fileName;
+      var srcMi = App.Core.Model.Folders.GetMediaItemByPath(srcFilePath);
+      var destMi = App.Core.Model.Folders.GetMediaItemByPath(destFilePath);
 
       Application.Current.Dispatcher?.Invoke(delegate {
-        var focd = new FileOperationCollisionDialog(srcFilePath, destFilePath, owner);
+        srcMi?.SetThumbSize();
+        srcMi?.SetInfoBox();
+        destMi?.SetThumbSize();
+        destMi?.SetInfoBox();
+
+        var focd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
         focd.ShowDialog();
         result = focd.Result;
         outFileName = focd.FileName;
