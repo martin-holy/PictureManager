@@ -7,13 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.Utils;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for FileOperationCollisionDialog.xaml
-  /// </summary>
   public partial class FileOperationCollisionDialog: INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -26,11 +24,15 @@ namespace PictureManager.Dialogs {
     private string _fileName;
     private FileInfo _srcFileInfo;
     private FileInfo _destFileInfo;
+    private MediaItem _srcMediaItem;
+    private MediaItem _destMediaItem;
 
     public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
     public FileInfo SrcFileInfo { get => _srcFileInfo; set { _srcFileInfo = value; OnPropertyChanged(); } }
     public FileInfo DestFileInfo { get => _destFileInfo; set { _destFileInfo = value; OnPropertyChanged(); } }
+    public MediaItem SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
+    public MediaItem DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
     public Uri SrcFilePathCacheUri => GetThumbFilePath(SrcFileInfo.FullName).Result;
     public Uri DestFilePathCacheUri => GetThumbFilePath(DestFileInfo.FullName).Result;
     public string SrcFileSize => $"File size: {SrcFileInfo.Length} B";
@@ -39,12 +41,19 @@ namespace PictureManager.Dialogs {
     public string DestFileModified => $"Modified: {DestFileInfo.LastWriteTime}";
     public string SrcDimensions => GetDimensions(SrcFileInfo.FullName);
     public string DestDimensions => GetDimensions(DestFileInfo.FullName);
+    public int MaxThumbSize => (int) (App.Core.Model.ThumbnailSize / App.Core.Model.WindowsDisplayScale * 100);
+    public Visibility SrcThumbVisibility => SrcMediaItem == null ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility SrcMediaItemThumbVisibility => SrcMediaItem != null ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility DestThumbVisibility => DestMediaItem == null ? Visibility.Visible : Visibility.Collapsed;
+    public Visibility DestMediaItemThumbVisibility => DestMediaItem != null ? Visibility.Visible : Visibility.Collapsed;
 
     public CollisionResult Result;
 
-    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner) {
+    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, MediaItem srcMediaItem, MediaItem destMediaItem, Window owner) {
       SrcFileInfo = new FileInfo(srcFilePath);
       DestFileInfo = new FileInfo(destFilePath);
+      SrcMediaItem = srcMediaItem;
+      DestMediaItem = destMediaItem;
       FileName = SrcFileInfo.Name;
       Owner = owner;
       Result = CollisionResult.Skip;

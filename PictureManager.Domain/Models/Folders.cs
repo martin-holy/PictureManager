@@ -163,6 +163,11 @@ namespace PictureManager.Domain.Models {
       return pathParts.Length == 1 ? drive : drive?.GetByPath(path);
     }
 
+    public MediaItem GetMediaItemByPath(string path) {
+      var folder = GetByPath(path.Substring(0, path.LastIndexOf(Path.DirectorySeparatorChar)));
+      return folder?.GetMediaItemByPath(path);
+    }
+
     public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
       foreach (var item in folders.Cast<Folder>()) {
         index++;
