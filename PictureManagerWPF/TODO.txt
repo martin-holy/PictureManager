@@ -15,12 +15,13 @@
 - zmenit title na favorite folder
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
-- rotate video just for view
-- vymyslet to tak, zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
-- FileOperatinDialog by mel mit info o Keywords, People, ... takze udelat control, kterej se pouzije jak pro thumbnails tak pro tohle
+- rotate video just for view (čeknout, jeslti nestaci mit na MediaItem zmenenou orientaci, ktera by se ukladala)
+- vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
+    pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat tabs na thmbnails, moznost prejmenovat tab, a load je do aktivniho tabu
 - udelat do thumbnails kategorie podle slozek/datumu/...
 - wrap long coment
+- pridat do Favorites folders ToolTip s fullpath
 
 
 #Code Cleaning
