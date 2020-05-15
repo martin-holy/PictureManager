@@ -20,7 +20,6 @@
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat tabs na thmbnails, moznost prejmenovat tab, a load je do aktivniho tabu
 - udelat do thumbnails kategorie podle slozek/datumu/...
-- wrap long coment
 - pridat do Favorites folders ToolTip s fullpath
 
 
