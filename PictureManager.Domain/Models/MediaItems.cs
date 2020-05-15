@@ -222,6 +222,10 @@ namespace PictureManager.Domain.Models {
         else SetSelected(mi, false);
       }
 
+      // update _indexOfCurrent after the FilteredItems were changed
+      if (Current != null)
+        _indexOfCurrent = FilteredItems.IndexOf(Current);
+
       if (delete) {
         fileOperationDelete.Invoke(files, true, false);
         cache.ForEach(File.Delete);
