@@ -160,10 +160,9 @@ namespace PictureManager.Commands {
       return App.Core.Model.MediaItems.FilteredItems.Count > 0;
     }
 
-    private static async void Compare() {
-      var similar = ImageComparer.GetSimilar(App.Core.Model.MediaItems.FilteredItems.ToArray(), 2);
-      await App.Core.MediaItemsViewModel.LoadAsync(similar, null, false);
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+    private static void Compare() {
+      App.WMain.ImageComparerTool.Compare();
+      App.WMain.ImageComparerTool.Visibility = Visibility.Visible;
     }
 
     private static bool CanCompress() {

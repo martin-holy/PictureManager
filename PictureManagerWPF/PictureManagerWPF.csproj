@@ -95,6 +95,7 @@
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomControls\IconRect.cs" />
+    <Compile Include="CustomControls\ImageComparer.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
@@ -132,7 +133,6 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="ImageComparer.cs" />
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Patterns\Singleton.cs" />
     <Compile Include="Tests.cs" />
@@ -199,6 +199,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ResourceDictionaries\CustomControlStyles\IconRectStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\ImageComparerStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
