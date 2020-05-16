@@ -66,7 +66,7 @@ namespace PictureManager.CustomControls {
         }
         case 1: {
           // pHash
-          similar = GetSimilar(items.ToArray(), Diff, _pHashes, GetPHash);
+          similar = GetSimilar(items.ToArray(), Diff, _pHashes, GetPerceptualHash);
           break;
         }
       }
@@ -128,6 +128,15 @@ namespace PictureManager.CustomControls {
       progress.StartDialog();
     }
 
+    private static int CompareHashes(long a, long b) {
+      var diff = 0;
+      for (var i = 0; i < 64; i++)
+        if ((a & (1 << i)) != (b & (1 << i)))
+          diff++;
+
+      return diff;
+    }
+
     private static long GetAvgHash(string srcPath) {
       using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
         // get bitmap frame
@@ -161,7 +170,7 @@ namespace PictureManager.CustomControls {
       }
     }
 
-    public static long GetPHash(string srcPath) {
+    private static long GetPerceptualHash(string srcPath) {
       using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
         // get bitmap frame
         var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
@@ -175,67 +184,82 @@ namespace PictureManager.CustomControls {
         var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
 
         // copy pixels
-        var pixels = new double[1024];
+        var pixels = new byte[1024];
         grayScale.CopyPixels(pixels, 32, 0);
-
-        // compute DCT
-        Transform(pixels, 0, pixels.Length, new double[pixels.Length]);
-
-        // get only top-left 8x8
-        var lowFreq = new double[64];
-        var lfi = 0;
-        for (var pi = 0; pi < 256; pi++) {
-          lowFreq[lfi] = pixels[pi];
-          lfi++;
-          if (lfi % 8 == 0) pi += 24;
-
+        var pixels2D = new byte[32,32];
+        var row = -1;
+        for (var i = 0; i < 1024; i++) {
+          if (i % 32 == 0) row++;
+          pixels2D[row, i - row * 32] = pixels[i];
         }
 
-        // compute average
-        var sum = 0.0;
-        for (var i = 0; i < 64; i++)
-          sum += lowFreq[i];
-        var avg = sum / 64;
+        // compute DCT
+        var pixelsDct = ApplyDiscreteCosineTransform(pixels2D, 32);
+
+        // compute average only from top-left 8x8 minus first value
+        double total = 0;
+        for (var x = 0; x < 8; x++) {
+          for (var y = 0; y < 8; y++) {
+            total += pixelsDct[x, y];
+          }
+        }
+        total -= pixelsDct[0,0];
+        var avg = total / (8 * 8 - 1);
 
         // compute bits
         long hash = 0;
-        for (var i = 0; i < 64; i++)
-          if (lowFreq[i] > avg)
-            hash |= 1 << i;
+        var bi = 0;
+        for (var x = 0; x < 8; x++) {
+          for (var y = 0; y < 8; y++) {
+            if (pixelsDct[x,y] > avg)
+              hash |= 1 << bi;
+            bi++;
+          }
+        }
 
         return hash;
       }
     }
 
-    private static void Transform(double[] vector, int off, int len, double[] temp) {
-      // Algorithm by Byeong Gi Lee, 1984. For details, see:
-      // See: http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.118.3056&rep=rep1&type=pdf#page=34
-      if (len == 1)
-        return;
-      int halfLen = len / 2;
-      for (int i = 0; i < halfLen; i++) {
-        double x = vector[off + i];
-        double y = vector[off + len - 1 - i];
-        temp[off + i] = x + y;
-        temp[off + i + halfLen] = (x - y) / (Math.Cos((i + 0.5) * Math.PI / len) * 2);
-      }
-      Transform(temp, off, halfLen, vector);
-      Transform(temp, off + halfLen, halfLen, vector);
-      for (int i = 0; i < halfLen - 1; i++) {
-        vector[off + i * 2 + 0] = temp[off + i];
-        vector[off + i * 2 + 1] = temp[off + i + halfLen] + temp[off + i + halfLen + 1];
-      }
-      vector[off + len - 2] = temp[off + halfLen - 1];
-      vector[off + len - 1] = temp[off + len - 1];
-    }
+    private static double[,] ApplyDiscreteCosineTransform(byte[,] input, int size) {
+      var m = size;
+      var n = size;
+      const double pi = 3.142857;
 
-    private static int CompareHashes(long a, long b) {
-      var diff = 0;
-      for (var i = 0; i < 64; i++)
-        if ((a & (1 << i)) != (b & (1 << i)))
-          diff++;
+      // dct will store the discrete cosine transform 
+      var dct = new double[m,n];
 
-      return diff;
+      for (var i = 0; i < m; i++) {
+        for (var j = 0; j < n; j++) {
+          double ci, cj;
+          // ci and cj depends on frequency as well as 
+          // number of row and columns of specified matrix 
+          if (i == 0)
+            ci = 1 / Math.Sqrt(m);
+          else
+            ci = Math.Sqrt(2) / Math.Sqrt(m);
+
+          if (j == 0)
+            cj = 1 / Math.Sqrt(n);
+          else
+            cj = Math.Sqrt(2) / Math.Sqrt(n);
+
+          // sum will temporarily store the sum of  
+          // cosine signals 
+          double sum = 0;
+          for (var k = 0; k < m; k++) {
+            for (var l = 0; l < n; l++) {
+              sum += input[k, l] *
+                     Math.Cos((2 * k + 1) * i * pi / (2 * m)) *
+                     Math.Cos((2 * l + 1) * j * pi / (2 * n));
+            }
+          }
+
+          dct[i,j] = ci * cj * sum;
+        }
+      }
+
+      return dct;
     }
   }
 }
