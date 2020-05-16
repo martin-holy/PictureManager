@@ -3,6 +3,7 @@
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/MediaItemThumbnailStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/IconRectStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

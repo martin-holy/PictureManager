@@ -48,6 +48,7 @@ namespace PictureManager.ViewModels {
         splittedItem.Clear();
 
       SplittedItems.Clear();
+      App.WMain.ImageComparerTool.Close();
 
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
 

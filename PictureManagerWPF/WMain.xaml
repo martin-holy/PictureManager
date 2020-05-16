@@ -111,6 +111,12 @@
     </controls:WindowCommands>
   </controls:MetroWindow.LeftWindowCommands>
 
+  <controls:MetroWindow.RightWindowCommands>
+    <controls:WindowCommands>
+      <cc:ImageComparer x:Name="ImageComparerTool" Visibility="Collapsed" />
+    </controls:WindowCommands>
+  </controls:MetroWindow.RightWindowCommands>
+
   <controls:MetroWindow.Resources>
     <ItemsPanelTemplate x:Key="IptHorizontalStackPanel">
       <StackPanel Orientation="Horizontal" />
