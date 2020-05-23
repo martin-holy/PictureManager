@@ -2,10 +2,11 @@
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka (neni to tim ze se dela ReloadThumbnail v jinem vlakne?)
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
+- ve fullscreenu se nepridal keyword do status baru
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
-- progress bar na compare images
+- nedelat zbytecne SetThumbSize
 
 
 #New
@@ -20,7 +21,9 @@
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat tabs na thmbnails, moznost prejmenovat tab, a load je do aktivniho tabu
 - udelat do thumbnails kategorie podle slozek/datumu/...
+  kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - pridat do Favorites folders ToolTip s fullpath
+- multiselect on Folders, Keywords, People, ...
 
 
 #Code Cleaning

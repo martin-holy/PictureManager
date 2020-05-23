@@ -19,7 +19,7 @@ using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsViewModel {
-    public ObservableCollection<ObservableCollection<MediaItem>> SplittedItems { get; } = new ObservableCollection<ObservableCollection<MediaItem>>();
+    public ObservableCollection<object> SplittedItems { get; } = new ObservableCollection<object>();
 
     private CancellationTokenSource _loadCts;
     private Task _loadTask;
@@ -44,10 +44,7 @@ namespace PictureManager.ViewModels {
 
       // Clear before new load
       App.Core.Model.MediaItems.ClearItBeforeLoad();
-      foreach (var splittedItem in SplittedItems)
-        splittedItem.Clear();
-
-      SplittedItems.Clear();
+      SplittedItemsClear();
       App.WMain.ImageComparerTool.Close();
 
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
@@ -169,52 +166,88 @@ namespace PictureManager.ViewModels {
       });
     }
 
+    private bool SplittedItemsAddGroup(MediaItem mi) {
+      var group = SplittedItems.OfType<MediaItemsGroup>().LastOrDefault();
+
+      // tady k dohledany skupine pridavat postupne pocet souboru, ...
+
+      // Add Folder Group
+      //if (group != null && group.Folder.Equals(mi.Folder)) return false;
+      //SplittedItems.Add(new MediaItemsGroup { Title = mi.Folder.FullPath, Folder = mi.Folder });
+
+      // Add Date Group
+      var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
+      if (string.Empty.Equals(miDate)) return false;
+      if (group != null && group.Title.Equals(miDate)) return false;
+      SplittedItems.Add(new MediaItemsGroup {Title = miDate});
+
+      return true;
+    }
+
     private void SplittedItemsAdd(MediaItem mi) {
-      var lastRowIndex = SplittedItems.Count - 1;
-      if (lastRowIndex == -1) {
-        SplittedItems.Add(new ObservableCollection<MediaItem>());
-        lastRowIndex++;
+      // Add Media Items Group
+      if (SplittedItemsAddGroup(mi)) {
+        SplittedItems.Add(new MediaItemsRow {Items = {mi}});
+        return;
+      }
+
+      // Add Media Items Row
+      var row = SplittedItems.OfType<MediaItemsRow>().LastOrDefault();
+      if (row == null) {
+        row = new MediaItemsRow();
+        SplittedItems.Add(row);
       }
 
       var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+      var rowWidth = row.Items.Sum(x => x.ThumbWidth + itemOffset);
 
-      var rowWidth = SplittedItems[lastRowIndex].Sum(x => x.ThumbWidth + itemOffset);
-      if (mi.ThumbWidth <= rowMaxWidth - rowWidth) {
-        SplittedItems[lastRowIndex].Add(mi);
+      if (mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
+        row = new MediaItemsRow();
+        SplittedItems.Add(row);
       }
-      else {
-        SplittedItems.Add(new ObservableCollection<MediaItem>());
-        SplittedItems[lastRowIndex + 1].Add(mi);
-      }
+
+      // Add Media Item
+      row.Items.Add(mi);
     }
 
     public void SplittedItemsReload() {
-      foreach (var itemsRow in SplittedItems)
-        itemsRow.Clear();
-
-      SplittedItems.Clear();
+      SplittedItemsClear();
       App.WMain.UpdateLayout();
 
-      var row = new ObservableCollection<MediaItem>();
+      const int itemOffset = 6; //border, margin, padding, ...
+      MediaItemsGroup group = null;
+      MediaItemsRow row = null;
       var rowWidth = 0;
       var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
 
-      const int itemOffset = 6; //border, margin, padding, ...
-
       foreach (var mi in App.Core.Model.MediaItems.FilteredItems) {
-        if (mi.ThumbWidth + itemOffset <= rowMaxWidth - rowWidth) {
-          row.Add(mi);
-          rowWidth += mi.ThumbWidth + itemOffset;
-        }
-        else {
+        // Add Date Group
+        var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
+        if (!string.Empty.Equals(miDate) && (group == null || !group.Title.Equals(miDate))) {
+          group = new MediaItemsGroup {Title = miDate};
+          row = new MediaItemsRow();
+          SplittedItems.Add(group);
           SplittedItems.Add(row);
-          row = new ObservableCollection<MediaItem> { mi };
-          rowWidth = mi.ThumbWidth + itemOffset;
+          rowWidth = 0;
         }
-      }
 
-      SplittedItems.Add(row);
+        if (row == null || mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
+          rowWidth = 0;
+          row = new MediaItemsRow();
+          SplittedItems.Add(row);
+        }
+
+        row.Items.Add(mi);
+        rowWidth += mi.ThumbWidth + itemOffset;
+      }
+    }
+
+    private void SplittedItemsClear() {
+      foreach (var row in SplittedItems.OfType<MediaItemsRow>())
+        row.Items.Clear();
+
+      SplittedItems.Clear();
     }
 
     public void ScrollToCurrent() {
@@ -231,8 +264,9 @@ namespace PictureManager.ViewModels {
     public void ScrollTo(MediaItem mi) {
       var rowIndex = 0;
       foreach (var row in SplittedItems) {
-        if (row.Any(x => x.Id.Equals(mi.Id)))
-          break;
+        if (row is MediaItemsRow itemsRow)
+          if (itemsRow.Items.Any(x => x.Id.Equals(mi.Id)))
+            break;
         rowIndex++;
       }
 

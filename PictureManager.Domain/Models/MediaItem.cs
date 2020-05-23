@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -213,6 +214,15 @@ namespace PictureManager.Domain.Models {
 
     public void ReloadThumbnail() {
       OnPropertyChanged(nameof(FilePathCacheUri));
+    }
+
+    public static string GetDateTimeFromName(MediaItem mi, string format) {
+      if (mi == null) return string.Empty;
+
+      var sdt = mi.FileName.Length < 15 ? string.Empty : mi.FileName.Substring(0, 15);
+      var success = DateTime.TryParseExact(sdt, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt);
+
+      return success ? dt.ToString(format, CultureInfo.CurrentCulture) : string.Empty;
     }
   }
 }

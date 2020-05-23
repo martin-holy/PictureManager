@@ -346,19 +346,26 @@
 
           <!-- Thumbnails -->
           <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItemsViewModel.SplittedItems}"
-              VirtualizingStackPanel.IsVirtualizing="True" 
-              VirtualizingPanel.ScrollUnit="Pixel" 
-              ScrollViewer.CanContentScroll="True" PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
+                        VirtualizingStackPanel.IsVirtualizing="True" 
+                        VirtualizingPanel.ScrollUnit="Pixel" 
+                        ScrollViewer.CanContentScroll="True"
+                        PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
-                <ItemsControl ItemsSource="{Binding}" ItemsPanel="{StaticResource IptHorizontalStackPanel}">
-                  <!-- Thumbnail -->
+            <ItemsControl.Resources>
+              <!-- Thumbnails Rows -->
+              <DataTemplate DataType="{x:Type models:MediaItemsRow}">
+                <ItemsControl ItemsSource="{Binding Items}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+
                   <ItemsControl.ItemTemplate>
                     <DataTemplate>
                       <cc:MediaItemThumbnail DataContext="{Binding}" 
@@ -371,7 +378,17 @@
                   </ItemsControl.ItemTemplate>
                 </ItemsControl>
               </DataTemplate>
-            </ItemsControl.ItemTemplate>
+
+              <!-- Groups -->
+              <DataTemplate DataType="{x:Type models:MediaItemsGroup}">
+                <Border BorderBrush="Black" BorderThickness="1" Margin="1,20,0,8" Background="#88000000">
+                  <StackPanel Orientation="Horizontal">
+                    <cc:IconRect IconName="{x:Static pmd:IconName.Calendar}" Margin="8" />
+                    <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.Resources>
 
             <ItemsControl.Template>
               <ControlTemplate>

@@ -32,6 +32,7 @@ namespace PictureManager.ViewModels {
     public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
+    public string DateAndTime => MediaItem.GetDateTimeFromName(CurrentMediaItem, "d. MMMM yyyy, H:mm:ss");
 
     public bool IsGeoNameVisible => CurrentMediaItem?.GeoName != null;
     public bool IsCommentVisible => AppMode == AppMode.Viewer && !string.IsNullOrEmpty(CurrentMediaItem?.Comment);
@@ -107,15 +108,6 @@ namespace PictureManager.ViewModels {
         catch {
           return string.Empty;
         }
-      }
-    }
-
-    public string DateAndTime {
-      get {
-        var sdt = CurrentMediaItem?.FileName.Length < 15 ? string.Empty : CurrentMediaItem?.FileName.Substring(0, 15);
-        var success = DateTime.TryParseExact(sdt, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt);
-
-        return success ? dt.ToString("d. MMMM yyyy, H:mm:ss", CultureInfo.CurrentCulture) : string.Empty;
       }
     }
 
