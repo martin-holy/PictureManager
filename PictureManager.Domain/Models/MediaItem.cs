@@ -126,7 +126,9 @@ namespace PictureManager.Domain.Models {
 
     public void SetInfoBox() {
       InfoBoxPeople?.Clear();
+      InfoBoxPeople = null;
       InfoBoxKeywords?.Clear();
+      InfoBoxKeywords = null;
       InfoBoxThumb?.Clear();
       InfoBoxThumb = new ObservableCollection<string>();
 
