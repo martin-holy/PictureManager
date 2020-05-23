@@ -50,7 +50,9 @@
 
           <!-- Selected -->
           <Border Background="#1181B1"
-                  Visibility="{Binding AppInfo.IsSelectedCountVisible, Converter={StaticResource AllToVisibilityConverter}}">
+                  Visibility="{Binding AppInfo.AppMode, 
+                                       Converter={StaticResource AllToVisibilityConverter}, 
+                                       ConverterParameter={x:Static pm:AppMode.Browser}}">
             <TextBlock Text="{Binding Model.MediaItems.Selected}" />
           </Border>
 
@@ -73,9 +75,22 @@
                     Item="{Binding AppInfo.FileSize}" />
 
       <!-- ImageActualZoom -->
-      <uc:InfoPanel Visibility="{Binding AppInfo.IsImageActualZoomVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.Magnify}"
-                    Item="{Binding AppInfo.ZoomActualFormatted}" />
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.Magnify}" Item="{Binding AppInfo.ZoomActualFormatted}">
+        <uc:InfoPanel.Style>
+          <Style TargetType="{x:Type uc:InfoPanel}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                  <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
+                  <Condition Binding="{Binding Model.MediaItems.Current.MediaType}" Value="{x:Static pmd:MediaType.Image}" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" />
+              </MultiDataTrigger>
+            </Style.Triggers>
+          </Style>
+        </uc:InfoPanel.Style>
+      </uc:InfoPanel>
 
       <!-- Rating -->
       <Border Style="{StaticResource SBorderGroup}"
@@ -97,8 +112,18 @@
       </Border>
 
       <!-- GeoName -->
-      <Border Visibility="{Binding AppInfo.IsGeoNameVisible, Converter={StaticResource AllToVisibilityConverter}}"
-              ToolTip="{Binding AppInfo.FullGeoName}">
+      <Border ToolTip="{Binding AppInfo.FullGeoName}">
+        <Border.Style>
+          <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Model.MediaItems.Current.GeoName, 
+                                             Converter={StaticResource AllToBoolConverter}}" Value="True">
+                <Setter Property="Visibility" Value="Visible" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
         <cc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
       </Border>
 
@@ -114,19 +139,61 @@
                     Item="{Binding AppInfo.DateAndTime}" />
 
       <!-- People -->
-      <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxPeopleVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.People}"
-                    Items="{Binding AppInfo.CurrentMediaItem.InfoBoxPeople}" />
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.People}" Items="{Binding Model.MediaItems.Current.InfoBoxPeople}">
+        <uc:InfoPanel.Style>
+          <Style TargetType="{x:Type uc:InfoPanel}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                  <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
+                  <Condition Binding="{Binding Model.MediaItems.Current.InfoBoxPeople, 
+                                               Converter={StaticResource AllToBoolConverter}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" />
+              </MultiDataTrigger>
+            </Style.Triggers>
+          </Style>
+        </uc:InfoPanel.Style>
+      </uc:InfoPanel>
 
       <!-- Keywords -->
-      <uc:InfoPanel Visibility="{Binding AppInfo.IsInfoBoxKeywordsVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.Tag}"
-                    Items="{Binding AppInfo.CurrentMediaItem.InfoBoxKeywords}" />
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.Tag}" Items="{Binding Model.MediaItems.Current.InfoBoxKeywords}">
+        <uc:InfoPanel.Style>
+          <Style TargetType="{x:Type uc:InfoPanel}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                  <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
+                  <Condition Binding="{Binding Model.MediaItems.Current.InfoBoxKeywords, 
+                                               Converter={StaticResource AllToBoolConverter}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" />
+              </MultiDataTrigger>
+            </Style.Triggers>
+          </Style>
+        </uc:InfoPanel.Style>
+      </uc:InfoPanel>
 
       <!-- Comment -->
-      <uc:InfoPanel Visibility="{Binding AppInfo.IsCommentVisible, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.Notification}"
-                    Item="{Binding AppInfo.CurrentMediaItem.Comment}" />
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.Notification}" Item="{Binding Model.MediaItems.Current.Comment}">
+        <uc:InfoPanel.Style>
+          <Style TargetType="{x:Type uc:InfoPanel}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Style.Triggers>
+              <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                  <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
+                  <Condition Binding="{Binding Model.MediaItems.Current.Comment, 
+                                               Converter={StaticResource AllToBoolConverter}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Visibility" Value="Visible" />
+              </MultiDataTrigger>
+            </Style.Triggers>
+          </Style>
+        </uc:InfoPanel.Style>
+      </uc:InfoPanel>
 
     </WrapPanel>
   </Grid>

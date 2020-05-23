@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
@@ -34,13 +32,6 @@ namespace PictureManager.ViewModels {
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
     public string DateAndTime => MediaItem.GetDateTimeFromName(CurrentMediaItem, "d. MMMM yyyy, H:mm:ss");
 
-    public bool IsGeoNameVisible => CurrentMediaItem?.GeoName != null;
-    public bool IsCommentVisible => AppMode == AppMode.Viewer && !string.IsNullOrEmpty(CurrentMediaItem?.Comment);
-    public bool IsInfoBoxPeopleVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxPeople != null;
-    public bool IsInfoBoxKeywordsVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.InfoBoxKeywords != null;
-    public bool IsImageActualZoomVisible => AppMode == AppMode.Viewer && CurrentMediaItem?.MediaType == MediaType.Image;
-    public bool IsSelectedCountVisible => AppMode == AppMode.Browser;
-
     public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
     public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
     public string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
@@ -55,11 +46,6 @@ namespace PictureManager.ViewModels {
       set {
         _appMode = value;
         OnPropertyChanged();
-        OnPropertyChanged(nameof(IsCommentVisible));
-        OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
-        OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
-        OnPropertyChanged(nameof(IsImageActualZoomVisible));
-        OnPropertyChanged(nameof(IsSelectedCountVisible));
         OnPropertyChanged(nameof(FilePath));
         App.WMain.SetFlyoutMainTreeViewMargin();
       }
@@ -122,11 +108,6 @@ namespace PictureManager.ViewModels {
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
         
-        OnPropertyChanged(nameof(IsGeoNameVisible));
-        OnPropertyChanged(nameof(IsCommentVisible));
-        OnPropertyChanged(nameof(IsInfoBoxPeopleVisible));
-        OnPropertyChanged(nameof(IsInfoBoxKeywordsVisible));
-        OnPropertyChanged(nameof(IsImageActualZoomVisible));
         OnPropertyChanged(nameof(DateAndTime));
         OnPropertyChanged(nameof(FilePath));
         OnPropertyChanged(nameof(FileSize));

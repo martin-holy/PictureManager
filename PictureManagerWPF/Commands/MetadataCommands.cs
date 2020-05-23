@@ -132,7 +132,6 @@ namespace PictureManager.Commands {
       MediaItemsViewModel.TryWriteMetadata(current);
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
-      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.IsCommentVisible));
     }
 
     private static bool CanReload(object parameter) {
