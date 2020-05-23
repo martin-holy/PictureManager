@@ -5,7 +5,6 @@
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
-- nedelat zbytecne SetThumbSize
 
 
 #New

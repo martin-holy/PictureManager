@@ -103,7 +103,9 @@ namespace PictureManager.Domain.Models {
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
     }
 
-    public void SetThumbSize() {
+    public void SetThumbSize(bool reload = false) {
+      if (ThumbSize != 0 && !reload) return;
+
       // TODO: move next and last line calculation elsewhere
       var desiredSize = (int) (Core.Instance.ThumbnailSize / Core.Instance.WindowsDisplayScale * 100 * Core.Instance.ThumbScale);
 

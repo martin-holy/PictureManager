@@ -205,7 +205,7 @@ namespace PictureManager.Commands {
         mediaItems.ToArray(),
         null,
         async delegate (MediaItem mi) {
-          mi.SetThumbSize();
+          mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
           mi.ReloadThumbnail();
         },
