@@ -244,18 +244,18 @@ namespace PictureManager.Domain.Models {
               p.MediaItems.Add(mi);
             }
             else {
-              mi.People.Remove(p);
+              mi.People?.Remove(p);
               p.MediaItems.Remove(mi);
-              if (mi.People.Count == 0)
+              if (mi.People?.Count == 0)
                 mi.People = null;
             }
             break;
           }
           case Keyword k: {
             if (!k.IsMarked && mi.Keywords != null) {
-              mi.Keywords.Remove(k);
+              mi.Keywords?.Remove(k);
               k.MediaItems.Remove(mi);
-              if (mi.Keywords.Count == 0)
+              if (mi.Keywords?.Count == 0)
                 mi.Keywords = null;
               break;
             }
@@ -512,7 +512,7 @@ namespace PictureManager.Domain.Models {
 
     public void ResetThumbsSize() {
       foreach (var item in LoadedItems)
-        item.SetThumbSize();
+        item.SetThumbSize(true);
     }
 
     public MediaItem GetNext() {

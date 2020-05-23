@@ -305,7 +305,7 @@ namespace PictureManager.ViewModels {
           }
 
           TryWriteMetadata(mi);
-          mi.SetThumbSize();
+          mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
           mi.ReloadThumbnail();
         },
