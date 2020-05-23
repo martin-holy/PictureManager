@@ -2,7 +2,6 @@
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka (neni to tim ze se dela ReloadThumbnail v jinem vlakne?)
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
-- ve fullscreenu se nepridal keyword do status baru
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
