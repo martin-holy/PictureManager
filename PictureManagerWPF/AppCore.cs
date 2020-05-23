@@ -88,8 +88,6 @@ namespace PictureManager {
             Model.MediaItems.SetMetadata(item);
 
             Model.MarkUsedKeywordsAndPeople();
-            AppInfo.OnPropertyChanged(nameof(AppInfo.IsInfoBoxPeopleVisible));
-            AppInfo.OnPropertyChanged(nameof(AppInfo.IsInfoBoxKeywordsVisible));
             AppInfo.UpdateRating();
           }
           else {

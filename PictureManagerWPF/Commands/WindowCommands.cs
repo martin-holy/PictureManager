@@ -154,10 +154,7 @@ namespace PictureManager.Commands {
         // onCompleted
         delegate {
           App.Core.Model.Sdb.SaveAllTables();
-
-          var info = App.Core.AppInfo;
-          info.FullGeoName = info.CurrentMediaItem?.GeoName?.GetFullPath("\n");
-          info.OnPropertyChanged(nameof(info.IsGeoNameVisible));
+          App.Core.AppInfo.FullGeoName = App.Core.AppInfo.CurrentMediaItem?.GeoName?.GetFullPath("\n");
         });
 
       progress.StartDialog();

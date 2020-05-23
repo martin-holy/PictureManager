@@ -12,6 +12,33 @@ using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager {
+  public static class Convertors {
+    public static bool AllToBool(object value, object parameter) {
+      if (value == null) return false;
+
+      if (parameter != null)
+        return value.Equals(parameter);
+
+      switch (value) {
+        case string s: {
+          return !string.IsNullOrEmpty(s);
+        }
+        case bool b: {
+          return b;
+        }
+        case int i: {
+          return i > 0;
+        }
+        case Collection<string> c: {
+          return c.Count > 0;
+        }
+      }
+
+      // value != null
+      return true;
+    }
+  }
+
   public class StaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException();
@@ -105,32 +132,17 @@ namespace PictureManager {
 
   public class AllToVisibilityConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) return Visibility.Collapsed;
-      var result = false;
+      return Convertors.AllToBool(value, parameter) ? Visibility.Visible : Visibility.Collapsed;
+    }
 
-      if (parameter != null)
-        result = value.Equals(parameter);
-      else
-        switch (value) {
-          case string s: {
-            result = !string.IsNullOrEmpty(s);
-            break;
-          }
-          case bool b: {
-            result = b;
-            break;
-          }
-          case int i: {
-            result = i > 0;
-            break;
-          }
-          case Collection<string> c: {
-            result = c.Count > 0;
-            break;
-          }
-        }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      throw new NotSupportedException();
+    }
+  }
 
-      return result ? Visibility.Visible : Visibility.Collapsed;
+  public class AllToBoolConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      return Convertors.AllToBool(value, parameter);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
