@@ -92,7 +92,7 @@ namespace PictureManager {
           }
           else {
             // get items by tag
-            List<MediaItem> items = null;
+            var items = new List<MediaItem>();
 
             switch ((BaseTreeViewTagItem)item) {
               case Rating rating: items = Model.MediaItems.All.Where(x => x.Rating == rating.Value).ToList(); break;
@@ -100,6 +100,15 @@ namespace PictureManager {
               case Person person: items = person.MediaItems; break;
               case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
             }
+
+            // if CTRL is pressed, add new items to already loaded items
+            if (and)
+              items = Model.MediaItems.LoadedItems.Union(items).ToList();
+
+            // if ALT is pressed, remove new items from already loaded items
+            if (hide)
+              items = Model.MediaItems.LoadedItems.Except(items).ToList();
+
             await MediaItemsViewModel.LoadAsync(items, null);
             Model.MarkUsedKeywordsAndPeople();
           }
@@ -118,7 +127,15 @@ namespace PictureManager {
 
           var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> {(Folder) item};
           var folders = Folder.GetFolders(roots, recursive);
-          
+
+          // if CTRL is pressed, add items from new folders to already loaded items
+          if (and)
+            folders = Model.MediaItems.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
+
+          // if ALT is pressed, remove items from new folders from already loaded items
+          if (hide)
+            folders = Model.MediaItems.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
+
           await MediaItemsViewModel.LoadAsync(null, folders);
           Model.MarkUsedKeywordsAndPeople();
           break;
