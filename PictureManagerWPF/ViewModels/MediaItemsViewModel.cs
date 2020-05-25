@@ -38,9 +38,7 @@ namespace PictureManager.ViewModels {
         await _loadTask;
       }
 
-      // scroll to top to fix funny loading
-      if (App.Core.Model.MediaItems.FilteredItems.Count > 0)
-        ScrollTo(App.Core.Model.MediaItems.FilteredItems[0]);
+      ScrollToTop();
 
       // Clear before new load
       App.Core.Model.MediaItems.ClearItBeforeLoad();
@@ -258,6 +256,7 @@ namespace PictureManager.ViewModels {
 
     public void ScrollToTop() {
       App.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToTop();
+      App.WMain.UpdateLayout();
     }
 
     public void ScrollTo(MediaItem mi) {
@@ -365,8 +364,8 @@ namespace PictureManager.ViewModels {
 
       App.Core.Model.MediaItems.OnPropertyChanged(nameof(App.Core.Model.MediaItems.PositionSlashCount));
       App.Core.Model.MarkUsedKeywordsAndPeople();
-      SplittedItemsReload();
       ScrollToTop();
+      SplittedItemsReload();
     }
 
     public static bool TryWriteMetadata(MediaItem mediaItem) {
