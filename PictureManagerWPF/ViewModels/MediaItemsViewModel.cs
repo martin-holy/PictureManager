@@ -79,8 +79,8 @@ namespace PictureManager.ViewModels {
         }
 
         App.Core.Model.MediaItems.OnPropertyChanged(nameof(App.Core.Model.MediaItems.PositionSlashCount));
-        App.Core.Model.SetMediaItemSizesLoadedRange();
         await LoadThumbnailsAsync(App.Core.Model.MediaItems.FilteredItems.ToArray(), token);
+        App.Core.Model.SetMediaItemSizesLoadedRange();
       });
 
       await _loadTask;
@@ -151,7 +151,6 @@ namespace PictureManager.ViewModels {
               continue;
             }
 
-            mi.SetThumbSize();
             mediaItemsModified = true;
           }
 
@@ -500,6 +499,7 @@ namespace PictureManager.ViewModels {
               mi.Height = size[0];
               mi.Width = size[1];
               mi.Orientation = size[2];
+              mi.SetThumbSize(true);
             }
             catch (Exception ex) {
               App.Core.LogError(ex, mi.FilePath);
@@ -513,7 +513,7 @@ namespace PictureManager.ViewModels {
             mi.Width = frame.PixelWidth;
             mi.Height = frame.PixelHeight;
 
-            mi.SetThumbSize();
+            mi.SetThumbSize(true);
             App.Core.Model.MediaItems.Helper.IsModified = true;
 
             // true because only media item dimensions are required

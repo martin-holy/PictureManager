@@ -105,6 +105,22 @@ namespace PictureManager.Domain.Models {
 
     public void SetThumbSize(bool reload = false) {
       if (ThumbSize != 0 && !reload) return;
+      if (Width == 0 || Height == 0) return;
+
+      // TODO: move next and last line calculation elsewhere
+      var desiredSize = (int)(Core.Instance.ThumbnailSize / Core.Instance.WindowsDisplayScale * 100 * Core.Instance.ThumbScale);
+      var rotated = Orientation == (int) MediaOrientation.Rotate90 || Orientation == (int) MediaOrientation.Rotate270;
+      Imaging.GetThumbSize(rotated ? Height : Width, rotated ? Width : Height, desiredSize, out _thumbWidth, out _thumbHeight);
+
+      IsPanoramic = ThumbWidth > desiredSize;
+      OnPropertyChanged(nameof(ThumbWidth));
+      OnPropertyChanged(nameof(ThumbHeight));
+
+      ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * Core.Instance.WindowsDisplayScale / 100 / Core.Instance.ThumbScale);
+    }
+
+    public void SetThumbSizeOld(bool reload = false) {
+      if (ThumbSize != 0 && !reload) return;
 
       // TODO: move next and last line calculation elsewhere
       var desiredSize = (int) (Core.Instance.ThumbnailSize / Core.Instance.WindowsDisplayScale * 100 * Core.Instance.ThumbScale);
