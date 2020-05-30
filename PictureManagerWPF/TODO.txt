@@ -3,6 +3,8 @@
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
 - Date Group: kdyz MediaItem nema datum, a MediaItem pred nim ma datum, tak se prida do skupiny. mela by se vytvorit prazdna skupina
+- na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
+- kdyz se smaze slozka mimo program a pak se klikne na folder keyword s tou slozkou, tak to spande
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
