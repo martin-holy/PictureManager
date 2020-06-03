@@ -156,6 +156,13 @@ namespace PictureManager.Domain {
           }
         }
 
+        // Folders
+        var f = mi.Folder;
+        while (f != null) {
+          MarkedTagsAddWithIncrease(f);
+          f = f.Parent as Folder;
+        }
+
         // FolderKeywords
         var fk = mi.Folder.FolderKeyword;
         while (fk != null) {

@@ -23,7 +23,6 @@
 - udelat do thumbnails kategorie podle slozek/datumu/...
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - pridat do Favorites folders ToolTip s fullpath
-- PicCount na slozky
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 
 
