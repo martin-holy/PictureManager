@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Folder : BaseTreeViewItem, IRecord, IEquatable<Folder> {
+  public sealed class Folder : BaseTreeViewTagItem, IRecord, IEquatable<Folder> {
     public string[] Csv { get; set; }
     public int Id { get; }
     public bool IsFolderKeyword { get; set; }
