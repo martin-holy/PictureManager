@@ -41,7 +41,7 @@ namespace PictureManager.Commands {
     }
 
     public void SwitchToFullScreen() {
-      if (App.Core.Model.MediaItems.Current == null) return;
+      if (App.Core.Model.MediaItems.ThumbsGrid.Current == null) return;
       App.Core.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
@@ -117,10 +117,8 @@ namespace PictureManager.Commands {
 
       App.WMain.SetFlyoutMainTreeViewMargin();
 
-      if (reload) {
-        App.Core.MediaItemsViewModel.SplittedItemsReload();
-        App.Core.MediaItemsViewModel.ScrollToCurrent();
-      }
+      if (reload)
+        App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private void OpenFolderKeywordsList() {
@@ -129,7 +127,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.Model.MediaItems.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {
@@ -137,7 +135,7 @@ namespace PictureManager.Commands {
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
-        App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         delegate (MediaItem mi) {

@@ -62,7 +62,7 @@ namespace PictureManager.UserControls {
     public void Start(bool delay) {
       if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
 
-      var current = App.Core.Model.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
       if (delay && current.MediaType == MediaType.Image && current.IsPanoramic && PlayPanoramicImages) {
         Pause();
         App.WMain.FullImage.Play(Interval, delegate { Start(false); });

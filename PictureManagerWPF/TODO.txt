@@ -20,11 +20,11 @@
 - rotate video just for view (čeknout, jeslti nestaci mit na MediaItem zmenenou orientaci, ktera by se ukladala)
 - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
-- udelat tabs na thmbnails, moznost prejmenovat tab, a load je do aktivniho tabu
 - udelat do thumbnails kategorie podle slozek/datumu/...
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - pridat do Favorites folders ToolTip s fullpath
 - PicCount na slozky
+- prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 
 
 #Code Cleaning

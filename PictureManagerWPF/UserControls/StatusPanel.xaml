@@ -38,14 +38,14 @@
 
       <!-- PositionSlashCount / Selected / Modified -->
       <Border Style="{StaticResource SBorderGroup}"
-              Visibility="{Binding Model.MediaItems.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
+              Visibility="{Binding Model.MediaItems.ThumbsGrid.FilteredItems.Count, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <!-- Icon -->
           <cc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
 
           <!-- PositionSlashCount -->
           <Border>
-            <TextBlock Text="{Binding Model.MediaItems.PositionSlashCount}" />
+            <TextBlock Text="{Binding Model.MediaItems.ThumbsGrid.PositionSlashCount}" />
           </Border>
 
           <!-- Selected -->
@@ -53,7 +53,7 @@
                   Visibility="{Binding AppInfo.AppMode, 
                                        Converter={StaticResource AllToVisibilityConverter}, 
                                        ConverterParameter={x:Static pm:AppMode.Browser}}">
-            <TextBlock Text="{Binding Model.MediaItems.Selected}" />
+            <TextBlock Text="{Binding Model.MediaItems.ThumbsGrid.Selected}" />
           </Border>
 
           <!-- Modified -->
@@ -83,7 +83,7 @@
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                   <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding Model.MediaItems.Current.MediaType}" Value="{x:Static pmd:MediaType.Image}" />
+                  <Condition Binding="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType}" Value="{x:Static pmd:MediaType.Image}" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Visible" />
               </MultiDataTrigger>
@@ -117,7 +117,7 @@
           <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding Model.MediaItems.Current.GeoName, 
+              <DataTrigger Binding="{Binding Model.MediaItems.ThumbsGrid.Current.GeoName, 
                                              Converter={StaticResource AllToBoolConverter}}" Value="True">
                 <Setter Property="Visibility" Value="Visible" />
               </DataTrigger>
@@ -139,7 +139,7 @@
                     Item="{Binding AppInfo.DateAndTime}" />
 
       <!-- People -->
-      <uc:InfoPanel IconName="{x:Static pmd:IconName.People}" Items="{Binding Model.MediaItems.Current.InfoBoxPeople}">
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.People}" Items="{Binding Model.MediaItems.ThumbsGrid.Current.InfoBoxPeople}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -147,7 +147,7 @@
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                   <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding Model.MediaItems.Current.InfoBoxPeople, 
+                  <Condition Binding="{Binding Model.MediaItems.ThumbsGrid.Current.InfoBoxPeople, 
                                                Converter={StaticResource AllToBoolConverter}}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Visible" />
@@ -158,7 +158,7 @@
       </uc:InfoPanel>
 
       <!-- Keywords -->
-      <uc:InfoPanel IconName="{x:Static pmd:IconName.Tag}" Items="{Binding Model.MediaItems.Current.InfoBoxKeywords}">
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.Tag}" Items="{Binding Model.MediaItems.ThumbsGrid.Current.InfoBoxKeywords}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -166,7 +166,7 @@
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                   <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding Model.MediaItems.Current.InfoBoxKeywords, 
+                  <Condition Binding="{Binding Model.MediaItems.ThumbsGrid.Current.InfoBoxKeywords, 
                                                Converter={StaticResource AllToBoolConverter}}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Visible" />
@@ -177,7 +177,7 @@
       </uc:InfoPanel>
 
       <!-- Comment -->
-      <uc:InfoPanel IconName="{x:Static pmd:IconName.Notification}" Item="{Binding Model.MediaItems.Current.Comment}">
+      <uc:InfoPanel IconName="{x:Static pmd:IconName.Notification}" Item="{Binding Model.MediaItems.ThumbsGrid.Current.Comment}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -185,7 +185,7 @@
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                   <Condition Binding="{Binding AppInfo.AppMode}" Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding Model.MediaItems.Current.Comment, 
+                  <Condition Binding="{Binding Model.MediaItems.ThumbsGrid.Current.Comment, 
                                                Converter={StaticResource AllToBoolConverter}}" Value="True" />
                 </MultiDataTrigger.Conditions>
                 <Setter Property="Visibility" Value="Visible" />

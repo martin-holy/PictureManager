@@ -4,6 +4,7 @@
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/MediaItemThumbnailStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/IconRectStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ThumbnailsGridControlStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

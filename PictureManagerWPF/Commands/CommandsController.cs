@@ -23,7 +23,7 @@ namespace PictureManager.Commands {
       MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
 
       SetTargetToCommand(MediaCommands.TogglePlayPause, App.WMain.FullMedia);
-      SetTargetToCommand(MediaItemsCommands.SelectAllCommand, App.WMain.ThumbsBox);
+      SetTargetToCommand(MediaItemsCommands.SelectAllCommand, App.WMain.TabThumbnailsGrids);
     }
 
     private void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {

@@ -55,7 +55,7 @@ namespace PictureManager.CustomControls {
     }
 
     public void Compare() {
-      var items = MediaItems.Filter(App.Core.Model.MediaItems.LoadedItems);
+      var items = MediaItems.Filter(App.Core.Model.MediaItems.ThumbsGrid.LoadedItems);
       List<MediaItem> similar = null;
 
       switch (SelectedMode) {
@@ -71,13 +71,13 @@ namespace PictureManager.CustomControls {
         }
       }
 
-      App.Core.Model.MediaItems.FilteredItems.Clear();
+      App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Clear();
       if (similar != null)
         foreach (var mi in similar)
-          App.Core.Model.MediaItems.FilteredItems.Add(mi);
+          App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Add(mi);
 
-      App.Core.MediaItemsViewModel.SplittedItemsReload();
-      App.Core.Model.MediaItems.Current = null;
+      App.Core.Model.MediaItems.ThumbsGrid.Current = null;
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
       App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 

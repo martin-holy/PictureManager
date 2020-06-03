@@ -9,7 +9,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.Commands;
-using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -39,6 +38,9 @@ namespace PictureManager {
 
     public WMain() {
       InitializeComponent();
+
+      // add default ThumbnailsGridControl
+      MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.Model.MediaItems.ThumbsGrid);
 
       PresentationPanel.Elapsed = delegate {
         Application.Current.Dispatcher?.Invoke(delegate {
@@ -204,7 +206,7 @@ namespace PictureManager {
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var foMode = e.KeyStates == DragDropKeyStates.ControlKey ? FileOperationMode.Copy : FileOperationMode.Move;
         App.Core.MediaItemsViewModel.CopyMove(
-          foMode, App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
+          foMode, App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder) destData);
         App.Core.Model.MediaItems.Helper.IsModified = true;
       }
       // Folder
@@ -265,7 +267,7 @@ namespace PictureManager {
       // MediaItems
       if (e.Data.GetDataPresent(DataFormats.FileDrop)) {
         var dragged = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.OrderBy(x => x).ToArray();
-        var selected = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+        var selected = App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
         if (dragged != null && selected.SequenceEqual(dragged) && 
             dataContext is Folder destData && destData.IsAccessible) return;
@@ -296,82 +298,6 @@ namespace PictureManager {
     }
     #endregion
 
-    #region Thumbnail
-    private void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
-      var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-      var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var mi = (MediaItem) ((FrameworkElement) sender).DataContext;
-
-      // use middle and right button like CTRL + left button
-      if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Right) {
-        isCtrlOn = true;
-        isShiftOn = false;
-      }
-
-      App.Core.Model.MediaItems.Select(isCtrlOn, isShiftOn, mi);
-      App.Core.Model.MarkUsedKeywordsAndPeople();
-    }
-
-    private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      _dragDropStartPosition = e.GetPosition(null);
-      if (e.ClickCount != 2) return;
-
-      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
-
-      if (mi == null) return;
-      App.Core.Model.MediaItems.DeselectAll();
-      App.Core.Model.MediaItems.Current = mi;
-
-      if (mi.MediaType == MediaType.Video) {
-        (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
-        VideoThumbnailPreview.Source = null;
-      }
-
-      CommandsController.WindowCommands.SwitchToFullScreen();
-      SetMediaItemSource();
-    }
-
-    private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
-      if (!IsDragDropStarted(e)) return;
-      var dob = new DataObject();
-      var data = App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
-      if (data.Count == 0)
-        data.Add(((MediaItem) ((FrameworkElement) sender).DataContext).FilePath);
-      dob.SetData(DataFormats.FileDrop, data.ToArray());
-      DragDrop.DoDragDrop(this, dob, DragDropEffects.Move | DragDropEffects.Copy);
-    }
-
-    private void Thumb_OnMouseEnter(object sender, MouseEventArgs e) {
-      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
-      if (mi == null) return;
-      if (mi.MediaType != MediaType.Video) return;
-
-      VideoThumbnailPreview.Source = mi.FilePathUri;
-      (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
-      ((MediaItemThumbnail) sender).InsertPlayer(VideoThumbnailPreview);
-      VideoThumbnailPreview.Play();
-    }
-
-    private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
-      var mi = ((FrameworkElement) sender).DataContext as MediaItem;
-      if (mi == null) return;
-      if (mi.MediaType != MediaType.Video) return;
-
-      (VideoThumbnailPreview.Parent as Grid)?.Children.Remove(VideoThumbnailPreview);
-      VideoThumbnailPreview.Source = null;
-    }
-
-    private void ThumbsBox_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
-      if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
-      if (e.Delta < 0 && App.Core.Model.ThumbScale < .1) return;
-      App.Core.Model.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      App.Core.AppInfo.IsThumbInfoVisible = App.Core.Model.ThumbScale > 0.5;
-      App.Core.Model.MediaItems.ResetThumbsSize();
-      App.Core.MediaItemsViewModel.SplittedItemsReload();
-    }
-
-    #endregion
-
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
       App.Core.Model.MediaItemSizes.Size.SliderChanged = true;
       App.Core.MediaItemsViewModel.ReapplyFilter();
@@ -385,7 +311,7 @@ namespace PictureManager {
     }
 
     public void SetMediaItemSource(bool decoded = false) {
-      var current = App.Core.Model.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current, decoded);
@@ -441,8 +367,7 @@ namespace PictureManager {
 
     private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
       FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      App.Core.MediaItemsViewModel.SplittedItemsReload();
-      App.Core.MediaItemsViewModel.ScrollToCurrent();
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
@@ -463,12 +388,34 @@ namespace PictureManager {
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       if (App.Core.AppInfo.AppMode == AppMode.Viewer) return;
-      App.Core.MediaItemsViewModel.SplittedItemsReload();
-      App.Core.MediaItemsViewModel.ScrollToCurrent();
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
       App.Core.ClearFilters();
+    }
+
+    private void TabThumbnailsGrids_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
+      var grid = (ThumbnailsGrid) ((FrameworkElement) ((TabControl) sender).SelectedItem).DataContext;
+      App.Core.Model.MediaItems.ThumbsGrid = grid;
+      grid.UpdateSelected();
+      App.Core.AppInfo.CurrentMediaItem = grid.Current;
+    }
+
+    private void TabThumbnailsGrids_CloseTab(object sender, RoutedEventArgs e) {
+      if (!(((FrameworkElement) sender).DataContext is ThumbnailsGrid grid)) return;
+      App.Core.MediaItemsViewModel.RemoveThumbnailsGrid(TabThumbnailsGrids, grid);
+
+      // set new SelectedItem and remove TabItem
+      var tab = ((FrameworkElement) sender).TryFindParent<TabItem>();
+      if (tab == null) return;
+      var i = TabThumbnailsGrids.Items.IndexOf(tab);
+      TabThumbnailsGrids.SelectedItem = TabThumbnailsGrids.Items[i != 0 ? 0 : 1];
+      TabThumbnailsGrids.Items.Remove(tab);
+    }
+
+    public void TabThumbnailsGrids_AddTab(object sender, RoutedEventArgs e) {
+      MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.MediaItemsViewModel.AddThumbnailsGridModel());
     }
   }
 }

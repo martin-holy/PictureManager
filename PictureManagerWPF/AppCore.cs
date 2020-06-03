@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,13 +31,7 @@ namespace PictureManager {
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
 
-      MediaItemsViewModel = new MediaItemsViewModel();
-
-      Model.MediaItems.PropertyChanged += delegate (object sender, PropertyChangedEventArgs e) {
-        if (e.PropertyName.Equals(nameof(Model.MediaItems.Current))) {
-          AppInfo.CurrentMediaItem = Model.MediaItems.Current;
-        }
-      };
+      MediaItemsViewModel = new MediaItemsViewModel(this);
     }
 
     public void SetBackgroundBrush(BaseTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -103,13 +96,13 @@ namespace PictureManager {
 
             // if CTRL is pressed, add new items to already loaded items
             if (and)
-              items = Model.MediaItems.LoadedItems.Union(items).ToList();
+              items = Model.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
 
             // if ALT is pressed, remove new items from already loaded items
             if (hide)
-              items = Model.MediaItems.LoadedItems.Except(items).ToList();
+              items = Model.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
 
-            await MediaItemsViewModel.LoadAsync(items, null);
+            await MediaItemsViewModel.LoadAsync(items, null, item.Title);
             Model.MarkUsedKeywordsAndPeople();
           }
 
@@ -130,13 +123,13 @@ namespace PictureManager {
 
           // if CTRL is pressed, add items from new folders to already loaded items
           if (and)
-            folders = Model.MediaItems.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
+            folders = Model.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
 
           // if ALT is pressed, remove items from new folders from already loaded items
           if (hide)
-            folders = Model.MediaItems.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
+            folders = Model.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
 
-          await MediaItemsViewModel.LoadAsync(null, folders);
+          await MediaItemsViewModel.LoadAsync(null, folders, folders[0].Title);
           Model.MarkUsedKeywordsAndPeople();
           break;
         }

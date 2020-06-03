@@ -98,6 +98,7 @@
     <Compile Include="CustomControls\IconRect.cs" />
     <Compile Include="CustomControls\ImageComparer.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
+    <Compile Include="CustomControls\ThumbnailsGridControl.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -256,6 +257,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\RotationDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\ThumbnailsGridControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
