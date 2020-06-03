@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -19,10 +21,15 @@ using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsViewModel {
-    public ObservableCollection<object> SplittedItems { get; } = new ObservableCollection<object>();
-
     private CancellationTokenSource _loadCts;
     private Task _loadTask;
+    private readonly MediaItems _model;
+
+    public MediaItemsViewModel(AppCore core) {
+      _model = core.Model.MediaItems;
+      // create default ThumbnailsGrid
+      AddThumbnailsGridModel();
+    }
 
     ~MediaItemsViewModel() {
       if (_loadCts != null) {
@@ -31,7 +38,54 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, bool sorted = true) {
+    public ThumbnailsGrid AddThumbnailsGridModel() {
+      var grid = new ThumbnailsGrid();
+      grid.PropertyChanged += OnCurrentMediaItemChange;
+
+      if (_model.ThumbnailsGrids.Count == 0)
+        grid.ShowAddTabButton = true;
+
+      _model.ThumbnailsGrids.Add(grid);
+      _model.ThumbsGrid = grid;
+
+      return grid;
+    }
+
+    public static void AddThumbnailsGridView(TabControl tabControl, ThumbnailsGrid grid) {
+      var tabItem = new TabItem {
+        DataContext = grid,
+        Content = new ThumbnailsGridControl {
+          Name = "ThumbsGridControl"
+        },
+        HeaderTemplate = tabControl.FindResource("ThumbsTabItemTemplate") as DataTemplate
+      };
+      tabItem.DataContext = grid;
+      tabControl.Items.Add(tabItem);
+      tabControl.SelectedItem = tabItem;
+    }
+
+    public void RemoveThumbnailsGrid(TabControl tabControl, ThumbnailsGrid grid) {
+      grid.ClearItBeforeLoad();
+      grid.PropertyChanged -= OnCurrentMediaItemChange;
+      _model.ThumbnailsGrids.Remove(grid);
+      
+      if (_model.ThumbnailsGrids.Count == 0)
+        AddThumbnailsGridView(tabControl, AddThumbnailsGridModel());
+
+      // show/hide AddTabButton
+      foreach (var tGrid in _model.ThumbnailsGrids)
+        tGrid.ShowAddTabButton = false;
+      _model.ThumbnailsGrids[0].ShowAddTabButton = true;
+    }
+
+    public void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
+      var grid = (ThumbnailsGrid)sender;
+      if (e.PropertyName.Equals(nameof(grid.Current))) {
+        App.Core.AppInfo.CurrentMediaItem = grid.Current;
+      }
+    }
+
+    public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
       // cancel previous work
       if (_loadCts != null) {
         _loadCts.Cancel();
@@ -40,9 +94,12 @@ namespace PictureManager.ViewModels {
 
       ScrollToTop();
 
+      var currentGrid = _model.ThumbsGrid;
+      currentGrid.Title = tabTitle;
+
       // Clear before new load
-      App.Core.Model.MediaItems.ClearItBeforeLoad();
-      SplittedItemsClear();
+      currentGrid.ClearItBeforeLoad();
+      currentGrid.ClearRows();
       App.WMain.ImageComparerTool.Close();
 
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
@@ -59,25 +116,24 @@ namespace PictureManager.ViewModels {
         }
 
         if (folders != null) {
-          items = await App.Core.Model.MediaItems.GetMediaItemsFromFoldersAsync(folders, token);
+          items = await _model.GetMediaItemsFromFoldersAsync(folders, token);
         }
 
-        if (sorted)
-          items = items.OrderBy(x => x.FileName).ToList();
+        items = items.OrderBy(x => x.FileName).ToList();
 
         // set thumb size and add Media Items to LoadedItems
         foreach (var mi in items) {
           mi.SetThumbSize();
-          App.Core.Model.MediaItems.LoadedItems.Add(mi);
+          currentGrid.LoadedItems.Add(mi);
         }
 
         // filter Media Items and add them to FilteredItems
-        foreach (var mi in MediaItems.Filter(App.Core.Model.MediaItems.LoadedItems)) {
-          App.Core.Model.MediaItems.FilteredItems.Add(mi);
+        foreach (var mi in MediaItems.Filter(currentGrid.LoadedItems)) {
+          currentGrid.FilteredItems.Add(mi);
         }
 
-        App.Core.Model.MediaItems.OnPropertyChanged(nameof(App.Core.Model.MediaItems.PositionSlashCount));
-        await LoadThumbnailsAsync(App.Core.Model.MediaItems.FilteredItems.ToArray(), token);
+        currentGrid.OnPropertyChanged(nameof(currentGrid.PositionSlashCount));
+        await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), token);
         App.Core.Model.SetMediaItemSizesLoadedRange();
       });
 
@@ -103,7 +159,7 @@ namespace PictureManager.ViewModels {
           saveDb = true;
           if (Application.Current.Dispatcher != null)
             await Application.Current.Dispatcher.InvokeAsync(delegate {
-              Delete(App.Core.Model.MediaItems.All.Where(x => x.IsNew).ToArray());
+              Delete(_model.All.Where(x => x.IsNew).ToArray());
             });
         }
 
@@ -112,15 +168,20 @@ namespace PictureManager.ViewModels {
       });
 
       // TODO: is this necessary?
-      if (App.Core.Model.MediaItems.Current != null) {
-        App.Core.Model.MediaItems.SetSelected(App.Core.Model.MediaItems.Current, false);
-        App.Core.Model.MediaItems.SetSelected(App.Core.Model.MediaItems.Current, true);
+      if (_model.ThumbsGrid.Current != null) {
+        _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, false);
+        _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, true);
       }
 
       GC.Collect();
     }
 
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      var maxWidth = 0.0;
+      Application.Current.Dispatcher?.Invoke(delegate {
+        maxWidth = App.WMain.TabThumbnailsGrids.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
+      });
+
       return Task.Run(() => {
         var mediaItemsModified = false;
         var count = items.Count;
@@ -135,14 +196,14 @@ namespace PictureManager.ViewModels {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            Application.Current.Dispatcher?.Invoke(delegate { App.Core.Model.MediaItems.MediaItemsCount++; });
+            Application.Current.Dispatcher?.Invoke(delegate { _model.MediaItemsCount++; });
 
             if (!ReadMetadata(mi)) {
               // delete corrupted MediaItems
               Application.Current.Dispatcher?.Invoke(delegate {
-                App.Core.Model.MediaItems.LoadedItems.Remove(mi);
-                App.Core.Model.MediaItems.FilteredItems.Remove(mi);
-                App.Core.Model.MediaItems.Delete(mi);
+                _model.ThumbsGrid.LoadedItems.Remove(mi);
+                _model.ThumbsGrid.FilteredItems.Remove(mi);
+                _model.Delete(mi);
                 App.Core.AppInfo.ProgressBarValueA = percent;
               });
 
@@ -154,7 +215,7 @@ namespace PictureManager.ViewModels {
 
           Application.Current.Dispatcher?.Invoke(delegate {
             mi.SetInfoBox();
-            SplittedItemsAdd(mi);
+            _model.ThumbsGrid.AddItem(mi, maxWidth);
             App.Core.AppInfo.ProgressBarValueA = percent;
           });
         }
@@ -163,116 +224,33 @@ namespace PictureManager.ViewModels {
       });
     }
 
-    private bool SplittedItemsAddGroup(MediaItem mi) {
-      var group = SplittedItems.OfType<MediaItemsGroup>().LastOrDefault();
-
-      // tady k dohledany skupine pridavat postupne pocet souboru, ...
-
-      // Add Folder Group
-      //if (group != null && group.Folder.Equals(mi.Folder)) return false;
-      //SplittedItems.Add(new MediaItemsGroup { Title = mi.Folder.FullPath, Folder = mi.Folder });
-
-      // Add Date Group
-      var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
-      if (string.Empty.Equals(miDate)) return false;
-      if (group != null && group.Title.Equals(miDate)) return false;
-      SplittedItems.Add(new MediaItemsGroup {Title = miDate});
-
-      return true;
-    }
-
-    private void SplittedItemsAdd(MediaItem mi) {
-      // Add Media Items Group
-      if (SplittedItemsAddGroup(mi)) {
-        SplittedItems.Add(new MediaItemsRow {Items = {mi}});
-        return;
-      }
-
-      // Add Media Items Row
-      var row = SplittedItems.OfType<MediaItemsRow>().LastOrDefault();
-      if (row == null) {
-        row = new MediaItemsRow();
-        SplittedItems.Add(row);
-      }
-
-      var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
-      var rowWidth = row.Items.Sum(x => x.ThumbWidth + itemOffset);
-
-      if (mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
-        row = new MediaItemsRow();
-        SplittedItems.Add(row);
-      }
-
-      // Add Media Item
-      row.Items.Add(mi);
-    }
-
-    public void SplittedItemsReload() {
-      SplittedItemsClear();
+    public void ThumbsGridReloadItems() {
+      ScrollToTop();
       App.WMain.UpdateLayout();
-
-      const int itemOffset = 6; //border, margin, padding, ...
-      MediaItemsGroup group = null;
-      MediaItemsRow row = null;
-      var rowWidth = 0;
-      var rowMaxWidth = App.WMain.ThumbsBox.ActualWidth;
-
-      foreach (var mi in App.Core.Model.MediaItems.FilteredItems) {
-        // Add Date Group
-        var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
-        if (!string.Empty.Equals(miDate) && (group == null || !group.Title.Equals(miDate))) {
-          group = new MediaItemsGroup {Title = miDate};
-          row = new MediaItemsRow();
-          SplittedItems.Add(group);
-          SplittedItems.Add(row);
-          rowWidth = 0;
-        }
-
-        if (row == null || mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
-          rowWidth = 0;
-          row = new MediaItemsRow();
-          SplittedItems.Add(row);
-        }
-
-        row.Items.Add(mi);
-        rowWidth += mi.ThumbWidth + itemOffset;
-      }
-    }
-
-    private void SplittedItemsClear() {
-      foreach (var row in SplittedItems.OfType<MediaItemsRow>())
-        row.Items.Clear();
-
-      SplittedItems.Clear();
+      var maxWidth = App.WMain.TabThumbnailsGrids.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
+      _model.ThumbsGrid.ReloadItems(maxWidth);
+      ScrollToCurrent();
     }
 
     public void ScrollToCurrent() {
-      if (App.Core.Model.MediaItems.Current == null)
+      if (_model.ThumbsGrid?.Current == null)
         ScrollToTop();
       else
-        ScrollTo(App.Core.Model.MediaItems.Current);
+        ScrollTo(_model.ThumbsGrid.Current);
     }
 
     public void ScrollToTop() {
-      App.WMain.ThumbsBox.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToTop();
+      App.WMain.TabThumbnailsGrids.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToTop();
       App.WMain.UpdateLayout();
     }
 
     public void ScrollTo(MediaItem mi) {
-      var rowIndex = 0;
-      foreach (var row in SplittedItems) {
-        if (row is MediaItemsRow itemsRow)
-          if (itemsRow.Items.Any(x => x.Id.Equals(mi.Id)))
-            break;
-        rowIndex++;
-      }
-
-      App.WMain.ThumbsBox.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel").BringIndexIntoViewPublic(rowIndex);
+      App.WMain.TabThumbnailsGrids.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel")
+        .BringIndexIntoViewPublic(_model.ThumbsGrid.GetRowIndexWith(mi));
     }
 
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
-      App.Core.Model.MediaItems.Helper.IsModified = true;
+      _model.Helper.IsModified = true;
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
       progress.AddEvents(
@@ -310,8 +288,7 @@ namespace PictureManager.ViewModels {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          SplittedItemsReload();
-          ScrollToCurrent();
+          ThumbsGridReloadItems();
           App.Core.Model.Sdb.SaveAllTables();
         });
 
@@ -343,29 +320,21 @@ namespace PictureManager.ViewModels {
       fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {
-        App.Core.Model.MediaItems.RemoveSelected(false, null);
-        SplittedItemsReload();
-        ScrollToCurrent();
+        _model.ThumbsGrid.RemoveSelected(false, null);
+        ThumbsGridReloadItems();
       }
     }
 
     public void Delete(MediaItem[] items) {
       var progress = new ProgressBarDialog(App.WMain, false, 1, "Removing Media Items from database ...");
-      progress.AddEvents(items, null, App.Core.Model.MediaItems.Delete, mi => mi.FilePath, null);
+      progress.AddEvents(items, null, _model.Delete, mi => mi.FilePath, null);
       progress.StartDialog();
     }
 
     public void ReapplyFilter() {
-      App.Core.Model.MediaItems.Current = null;
-      App.Core.Model.MediaItems.FilteredItems.Clear();
-
-      foreach (var mi in MediaItems.Filter(App.Core.Model.MediaItems.LoadedItems))
-        App.Core.Model.MediaItems.FilteredItems.Add(mi);
-
-      App.Core.Model.MediaItems.OnPropertyChanged(nameof(App.Core.Model.MediaItems.PositionSlashCount));
+      _model.ThumbsGrid.ReapplyFilter();
       App.Core.Model.MarkUsedKeywordsAndPeople();
-      ScrollToTop();
-      SplittedItemsReload();
+      ThumbsGridReloadItems();
     }
 
     public static bool TryWriteMetadata(MediaItem mediaItem) {

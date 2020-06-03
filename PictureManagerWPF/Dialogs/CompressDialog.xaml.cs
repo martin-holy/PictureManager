@@ -51,8 +51,8 @@ namespace PictureManager.Dialogs {
       _compress.ProgressChanged += Compress_ProgressChanged;
       _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
       _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? App.Core.Model.MediaItems.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
-        : App.Core.Model.MediaItems.FilteredItems.ToList());
+        ? App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
+        : App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.ToList());
     }
 
     private static void Compress_DoWork(object sender, DoWorkEventArgs e) {

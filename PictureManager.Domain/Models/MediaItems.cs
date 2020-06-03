@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using PictureManager.Domain.Utils;
@@ -12,46 +10,24 @@ using Directory = System.IO.Directory;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class MediaItems : INotifyPropertyChanged, ITable {
+  public class MediaItems : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
     public List<MediaItem> All { get; } = new List<MediaItem>();
 
-    private MediaItem _current;
     private bool _isEditModeOn;
-    private int _selected;
-    private int? _indexOfCurrent;
     private int _mediaItemsCount;
+    private ThumbnailsGrid _currentThumbsGrid;
 
-    public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
-    public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
-    public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
-    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
-
-    public MediaItem Current {
-      get => _current;
-      set {
-        if (_current != null) SetSelected(_current, false);
-        _current = value;
-        if (_current != null) SetSelected(_current, true);
-        _indexOfCurrent = value == null ? null : (int?) FilteredItems.IndexOf(value);
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(PositionSlashCount));
-      }
+    public ThumbnailsGrid ThumbsGrid {
+      get => _currentThumbsGrid;
+      set { _currentThumbsGrid = value; OnPropertyChanged(nameof(ThumbsGrid)); }
     }
-
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
-    public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
-    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
-
     public int ModifiedCount => ModifiedItems.Count;
     public List<MediaItem> ModifiedItems = new List<MediaItem>();
-
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
+    public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new ObservableCollection<ThumbnailsGrid>();
+    public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public void NewFromCsv(string csv) {
       // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords
@@ -146,6 +122,13 @@ namespace PictureManager.Domain.Models {
       item.GeoName?.MediaItems.Remove(item);
       item.GeoName = null;
 
+      // remove from ThumbnailsGrids
+      foreach (var thumbnailsGrid in ThumbnailsGrids) {
+        thumbnailsGrid.FilteredItems.Remove(item);
+        thumbnailsGrid.LoadedItems.Remove(item);
+        thumbnailsGrid.SelectedItems.Remove(item);
+      }
+
       // remove from DB
       All.Remove(item);
 
@@ -153,12 +136,6 @@ namespace PictureManager.Domain.Models {
 
       // set MediaItems table as modified
       Helper.IsModified = true;
-    }
-
-    public void SetSelected(MediaItem mi, bool value) {
-      if (mi.IsSelected == value) return;
-      mi.IsSelected = value;
-      if (value) Selected++; else Selected--;
     }
 
     public void SetModified(MediaItem mi, bool value) {
@@ -172,67 +149,8 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(ModifiedCount));
     }
 
-    public List<MediaItem> GetSelectedOrAll() {
-      var mediaItems = FilteredItems.Where(x => x.IsSelected).ToList();
-      return mediaItems.Count == 0 ? FilteredItems.ToList() : mediaItems;
-    }
-
-    public void SelectAll() {
-      Current = null;
-      foreach (var mi in FilteredItems)
-        SetSelected(mi, true);
-    }
-
-    public void DeselectAll() {
-      Current = null;
-      foreach (var mi in LoadedItems)
-        SetSelected(mi, false);
-    }
-
-    public void SelectNotModified() {
-      Current = null;
-      foreach (var mi in FilteredItems) {
-        SetSelected(mi, false);
-        if (!mi.IsModified)
-          SetSelected(mi, true);
-      }
-    }
-
-    public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) {
-      var items = FilteredItems.Where(x => x.IsSelected).ToList();
-      if (items.Count == 0) return;
-
-      // set Current to next MediaItem after last selected or one before first selected or null
-      var indexOfNewCurrent = FilteredItems.IndexOf(items[items.Count - 1]) + 1;
-      if (indexOfNewCurrent == FilteredItems.Count)
-        indexOfNewCurrent = FilteredItems.IndexOf(items[0]) - 1;
-      Current = indexOfNewCurrent >= 0 ? FilteredItems[indexOfNewCurrent] : null;
-
-      var files = new List<string>();
-      var cache = new List<string>();
-
-      foreach (var mi in items) {
-        LoadedItems.Remove(mi);
-        FilteredItems.Remove(mi);
-        if (delete) {
-          files.Add(mi.FilePath);
-          cache.Add(mi.FilePathCache);
-          Delete(mi);
-        }
-        else SetSelected(mi, false);
-      }
-
-      // update Current after the FilteredItems were changed
-      Current = Current;
-
-      if (delete) {
-        fileOperationDelete.Invoke(files, true, false);
-        cache.ForEach(File.Delete);
-      }
-    }
-
     public void SetMetadata(object tag) {
-      foreach (var mi in FilteredItems.Where(x => x.IsSelected)) {
+      foreach (var mi in ThumbsGrid.SelectedItems) {
         SetModified(mi, true);
 
         switch (tag) {
@@ -311,19 +229,6 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void ClearItBeforeLoad() {
-      Current = null;
-      foreach (var item in LoadedItems) {
-        SetSelected(item, false);
-        item.InfoBoxThumb = null;
-        item.InfoBoxPeople = null;
-        item.InfoBoxKeywords = null;
-      }
-
-      LoadedItems.Clear();
-      FilteredItems.Clear();
-    }
-
     public static void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder,
       IProgress<object[]> progress, CollisionResolver collisionResolver, CancellationToken token) {
       var count = items.Count;
@@ -345,7 +250,7 @@ namespace PictureManager.Domain.Models {
           var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Core.Instance.RunOnUiThread(() => Core.Instance.MediaItems.SetSelected(mi, false));
+            Core.Instance.RunOnUiThread(() => Core.Instance.MediaItems.ThumbsGrid.SetSelected(mi, false));
             continue;
           }
         }
@@ -508,58 +413,6 @@ namespace PictureManager.Domain.Models {
       });
 
       return output;
-    }
-
-    public void ResetThumbsSize() {
-      foreach (var item in LoadedItems)
-        item.SetThumbSize(true);
-    }
-
-    public MediaItem GetNext() {
-      if (Current == null || _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1) return null;
-
-      return FilteredItems[(int) _indexOfCurrent + 1];
-    }
-
-    public MediaItem GetPrevious() {
-      if (Current == null || _indexOfCurrent == null || _indexOfCurrent < 1) return null;
-
-      return FilteredItems[(int) _indexOfCurrent - 1];
-    }
-
-    public void Select(bool isCtrlOn, bool isShiftOn, MediaItem mi) {
-      if (!isCtrlOn && !isShiftOn) {
-        DeselectAll();
-        Current = mi;
-      }
-      else {
-        if (isCtrlOn)
-          SetSelected(mi, !mi.IsSelected);
-
-        if (isShiftOn && Current != null && _indexOfCurrent != null) {
-          var from = (int) _indexOfCurrent;
-          var indexOfMi = FilteredItems.IndexOf(mi);
-          var to = indexOfMi;
-          if (from > to) {
-            to = from;
-            from = indexOfMi;
-          }
-
-          for (var i = from; i < to + 1; i++) {
-            SetSelected(FilteredItems[i], true);
-          }
-        }
-
-        if (Selected == 0)
-          Current = null;
-        else if (Selected > 1) {
-          var current = Current;
-          var currentSelected = current?.IsSelected ?? false;
-          Current = null;
-          if (currentSelected)
-            SetSelected(current, true);
-        }
-      }
     }
   }
 }

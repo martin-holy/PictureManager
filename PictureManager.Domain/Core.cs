@@ -104,9 +104,9 @@ namespace PictureManager.Domain {
     }
 
     public void SetMediaItemSizesLoadedRange() {
-      var zeroItems = MediaItems.FilteredItems.Count == 0;
-      var min = zeroItems ? 0 : MediaItems.FilteredItems.Min(x => x.Width * x.Height);
-      var max = zeroItems ? 0 : MediaItems.FilteredItems.Max(x => x.Width * x.Height);
+      var zeroItems = MediaItems.ThumbsGrid.FilteredItems.Count == 0;
+      var min = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
+      var max = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
       MediaItemSizes.Size.SetLoadedRange(min, max);
     }
 
@@ -127,7 +127,7 @@ namespace PictureManager.Domain {
       }
       MarkedTags.Clear();
 
-      var mediaItems = MediaItems.GetSelectedOrAll();
+      var mediaItems = MediaItems.ThumbsGrid.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
 
         // People

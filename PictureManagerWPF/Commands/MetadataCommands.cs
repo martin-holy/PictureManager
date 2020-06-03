@@ -28,7 +28,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanEdit() {
-      return !App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.FilteredItems.Count > 0;
+      return !App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private void Edit() {
@@ -103,11 +103,11 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanComment() {
-      return App.Core.Model.MediaItems.Current != null;
+      return App.Core.Model.MediaItems.ThumbsGrid.Current != null;
     }
 
     private void Comment() {
-      var current = App.Core.Model.MediaItems.Current;
+      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -135,7 +135,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanReload(object parameter) {
-      return parameter is Folder || App.Core.Model.MediaItems.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private void Reload(object parameter) {
@@ -143,7 +143,7 @@ namespace PictureManager.Commands {
       var folder = parameter as Folder;
       var mediaItems = folder != null
         ? folder.GetMediaItems(recursive)
-        : App.Core.Model.MediaItems.GetSelectedOrAll();
+        : App.Core.Model.MediaItems.ThumbsGrid.GetSelectedOrAll();
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(

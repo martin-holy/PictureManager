@@ -339,66 +339,63 @@
       <!-- Thumbnails and Full Media -->
       <Grid Grid.Column="2" >
 
-        <!-- Thumbnails -->
-        <Grid Visibility="{Binding AppInfo.AppMode, 
-            Converter={StaticResource AllToVisibilityConverter}, 
-            ConverterParameter={x:Static pm:AppMode.Browser}}">
+        <!-- Thumbnails Grids -->
+        <!--<TabControl x:Name="TabThumbnailsGrids" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
+                    ItemsSource="{Binding Model.MediaItems.ThumbnailsGrids}"
+                    SelectionChanged="TabThumbnailsGrids_OnSelectionChanged"
+                    Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
+                                         Converter={StaticResource AllToVisibilityConverter}, 
+                                         ConverterParameter={x:Static pm:AppMode.Browser}}"
+                    ItemTemplate="{DynamicResource ThumbsTabItemTemplate}">
 
-          <!-- Thumbnails -->
-          <ItemsControl x:Name="ThumbsBox" ItemsSource="{Binding MediaItemsViewModel.SplittedItems}"
-                        VirtualizingStackPanel.IsVirtualizing="True" 
-                        VirtualizingPanel.ScrollUnit="Pixel" 
-                        ScrollViewer.CanContentScroll="True"
-                        PreviewMouseWheel="ThumbsBox_OnPreviewMouseWheel">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <VirtualizingStackPanel x:Name="ThumbsBoxStackPanel" CacheLengthUnit="Item" CacheLength="4"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+          <TabControl.Resources>
+            <DataTemplate x:Key="ThumbsTabItemTemplate">
+              <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}">
+                <Button Style="{StaticResource FontIconButton}" Content="✚" Click="TabThumbnailsGrids_AddTab"
+                        Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
+                <Button Style="{StaticResource FontIconButton}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
+                <TextBlock Text="{Binding Title}" Margin="0,8">
+                  <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="270" />
+                  </TextBlock.LayoutTransform>
+                </TextBlock>
+              </StackPanel>
+            </DataTemplate>
+          </TabControl.Resources>
 
-            <ItemsControl.Resources>
-              <!-- Thumbnails Rows -->
-              <DataTemplate DataType="{x:Type models:MediaItemsRow}">
-                <ItemsControl ItemsSource="{Binding Items}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
+          <TabControl.ContentTemplate>
+            <DataTemplate>
+              <cc:ThumbnailsGridControl DataContext="{Binding}" x:Name="ThumbsGridControl" />
+            </DataTemplate>
+          </TabControl.ContentTemplate>
 
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <cc:MediaItemThumbnail DataContext="{Binding}" 
-                                             MouseLeftButtonDown="Thumb_OnMouseLeftButtonDown" 
-                                             MouseMove="Thumb_OnMouseMove"
-                                             MouseEnter="Thumb_OnMouseEnter"
-                                             MouseLeave="Thumb_OnMouseLeave"
-                                             PreviewMouseUp="Thumb_OnPreviewMouseUp" />
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-              </DataTemplate>
+        </TabControl>-->
 
-              <!-- Groups -->
-              <DataTemplate DataType="{x:Type models:MediaItemsGroup}">
-                <Border BorderBrush="Black" BorderThickness="1" Margin="1,20,0,8" Background="#88000000">
-                  <StackPanel Orientation="Horizontal">
-                    <cc:IconRect IconName="{x:Static pmd:IconName.Calendar}" Margin="8" />
-                    <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
-                  </StackPanel>
-                </Border>
-              </DataTemplate>
-            </ItemsControl.Resources>
+        <TabControl x:Name="TabThumbnailsGrids" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
+                    SelectionChanged="TabThumbnailsGrids_OnSelectionChanged"
+                    Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
+                                         Converter={StaticResource AllToVisibilityConverter}, 
+                                         ConverterParameter={x:Static pm:AppMode.Browser}}">
 
-            <ItemsControl.Template>
-              <ControlTemplate>
-                <cc:WheelSpeedScrollViewer x:Name="ThumbsBoxScrollViewer" >
-                  <ItemsPresenter />
-                </cc:WheelSpeedScrollViewer>
-              </ControlTemplate>
-            </ItemsControl.Template>
-          </ItemsControl>
-        </Grid>
+          <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
+
+          <TabControl.Resources>
+            <DataTemplate x:Key="ThumbsTabItemTemplate">
+              <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}"
+                          DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
+                <Button Style="{StaticResource FontIconButton}" Content="✚" Click="TabThumbnailsGrids_AddTab"
+                        Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
+                <Button Style="{StaticResource FontIconButton}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
+                <TextBlock Text="{Binding Title}" Margin="0,8">
+                  <TextBlock.LayoutTransform>
+                    <RotateTransform Angle="270" />
+                  </TextBlock.LayoutTransform>
+                </TextBlock>
+              </StackPanel>
+            </DataTemplate>
+          </TabControl.Resources>
+
+        </TabControl>
 
         <!-- Full Media -->
         <Grid x:Name="PanelFullScreen" Background="Transparent"
@@ -408,7 +405,7 @@
               ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
           <!-- Full Media Image -->
-          <Grid Visibility="{Binding Model.MediaItems.Current.MediaType, 
+          <Grid Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType, 
               Converter={StaticResource AllToVisibilityConverter}, 
               ConverterParameter={x:Static pmd:MediaType.Image}}">
 
@@ -420,11 +417,12 @@
 
           <!-- Full Media Video -->
           <uc:MediaElementControl x:Name="FullMedia"
-              Visibility="{Binding Model.MediaItems.Current.MediaType,
+              Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
                 Source={x:Static pm:App.Core},
                 Converter={StaticResource AllToVisibilityConverter}, 
                 ConverterParameter={x:Static pmd:MediaType.Video}}" />
         </Grid>
+
       </Grid>
     </Grid>
 

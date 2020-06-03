@@ -14,7 +14,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="cc:MediaItemThumbnail">
-          <Border Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True">
+          <Border x:Name="PART_Border" Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True">
             <Border.Style>
               <Style TargetType="{x:Type Border}">
                 <Setter Property="BorderBrush" Value="Black" />
