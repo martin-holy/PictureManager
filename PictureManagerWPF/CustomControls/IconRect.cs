@@ -12,6 +12,14 @@ namespace PictureManager.CustomControls {
       set => SetValue(IconNameProperty, value);
     }
 
+    public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
+      nameof(Size), typeof(double), typeof(IconRect), new PropertyMetadata(18.0));
+
+    public double Size {
+      get => (double) GetValue(SizeProperty);
+      set => SetValue(SizeProperty, value);
+    }
+
     static IconRect() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(IconRect),
         new FrameworkPropertyMetadata(typeof(IconRect)));

@@ -11,7 +11,7 @@
       <Setter.Value>
         <ControlTemplate TargetType="cc:IconRect">
           <Rectangle DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:IconRect}}}"
-                     Width="18" Height="18" VerticalAlignment="Center" 
+                     Width="{Binding Size}" Height="{Binding Size}" VerticalAlignment="Center" 
                      Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}">
             <Rectangle.OpacityMask>
               <VisualBrush Stretch="Uniform" 
