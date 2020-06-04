@@ -417,5 +417,19 @@ namespace PictureManager {
     public void TabThumbnailsGrids_AddTab(object sender, RoutedEventArgs e) {
       MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.MediaItemsViewModel.AddThumbnailsGridModel());
     }
+
+    private void BtnNavCategory_OnClick(object sender, RoutedEventArgs e) {
+      var cat = (BaseTreeViewItem) ((Button) sender).DataContext;
+      if (!(TvCategories.ItemContainerGenerator.ContainerFromItem(cat) is TreeViewItem tvi)) return;
+      TvCategories.FindChildren<ScrollViewer>(true).SingleOrDefault()?.ScrollToBottom();
+      tvi.BringIntoView();
+    }
+
+    private void TvCategories_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
+      // Disable default selection of TreeViewItem
+      var item = ((TreeView) sender).SelectedItem;
+      if (TvCategories.ItemContainerGenerator.ContainerFromItem(item) is TreeViewItem tvi)
+        tvi.IsSelected = false;
+    }
   }
 }

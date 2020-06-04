@@ -31,9 +31,7 @@ namespace PictureManager.Commands {
       return !App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
-    private void Edit() {
-      Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)] = App.WMain.TabFolders.IsSelected;
-      App.WMain.TabKeywords.IsSelected = true;
+    private static void Edit() {
       App.Core.Model.MediaItems.IsEditModeOn = true;
     }
 
@@ -57,15 +55,10 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate (object sender, RunWorkerCompletedEventArgs e) {
-          if (e.Cancelled) {
+          if (e.Cancelled)
             Cancel();
-          }
-          else {
-            if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
-              App.WMain.TabFolders.IsSelected = true;
-
+          else
             App.Core.Model.MediaItems.IsEditModeOn = false;
-          }
         });
 
       progress.StartDialog();
@@ -95,8 +88,6 @@ namespace PictureManager.Commands {
           App.Core.Model.Sdb.SaveAllTables();
           App.Core.Model.MarkUsedKeywordsAndPeople();
           App.Core.Model.MediaItems.IsEditModeOn = false;
-          if ((bool)Application.Current.Properties[nameof(AppProperty.EditMetadataFromFolders)])
-            App.WMain.TabFolders.IsSelected = true;
         });
 
       progress.StartDialog();

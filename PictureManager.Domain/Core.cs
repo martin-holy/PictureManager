@@ -14,22 +14,16 @@ namespace PictureManager.Domain {
     public ILogger Logger { get; set; }
 
     #region TreeView Roots and Categories
-    // Folders
-    public ObservableCollection<BaseTreeViewItem> FoldersRoot { get; }
+    public ObservableCollection<BaseCategoryItem> TreeViewCategories { get; }
     public FavoriteFolders FavoriteFolders { get; }
     public Folders Folders { get; }
-    // Keywords
-    public ObservableCollection<BaseTreeViewItem> KeywordsRoot { get; }
     public Ratings Ratings { get; }
     public MediaItemSizes MediaItemSizes { get; }
     public People People { get; }
     public FolderKeywords FolderKeywords { get; }
     public Keywords Keywords { get; }
     public GeoNames GeoNames { get; }
-    // Filters
-    public ObservableCollection<BaseTreeViewItem> FiltersRoot { get; }
     public Viewers Viewers { get; }
-
     public CategoryGroups CategoryGroups { get; }
     #endregion
 
@@ -45,25 +39,20 @@ namespace PictureManager.Domain {
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-      #region TreeView Roots and Categories
-      // Folders
       FavoriteFolders = new FavoriteFolders();
       Folders = new Folders();
-      FoldersRoot = new ObservableCollection<BaseTreeViewItem> { FavoriteFolders, Folders };
-      // Keywords
       Ratings = new Ratings();
       MediaItemSizes = new MediaItemSizes();
       People = new People { CanHaveGroups = true, CanModifyItems = true };
       FolderKeywords = new FolderKeywords();
       Keywords = new Keywords { CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true };
       GeoNames = new GeoNames();
-      KeywordsRoot = new ObservableCollection<BaseTreeViewItem> { Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames };
-      // Filters
       Viewers = new Viewers { CanModifyItems = true };
-      FiltersRoot = new ObservableCollection<BaseTreeViewItem> { Viewers };
+
+      TreeViewCategories = new ObservableCollection<BaseCategoryItem>
+        {FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers};
 
       CategoryGroups = new CategoryGroups();
-      #endregion
 
       MediaItems = new MediaItems();
     }

@@ -10,7 +10,6 @@ namespace PictureManager.Domain.Models {
     public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
       IconName = IconName.Eye;
-      IsExpanded = true;
     }
 
     public void SaveToFile() {
