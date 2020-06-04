@@ -131,9 +131,45 @@
         TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
 
         <Grid>
-          <!-- TreeView Folders, Keywords and Filters -->
-          <TabControl x:Name="TcMain" Background="Transparent" BorderThickness="0">
-            <TabControl.Resources>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <DockPanel Grid.Row="0" Height="50">
+            <!-- TreeView Categories Navigation Bar -->
+            <ItemsControl ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}" DockPanel.Dock="Left">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Button Margin="2,2,0,0" BorderThickness="0" Background="Transparent" 
+                          Width="32" Height="32" Cursor="{x:Static Cursors.Hand}"
+                          ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick">
+                    <cc:IconRect IconName="{Binding IconName}" Size="22" />
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!-- Button to close/open flyout panel -->
+            <Button BorderThickness="0" Background="Transparent" Width="24" Height="24" DockPanel.Dock="Right"
+                    HorizontalAlignment="Right" Margin="0,0,2,0"
+                    Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
+              <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
+            </Button>
+          </DockPanel>
+          
+          <!-- TreeView Categories -->
+          <TreeView x:Name="TvCategories" Grid.Row="1" Background="Transparent" FocusManager.IsFocusScope="True"
+                      ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}"
+                      SelectedItemChanged="TvCategories_OnSelectedItemChanged">
+
+            <TreeView.Resources>
               <!-- KeywordsPicCountStyle -->
               <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
                 <Setter Property="Text" Value="{Binding PicCount}" />
@@ -150,7 +186,7 @@
               </Style>
 
               <!-- STreeViewItem -->
-              <Style TargetType="{x:Type TreeViewItem}" x:Key="STreeViewItem" BasedOn="{StaticResource MetroTreeViewItem}">
+              <Style x:Key="STreeViewItem" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
                 <Setter Property="VerticalContentAlignment" Value="Stretch" />
@@ -187,6 +223,16 @@
                 <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
               </Style>
 
+              <!-- BaseCategoryItem -->
+              <HierarchicalDataTemplate DataType="{x:Type models:BaseCategoryItem}" ItemsSource="{Binding Items}">
+                <Border Height="40">
+                  <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
+                    <cc:IconRect IconName="{Binding IconName}" Size="24" />
+                    <TextBlock Style="{StaticResource TreeViewTitle}" FontSize="18" />
+                  </StackPanel>
+                </Border>
+              </HierarchicalDataTemplate>
+
               <!-- BaseTreeViewItem -->
               <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewItem}" ItemsSource="{Binding Items}">
                 <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
@@ -203,78 +249,40 @@
                   <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
                 </StackPanel>
               </HierarchicalDataTemplate>
-            </TabControl.Resources>
 
-            <TabItem Header="Folders" x:Name="TabFolders" HorizontalAlignment="Left">
-              <!-- TreeView Folders -->
-              <TreeView x:Name="TvFolders" Background="Transparent" FocusManager.IsFocusScope="True"
-                      ItemsSource="{Binding Model.FoldersRoot, Source={x:Static pm:App.Core}}">
-                <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding IsHidden}" Value="True">
-                        <Setter Property="Visibility" Value="Collapsed" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </TreeView.ItemContainerStyle>
-              </TreeView>
-            </TabItem>
+              <!-- DataTemplate - Rating -->
+              <HierarchicalDataTemplate DataType="{x:Type models:Rating}">
+                <StackPanel Style="{StaticResource STreeViewStackPanel}">
+                  <StackPanel Orientation="Horizontal">
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
+                    <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+                  </StackPanel>
+                  <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
 
-            <TabItem Header="Keywords" x:Name="TabKeywords" HorizontalAlignment="Left">
-              <!-- TreeView Keywords -->
-              <TreeView x:Name="TvKeywords" Background="Transparent" FocusManager.IsFocusScope="True"
-                      ItemsSource="{Binding Model.KeywordsRoot, Source={x:Static pm:App.Core}}">
+              <!-- DataTemplate - MediaItemSize -->
+              <HierarchicalDataTemplate DataType="{x:Type models:MediaItemSize}">
+                <StackPanel Style="{StaticResource STreeViewStackPanel}" Margin="0,0,3,3">
+                  <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
-                    <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
-                    <Style.Triggers>
-                      <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                          <Condition Binding="{Binding IsMarked}" Value="True" />
-                          <Condition Binding="{Binding BackgroundBrush}" Value="0" />
-                        </MultiDataTrigger.Conditions>
-                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-                      </MultiDataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </TreeView.ItemContainerStyle>
-
-                <TreeView.Resources>
-                  <!-- TreeView Keywords - Rating -->
-                  <HierarchicalDataTemplate DataType="{x:Type models:Rating}">
-                    <StackPanel Style="{StaticResource STreeViewStackPanel}">
-                      <StackPanel Orientation="Horizontal">
-                        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
-                        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
-                        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
-                        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
-                        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
-                      </StackPanel>
-                      <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-
-                  <!-- TreeView Keywords - MediaItemSize -->
-                  <HierarchicalDataTemplate DataType="{x:Type models:MediaItemSize}">
-                    <StackPanel Style="{StaticResource STreeViewStackPanel}" Margin="0,0,3,3">
-                      <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
-                        <Grid.RowDefinitions>
-                          <RowDefinition />
-                          <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                          <ColumnDefinition />
-                          <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-
-                        <TextBlock HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" 
+                    <TextBlock HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" 
                         Text="{Binding PixelMin, Converter={StaticResource MediaItemSizeConverter}}" />
-                        <TextBlock HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" 
+                    <TextBlock HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" 
                         Text="{Binding PixelMax, Converter={StaticResource MediaItemSizeConverter}}" />
 
-                        <controls:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                    <controls:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
                         HorizontalAlignment="Stretch" MoveWholeRange="True" 
                         Minimum="{Binding Min}" Maximum="{Binding Max}"
                         LowerValue="{Binding PixelMin}" UpperValue="{Binding PixelMax}" 
@@ -282,44 +290,36 @@
                         LowerThumbDragCompleted="MediaItemSize_OnDragCompleted"
                         CentralThumbDragCompleted="MediaItemSize_OnDragCompleted"
                         IsSnapToTickEnabled="True" TickFrequency="0.1" />
-                      </Grid>
-                    </StackPanel>
-                  </HierarchicalDataTemplate>
-                </TreeView.Resources>
+                  </Grid>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
 
-              </TreeView>
-            </TabItem>
+            <TreeView.ItemContainerStyle>
+              <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
+                <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
+                <Style.Triggers>
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding IsMarked}" Value="True" />
+                      <Condition Binding="{Binding BackgroundBrush}" Value="0" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+                  </MultiDataTrigger>
 
-            <TabItem Header="Filters" HorizontalAlignment="Left">
-              <!-- TreeView Filters -->
-              <TreeView x:Name="TvFilters" Background="Transparent"
-                      ItemsSource="{Binding Model.FiltersRoot, Source={x:Static pm:App.Core}}">
+                  <!-- this is for Folder -->
+                  <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                  </DataTrigger>
 
-                <TreeView.ItemContainerStyle>
-                  <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
+                  <!-- this is for Viewers Folder -->
+                  <DataTrigger Binding="{Binding ToolTip}" Value="True">
                     <Setter Property="ToolTip" Value="{Binding ToolTip}" />
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding IsMarked}" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </TreeView.ItemContainerStyle>
-              </TreeView>
-            </TabItem>
-            
-            <!-- button to close/open flyout panel -->
-            <TabItem HorizontalAlignment="Right">
-              <TabItem.HeaderTemplate>
-                <DataTemplate>
-                  <Button BorderThickness="0" Background="Transparent" Width="30" Height="30"
-                          Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-                    <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
-                  </Button>
-                </DataTemplate>
-              </TabItem.HeaderTemplate>
-            </TabItem>
-          </TabControl>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TreeView.ItemContainerStyle>
+          </TreeView>
         </Grid>
       </controls:Flyout>
     </controls:FlyoutsControl>
