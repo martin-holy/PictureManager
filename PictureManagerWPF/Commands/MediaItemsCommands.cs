@@ -161,8 +161,9 @@ namespace PictureManager.Commands {
     }
 
     private static void Compare() {
-      App.WMain.ImageComparerTool.Compare();
       App.WMain.ImageComparerTool.Visibility = Visibility.Visible;
+      App.WMain.ImageComparerTool.SelectDefaultMethod();
+      App.WMain.ImageComparerTool.Compare();
     }
 
     private static bool CanCompress() {
