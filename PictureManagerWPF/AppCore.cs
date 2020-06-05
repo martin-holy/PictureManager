@@ -58,7 +58,7 @@ namespace PictureManager {
           var visibleTreeIndex = 0;
           Model.Folders.GetVisibleTreeIndexFor(Model.Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
           var offset = (Model.FavoriteFolders.Items.Count + visibleTreeIndex) * 25;
-          var border = VisualTreeHelper.GetChild(App.WMain.TvCategories, 0);
+          var border = VisualTreeHelper.GetChild(App.WMain.TreeViewCategories.TreeView, 0);
           var scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
           scrollViewer?.ScrollToVerticalOffset(offset);
           break;

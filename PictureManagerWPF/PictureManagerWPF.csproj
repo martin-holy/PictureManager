@@ -152,6 +152,9 @@
     </Compile>
     <Compile Include="CustomControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="CustomControls\ZoomImageBox.cs" />
+    <Compile Include="UserControls\TreeViewCategories.xaml.cs">
+      <DependentUpon>TreeViewCategories.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Utils\Imaging.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="ViewModels\FoldersViewModel.cs" />
@@ -329,6 +332,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\StatusPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\TreeViewCategories.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
