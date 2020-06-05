@@ -4,7 +4,7 @@
 
     public MediaItemSizes() : base(Category.MediaItemSizes) {
       Title = "Sizes";
-      IconName = IconName.Bug;
+      IconName = IconName.Ruler;
       Items.Add(Size);
     }
   }
