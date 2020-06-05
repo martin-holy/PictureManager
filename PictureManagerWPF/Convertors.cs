@@ -73,15 +73,15 @@ namespace PictureManager {
       switch (dataContext) {
         case Keyword _:
         case Folder _:
-          return App.WMain.TvCategories.FindResource("STreeViewStackPanelWithDragDrop");
+          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDragDrop");
         case Person _:
-          return App.WMain.TvCategories.FindResource("STreeViewStackPanelWithDrag");
+          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDrag");
         case CategoryGroup _:
         case Keywords _:
         case People _:
-          return App.WMain.TvCategories.FindResource("STreeViewStackPanelWithDrop");
+          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDrop");
         default:
-          return App.WMain.TvCategories.FindResource("STreeViewStackPanel");
+          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanel");
       }
     }
 
