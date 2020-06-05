@@ -32,6 +32,7 @@ namespace PictureManager.Domain.Models {
       foreach (var item in All) {
         item.Folder = Core.Instance.Folders.AllDic[int.Parse(item.Csv[1])];
         item.Title = item.Folder.Title;
+        item.ToolTip = item.Folder.FullPath;
         Items.Add(item);
 
         // csv array is not needed any more

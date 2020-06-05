@@ -188,8 +188,7 @@
               <Setter Property="Visibility" Value="Collapsed" />
             </DataTrigger>
 
-            <!-- this is for Viewers Folder -->
-            <DataTrigger Binding="{Binding ToolTip}" Value="True">
+            <DataTrigger Binding="{Binding ToolTip, Converter={StaticResource AllToBoolConverter}}" Value="True">
               <Setter Property="ToolTip" Value="{Binding ToolTip}" />
             </DataTrigger>
           </Style.Triggers>
