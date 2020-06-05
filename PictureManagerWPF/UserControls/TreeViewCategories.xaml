@@ -13,33 +13,35 @@
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <DockPanel Grid.Row="0" Height="50">
-      <!-- TreeView Categories Navigation Bar -->
-      <ItemsControl ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}" DockPanel.Dock="Left">
-        <ItemsControl.ItemsPanel>
-          <ItemsPanelTemplate>
-            <StackPanel Orientation="Horizontal" />
-          </ItemsPanelTemplate>
-        </ItemsControl.ItemsPanel>
+    <Border Grid.Row="0" BorderThickness="0,0,0,4" BorderBrush="{StaticResource AccentColorBrush4}">
+      <DockPanel Height="50">
+        <!-- TreeView Categories Navigation Bar -->
+        <ItemsControl ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}" DockPanel.Dock="Left">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
 
-        <ItemsControl.ItemTemplate>
-          <DataTemplate>
-            <Button Margin="2,2,0,0" BorderThickness="0" Background="Transparent" 
-                    Width="32" Height="32" Cursor="{x:Static Cursors.Hand}"
-                    ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick">
-              <customControls:IconRect IconName="{Binding IconName}" Size="22" />
-            </Button>
-          </DataTemplate>
-        </ItemsControl.ItemTemplate>
-      </ItemsControl>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Button Margin="2,2,0,0" BorderThickness="0" Background="Transparent" 
+                      Width="32" Height="32" Cursor="{x:Static Cursors.Hand}"
+                      ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick">
+                <customControls:IconRect IconName="{Binding IconName}" Size="22" />
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
 
-      <!-- Button to close/open flyout panel -->
-      <Button BorderThickness="0" Background="Transparent" Width="24" Height="24" DockPanel.Dock="Right"
-              HorizontalAlignment="Right" Margin="0,0,2,0"
-              Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-        <customControls:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
-      </Button>
-    </DockPanel>
+        <!-- Button to close/open flyout panel -->
+        <Button BorderThickness="0" Background="Transparent" Width="24" Height="24" DockPanel.Dock="Right"
+                HorizontalAlignment="Right" Margin="0,0,2,0"
+                Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
+          <customControls:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
+        </Button>
+      </DockPanel>
+    </Border>
 
     <!-- TreeView Categories -->
     <TreeView x:Name="TvCategories" Grid.Row="1" Background="Transparent" FocusManager.IsFocusScope="True"
