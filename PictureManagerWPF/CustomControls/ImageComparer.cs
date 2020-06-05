@@ -26,6 +26,7 @@ namespace PictureManager.CustomControls {
 
     private readonly Dictionary<MediaItem, long> _avgHashes = new Dictionary<MediaItem, long>();
     private readonly Dictionary<MediaItem, long> _pHashes = new Dictionary<MediaItem, long>();
+    private RadioButton _rbAvgHash;
 
     static ImageComparer() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageComparer),
@@ -33,8 +34,10 @@ namespace PictureManager.CustomControls {
     }
 
     public override void OnApplyTemplate() {
-      if (Template.FindName("PART_RbAvgHash", this) is RadioButton rbAvgHash)
+      if (Template.FindName("PART_RbAvgHash", this) is RadioButton rbAvgHash) {
         rbAvgHash.Checked += delegate { Compare(); };
+        _rbAvgHash = rbAvgHash;
+      }
 
       if (Template.FindName("PART_RbPHash", this) is RadioButton rbpHash)
         rbpHash.Checked += delegate { Compare(); };
@@ -52,6 +55,11 @@ namespace PictureManager.CustomControls {
       _avgHashes.Clear();
       _pHashes.Clear();
       Visibility = Visibility.Collapsed;
+    }
+
+    public void SelectDefaultMethod() {
+      if (_rbAvgHash != null)
+        _rbAvgHash.IsChecked = true;
     }
 
     public void Compare() {
