@@ -5,15 +5,12 @@
 - Date Group: kdyz MediaItem nema datum, a MediaItem pred nim ma datum, tak se prida do skupiny. mela by se vytvorit prazdna skupina
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - kdyz se smaze slozka mimo program a pak se klikne na folder keyword s tou slozkou, tak to spande
-- Viewer v TreeView uz nema ToolTip
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
 - Image Compare si pamatuje naposledy pouzitou metodu, takze to muze bejt ta pomala a pak to trva. 
   dat tam cancel a vzdycky rychlou metodu
   a mensit limit na 0-25
-
-
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
@@ -27,7 +24,6 @@
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat do thumbnails kategorie podle slozek/datumu/...
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
-- pridat do Favorites folders ToolTip s fullpath
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 
 
