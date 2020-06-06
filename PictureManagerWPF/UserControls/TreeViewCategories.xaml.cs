@@ -211,6 +211,7 @@ namespace PictureManager.UserControls {
       }
 
       App.Core.Model.Sdb.SaveAllTables();
+      App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 
     private void TreeView_AllowDropCheck(object sender, DragEventArgs e) {
