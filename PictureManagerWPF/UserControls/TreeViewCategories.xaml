@@ -8,13 +8,29 @@
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
   <Grid>
+    <Grid.Resources>
+      <!-- CategoriesBarButtonStyle -->
+      <Style x:Key="CategoriesNavBarButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="ToolTip" Value="{Binding Title}" />
+      </Style>
+
+      <!-- CategoriesBarButtonStyle -->
+      <Style x:Key="PinButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+      </Style>
+    </Grid.Resources>
+
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
     <Border Grid.Row="0" BorderThickness="0,0,0,4" BorderBrush="{StaticResource AccentColorBrush4}">
-      <DockPanel Height="50">
+      <DockPanel Height="40">
         <!-- TreeView Categories Navigation Bar -->
         <ItemsControl ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}" DockPanel.Dock="Left">
           <ItemsControl.ItemsPanel>
@@ -25,9 +41,7 @@
 
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Button Margin="2,2,0,0" BorderThickness="0" Background="Transparent" 
-                      Width="32" Height="32" Cursor="{x:Static Cursors.Hand}"
-                      ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick">
+              <Button Style="{StaticResource CategoriesNavBarButtonStyle}" Click="BtnNavCategory_OnClick">
                 <customControls:IconRect IconName="{Binding IconName}" Size="22" />
               </Button>
             </DataTemplate>
@@ -35,9 +49,8 @@
         </ItemsControl>
 
         <!-- Button to close/open flyout panel -->
-        <Button BorderThickness="0" Background="Transparent" Width="24" Height="24" DockPanel.Dock="Right"
-                HorizontalAlignment="Right" Margin="0,0,2,0"
-                Cursor="{x:Static Cursors.Hand}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
+        <Button Style="{StaticResource PinButtonStyle}" DockPanel.Dock="Right"
+                Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
           <customControls:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
         </Button>
       </DockPanel>
