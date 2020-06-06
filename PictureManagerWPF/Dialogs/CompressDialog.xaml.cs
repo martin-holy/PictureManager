@@ -92,7 +92,7 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
-      _compress.CancelAsync();
+      _compress?.CancelAsync();
       Close();
     }
 
