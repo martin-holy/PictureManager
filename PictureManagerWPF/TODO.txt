@@ -8,9 +8,8 @@
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
-- Image Compare si pamatuje naposledy pouzitou metodu, takze to muze bejt ta pomala a pak to trva. 
-  dat tam cancel a vzdycky rychlou metodu
-  a mensit limit na 0-25
+- taby na thums dat streach a ne omezovat na x px
+- icon button style
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
