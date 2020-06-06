@@ -162,6 +162,7 @@ namespace PictureManager.Commands {
 
     private static void Compare() {
       App.WMain.ImageComparerTool.Visibility = Visibility.Visible;
+      App.WMain.UpdateLayout();
       App.WMain.ImageComparerTool.SelectDefaultMethod();
       App.WMain.ImageComparerTool.Compare();
     }
