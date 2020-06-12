@@ -354,6 +354,7 @@ namespace PictureManager.Domain.Models {
       await Task.Run(() => {
         foreach (var folder in folders.Where(x => x.IsHidden == false)) {
           if (token.IsCancellationRequested) break;
+          if (!Directory.Exists(folder.FullPath)) continue;
           var folderMediaItems = new List<MediaItem>();
 
           // add MediaItems from current Folder to dictionary for faster search
