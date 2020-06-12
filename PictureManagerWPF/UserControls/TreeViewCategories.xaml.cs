@@ -31,7 +31,7 @@ namespace PictureManager.UserControls {
     }
 
     private void TvCategories_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
-      // Disable default selection of TreeViewItem
+      // Disable selection on Categories (1st level)
       var item = ((TreeView)sender).SelectedItem;
       if (TvCategories.ItemContainerGenerator.ContainerFromItem(item) is TreeViewItem tvi)
         tvi.IsSelected = false;
