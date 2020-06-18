@@ -98,6 +98,7 @@ namespace PictureManager {
         case IconName.Folder:
         case IconName.FolderStar:
         case IconName.FolderLock:
+        case IconName.FolderPuzzle:
         case IconName.FolderOpen: return new SolidColorBrush(Color.FromRgb(249, 218, 119));
         case IconName.Tag: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
         case IconName.TagLabel: return new SolidColorBrush(Color.FromRgb(142, 193, 99));

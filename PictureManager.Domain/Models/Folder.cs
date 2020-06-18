@@ -8,12 +8,20 @@ namespace PictureManager.Domain.Models {
   public sealed class Folder : BaseTreeViewTagItem, IRecord, IEquatable<Folder> {
     public string[] Csv { get; set; }
     public int Id { get; }
-    public bool IsFolderKeyword { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
     private bool _isHidden;
+    private bool _isFolderKeyword;
+
+    public bool IsFolderKeyword {
+      get => _isFolderKeyword;
+      set {
+        _isFolderKeyword = value;
+        IconName = value ? IconName.FolderPuzzle : IconName.Folder;
+      }
+    }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
     public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
     public string FullPath => GetFullPath(Path.DirectorySeparatorChar.ToString());
@@ -23,7 +31,7 @@ namespace PictureManager.Domain.Models {
       set {
         base.IsExpanded = value;
         if (value) LoadSubFolders(false);
-        if (Parent != null) // not Drive Folder
+        if (Parent != null && !IsFolderKeyword) // not Drive Folder and not FolderKeyword
           IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
       }
     }

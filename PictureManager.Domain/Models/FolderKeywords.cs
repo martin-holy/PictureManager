@@ -4,7 +4,7 @@ namespace PictureManager.Domain.Models {
   public sealed class FolderKeywords: BaseCategoryItem {
     public FolderKeywords() : base (Category.FolderKeywords) {
       Title = "Folder Keywords";
-      IconName = IconName.Folder;
+      IconName = IconName.FolderPuzzle;
     }
 
     public void Load() {
