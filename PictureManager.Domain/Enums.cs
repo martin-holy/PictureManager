@@ -10,6 +10,7 @@
     FolderStar,
     FolderLock,
     FolderOpen,
+    FolderPuzzle,
     Star,
     People,
     PeopleMultiple,

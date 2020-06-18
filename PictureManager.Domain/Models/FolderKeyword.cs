@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public FolderKeyword() {
-      IconName = IconName.Folder;
+      IconName = IconName.FolderPuzzle;
     }
   }
 }
