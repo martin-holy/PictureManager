@@ -257,8 +257,8 @@ namespace PictureManager.UserControls {
       if (e.Data.GetDataPresent(typeof(Person))) {
         var srcData = (Person)e.Data.GetData(typeof(Person));
 
-        if (dataContext is BaseTreeViewItem destData && srcData?.Parent != destData &&
-            (destData.GetTopParent() as BaseCategoryItem)?.Category == Category.People) return;
+        if ((dataContext is BaseCategoryItem cat && cat.Category == Category.People) || 
+            (dataContext is CategoryGroup group && group.Category == Category.People && srcData?.Parent != group)) return;
       }
 
       // can't be dropped

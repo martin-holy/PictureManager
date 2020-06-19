@@ -73,9 +73,8 @@ namespace PictureManager {
       switch (dataContext) {
         case Keyword _:
         case Folder _:
-          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDragDrop");
         case Person _:
-          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDrag");
+          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDragDrop");
         case CategoryGroup _:
         case Keywords _:
         case People _:
