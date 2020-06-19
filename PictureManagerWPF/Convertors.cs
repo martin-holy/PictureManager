@@ -98,17 +98,15 @@ namespace PictureManager {
         case IconName.FolderStar:
         case IconName.FolderLock:
         case IconName.FolderPuzzle:
-        case IconName.FolderOpen: return new SolidColorBrush(Color.FromRgb(249, 218, 119));
-        case IconName.Tag: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
-        case IconName.TagLabel: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
+        case IconName.FolderOpen: return App.WMain.FindResource("ColorBrushFolder");
+        case IconName.Tag:
+        case IconName.TagLabel: return App.WMain.FindResource("ColorBrushTag");
         case IconName.People:
-        case IconName.PeopleMultiple: return new SolidColorBrush(Color.FromRgb(19, 122, 166));
+        case IconName.PeopleMultiple: return App.WMain.FindResource("ColorBrushPeople");
         case IconName.Drive:
         case IconName.DriveError:
-        case IconName.Cd: return new SolidColorBrush(Color.FromRgb(199, 199, 199));
-        case IconName.Cancel: return new SolidColorBrush(Color.FromRgb(221, 121, 47));
-        case IconName.Save: return new SolidColorBrush(Color.FromRgb(19, 122, 166));
-        default: return new SolidColorBrush(Color.FromRgb(255, 255, 255));
+        case IconName.Cd: return App.WMain.FindResource("ColorBrushDrive");
+        default: return App.WMain.FindResource("ColorBrushWhite");
       }
     }
 

@@ -11,7 +11,6 @@
 #Update
 - na File Operation Dialog pridat copy/move/delete
 - taby na thums dat streach a ne omezovat na x px
-- IconNameToBrushConverter predelat tak, aby vyuzival brush z resources
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
