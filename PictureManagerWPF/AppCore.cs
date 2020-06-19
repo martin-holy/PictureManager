@@ -134,6 +134,9 @@ namespace PictureManager {
           break;
         }
         case BaseCategoryItem _: {
+          // if category is going to collapse and sub item is selected, category gets selected
+          // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
+          // this will only prevent selecting category if selection was made with mouse click
           item.IsSelected = false;
           break;
         }

@@ -58,8 +58,7 @@
 
     <!-- TreeView Categories -->
     <TreeView x:Name="TvCategories" Grid.Row="1" Background="Transparent" FocusManager.IsFocusScope="True"
-              ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}"
-              SelectedItemChanged="TvCategories_OnSelectedItemChanged">
+              ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}">
 
       <TreeView.Resources>
         <!-- KeywordsPicCountStyle -->
@@ -75,15 +74,6 @@
               <Setter Property="Visibility" Value="Visible"/>
             </DataTrigger>
           </Style.Triggers>
-        </Style>
-
-        <!-- STreeViewItem -->
-        <Style x:Key="STreeViewItem" TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=OneWay}" />
-          <Setter Property="VerticalContentAlignment" Value="Stretch" />
-          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Setter Property="Background" Value="Transparent" />
         </Style>
 
         <!-- STreeViewStackPanel -->
@@ -181,7 +171,11 @@
       </TreeView.Resources>
 
       <TreeView.ItemContainerStyle>
-        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource STreeViewItem}">
+        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
+          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+          <Setter Property="VerticalContentAlignment" Value="Stretch" />
+          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
           <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
           <Style.Triggers>
             <MultiDataTrigger>
