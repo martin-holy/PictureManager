@@ -6,7 +6,6 @@
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
 - spatne se nacitaj nahledy u panoramat 20200616_162730
-- kdyz se presouva Person, tak se nescrolluje treeview
 - link to People, expand, expand common, label person, save, collapse People a zmeni se trojuhelnik, ale neudela se collapse
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
 
@@ -14,11 +13,11 @@
 - na File Operation Dialog pridat copy/move/delete
 - taby na thums dat streach a ne omezovat na x px
 - pri scroll to category, zascrollovat i horizontalne
+- IconNameToBrushConverter predelat tak, aby vyuzival brush z resources
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
 - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
-- ikony
 - zmenit title na favorite folder
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
@@ -29,8 +28,6 @@
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 - po vytvoreni videa z obrazku nacist video do gridu
-- nova ikona pro FolderKeywords
-- zobrazovat ikonu FolderKeywords ve Folders
 - on mouse over zobrazit u people/keywords/... actions and/or/not/load
 
 

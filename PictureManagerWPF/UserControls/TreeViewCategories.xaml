@@ -94,12 +94,6 @@
           <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
         </Style>
 
-        <!-- STreeViewStackPanelWithDrag -->
-        <Style x:Key="STreeViewStackPanelWithDrag" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
-          <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
-          <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
-        </Style>
-
         <!-- STreeViewKeywordsStackPanelWithDrop -->
         <Style x:Key="STreeViewStackPanelWithDrop" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
           <Setter Property="AllowDrop" Value="True" />
