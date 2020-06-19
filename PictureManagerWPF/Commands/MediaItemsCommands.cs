@@ -126,7 +126,7 @@ namespace PictureManager.Commands {
 
     private static void Shuffle() {
       App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Shuffle();
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems(false);
     }
 
     private static bool CanResizeImages() {

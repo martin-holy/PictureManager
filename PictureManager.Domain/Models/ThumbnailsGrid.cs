@@ -210,7 +210,7 @@ namespace PictureManager.Domain.Models {
       row.Items.Add(mi);
     }
 
-    public void ReloadItems(double rowMaxWidth) {
+    public void ReloadItems(double rowMaxWidth, bool withGroups) {
       ClearRows();
 
       const int itemOffset = 6; //border, margin, padding, ...
@@ -220,13 +220,15 @@ namespace PictureManager.Domain.Models {
 
       foreach (var mi in FilteredItems) {
         // Add Date Group
-        var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
-        if (!string.Empty.Equals(miDate) && (group == null || !group.Title.Equals(miDate))) {
-          group = new MediaItemsGroup { Title = miDate };
-          row = new MediaItemsRow();
-          Rows.Add(group);
-          Rows.Add(row);
-          rowWidth = 0;
+        if (withGroups) {
+          var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
+          if (!string.Empty.Equals(miDate) && (group == null || !group.Title.Equals(miDate))) {
+            group = new MediaItemsGroup {Title = miDate};
+            row = new MediaItemsRow();
+            Rows.Add(group);
+            Rows.Add(row);
+            rowWidth = 0;
+          }
         }
 
         if (row == null || mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
