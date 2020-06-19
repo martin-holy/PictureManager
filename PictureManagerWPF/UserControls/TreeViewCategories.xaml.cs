@@ -26,8 +26,10 @@ namespace PictureManager.UserControls {
     private void BtnNavCategory_OnClick(object sender, RoutedEventArgs e) {
       var cat = (BaseTreeViewItem)((Button)sender).DataContext;
       if (!(TvCategories.ItemContainerGenerator.ContainerFromItem(cat) is TreeViewItem tvi)) return;
-      TvCategories.FindChildren<ScrollViewer>(true).SingleOrDefault()?.ScrollToBottom();
+      var sv = TvCategories.FindChildren<ScrollViewer>(true).SingleOrDefault();
+      sv?.ScrollToBottom();
       tvi.BringIntoView();
+      sv?.ScrollToHorizontalOffset(0);
     }
 
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView

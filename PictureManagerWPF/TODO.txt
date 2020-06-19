@@ -11,7 +11,6 @@
 #Update
 - na File Operation Dialog pridat copy/move/delete
 - taby na thums dat streach a ne omezovat na x px
-- pri scroll to category, zascrollovat i horizontalne
 - IconNameToBrushConverter predelat tak, aby vyuzival brush z resources
 
 #New
