@@ -25,7 +25,7 @@
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 - po vytvoreni videa z obrazku nacist video do gridu
-- on mouse over zobrazit u people/keywords/... actions and/or/not/load
+- on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 
 
 #Code Cleaning
