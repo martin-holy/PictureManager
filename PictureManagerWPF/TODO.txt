@@ -6,7 +6,6 @@
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
 - spatne se nacitaj nahledy u panoramat 20200616_162730
-- link to People, expand, expand common, label person, save, collapse People a zmeni se trojuhelnik, ale neudela se collapse
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
 
 #Update

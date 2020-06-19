@@ -30,13 +30,6 @@ namespace PictureManager.UserControls {
       tvi.BringIntoView();
     }
 
-    private void TvCategories_OnSelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
-      // Disable selection on Categories (1st level)
-      var item = ((TreeView)sender).SelectedItem;
-      if (TvCategories.ItemContainerGenerator.ContainerFromItem(item) is TreeViewItem tvi)
-        tvi.IsSelected = false;
-    }
-
     //this is PreviewMouseRightButtonDown on StackPanel in TreeView
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       e.Handled = true;
@@ -132,7 +125,6 @@ namespace PictureManager.UserControls {
         stackPanel.ContextMenu = menu;
     }
 
-    //this is PreviewMouseUp on StackPanel in TreeView Folders, Keywords and Filters
     private void TreeView_Select(object sender, MouseButtonEventArgs e) {
       /*
        SHIFT key => recursive
