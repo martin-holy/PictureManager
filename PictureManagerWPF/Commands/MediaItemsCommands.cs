@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand CopyPathsCommand { get; } = new RoutedUICommand { Text = "Copy Paths" };
     public static RoutedUICommand CompareCommand { get; } = new RoutedUICommand { Text = "Compare" };
     public static RoutedUICommand ImagesToVideoCommand { get; } = new RoutedUICommand { Text = "Images to Video" };
+    public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
@@ -43,6 +45,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, ImagesToVideoCommand, ImagesToVideo, CanImagesToVideo);
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
+      CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
     }
 
     public static bool CanNext() {
@@ -271,6 +274,49 @@ namespace PictureManager.Commands {
         App.WMain.PresentationPanel.Stop();
       else
         App.WMain.PresentationPanel.Start(true);
+    }
+
+    private static bool CanRename() {
+      return App.Core.Model.MediaItems.ThumbsGrid.Current != null;
+    }
+
+    private void Rename() {
+      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
+      var inputDialog = new InputDialog {
+        Owner = App.WMain,
+        IconName = IconName.Notification,
+        Title = "Rename",
+        Question = "Add a new name.",
+        Answer = Path.GetFileNameWithoutExtension(current.FileName)
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        var newFileName = inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName);
+
+        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) > 0)) {
+          inputDialog.ShowErrorMessage("New file name contains invalid character!");
+          return;
+        }
+
+        if (File.Exists(Domain.Extensions.PathCombine(current.Folder.FullPath, newFileName))) {
+          inputDialog.ShowErrorMessage("New file name already exists!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+
+      try {
+        current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
+        App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex);
+      }
     }
   }
 }
