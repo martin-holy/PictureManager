@@ -312,6 +312,7 @@ namespace PictureManager.Commands {
 
       try {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
+        App.Core.Model.MediaItems.ThumbsGrid.FilteredItemsSetInPlace(current);
         App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
       }
       catch (Exception ex) {

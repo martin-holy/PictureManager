@@ -293,5 +293,11 @@ namespace PictureManager.Domain.Models {
 
       return FilteredItems[(int)_indexOfCurrent - 1];
     }
+
+    public void FilteredItemsSetInPlace(MediaItem mi) {
+      var oldIndex = FilteredItems.IndexOf(mi);
+      var newIndex = FilteredItems.OrderBy(x => x.FileName).ToList().IndexOf(mi);
+      FilteredItems.Move(oldIndex, newIndex);
+    }
   }
 }
