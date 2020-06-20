@@ -188,7 +188,7 @@ namespace PictureManager.Commands {
       }
       
       App.Core.Model.Sdb.SaveAllTables();
-      if (folder.FolderKeyword != null)
+      if (folder.IsFolderKeyword || folder.FolderKeyword != null)
         App.Core.Model.FolderKeywords.Load();
     }
 
@@ -212,7 +212,7 @@ namespace PictureManager.Commands {
       }
 
       App.Core.Model.Sdb.SaveAllTables();
-      if (folder.FolderKeyword != null)
+      if (folder.IsFolderKeyword || folder.FolderKeyword != null)
         App.Core.Model.FolderKeywords.Load();
 
       // reload if the folder was selected before
