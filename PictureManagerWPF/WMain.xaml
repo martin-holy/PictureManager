@@ -53,6 +53,7 @@
           <MenuItem Command="cmd:MediaItemsCommands.ImagesToVideoCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.CopyPathsCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.RenameCommand" />
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
           <MenuItem Command="cmd:MetadataCommands.EditCommand" Tag="{x:Static pmd:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />

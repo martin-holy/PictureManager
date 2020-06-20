@@ -119,29 +119,6 @@ namespace PictureManager.Domain.Models {
       ThumbSize = (int)((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * Core.Instance.WindowsDisplayScale / 100 / Core.Instance.ThumbScale);
     }
 
-    public void SetThumbSizeOld(bool reload = false) {
-      if (ThumbSize != 0 && !reload) return;
-
-      // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int) (Core.Instance.ThumbnailSize / Core.Instance.WindowsDisplayScale * 100 * Core.Instance.ThumbScale);
-
-      if (Width == 0 || Height == 0) {
-        ThumbWidth = desiredSize;
-        ThumbHeight = desiredSize;
-      }
-      else {
-        var rotated = Orientation == (int) MediaOrientation.Rotate90 ||
-                      Orientation == (int) MediaOrientation.Rotate270;
-        Imaging.GetThumbSize(rotated ? Height : Width, rotated ? Width : Height, desiredSize, out _thumbWidth, out _thumbHeight);
-
-        IsPanoramic = ThumbWidth > desiredSize;
-        OnPropertyChanged(nameof(ThumbWidth));
-        OnPropertyChanged(nameof(ThumbHeight));
-      }
-
-      ThumbSize = (int) ((ThumbWidth > ThumbHeight ? ThumbWidth : ThumbHeight) * Core.Instance.WindowsDisplayScale / 100 / Core.Instance.ThumbScale);
-    }
-
     public void SetInfoBox() {
       InfoBoxPeople?.Clear();
       InfoBoxPeople = null;
@@ -230,6 +207,15 @@ namespace PictureManager.Domain.Models {
       Folder.MediaItems.Remove(this);
       Folder = folder;
       Folder.MediaItems.Add(this);
+    }
+
+    public void Rename(string newFileName) {
+      Core.Instance.MediaItems.Helper.IsModified = true;
+      var oldFilePath = FilePath;
+      var oldFilePathCache = FilePathCache;
+      FileName = newFileName;
+      File.Move(oldFilePath, FilePath);
+      File.Move(oldFilePathCache, FilePathCache);
     }
 
     public void ReloadThumbnail() {
