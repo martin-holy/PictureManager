@@ -156,6 +156,7 @@ namespace PictureManager {
       App.Core.Model.MediaItems.ThumbsGrid = grid;
       grid.UpdateSelected();
       App.Core.AppInfo.CurrentMediaItem = grid.Current;
+      App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 
     private void TabThumbnailsGrids_CloseTab(object sender, RoutedEventArgs e) {
