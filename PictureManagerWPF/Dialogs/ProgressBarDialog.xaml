@@ -12,9 +12,11 @@
         ShowMaxRestoreButton="False" ShowMinButton="False" ShowCloseButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
   <StackPanel Margin="5">
-    <TextBlock x:Name="TbCustomMessage" Foreground="White" TextWrapping="Wrap" Margin="5" Text="" />
-    <TextBlock x:Name="TbCount" Foreground="White" Text="" HorizontalAlignment="Center" FontSize="18" />
-    <ProgressBar x:Name="PbWorkerProgress" Height="20" Margin="5" />
+    <TextBlock x:Name="TbCustomMessage" Foreground="White" TextWrapping="Wrap" Margin="5" Text="" FontSize="14" Height="80" />
+    <Grid>
+      <ProgressBar x:Name="PbWorkerProgress" Height="20" Margin="5" />
+      <TextBlock x:Name="TbCount" Foreground="White" Text="" HorizontalAlignment="Center" FontSize="18" Padding="0,1,0,0" />
+    </Grid>
     <StackPanel Style="{StaticResource DialogButtons}">
       <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
