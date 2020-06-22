@@ -408,44 +408,7 @@ namespace PictureManager.ViewModels {
             else
               metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", mi.GeoName.Id.ToString());
 
-            var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-            encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], decoder.Frames[0].Thumbnail, metadata,
-              decoder.Frames[0].ColorContexts));
-
-            var hResult = 0;
-            try {
-              using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-                encoder.Save(newFileStream);
-              }
-              bSuccess = true;
-            }
-            catch (Exception ex) {
-              bSuccess = false;
-              hResult = ex.HResult;
-              App.Core.LogError(ex, mi.FilePath);
-            }
-
-            //There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
-            //Problem with ThumbnailImage in JPEG images taken by Huawei P10
-            if (!bSuccess && hResult == -2146233033) {
-              if (metadata.ContainsQuery("/app1/thumb/"))
-                metadata.RemoveQuery("/app1/thumb/");
-              encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-              encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], null, metadata,
-                decoder.Frames[0].ColorContexts));
-
-              try {
-                using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-                  encoder.Save(newFileStream);
-                }
-
-                bSuccess = true;
-              }
-              catch (Exception ex) {
-                bSuccess = false;
-                App.Core.LogError(ex, mi.FilePath);
-              }
-            }
+            bSuccess = WriteMetadata(mi, newFile, decoder, metadata, true);
           }
         }
       }
@@ -455,6 +418,41 @@ namespace PictureManager.ViewModels {
         original.Delete();
         newFile.MoveTo(original.FullName);
       }
+      return bSuccess;
+    }
+
+    private static bool WriteMetadata(MediaItem mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
+      bool bSuccess;
+      var hResult = 0;
+      var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+      encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0], 
+        withThumbnail ? decoder.Frames[0].Thumbnail : null, metadata, decoder.Frames[0].ColorContexts));
+
+      try {
+        using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+          encoder.Save(newFileStream);
+        }
+
+        bSuccess = true;
+      }
+      catch (Exception ex) {
+        bSuccess = false;
+        hResult = ex.HResult;
+
+        // don't log error if hResult is -2146233033
+        if (hResult != -2146233033)
+          App.Core.LogError(ex, mi.FilePath);
+      }
+
+      //There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
+      //Problem with ThumbnailImage in JPEG images taken by Huawei P10
+      if (!bSuccess && hResult == -2146233033) {
+        if (metadata.ContainsQuery("/app1/thumb/"))
+          metadata.RemoveQuery("/app1/thumb/");
+
+        bSuccess = WriteMetadata(mi, newFile, decoder, metadata, false);
+      }
+
       return bSuccess;
     }
 
