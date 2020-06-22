@@ -32,6 +32,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ActivateFilterAndCommand { get; } = new RoutedUICommand { Text = "Filter And" };
     public static RoutedUICommand ActivateFilterOrCommand { get; } = new RoutedUICommand { Text = "Filter Or" };
     public static RoutedUICommand ActivateFilterNotCommand { get; } = new RoutedUICommand { Text = "Filter Not" };
+    public static RoutedUICommand LoadByTagCommand { get; } = new RoutedUICommand { Text = "Load" };
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, CategoryGroupNewCommand, CategoryGroupNew);
@@ -54,6 +55,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, ActivateFilterAndCommand, ActivateFilterAnd);
       CommandsController.AddCommandBinding(cbc, ActivateFilterOrCommand, ActivateFilterOr);
       CommandsController.AddCommandBinding(cbc, ActivateFilterNotCommand, ActivateFilterNot);
+      CommandsController.AddCommandBinding(cbc, LoadByTagCommand, LoadByTag);
     }
 
     private static void CategoryGroupNew(object parameter) {
@@ -273,5 +275,12 @@ namespace PictureManager.Commands {
       App.Core.ActivateFilter((BaseTreeViewItem)parameter, BackgroundBrush.Hidden);
     }
 
+    private static void LoadByTag(object parameter) {
+      App.Core.TreeView_Select((BaseTreeViewItem)parameter,
+        (Keyboard.Modifiers & ModifierKeys.Control) > 0,
+        (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
+        (Keyboard.Modifiers & ModifierKeys.Shift) > 0,
+        true);
+    }
   }
 }

@@ -107,6 +107,7 @@ namespace PictureManager.UserControls {
         case Person _:
         case Keyword _:
         case GeoName _: {
+            AddMenuItem(TreeViewCommands.LoadByTagCommand);
             AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
             AddMenuItem(TreeViewCommands.ActivateFilterOrCommand);
             AddMenuItem(TreeViewCommands.ActivateFilterNotCommand);

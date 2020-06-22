@@ -46,7 +46,7 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public async void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive) {
+    public async void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
       switch (item) {
@@ -67,7 +67,7 @@ namespace PictureManager {
         case Person _:
         case Keyword _:
         case GeoName _: {
-          if (Model.MediaItems.IsEditModeOn) {
+          if (Model.MediaItems.IsEditModeOn && !loadByTag) {
             if (!(item is BaseTreeViewTagItem bti)) return;
 
             bti.IsMarked = !bti.IsMarked;
