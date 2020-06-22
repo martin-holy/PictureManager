@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -280,7 +279,7 @@ namespace PictureManager.Commands {
       return App.Core.Model.MediaItems.ThumbsGrid.Current != null;
     }
 
-    private void Rename() {
+    private static void Rename() {
       var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
@@ -314,6 +313,8 @@ namespace PictureManager.Commands {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
         App.Core.Model.MediaItems.ThumbsGrid.FilteredItemsSetInPlace(current);
         App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+        App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FilePath));
+        App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.DateAndTime));
       }
       catch (Exception ex) {
         App.Core.LogError(ex);
