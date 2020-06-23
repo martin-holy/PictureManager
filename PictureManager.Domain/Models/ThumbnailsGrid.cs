@@ -263,8 +263,10 @@ namespace PictureManager.Domain.Models {
       Current = null;
       FilteredItems.Clear();
 
-      foreach (var mi in MediaItems.Filter(LoadedItems))
+      foreach (var mi in MediaItems.Filter(LoadedItems)) {
+        mi.SetInfoBox();
         FilteredItems.Add(mi);
+      }
 
       OnPropertyChanged(nameof(PositionSlashCount));
     }
