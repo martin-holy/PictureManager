@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywords: BaseCategoryItem {
+    public List<FolderKeyword> All { get; } = new List<FolderKeyword>();
+
     public FolderKeywords() : base (Category.FolderKeywords) {
       Title = "Folder Keywords";
       IconName = IconName.FolderPuzzle;
@@ -9,6 +12,7 @@ namespace PictureManager.Domain.Models {
 
     public void Load() {
       Items.Clear();
+      All.Clear();
 
       var fkRoots = Core.Instance.Folders.All.Where(x => x.IsFolderKeyword);
 
@@ -18,7 +22,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private static void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
+    private void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
       foreach (var fi in folder.Items.OfType<Folder>()) {
         if (!Core.Instance.CanViewerSeeThisFolder(fi)) continue;
         if (fi.IsThisOrParentHidden()) continue;
@@ -30,6 +34,7 @@ namespace PictureManager.Domain.Models {
             Parent = folderKeyword
           };
           fk.Parent.Items.Add(fk);
+          All.Add(fk);
         }
 
         fi.FolderKeyword = fk;

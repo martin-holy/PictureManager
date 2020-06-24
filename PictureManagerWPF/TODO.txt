@@ -7,11 +7,8 @@
   rozpoznavat i datum bez casu
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
-- spatne se nacitaj nahledy u panoramat 20200616_162730
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
-- FileOperationCollisionDialog ma divnej ToolTip na fileName txt
-- nahled pro video z obrazku ma pomer 4:3 misto 16:9
-- pri prejmenovani MI, aktualizovat AppInfo
+- nahled pro video z obrazku ma pomer 4:3 misto 16:9 (nemuzu najit konkretni pripad)
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
@@ -31,6 +28,7 @@
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 - po vytvoreni videa z obrazku nacist video do gridu
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
+- search, kterej hleda ve folders, people, keywords, FK a geonames. zobrazi se list s cca 10 vysledkama a po kliku se udela scroll to
 
 
 #Code Cleaning

@@ -120,7 +120,7 @@
   <controls:MetroWindow.Flyouts>
     <controls:FlyoutsControl>
       <!-- Flyout with TreeViewCategories -->
-      <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="350" IsOpen="True" IsPinned="True" 
+      <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="380" IsOpen="True" IsPinned="True" 
         Background="#FF252525" Margin="{Binding FlyoutMainTreeViewMargin}"
         TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
 
@@ -132,7 +132,7 @@
   <Grid>
     <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="350" />
+        <ColumnDefinition Width="380" />
         <ColumnDefinition Width="3" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
