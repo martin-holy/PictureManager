@@ -186,6 +186,8 @@ namespace PictureManager.Domain.Models {
       var dirNames = new HashSet<string>();
       var fullPath = FullPath + Path.DirectorySeparatorChar;
 
+      if (!Directory.Exists(fullPath)) return;
+
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var isNew = false;
         var dirName = dir.Substring(fullPath.Length);
