@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pm="clr-namespace:PictureManager"
-             xmlns:customControls="clr-namespace:PictureManager.CustomControls"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
@@ -16,11 +17,15 @@
         <Setter Property="ToolTip" Value="{Binding Title}" />
       </Style>
 
-      <!-- CategoriesBarButtonStyle -->
+      <!-- SearchButtonStyle -->
+      <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource CategoriesNavBarButtonStyle}">
+        <Setter Property="ToolTip" Value="Search" />
+      </Style>
+
+      <!-- PinButtonStyle -->
       <Style x:Key="PinButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
         <Setter Property="Width" Value="24" />
         <Setter Property="Height" Value="24" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
       </Style>
     </Grid.Resources>
 
@@ -42,23 +47,45 @@
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Button Style="{StaticResource CategoriesNavBarButtonStyle}" Click="BtnNavCategory_OnClick">
-                <customControls:IconRect IconName="{Binding IconName}" Size="22" />
+                <cc:IconRect IconName="{Binding IconName}" Size="20" />
               </Button>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <!-- Button to close/open flyout panel -->
-        <Button Style="{StaticResource PinButtonStyle}" DockPanel.Dock="Right"
-                Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-          <customControls:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
-        </Button>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+          <!-- Search -->
+          <Button Style="{StaticResource SearchButtonStyle}" Click="ShowSearch">
+            <cc:IconRect IconName="{x:Static pmd:IconName.Magnify}" Size="20" />
+          </Button>
+
+          <!-- Button to close/open flyout panel -->
+          <Button Style="{StaticResource PinButtonStyle}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
+            <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
+          </Button>
+        </StackPanel>
       </DockPanel>
     </Border>
 
     <!-- TreeView Categories -->
     <TreeView x:Name="TvCategories" Grid.Row="1" Background="Transparent" FocusManager.IsFocusScope="True"
               ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}">
+      
+      <!-- BlurEffect when Search is visible -->
+      <TreeView.Style>
+        <Style TargetType="TreeView">
+          <Setter Property="BorderThickness" Value="0" />
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding Visibility, ElementName=Search}" Value="Visible">
+              <Setter Property="Effect">
+                <Setter.Value>
+                  <BlurEffect Radius="4" KernelType="Gaussian" />
+                </Setter.Value>
+              </Setter>
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </TreeView.Style>
 
       <TreeView.Resources>
         <!-- KeywordsPicCountStyle -->
@@ -103,7 +130,7 @@
         <HierarchicalDataTemplate DataType="{x:Type models:BaseCategoryItem}" ItemsSource="{Binding Items}">
           <Border Height="40">
             <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-              <customControls:IconRect IconName="{Binding IconName}" Size="24" />
+              <cc:IconRect IconName="{Binding IconName}" Size="24" />
               <TextBlock Style="{StaticResource TreeViewTitle}" FontSize="18" />
             </StackPanel>
           </Border>
@@ -112,7 +139,7 @@
         <!-- BaseTreeViewItem -->
         <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-            <customControls:IconRect IconName="{Binding IconName}" />
+            <cc:IconRect IconName="{Binding IconName}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />
           </StackPanel>
         </HierarchicalDataTemplate>
@@ -120,7 +147,7 @@
         <!-- BaseTreeViewTagItem -->
         <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
           <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-            <customControls:IconRect IconName="{Binding IconName}" />
+            <cc:IconRect IconName="{Binding IconName}" />
             <TextBlock Style="{StaticResource TreeViewTitle}" />
             <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
           </StackPanel>
@@ -198,5 +225,9 @@
         </Style>
       </TreeView.ItemContainerStyle>
     </TreeView>
+
+    <!-- Search -->
+    <uc:TreeViewSearch Grid.Row="1" x:Name="Search" Visibility="Collapsed" />
+
   </Grid>
 </UserControl>

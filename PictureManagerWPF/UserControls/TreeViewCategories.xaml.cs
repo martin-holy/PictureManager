@@ -265,5 +265,10 @@ namespace PictureManager.UserControls {
       App.Core.Model.MediaItemSizes.Size.SliderChanged = true;
       App.Core.MediaItemsViewModel.ReapplyFilter();
     }
+
+    private void ShowSearch(object sender, RoutedEventArgs e) {
+      Search.TbSearch.Text = string.Empty;
+      Search.Visibility = Visibility.Visible;
+    }
   }
 }
