@@ -61,7 +61,7 @@ namespace PictureManager.UserControls {
       // GeoNames
       AddToSearchResult(App.Core.Model.GeoNames.All
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
-        .Select(x => new SearchItem(IconName.Tag, x.Title, x.GetFullPath(sep), x)));
+        .Select(x => new SearchItem(IconName.LocationCheckin, x.Title, x.GetFullPath(sep), x)));
 
       // Folders
       var result = App.Core.Model.Folders.All
@@ -78,8 +78,10 @@ namespace PictureManager.UserControls {
     private void NavigateTo(object sender, SelectionChangedEventArgs e) {
       var item = ((SearchItem)((ListBox)sender).SelectedItem)?.Item;
 
-      if (item != null)
+      if (item != null) {
         BaseTreeViewItem.ExpandTo(item);
+        App.WMain.TreeViewCategories.TreeItemBringIntoView(item);
+      }
 
       CloseSearch(null, null);
     }

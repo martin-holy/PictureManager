@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -29,6 +30,42 @@ namespace PictureManager.UserControls {
       var sv = TvCategories.FindChildren<ScrollViewer>(true).SingleOrDefault();
       sv?.ScrollToBottom();
       tvi.BringIntoView();
+      sv?.ScrollToHorizontalOffset(0);
+    }
+
+    public void TreeItemBringIntoView(BaseTreeViewItem item) {
+      // here I assume that item and all parents are expanded
+      // ScrollToBottom will cache TreeViewItem so it can be bring ed into view
+      var sv = TvCategories.FindChildren<ScrollViewer>(true).SingleOrDefault();
+      sv?.ScrollToBottom();
+      App.WMain.UpdateLayout();
+
+      // get all parents of item
+      var items = new List<BaseTreeViewItem>();
+      item.GetThisAndParentRecursive(ref items);
+
+      // add top parent for some cases
+      switch (item) {
+        case Folder _: {
+          items.Add(App.Core.Model.Folders);
+          App.Core.Model.Folders.IsExpanded = true;
+          break;
+        }
+        case GeoName _: {
+          items.Add(App.Core.Model.GeoNames);
+          App.Core.Model.GeoNames.IsExpanded = true;
+          break;
+        }
+      }
+
+      items.Reverse();
+
+      // get container for item
+      var elm = TvCategories as ItemsControl;
+      foreach (var i in items)
+        elm = elm?.ItemContainerGenerator.ContainerFromItem(i) as ItemsControl;
+
+      elm?.BringIntoView();
       sv?.ScrollToHorizontalOffset(0);
     }
 
