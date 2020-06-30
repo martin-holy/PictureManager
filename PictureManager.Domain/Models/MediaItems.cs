@@ -291,16 +291,23 @@ namespace PictureManager.Domain.Models {
     }
 
     public static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {
+      // Media Type
+      var grid = Core.Instance.MediaItems.ThumbsGrid;
+      var mediaTypes = new HashSet<MediaType>();
+      if (grid.ShowImages) mediaTypes.Add(MediaType.Image);
+      if (grid.ShowVideos) mediaTypes.Add(MediaType.Video);
+      mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
+
       //Ratings
       var chosenRatings = Core.Instance.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
       if (chosenRatings.Any())
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 
-      //MediaItemSizes
+      // MediaItemSizes
       if (!Core.Instance.MediaItemSizes.Size.AllSizes())
         mediaItems = mediaItems.Where(mi => mi.IsNew || Core.Instance.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
 
-      //People
+      // People
       var orPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
       var andPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
       var notPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
@@ -323,7 +330,7 @@ namespace PictureManager.Domain.Models {
         }).ToList();
       }
 
-      //Keywords
+      // Keywords
       var orKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
       var andKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
       var notKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
