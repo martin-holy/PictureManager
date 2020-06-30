@@ -78,6 +78,7 @@ namespace PictureManager.Domain.Models {
             parentGeoName);
 
           AddRecord(dbGeoName);
+          parentGeoName?.Items.Add(dbGeoName);
           Helper.IsModified = true;
         }
 
