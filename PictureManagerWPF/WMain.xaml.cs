@@ -174,5 +174,9 @@ namespace PictureManager {
     public void TabThumbnailsGrids_AddTab(object sender, RoutedEventArgs e) {
       MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.MediaItemsViewModel.AddThumbnailsGridModel());
     }
+
+    private void OnMediaTypesChanged(object sender, RoutedEventArgs e) {
+      App.Core.MediaItemsViewModel.ReapplyFilter();
+    }
   }
 }

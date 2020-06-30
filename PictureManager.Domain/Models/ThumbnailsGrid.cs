@@ -16,6 +16,8 @@ namespace PictureManager.Domain.Models {
     private int _selected;
     private string _title;
     private bool _showAddTabButton;
+    private bool _showImages = true;
+    private bool _showVideos = true;
 
     public List<MediaItem> SelectedItems { get; } = new List<MediaItem>();
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
@@ -25,6 +27,8 @@ namespace PictureManager.Domain.Models {
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } } 
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
     public bool ShowAddTabButton { get => _showAddTabButton; set { _showAddTabButton = value; OnPropertyChanged(); } }
+    public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
+    public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
 
     public MediaItem Current {

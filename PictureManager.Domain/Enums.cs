@@ -38,7 +38,9 @@
     Pin,
     Calendar,
     Magnify,
+    Image,
     ImageMultiple,
-    PageUpload
+    PageUpload,
+    MovieClapper
   }
 }

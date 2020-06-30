@@ -99,6 +99,18 @@
         </Border>
       </StackPanel>
 
+      <!-- Media Types -->
+      <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Image" Click="OnMediaTypesChanged"
+                      IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
+          <cc:IconRect IconName="{x:Static pmd:IconName.Image}" />
+        </ToggleButton>
+        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Video" Click="OnMediaTypesChanged"
+                      IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
+          <cc:IconRect IconName="{x:Static pmd:IconName.MovieClapper}" />
+        </ToggleButton>
+      </StackPanel>
+
       <!-- Log Button -->
       <Button Background="Red" Command="cmd:WindowCommands.OpenLogCommand" Height="24" Margin="2,0,2,0"
         Visibility="{Binding Log.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
