@@ -147,6 +147,7 @@ namespace PictureManager.Commands {
 
           mi.GeoName = lastGeoName;
           MediaItemsViewModel.TryWriteMetadata(mi);
+          App.Core.Model.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted
