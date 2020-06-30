@@ -13,6 +13,7 @@
         <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/Converters.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ToggleButtonStyle.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuItemStyles.xaml" />
