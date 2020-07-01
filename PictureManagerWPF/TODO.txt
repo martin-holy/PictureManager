@@ -9,6 +9,7 @@
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
 - nahled pro video z obrazku ma pomer 4:3 misto 16:9 (nemuzu najit konkretni pripad)
+- po vytvoreni videa z obrazku nacist video do gridu
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
@@ -20,13 +21,11 @@
 - zmenit title na favorite folder
 - nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
-- rotate video just for view (čeknout, jeslti nestaci mit na MediaItem zmenenou orientaci, ktera by se ukladala)
 - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat do thumbnails kategorie podle slozek/datumu/...
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
-- po vytvoreni videa z obrazku nacist video do gridu
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 - pridat k rotate taky flip H a V
 

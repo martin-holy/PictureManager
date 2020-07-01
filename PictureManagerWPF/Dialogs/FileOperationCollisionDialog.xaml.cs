@@ -70,7 +70,7 @@ namespace PictureManager.Dialogs {
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
         await Imaging.CreateThumbnailAsync(Domain.Utils.Imaging.GetMediaType(filePath), filePath, thumbPath,
-          Settings.Default.ThumbnailSize);
+          Settings.Default.ThumbnailSize, 0);
       }
 
       return new Uri(thumbPath);

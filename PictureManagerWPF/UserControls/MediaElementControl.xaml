@@ -13,7 +13,13 @@
                   Stretch="Uniform" StretchDirection="Both"
                   MediaOpened="MediaElement_OnMediaOpened" 
                   MediaEnded="MediaElement_OnMediaEnded"
-                  MouseLeftButtonUp="MediaElement_OnMouseLeftButtonUp" />
+                  MouseLeftButtonUp="MediaElement_OnMouseLeftButtonUp">
+      <MediaElement.LayoutTransform>
+        <TransformGroup>
+          <RotateTransform Angle="{Binding Rotation}" />
+        </TransformGroup>
+      </MediaElement.LayoutTransform>
+    </MediaElement>
 
     <Grid Height="40" VerticalAlignment="Top" Background="#88000000">
       <Grid.Style>

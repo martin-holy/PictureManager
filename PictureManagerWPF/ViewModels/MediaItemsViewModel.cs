@@ -258,17 +258,22 @@ namespace PictureManager.ViewModels {
         null,
         // action
         async delegate (MediaItem mi) {
-          var newOrientation = 0;
-          switch ((MediaOrientation)mi.Orientation) {
-            case MediaOrientation.Rotate90: newOrientation = 90; break;
-            case MediaOrientation.Rotate180: newOrientation = 180; break;
-            case MediaOrientation.Rotate270: newOrientation = 270; break;
-          }
+          var newOrientation = mi.RotationAngle;
 
-          switch (rotation) {
-            case Rotation.Rotate90: newOrientation += 90; break;
-            case Rotation.Rotate180: newOrientation += 180; break;
-            case Rotation.Rotate270: newOrientation += 270; break;
+          if (mi.MediaType == MediaType.Image) {
+            switch (rotation) {
+              case Rotation.Rotate90: newOrientation += 90; break;
+              case Rotation.Rotate180: newOrientation += 180; break;
+              case Rotation.Rotate270: newOrientation += 270; break;
+            }
+          } else if (mi.MediaType == MediaType.Video) {
+            // images have switched 90 and 270 angles and all app is made with this in mind
+            // so I switched orientation just for video
+            switch (rotation) {
+              case Rotation.Rotate90: newOrientation += 270; break;
+              case Rotation.Rotate180: newOrientation += 180; break;
+              case Rotation.Rotate270: newOrientation += 90; break;
+            }
           }
 
           if (newOrientation >= 360) newOrientation -= 360;
@@ -282,7 +287,7 @@ namespace PictureManager.ViewModels {
 
           TryWriteMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,

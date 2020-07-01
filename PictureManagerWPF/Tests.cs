@@ -81,7 +81,7 @@ namespace PictureManager {
             while (partition.MoveNext()) {
               Console.WriteLine("loop before");
               var mi = partition.Current;
-              await Imaging.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+              await Imaging.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize, mi.RotationAngle);
               Console.WriteLine("loop after");
             }
           }

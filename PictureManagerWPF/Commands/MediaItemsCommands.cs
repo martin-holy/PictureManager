@@ -210,7 +210,7 @@ namespace PictureManager.Commands {
         null,
         async delegate (MediaItem mi) {
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
