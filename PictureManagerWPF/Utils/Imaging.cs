@@ -147,7 +147,7 @@ namespace PictureManager.Utils {
                 // Folder can by null if the mediaItem is corrupted and is deleted in loading metadata process
                 if (mi == null || mi.Folder == null) continue;
                 if (File.Exists(mi.FilePathCache)) continue;
-                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize, mi.RotationAngle);
 
                 mi.ReloadThumbnail();
               }
@@ -156,10 +156,10 @@ namespace PictureManager.Utils {
       });
     }
 
-    public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size) {
+    public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle) {
       return type == MediaType.Image
         ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size))
-        : CreateThumbnailAsync(srcPath, destPath, size);
+        : CreateThumbnailAsync(srcPath, destPath, size, rotationAngle);
     }
 
     public static bool CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
@@ -205,12 +205,12 @@ namespace PictureManager.Utils {
       }
     }
 
-    public static Task CreateThumbnailAsync(string srcPath, string destPath, int size) {
+    public static Task CreateThumbnailAsync(string srcPath, string destPath, int size, int rotationAngle) {
       var tcs = new TaskCompletionSource<bool>();
       var process = new Process {
         EnableRaisingEvents = true,
         StartInfo = new ProcessStartInfo {
-          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\"",
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\" rotationAngle|\"{rotationAngle}\"",
           FileName = "ThumbnailCreator.exe",
           UseShellExecute = false,
           CreateNoWindow = true

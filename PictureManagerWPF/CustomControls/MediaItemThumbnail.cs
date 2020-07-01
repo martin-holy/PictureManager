@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
@@ -79,10 +80,14 @@ namespace PictureManager.CustomControls {
       if (mi == null) return;
       if (mi.MediaType != MediaType.Video) return;
 
-      (App.WMain.VideoThumbnailPreview.Parent as Grid)?.Children.Remove(App.WMain.VideoThumbnailPreview);
-      App.WMain.VideoThumbnailPreview.Source = mi.FilePathUri;
-      _grid.Children.Insert(2, App.WMain.VideoThumbnailPreview);
-      App.WMain.VideoThumbnailPreview.Play();
+      var player = App.WMain.VideoThumbnailPreview;
+      var rotation = new TransformGroup();
+      rotation.Children.Add(new RotateTransform(mi.RotationAngle));
+      (player.Parent as Grid)?.Children.Remove(player);
+      player.LayoutTransform = rotation;
+      player.Source = mi.FilePathUri;
+      _grid.Children.Insert(2, player);
+      player.Play();
     }
 
     public void InsertPlayer(UIElement player) {

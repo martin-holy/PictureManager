@@ -51,6 +51,10 @@ namespace PictureManager.UserControls {
       }
     }
 
+    private double _rotation;
+
+    public double Rotation { get => _rotation; set { _rotation = value; OnPropertyChanged(); } }
+
     public MediaElementControl() {
       InitializeComponent();
 

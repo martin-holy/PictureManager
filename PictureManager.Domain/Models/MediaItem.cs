@@ -103,6 +103,18 @@ namespace PictureManager.Domain.Models {
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
     }
 
+    public int RotationAngle {
+      get {
+        switch ((MediaOrientation) Orientation) {
+          case MediaOrientation.Rotate90: return 90;
+          case MediaOrientation.Rotate180: return 180;
+          case MediaOrientation.Rotate270: return 270;
+        }
+
+        return 0;
+      }
+    }
+
     public void SetThumbSize(bool reload = false) {
       if (ThumbSize != 0 && !reload) return;
       if (Width == 0 || Height == 0) return;
