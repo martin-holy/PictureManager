@@ -17,17 +17,28 @@ namespace PictureManager.Dialogs {
     private Process _process;
     private readonly string _inputListPath;
     private readonly string _outputFilePath;
+    private readonly string _outputFileName;
+    private readonly Folder _outputFolder;
+    private readonly OnSuccess _onSuccess;
 
-    public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items) {
+    public delegate void OnSuccess(Folder folder, string fileName);
+
+    public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
       InitializeComponent();
-      Owner = owner;
+      
       _items = items.ToArray();
+      var firstMi = _items.First();
+
+      Owner = owner;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
-      _outputFilePath = _items.First().FilePath + ".mp4";
+      _outputFilePath = firstMi.FilePath + ".mp4";
+      _outputFileName = firstMi.FileName + ".mp4";
+      _outputFolder = firstMi.Folder;
+      _onSuccess = onSuccess;
     }
 
-    public static void ShowDialog(Window owner, IEnumerable<MediaItem> items) {
-      var dlg = new ImagesToVideoDialog(owner, items);
+    public static void ShowDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
+      var dlg = new ImagesToVideoDialog(owner, items, onSuccess);
       dlg.ShowDialog();
     }
 
@@ -128,7 +139,7 @@ namespace PictureManager.Dialogs {
         await CreateVideoAsync();
         DeleteFile(_inputListPath);
         Owner.Activate();
-        // TODO soft reload. keep selected and scroll, just add one thumbnail
+        _onSuccess.Invoke(_outputFolder, _outputFileName);
       }
 
       Close();
