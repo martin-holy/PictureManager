@@ -159,13 +159,14 @@ namespace PictureManager.Domain.Models {
 
       if (Keywords != null) {
         InfoBoxKeywords = new ObservableCollection<string>();
+        var allKeywords = new List<BaseTreeViewItem>();
 
-        foreach (var keyword in Keywords) {
-          foreach (var k in keyword.FullPath.Split('/')) {
-            if (InfoBoxKeywords.Contains(k)) continue;
-            InfoBoxKeywords.Add(k);
-            InfoBoxThumb.Add(k);
-          }
+        foreach (var keyword in Keywords)
+          keyword.GetThisAndParentRecursive(ref allKeywords);
+
+        foreach (var keyword in allKeywords.OfType<Keyword>().Distinct().OrderBy(x => x.FullPath)) {
+          InfoBoxKeywords.Add(keyword.Title);
+          InfoBoxThumb.Add(keyword.Title);
         }
       }
 
