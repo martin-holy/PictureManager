@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,15 @@ namespace PictureManager.Domain {
       for (var i = 0; i < sorted.Count; i++) {
         collection.Move(collection.IndexOf(sorted[i]), i);
       }
+    }
+
+    public static void AddInOrder<T>(this List<T> list, T item, Func<T, T, bool> compare) {
+      int i;
+      for (i = 0; i < list.Count; i++)
+        if (compare.Invoke(list[i], item))
+          break;
+
+      list.Insert(i, item);
     }
 
     /// <summary>
