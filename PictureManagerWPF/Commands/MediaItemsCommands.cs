@@ -10,6 +10,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
 using PictureManager.Utils;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public class MediaItemsCommands: Singleton<MediaItemsCommands> {
@@ -145,7 +146,24 @@ namespace PictureManager.Commands {
 
     private static void ImagesToVideo() {
       ImagesToVideoDialog.ShowDialog(App.WMain,
-        App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image));
+        App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image), 
+        async delegate(Folder folder, string fileName) {
+          var mmi = App.Core.Model.MediaItems;
+
+          // create new MediaItem, Read Metadata and Create Thumbnail
+          var mi = new MediaItem(mmi.Helper.GetNextId(), folder, fileName);
+          mmi.AddRecord(mi);
+          folder.MediaItems.Add(mi);
+          MediaItemsViewModel.ReadMetadata(mi);
+          mi.SetThumbSize(true);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
+
+          // reload grid
+          mmi.ThumbsGrid.LoadedItems.AddInOrder(mi, (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
+          App.Core.MediaItemsViewModel.ReapplyFilter();
+          App.Core.MediaItemsViewModel.ScrollTo(mi);
+        }
+      );
     }
 
     private static bool CanCopyPaths() {
