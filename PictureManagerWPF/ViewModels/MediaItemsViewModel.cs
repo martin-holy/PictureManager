@@ -484,7 +484,6 @@ namespace PictureManager.ViewModels {
             mi.Width = frame.PixelWidth;
             mi.Height = frame.PixelHeight;
 
-            mi.SetThumbSize(true);
             App.Core.Model.MediaItems.Helper.IsModified = true;
 
             // true because only media item dimensions are required
@@ -558,6 +557,8 @@ namespace PictureManager.ViewModels {
               App.Core.Model.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
               mi.GeoName = geoname;
             }
+
+            mi.SetThumbSize(true);
           }
         }
       }

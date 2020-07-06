@@ -8,7 +8,6 @@
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
-- nahled pro video z obrazku ma pomer 4:3 misto 16:9 (nemuzu najit konkretni pripad)
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
