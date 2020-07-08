@@ -454,6 +454,8 @@ namespace PictureManager.ViewModels {
       if (!bSuccess && hResult == -2146233033) {
         if (metadata.ContainsQuery("/app1/thumb/"))
           metadata.RemoveQuery("/app1/thumb/");
+        else 
+          metadata = null; // removing thumbnail wasn't enough
 
         bSuccess = WriteMetadata(mi, newFile, decoder, metadata, false);
       }
