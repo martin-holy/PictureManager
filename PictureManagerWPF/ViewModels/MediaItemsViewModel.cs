@@ -344,9 +344,18 @@ namespace PictureManager.ViewModels {
 
     public static bool TryWriteMetadata(MediaItem mediaItem) {
       App.Core.Model.MediaItems.Helper.IsModified = true;
-      if (WriteMetadata(mediaItem)) return true;
-      Imaging.ReSaveImage(mediaItem.FilePath);
-      return WriteMetadata(mediaItem);
+      if (mediaItem.IsOnlyInDb) return true;
+      try {
+        var bSuccess = WriteMetadata(mediaItem);
+        if (bSuccess) return true;
+        throw new Exception("Error writing metadata");
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
+        // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
+        mediaItem.IsOnlyInDb = true;
+        return false;
+      }
     }
 
     private static bool WriteMetadata(MediaItem mi) {
@@ -413,7 +422,7 @@ namespace PictureManager.ViewModels {
             else
               metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", mi.GeoName.Id.ToString());
 
-            bSuccess = WriteMetadata(mi, newFile, decoder, metadata, true);
+            bSuccess = WriteMetadataToFile(mi, newFile, decoder, metadata, true);
           }
         }
       }
@@ -426,7 +435,7 @@ namespace PictureManager.ViewModels {
       return bSuccess;
     }
 
-    private static bool WriteMetadata(MediaItem mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
+    private static bool WriteMetadataToFile(MediaItem mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
       bool bSuccess;
       var hResult = 0;
       var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
@@ -449,15 +458,17 @@ namespace PictureManager.ViewModels {
           App.Core.LogError(ex, mi.FilePath);
       }
 
-      //There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
-      //Problem with ThumbnailImage in JPEG images taken by Huawei P10
+      // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
+      // It might be problem with ThumbnailImage in JPEG images taken by Huawei P10
       if (!bSuccess && hResult == -2146233033) {
         if (metadata.ContainsQuery("/app1/thumb/"))
           metadata.RemoveQuery("/app1/thumb/");
-        else 
-          metadata = null; // removing thumbnail wasn't enough
+        else {
+          // removing thumbnail wasn't enough
+          return false;
+        }
 
-        bSuccess = WriteMetadata(mi, newFile, decoder, metadata, false);
+        bSuccess = WriteMetadataToFile(mi, newFile, decoder, metadata, false);
       }
 
       return bSuccess;
@@ -485,6 +496,7 @@ namespace PictureManager.ViewModels {
             var frame = decoder.Frames[0];
             mi.Width = frame.PixelWidth;
             mi.Height = frame.PixelHeight;
+            mi.SetThumbSize(true);
 
             App.Core.Model.MediaItems.Helper.IsModified = true;
 
@@ -570,6 +582,8 @@ namespace PictureManager.ViewModels {
         // No imaging component suitable to complete this operation was found.
         if ((ex.InnerException as COMException)?.HResult == -2003292336)
           return false;
+
+        mi.IsOnlyInDb = true;
 
         // true because only media item dimensions are required
         return true;
