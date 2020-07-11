@@ -49,6 +49,7 @@ namespace PictureManager.Domain.Models {
     public bool IsModified { get; set; }
     public bool IsNew { get; set; }
     public bool IsPanoramic { get; set; }
+    public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
@@ -88,7 +89,7 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     public string ToCsv() {
-      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords
+      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
       return string.Join("|",
         Id.ToString(),
         Folder.Id.ToString(),
@@ -100,7 +101,8 @@ namespace PictureManager.Domain.Models {
         Comment ?? string.Empty,
         GeoName?.Id.ToString(),
         People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
-        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
+        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)),
+        IsOnlyInDb ? "1" : string.Empty);
     }
 
     public int RotationAngle {

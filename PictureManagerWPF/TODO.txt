@@ -26,6 +26,8 @@
 - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 - pridat k rotate taky flip H a V
+- kdyz se nepodari ulozit metadata to obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
+
 
 
 #Code Cleaning

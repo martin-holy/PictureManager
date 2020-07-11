@@ -30,9 +30,9 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public void NewFromCsv(string csv) {
-      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords
+      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
       var props = csv.Split('|');
-      if (props.Length != 11) return;
+      if (props.Length != 12) return;
       var id = int.Parse(props[0]);
       AddRecord(new MediaItem(id, null, props[2]) {
         Csv = props,
@@ -40,7 +40,8 @@ namespace PictureManager.Domain.Models {
         Height = props[4].IntParseOrDefault(0),
         Orientation = props[5].IntParseOrDefault(1),
         Rating = props[6].IntParseOrDefault(0),
-        Comment = string.IsNullOrEmpty(props[7]) ? null : props[7]
+        Comment = string.IsNullOrEmpty(props[7]) ? null : props[7],
+        IsOnlyInDb = props[11] == "1"
       });
     }
 
