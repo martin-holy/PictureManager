@@ -135,6 +135,8 @@ namespace PictureManager.Domain.Models {
 
       MediaItemsCount--;
 
+      SetModified(item, false);
+
       // set MediaItems table as modified
       Helper.IsModified = true;
     }
