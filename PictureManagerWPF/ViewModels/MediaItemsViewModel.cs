@@ -482,7 +482,13 @@ namespace PictureManager.ViewModels {
               var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
               mi.Height = size[0];
               mi.Width = size[1];
-              mi.Orientation = size[2];
+
+              switch (size[2]) {
+                case 180: mi.Orientation = 3; break;
+                case 270: mi.Orientation = 6; break;
+                default: mi.Orientation = 1; break;
+              }
+
               mi.SetThumbSize(true);
             }
             catch (Exception ex) {
