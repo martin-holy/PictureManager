@@ -484,9 +484,9 @@ namespace PictureManager.ViewModels {
               mi.Width = size[1];
 
               switch (size[2]) {
-                case 180: mi.Orientation = 3; break;
-                case 270: mi.Orientation = 6; break;
-                default: mi.Orientation = 1; break;
+                case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
+                case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
+                default: mi.Orientation = (int)MediaOrientation.Normal; break;
               }
 
               mi.SetThumbSize(true);
