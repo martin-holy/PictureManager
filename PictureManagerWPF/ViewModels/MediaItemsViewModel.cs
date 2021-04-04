@@ -484,6 +484,7 @@ namespace PictureManager.ViewModels {
               mi.Width = size[1];
 
               switch (size[2]) {
+                case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
                 case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
                 case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
                 default: mi.Orientation = (int)MediaOrientation.Normal; break;
