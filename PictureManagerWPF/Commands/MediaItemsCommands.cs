@@ -156,7 +156,7 @@ namespace PictureManager.Commands {
           folder.MediaItems.Add(mi);
           MediaItemsViewModel.ReadMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0);
 
           // reload grid
           mmi.ThumbsGrid.LoadedItems.AddInOrder(mi, (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
@@ -228,7 +228,7 @@ namespace PictureManager.Commands {
         null,
         async delegate (MediaItem mi) {
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
