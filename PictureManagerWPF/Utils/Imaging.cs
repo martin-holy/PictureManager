@@ -147,7 +147,7 @@ namespace PictureManager.Utils {
                 // Folder can by null if the mediaItem is corrupted and is deleted in loading metadata process
                 if (mi == null || mi.Folder == null) continue;
                 if (File.Exists(mi.FilePathCache)) continue;
-                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize, mi.RotationAngle);
+                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize, 0);
 
                 mi.ReloadThumbnail();
               }
