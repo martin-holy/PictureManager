@@ -240,5 +240,72 @@ namespace PictureManager.Utils {
         }
       });
     }
+
+    // Create Thumbnail from video from given time (very slow!!!)
+    public static Task CreateVideoThumbnailAsync(string srcPath, string destPath, string size, string time) {
+      var args = $"-y -i \"{srcPath}\" -ss {time} -frames:v 1 -s {size} \"{destPath}\"";
+      var tcs = new TaskCompletionSource<bool>();
+
+      var process = new Process {
+        EnableRaisingEvents = true,
+        StartInfo = new ProcessStartInfo {
+          Arguments = args,
+          FileName = Settings.Default.FfmpegPath,
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
+
+      process.Exited += (s, e) => {
+        tcs.TrySetResult(true);
+        process.Dispose();
+      };
+
+      process.Start();
+      return tcs.Task;
+    }
+
+    public static bool CreateVideoThumbnailFromVisual(FrameworkElement visual, string destPath, int desiredSize) {
+      try {
+        // create destination directory if doesn't exist
+        var dir = Path.GetDirectoryName(destPath);
+        if (dir == null) return false;
+        Directory.CreateDirectory(dir);
+
+        // get offset of visual from its parent
+        var offset = visual.TranslatePoint(new Point(0, 0), (UIElement) visual.Parent);
+
+        // round all variables for safer calculation
+        var ox = Math.Round(offset.X, 0);
+        var oy = Math.Round(offset.Y, 0);
+        var aw = Math.Round(visual.ActualWidth, 0);
+        var ah = Math.Round(visual.ActualHeight, 0);
+
+        // render visual to bitmap
+        var bmp = new RenderTargetBitmap((int)(aw + ox), (int)(ah + oy), 96, 96, PixelFormats.Pbgra32);
+        bmp.Render(visual);
+
+        // crop bitmap
+        var crop = new CroppedBitmap(bmp, new Int32Rect((int)ox, (int)oy, (int)aw, (int)ah));
+
+        // scale bitmap to thumbnail
+        Domain.Utils.Imaging.GetThumbSize(aw, ah, desiredSize, out var tw, out var th);
+        var thumb = new TransformedBitmap(crop, new ScaleTransform(tw / aw, th / ah, 0, 0));
+
+        // create encoder for thumbnail
+        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+        encoder.Frames.Add(BitmapFrame.Create(thumb));
+
+        // save thumbnail
+        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
+          encoder.Save(destFileStream);
+        }
+
+        return true;
+      }
+      catch (Exception) {
+        return false;
+      }
+    }
   }
 }
