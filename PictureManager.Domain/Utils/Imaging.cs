@@ -28,16 +28,20 @@ namespace PictureManager.Domain.Utils {
           var tooBig = panoramaHeight / height * width > maxWidth;
           outHeight = (int)(tooBig ? maxWidth / width * height : panoramaHeight);
           outWidth = (int)(tooBig ? maxWidth : panoramaHeight / height * width);
+          if (outHeight % 2 != 0) outHeight++;
+          if (outWidth % 2 != 0) outWidth++;
           return;
         }
 
         outHeight = (int)(desiredSize / width * height);
         outWidth = desiredSize;
+        if (outHeight % 2 != 0) outHeight++;
         return;
       }
 
       outHeight = desiredSize;
       outWidth = (int)(desiredSize / height * width);
+      if (outWidth % 2 != 0) outWidth++;
     }
   }
 }
