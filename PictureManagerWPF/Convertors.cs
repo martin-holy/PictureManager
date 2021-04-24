@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Net.Cache;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -185,8 +186,14 @@ namespace PictureManager {
 
         var src = new BitmapImage();
         src.BeginInit();
-        src.UriSource = uriValue;
+        
+        if (parameter is string s && s.Equals("IgnoreImageCache")) {
+          src.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
+          src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+        }
+
         src.CacheOption = BitmapCacheOption.OnLoad;
+        src.UriSource = uriValue;
         src.EndInit();
         return src;
       }
