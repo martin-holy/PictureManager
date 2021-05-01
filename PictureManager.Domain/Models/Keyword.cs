@@ -8,6 +8,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public int Idx { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
+    public List<VideoClip> VideoClips { get; set; }
 
     public string FullPath => GetFullPath();
 

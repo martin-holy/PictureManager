@@ -29,6 +29,8 @@ namespace PictureManager.Domain {
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
     public MediaItems MediaItems { get; }
+    public VideoClips VideoClips { get; }
+    public VideoClipsGroups VideoClipsGroups { get; }
     public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -55,6 +57,8 @@ namespace PictureManager.Domain {
       CategoryGroups = new CategoryGroups();
 
       MediaItems = new MediaItems();
+      VideoClips = new VideoClips();
+      VideoClipsGroups = new VideoClipsGroups();
     }
 
     public Task InitAsync(IProgress<string> progress) {
@@ -68,6 +72,8 @@ namespace PictureManager.Domain {
         Sdb.AddTable(Keywords);
         Sdb.AddTable(GeoNames);
         Sdb.AddTable(MediaItems);
+        Sdb.AddTable(VideoClips);
+        Sdb.AddTable(VideoClipsGroups);
         Sdb.AddTable(FavoriteFolders);
 
         Sdb.LoadAllTables(progress);
@@ -79,6 +85,14 @@ namespace PictureManager.Domain {
         FolderKeywords.Load();
         progress.Report("Loading Ratings");
         Ratings.Load();
+
+        // cleanup
+        Folders.AllDic.Clear();
+        Folders.AllDic = null;
+        MediaItems.AllDic.Clear();
+        MediaItems.AllDic = null;
+        VideoClips.AllDic.Clear();
+        VideoClips.AllDic = null;
 
         Folders.IsExpanded = true;
       });

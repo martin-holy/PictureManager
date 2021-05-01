@@ -201,8 +201,8 @@
           </Grid>
 
           <!-- Full Media Video -->
-          <uc:MediaElementControl x:Name="FullMedia"
-              Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
+          <cc:VideoPlayer x:Name="FullMedia"
+                Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
                 Source={x:Static pm:App.Core},
                 Converter={StaticResource AllToVisibilityConverter}, 
                 ConverterParameter={x:Static pmd:MediaType.Video}}" />
