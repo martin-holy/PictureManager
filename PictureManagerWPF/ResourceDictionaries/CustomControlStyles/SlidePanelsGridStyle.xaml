@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls">
+
+  <Style TargetType="cc:SlidePanelsGrid">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="cc:SlidePanelsGrid">
+          <Grid>
+            <Grid Name="PART_MainGrid">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+
+              <GridSplitter Name="PART_GridSplitterLeft" Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent" />
+              
+              <ContentPresenter Name="PART_ContentMiddle" Grid.Column="2" Content="{Binding ContentMiddle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanelsGrid}}}" />
+              
+              <GridSplitter Name="PART_GridSplitterRight" Grid.Column="3" HorizontalAlignment="Stretch" Background="Transparent" />
+            </Grid>
+
+            <ContentPresenter Content="{Binding ContentLeft, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanelsGrid}}}" HorizontalAlignment="Left" />
+            <ContentPresenter Content="{Binding ContentRight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanelsGrid}}}" HorizontalAlignment="Right" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+    
+</ResourceDictionary>
