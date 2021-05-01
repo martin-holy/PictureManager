@@ -95,10 +95,13 @@
     <Compile Include="Commands\TreeViewCommands.cs" />
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
+    <Compile Include="CustomControls\SlidePanel.cs" />
+    <Compile Include="CustomControls\SlidePanelsGrid.cs" />
     <Compile Include="CustomControls\IconRect.cs" />
     <Compile Include="CustomControls\ImageComparer.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
     <Compile Include="CustomControls\ThumbnailsGridControl.cs" />
+    <Compile Include="CustomControls\VideoPlayer.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -141,9 +144,6 @@
     <Compile Include="UserControls\InfoPanel.xaml.cs">
       <DependentUpon>InfoPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UserControls\MediaElementControl.xaml.cs">
-      <DependentUpon>MediaElementControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\PresentationPanel.xaml.cs">
       <DependentUpon>PresentationPanel.xaml</DependentUpon>
     </Compile>
@@ -163,6 +163,7 @@
     <Compile Include="ViewModels\FoldersViewModel.cs" />
     <Compile Include="ViewModels\GeoNamesViewModel.cs" />
     <Compile Include="ViewModels\MediaItemsViewModel.cs" />
+    <Compile Include="ViewModels\VideoClipViewModel.cs" />
     <Compile Include="ViewModels\ViewersViewModel.cs" />
     <Compile Include="ViewModels\AppInfo.cs" />
     <Compile Include="Dialogs\InputDialog.xaml.cs">
@@ -215,6 +216,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ResourceDictionaries\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\SlidePanelStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\SlidePanelsGridStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -282,6 +291,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\VideoPlayerStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ResourceDictionaries\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -319,10 +332,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UserControls\InfoPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\MediaElementControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

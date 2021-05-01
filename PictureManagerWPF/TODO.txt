@@ -8,10 +8,17 @@
 - na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - mkv soubor se nacte jako podporovanej, ale nevytvori se pro nej nahled. pro mkv asi nemuzu ziskat velikost
 - systemovy popup menu ma spatny barvy. treba pri copy/paste text
+- folders refresh after viewer change
+- kdyz se vytvori video z obrazku 2x za sebou a tak to bude mit stejnej nazev souboru, tak to povede k serii problemu
+- disky identifikovat podle ID a ne podle pismena
+- zkontrolovat aby Thumbnails mely rozmery delitelny dvema
+- Clips: kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
 - taby na thums dat streach a ne omezovat na x px
+- pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
+- pruhlednost statusbaru pri skryti nastavit na 0
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
@@ -27,7 +34,18 @@
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 - pridat k rotate taky flip H a V
 - kdyz se nepodari ulozit metadata to obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
+- nahledy k osobam na mouse over??? :)
+- filter na delku videa
+- zobrazovat ve status baru soucet MB za selected
+- ted to asi zrovna vychazi dobre, ale nastavit vychozi sirku treeview tak, aby zbyl prostor velkej 4:3
+- v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
+  nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat pubodni video
 
 
 
 #Code Cleaning
+- odstranit vsude AllDic, pokud se to pouziva pouze na nacteni, jako jsem to udelal na MediaItems a Folders
+
+
+shortcuts:
+ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)

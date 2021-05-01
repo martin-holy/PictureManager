@@ -46,6 +46,7 @@ namespace PictureManager {
         });
       };
 
+      FullMedia.ApplyTemplate();
       FullMedia.RepeatEnded += delegate {
         if (!PresentationPanel.IsPaused) return;
         PresentationPanel.Start(false);
@@ -75,14 +76,11 @@ namespace PictureManager {
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current, decoded);
-          FullMedia.MediaElement.Source = null;
-          FullMedia.IsPlaying = false;
+          FullMedia.SetSource(null);
           break;
         }
         case MediaType.Video: {
-          FullMedia.Rotation = current.RotationAngle;
-          FullMedia.MediaElement.Source = current.FilePathUri;
-          FullMedia.IsPlaying = true;
+          FullMedia.SetSource(current);
           break;
         }
       }

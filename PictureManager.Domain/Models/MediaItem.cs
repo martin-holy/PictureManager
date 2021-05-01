@@ -38,6 +38,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<string> InfoBoxThumb { get; set; }
     public ObservableCollection<string> InfoBoxPeople { get; set; }
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
+    public List<VideoClip> VideoClips { get; set; }
 
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
@@ -244,6 +245,20 @@ namespace PictureManager.Domain.Models {
       var success = DateTime.TryParseExact(sdt, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt);
 
       return success ? dt.ToString(format, CultureInfo.CurrentCulture) : string.Empty;
+    }
+
+    public void AddVideoClip(VideoClip vc) {
+      if (VideoClips == null)
+        VideoClips = new List<VideoClip>();
+      VideoClips.Add(vc);
+      OnPropertyChanged(nameof(VideoClips));
+    }
+
+    public void RemoveVideoClip(VideoClip vc) {
+      VideoClips.Remove(vc);
+      if (VideoClips.Count == 0)
+        VideoClips = null;
+      OnPropertyChanged(nameof(VideoClips));
     }
   }
 }

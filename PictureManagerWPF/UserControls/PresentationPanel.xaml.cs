@@ -72,13 +72,13 @@ namespace PictureManager.UserControls {
       _timer.Interval = delay ? Interval : 1;
       IsPaused = false;
       IsRunning = true;
-      App.WMain.FullMedia.RepeatForMilliseconds = Interval;
+      App.WMain.FullMedia.RepeatForSeconds = Interval;
     }
 
     public void Stop() {
       IsPaused = false;
       IsRunning = false;
-      App.WMain.FullMedia.RepeatForMilliseconds = 0; // infinity
+      App.WMain.FullMedia.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {
@@ -87,7 +87,7 @@ namespace PictureManager.UserControls {
     }
 
     private void ChangeInterval(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      Interval = (int) IntervalSlider.Value * 1000;
+      Interval = (int) IntervalSlider.Value;
     }
   }
 }

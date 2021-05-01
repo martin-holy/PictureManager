@@ -68,7 +68,7 @@ namespace PictureManager.Commands {
       App.WMain.FullImage.Stop();
       App.WMain.FullImage.SetSource(null);
       App.WMain.FullMedia.IsPlaying = false;
-      App.WMain.FullMedia.MediaElement.Source = null;
+      App.WMain.FullMedia.SetSource(null);
     }
 
     private void OpenSettings() {
