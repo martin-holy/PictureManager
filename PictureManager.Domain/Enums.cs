@@ -41,6 +41,10 @@
     Image,
     ImageMultiple,
     PageUpload,
-    MovieClapper
+    MovieClapper,
+    SoundMute,
+    Sound3,
+    Clock,
+    RunFast
   }
 }
