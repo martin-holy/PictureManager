@@ -1,12 +1,9 @@
-﻿using System.Windows;
-
-namespace PictureManager
+﻿namespace PictureManager
 {
     /// <summary>
     /// Interaction logic for WTest.xaml
     /// </summary>
-    public partial class WTest : Window
-    {
+    public partial class WTest {
         public WTest()
         {
             InitializeComponent();
