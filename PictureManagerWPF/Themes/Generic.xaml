@@ -1,10 +1,11 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/MediaItemThumbnailStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/IconRectStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ThumbnailsGridControlStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VideoPlayerStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
-
 </ResourceDictionary>
