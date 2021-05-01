@@ -18,6 +18,8 @@ namespace PictureManager {
   public class Tests {
 
     public void Run() {
+      var wtest = new WTest();
+      wtest.Show();
       //GetByPathTest();
       /*foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0)) {
         mi.ReadMetadata();
