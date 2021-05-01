@@ -10,7 +10,7 @@ namespace PictureManager.Domain.Models {
   public sealed class Folders : BaseCategoryItem, ITable {
     public TableHelper Helper { get; set; }
     public List<Folder> All { get; } = new List<Folder>();
-    public Dictionary<int, Folder> AllDic { get; } = new Dictionary<int, Folder>();
+    public Dictionary<int, Folder> AllDic { get; set; }
 
     public Folders() : base(Category.Folders) {
       Title = "Folders";
@@ -48,13 +48,13 @@ namespace PictureManager.Domain.Models {
 
     public void LoadFromFile() {
       All.Clear();
-      AllDic.Clear();
+      AllDic = new Dictionary<int, Folder>();
       Helper.LoadFromFile();
     }
 
     public void AddRecord(Folder record) {
       All.Add(record);
-      AllDic.Add(record.Id, record);
+      AllDic?.Add(record.Id, record);
     }
 
     public void DeleteRecord(Folder folder) {
@@ -77,7 +77,6 @@ namespace PictureManager.Domain.Models {
       foreach (var f in folders.OfType<Folder>()) {
         // remove Folder from DB
         All.Remove(f);
-        AllDic.Remove(f.Id);
 
         // remove MediaItems
         foreach (var mi in f.MediaItems.ToList())
