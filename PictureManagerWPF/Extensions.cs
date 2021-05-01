@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows;
 
 namespace PictureManager {
   static class Extensions {
@@ -73,6 +74,14 @@ namespace PictureManager {
       }
 
       return $"{doubleSize:0.##} {sizes[order]}";
+    }
+
+    public static T FindTemplatedParent<T>(FrameworkElement child) where T : FrameworkElement {
+      while (true) {
+        if (child?.TemplatedParent == null) return null;
+        if (child.TemplatedParent is T parent) return parent;
+        child = (FrameworkElement) child.TemplatedParent;
+      }
     }
   }
 }
