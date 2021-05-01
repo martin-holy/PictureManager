@@ -13,6 +13,7 @@ namespace PictureManager.Domain.Models {
   public class MediaItems : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
     public List<MediaItem> All { get; } = new List<MediaItem>();
+    public Dictionary<int, MediaItem> AllDic { get; set; }
 
     private bool _isEditModeOn;
     private int _mediaItemsCount;
@@ -90,12 +91,14 @@ namespace PictureManager.Domain.Models {
 
     public void LoadFromFile() {
       All.Clear();
+      AllDic = new Dictionary<int, MediaItem>();
       Helper.LoadFromFile();
       MediaItemsCount = All.Count;
     }
 
     public void AddRecord(MediaItem record) {
       All.Add(record);
+      AllDic?.Add(record.Id, record);
     }
 
     public void Delete(MediaItem item) {
