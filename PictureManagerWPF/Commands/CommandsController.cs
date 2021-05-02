@@ -10,12 +10,14 @@ namespace PictureManager.Commands {
     public TreeViewCommands TreeViewCommands => TreeViewCommands.Instance;
     public MetadataCommands MetadataCommands => MetadataCommands.Instance;
     public WindowCommands WindowCommands => WindowCommands.Instance;
+    public VideoPlayerCommands VideoPlayerCommands => VideoPlayerCommands.Instance;
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       MediaItemsCommands.AddCommandBindings(cbc);
       TreeViewCommands.AddCommandBindings(cbc);
       MetadataCommands.AddCommandBindings(cbc);
       WindowCommands.AddCommandBindings(cbc);
+      VideoPlayerCommands.AddCommandBindings(cbc);
     }
 
     public void AddInputBindings() {
@@ -45,6 +47,10 @@ namespace PictureManager.Commands {
     }
 
     public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed, Func<object, bool> canExecute) {
+      elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
+    }
+
+    public static void AddCommandBinding(CommandBindingCollection elementCommandBindings, ICommand command, Action<object> executed, Func<bool> canExecute) {
       elementCommandBindings.Add(new CommandBinding(command, HandleExecute(executed), HandleCanExecute(canExecute)));
     }
 
