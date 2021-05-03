@@ -27,9 +27,9 @@ namespace PictureManager.Domain.Models {
 
     public void LinkReferences() {
       foreach (var vc in All) {
-        // reference to MediaItem and back reference from MediaItem to VideoClip
+        // reference to MediaItem and back reference from MediaItem to VideoClip without group
         vc.MediaItem = Core.Instance.MediaItems.AllDic[int.Parse(vc.Csv[1])];
-        vc.MediaItem.AddVideoClip(vc);
+        vc.MediaItem.VideoClipAdd(vc, vc.Group);
 
         // reference to People and back reference from Person to VideoClip
         if (!string.IsNullOrEmpty(vc.Csv[9])) {
@@ -79,7 +79,7 @@ namespace PictureManager.Domain.Models {
             Speed = speed
           };
 
-          mediaItem.AddVideoClip(vc);
+          mediaItem.VideoClipAdd(vc, null);
           All.Add(vc);
 
           return vc;
@@ -87,8 +87,16 @@ namespace PictureManager.Domain.Models {
       );
     }
 
+    public VideoClip ItemCreate(MediaItem mediaItem, VideoClipsGroup group) {
+      var vc = new VideoClip(Helper.GetNextId(), mediaItem);
+      vc.MediaItem.VideoClipAdd(vc, group);
+      All.Add(vc);
+
+      return vc;
+    }
+
     public void ItemDelete(VideoClip vc) {
-      vc.MediaItem.RemoveVideoClip(vc);
+      vc.MediaItem.VideoClips?.Remove(vc);
       vc.Group?.Clips.Remove(vc);
 
       if (vc.People != null)

@@ -93,6 +93,7 @@
     <Compile Include="Commands\MediaItemsCommands.cs" />
     <Compile Include="Commands\MetadataCommands.cs" />
     <Compile Include="Commands\TreeViewCommands.cs" />
+    <Compile Include="Commands\VideoPlayerCommands.cs" />
     <Compile Include="Commands\WindowCommands.cs" />
     <Compile Include="Convertors.cs" />
     <Compile Include="CustomControls\SlidePanel.cs" />
