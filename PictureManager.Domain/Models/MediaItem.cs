@@ -38,7 +38,8 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<string> InfoBoxThumb { get; set; }
     public ObservableCollection<string> InfoBoxPeople { get; set; }
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
-    public List<VideoClip> VideoClips { get; set; }
+    public ObservableCollection<VideoClip> VideoClips { get; set; }
+    public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
 
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
@@ -247,18 +248,26 @@ namespace PictureManager.Domain.Models {
       return success ? dt.ToString(format, CultureInfo.CurrentCulture) : string.Empty;
     }
 
-    public void AddVideoClip(VideoClip vc) {
-      if (VideoClips == null)
-        VideoClips = new List<VideoClip>();
-      VideoClips.Add(vc);
-      OnPropertyChanged(nameof(VideoClips));
+    public VideoClipsGroup VideoClipsGroupAdd(VideoClipsGroup group) {
+      if (VideoClipsGroups == null)
+        VideoClipsGroups = new ObservableCollection<VideoClipsGroup>();
+      VideoClipsGroups.Add(group);
+
+      return group;
     }
 
-    public void RemoveVideoClip(VideoClip vc) {
-      VideoClips.Remove(vc);
-      if (VideoClips.Count == 0)
-        VideoClips = null;
-      OnPropertyChanged(nameof(VideoClips));
+    public VideoClip VideoClipAdd(VideoClip vc, VideoClipsGroup group) {
+      if (group == null) {
+        if (VideoClips == null)
+          VideoClips = new ObservableCollection<VideoClip>();
+        VideoClips.Add(vc);
+      }
+      else {
+        group.Clips.Add(vc);
+        vc.Group = group;
+      }
+
+      return vc;
     }
   }
 }

@@ -9,7 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+using PictureManager.Commands;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -28,6 +30,7 @@ namespace PictureManager.CustomControls {
 
     public MediaElement MediaElement { get; set; }
     public Action RepeatEnded;
+    public ObservableCollection<VideoClipsGroup> Groups { get; set; }
     public ObservableCollection<VideoClipViewModel> Clips { get; set; }
     public VideoClipViewModel CurrentVideoClip { get; set; }
 
@@ -140,21 +143,6 @@ namespace PictureManager.CustomControls {
       }
     }
 
-    public void SplitClip() {
-      if (_tvClips.SelectedItem is VideoClipViewModel vc && vc.Clip.TimeEnd == 0)
-        SetMarker(vc, false);
-      else
-        AddClip();
-    }
-
-    private async void AddClip() {
-      var vc = await Core.Instance.VideoClips.CreateVideoClipAsync(_mediaItem, _volumeSlider.Value, _speedSlider.Value);
-      var vcvm = new VideoClipViewModel(vc) {Index = Clips.Count + 1};
-      Clips.Add(vcvm);
-      SetMarker(vcvm, true);
-      vcvm.IsSelected = true;
-    }
-
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
@@ -250,6 +238,8 @@ namespace PictureManager.CustomControls {
       if (Template.FindName("PART_TvClips", this) is TreeView tvClips) {
         _tvClips = tvClips;
 
+        _tvClips.PreviewMouseRightButtonDown += TreeViewClipsAttachContextMenu;
+
         _tvClips.SelectedItemChanged += delegate {
           CurrentVideoClip = _tvClips.SelectedItem as VideoClipViewModel;
           if (CurrentVideoClip != null) {
@@ -292,7 +282,7 @@ namespace PictureManager.CustomControls {
 
                 if (!result) return;
                 vc.RenameClip(output);
-                  break;
+                break;
               }
             }
           }
@@ -464,6 +454,70 @@ namespace PictureManager.CustomControls {
       PlayPauseToggle();
     }
 
+    #region Clips and Groups
 
+    public void SplitClip() {
+      if (_tvClips.SelectedItem is VideoClipViewModel vc && vc.Clip.TimeEnd == 0)
+        SetMarker(vc, false);
+      else
+        AddClip();
+    }
+
+    private async void AddClip() {
+      var vc = await Core.Instance.VideoClips.CreateVideoClipAsync(_mediaItem, _volumeSlider.Value, _speedSlider.Value);
+      var vcvm = new VideoClipViewModel(vc) { Index = Clips.Count + 1 };
+      Clips.Add(vcvm);
+      SetMarker(vcvm, true);
+      vcvm.IsSelected = true;
+    }
+
+    private void TreeViewClipsAttachContextMenu(object sender, MouseButtonEventArgs e) {
+      e.Handled = true;
+
+      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement) e.OriginalSource);
+      var tv = (FrameworkElement) sender;
+      var elm = tvi ?? tv;
+
+      // I don't know other way to not show ContextMenu on TreeView when click was on TreeViewItem
+      if (tv.ContextMenu != null && tvi != null) {
+        tv.ContextMenu.Items.Clear();
+        tv.ContextMenu = null;
+      }
+
+      if (elm.ContextMenu != null) return;
+
+      var menu = new ContextMenu { Tag = elm.DataContext };
+      var binding = new Binding(nameof(ContextMenu.PlacementTarget)) {
+        RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1)
+      };
+
+      void AddMenuItem(ICommand command) {
+        var menuItem = new MenuItem { Command = command, CommandParameter = elm.DataContext };
+        menuItem.SetBinding(MenuItem.CommandTargetProperty, binding);
+        menu.Items.Add(menuItem);
+      }
+
+      switch (elm.DataContext) {
+        case VideoPlayer _: {
+          AddMenuItem(VideoPlayerCommands.VideoClipsGroupCreateCommand);
+          AddMenuItem(VideoPlayerCommands.VideoClipCreateCommand);
+          break;
+        }
+        case VideoClipsGroup _: {
+          AddMenuItem(VideoPlayerCommands.VideoClipCreateCommand);
+          AddMenuItem(VideoPlayerCommands.VideoClipsGroupDeleteCommand);
+            break;
+        }
+        case VideoClipViewModel _: {
+          AddMenuItem(VideoPlayerCommands.VideoClipDeleteCommand);
+          break;
+        }
+      }
+
+      if (menu.Items.Count > 0)
+        elm.ContextMenu = menu;
+    }
+
+    #endregion
+    }
   }
-}

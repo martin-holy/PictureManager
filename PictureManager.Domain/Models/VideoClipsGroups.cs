@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -7,21 +8,21 @@ namespace PictureManager.Domain.Models {
     public List<VideoClipsGroup> All { get; } = new List<VideoClipsGroup>();
 
     public void NewFromCsv(string csv) {
-      // ID|Name|Clips
+      // ID|Name|MediaItem|Clips
       var props = csv.Split('|');
-      if (props.Length != 3) return;
-      All.Add(
-        new VideoClipsGroup(int.Parse(props[0]), null) {
-          Name = string.IsNullOrEmpty(props[1]) ? null : props[1],
-          Csv = props
-        });
+      if (props.Length != 4) return;
+      All.Add(new VideoClipsGroup(int.Parse(props[0]), props[1]) {Csv = props});
     }
 
     public void LinkReferences() {
       foreach (var vcg in All) {
-        // reference to VideoClip and back reference from VideoClipsGroup to VideoClip
-        if (!string.IsNullOrEmpty(vcg.Csv[2])) {
-          var ids = vcg.Csv[2].Split(',');
+        // reference to MediaItem and back reference from MediaItem to VideoClipsGroup
+        vcg.MediaItem = Core.Instance.MediaItems.AllDic[int.Parse(vcg.Csv[2])];
+        vcg.MediaItem.VideoClipsGroupAdd(vcg);
+
+        // reference to VideoClip and back reference from VideoClip to VideoClipsGroup
+        if (!string.IsNullOrEmpty(vcg.Csv[3])) {
+          var ids = vcg.Csv[3].Split(',');
           vcg.Clips = new List<VideoClip>(ids.Length);
           foreach (var vcId in ids) {
             var vc = Core.Instance.VideoClips.AllDic[int.Parse(vcId)];
@@ -44,9 +45,19 @@ namespace PictureManager.Domain.Models {
       Helper.LoadFromFile();
     }
 
+    public VideoClipsGroup ItemCreate(string name, MediaItem mediaItem) {
+      var vcg = new VideoClipsGroup(Helper.GetNextId(), name) {MediaItem = mediaItem};
+      vcg.MediaItem.VideoClipsGroupAdd(vcg);
+      All.Add(vcg);
+
+      return vcg;
+    }
+
     public void ItemDelete(VideoClipsGroup vcg) {
       foreach (var vc in vcg.Clips)
         Core.Instance.VideoClips.ItemDelete(vc);
+
+      vcg.MediaItem.VideoClipsGroups.Remove(vcg);
 
       All.Remove(vcg);
       Helper.IsModified = true;
