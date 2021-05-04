@@ -38,9 +38,9 @@ namespace PictureManager.UserControls {
     public PresentationPanel() {
       _timer = new Timer();
       _timer.Elapsed += (o, e) => {
-        if (_timer.Interval == 1)
+        if (_timer.Interval == 1000)
           Application.Current.Dispatcher?.Invoke(delegate {
-            _timer.Interval = Interval;
+            _timer.Interval = Interval * 1000;
           });
 
         Elapsed();
@@ -69,7 +69,7 @@ namespace PictureManager.UserControls {
         return;
       }
 
-      _timer.Interval = delay ? Interval : 1;
+      _timer.Interval = delay ? Interval * 1000 : 1000;
       IsPaused = false;
       IsRunning = true;
       App.WMain.FullMedia.RepeatForSeconds = Interval;
