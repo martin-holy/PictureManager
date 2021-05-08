@@ -12,7 +12,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
     void ItemMove(ICatTreeViewBaseItem item, ICatTreeViewBaseItem dest, bool aboveDest);
     string ValidateNewGroupTitle(ICatTreeViewBaseItem root, string name);
     void GroupCreate(ICatTreeViewBaseItem root, string name);
-    void GroupRename(ICatTreeViewGroup group, string newTitle);
+    void GroupRename(ICatTreeViewGroup group, string name);
     void GroupDelete(ICatTreeViewGroup group);
     void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest);
   }
