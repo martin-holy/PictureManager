@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models {
       // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
       var props = csv.Split('|');
       if (props.Length != 11) return;
-      All.Add(
+      AddRecord(
         new VideoClip(int.Parse(props[0]),null) {
           TimeStart = props[2].IntParseOrDefault(0),
           TimeEnd = props[3].IntParseOrDefault(0),
@@ -72,6 +72,11 @@ namespace PictureManager.Domain.Models {
       Helper.LoadFromFile();
     }
 
+    private void AddRecord(VideoClip record) {
+      All.Add(record);
+      AllDic.Add(record.Id, record);
+    }
+
     public Task<VideoClip> CreateVideoClipAsync(MediaItem mediaItem, double volume, double speed) {
       return Core.Instance.RunOnUiThread(() => {
           var vc = new VideoClip(Helper.GetNextId(), mediaItem) {
@@ -124,7 +129,12 @@ namespace PictureManager.Domain.Models {
 
     public void ItemMove(VideoClip vc, VideoClip dest, bool aboveDest) {
       All.Move(vc, dest, aboveDest);
-      vc.MediaItem.VideoClips.Move(vc, dest, aboveDest);
+      
+      if (vc.Group == null)
+        vc.MediaItem.VideoClips.Move(vc, dest, aboveDest);
+      else
+        vc.Group.Clips.Move(vc, dest, aboveDest);
+
       Helper.IsModified = true;
     }
 
@@ -139,6 +149,8 @@ namespace PictureManager.Domain.Models {
         vc.MediaItem.VideoClips.Add(vc);
       else
         dest.Clips.Add(vc);
+
+      Core.Instance.VideoClipsGroups.Helper.IsModified = true;
 
       Helper.IsModified = true;
     }
