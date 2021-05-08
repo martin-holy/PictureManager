@@ -116,5 +116,14 @@ namespace PictureManager.Domain.Models {
       All.Remove(vc);
       Helper.IsModified = true;
     }
+
+    public void ItemMove(VideoClip vc, VideoClip dest, bool aboveDest) {
+      // TODO
+    }
+
+    public void ItemMove(VideoClip vc, VideoClipsGroup dest) {
+      // TODO
+      // pozor, dest muze bejt null, coz znamena presun do kategorie
+    }
   }
 }
