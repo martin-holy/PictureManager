@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
@@ -8,6 +8,7 @@ namespace PictureManager.Commands {
   public class CommandsController: Singleton<CommandsController> {
     public MediaItemsCommands MediaItemsCommands => MediaItemsCommands.Instance;
     public TreeViewCommands TreeViewCommands => TreeViewCommands.Instance;
+    public CatTreeViewCommands CatTreeViewCommands => CatTreeViewCommands.Instance;
     public MetadataCommands MetadataCommands => MetadataCommands.Instance;
     public WindowCommands WindowCommands => WindowCommands.Instance;
     public VideoPlayerCommands VideoPlayerCommands => VideoPlayerCommands.Instance;
@@ -15,6 +16,7 @@ namespace PictureManager.Commands {
     public void AddCommandBindings(CommandBindingCollection cbc) {
       MediaItemsCommands.AddCommandBindings(cbc);
       TreeViewCommands.AddCommandBindings(cbc);
+      CatTreeViewCommands.AddCommandBindings(cbc);
       MetadataCommands.AddCommandBindings(cbc);
       WindowCommands.AddCommandBindings(cbc);
       VideoPlayerCommands.AddCommandBindings(cbc);

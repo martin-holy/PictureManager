@@ -1,4 +1,4 @@
-﻿<Application x:Class="PictureManager.App"
+<Application x:Class="PictureManager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Application.Resources>
@@ -21,6 +21,7 @@
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
