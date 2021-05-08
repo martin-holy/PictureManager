@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -25,6 +25,29 @@ namespace PictureManager.Domain {
           break;
 
       list.Insert(i, item);
+    }
+
+    public static void Move<T>(this List<T> list, T item, T dest, bool aboveDest) {
+      var oldIndex = list.IndexOf(item);
+      var newIndex = list.IndexOf(dest);
+
+      if (newIndex > oldIndex && aboveDest) newIndex--;
+      if (newIndex < oldIndex && !aboveDest) newIndex++;
+      if (newIndex == oldIndex) return;
+
+      list.RemoveAt(oldIndex);
+      list.Insert(newIndex, item);
+    }
+
+    public static void Move<T>(this ObservableCollection<T> collection, T item, T dest, bool aboveDest) {
+      var oldIndex = collection.IndexOf(item);
+      var newIndex = collection.IndexOf(dest);
+
+      if (newIndex > oldIndex && aboveDest) newIndex--;
+      if (newIndex < oldIndex && !aboveDest) newIndex++;
+      if (newIndex == oldIndex) return;
+
+      collection.Move(oldIndex, newIndex);
     }
 
     /// <summary>
