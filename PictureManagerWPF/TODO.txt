@@ -13,6 +13,7 @@
 - disky identifikovat podle ID a ne podle pismena
 - zkontrolovat aby Thumbnails mely rozmery delitelny dvema
 - Clips: kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
+- Comment na MediaItem sezere tecky na validaci
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
@@ -40,6 +41,7 @@
 - ted to asi zrovna vychazi dobre, ale nastavit vychozi sirku treeview tak, aby zbyl prostor velkej 4:3
 - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
   nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat pubodni video
+- moznost ve vieweru prochazet i jenom selected mediaItems
 
 
 
@@ -49,3 +51,13 @@
 
 shortcuts:
 ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
+
+
+##TreeViewExt
+- ICategoryItem bude mit CategoryId a ItemId, aby se tam nechali ukladat pod mediaItems grupy
+- u mediaItems se bude category menit podle aktualniho mi
+- takze MediaItem bude ICategoryItem
+- pod MediaItem budu mit Keywords, People, VideoClips a pak tam budou Items, coz budou IBaseTreeViewItem, 
+  takze i VideoClip bde IBaseTreeViewItem, aby se do items pak nechalo dat bud jen VideoClips, nebo i Keywords a People
+  a vsechno se to pak ukaze ve stromu pod kategorii MediaItem
+- funkce jako GroupCreate, GroupRename, ... v BaseCategoryItem budou ve staticke tride
