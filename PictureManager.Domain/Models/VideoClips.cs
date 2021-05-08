@@ -118,12 +118,24 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemMove(VideoClip vc, VideoClip dest, bool aboveDest) {
-      // TODO
+      All.Move(vc, dest, aboveDest);
+      vc.MediaItem.VideoClips.Move(vc, dest, aboveDest);
+      Helper.IsModified = true;
     }
 
     public void ItemMove(VideoClip vc, VideoClipsGroup dest) {
-      // TODO
-      // pozor, dest muze bejt null, coz znamena presun do kategorie
+      if (vc.Group == null)
+        vc.MediaItem.VideoClips.Remove(vc);
+
+      vc.Group?.Clips.Remove(vc);
+      vc.Group = dest;
+
+      if (dest == null)
+        vc.MediaItem.VideoClips.Add(vc);
+      else
+        dest.Clips.Add(vc);
+
+      Helper.IsModified = true;
     }
   }
 }
