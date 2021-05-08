@@ -89,6 +89,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppCore.cs" />
+    <Compile Include="Commands\CatTreeViewCommands.cs" />
     <Compile Include="Commands\CommandsController.cs" />
     <Compile Include="Commands\MediaItemsCommands.cs" />
     <Compile Include="Commands\MetadataCommands.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="CustomControls\ImageComparer.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
     <Compile Include="CustomControls\ThumbnailsGridControl.cs" />
+    <Compile Include="CustomControls\CatTreeView.cs" />
     <Compile Include="CustomControls\VideoPlayer.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
@@ -217,6 +219,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ResourceDictionaries\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ResourceDictionaries\CustomControlStyles\CatTreeViewStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

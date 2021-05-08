@@ -21,6 +21,7 @@
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
