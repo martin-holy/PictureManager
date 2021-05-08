@@ -11,6 +11,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
         case Category.Filters: return IconName.Filter;
         case Category.Viewers: return IconName.Eye;
         case Category.SqlQueries: return IconName.DatabaseSql;
+        case Category.MediaItemClips: return IconName.MovieClapper;
         default: return IconName.Bug;
       }
     }
