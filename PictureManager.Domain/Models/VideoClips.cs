@@ -95,6 +95,11 @@ namespace PictureManager.Domain.Models {
       return vc;
     }
 
+    public void ItemRename(VideoClip vc, string name) {
+      vc.Name = name;
+      Helper.IsModified = true;
+    }
+
     public void ItemDelete(VideoClip vc) {
       vc.MediaItem.VideoClips?.Remove(vc);
       vc.Group?.Clips.Remove(vc);
