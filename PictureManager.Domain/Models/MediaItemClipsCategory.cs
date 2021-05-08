@@ -77,7 +77,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemRename(ICatTreeViewBaseItem item, string name) {
-      throw new NotImplementedException();
+      item.Title = name;
+      Core.Instance.VideoClips.ItemRename(item.Tag as VideoClip, name);
     }
 
     public void ItemDelete(ICatTreeViewBaseItem item) {
@@ -117,9 +118,9 @@ namespace PictureManager.Domain.Models {
       root.Items.Insert(root.Items.Count(x => x is ICatTreeViewGroup), CreateGroupItem(vcg, root));
     }
 
-    public void GroupRename(ICatTreeViewGroup group, string newTitle) {
-      group.Title = newTitle;
-      Core.Instance.VideoClipsGroups.ItemRename(group.Tag as VideoClipsGroup, newTitle);
+    public void GroupRename(ICatTreeViewGroup group, string name) {
+      group.Title = name;
+      Core.Instance.VideoClipsGroups.ItemRename(group.Tag as VideoClipsGroup, name);
     }
 
     public void GroupDelete(ICatTreeViewGroup group) {
