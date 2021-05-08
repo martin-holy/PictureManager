@@ -75,8 +75,8 @@ namespace PictureManager.Domain {
         Sdb.AddTable(Keywords);
         Sdb.AddTable(GeoNames);
         Sdb.AddTable(MediaItems);
-        Sdb.AddTable(VideoClipsGroups); // needs to be before VideoClips
-        Sdb.AddTable(VideoClips);
+        Sdb.AddTable(VideoClips); // needs to be after MediaItems, People and Keywords
+        Sdb.AddTable(VideoClipsGroups); // needs to be after VideoClips and MediaItems
         Sdb.AddTable(FavoriteFolders);
 
         Sdb.LoadAllTables(progress);
