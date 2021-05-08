@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -52,11 +53,6 @@ namespace PictureManager.Domain.Models {
       return vcg;
     }
 
-    public void ItemRename(VideoClipsGroup vcg, string name) {
-      vcg.Name = name;
-      SaveToFile();
-    }
-
     public void ItemDelete(VideoClipsGroup vcg) {
       foreach (var vc in vcg.Clips)
         Core.Instance.VideoClips.ItemDelete(vc);
@@ -64,12 +60,6 @@ namespace PictureManager.Domain.Models {
       vcg.MediaItem.VideoClipsGroups.Remove(vcg);
 
       All.Remove(vcg);
-      Helper.IsModified = true;
-    }
-
-    public void GroupMove(VideoClipsGroup group, VideoClipsGroup dest, bool aboveDest) {
-      All.Move(group, dest, aboveDest);
-      group.MediaItem.VideoClipsGroups.Move(group, dest, aboveDest);
       Helper.IsModified = true;
     }
   }
