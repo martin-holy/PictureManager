@@ -75,9 +75,22 @@ namespace PictureManager.CustomControls {
       var dest = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource)?.DataContext;
       var src = ((object[]) e.Data.GetData(typeof(object[])))?[0];
 
-      // move groups
-      if (dest is ICatTreeViewGroup destGroup && src is ICatTreeViewGroup srcGroup && !destGroup.Title.Equals(srcGroup.Title))
-        return;
+      if (dest != src) {
+        var destCat = CatTreeViewUtils.GetTopParent(dest as ICatTreeViewBaseItem) as ICatTreeViewCategory;
+        var srcCat = CatTreeViewUtils.GetTopParent(src as ICatTreeViewBaseItem) as ICatTreeViewCategory;
+
+        // copy/move within same category
+        if (destCat != null && srcCat != null && destCat.Category == srcCat.Category) {
+          // copy/move groups
+          if (dest is ICatTreeViewGroup && src is ICatTreeViewGroup)
+            return;
+
+          // copy/move items
+          if (!(src is ICatTreeViewGroup) && src is ICatTreeViewBaseItem srcItem && 
+              dest != srcItem.Parent && dest is ICatTreeViewBaseItem)
+            return;
+        }
+      }
 
       // can't be dropped
       e.Effects = DragDropEffects.None;
@@ -86,16 +99,25 @@ namespace PictureManager.CustomControls {
 
     private static void OnDrop(object sender, DragEventArgs e) {
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement) e.OriginalSource);
-      var dest = tvi?.DataContext;
-      var src = ((object[]) e.Data.GetData(typeof(object[])))?[0];
+      if (tvi == null) return;
 
-      // move groups
-      if (dest is ICatTreeViewGroup destGroup && 
-          src is ICatTreeViewGroup srcGroup &&
-          CatTreeViewUtils.GetTopParent(destGroup) is ICatTreeViewCategory cat) {
-        cat.GroupMove(srcGroup, destGroup, e.GetPosition(tvi).Y < tvi.ActualHeight / 2);
+      var cat = CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewBaseItem) as ICatTreeViewCategory;
+      if (cat == null) return;
+
+      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
+      var dest = tvi.DataContext;
+      var src = ((object[]) e.Data.GetData(typeof(object[])))?[0];
+      
+
+      // copy/move groups
+      if (src is ICatTreeViewGroup srcGroup && dest is ICatTreeViewGroup destGroup) {
+        cat.GroupMove(srcGroup, destGroup, aboveDest);
+        return;
       }
-        
+
+      // copy/move items
+      if (src is ICatTreeViewBaseItem srcItem && dest is ICatTreeViewBaseItem destItem)
+        cat.ItemMove(srcItem, destItem, aboveDest);
     }
 
     #endregion

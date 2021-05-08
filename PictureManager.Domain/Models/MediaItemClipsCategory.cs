@@ -85,6 +85,27 @@ namespace PictureManager.Domain.Models {
       item.Parent.Items.Remove(item);
     }
 
+    public void ItemMove(ICatTreeViewBaseItem item, ICatTreeViewBaseItem dest, bool aboveDest) {
+      // move item to end of category or group
+      if (dest is ICatTreeViewCategory || dest is ICatTreeViewGroup) {
+        Core.Instance.VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClipsGroup);
+        item.Parent.Items.Remove(item);
+        dest.Items.Add(item);
+        item.Parent = dest;
+      }
+      else {
+        // update parent 
+        if (item.Parent != dest.Parent) {
+          Core.Instance.VideoClips.ItemMove(item.Tag as VideoClip, dest.Parent.Tag as VideoClipsGroup);
+          item.Parent.Items.Remove(item);
+          dest.Parent.Items.Add(item);
+          item.Parent = dest.Parent;
+        }
+        Core.Instance.VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClip, aboveDest);
+        item.Parent.Items.Move(item, dest, aboveDest);
+      }
+    }
+
     public string ValidateNewGroupTitle(ICatTreeViewBaseItem root, string name) {
       return root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name)) != null
         ? $"{name} group already exists!"
