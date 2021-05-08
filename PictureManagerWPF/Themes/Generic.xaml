@@ -7,6 +7,5 @@
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -25,8 +25,6 @@ namespace PictureManager.Domain {
     public GeoNames GeoNames { get; }
     public Viewers Viewers { get; }
     public CategoryGroups CategoryGroups { get; }
-
-    public MediaItemClipsCategory MediaItemClipsCategory { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -59,7 +57,6 @@ namespace PictureManager.Domain {
       CategoryGroups = new CategoryGroups();
 
       MediaItems = new MediaItems();
-      MediaItemClipsCategory = new MediaItemClipsCategory();
       VideoClips = new VideoClips();
       VideoClipsGroups = new VideoClipsGroups();
     }
