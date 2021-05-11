@@ -6,6 +6,7 @@
 <ResourceDictionary.MergedDictionaries>
   <ResourceDictionary Source="../Converters.xaml" />
   <ResourceDictionary Source="../Brushes/Brushes.xaml" />
+  <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
 </ResourceDictionary.MergedDictionaries>
 
   <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z" />
