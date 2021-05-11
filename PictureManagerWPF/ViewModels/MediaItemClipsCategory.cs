@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PictureManager.Domain;
@@ -49,6 +50,33 @@ namespace PictureManager.ViewModels {
       if (mi.VideoClips != null)
         foreach (var clip in mi.VideoClips)
           Items.Add(CreateClipItem(clip, this));
+    }
+
+    public void SelectNext(VideoClipViewModel current, bool inGroup) {
+      var groups = new List<List<ICatTreeViewBaseItem>>();
+      groups.AddRange(Items.Where(x => x is ICatTreeViewGroup g && g.Items.Count > 0).Select(g => g.Items.ToList()));
+      groups.Add(Items.Where(x => !(x is ICatTreeViewGroup)).ToList());
+
+      for (var i = 0; i < groups.Count; i++) {
+        var group = groups[i];
+        var idx = group.IndexOf(current);
+
+        if (idx < 0) continue;
+
+        ICatTreeViewBaseItem next;
+
+        if (idx < group.Count - 1)
+          next = group[idx + 1];
+        else
+          next = inGroup ? group[0] : groups[i < groups.Count - 1 ? i + 1 : 0][0];
+
+        if (next == current)
+          next.IsSelected = false;
+
+        next.IsSelected = true;
+
+        break;
+      }
     }
 
     public static string GetDuration(int start, int end) {
