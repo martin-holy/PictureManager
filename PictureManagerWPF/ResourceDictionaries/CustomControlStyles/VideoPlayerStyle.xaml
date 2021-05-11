@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:cmd="clr-namespace:PictureManager.Commands"
                     xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
   <ResourceDictionary.MergedDictionaries>
@@ -13,6 +12,7 @@
     <ResourceDictionary Source="../Converters.xaml" />
     <ResourceDictionary Source="../BaseControlStyles/ToggleButtonStyle.xaml" />
     <ResourceDictionary Source="../Brushes/Brushes.xaml" />
+    <ResourceDictionary Source="CatTreeViewStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="cc:VideoPlayer">
@@ -36,13 +36,14 @@
               <cc:SlidePanelsGrid.ContentRight>
                 <cc:SlidePanel IsOpen="True" Position="Right" Margin="0,40,0,40" Width="280" x:Name="PART_ClipsPanel">
                   <cc:SlidePanel.Content>
-                    <Grid Name="PART_FlyoutPanel" Background="{StaticResource ColorBrushBackground}">
+                    <Grid Background="{StaticResource ColorBrushBackground}">
                       <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                       </Grid.RowDefinitions>
 
+                      <!-- Buttons -->
                       <StackPanel Orientation="Horizontal">
                         <StackPanel.Resources>
                           <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
@@ -58,13 +59,12 @@
 
                         <Button Name="PART_BtnMarkerA" ToolTip="Set start">A</Button>
                         <Button Name="PART_BtnMarkerB" ToolTip="Set end">B</Button>
-                        <Button Name="PART_BtnAddClip" ToolTip="Add new">✚</Button>
-                        <Button Name="PART_BtnRemoveClip" ToolTip="Remove">✖</Button>
-                        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Mute" IsChecked="{Binding MediaElement.IsMuted}">
+                        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Mute" IsChecked="{Binding Player.IsMuted}">
                           <cc:IconRect IconName="{x:Static pmd:IconName.SoundMute}" />
                         </ToggleButton>
                       </StackPanel>
 
+                      <!-- PlayType -->
                       <StackPanel Orientation="Vertical" Grid.Row="1">
                         <StackPanel Orientation="Horizontal" Margin="4" Name="PART_SpPlayTypes">
                           <TextBlock Text="Play: " />
@@ -83,59 +83,52 @@
                         </StackPanel>
                       </StackPanel>
 
-                      <TreeView x:Name="PART_TvClips" Grid.Row="2" Background="Transparent" FocusManager.IsFocusScope="True"
-                              ItemsSource="{Binding Clips}">
+                      <!-- Clips TreeView -->
+                      <cc:CatTreeView x:Name="PART_CtvClips" Grid.Row="2" Style="{StaticResource CatTreeView}" 
+                                        FocusManager.IsFocusScope="True"
+                                        ItemsSource="{Binding MediaItemClips}">
 
-                        <TreeView.Resources>
-                          <!-- Time Button -->
-                          <Style x:Key="STimeButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
-                            <Setter Property="Margin" Value="2" />
-                          </Style>
-
-                          <HierarchicalDataTemplate DataType="{x:Type vm:VideoClipViewModel}">
-                            <Border>
-                              <StackPanel Orientation="Horizontal">
-                                <Image Source="{Binding ThumbPath, Converter={StaticResource ImageSourceConverter}, ConverterParameter=IgnoreImageCache}" 
+                          <cc:CatTreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type vm:VideoClipViewModel}">
+                              <Border>
+                                <StackPanel Orientation="Horizontal">
+                                  <Image Source="{Binding ThumbPath, Converter={StaticResource ImageSourceConverter}, ConverterParameter=IgnoreImageCache}" 
                                      Stretch="Uniform" Width="100" Margin="0,4,4,4" />
-                                <StackPanel>
-                                  <TextBlock Text="{Binding Name}" Name="TbName" FontSize="16" Cursor="IBeam" ToolTip="Rename" />
+                                  <StackPanel>
+                                    <TextBlock Text="{Binding Title}" Name="TbName" FontSize="16" />
 
-                                  <!--  Duration, Volume, Speed -->
-                                  <StackPanel Orientation="Horizontal">
-                                    <StackPanel.Resources>
-                                      <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="Margin" Value="4,0" />
-                                      </Style>
-                                    </StackPanel.Resources>
-                                    <cc:IconRect IconName="Clock" Size="12" />
-                                    <TextBlock Text="{Binding Duration}" />
-                                    <cc:IconRect IconName="Sound3" Size="12" />
-                                    <TextBlock Text="{Binding Volume}" />
-                                    <cc:IconRect IconName="RunFast" Size="12" />
-                                    <TextBlock Text="{Binding Speed}" />
+                                    <!--  Duration, Volume, Speed -->
+                                    <StackPanel Orientation="Horizontal">
+                                      <StackPanel.Resources>
+                                        <Style TargetType="{x:Type TextBlock}">
+                                          <Setter Property="Margin" Value="4,0" />
+                                        </Style>
+                                      </StackPanel.Resources>
+                                      <cc:IconRect IconName="Clock" Size="12" />
+                                      <TextBlock Text="{Binding Duration}" />
+                                      <cc:IconRect IconName="Sound3" Size="12" />
+                                      <TextBlock Text="{Binding Volume}" />
+                                      <cc:IconRect IconName="RunFast" Size="12" />
+                                      <TextBlock Text="{Binding Speed}" />
+                                    </StackPanel>
+
+                                    <!-- A-B -->
+                                    <StackPanel Orientation="Horizontal">
+                                      <TextBlock Text="A [ " Cursor="Hand" Name="TbMarkerA" ToolTip="Seek to start" />
+                                      <TextBlock Text="{Binding TimeStart}" />
+                                      <TextBlock Text=" - " />
+                                      <TextBlock Text="{Binding TimeEnd}" />
+                                      <TextBlock Text=" ] B" Cursor="Hand" Name="TbMarkerB" ToolTip="Seek to end" />
+                                    </StackPanel>
+
                                   </StackPanel>
-
-                                  <!-- A-B -->
-                                  <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="A [ " Cursor="Hand" Name="TbMarkerA" ToolTip="Seek to start" />
-                                    <TextBlock Text="{Binding TimeStart}" />
-                                    <TextBlock Text=" - " />
-                                    <TextBlock Text="{Binding TimeEnd}" />
-                                    <TextBlock Text=" ] B" Cursor="Hand" Name="TbMarkerB" ToolTip="Seek to end" />
-                                  </StackPanel>
-
                                 </StackPanel>
-                              </StackPanel>
-                            </Border>
-                          </HierarchicalDataTemplate>
-                        </TreeView.Resources>
+                              </Border>
+                            </HierarchicalDataTemplate>
+                          </cc:CatTreeView.Resources>
 
-                        <TreeView.ItemContainerStyle>
-                          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
-                          </Style>
-                        </TreeView.ItemContainerStyle>
-                      </TreeView>
+                        </cc:CatTreeView>
+
                     </Grid>
                   </cc:SlidePanel.Content>
                 </cc:SlidePanel>
