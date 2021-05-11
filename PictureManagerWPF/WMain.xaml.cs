@@ -47,6 +47,7 @@ namespace PictureManager {
       };
 
       FullMedia.ApplyTemplate();
+      FullMedia.MediaItemClips.Add(App.Core.MediaItemClipsCategory);
       FullMedia.RepeatEnded += delegate {
         if (!PresentationPanel.IsPaused) return;
         PresentationPanel.Start(false);
@@ -76,10 +77,12 @@ namespace PictureManager {
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current, decoded);
+          App.Core.MediaItemClipsCategory.SetMediaItem(null);
           FullMedia.SetSource(null);
           break;
         }
         case MediaType.Video: {
+          App.Core.MediaItemClipsCategory.SetMediaItem(current);
           FullMedia.SetSource(current);
           break;
         }
