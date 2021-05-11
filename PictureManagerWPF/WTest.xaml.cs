@@ -18,10 +18,10 @@ namespace PictureManager {
     }
 
     private void SetUpMediaItemTest() {
-      Core.Instance.MediaItemClipsCategory.SetMediaItem(
+      App.Core.MediaItemClipsCategory.SetMediaItem(
         Core.Instance.MediaItems.All.FirstOrDefault(mi => mi.Id == 138791));
 
-      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewBaseItem> {Core.Instance.MediaItemClipsCategory};
+      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewBaseItem> {App.Core.MediaItemClipsCategory};
     }
 
     public void AllowDropCheck(object sender, DragEventArgs e) {
