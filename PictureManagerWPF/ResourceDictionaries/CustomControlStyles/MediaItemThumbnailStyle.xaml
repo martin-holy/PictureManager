@@ -57,7 +57,7 @@
 
               <!-- Video Clips over layer -->
               <cc:IconRect IconName="ImageMultiple" Size="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5"
-                           Visibility="{Binding VideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
+                           Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
 
               <!-- Thumbnail Info Box -->
               <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
