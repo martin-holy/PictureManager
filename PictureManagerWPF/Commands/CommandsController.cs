@@ -11,7 +11,6 @@ namespace PictureManager.Commands {
     public CatTreeViewCommands CatTreeViewCommands => CatTreeViewCommands.Instance;
     public MetadataCommands MetadataCommands => MetadataCommands.Instance;
     public WindowCommands WindowCommands => WindowCommands.Instance;
-    public VideoPlayerCommands VideoPlayerCommands => VideoPlayerCommands.Instance;
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       MediaItemsCommands.AddCommandBindings(cbc);
@@ -19,7 +18,6 @@ namespace PictureManager.Commands {
       CatTreeViewCommands.AddCommandBindings(cbc);
       MetadataCommands.AddCommandBindings(cbc);
       WindowCommands.AddCommandBindings(cbc);
-      VideoPlayerCommands.AddCommandBindings(cbc);
     }
 
     public void AddInputBindings() {
