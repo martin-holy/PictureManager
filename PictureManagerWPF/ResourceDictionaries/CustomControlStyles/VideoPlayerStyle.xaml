@@ -71,11 +71,10 @@
                           <RadioButton Tag="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="True" />
                           <RadioButton Tag="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" />
                           <RadioButton Tag="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" />
+                          <RadioButton Tag="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="4" 
-                                  Visibility="{Binding PlayType, 
-                                                Converter={StaticResource AllToVisibilityConverter}, 
-                                                ConverterParameter={x:Static cc:PlayType.Clips}}">
+                                  Visibility="{Binding ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
                           <TextBlock Text="Repeat for: " Margin="0,0,4,0" />
                           <Slider Name="PART_RepeatSlider" Value="{Binding RepeatForSeconds}" Width="70"
                                  Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" 
