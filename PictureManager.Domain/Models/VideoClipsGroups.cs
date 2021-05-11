@@ -23,11 +23,8 @@ namespace PictureManager.Domain.Models {
         if (!string.IsNullOrEmpty(vcg.Csv[3])) {
           var ids = vcg.Csv[3].Split(',');
           vcg.Clips = new List<VideoClip>(ids.Length);
-          foreach (var vcId in ids) {
-            var vc = Core.Instance.VideoClips.AllDic[int.Parse(vcId)];
-            vc.Group = vcg;
-            vcg.Clips.Add(vc);
-          }
+          foreach (var vcId in ids)
+            vcg.MediaItem.VideoClipAdd(Core.Instance.VideoClips.AllDic[int.Parse(vcId)], vcg);
         }
 
         // csv array is not needed any more
@@ -58,11 +55,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(VideoClipsGroup vcg) {
-      foreach (var vc in vcg.Clips)
-        Core.Instance.VideoClips.ItemDelete(vc);
-
       vcg.MediaItem.VideoClipsGroups.Remove(vcg);
-
       All.Remove(vcg);
       Helper.IsModified = true;
     }
