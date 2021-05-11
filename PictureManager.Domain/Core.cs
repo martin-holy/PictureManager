@@ -25,8 +25,6 @@ namespace PictureManager.Domain {
     public GeoNames GeoNames { get; }
     public Viewers Viewers { get; }
     public CategoryGroups CategoryGroups { get; }
-
-    public MediaItemClipsCategory MediaItemClipsCategory { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -59,7 +57,6 @@ namespace PictureManager.Domain {
       CategoryGroups = new CategoryGroups();
 
       MediaItems = new MediaItems();
-      MediaItemClipsCategory = new MediaItemClipsCategory();
       VideoClips = new VideoClips();
       VideoClipsGroups = new VideoClipsGroups();
     }
@@ -75,8 +72,8 @@ namespace PictureManager.Domain {
         Sdb.AddTable(Keywords);
         Sdb.AddTable(GeoNames);
         Sdb.AddTable(MediaItems);
-        Sdb.AddTable(VideoClips); // needs to be after MediaItems, People and Keywords
-        Sdb.AddTable(VideoClipsGroups); // needs to be after VideoClips and MediaItems
+        Sdb.AddTable(VideoClipsGroups); // needs to be before VideoClips
+        Sdb.AddTable(VideoClips);
         Sdb.AddTable(FavoriteFolders);
 
         Sdb.LoadAllTables(progress);
