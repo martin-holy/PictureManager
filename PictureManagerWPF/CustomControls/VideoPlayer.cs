@@ -16,7 +16,7 @@ using PictureManager.ViewModels;
 
 namespace PictureManager.CustomControls {
   public enum TimelineShift { Beginning, LargeBack, SmallBack, SmallForward, LargeForward, End }
-  public enum PlayType { Video, Clip, Clips }
+  public enum PlayType { Video, Clip, Clips, Group }
 
   public class VideoPlayer : Control, INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
@@ -34,7 +34,7 @@ namespace PictureManager.CustomControls {
       get {
         const string zeroTime = "00:00:00";
         if (Player == null) return zeroTime;
-        var pos = new TimeSpan(0, 0, 0, (int)Math.Round(Player.Position.TotalSeconds), 0).ToString();
+        var pos = new TimeSpan(0, 0, 0, (int) Math.Round(Player.Position.TotalSeconds), 0).ToString();
         var dur = Player.NaturalDuration.HasTimeSpan ? Player.NaturalDuration.TimeSpan.ToString() : zeroTime;
         return $"{pos} / {dur}";
       }
@@ -44,7 +44,7 @@ namespace PictureManager.CustomControls {
       nameof(IsPlaying), typeof(bool), typeof(VideoPlayer));
 
     public bool IsPlaying {
-      get => (bool)GetValue(IsPlayingProperty);
+      get => (bool) GetValue(IsPlayingProperty);
       set {
         SetValue(IsPlayingProperty, value);
 
@@ -65,7 +65,7 @@ namespace PictureManager.CustomControls {
       nameof(Rotation), typeof(double), typeof(VideoPlayer));
 
     public double Rotation {
-      get => (double)GetValue(RotationProperty);
+      get => (double) GetValue(RotationProperty);
       set => SetValue(RotationProperty, value);
     }
 
@@ -74,7 +74,7 @@ namespace PictureManager.CustomControls {
       nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new PropertyMetadata(3));
 
     public int RepeatForSeconds {
-      get => (int)GetValue(RepeatForSecondsProperty);
+      get => (int) GetValue(RepeatForSecondsProperty);
       set => SetValue(RepeatForSecondsProperty, value);
     }
 
@@ -82,15 +82,19 @@ namespace PictureManager.CustomControls {
       nameof(PlayType), typeof(PlayType), typeof(VideoPlayer));
 
     public PlayType PlayType {
-      get => (PlayType)GetValue(PlayTypeProperty);
+      get => (PlayType) GetValue(PlayTypeProperty);
       set {
         SetValue(PlayTypeProperty, value);
 
         if (value == PlayType.Clip && _ctvClips.SelectedItem is VideoClipViewModel vc) {
           _timelineSlider.Value = vc.Clip.TimeStart;
         }
+
+        OnPropertyChanged(nameof(ShowRepeatSlider));
       }
     }
+
+    public bool ShowRepeatSlider => PlayType == PlayType.Clips || PlayType == PlayType.Group;
 
     private CatTreeView _ctvClips;
     private Slider _timelineSlider;
@@ -201,7 +205,7 @@ namespace PictureManager.CustomControls {
         _ctvClips.SelectedItemChanged += delegate {
           CurrentVideoClip = _ctvClips.SelectedItem as VideoClipViewModel;
           if (CurrentVideoClip != null) {
-            if (PlayType == PlayType.Clips) {
+            if (PlayType == PlayType.Clips || PlayType == PlayType.Group) {
               var d = (CurrentVideoClip.Clip.TimeEnd - CurrentVideoClip.Clip.TimeStart) / 1000.0;
               _repeatCount = (int)Math.Round(RepeatForSeconds / d, 0);
             }
@@ -247,22 +251,20 @@ namespace PictureManager.CustomControls {
         var vc = CurrentVideoClip.Clip;
 
         if (vc.TimeEnd > vc.TimeStart && Player.Position.TotalMilliseconds > vc.TimeEnd) {
-          if (PlayType == PlayType.Clip)
-            _timelineSlider.Value = vc.TimeStart;
-          
-          if (PlayType == PlayType.Clips) {
-            if (_repeatCount > 0) {
-              _repeatCount--;
+          switch (PlayType) {
+            case PlayType.Clip:
               _timelineSlider.Value = vc.TimeStart;
-            }
-            else {
-              // TODO select next clip to play
-              //var i = Clips.IndexOf(CurrentVideoClip);
-              //if (i < Clips.Count - 1)
-              //  Clips[i + 1].IsSelected = true;
-              //else
-              //  Clips[0].IsSelected = true;
-            }
+              break;
+            case PlayType.Clips:
+            case PlayType.Group:
+              if (_repeatCount > 0) {
+                _repeatCount--;
+                _timelineSlider.Value = vc.TimeStart;
+              }
+              else {
+                App.Core.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
+              }
+              break;
           }
         }
       };
