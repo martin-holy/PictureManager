@@ -19,6 +19,7 @@ namespace PictureManager {
   public class AppCore: ILogger {
     public Core Model { get; }
     public MediaItemsViewModel MediaItemsViewModel { get; }
+    public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new AppInfo();
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
 
@@ -32,6 +33,7 @@ namespace PictureManager {
       AppInfo.ProgressBarValueB = 100;
 
       MediaItemsViewModel = new MediaItemsViewModel(this);
+      MediaItemClipsCategory = new MediaItemClipsCategory();
     }
 
     public void SetBackgroundBrush(BaseTreeViewItem item, BackgroundBrush backgroundBrush) {
