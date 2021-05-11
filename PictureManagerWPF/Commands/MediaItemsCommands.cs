@@ -29,6 +29,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand CompareCommand { get; } = new RoutedUICommand { Text = "Compare" };
     public static RoutedUICommand ImagesToVideoCommand { get; } = new RoutedUICommand { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
+    public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
@@ -46,6 +47,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
+      CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
     }
 
     public static bool CanNext() {
@@ -336,6 +338,21 @@ namespace PictureManager.Commands {
       }
       catch (Exception ex) {
         App.Core.LogError(ex);
+      }
+    }
+
+    private static bool VideoSourceIsNotNull() {
+      return App.WMain.FullMedia.Player.Source != null;
+    }
+
+    private static void VideoClipSplit() {
+      var vc = App.WMain.FullMedia.CurrentVideoClip;
+      if (vc != null && vc.Clip.TimeEnd == 0) {
+        var player = App.WMain.FullMedia.Player;
+        vc.SetMarker(false, player.Position, player.Volume, player.SpeedRatio);
+      }
+      else {
+        App.Core.MediaItemClipsCategory.ItemCreate(App.Core.MediaItemClipsCategory, string.Empty);
       }
     }
   }
