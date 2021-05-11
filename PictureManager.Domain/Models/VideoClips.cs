@@ -29,7 +29,8 @@ namespace PictureManager.Domain.Models {
       foreach (var vc in All) {
         // reference to MediaItem and back reference from MediaItem to VideoClip without group
         vc.MediaItem = Core.Instance.MediaItems.AllDic[int.Parse(vc.Csv[1])];
-        vc.MediaItem.VideoClipAdd(vc, vc.Group);
+        if (vc.Group == null)
+          vc.MediaItem.VideoClipAdd(vc, null);
 
         // reference to People and back reference from Person to VideoClip
         if (!string.IsNullOrEmpty(vc.Csv[9])) {
@@ -92,8 +93,8 @@ namespace PictureManager.Domain.Models {
       );
     }
 
-    public VideoClip ItemCreate(MediaItem mediaItem, VideoClipsGroup group) {
-      var vc = new VideoClip(Helper.GetNextId(), mediaItem);
+    public VideoClip ItemCreate(string name, MediaItem mediaItem, VideoClipsGroup group) {
+      var vc = new VideoClip(Helper.GetNextId(), mediaItem) {Name = name};
       vc.MediaItem.VideoClipAdd(vc, group);
       All.Add(vc);
 
@@ -107,7 +108,13 @@ namespace PictureManager.Domain.Models {
 
     public void ItemDelete(VideoClip vc) {
       vc.MediaItem.VideoClips?.Remove(vc);
-      vc.Group?.Clips.Remove(vc);
+      vc.MediaItem = null;
+      
+      if (vc.Group != null) {
+        vc.Group.Clips.Remove(vc);
+        vc.Group = null;
+        Core.Instance.VideoClipsGroups.Helper.IsModified = true;
+      }
 
       if (vc.People != null)
         foreach (var p in vc.People) {
@@ -146,7 +153,7 @@ namespace PictureManager.Domain.Models {
       vc.Group = dest;
 
       if (dest == null)
-        vc.MediaItem.VideoClips.Add(vc);
+        vc.MediaItem.VideoClipAdd(vc, null);
       else
         dest.Clips.Add(vc);
 
