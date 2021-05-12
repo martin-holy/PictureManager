@@ -13,4 +13,5 @@
   <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
   <pm:TypeToStyleConverter x:Key="TypeToStyleConverter" />
+  <pm:DataTypeConverter x:Key="DataTypeConverter" />
 </ResourceDictionary>

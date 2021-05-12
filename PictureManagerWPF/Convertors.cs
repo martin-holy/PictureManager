@@ -217,4 +217,18 @@ namespace PictureManager {
       return value;
     }
   }
+
+  public class DataTypeConverter : IValueConverter {
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (value == null || parameter == null) return false;
+      // check for type
+      if (value.GetType() == parameter.GetType()) return true;
+      // check for interface
+      return value.GetType().GetInterface(parameter.ToString()) != null;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value;
+    }
+  }
 }
