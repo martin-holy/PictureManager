@@ -10,6 +10,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
 namespace PictureManager {
@@ -225,6 +226,27 @@ namespace PictureManager {
       if (value.GetType() == parameter.GetType()) return true;
       // check for interface
       return value.GetType().GetInterface(parameter.ToString()) != null;
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+      return value;
+    }
+  }
+
+  public class CatTreeViewMarginConverter : IValueConverter {
+    public double Length { get; set; }
+
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+      if (!(value is ICatTreeViewBaseItem tvi)) return new Thickness(0.0);
+
+      var levels = 0;
+      var parent = tvi.Parent;
+      while (parent != null) {
+        levels++;
+        parent = parent.Parent;
+      }
+
+      return new Thickness(Length * levels, 0.0, 0.0, 0.0);
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
