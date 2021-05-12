@@ -48,7 +48,7 @@ namespace PictureManager.CustomControls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      // open Flyout if is not open and mouse cursor is close to left or right edge of FlyoutsControl
+      // open SlidePanel if is not open and mouse cursor is close to left or right edge of SlidePanelsGrid
       MouseMove += delegate(object sender, MouseEventArgs e) {
         var pos = e.GetPosition(this);
         if (pos.X < 5 && ContentLeft != null && !ContentLeft.IsOpen)
