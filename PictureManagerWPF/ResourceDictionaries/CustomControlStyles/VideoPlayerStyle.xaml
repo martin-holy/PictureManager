@@ -34,7 +34,7 @@
               </cc:SlidePanelsGrid.ContentMiddle>
 
               <cc:SlidePanelsGrid.ContentRight>
-                <cc:SlidePanel IsOpen="True" Position="Right" Margin="0,40,0,40" Width="315" x:Name="PART_ClipsPanel">
+                <cc:SlidePanel IsOpen="False" IsPinned="False" Position="Right" Margin="0,40,-315,40" Width="315" x:Name="PART_ClipsPanel">
                   <cc:SlidePanel.Content>
                     <Grid Background="{StaticResource ColorBrushBackground}">
                       <Grid.RowDefinitions>
