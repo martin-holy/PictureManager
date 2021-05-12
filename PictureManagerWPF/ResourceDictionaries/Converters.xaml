@@ -14,4 +14,5 @@
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
   <pm:TypeToStyleConverter x:Key="TypeToStyleConverter" />
   <pm:DataTypeConverter x:Key="DataTypeConverter" />
+  <pm:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
 </ResourceDictionary>
