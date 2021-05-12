@@ -52,7 +52,7 @@ namespace PictureManager.Domain.Models {
     public bool IsNew { get; set; }
     public bool IsPanoramic { get; set; }
     public bool IsOnlyInDb { get; set; } // used when metadata can't be read/write
-    public bool HasVideoClips => VideoClips != null || VideoClipsGroups != null;
+    public bool HasVideoClips => VideoClips?.Count > 0 || VideoClipsGroups?.Count > 0;
 
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) {
