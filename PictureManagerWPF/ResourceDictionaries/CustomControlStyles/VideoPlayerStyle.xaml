@@ -34,7 +34,7 @@
               </cc:SlidePanelsGrid.ContentMiddle>
 
               <cc:SlidePanelsGrid.ContentRight>
-                <cc:SlidePanel IsOpen="True" Position="Right" Margin="0,40,0,40" Width="280" x:Name="PART_ClipsPanel">
+                <cc:SlidePanel IsOpen="True" Position="Right" Margin="0,40,0,40" Width="315" x:Name="PART_ClipsPanel">
                   <cc:SlidePanel.Content>
                     <Grid Background="{StaticResource ColorBrushBackground}">
                       <Grid.RowDefinitions>
@@ -62,24 +62,22 @@
                         <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Mute" IsChecked="{Binding Player.IsMuted}">
                           <cc:IconRect IconName="{x:Static pmd:IconName.SoundMute}" />
                         </ToggleButton>
+                        <StackPanel Orientation="Horizontal" Margin="4" 
+                                    Visibility="{Binding ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
+                          <TextBlock Text="Repeat for: " Margin="0,0,4,0" />
+                          <Slider Name="PART_RepeatSlider" Value="{Binding RepeatForSeconds}" Width="70"
+                                  Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" 
+                                  AutoToolTipPlacement="BottomRight"/>
+                        </StackPanel>
                       </StackPanel>
 
                       <!-- PlayType -->
-                      <StackPanel Orientation="Vertical" Grid.Row="1">
-                        <StackPanel Orientation="Horizontal" Margin="4" Name="PART_SpPlayTypes">
-                          <TextBlock Text="Play: " />
-                          <RadioButton Tag="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="True" />
-                          <RadioButton Tag="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" />
-                          <RadioButton Tag="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" />
-                          <RadioButton Tag="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="4" 
-                                  Visibility="{Binding ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
-                          <TextBlock Text="Repeat for: " Margin="0,0,4,0" />
-                          <Slider Name="PART_RepeatSlider" Value="{Binding RepeatForSeconds}" Width="70"
-                                 Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" 
-                                 AutoToolTipPlacement="BottomRight"/>
-                        </StackPanel>
+                      <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="4" Name="PART_SpPlayTypes">
+                        <TextBlock Text="Play: " />
+                        <RadioButton Tag="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="True" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" />
                       </StackPanel>
 
                       <!-- Clips TreeView -->
