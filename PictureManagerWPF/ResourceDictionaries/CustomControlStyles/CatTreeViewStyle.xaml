@@ -77,55 +77,35 @@
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
     <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment,Mode=OneWay,FallbackValue=Center,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
     <Setter Property="MinHeight" Value="25" />
-    <Setter Property="Padding" Value="5,0,0,0" />
+    <Setter Property="Padding" Value="0" />
     <Setter Property="SnapsToDevicePixels" Value="True" />
     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TreeViewItem}">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <ContentControl>
-              <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press"
-                            IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
-              <ContentControl.Style>
-                <Style TargetType="ContentControl">
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding Converter={StaticResource DataTypeConverter}, 
-                        ConverterParameter={x:Type ctvm:ICatTreeViewCategory}}" Value="True">
-                      <Setter Property="Visibility" Value="Collapsed" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </ContentControl.Style>
-            </ContentControl>
-            
-
-            <Border x:Name="Border"
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    MinHeight="{TemplateBinding MinHeight}"
-                    Background="{TemplateBinding Background}"
+          <StackPanel>
+            <Border x:Name="Border" MinHeight="{TemplateBinding MinHeight}"
+                    Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}"
                     BorderBrush="{TemplateBinding BorderBrush}"
                     BorderThickness="{TemplateBinding BorderThickness}"
-                    Padding="{TemplateBinding Padding}">
-
-              <ContentPresenter x:Name="PART_Header" ContentSource="Header"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+              <Grid VerticalAlignment="Stretch" Background="Transparent"
+                    Margin="{Binding DataContext, Converter={StaticResource CatTreeViewMarginConverter}, RelativeSource={x:Static RelativeSource.TemplatedParent}}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" MinWidth="19"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ToggleButton x:Name="Expander" ClickMode="Press" Style="{StaticResource ExpandCollapseToggleStyle}"
+                              IsChecked="{Binding Path=IsExpanded, RelativeSource={x:Static RelativeSource.TemplatedParent}, Mode=TwoWay}"/>
+                <ContentPresenter x:Name="PART_Header" Grid.Column="1" ContentSource="Header"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              </Grid>
             </Border>
-            <ItemsPresenter x:Name="ItemsHost" Grid.Row="1" Grid.Column="1" Visibility="Visible" />
-          </Grid>
+            <ItemsPresenter x:Name="ItemsHost" SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+          </StackPanel>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="false">
