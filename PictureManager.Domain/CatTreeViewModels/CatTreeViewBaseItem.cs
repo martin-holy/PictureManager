@@ -27,5 +27,12 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public void OnPropertyChanged([CallerMemberName] string name = null) {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
+
+    public static void ExpandAll(ICatTreeViewBaseItem root) {
+      if (root.Items.Count == 0) return;
+      root.IsExpanded = true;
+      foreach (var item in root.Items)
+        ExpandAll(item);
+    }
   }
 }
