@@ -16,6 +16,7 @@
     <Setter Property="Focusable" Value="False" />
     <Setter Property="Foreground" Value="{StaticResource BlackBrush}" />
     <Setter Property="Height" Value="16" />
+    <Setter Property="Width" Value="16" />
     <Setter Property="Margin" Value="1" />
     <Setter Property="Template">
       <Setter.Value>
@@ -56,7 +57,6 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
-    <Setter Property="Width" Value="16" />
   </Style>
   
   <Style x:Key="TreeViewItemFocusVisual">
@@ -86,7 +86,7 @@
         <ControlTemplate TargetType="{x:Type TreeViewItem}">
           <Grid>
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" MinWidth="19" />
+              <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
@@ -95,8 +95,21 @@
               <RowDefinition />
             </Grid.RowDefinitions>
 
-            <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press"
-                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+            <ContentControl>
+              <ToggleButton x:Name="Expander" Style="{StaticResource ExpandCollapseToggleStyle}" ClickMode="Press"
+                            IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" />
+              <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Converter={StaticResource DataTypeConverter}, 
+                        ConverterParameter={x:Type ctvm:ICatTreeViewCategory}}" Value="True">
+                      <Setter Property="Visibility" Value="Collapsed" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </ContentControl.Style>
+            </ContentControl>
+            
 
             <Border x:Name="Border"
                     Grid.Row="0"
