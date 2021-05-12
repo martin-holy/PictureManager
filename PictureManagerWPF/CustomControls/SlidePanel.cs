@@ -82,6 +82,8 @@ namespace PictureManager.CustomControls {
       Storyboard.SetTargetProperty(_closeAnimation, new PropertyPath(MarginProperty));
       _sbClose = new Storyboard();
       _sbClose.Children.Add(_closeAnimation);
+
+      OnIsPinnedChanged?.Invoke();
     }
 
     // creates new or update existing animation if panel width changes
