@@ -1,12 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls">
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="../Brushes/Brushes.xaml" />
+  </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="cc:SlidePanelsGrid">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="cc:SlidePanelsGrid">
-          <Grid>
+          <Grid Background="{StaticResource ColorBrushBackground}">
             <Grid Name="PART_MainGrid">
               <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
