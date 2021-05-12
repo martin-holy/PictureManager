@@ -134,6 +134,8 @@ namespace PictureManager.ViewModels {
       vcvm.IsSelected = true;
       root.Items.Add(vcvm);
 
+      CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
+
       App.WMain.FullMedia.CreateThumbnail(vcvm, player, true);
     }
 
@@ -148,6 +150,8 @@ namespace PictureManager.ViewModels {
       File.Delete(vc.ThumbPath.LocalPath);
       item.Parent.Items.Remove(item);
       Core.Instance.VideoClips.ItemDelete(item.Tag as VideoClip);
+
+      CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
     }
 
     public void ItemMove(ICatTreeViewBaseItem item, ICatTreeViewBaseItem dest, bool aboveDest) {
