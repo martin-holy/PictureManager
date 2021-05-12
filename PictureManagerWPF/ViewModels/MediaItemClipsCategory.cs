@@ -50,6 +50,8 @@ namespace PictureManager.ViewModels {
       if (mi.VideoClips != null)
         foreach (var clip in mi.VideoClips)
           Items.Add(CreateClipItem(clip, this));
+
+      ExpandAll(this);
     }
 
     public void SelectNext(VideoClipViewModel current, bool inGroup) {
