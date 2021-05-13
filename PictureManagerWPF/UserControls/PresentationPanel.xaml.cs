@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Timers;
 using System.Windows;
+using PictureManager.CustomControls;
 using PictureManager.Domain;
 
 namespace PictureManager.UserControls {
@@ -9,7 +10,7 @@ namespace PictureManager.UserControls {
       nameof(IsRunning), typeof(bool), typeof(PresentationPanel));
     
     public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register(
-      nameof(Interval), typeof(int), typeof(PresentationPanel), new UIPropertyMetadata(3000));
+      nameof(Interval), typeof(int), typeof(PresentationPanel), new UIPropertyMetadata(3));
 
     public static readonly DependencyProperty PlayPanoramicImagesProperty = DependencyProperty.Register(
       nameof(PlayPanoramicImages), typeof(bool), typeof(PresentationPanel), new UIPropertyMetadata(true));
@@ -26,7 +27,7 @@ namespace PictureManager.UserControls {
       get => (int) GetValue(IntervalProperty);
       set {
         SetValue(IntervalProperty, value);
-        _timer.Interval = value;
+        _timer.Interval = value * 1000;
       }
     }
 
@@ -38,11 +39,6 @@ namespace PictureManager.UserControls {
     public PresentationPanel() {
       _timer = new Timer();
       _timer.Elapsed += (o, e) => {
-        if (_timer.Interval == 1000)
-          Application.Current.Dispatcher?.Invoke(delegate {
-            _timer.Interval = Interval * 1000;
-          });
-
         Elapsed();
       };
 
@@ -65,14 +61,16 @@ namespace PictureManager.UserControls {
       var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
       if (delay && current.MediaType == MediaType.Image && current.IsPanoramic && PlayPanoramicImages) {
         Pause();
-        App.WMain.FullImage.Play(Interval, delegate { Start(false); });
+        App.WMain.FullImage.Play(Interval * 1000, delegate { Start(false); });
         return;
       }
 
-      _timer.Interval = delay ? Interval * 1000 : 1000;
       IsPaused = false;
       IsRunning = true;
+      App.WMain.FullMedia.PlayType = PlayType.Video;
       App.WMain.FullMedia.RepeatForSeconds = Interval;
+
+      if (!delay) Elapsed();
     }
 
     public void Stop() {
