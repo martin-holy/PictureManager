@@ -89,7 +89,7 @@ namespace PictureManager.CustomControls {
         if (value == PlayType.Clip && _ctvClips.SelectedItem is VideoClipViewModel vc) {
           _timelineSlider.Value = vc.Clip.TimeStart;
         }
-
+        OnPropertyChanged();
         OnPropertyChanged(nameof(ShowRepeatSlider));
       }
     }
