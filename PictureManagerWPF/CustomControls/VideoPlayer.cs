@@ -246,7 +246,7 @@ namespace PictureManager.CustomControls {
 
       _clipTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(10) };
       _clipTimer.Tick += delegate {
-        if (CurrentVideoClip == null) return;
+        if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
         var vc = CurrentVideoClip.Clip;
 
@@ -310,24 +310,21 @@ namespace PictureManager.CustomControls {
       if (!Player.HasVideo) return;
 
       var nd = Player.NaturalDuration;
-      _repeatCount = (int)Math.Round(RepeatForSeconds / (nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds / 1000 : 1), 0);
+      _repeatCount = (int)Math.Round(RepeatForSeconds / (nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds / 1000.0 : 1), 0);
 
       _timelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000;
       IsPlaying = true;
     }
 
     private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {
-      if (_repeatCount > 0 || PlayType != PlayType.Clips) {
+      // if video doesn't have TimeSpan than is probably less than 1s long
+      // and can't be repeated with MediaElement.Stop()/MediaElement.Play()
+      Player.Position = TimeSpan.FromMilliseconds(1);
+
+      if (_repeatCount > 0)
         _repeatCount--;
-
-        // if video doesn't have TimeSpan than is probably less than 1s long
-        // and can't be repeated with MediaElement.Stop()/MediaElement.Play()
-        Player.Position = TimeSpan.FromMilliseconds(1);
-
-        return;
-      }
-
-      RepeatEnded();
+      else
+        RepeatEnded();
     }
 
     private void MediaElement_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
