@@ -74,10 +74,10 @@
                       <!-- PlayType -->
                       <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="4" Name="PART_SpPlayTypes">
                         <TextBlock Text="Play: " />
-                        <RadioButton Tag="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="True" />
-                        <RadioButton Tag="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" />
-                        <RadioButton Tag="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" />
-                        <RadioButton Tag="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="{Binding PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Video}}" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" IsChecked="{Binding PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Clip}}" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" IsChecked="{Binding PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Clips}}" />
+                        <RadioButton Tag="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" IsChecked="{Binding PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Group}}" />
                       </StackPanel>
 
                       <!-- Clips TreeView -->
