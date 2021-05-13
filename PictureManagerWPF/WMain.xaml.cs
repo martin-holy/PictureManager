@@ -39,6 +39,7 @@ namespace PictureManager {
 
       PresentationPanel.Elapsed = delegate {
         Application.Current.Dispatcher?.Invoke(delegate {
+          if (PresentationPanel.IsPaused) return;
           if (MediaItemsCommands.CanNext())
             CommandsController.MediaItemsCommands.Next();
           else
