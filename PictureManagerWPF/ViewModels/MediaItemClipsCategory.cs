@@ -119,6 +119,15 @@ namespace PictureManager.ViewModels {
       };
     }
 
+    // update clip titles without names
+    private static void UpdateClipTitles(IEnumerable<VideoClipViewModel> items) {
+      foreach (var baseItem in items)
+        if (string.IsNullOrEmpty((baseItem.Tag as VideoClip)?.Name)) {
+          var pi = baseItem.Parent.Items;
+          baseItem.Title = $"Clip #{pi.IndexOf(baseItem) - pi.Count(x => x is ICatTreeViewGroup) + 1}";
+        }
+    }
+
     public string ValidateNewItemTitle(ICatTreeViewBaseItem root, string name) {
       return root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name)) != null
         ? $"{name} item already exists!"
@@ -149,12 +158,16 @@ namespace PictureManager.ViewModels {
 
       File.Delete(vc.ThumbPath.LocalPath);
       item.Parent.Items.Remove(item);
+      UpdateClipTitles(item.Parent.Items.OfType<VideoClipViewModel>());
+      item.Parent = null;
       Core.Instance.VideoClips.ItemDelete(item.Tag as VideoClip);
 
       CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
     }
 
     public void ItemMove(ICatTreeViewBaseItem item, ICatTreeViewBaseItem dest, bool aboveDest) {
+      var items = item.Parent.Items.Union(dest is VideoClipViewModel ? dest.Parent.Items : dest.Items).OfType<VideoClipViewModel>();
+
       // move item to end of category or group
       if (dest is ICatTreeViewCategory || dest is ICatTreeViewGroup) {
         Core.Instance.VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClipsGroup);
@@ -173,6 +186,8 @@ namespace PictureManager.ViewModels {
         Core.Instance.VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClip, aboveDest);
         item.Parent.Items.Move(item, dest, aboveDest);
       }
+
+      UpdateClipTitles(items);
     }
 
     public string ValidateNewGroupTitle(ICatTreeViewBaseItem root, string name) {
