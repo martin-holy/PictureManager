@@ -19,6 +19,8 @@ namespace PictureManager.Domain.Models {
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIconName(category)) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       parent.Items.SetInOrder(group, x => x.Name);
+      All.Add(group);
+
       return group;
     }
 
