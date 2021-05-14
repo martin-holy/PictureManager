@@ -61,8 +61,10 @@ namespace PictureManager.Domain.Models {
     }
 
     public Person GetPerson(string name, bool create) {
-      var person = All.SingleOrDefault(x => x.Title.Equals(name));
-      return person ?? (create ? CreatePerson(this, name) : null);
+      return Core.Instance.RunOnUiThread(() => {
+        var person = All.SingleOrDefault(x => x.Title.Equals(name));
+        return person ?? (create ? CreatePerson(this, name) : null);
+      }).Result;
     } 
 
     public Person CreatePerson(BaseTreeViewItem root, string name) {
