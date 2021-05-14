@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -76,21 +75,6 @@ namespace PictureManager.Domain.Models {
     private void AddRecord(VideoClip record) {
       All.Add(record);
       AllDic.Add(record.Id, record);
-    }
-
-    public Task<VideoClip> CreateVideoClipAsync(MediaItem mediaItem, double volume, double speed) {
-      return Core.Instance.RunOnUiThread(() => {
-          var vc = new VideoClip(Helper.GetNextId(), mediaItem) {
-            Volume = volume,
-            Speed = speed
-          };
-
-          mediaItem.VideoClipAdd(vc, null);
-          All.Add(vc);
-
-          return vc;
-        }
-      );
     }
 
     public VideoClip ItemCreate(string name, MediaItem mediaItem, VideoClipsGroup group) {
