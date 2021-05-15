@@ -57,7 +57,17 @@ namespace PictureManager.ViewModels {
     public void SelectNext(VideoClipViewModel current, bool inGroup) {
       var groups = new List<List<ICatTreeViewBaseItem>>();
       groups.AddRange(Items.Where(x => x is ICatTreeViewGroup g && g.Items.Count > 0).Select(g => g.Items.ToList()));
-      groups.Add(Items.Where(x => !(x is ICatTreeViewGroup)).ToList());
+
+      if (Items.Count(x => !(x is ICatTreeViewGroup)) > 0)
+        groups.Add(Items.Where(x => !(x is ICatTreeViewGroup)).ToList());
+
+      if (groups.Count == 0) return;
+
+      // select first
+      if (current == null) {
+        groups[0][0].IsSelected = true;
+        return;
+      }
 
       for (var i = 0; i < groups.Count; i++) {
         var group = groups[i];
