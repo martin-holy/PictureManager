@@ -318,6 +318,9 @@ namespace PictureManager.CustomControls {
 
       _timelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000;
       IsPlaying = true;
+
+      if (PlayType != PlayType.Video)
+        App.Core.MediaItemClipsCategory.SelectNext(null, false);
     }
 
     private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {
