@@ -16,10 +16,6 @@ namespace PictureManager.UserControls {
       InitializeComponent();
     }
 
-    private void OnSizeChanged(object sender, SizeChangedEventArgs e) {
-      App.WMain.SetFlyoutMainTreeViewMargin();
-    }
-
     private void OnPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       IsPinned = !IsPinned;
     }

@@ -29,6 +29,7 @@ namespace PictureManager.CustomControls {
     public Action RepeatEnded;
     public ObservableCollection<ICatTreeViewCategory> MediaItemClips { get; set; }
     public VideoClipViewModel CurrentVideoClip { get; set; }
+    public SlidePanel ClipsPanel { get; set; }
 
     public string PositionSlashDuration {
       get {
@@ -154,11 +155,14 @@ namespace PictureManager.CustomControls {
         _timelineSlider.PreviewMouseLeftButtonDown += TimelineSlider_OnPreviewMouseLeftButtonDown;
       }
 
-      if (Template.FindName("PART_ClipsPanel", this) is SlidePanel spClipsPanel)
+      if (Template.FindName("PART_ClipsPanel", this) is SlidePanel spClipsPanel) {
         if (Template.FindName("PART_BtnIsPinned", this) is ToggleButton btnIsPinned) {
           BindingOperations.SetBinding(btnIsPinned, ToggleButton.IsCheckedProperty,
             new Binding(nameof(SlidePanel.IsPinned)) {Source = spClipsPanel});
         }
+
+        ClipsPanel = spClipsPanel;
+      }
 
       if (Template.FindName("PART_BtnTimelineBeginning", this) is Button btnBeginning)
         btnBeginning.Click += ShiftTimelineButton_OnClick;

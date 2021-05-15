@@ -6,8 +6,11 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="cc:SlidePanel" >
-          <ContentPresenter Content="{Binding Content, 
-            RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanel}}}" />
+          <Border Margin="{Binding BorderMargin, 
+              RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanel}}}">
+            <ContentPresenter Content="{Binding Content, 
+              RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:SlidePanel}}}" />
+          </Border>
         </ControlTemplate>
       </Setter.Value>
     </Setter>

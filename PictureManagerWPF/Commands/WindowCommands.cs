@@ -103,19 +103,8 @@ namespace PictureManager.Commands {
         }
       }
 
-      if (show) {
-        App.WMain.GridMain.ColumnDefinitions[0].Width = new GridLength(App.WMain.FlyoutMainTreeView.ActualWidth);
-        App.WMain.GridMain.ColumnDefinitions[1].Width = new GridLength(3);
-      }
-      else {
-        App.WMain.GridMain.ColumnDefinitions[0].Width = new GridLength(0);
-        App.WMain.GridMain.ColumnDefinitions[1].Width = new GridLength(0);
-      }
-
-      App.WMain.FlyoutMainTreeView.IsPinned = show;
-      App.WMain.FlyoutMainTreeView.IsOpen = show;
-
-      App.WMain.SetFlyoutMainTreeViewMargin();
+      App.WMain.SlidePanelMainTreeView.IsPinned = show;
+      App.WMain.SlidePanelMainTreeView.IsOpen = show;
 
       if (reload)
         App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
