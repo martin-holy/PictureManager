@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
@@ -18,19 +17,8 @@ namespace PictureManager {
   /// </summary>
   public partial class WMain {
     public MediaElement VideoThumbnailPreview;
-
     public CommandsController CommandsController => CommandsController.Instance;
-
-    #region DependencyProperties
-    public static readonly DependencyProperty FlyoutMainTreeViewMarginProperty = DependencyProperty.Register(
-      nameof(FlyoutMainTreeViewMargin), typeof(Thickness), typeof(WMain));
-
-    public Thickness FlyoutMainTreeViewMargin {
-      get => (Thickness) GetValue(FlyoutMainTreeViewMarginProperty);
-      set => SetValue(FlyoutMainTreeViewMarginProperty, value);
-    }
-    #endregion
-
+    
     public WMain() {
       InitializeComponent();
 
@@ -63,6 +51,13 @@ namespace PictureManager {
       VideoThumbnailPreview.MediaEnded += (o, args) => {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
         ((MediaElement) o).Position = TimeSpan.FromMilliseconds(1);
+      };
+
+      MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Core.MediaItemsViewModel.ThumbsGridReloadItems(); };
+
+      StatusPanel.SizeChanged += delegate {
+        SlidePanelMainTreeView.BorderMargin = new Thickness(0,0,0, StatusPanel.ActualHeight);
+        FullMedia.ClipsPanel.BorderMargin = new Thickness(0, 0, 0, StatusPanel.ActualHeight);
       };
     }
 
@@ -106,32 +101,6 @@ namespace PictureManager {
         if (MediaItemsCommands.CanPrevious())
           CommandsController.MediaItemsCommands.Previous();
       }
-    }
-
-    private void WMain_OnMouseMove(object sender, MouseEventArgs e) {
-      var pos = e.GetPosition(this);
-      if (pos.X < 3 && !FlyoutMainTreeView.IsOpen)
-        FlyoutMainTreeView.IsOpen = true;
-    }
-
-    private void FlyoutMainTreeView_OnMouseLeave(object sender, MouseEventArgs e) {
-      if (!FlyoutMainTreeView.IsPinned)
-        FlyoutMainTreeView.IsOpen = false;
-    }
-
-    public void SetFlyoutMainTreeViewMargin() {
-      var top = App.Core.AppInfo.AppMode == AppMode.Browser ? 30 : 0;
-      var bottom = FlyoutMainTreeView.IsPinned ? StatusPanel.ActualHeight : 0;
-      FlyoutMainTreeViewMargin = new Thickness(0, top, 0, bottom);
-    }
-
-    private void MainSplitter_OnDragDelta(object sender, DragDeltaEventArgs e) {
-      FlyoutMainTreeView.Width = GridMain.ColumnDefinitions[0].ActualWidth;
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
-    }
-
-    private void MainSplitter_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      MainSplitter_OnDragDelta(null, null);
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
