@@ -25,76 +25,16 @@ namespace PictureManager.CustomControls {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 
+    public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register(nameof(IsPlaying), typeof(bool), typeof(VideoPlayer));
+    public static readonly DependencyProperty RotationProperty = DependencyProperty.Register(nameof(Rotation), typeof(double), typeof(VideoPlayer));
+    public static readonly DependencyProperty RepeatForSecondsProperty = DependencyProperty.Register(nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new PropertyMetadata(3));
+    public static readonly DependencyProperty PlayTypeProperty = DependencyProperty.Register(nameof(PlayType), typeof(PlayType), typeof(VideoPlayer));
+
     public MediaElement Player { get; set; }
     public Action RepeatEnded;
     public ObservableCollection<ICatTreeViewCategory> MediaItemClips { get; set; }
     public VideoClipViewModel CurrentVideoClip { get; set; }
     public SlidePanel ClipsPanel { get; set; }
-
-    public string PositionSlashDuration {
-      get {
-        const string zeroTime = "00:00:00";
-        if (Player == null) return zeroTime;
-        var pos = new TimeSpan(0, 0, 0, (int) Math.Round(Player.Position.TotalSeconds), 0).ToString();
-        var dur = Player.NaturalDuration.HasTimeSpan ? Player.NaturalDuration.TimeSpan.ToString() : zeroTime;
-        return $"{pos} / {dur}";
-      }
-    }
-
-    public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register(
-      nameof(IsPlaying), typeof(bool), typeof(VideoPlayer));
-
-    public bool IsPlaying {
-      get => (bool) GetValue(IsPlayingProperty);
-      set {
-        SetValue(IsPlayingProperty, value);
-
-        if (value) {
-          Player.Play();
-          _timelineTimer.Start();
-          _clipTimer.Start();
-        }
-        else {
-          _timelineTimer.Stop();
-          _clipTimer.Stop();
-          Player.Pause();
-        }
-      }
-    }
-
-    public static readonly DependencyProperty RotationProperty = DependencyProperty.Register(
-      nameof(Rotation), typeof(double), typeof(VideoPlayer));
-
-    public double Rotation {
-      get => (double) GetValue(RotationProperty);
-      set => SetValue(RotationProperty, value);
-    }
-
-    // 0 => infinity
-    public static readonly DependencyProperty RepeatForSecondsProperty = DependencyProperty.Register(
-      nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new PropertyMetadata(3));
-
-    public int RepeatForSeconds {
-      get => (int) GetValue(RepeatForSecondsProperty);
-      set => SetValue(RepeatForSecondsProperty, value);
-    }
-
-    public static readonly DependencyProperty PlayTypeProperty = DependencyProperty.Register(
-      nameof(PlayType), typeof(PlayType), typeof(VideoPlayer));
-
-    public PlayType PlayType {
-      get => (PlayType) GetValue(PlayTypeProperty);
-      set {
-        SetValue(PlayTypeProperty, value);
-
-        if (value == PlayType.Clip && _ctvClips.SelectedItem is VideoClipViewModel vc) {
-          _timelineSlider.Value = vc.Clip.TimeStart;
-        }
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(ShowRepeatSlider));
-      }
-    }
-
     public bool ShowRepeatSlider => PlayType == PlayType.Clips || PlayType == PlayType.Group;
 
     private CatTreeView _ctvClips;
@@ -106,6 +46,55 @@ namespace PictureManager.CustomControls {
     private bool _isTimelineTimerExecuting;
     private bool _wasPlaying;
     private int _repeatCount;
+
+    public double Rotation {
+      get => (double)GetValue(RotationProperty);
+      set => SetValue(RotationProperty, value);
+    }
+
+    // 0 => infinity
+    public int RepeatForSeconds {
+      get => (int)GetValue(RepeatForSecondsProperty);
+      set => SetValue(RepeatForSecondsProperty, value);
+    }
+
+    public string PositionSlashDuration {
+      get {
+        const string zeroTime = "00:00:00";
+        if (Player == null) return zeroTime;
+        var pos = new TimeSpan(0, 0, 0, (int) Math.Round(Player.Position.TotalSeconds), 0).ToString();
+        var dur = Player.NaturalDuration.HasTimeSpan ? Player.NaturalDuration.TimeSpan.ToString() : zeroTime;
+        return $"{pos} / {dur}";
+      }
+    }
+
+    public bool IsPlaying {
+      get => (bool) GetValue(IsPlayingProperty);
+      set {
+        SetValue(IsPlayingProperty, value);
+
+        if (value) {
+          StartClipTimer();
+          Player.Play();
+          _timelineTimer.Start();
+        }
+        else {
+          Player.Pause();
+          _timelineTimer.Stop();
+          _clipTimer.Stop();
+        }
+      }
+    }
+
+    public PlayType PlayType {
+      get => (PlayType) GetValue(PlayTypeProperty);
+      set {
+        SetValue(PlayTypeProperty, value);
+        StartClipTimer();
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(ShowRepeatSlider));
+      }
+    }
 
     static VideoPlayer() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(VideoPlayer), 
@@ -122,6 +111,26 @@ namespace PictureManager.CustomControls {
         Player.Source = null;
         IsPlaying = false;
       }
+    }
+
+    private void StartClipTimer() {
+      _clipTimer.Stop();
+
+      if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
+
+      var vc = CurrentVideoClip.Clip;
+      var duration = vc.TimeEnd - vc.TimeStart;
+
+      if (PlayType == PlayType.Clips || PlayType == PlayType.Group)
+        _repeatCount = (int)Math.Round(RepeatForSeconds / (duration / 1000.0), 0);
+      else
+        _repeatCount = 0;
+
+      _timelineSlider.Value = vc.TimeStart;
+      _volumeSlider.Value = vc.Volume;
+      _speedSlider.Value = vc.Speed;
+      _clipTimer.Interval = TimeSpan.FromMilliseconds(duration);
+      _clipTimer.Start();
     }
 
     public override void OnApplyTemplate() {
@@ -208,19 +217,7 @@ namespace PictureManager.CustomControls {
 
         _ctvClips.SelectedItemChanged += delegate {
           CurrentVideoClip = _ctvClips.SelectedItem as VideoClipViewModel;
-          if (CurrentVideoClip != null) {
-            if (PlayType == PlayType.Clips || PlayType == PlayType.Group) {
-              var d = (CurrentVideoClip.Clip.TimeEnd - CurrentVideoClip.Clip.TimeStart) / 1000.0;
-              _repeatCount = (int)Math.Round(RepeatForSeconds / d, 0);
-            }
-            else {
-              _repeatCount = 0;
-            }
-            
-            _timelineSlider.Value = CurrentVideoClip.Clip.TimeStart;
-            _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
-            _speedSlider.Value = CurrentVideoClip.Clip.Speed;
-          }
+          StartClipTimer();
         };
 
         _ctvClips.PreviewMouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs args) {
@@ -253,8 +250,7 @@ namespace PictureManager.CustomControls {
         if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
         var vc = CurrentVideoClip.Clip;
-
-        if (vc.TimeEnd > vc.TimeStart && Player.Position.TotalMilliseconds > vc.TimeEnd) {
+        if (vc.TimeEnd > vc.TimeStart) {
           switch (PlayType) {
             case PlayType.Clip:
               _timelineSlider.Value = vc.TimeStart;
