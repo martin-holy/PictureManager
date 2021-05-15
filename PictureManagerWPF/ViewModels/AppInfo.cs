@@ -47,7 +47,6 @@ namespace PictureManager.ViewModels {
         _appMode = value;
         OnPropertyChanged();
         OnPropertyChanged(nameof(FilePath));
-        App.WMain.SetFlyoutMainTreeViewMargin();
       }
     }
 

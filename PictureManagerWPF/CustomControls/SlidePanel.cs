@@ -22,8 +22,11 @@ namespace PictureManager.CustomControls {
     public static readonly DependencyProperty PositionProperty = DependencyProperty.Register(
       nameof(Position), typeof(Dock), typeof(SlidePanel));
 
-    private bool _isPinned = true;
+    public static readonly DependencyProperty BorderMarginProperty = DependencyProperty.Register(
+      nameof(BorderMargin), typeof(Thickness), typeof(SlidePanel));
 
+    private bool _isPinned = true;
+    
     public bool IsPinned {
       get => _isPinned;
       set {
@@ -38,8 +41,8 @@ namespace PictureManager.CustomControls {
       set {
         SetValue(IsOpenProperty, value);
         if (value)
-          _sbOpen.Begin(this); 
-        else 
+          _sbOpen.Begin(this);
+        else
           _sbClose.Begin(this);
       }
     }
@@ -47,6 +50,11 @@ namespace PictureManager.CustomControls {
     public Dock Position {
       get => (Dock)GetValue(PositionProperty);
       set => SetValue(PositionProperty, value);
+    }
+
+    public Thickness BorderMargin {
+      get => (Thickness)GetValue(BorderMarginProperty);
+      set => SetValue(BorderMarginProperty, value);
     }
 
     public FrameworkElement Content {

@@ -227,8 +227,9 @@ namespace PictureManager.ViewModels {
     public void ThumbsGridReloadItems(bool withGroups = true) {
       ScrollToTop();
       App.WMain.UpdateLayout();
-      var maxWidth = App.WMain.TabThumbnailsGrids.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
-      _model.ThumbsGrid.ReloadItems(maxWidth, withGroups);
+      var control = App.WMain.TabThumbnailsGrids.FindChild<ThumbnailsGridControl>("ThumbsGridControl");
+      if (control == null) return;
+      _model.ThumbsGrid.ReloadItems(control.ActualWidth, withGroups);
       ScrollToCurrent();
     }
 
@@ -240,7 +241,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void ScrollToTop() {
-      App.WMain.TabThumbnailsGrids.FindChild<ScrollViewer>("ThumbsBoxScrollViewer").ScrollToTop();
+      App.WMain.TabThumbnailsGrids.FindChild<ScrollViewer>("ThumbsBoxScrollViewer")?.ScrollToTop();
       App.WMain.UpdateLayout();
     }
 

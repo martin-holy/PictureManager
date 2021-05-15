@@ -13,7 +13,7 @@
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
         Loaded="Window_Loaded" FontSize="13.333" SaveWindowPosition="True" TitleCharacterCasing="Normal"
-        LeftWindowCommandsOverlayBehavior="Never" MouseMove="WMain_OnMouseMove" Closing="WMain_OnClosing"
+        LeftWindowCommandsOverlayBehavior="Never" Closing="WMain_OnClosing"
         SizeChanged="WMain_OnSizeChanged">
 
   <controls:MetroWindow.TitleTemplate>
@@ -129,87 +129,73 @@
     </controls:WindowCommands>
   </controls:MetroWindow.RightWindowCommands>
 
-  <controls:MetroWindow.Flyouts>
-    <controls:FlyoutsControl>
-      <!-- Flyout with TreeViewCategories -->
-      <controls:Flyout x:Name="FlyoutMainTreeView" Position="Left" Width="380" IsOpen="True" IsPinned="True" 
-        Background="#FF252525" Margin="{Binding FlyoutMainTreeViewMargin}"
-        TitleVisibility="Collapsed" CloseButtonVisibility="Collapsed" MouseLeave="FlyoutMainTreeView_OnMouseLeave">
-
-        <uc:TreeViewCategories x:Name="TreeViewCategories" />
-      </controls:Flyout>
-    </controls:FlyoutsControl>
-  </controls:MetroWindow.Flyouts>
-
   <Grid>
-    <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="380" />
-        <ColumnDefinition Width="3" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
+    <cc:SlidePanelsGrid x:Name="MainSlidePanelsGrid">
+      <cc:SlidePanelsGrid.ContentLeft>
+        <cc:SlidePanel IsOpen="True" IsPinned="True" Position="Left" Width="380" x:Name="SlidePanelMainTreeView">
+          <cc:SlidePanel.Content>
+            <uc:TreeViewCategories x:Name="TreeViewCategories" Background="{StaticResource ColorBrushBackground}" />
+          </cc:SlidePanel.Content>
+        </cc:SlidePanel>
+      </cc:SlidePanelsGrid.ContentLeft>
 
-      <GridSplitter Grid.Column="1" DragDelta="MainSplitter_OnDragDelta" DragCompleted="MainSplitter_OnDragCompleted" 
-          Width="3" HorizontalAlignment="Stretch" Background="{StaticResource WhiteBrush}" />
+      <cc:SlidePanelsGrid.ContentMiddle>
+        <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
+          <!-- Thumbnails Grids -->
+          <TabControl x:Name="TabThumbnailsGrids" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
+                      SelectionChanged="TabThumbnailsGrids_OnSelectionChanged"
+                      Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
+                                           Converter={StaticResource AllToVisibilityConverter}, 
+                                           ConverterParameter={x:Static pm:AppMode.Browser}}">
 
-      <!-- Thumbnails and Full Media -->
-      <Grid Grid.Column="2" >
+            <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
 
-        <!-- Thumbnails Grids -->
-        <TabControl x:Name="TabThumbnailsGrids" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
-                    SelectionChanged="TabThumbnailsGrids_OnSelectionChanged"
-                    Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
-                                         Converter={StaticResource AllToVisibilityConverter}, 
-                                         ConverterParameter={x:Static pm:AppMode.Browser}}">
+            <TabControl.Resources>
+              <DataTemplate x:Key="ThumbsTabItemTemplate">
+                <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}"
+                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
+                  <Button Style="{StaticResource FontIconButton}" Content="✚" Click="TabThumbnailsGrids_AddTab"
+                          Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
+                  <Button Style="{StaticResource FontIconButton}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
+                  <TextBlock Text="{Binding Title}" Margin="0,8">
+                    <TextBlock.LayoutTransform>
+                      <RotateTransform Angle="270" />
+                    </TextBlock.LayoutTransform>
+                  </TextBlock>
+                </StackPanel>
+              </DataTemplate>
+            </TabControl.Resources>
 
-          <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
+          </TabControl>
 
-          <TabControl.Resources>
-            <DataTemplate x:Key="ThumbsTabItemTemplate">
-              <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}"
-                          DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
-                <Button Style="{StaticResource FontIconButton}" Content="✚" Click="TabThumbnailsGrids_AddTab"
-                        Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
-                <Button Style="{StaticResource FontIconButton}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
-                <TextBlock Text="{Binding Title}" Margin="0,8">
-                  <TextBlock.LayoutTransform>
-                    <RotateTransform Angle="270" />
-                  </TextBlock.LayoutTransform>
-                </TextBlock>
-              </StackPanel>
-            </DataTemplate>
-          </TabControl.Resources>
-
-        </TabControl>
-
-        <!-- Full Media -->
-        <Grid x:Name="PanelFullScreen" Background="Transparent"
-            MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
-            Visibility="{Binding AppInfo.AppMode, 
-              Converter={StaticResource AllToVisibilityConverter}, 
-              ConverterParameter={x:Static pm:AppMode.Viewer}}">
-
-          <!-- Full Media Image -->
-          <Grid Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType, 
-              Converter={StaticResource AllToVisibilityConverter}, 
-              ConverterParameter={x:Static pmd:MediaType.Image}}">
-
-            <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
-
-            <!-- Presentation Panel -->
-            <uc:PresentationPanel x:Name="PresentationPanel" />
-          </Grid>
-
-          <!-- Full Media Video -->
-          <cc:VideoPlayer x:Name="FullMedia"
-                Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
-                Source={x:Static pm:App.Core},
+          <!-- Full Media -->
+          <Grid x:Name="PanelFullScreen" Background="Transparent"
+              MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
+              Visibility="{Binding AppInfo.AppMode, 
                 Converter={StaticResource AllToVisibilityConverter}, 
-                ConverterParameter={x:Static pmd:MediaType.Video}}" />
-        </Grid>
+                ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
-      </Grid>
-    </Grid>
+            <!-- Full Media Image -->
+            <Grid Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType, 
+                Converter={StaticResource AllToVisibilityConverter}, 
+                ConverterParameter={x:Static pmd:MediaType.Image}}">
+
+              <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
+
+              <!-- Presentation Panel -->
+              <uc:PresentationPanel x:Name="PresentationPanel" />
+            </Grid>
+
+            <!-- Full Media Video -->
+            <cc:VideoPlayer x:Name="FullMedia"
+                  Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
+                  Source={x:Static pm:App.Core},
+                  Converter={StaticResource AllToVisibilityConverter}, 
+                  ConverterParameter={x:Static pmd:MediaType.Video}}" />
+          </Grid>
+        </Grid>
+      </cc:SlidePanelsGrid.ContentMiddle>
+    </cc:SlidePanelsGrid>
 
     <!-- Status Panel -->
     <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" MouseWheel="PanelFullScreen_OnMouseWheel" />

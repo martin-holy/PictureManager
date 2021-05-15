@@ -23,8 +23,7 @@
     </Style>
   </UserControl.Resources>
 
-  <Grid VerticalAlignment="Top" Background="#88000000" Style="{StaticResource SOpacity}"
-        SizeChanged="OnSizeChanged">
+  <Grid VerticalAlignment="Top" Background="#88000000" Style="{StaticResource SOpacity}">
 
     <WrapPanel VerticalAlignment="Bottom" Margin="0,2,0,1">
       <WrapPanel.Style>

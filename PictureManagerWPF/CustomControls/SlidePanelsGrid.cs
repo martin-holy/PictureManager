@@ -51,6 +51,10 @@ namespace PictureManager.CustomControls {
       // open SlidePanel if is not open and mouse cursor is close to left or right edge of SlidePanelsGrid
       MouseMove += delegate(object sender, MouseEventArgs e) {
         var pos = e.GetPosition(this);
+        
+        // to stop opening panel by it self in some cases
+        if (pos.X == 0 && pos.Y == 0) return;
+
         if (pos.X < 5 && ContentLeft != null && !ContentLeft.IsOpen)
           ContentLeft.IsOpen = true;
         if (pos.X > ActualWidth - 5 && ContentRight != null && !ContentRight.IsOpen)
