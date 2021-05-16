@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 
 namespace PictureManager {
@@ -82,6 +83,26 @@ namespace PictureManager {
         if (child.TemplatedParent is T parent) return parent;
         child = (FrameworkElement) child.TemplatedParent;
       }
+    }
+
+    public static bool TryParseDoubleUniversal(this string s, out double result) {
+      // TODO refactor
+
+      result = 0.0;
+      if (string.IsNullOrEmpty(s)) return false;
+
+      var clean = new string(s.Where(x => char.IsDigit(x) || x == '.' || x == ',').ToArray());
+      var iOfSep = clean.LastIndexOfAny(new[] { ',', '.' });
+      var partA = clean.Substring(0, iOfSep).Replace(",", string.Empty).Replace(".", string.Empty);
+      var partB = clean.Substring(iOfSep + 1);
+      if (!int.TryParse(partA, out var intA)) return false;
+      if (!int.TryParse(partB, out var intB)) return false;
+
+      var bla = double.Parse("1".PadRight(partB.Length + 1, '0'));
+
+      result = intA + intB / bla;
+
+      return true;
     }
   }
 }
