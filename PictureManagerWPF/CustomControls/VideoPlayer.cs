@@ -46,6 +46,9 @@ namespace PictureManager.CustomControls {
     private bool _isTimelineTimerExecuting;
     private bool _wasPlaying;
     private int _repeatCount;
+    private int _smallChange;
+
+    public int SmallChange { get => _smallChange; set { _smallChange = value; OnPropertyChanged();} }
 
     public double Rotation {
       get => (double)GetValue(RotationProperty);
@@ -103,6 +106,9 @@ namespace PictureManager.CustomControls {
 
     public void SetSource(MediaItem mediaItem) {
       if (mediaItem != null) {
+        var data = ShellStuff.FileInformation.GetVideoMetadata(mediaItem.Folder.FullPath, mediaItem.FileName);
+        var fps = (double) data[3] > 0 ? (double) data[3] : 30.0;
+        SmallChange = (int) Math.Round(1000 / fps, 0);
         Rotation = mediaItem.RotationAngle;
         Player.Source = mediaItem.FilePathUri;
         IsPlaying = true;
@@ -120,6 +126,8 @@ namespace PictureManager.CustomControls {
 
       var vc = CurrentVideoClip.Clip;
       var duration = (vc.TimeEnd - vc.TimeStart) / _speedSlider.Value;
+
+      if (duration <= 0) return;
 
       if (PlayType == PlayType.Clips || PlayType == PlayType.Group)
         _repeatCount = (int)Math.Round(RepeatForSeconds / (duration / 1000.0), 0);
@@ -222,7 +230,8 @@ namespace PictureManager.CustomControls {
             _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
             _speedSlider.Value = CurrentVideoClip.Clip.Speed;
           }
-          StartClipTimer();
+          
+          if (IsPlaying) StartClipTimer();
         };
 
         _ctvClips.PreviewMouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs args) {
