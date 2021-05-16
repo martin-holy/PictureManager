@@ -119,7 +119,7 @@ namespace PictureManager.CustomControls {
       if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
       var vc = CurrentVideoClip.Clip;
-      var duration = vc.TimeEnd - vc.TimeStart;
+      var duration = (vc.TimeEnd - vc.TimeStart) / _speedSlider.Value;
 
       if (PlayType == PlayType.Clips || PlayType == PlayType.Group)
         _repeatCount = (int)Math.Round(RepeatForSeconds / (duration / 1000.0), 0);
@@ -127,8 +127,6 @@ namespace PictureManager.CustomControls {
         _repeatCount = 0;
 
       _timelineSlider.Value = vc.TimeStart;
-      _volumeSlider.Value = vc.Volume;
-      _speedSlider.Value = vc.Speed;
       _clipTimer.Interval = TimeSpan.FromMilliseconds(duration);
       _clipTimer.Start();
     }
@@ -140,7 +138,10 @@ namespace PictureManager.CustomControls {
 
       if (Template.FindName("PART_SpeedSlider", this) is Slider speedSlider) {
         _speedSlider = speedSlider;
-        _speedSlider.ValueChanged += delegate { Player.SpeedRatio = _speedSlider.Value; };
+        _speedSlider.ValueChanged += delegate {
+          Player.SpeedRatio = _speedSlider.Value;
+          StartClipTimer();
+        };
       }
 
       if (Template.FindName("PART_VolumeSlider", this) is Slider volumeSlider) {
@@ -217,6 +218,10 @@ namespace PictureManager.CustomControls {
 
         _ctvClips.SelectedItemChanged += delegate {
           CurrentVideoClip = _ctvClips.SelectedItem as VideoClipViewModel;
+          if (CurrentVideoClip != null) {
+            _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
+            _speedSlider.Value = CurrentVideoClip.Clip.Speed;
+          }
           StartClipTimer();
         };
 
