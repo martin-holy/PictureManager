@@ -218,7 +218,7 @@ namespace PictureManager.CustomControls {
 
         _ctvClips.SelectedItemChanged += delegate {
           CurrentVideoClip = _ctvClips.SelectedItem as VideoClipViewModel;
-          if (CurrentVideoClip != null) {
+          if (CurrentVideoClip != null && PlayType != PlayType.Video) {
             _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
             _speedSlider.Value = CurrentVideoClip.Clip.Speed;
           }
