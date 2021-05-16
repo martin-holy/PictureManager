@@ -104,8 +104,6 @@ namespace PictureManager.ViewModels {
     }
 
     public static string FormatTimeSpan(int ms) {
-      if (ms == 0) return string.Empty;
-
       var format = ms >= 60 * 60 * 1000 ? @"h\:mm\:ss\.fff" : @"m\:ss\.fff";
 
       return TimeSpan.FromMilliseconds(ms).ToString(format);
