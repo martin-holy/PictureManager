@@ -15,15 +15,12 @@
 - Clips: kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
 - Comment na MediaItem sezere tecky na validaci
 - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
-- nejde nastavit clip se startem na 0
-- clip timer asi zkratit, protoze to nekdy prejde na dalsi snimek
 
 #Update
 - na File Operation Dialog pridat copy/move/delete
 - taby na thums dat streach a ne omezovat na x px
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
 - pruhlednost statusbaru pri skryti nastavit na 0
-- poustet _clipTimer ve VideoPlayer jen kdyz je to potreba
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
@@ -48,7 +45,6 @@
 - moznost ve vieweru prochazet i jenom selected mediaItems
 - umoznit zmenit nahled u videa
 - ulozit clips pri prechodu do viewera, nebo na dalsi mediaItem
-- nastavit small step u videa na jeden snimek podle FPS
 
 
 
