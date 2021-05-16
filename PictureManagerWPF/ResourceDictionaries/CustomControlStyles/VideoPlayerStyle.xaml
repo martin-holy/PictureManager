@@ -168,7 +168,7 @@
                 <!-- Seek To -->
                 <TextBlock>Seek To</TextBlock>
                 <Slider Name="PART_TimelineSlider" Margin="5" HorizontalAlignment="Stretch" IsMoveToPointEnabled="True" 
-                        LargeChange="1000" SmallChange="30" IsTabStop="False"/>
+                        LargeChange="1000" SmallChange="{Binding SmallChange}" IsTabStop="False"/>
               </DockPanel>
 
               <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.Column="1">
