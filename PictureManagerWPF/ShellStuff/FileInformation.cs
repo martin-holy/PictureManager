@@ -6,16 +6,23 @@ using System.Runtime.InteropServices;
 
 namespace PictureManager.ShellStuff {
   public static class FileInformation {
-    internal static int[] GetVideoMetadata(string dirPath, string fileName) {
+    internal static object[] GetVideoMetadata(string dirPath, string fileName) {
       var shl = new Shell32.Shell();
       var fldr = shl.NameSpace(dirPath);
       var itm = fldr.ParseName(fileName);
       // INFO I am not sure, but it looks like that the iColumn numbers are not the same all the time
-      string[] size = {fldr.GetDetailsOf(itm, 314), fldr.GetDetailsOf(itm, 316), fldr.GetDetailsOf(itm, 319)};
-      int.TryParse(size[0], out var h);
-      int.TryParse(size[1], out var w);
-      int.TryParse(size[2], out var o);
-      return new[] {h, w, o};
+      string[] data = {
+        fldr.GetDetailsOf(itm, 314), // height
+        fldr.GetDetailsOf(itm, 316), // width
+        fldr.GetDetailsOf(itm, 319), // orientation
+        fldr.GetDetailsOf(itm, 315)  // FPS
+      };
+      int.TryParse(data[0], out var h);
+      int.TryParse(data[1], out var w);
+      int.TryParse(data[2], out var o);
+      data[3].TryParseDoubleUniversal(out var fps);
+
+      return new object[] {h, w, o, fps};
     }
 
     internal static List<string> GetAllVideoMetadata(string filePath) {
