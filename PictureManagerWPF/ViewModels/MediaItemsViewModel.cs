@@ -481,10 +481,10 @@ namespace PictureManager.ViewModels {
           Application.Current.Dispatcher?.Invoke(delegate {
             try {
               var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
-              mi.Height = size[0];
-              mi.Width = size[1];
+              mi.Height = (int)size[0];
+              mi.Width = (int)size[1];
 
-              switch (size[2]) {
+              switch ((int)size[2]) {
                 case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
                 case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
                 case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
