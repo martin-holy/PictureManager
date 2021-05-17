@@ -36,8 +36,8 @@ namespace PictureManager.CustomControls {
     public VideoClipViewModel CurrentVideoClip { get; set; }
     public SlidePanel ClipsPanel { get; set; }
     public bool ShowRepeatSlider => PlayType == PlayType.Clips || PlayType == PlayType.Group;
+    public CatTreeView CtvClips;
 
-    private CatTreeView _ctvClips;
     private Slider _timelineSlider;
     private Slider _speedSlider;
     private Slider _volumeSlider;
@@ -221,11 +221,11 @@ namespace PictureManager.CustomControls {
         };
 
       if (Template.FindName("PART_CtvClips", this) is CatTreeView ctvClips) {
-        _ctvClips = ctvClips;
+        CtvClips = ctvClips;
 
 
-        _ctvClips.SelectedItemChanged += delegate {
-          CurrentVideoClip = _ctvClips.SelectedItem as VideoClipViewModel;
+        CtvClips.SelectedItemChanged += delegate {
+          CurrentVideoClip = CtvClips.SelectedItem as VideoClipViewModel;
           if (CurrentVideoClip != null && PlayType != PlayType.Video) {
             _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
             _speedSlider.Value = CurrentVideoClip.Clip.Speed;
@@ -234,8 +234,8 @@ namespace PictureManager.CustomControls {
           if (IsPlaying) StartClipTimer();
         };
 
-        _ctvClips.PreviewMouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs args) {
-          if (args.OriginalSource is FrameworkElement fe && _ctvClips.SelectedItem is VideoClipViewModel vc) {
+        CtvClips.PreviewMouseLeftButtonUp += delegate(object sender, MouseButtonEventArgs args) {
+          if (args.OriginalSource is FrameworkElement fe && CtvClips.SelectedItem is VideoClipViewModel vc) {
             switch (fe.Name) {
               // Seek to start video position defined in Clip
               case "TbMarkerA": {
@@ -401,7 +401,7 @@ namespace PictureManager.CustomControls {
     }
 
     private void SetMarker(bool start) {
-      if (!(_ctvClips.SelectedItem is VideoClipViewModel vc)) return;
+      if (!(CtvClips.SelectedItem is VideoClipViewModel vc)) return;
       vc.SetMarker(start, Player.Position, _volumeSlider.Value, _speedSlider.Value);
       if (start) CreateThumbnail(vc, Player, true);
     }
