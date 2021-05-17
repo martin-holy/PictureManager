@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+                    xmlns:cmd="clr-namespace:PictureManager.Commands">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.slider.xaml" />
@@ -59,9 +60,13 @@
 
                         <Button Name="PART_BtnMarkerA" ToolTip="Set start">A</Button>
                         <Button Name="PART_BtnMarkerB" ToolTip="Set end">B</Button>
+                        <Button Command="cmd:MediaItemsCommands.VideoClipsSaveCommand">
+                          <cc:IconRect IconName="{x:Static pmd:IconName.Save}" Size="16" />
+                        </Button>
                         <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Mute" IsChecked="{Binding Player.IsMuted}">
                           <cc:IconRect IconName="{x:Static pmd:IconName.SoundMute}" />
                         </ToggleButton>
+                        
                         <StackPanel Orientation="Horizontal" Margin="4" 
                                     Visibility="{Binding ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
                           <TextBlock Text="Repeat for: " Margin="0,0,4,0" />
