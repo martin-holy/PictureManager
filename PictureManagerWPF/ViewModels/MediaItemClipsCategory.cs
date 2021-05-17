@@ -150,6 +150,7 @@ namespace PictureManager.ViewModels {
       vcvm.SetMarker(true, player.Position, player.Volume, player.SpeedRatio);
       vcvm.IsSelected = true;
       root.Items.Add(vcvm);
+      App.WMain.FullMedia.CtvClips.ScrollTo(vcvm);
 
       CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
 
