@@ -297,26 +297,13 @@ namespace PictureManager.CustomControls {
 
     private void VideoPlayerControl_OnKeyDown(object sender, KeyEventArgs e) {
       switch (e.Key) {
-        case Key.Left: {
-            switch (Keyboard.Modifiers) {
-              case ModifierKeys.Control: ShiftTimeline(TimelineShift.SmallBack); break;
-              case ModifierKeys.Shift: ShiftTimeline(TimelineShift.LargeBack); break;
-            }
-
-            break;
-          }
-        case Key.Right: {
-            switch (Keyboard.Modifiers) {
-              case ModifierKeys.Control: ShiftTimeline(TimelineShift.SmallForward); break;
-              case ModifierKeys.Shift: ShiftTimeline(TimelineShift.LargeForward); break;
-            }
-
-            break;
-          }
-        case Key.Space: {
-            PlayPauseToggle();
-            break;
-          }
+        case Key.Home: ShiftTimeline(TimelineShift.Beginning); break;
+        case Key.End: ShiftTimeline(TimelineShift.End); break;
+        case Key.PageUp: ShiftTimeline(TimelineShift.LargeBack); break;
+        case Key.PageDown: ShiftTimeline(TimelineShift.LargeForward); break;
+        case Key.NumPad7: ShiftTimeline(TimelineShift.SmallBack); break;
+        case Key.NumPad9: ShiftTimeline(TimelineShift.SmallForward); break;
+        case Key.Space: PlayPauseToggle(); break;
       }
     }
 
