@@ -147,7 +147,7 @@ namespace PictureManager.ViewModels {
       if (!(CreateClipItem(vc, root) is VideoClipViewModel vcvm)) return;
 
       var player = App.WMain.FullMedia.Player;
-      vcvm.SetMarker(true, player.Position, player.Volume, player.SpeedRatio);
+      App.WMain.FullMedia.SetMarker(vcvm, true);
       vcvm.IsSelected = true;
       root.Items.Add(vcvm);
       App.WMain.FullMedia.CtvClips.ScrollTo(vcvm);

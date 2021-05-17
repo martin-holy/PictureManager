@@ -205,12 +205,12 @@ namespace PictureManager.CustomControls {
 
       if (Template.FindName("PART_BtnMarkerA", this) is Button btnMarkerA)
         btnMarkerA.Click += delegate {
-          SetMarker(true);
+          SetMarker(CurrentVideoClip, true);
         };
 
       if (Template.FindName("PART_BtnMarkerB", this) is Button btnMarkerB)
         btnMarkerB.Click += delegate {
-          SetMarker(false);
+          SetMarker(CurrentVideoClip, false);
         };
 
       if (Template.FindName("PART_SpPlayTypes", this) is StackPanel spPlayTypes)
@@ -387,9 +387,8 @@ namespace PictureManager.CustomControls {
       PlayPauseToggle();
     }
 
-    private void SetMarker(bool start) {
-      if (!(CtvClips.SelectedItem is VideoClipViewModel vc)) return;
-      vc.SetMarker(start, Player.Position, _volumeSlider.Value, _speedSlider.Value);
+    public void SetMarker(VideoClipViewModel vc, bool start) {
+      vc.SetMarker(start, (int) Math.Round(_timelineSlider.Value), _volumeSlider.Value, _speedSlider.Value);
       if (start) CreateThumbnail(vc, Player, true);
     }
 
