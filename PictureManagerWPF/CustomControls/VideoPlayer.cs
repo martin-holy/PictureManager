@@ -255,7 +255,7 @@ namespace PictureManager.CustomControls {
       _timelineTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
       _timelineTimer.Tick += delegate {
         _isTimelineTimerExecuting = true;
-        _timelineSlider.Value = Player.Position.TotalMilliseconds;
+        _timelineSlider.Value = Math.Round(Player.Position.TotalMilliseconds / SmallChange) * SmallChange;
         _isTimelineTimerExecuting = false;
       };
 
