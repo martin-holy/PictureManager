@@ -347,13 +347,10 @@ namespace PictureManager.Commands {
 
     private static void VideoClipSplit() {
       var vc = App.WMain.FullMedia.CurrentVideoClip;
-      if (vc != null && vc.Clip.TimeEnd == 0) {
-        var player = App.WMain.FullMedia.Player;
-        vc.SetMarker(false, player.Position, player.Volume, player.SpeedRatio);
-      }
-      else {
+      if (vc != null && vc.Clip.TimeEnd == 0)
+        App.WMain.FullMedia.SetMarker(vc, false);
+      else
         App.Core.MediaItemClipsCategory.ItemCreate(App.Core.MediaItemClipsCategory, string.Empty);
-      }
     }
   }
 }

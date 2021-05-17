@@ -22,18 +22,18 @@ namespace PictureManager.ViewModels {
       return new Uri($"{fpc.Substring(0, fpc.LastIndexOf('.'))}_{Clip.Id}.jpg");
     }
 
-    public void SetMarker(bool start, TimeSpan ts, double volume, double speed) {
+    public void SetMarker(bool start, int ms, double volume, double speed) {
       if (start) {
-        Clip.TimeStart = (int)ts.TotalMilliseconds;
-        if (ts.TotalMilliseconds > Clip.TimeEnd) Clip.TimeEnd = 0;
+        Clip.TimeStart = ms;
+        if (ms > Clip.TimeEnd) Clip.TimeEnd = 0;
       }
       else {
-        if (ts.TotalMilliseconds < Clip.TimeStart) {
+        if (ms < Clip.TimeStart) {
           Clip.TimeEnd = Clip.TimeStart;
-          Clip.TimeStart = (int)ts.TotalMilliseconds;
+          Clip.TimeStart = ms;
         }
         else {
-          Clip.TimeEnd = (int)ts.TotalMilliseconds;
+          Clip.TimeEnd = ms;
         }
       }
 
