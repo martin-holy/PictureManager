@@ -38,7 +38,6 @@ namespace PictureManager.CustomControls {
       _scrollViewer = Template.FindName("CatTreeViewScrollViewer", this) as ScrollViewer;
 
       PreviewMouseRightButtonDown += AttachContextMenu;
-      MouseMove += Scroll;
 
       // Drag & Drop
       PreviewMouseLeftButtonDown += SetDragObject;
@@ -47,17 +46,6 @@ namespace PictureManager.CustomControls {
       DragLeave += AllowDropCheck;
       DragOver += AllowDropCheck;
       Drop += OnDrop;
-    }
-
-    private void Scroll(object sender, MouseEventArgs e) {
-      // scroll treeView when the mouse is near the top or bottom
-      if (e.LeftButton != MouseButtonState.Pressed) return;
-
-      var pos = e.GetPosition(this);
-      if (pos.Y < 25)
-        _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset - 25);
-      else if (ActualHeight - pos.Y < 25)
-        _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset + 25);
     }
 
     #region  Drag & Drop
@@ -85,7 +73,14 @@ namespace PictureManager.CustomControls {
              Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
     }
 
-    private static void AllowDropCheck(object sender, DragEventArgs e) {
+    private void AllowDropCheck(object sender, DragEventArgs e) {
+      // scroll treeView when the mouse is near the top or bottom
+      var pos = e.GetPosition(this);
+      if (pos.Y < 25)
+        _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset - 25);
+      else if (ActualHeight - pos.Y < 25)
+        _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset + 25);
+
       // return if the data can be dropped
       var dest = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource)?.DataContext;
       var src = ((object[]) e.Data.GetData(typeof(object[])))?[0];
