@@ -30,6 +30,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ImagesToVideoCommand { get; } = new RoutedUICommand { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
     public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
+    public static RoutedUICommand VideoClipsSaveCommand { get; } = new RoutedUICommand { Text = "Save Video Clips" };
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
@@ -48,6 +49,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
       CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
+      CommandsController.AddCommandBinding(cbc, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
     }
 
     public static bool CanNext() {
@@ -351,6 +353,15 @@ namespace PictureManager.Commands {
         App.WMain.FullMedia.SetMarker(vc, false);
       else
         App.Core.MediaItemClipsCategory.ItemCreate(App.Core.MediaItemClipsCategory, string.Empty);
+    }
+
+    private static bool CanVideoClipsSave() {
+      return App.Core.Model.VideoClips.Helper.IsModified || App.Core.Model.VideoClipsGroups.Helper.IsModified;
+    }
+
+    private static void VideoClipsSave() {
+      App.Core.Model.VideoClips.SaveToFile();
+      App.Core.Model.VideoClipsGroups.SaveToFile();
     }
   }
 }
