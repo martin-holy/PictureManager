@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,6 +15,20 @@ namespace PictureManager.CustomControls {
     static CatTreeView() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView),
         new FrameworkPropertyMetadata(typeof(CatTreeView)));
+    }
+
+    public void ScrollTo(ICatTreeViewBaseItem item) {
+      var items = new List<ICatTreeViewBaseItem>();
+      CatTreeViewUtils.GetThisAndParentRecursive(item, ref items);
+      items.Reverse();
+      var tvi = ItemContainerGenerator.ContainerFromItem(items[0]) as TreeViewItem;
+
+      for (var i = 1; i < items.Count; i++) {
+        if (tvi == null) break;
+        tvi = tvi.ItemContainerGenerator.ContainerFromItem(items[i]) as TreeViewItem;
+      }
+
+      tvi?.Focus();
     }
 
     public override void OnApplyTemplate() {
