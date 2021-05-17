@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PictureManager.Domain.CatTreeViewModels {
   public static class CatTreeViewUtils {
     public static IconName GetCategoryGroupIconName(Category category) {
@@ -21,6 +23,15 @@ namespace PictureManager.Domain.CatTreeViewModels {
       while (true) {
         if (item.Parent == null) return item;
         item = item.Parent;
+      }
+    }
+
+    public static void GetThisAndParentRecursive(ICatTreeViewBaseItem self, ref List<ICatTreeViewBaseItem> items) {
+      items.Add(self);
+      var parent = self.Parent;
+      while (parent != null) {
+        items.Add(parent);
+        parent = parent.Parent;
       }
     }
   }
