@@ -6,7 +6,7 @@
 
   <UserControl.Resources>
     <!-- CloseButton Style -->
-    <Style TargetType="Button" x:Key="CloseButton" BasedOn="{StaticResource FontIconButton}">
+    <Style TargetType="Button" x:Key="CloseButton" BasedOn="{StaticResource StyleButtonFontSymbol}">
       <Setter Property="HorizontalAlignment" Value="Right" />
       <Setter Property="Margin" Value="0,0,2,0" />
       <Setter Property="Content" Value="✖" />
