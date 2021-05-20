@@ -7,11 +7,10 @@
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.slider.xaml" />
-    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.buttons.xaml" />
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.radiobutton.xaml" />
-    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.treeview.xaml" />
+
     <ResourceDictionary Source="../Converters.xaml" />
-    <ResourceDictionary Source="../BaseControlStyles/ToggleButtonStyle.xaml" />
+    <ResourceDictionary Source="../NamedStyles/ButtonStyles.xaml" />
     <ResourceDictionary Source="../Brushes/Brushes.xaml" />
     <ResourceDictionary Source="CatTreeViewStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
@@ -47,15 +46,15 @@
                       <!-- Buttons -->
                       <StackPanel Orientation="Horizontal">
                         <StackPanel.Resources>
-                          <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MetroButton}">
+                          <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleBaseButtonBase}">
                             <Setter Property="Margin" Value="2" />
                             <Setter Property="Width" Value="26" />
                             <Setter Property="Height" Value="26" />
                           </Style>
                         </StackPanel.Resources>
 
-                        <ToggleButton Style="{StaticResource ToggleButtonStyle}" Name="PART_BtnIsPinned">
-                          <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
+                        <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" Name="PART_BtnIsPinned">
+                          <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="14" />
                         </ToggleButton>
 
                         <Button Name="PART_BtnMarkerA" ToolTip="Set start">A</Button>
@@ -63,7 +62,7 @@
                         <Button Command="cmd:MediaItemsCommands.VideoClipsSaveCommand">
                           <cc:IconRect IconName="{x:Static pmd:IconName.Save}" Size="16" />
                         </Button>
-                        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Mute" IsChecked="{Binding Player.IsMuted}">
+                        <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Mute" IsChecked="{Binding Player.IsMuted}">
                           <cc:IconRect IconName="{x:Static pmd:IconName.SoundMute}" />
                         </ToggleButton>
                         
