@@ -7,15 +7,19 @@
   </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="cc:IconRect">
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="cc:IconRect">
           <Rectangle DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:IconRect}}}"
-                     Width="{Binding Size}" Height="{Binding Size}" VerticalAlignment="Center" 
-                     Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}">
+                     Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}"
+                     Width="{Binding Size}" 
+                     Height="{Binding Size}" 
+                     VerticalAlignment="Center">
             <Rectangle.OpacityMask>
-              <VisualBrush Stretch="Uniform" 
-                           Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
+              <VisualBrush Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"
+                           Stretch="Uniform" />
             </Rectangle.OpacityMask>
           </Rectangle>
         </ControlTemplate>
