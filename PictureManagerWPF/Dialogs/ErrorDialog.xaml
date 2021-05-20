@@ -8,14 +8,14 @@
   mc:Ignorable="d"
   Title="{Binding TitleText}" Width="500" SizeToContent="Height"
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333"
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal"  
   ShowMinButton="False" ShowMaxRestoreButton="False"
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <DockPanel>
     <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-      <Button Style="{StaticResource DialogButton}" Content="Close" IsCancel="True" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CLOSE" IsCancel="True" />
     </StackPanel>
     <StackPanel Margin="5">
       <TextBlock Text="{Binding Message}" Margin="5" />

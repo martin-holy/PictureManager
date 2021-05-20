@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="About" Height="290" Width="310" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{DynamicResource ColorBrushBackground}" 
         ShowInTaskbar="False" 
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 

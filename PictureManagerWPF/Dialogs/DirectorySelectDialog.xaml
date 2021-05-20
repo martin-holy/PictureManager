@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="DirectorySelectDialog" Height="150" Width="350" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" 
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
@@ -38,7 +38,7 @@
     <Label Grid.Column="0" Grid.Row="0" Content="Select target directory:"/>
     <ComboBox Name="CmbDirectory" Grid.Column="0" Grid.Row="1" Width="Auto" VerticalAlignment="Center" Style="{StaticResource ErrorStyle}" SelectedItem="{Binding Answer}" ItemsSource="{Binding Paths}"></ComboBox>
     <Button Name="BtnBrowseDir" Grid.Column="1" Grid.Row="1" Margin="5,0,0,0" Click="BtnBrowseDir_OnClick">
-      <Rectangle  Width="18" Height="18" VerticalAlignment="Center" Fill="{DynamicResource BlackBrush}">
+      <Rectangle  Width="18" Height="18" VerticalAlignment="Center" Fill="{StaticResource WhiteBrush}">
         <Rectangle.OpacityMask>
           <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
         </Rectangle.OpacityMask>

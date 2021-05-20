@@ -7,7 +7,7 @@
   mc:Ignorable="d"
   Title="File Operation Dialog" SizeToContent="Height" Width="500"
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
@@ -39,7 +39,7 @@
     <ProgressBar x:Name="PbProgress" Height="16" Margin="5,0" IsIndeterminate="True" />
 
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+      <Button x:Name="BtnCancel" Style="{StaticResource StyleButtonDialog}" Content="CANCEL" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

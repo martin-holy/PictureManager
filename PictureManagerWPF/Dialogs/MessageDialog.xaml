@@ -7,14 +7,14 @@
         mc:Ignorable="d"
         Title="{Binding TitleText}" SizeToContent="WidthAndHeight" MinWidth="300"
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" FontSize="13.333" 
         ShowMaxRestoreButton="False" ShowMinButton="False" ShowCloseButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <controls:MetroWindow.Resources>
-    <Style x:Key="NoButton" TargetType="Button" BasedOn="{StaticResource DialogButton}">
+    <Style x:Key="NoButton" TargetType="Button" BasedOn="{StaticResource StyleButtonDialog}">
       <Setter Property="Visibility" Value="Visible" />
       <Style.Triggers>
         <DataTrigger Binding="{Binding CanCancel}" Value="False">
@@ -26,7 +26,7 @@
 
   <StackPanel>
     <StackPanel Orientation="Horizontal">
-      <Rectangle Width="32" Height="32" Margin="10" Fill="{DynamicResource BlackBrush}">
+      <Rectangle Width="32" Height="32" Margin="10" Fill="{StaticResource WhiteBrush}">
         <Rectangle.OpacityMask>
           <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
         </Rectangle.OpacityMask>
@@ -36,8 +36,8 @@
     </StackPanel>
 
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnOk" Style="{StaticResource DialogButton}" Content="_Ok" IsDefault="True" />
-      <Button x:Name="BtnNo" Style="{StaticResource NoButton}" Content="_No" IsCancel="True" />
+      <Button x:Name="BtnOk" Style="{StaticResource StyleButtonDialog}" Content="OK" IsDefault="True" />
+      <Button x:Name="BtnNo" Style="{StaticResource NoButton}" Content="NO" IsCancel="True" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

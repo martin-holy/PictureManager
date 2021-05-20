@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Work in progress ..." SizeToContent="Height" Width="550"
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" FontSize="13.333" 
         ShowMaxRestoreButton="False" ShowMinButton="False" ShowCloseButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize">
@@ -18,7 +18,7 @@
       <TextBlock x:Name="TbCount" Foreground="White" Text="" HorizontalAlignment="Center" FontSize="18" Padding="0,1,0,0" />
     </Grid>
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+      <Button x:Name="BtnCancel" Style="{StaticResource StyleButtonDialog}" Content="CANCEL" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

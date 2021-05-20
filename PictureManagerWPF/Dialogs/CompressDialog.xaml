@@ -8,7 +8,7 @@
         Title="Compress Pictures to JPG" 
         SizeToContent="Height" Width="380"
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" FontSize="13.333" 
         ShowMaxRestoreButton="False" ShowMinButton="False" 
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
@@ -69,8 +69,8 @@
     </GroupBox>
 
     <StackPanel Grid.Row="2" Style="{StaticResource DialogButtons}">
-      <Button Style="{StaticResource DialogButton}" Content="Compress" x:Name="BtnCompress" Click="BtnCompress_OnClick" />
-      <Button Style="{StaticResource DialogButton}" Content="Close" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="COMPRESS" x:Name="BtnCompress" Click="BtnCompress_OnClick" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CLOSE" x:Name="BtnCancel" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
 
   </Grid>
