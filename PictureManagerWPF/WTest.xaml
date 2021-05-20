@@ -20,7 +20,7 @@
           <cc:SlidePanel.Content>
             <DockPanel Background="{StaticResource ColorBrushBackground}">
 
-              <ToggleButton Style="{StaticResource ToggleButtonStyle}" 
+              <ToggleButton Style="{StaticResource StyleBaseToggleButton}" 
                             IsChecked="{Binding ElementName=SlideLeft, Path=IsPinned}" 
                             DockPanel.Dock="Top" HorizontalAlignment="Right">
                 <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
@@ -52,7 +52,7 @@
           <cc:SlidePanel.Content>
             <DockPanel Background="DarkOliveGreen">
 
-              <ToggleButton Style="{StaticResource ToggleButtonStyle}" 
+              <ToggleButton Style="{StaticResource StyleBaseToggleButton}" 
                             IsChecked="{Binding ElementName=SlideRight, Path=IsPinned}" 
                             DockPanel.Dock="Top" HorizontalAlignment="Left">
                 <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
@@ -60,12 +60,42 @@
 
               <TextBlock Text="test right" />
 
+              
+              
+
             </DockPanel>
           </cc:SlidePanel.Content>
         </cc:SlidePanel>
       </cc:SlidePanelsGrid.ContentRight>
-    </cc:SlidePanelsGrid>  
+    </cc:SlidePanelsGrid>
 
+
+    <StackPanel Orientation="Vertical">
+      <StackPanel Orientation="Vertical">
+        <Button>Text button</Button>
+        <Button>Text</Button>
+        <Button>
+          <cc:IconRect IconName="{x:Static pmd:IconName.People}" />
+        </Button>
+      </StackPanel>
+
+      <StackPanel Orientation="Vertical">
+        <StackPanel.Resources>
+
+          
+
+
+
+          <Style TargetType="Button" BasedOn="{StaticResource StyleBaseButtonBase}"></Style>
+        </StackPanel.Resources>
+        <Button>TEXT button</Button>
+        <Button IsEnabled="False">Text</Button>
+        <Button>
+          <cc:IconRect IconName="{x:Static pmd:IconName.People}" />
+        </Button>
+        <Button Style="{StaticResource StyleButtonDialog}">DONE</Button>
+      </StackPanel>
+    </StackPanel>
 
   </Grid>
 </Window>
