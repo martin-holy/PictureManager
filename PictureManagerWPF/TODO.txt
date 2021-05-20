@@ -21,6 +21,7 @@
 - taby na thums dat streach a ne omezovat na x px
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
 - pruhlednost statusbaru pri skryti nastavit na 0
+- SimpleDB: set IsModified = false in SaveToFile
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
@@ -32,19 +33,18 @@
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
 - udelat do thumbnails kategorie podle slozek/datumu/...
   kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
-- prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima
+- prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima (pozor, delete je za selected)
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 - pridat k rotate taky flip H a V
-- kdyz se nepodari ulozit metadata to obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
+- kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 - nahledy k osobam na mouse over??? :)
 - filter na delku videa
 - zobrazovat ve status baru soucet MB za selected
 - ted to asi zrovna vychazi dobre, ale nastavit vychozi sirku treeview tak, aby zbyl prostor velkej 4:3
 - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
   nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat pubodni video
-- moznost ve vieweru prochazet i jenom selected mediaItems
 - umoznit zmenit nahled u videa
-- ulozit clips pri prechodu do viewera, nebo na dalsi mediaItem
+- hide mouse in fullmedia after 3sec
 
 
 
