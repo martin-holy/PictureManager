@@ -11,7 +11,7 @@
   <Grid>
     <Grid.Resources>
       <!-- CategoriesBarButtonStyle -->
-      <Style x:Key="CategoriesNavBarButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
+      <Style x:Key="CategoriesNavBarButtonStyle" TargetType="Button" BasedOn="{StaticResource StyleButtonIcon}">
         <Setter Property="Width" Value="32" />
         <Setter Property="Height" Value="32" />
         <Setter Property="ToolTip" Value="{Binding Title}" />
@@ -20,12 +20,6 @@
       <!-- SearchButtonStyle -->
       <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource CategoriesNavBarButtonStyle}">
         <Setter Property="ToolTip" Value="Search" />
-      </Style>
-
-      <!-- PinButtonStyle -->
-      <Style x:Key="PinButtonStyle" TargetType="Button" BasedOn="{StaticResource IconButtonStyle}">
-        <Setter Property="Width" Value="24" />
-        <Setter Property="Height" Value="24" />
       </Style>
     </Grid.Resources>
 
@@ -60,9 +54,9 @@
           </Button>
 
           <!-- Button to close/open flyout panel -->
-          <Button Style="{StaticResource PinButtonStyle}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-            <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="12" />
-          </Button>
+          <ToggleButton x:Name="BtnPinPanel" Style="{StaticResource StyleToggleButtonIconFlat}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
+            <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="14" />
+          </ToggleButton>
         </StackPanel>
       </DockPanel>
     </Border>
