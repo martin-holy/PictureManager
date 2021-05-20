@@ -37,13 +37,25 @@
   <controls:MetroWindow.LeftWindowCommands>
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
-        <MenuItem Header="Tools" Style="{StaticResource RootMenuStyle}">
+        <Menu.Resources>
+          <cc:IconRect x:Key="EyeIcon" x:Shared="False" IconName="{x:Static pmd:IconName.Eye}" />
+        </Menu.Resources>
+
+        <MenuItem Header="Tools" Style="{StaticResource StyleMenuItemRoot}">
           <MenuItem Command="cmd:WindowCommands.OpenFolderKeywordsListCommand" />
-          <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand" Tag="{x:Static pmd:IconName.Settings}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="cmd:WindowCommands.AddGeoNamesFromFilesCommand" Tag="{x:Static pmd:IconName.LocationCheckin}" Style="{StaticResource MenuItemIcon}" />
+          <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand">
+            <MenuItem.Icon>
+              <cc:IconRect IconName="{x:Static pmd:IconName.Settings}" />
+            </MenuItem.Icon>
+          </MenuItem>
+          <MenuItem Command="cmd:WindowCommands.AddGeoNamesFromFilesCommand">
+            <MenuItem.Icon>
+              <cc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
+            </MenuItem.Icon>
+          </MenuItem>
           <MenuItem Command="cmd:WindowCommands.TestButtonCommand" />
         </MenuItem>
-        <MenuItem Header="Media Items" Style="{StaticResource RootMenuStyle}">
+        <MenuItem Header="Media Items" Style="{StaticResource StyleMenuItemRoot}">
           <MenuItem Command="cmd:MediaItemsCommands.CompressCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.RebuildThumbnailsCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.RotateCommand" />
@@ -55,26 +67,42 @@
           <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.RenameCommand" />
         </MenuItem>
-        <MenuItem Header="Metadata" Style="{StaticResource RootMenuStyle}">
-          <MenuItem Command="cmd:MetadataCommands.EditCommand" Tag="{x:Static pmd:IconName.Edit}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="cmd:MetadataCommands.SaveCommand" Tag="{x:Static pmd:IconName.Save}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="cmd:MetadataCommands.CancelCommand" Tag="{x:Static pmd:IconName.Cancel}" Style="{StaticResource MenuItemIcon}" />
-          <MenuItem Command="cmd:MetadataCommands.CommentCommand" Tag="{x:Static pmd:IconName.Notification}" Style="{StaticResource MenuItemIcon}" />
+        <MenuItem Header="Metadata" Style="{StaticResource StyleMenuItemRoot}">
+          <MenuItem Command="cmd:MetadataCommands.EditCommand">
+            <MenuItem.Icon>
+              <cc:IconRect IconName="{x:Static pmd:IconName.Edit}" />
+            </MenuItem.Icon>
+          </MenuItem>
+            <MenuItem Command="cmd:MetadataCommands.SaveCommand">
+              <MenuItem.Icon>
+                <cc:IconRect IconName="{x:Static pmd:IconName.Save}" />
+              </MenuItem.Icon>
+            </MenuItem>
+          <MenuItem Command="cmd:MetadataCommands.CancelCommand">
+            <MenuItem.Icon>
+              <cc:IconRect IconName="{x:Static pmd:IconName.Cancel}" />
+            </MenuItem.Icon>
+          </MenuItem>
+            <MenuItem Command="cmd:MetadataCommands.CommentCommand">
+              <MenuItem.Icon>
+                <cc:IconRect IconName="{x:Static pmd:IconName.Notification}" />
+              </MenuItem.Icon>
+            </MenuItem>
           <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
         </MenuItem>
-        <MenuItem Header="Viewer" x:Name="MenuViewers" Tag="{x:Static pmd:IconName.Eye}" Style="{StaticResource RootMenuStyle}" 
-                  Icon="{StaticResource MenuItemIconRect}" ItemsSource="{Binding Model.Viewers.Items, Source={x:Static pm:App.Core}}"
+        <MenuItem Header="Viewer" x:Name="MenuViewers" Style="{StaticResource StyleMenuItemRoot}" Icon="{StaticResource EyeIcon}"
+                  ItemsSource="{Binding Model.Viewers.Items, Source={x:Static pm:App.Core}}"
                   Visibility="{Binding Model.Viewers.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
           <MenuItem.ItemContainerStyle>
-            <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemIcon}">
+            <Style TargetType="MenuItem" BasedOn="{StaticResource StyleBaseMenuItem}">
               <Setter Property="Header" Value="{Binding Title}" />
-              <Setter Property="Tag" Value="{x:Static pmd:IconName.Eye}" />
               <Setter Property="Command" Value="cmd:WindowCommands.ViewerChangeCommand" />
               <Setter Property="CommandParameter" Value="{Binding}" />
+              <Setter Property="Icon" Value="{StaticResource EyeIcon}" />
             </Style>
           </MenuItem.ItemContainerStyle>
         </MenuItem>
-        <MenuItem Command="cmd:WindowCommands.OpenAboutCommand" Style="{StaticResource RootMenuStyle}" />
+        <MenuItem Command="cmd:WindowCommands.OpenAboutCommand" Style="{StaticResource StyleMenuItemRoot}" />
       </Menu>
 
       <!-- Media Items Count -->
@@ -101,11 +129,11 @@
 
       <!-- Media Types -->
       <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Image" Click="OnMediaTypesChanged"
+        <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Image" Click="OnMediaTypesChanged"
                       IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
           <cc:IconRect IconName="{x:Static pmd:IconName.Image}" />
         </ToggleButton>
-        <ToggleButton Style="{StaticResource ToggleButtonStyle}" ToolTip="Video" Click="OnMediaTypesChanged"
+        <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Video" Click="OnMediaTypesChanged"
                       IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
           <cc:IconRect IconName="{x:Static pmd:IconName.MovieClapper}" />
         </ToggleButton>
@@ -154,9 +182,9 @@
               <DataTemplate x:Key="ThumbsTabItemTemplate">
                 <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}"
                             DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
-                  <Button Style="{StaticResource FontIconButton}" Content="✚" Click="TabThumbnailsGrids_AddTab"
+                  <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="TabThumbnailsGrids_AddTab"
                           Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
-                  <Button Style="{StaticResource FontIconButton}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
+                  <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
                   <TextBlock Text="{Binding Title}" Margin="0,8">
                     <TextBlock.LayoutTransform>
                       <RotateTransform Angle="270" />
