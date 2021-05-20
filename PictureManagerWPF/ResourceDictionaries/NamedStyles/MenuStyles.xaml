@@ -15,15 +15,5 @@
       </Trigger>
     </Style.Triggers>
   </Style>
-
-  <Style x:Key="StyleMenuItemIcon" TargetType="{x:Type MenuItem}" BasedOn="{StaticResource StyleBaseMenuItem}">
-    <Setter Property="Icon">
-      <Setter.Value>
-        <cc:IconRect IconName="{Binding Tag, RelativeSource={RelativeSource AncestorType=MenuItem}}" />
-      </Setter.Value>
-    </Setter>
-    <Setter Property="Height" Value="30" />
-    <Setter Property="VerticalContentAlignment" Value="Center" />
-  </Style>
     
 </ResourceDictionary>
