@@ -4,24 +4,29 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/Converters.xaml" />
+
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/MenuStyles.xaml" />
+
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/IconRectStyle.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
+
+        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
+
+        <ResourceDictionary Source="ResourceDictionaries/MahAppsMetro.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/blue.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/basedark.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Converters.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ToggleButtonStyle.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuItemStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/IconRectStyle.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
