@@ -2,10 +2,13 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.Commands;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -54,6 +57,9 @@ namespace PictureManager {
       };
 
       MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Core.MediaItemsViewModel.ThumbsGridReloadItems(); };
+
+      BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
+        new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
 
       StatusPanel.SizeChanged += delegate {
         SlidePanelMainTreeView.BorderMargin = new Thickness(0,0,0, StatusPanel.ActualHeight);
