@@ -9,7 +9,7 @@
                       mc:Ignorable="d"
                       Title="Browse For Folder" Width="300" Height="500"
                       BorderBrush="{DynamicResource AccentColorBrush}" 
-                      Background="{DynamicResource WhiteBrush}" 
+                      Background="{StaticResource ColorBrushBackground}" 
                       ShowInTaskbar="False" FontSize="13.333" 
                       ShowMaxRestoreButton="False" ShowMinButton="False"
                       WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
@@ -17,8 +17,8 @@
   <DockPanel>
     <!-- Buttons -->
     <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-      <Button x:Name="BtnOk" Style="{StaticResource DialogButton}" Content="OK" IsDefault="True" Click="BtnOk_OnClick" />
-      <Button x:Name="BtnCancel" Style="{StaticResource DialogButton}" Content="Cancel" IsCancel="True" Click="BtnCancel_OnClick" />
+      <Button x:Name="BtnOk" Style="{StaticResource StyleButtonDialog}" Content="OK" IsDefault="True" Click="BtnOk_OnClick" />
+      <Button x:Name="BtnCancel" Style="{StaticResource StyleButtonDialog}" Content="CANCEL" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
 
     <!-- TreeView -->

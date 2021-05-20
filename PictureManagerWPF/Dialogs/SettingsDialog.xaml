@@ -9,7 +9,7 @@
         Title="Settings" 
         SizeToContent="Height" Width="500" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" 
         FontSize="13.333" 
         ShowMaxRestoreButton="False" 
@@ -60,8 +60,8 @@
 
     <!-- Buttons -->
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button Style="{StaticResource DialogButton}" IsDefault="True" Content="Save" Click="Save" />
-      <Button Style="{StaticResource DialogButton}" IsCancel="True" Content="Cancel" />
+      <Button Style="{StaticResource StyleButtonDialog}" IsDefault="True" Content="SAVE" Click="Save" />
+      <Button Style="{StaticResource StyleButtonDialog}" IsCancel="True" Content="CANCEL" />
     </StackPanel>
   </StackPanel>
 

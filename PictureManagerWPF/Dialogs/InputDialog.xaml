@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:cc="clr-namespace:PictureManager.CustomControls"
         mc:Ignorable="d"
         Title="InputDialog" SizeToContent="WidthAndHeight" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
-        Background="{DynamicResource WhiteBrush}" 
+        Background="{StaticResource ColorBrushBackground}" 
         ShowInTaskbar="False" FontSize="13.333" 
         ShowMaxRestoreButton="False" ShowMinButton="False"
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
@@ -24,11 +25,7 @@
 
   <StackPanel>
     <StackPanel Orientation="Horizontal">
-      <Rectangle Width="32" Height="32" Margin="10" Fill="{DynamicResource BlackBrush}">
-        <Rectangle.OpacityMask>
-          <VisualBrush Stretch="Uniform" Visual="{Binding Path=IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
-        </Rectangle.OpacityMask>
-      </Rectangle>
+      <cc:IconRect Width="32" Height="32" Margin="10" IconName="{Binding IconName}" Size="32" />
       <StackPanel Orientation="Vertical">
         <Label Name="LblQuestion" Content="{Binding Path=Question}"/>
         <TextBox Name="TxtAnswer" MinWidth="300" Margin="5" Padding="2" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
@@ -36,8 +33,8 @@
     </StackPanel>
 
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnDialogOk" Style="{StaticResource DialogButton}" Content="_Ok" IsDefault="True" />
-      <Button Style="{StaticResource DialogButton}" Content="_Cancel" IsCancel="True" />
+      <Button x:Name="BtnDialogOk" Style="{StaticResource StyleButtonDialog}" Content="OK" IsDefault="True" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CANCEL" IsCancel="True" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

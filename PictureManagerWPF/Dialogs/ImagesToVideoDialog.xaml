@@ -8,7 +8,7 @@
   mc:Ignorable="d"
   Title="Images to Video" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0">
@@ -74,7 +74,7 @@
 
     <!-- Buttons -->
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnCreateVideo" Style="{StaticResource DialogButton}" Content="Create Video" Click="BtnCreateVideo_OnClick" />
+      <Button x:Name="BtnCreateVideo" Style="{StaticResource StyleButtonDialog}" Content="CREATE VIDEO" Click="BtnCreateVideo_OnClick" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

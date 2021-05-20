@@ -9,7 +9,7 @@
   mc:Ignorable="d"
   Title="Resize Images" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0">
@@ -75,7 +75,7 @@
     
     <!-- Buttons -->
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnResize" Style="{StaticResource DialogButton}" Content="Resize" Click="BtnResize_OnClick" />
+      <Button x:Name="BtnResize" Style="{StaticResource StyleButtonDialog}" Content="RESIZE" Click="BtnResize_OnClick" />
     </StackPanel>
   </StackPanel>
 </controls:MetroWindow>

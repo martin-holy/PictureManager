@@ -9,7 +9,7 @@
   mc:Ignorable="d"
   Title="Log" Width="600" Height="300"
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333"
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal"  
   ShowMinButton="False" ShowMaxRestoreButton="False"
@@ -17,8 +17,8 @@
 
   <DockPanel>
     <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-      <Button Style="{StaticResource DialogButton}" Content="Clear" Click="BtnClear_OnClick" />
-      <Button Style="{StaticResource DialogButton}" Content="Close" IsCancel="True" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CLEAR" Click="BtnClear_OnClick" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CLOSE" IsCancel="True" />
     </StackPanel>
 
     <Grid Margin="5">

@@ -8,7 +8,7 @@
   mc:Ignorable="d"
   Title="Folder Keywords" SizeToContent="Height" Width="400"
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
@@ -26,8 +26,8 @@
     </ListBox>
 
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnRemove" Style="{StaticResource DialogButton}" Content="_Remove" Click="BtnRemove_OnClick" />
-      <Button Style="{StaticResource DialogButton}" Content="_Close" IsCancel="True" />
+      <Button x:Name="BtnRemove" Style="{StaticResource StyleButtonDialog}" Content="REMOVE" Click="BtnRemove_OnClick" />
+      <Button Style="{StaticResource StyleButtonDialog}" Content="CLOSE" IsCancel="True" />
     </StackPanel>
   </StackPanel>
 

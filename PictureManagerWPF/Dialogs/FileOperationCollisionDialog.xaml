@@ -8,7 +8,7 @@
   mc:Ignorable="d"
   Title="The destination already has a file with this name" SizeToContent="WidthAndHeight" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
-  Background="{DynamicResource WhiteBrush}" 
+  Background="{StaticResource ColorBrushBackground}" 
   ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
   WindowStartupLocation="CenterScreen" TitleCharacterCasing="Normal" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0"
@@ -93,9 +93,9 @@
 
     <!-- Buttons -->
     <StackPanel Style="{StaticResource DialogButtons}">
-      <Button x:Name="BtnRename" Style="{StaticResource DialogButton}" Content="Rename" Click="BtnRename_OnClick" />
-      <Button x:Name="BtnReplace" Style="{StaticResource DialogButton}" Content="Replace" Click="BtnReplace_OnClick" />
-      <Button x:Name="BtnSkip" Style="{StaticResource DialogButton}" Content="Skip" Click="BtnSkip_OnClick" />
+      <Button x:Name="BtnRename" Style="{StaticResource StyleButtonDialog}" Content="RENAME" Click="BtnRename_OnClick" />
+      <Button x:Name="BtnReplace" Style="{StaticResource StyleButtonDialog}" Content="REPLACE" Click="BtnReplace_OnClick" />
+      <Button x:Name="BtnSkip" Style="{StaticResource StyleButtonDialog}" Content="SKIP" Click="BtnSkip_OnClick" />
     </StackPanel>
 
   </StackPanel>
