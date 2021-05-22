@@ -21,6 +21,7 @@ namespace PictureManager.ViewModels {
     private bool _isThumbInfoVisible = true;
     private string _dimension = string.Empty;
     private string _fullGeoName = string.Empty;
+    private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string>{{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}};
 
     public int ProgressBarValueA { get => _progressBarValueA; set { _progressBarValueA = value; OnPropertyChanged(); } }
     public int ProgressBarValueB { get => _progressBarValueB; set { _progressBarValueB = value; OnPropertyChanged(); } }
@@ -30,7 +31,7 @@ namespace PictureManager.ViewModels {
     public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
-    public string DateAndTime => MediaItem.GetDateTimeFromName(CurrentMediaItem, "d. MMMM yyyy, H:mm:ss");
+    public string DateAndTime => Domain.Extensions.DateTimeFromString(CurrentMediaItem?.FileName, _dateFormats, "H:mm:ss");
 
     public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
     public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
