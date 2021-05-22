@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -63,6 +64,44 @@ namespace PictureManager.Domain {
     public static void DeleteDirectoryIfEmpty(string path) {
       if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext())
         Directory.Delete(path);
+    }
+
+    /// <summary>
+    /// Tries to parse date from first 8 characters of the string 
+    /// </summary>
+    /// <param name="s">String date in format yyyyMMdd</param>
+    /// <param name="formats">Example: {{"d", "d. "}, {"m", "MMMM "}, {"y", "yyyy"}}</param>
+    /// <returns>Formated date or string.Empty</returns>
+    public static string DateFromString(string s, Dictionary<string, string> formats) {
+      if (s.Length < 8) return string.Empty;
+
+      var dateString = s.Substring(0, 8);
+
+      if (!dateString.All(char.IsDigit)) return string.Empty;
+
+      try {
+        var y = int.Parse(dateString.Substring(0, 4));
+        var m = int.Parse(dateString.Substring(4, 2));
+        var d = int.Parse(dateString.Substring(6, 2));
+
+        if (m == 0) {
+          formats["m"] = string.Empty;
+          m++;
+        }
+
+        if (d == 0) {
+          formats["d"] = string.Empty;
+          d++;
+        }
+
+        var date = new DateTime(y, m, d);
+        var format = formats.Aggregate(string.Empty, (f, current) => f + current.Value);
+
+        return date.ToString(format, CultureInfo.CurrentCulture);
+      }
+      catch (Exception) {
+        return string.Empty;
+      }
     }
   }
 }
