@@ -180,7 +180,7 @@ namespace PictureManager.Domain.Models {
       //SplittedItems.Add(new MediaItemsGroup { Title = mi.Folder.FullPath, Folder = mi.Folder });
 
       // Add Date Group
-      var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
+      var miDate = Extensions.DateFromString(mi.FileName, new Dictionary<string, string> {{"d", "d. "}, {"m", "MMMM "}, {"y", "yyyy"}});
 
       if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
         Rows.Add(new MediaItemsGroup {Title = miDate});
