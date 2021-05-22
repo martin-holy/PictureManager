@@ -170,7 +170,7 @@ namespace PictureManager.Domain.Models {
       Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
     }
 
-    public bool AddGroup(MediaItem mi) {
+    private void AddGroup(MediaItem mi) {
       var group = Rows.OfType<MediaItemsGroup>().LastOrDefault();
 
       // tady k dohledany skupine pridavat postupne pocet souboru, ...
@@ -181,19 +181,16 @@ namespace PictureManager.Domain.Models {
 
       // Add Date Group
       var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
-      if (string.Empty.Equals(miDate)) return false;
-      if (group != null && group.Title.Equals(miDate)) return false;
-      Rows.Add(new MediaItemsGroup { Title = miDate });
 
-      return true;
+      if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
+        Rows.Add(new MediaItemsGroup {Title = miDate});
+        Rows.Add(new MediaItemsRow());
+      }
     }
 
     public void AddItem(MediaItem mi, double rowMaxWidth) {
       // Add Media Items Group
-      if (AddGroup(mi)) {
-        Rows.Add(new MediaItemsRow { Items = { mi } });
-        return;
-      }
+      AddGroup(mi);
 
       // Add Media Items Row
       var row = Rows.OfType<MediaItemsRow>().LastOrDefault();
@@ -205,7 +202,7 @@ namespace PictureManager.Domain.Models {
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
       var rowWidth = row.Items.Sum(x => x.ThumbWidth + itemOffset);
 
-      if (mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
+      if (row.Items.Count > 0 && mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
         row = new MediaItemsRow();
         Rows.Add(row);
       }
@@ -226,7 +223,7 @@ namespace PictureManager.Domain.Models {
         // Add Date Group
         if (withGroups) {
           var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
-          if (!string.Empty.Equals(miDate) && (group == null || !group.Title.Equals(miDate))) {
+          if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
             group = new MediaItemsGroup {Title = miDate};
             row = new MediaItemsRow();
             Rows.Add(group);
