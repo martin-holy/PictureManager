@@ -18,6 +18,7 @@ namespace PictureManager.Domain.Models {
     private bool _showAddTabButton;
     private bool _showImages = true;
     private bool _showVideos = true;
+    private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string>{{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}};
 
     public List<MediaItem> SelectedItems { get; } = new List<MediaItem>();
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
@@ -180,7 +181,7 @@ namespace PictureManager.Domain.Models {
       //SplittedItems.Add(new MediaItemsGroup { Title = mi.Folder.FullPath, Folder = mi.Folder });
 
       // Add Date Group
-      var miDate = Extensions.DateFromString(mi.FileName, new Dictionary<string, string> {{"d", "d. "}, {"m", "MMMM "}, {"y", "yyyy"}});
+      var miDate = Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
 
       if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
         Rows.Add(new MediaItemsGroup {Title = miDate});
@@ -222,7 +223,7 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems) {
         // Add Date Group
         if (withGroups) {
-          var miDate = MediaItem.GetDateTimeFromName(mi, "d. MMMM yyyy");
+          var miDate = Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
           if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
             group = new MediaItemsGroup {Title = miDate};
             row = new MediaItemsRow();
