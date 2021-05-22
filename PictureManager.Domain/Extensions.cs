@@ -67,41 +67,39 @@ namespace PictureManager.Domain {
     }
 
     /// <summary>
-    /// Tries to parse date from first 8 characters of the string 
+    /// Tries to parse date and time from first 15 characters of the string 
     /// </summary>
-    /// <param name="s">String date in format yyyyMMdd</param>
-    /// <param name="formats">Example: {{"d", "d. "}, {"m", "MMMM "}, {"y", "yyyy"}}</param>
-    /// <returns>Formated date or string.Empty</returns>
-    public static string DateFromString(string s, Dictionary<string, string> formats) {
-      if (s.Length < 8) return string.Empty;
+    /// <param name="text">DateTime string in format yyyyMMdd_HHmmss</param>
+    /// <param name="dateFormats">Example: {{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}}</param>
+    /// <param name="timeFormat">Example: H:mm:ss</param>
+    /// <returns>Formated "date, time" or string.Empty</returns>
+    public static string DateTimeFromString(string text, Dictionary<string, string> dateFormats, string timeFormat) {
+      if (string.IsNullOrEmpty(text) || text.Length < 15 || text[8] != '_') return string.Empty;
 
-      var dateString = s.Substring(0, 8);
+      var locDateFormats = dateFormats.ToDictionary(df => df.Key, df => df.Value);
 
-      if (!dateString.All(char.IsDigit)) return string.Empty;
-
-      try {
-        var y = int.Parse(dateString.Substring(0, 4));
-        var m = int.Parse(dateString.Substring(4, 2));
-        var d = int.Parse(dateString.Substring(6, 2));
-
-        if (m == 0) {
-          formats["m"] = string.Empty;
-          m++;
-        }
-
-        if (d == 0) {
-          formats["d"] = string.Empty;
-          d++;
-        }
-
-        var date = new DateTime(y, m, d);
-        var format = formats.Aggregate(string.Empty, (f, current) => f + current.Value);
-
-        return date.ToString(format, CultureInfo.CurrentCulture);
+      if (text.Substring(4, 2) == "00") {
+        locDateFormats["M"] = string.Empty;
+        text = $"{text.Substring(0, 5)}1{text.Substring(6, 9)}";
       }
-      catch (Exception) {
+      
+      if (text.Substring(6, 2) == "00") {
+        locDateFormats["d"] = string.Empty;
+        text = $"{text.Substring(0, 7)}1{text.Substring(8, 7)}";
+      }
+      
+      if (text.Length > 15) text = text.Substring(0, 15);
+
+      if (!DateTime.TryParseExact(text, "yyyyMMdd_HHmmss", 
+        CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
         return string.Empty;
-      }
+
+      var dateFormat = locDateFormats.Aggregate(string.Empty, (f, current) => f + current.Value);
+      var dateF = dt.ToString(dateFormat, CultureInfo.CurrentCulture);
+      var timeF = dt.ToString(timeFormat, CultureInfo.CurrentCulture);
+
+      return dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0 || string.IsNullOrEmpty(timeFormat) ? dateF : $"{dateF}, {timeF}";
     }
+
   }
 }
