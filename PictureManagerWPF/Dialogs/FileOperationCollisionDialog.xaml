@@ -15,7 +15,7 @@
   Closing="OnClosing">
 
   <controls:MetroWindow.Resources>
-    <Style x:Key="ErrorStyle" TargetType="TextBox">
+    <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource StyleBaseTextBox}">
       <Style.Triggers>
         <DataTrigger Binding="{Binding Path=Error}" Value="True">
           <Setter Property="Background" Value="#7FFF0000" />

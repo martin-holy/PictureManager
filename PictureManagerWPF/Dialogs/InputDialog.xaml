@@ -14,7 +14,7 @@
         WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" ResizeMode="NoResize" 
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <controls:MetroWindow.Resources>
-    <Style x:Key="ErrorStyle" TargetType="TextBox">
+    <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource StyleBaseTextBox}">
       <Style.Triggers>
         <DataTrigger Binding="{Binding Path=Error}" Value="True">
           <Setter Property="Background" Value="#7FFF0000" />
@@ -28,7 +28,7 @@
       <cc:IconRect Width="32" Height="32" Margin="10" IconName="{Binding IconName}" Size="32" />
       <StackPanel Orientation="Vertical">
         <Label Name="LblQuestion" Content="{Binding Path=Question}"/>
-        <TextBox Name="TxtAnswer" MinWidth="300" Margin="5" Padding="2" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
+        <TextBox Name="TxtAnswer" MinWidth="300" Margin="5" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />
       </StackPanel>
     </StackPanel>
 
