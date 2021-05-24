@@ -308,7 +308,7 @@ namespace PictureManager.ViewModels {
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
     public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
-      var fop = new FileOperationDialog { Owner = App.WMain, PbProgress = { IsIndeterminate = false, Value = 0 } };
+      var fop = new FileOperationDialog(App.WMain, mode) {PbProgress = {IsIndeterminate = false, Value = 0}};
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new CancellationTokenSource();
         var token = fop.LoadCts.Token;

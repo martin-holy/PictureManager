@@ -8,7 +8,7 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels {
   public static class FoldersViewModel {
     public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder) {
-      var fop = new FileOperationDialog {Owner = App.WMain, PbProgress = {IsIndeterminate = true}};
+      var fop = new FileOperationDialog(App.WMain, mode) {PbProgress = {IsIndeterminate = true}};
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new CancellationTokenSource();
         var token = fop.LoadCts.Token;
