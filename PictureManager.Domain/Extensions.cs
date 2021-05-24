@@ -101,5 +101,20 @@ namespace PictureManager.Domain {
       return dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0 || string.IsNullOrEmpty(timeFormat) ? dateF : $"{dateF}, {timeF}";
     }
 
+    public static string GetNewFileName(string directory, string fileName) {
+      if (!Directory.Exists(directory)) return string.Empty;
+      
+      var name = Path.GetFileNameWithoutExtension(fileName);
+      var ext = Path.GetExtension(fileName);
+      var outFileName = fileName;
+      var counter = 0;
+      
+      while (File.Exists(Path.Combine(directory, outFileName))) {
+        counter++;
+        outFileName = $"{name}{counter}{ext}";
+      }
+
+      return outFileName;
+    }
   }
 }
