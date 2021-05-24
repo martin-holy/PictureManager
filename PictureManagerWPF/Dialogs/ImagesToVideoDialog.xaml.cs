@@ -28,11 +28,12 @@ namespace PictureManager.Dialogs {
       
       _items = items.ToArray();
       var firstMi = _items.First();
+      var fileName = Domain.Extensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 
       Owner = owner;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
-      _outputFilePath = firstMi.FilePath + ".mp4";
-      _outputFileName = firstMi.FileName + ".mp4";
+      _outputFilePath = Domain.Extensions.PathCombine(firstMi.Folder.FullPath, fileName);
+      _outputFileName = fileName;
       _outputFolder = firstMi.Folder;
       _onSuccess = onSuccess;
     }
