@@ -11,6 +11,7 @@
 
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/MenuStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/TextBoxStyles.xaml" />
 
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuStyles.xaml" />
