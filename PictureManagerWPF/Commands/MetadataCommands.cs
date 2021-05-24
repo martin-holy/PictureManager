@@ -59,6 +59,8 @@ namespace PictureManager.Commands {
             Cancel();
           else
             App.Core.Model.MediaItems.IsEditModeOn = false;
+
+          App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FileSize));
         });
 
       progress.StartDialog();
@@ -153,6 +155,7 @@ namespace PictureManager.Commands {
         delegate {
           App.Core.Model.MediaItems.Helper.IsModified = true;
           App.Core.Model.Sdb.SaveAllTables();
+          App.Core.Model.MarkUsedKeywordsAndPeople();
         });
 
       progress.Start();
