@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PictureManager.Utils {
   public static class StringUtils {
-    private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*':;!?=<>% ");
+    private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*'.:;!?=<>% ");
 
     public static string NormalizeComment(string comment) {
       return string.IsNullOrEmpty(comment)
