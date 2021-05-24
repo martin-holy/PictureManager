@@ -76,7 +76,7 @@
   <!--<Style BasedOn="{StaticResource MahApps.Metro.Styles.MetroButton}" TargetType="{x:Type Button}"/>-->
   <Style BasedOn="{StaticResource MahApps.Metro.Styles.MetroButton}" TargetType="{x:Type RepeatButton}"/>
   <!--<Style BasedOn="{StaticResource MahApps.Metro.Styles.MetroToggleButton}" TargetType="{x:Type ToggleButton}"/>-->
-  <Style BasedOn="{StaticResource MetroTextBox}" TargetType="{x:Type TextBox}"/>
+  <!--<Style BasedOn="{StaticResource MetroTextBox}" TargetType="{x:Type TextBox}"/>-->
   <Style BasedOn="{StaticResource MetroRichTextBox}" TargetType="{x:Type RichTextBox}"/>
   <Style BasedOn="{StaticResource MahApps.Metro.Styles.Slider}" TargetType="{x:Type Slider}"/>
   <Style BasedOn="{StaticResource MetroLabel}" TargetType="{x:Type Label}"/>
