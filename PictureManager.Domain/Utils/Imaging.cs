@@ -4,9 +4,8 @@ using System.Linq;
 
 namespace PictureManager.Domain.Utils {
   public static class Imaging {
-    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4", ".mkv" };
+    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4" };
     public static string[] SupportedImageExts = { ".jpg", ".jpeg" };
-    public static string[] SupportedVideoExts = { ".mp4", ".mkv" };
 
     public static bool IsSupportedFileType(string filePath) {
       return SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
