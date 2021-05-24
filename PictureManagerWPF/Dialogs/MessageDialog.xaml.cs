@@ -31,7 +31,7 @@ namespace PictureManager.Dialogs {
       IconName = canCancel ? IconName.Question : IconName.Information;
       CanCancel = canCancel;
       Owner = App.WMain;
-      BtnOk.Content = canCancel ? "_Yes" : "_Ok";
+      BtnOk.Content = canCancel ? "YES" : "OK";
     }
 
     public static bool Show(string title, string message, bool canCancel) {
