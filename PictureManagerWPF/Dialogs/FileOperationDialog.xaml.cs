@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using PictureManager.Domain;
 
 namespace PictureManager.Dialogs {
   public partial class FileOperationDialog : INotifyPropertyChanged {
@@ -24,8 +25,11 @@ namespace PictureManager.Dialogs {
     public string DirTo { get => _dirTo; set { _dirTo = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
 
-    public FileOperationDialog() {
+    public FileOperationDialog(Window owner, FileOperationMode mode) {
       InitializeComponent();
+
+      Owner = owner;
+      Title = $"File Operation Dialog ({mode})";
 
       Progress = new Progress<object[]>(e => {
         PbProgress.Value = (int) e[0];
