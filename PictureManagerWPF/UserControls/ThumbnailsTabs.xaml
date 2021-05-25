@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="PictureManager.UserControls.ThumbnailsTabs"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pm="clr-namespace:PictureManager">
+
+  <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
+              SelectionChanged="OnSelectionChanged" SizeChanged="OnSizeChanged"
+              Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
+                           Converter={StaticResource AllToVisibilityConverter}, 
+                           ConverterParameter={x:Static pm:AppMode.Browser}}">
+
+    <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
+
+    <TabControl.Resources>
+      <DataTemplate x:Key="ThumbsTabItemTemplate">
+        <StackPanel Orientation="Vertical" ToolTip="{Binding Title}"
+                    DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
+          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab"
+                  Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
+          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="BtnCloseTab" />
+          <TextBlock Text="{Binding Title}" Margin="0,8">
+            <TextBlock.LayoutTransform>
+              <RotateTransform Angle="270" />
+            </TextBlock.LayoutTransform>
+          </TextBlock>
+        </StackPanel>
+      </DataTemplate>
+    </TabControl.Resources>
+
+  </TabControl>
+</UserControl>
