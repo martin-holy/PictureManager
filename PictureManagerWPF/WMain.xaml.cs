@@ -6,13 +6,10 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using MahApps.Metro.Controls;
 using PictureManager.Commands;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
 
 namespace PictureManager {
   /// <summary>
@@ -26,7 +23,7 @@ namespace PictureManager {
       InitializeComponent();
 
       // add default ThumbnailsGridControl
-      MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.Model.MediaItems.ThumbsGrid);
+      ThumbnailsTabs.AddTab(App.Core.Model.MediaItems.ThumbsGrid);
 
       PresentationPanel.Elapsed = delegate {
         Application.Current.Dispatcher?.Invoke(delegate {
@@ -124,30 +121,6 @@ namespace PictureManager {
 
     private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
       App.Core.ClearFilters();
-    }
-
-    private void TabThumbnailsGrids_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      var grid = (ThumbnailsGrid) ((FrameworkElement) ((TabControl) sender).SelectedItem).DataContext;
-      App.Core.Model.MediaItems.ThumbsGrid = grid;
-      grid.UpdateSelected();
-      App.Core.AppInfo.CurrentMediaItem = grid.Current;
-      App.Core.Model.MarkUsedKeywordsAndPeople();
-    }
-
-    private void TabThumbnailsGrids_CloseTab(object sender, RoutedEventArgs e) {
-      if (!(((FrameworkElement) sender).DataContext is ThumbnailsGrid grid)) return;
-      App.Core.MediaItemsViewModel.RemoveThumbnailsGrid(TabThumbnailsGrids, grid);
-
-      // set new SelectedItem and remove TabItem
-      var tab = ((FrameworkElement) sender).TryFindParent<TabItem>();
-      if (tab == null) return;
-      var i = TabThumbnailsGrids.Items.IndexOf(tab);
-      TabThumbnailsGrids.SelectedItem = TabThumbnailsGrids.Items[i != 0 ? 0 : 1];
-      TabThumbnailsGrids.Items.Remove(tab);
-    }
-
-    public void TabThumbnailsGrids_AddTab(object sender, RoutedEventArgs e) {
-      MediaItemsViewModel.AddThumbnailsGridView(TabThumbnailsGrids, App.Core.MediaItemsViewModel.AddThumbnailsGridModel());
     }
 
     private void OnMediaTypesChanged(object sender, RoutedEventArgs e) {

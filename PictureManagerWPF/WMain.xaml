@@ -169,32 +169,8 @@
 
       <cc:SlidePanelsGrid.ContentMiddle>
         <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
-          <!-- Thumbnails Grids -->
-          <TabControl x:Name="TabThumbnailsGrids" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
-                      SelectionChanged="TabThumbnailsGrids_OnSelectionChanged"
-                      Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
-                                           Converter={StaticResource AllToVisibilityConverter}, 
-                                           ConverterParameter={x:Static pm:AppMode.Browser}}">
-
-            <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
-
-            <TabControl.Resources>
-              <DataTemplate x:Key="ThumbsTabItemTemplate">
-                <StackPanel Orientation="Vertical" MaxHeight="200" ToolTip="{Binding Title}"
-                            DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
-                  <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="TabThumbnailsGrids_AddTab"
-                          Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
-                  <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="TabThumbnailsGrids_CloseTab" />
-                  <TextBlock Text="{Binding Title}" Margin="0,8">
-                    <TextBlock.LayoutTransform>
-                      <RotateTransform Angle="270" />
-                    </TextBlock.LayoutTransform>
-                  </TextBlock>
-                </StackPanel>
-              </DataTemplate>
-            </TabControl.Resources>
-
-          </TabControl>
+          <!-- Thumbnails Tabs -->
+          <uc:ThumbnailsTabs x:Name="ThumbnailsTabs" />
 
           <!-- Full Media -->
           <Grid x:Name="PanelFullScreen" Background="Transparent"
