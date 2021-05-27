@@ -4,6 +4,10 @@
                     xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
                     xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="../Converters.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+
   <Style TargetType="cc:ThumbnailsGridControl">
     <Setter Property="Template">
       <Setter.Value>
@@ -41,8 +45,18 @@
               <DataTemplate DataType="{x:Type models:MediaItemsGroup}">
                 <Border BorderBrush="Black" BorderThickness="1" Margin="1,20,0,8" Background="#88000000">
                   <StackPanel Orientation="Horizontal">
-                    <cc:IconRect IconName="{x:Static pmd:IconName.Calendar}" Margin="8" />
-                    <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Folder, Converter={StaticResource AllToVisibilityConverter}}">
+                      <cc:IconRect IconName="{x:Static pmd:IconName.Folder}" Margin="8,8,0,8" />
+                      <TextBlock Text="{Binding Folder}" FontSize="20" Padding="8" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Visibility="{Binding Date, Converter={StaticResource AllToVisibilityConverter}}">
+                      <cc:IconRect IconName="{x:Static pmd:IconName.Calendar}" Margin="8,8,0,8" />
+                      <TextBlock Text="{Binding Date}" FontSize="20" Padding="8" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                      <cc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" Margin="8,8,0,8" />
+                      <TextBlock Text="{Binding ItemsCount}" FontSize="20" Padding="8" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
               </DataTemplate>
