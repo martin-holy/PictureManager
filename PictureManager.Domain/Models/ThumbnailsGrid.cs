@@ -18,6 +18,9 @@ namespace PictureManager.Domain.Models {
     private bool _showAddTabButton;
     private bool _showImages = true;
     private bool _showVideos = true;
+    private bool _groupByFolders = true;
+    private bool _groupByDate = true;
+    private bool _sortAll = true;
     private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string>{{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}};
 
     public List<MediaItem> SelectedItems { get; } = new List<MediaItem>();
@@ -30,6 +33,9 @@ namespace PictureManager.Domain.Models {
     public bool ShowAddTabButton { get => _showAddTabButton; set { _showAddTabButton = value; OnPropertyChanged(); } }
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
+    public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
+    public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
+    public bool SortAll { get => _sortAll; set { _sortAll = value; OnPropertyChanged(); } }
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
 
     public MediaItem Current {
@@ -171,22 +177,28 @@ namespace PictureManager.Domain.Models {
       Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
     }
 
+    private string GetFolderGroup(string folderName) {
+      if (!GroupByFolders) return string.Empty;
+      var iOfL = folderName.FirstIndexOfLetter();
+      return iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName.Substring(iOfL);
+    }
+
+    private string GetDateGroup(string fileName) {
+      return !GroupByDate ? string.Empty : Extensions.DateTimeFromString(fileName, _dateFormats, null);
+    }
+
     private void AddGroup(MediaItem mi) {
       var group = Rows.OfType<MediaItemsGroup>().LastOrDefault();
+      var miFolder = GetFolderGroup(mi.Folder.Title);
+      var miDate = GetDateGroup(mi.FileName);
 
-      // tady k dohledany skupine pridavat postupne pocet souboru, ...
-
-      // Add Folder Group
-      //if (group != null && group.Folder.Equals(mi.Folder)) return false;
-      //SplittedItems.Add(new MediaItemsGroup { Title = mi.Folder.FullPath, Folder = mi.Folder });
-
-      // Add Date Group
-      var miDate = Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
-
-      if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
-        Rows.Add(new MediaItemsGroup {Title = miDate});
+      if (group == null || !group.Date.Equals(miDate) && GroupByDate || !group.Folder.Equals(miFolder) && GroupByFolders) {
+        group = new MediaItemsGroup {Date = miDate, Folder = miFolder};
+        Rows.Add(group);
         Rows.Add(new MediaItemsRow());
       }
+
+      group.ItemsCount++;
     }
 
     public void AddItem(MediaItem mi, double rowMaxWidth) {
@@ -221,16 +233,19 @@ namespace PictureManager.Domain.Models {
       var rowWidth = 0;
 
       foreach (var mi in FilteredItems) {
-        // Add Date Group
         if (withGroups) {
-          var miDate = Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
-          if (group == null && !string.Empty.Equals(miDate) || group != null && !group.Title.Equals(miDate)) {
-            group = new MediaItemsGroup {Title = miDate};
+          var miFolder = GetFolderGroup(mi.Folder.Title);
+          var miDate = GetDateGroup(mi.FileName);
+
+          if (group == null || !miDate.Equals(group.Date) && GroupByDate || !miFolder.Equals(group.Folder) && GroupByFolders) {
+            group = new MediaItemsGroup {Date = miDate, Folder = miFolder};
             row = new MediaItemsRow();
             Rows.Add(group);
             Rows.Add(row);
             rowWidth = 0;
           }
+
+          group.ItemsCount++;
         }
 
         if (row == null || mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
