@@ -23,6 +23,15 @@
               <RotateTransform Angle="270" />
             </TextBlock.LayoutTransform>
           </TextBlock>
+
+          <StackPanel.ContextMenu>
+            <ContextMenu>
+              <MenuItem Header="Group by Folders" IsCheckable="True" IsChecked="{Binding GroupByFolders}" Click="Refresh" />
+              <MenuItem Header="Group by Date" IsCheckable="True" IsChecked="{Binding GroupByDate}" Click="Refresh" />
+              <MenuItem Header="Sort All" IsCheckable="True" IsChecked="{Binding SortAll}" Click="Refresh" />
+            </ContextMenu>
+          </StackPanel.ContextMenu>
+          
         </StackPanel>
       </DataTemplate>
     </TabControl.Resources>
