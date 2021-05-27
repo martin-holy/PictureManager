@@ -1,11 +1,13 @@
 ﻿namespace PictureManager.Domain.Models {
   public class MediaItemsGroup : ObservableObject {
     private string _title;
-    private bool _isTitleVisible;
-    private Folder _folder;
+    private string _folder;
+    private string _date;
+    private int _itemsCount;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public bool IsTitleVisible { get => _isTitleVisible; set { _isTitleVisible = value; OnPropertyChanged(); } }
-    public Folder Folder { get => _folder; set { _folder = value; OnPropertyChanged(); } }
+    public string Folder { get => _folder; set { _folder = value; OnPropertyChanged(); } }
+    public string Date { get => _date; set { _date = value; OnPropertyChanged(); } }
+    public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
   }
 }
