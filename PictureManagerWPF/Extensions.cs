@@ -6,17 +6,6 @@ using System.Windows;
 
 namespace PictureManager {
   static class Extensions {
-    public static int FirstIndexOfLetter(this string s) {
-      var index = 0;
-      while (s.Length - 1 > index) {
-        if (char.IsLetter(s, index))
-          break;
-        index++;
-      }
-
-      return index;
-    }
-
     /// <summary>
     /// Move directory but don't crash when directory exists or not exists
     /// </summary>
