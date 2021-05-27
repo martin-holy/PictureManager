@@ -97,16 +97,15 @@ namespace PictureManager.ViewModels {
         var token = _loadCts.Token;
         var items = new List<MediaItem>();
 
-        if (mediaItems != null) {
+        if (mediaItems != null)
           // filter out items if directory or file not exists or Viewer can not see items
           items = await MediaItems.VerifyAccessibilityOfMediaItemsAsync(mediaItems, token);
-        }
 
-        if (folders != null) {
+        if (folders != null)
           items = await _model.GetMediaItemsFromFoldersAsync(folders, token);
-        }
 
-        items = items.OrderBy(x => x.FileName).ToList();
+        if (currentGrid.SortAll)
+          items = items.OrderBy(x => x.FileName).ToList();
 
         // set thumb size and add Media Items to LoadedItems
         foreach (var mi in items) {
@@ -115,9 +114,8 @@ namespace PictureManager.ViewModels {
         }
 
         // filter Media Items and add them to FilteredItems
-        foreach (var mi in MediaItems.Filter(currentGrid.LoadedItems)) {
+        foreach (var mi in MediaItems.Filter(currentGrid.LoadedItems))
           currentGrid.FilteredItems.Add(mi);
-        }
 
         currentGrid.OnPropertyChanged(nameof(currentGrid.PositionSlashCount));
         await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), token);
