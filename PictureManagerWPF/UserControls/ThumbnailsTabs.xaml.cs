@@ -63,5 +63,9 @@ namespace PictureManager.UserControls {
       foreach (var tabItem in Tabs.Items.Cast<TabItem>())
         tabItem.MaxHeight = maxHeight;
     }
+
+    private void Refresh(object sender, RoutedEventArgs e) {
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+    }
   }
 }
