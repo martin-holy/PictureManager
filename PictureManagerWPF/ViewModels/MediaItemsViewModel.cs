@@ -86,7 +86,6 @@ namespace PictureManager.ViewModels {
 
       // Clear before new load
       currentGrid.ClearItBeforeLoad();
-      currentGrid.ClearRows();
       App.WMain.ImageComparerTool.Close();
 
       App.Core.AppInfo.ProgressBarIsIndeterminate = true;
@@ -103,9 +102,6 @@ namespace PictureManager.ViewModels {
 
         if (folders != null)
           items = await _model.GetMediaItemsFromFoldersAsync(folders, token);
-
-        if (currentGrid.SortAll)
-          items = items.OrderBy(x => x.FileName).ToList();
 
         // set thumb size and add Media Items to LoadedItems
         foreach (var mi in items) {
@@ -131,6 +127,9 @@ namespace PictureManager.ViewModels {
       App.Core.AppInfo.ProgressBarValueB = 0;
 
       await Task.Run(async () => {
+        if (_model.ThumbsGrid.SortAll)
+          items = items.OrderBy(x => x.FileName).ToList();
+
         // read metadata for new items and add thumbnails to grid
         var metadata = ReadMetadataAndListThumbsAsync(items, token);
         // create thumbnails
@@ -165,6 +164,7 @@ namespace PictureManager.ViewModels {
       var maxWidth = 0.0;
       Application.Current.Dispatcher?.Invoke(delegate {
         maxWidth = App.WMain.ThumbnailsTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
+        _model.ThumbsGrid.ClearRows();
       });
 
       return Task.Run(() => {
@@ -209,12 +209,25 @@ namespace PictureManager.ViewModels {
       });
     }
 
-    public void ThumbsGridReloadItems(bool withGroups = true) {
+    public async void ThumbsGridReloadItems() {
+      // cancel previous work
+      if (_loadCts != null) {
+        _loadCts.Cancel();
+        await _loadTask;
+      }
+
       ScrollToTop();
       App.WMain.UpdateLayout();
-      var control = App.WMain.ThumbnailsTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl");
-      if (control == null) return;
-      _model.ThumbsGrid.ReloadItems(control.ActualWidth, withGroups);
+
+      _loadTask = Task.Run(async () => {
+        _loadCts?.Dispose();
+        _loadCts = new CancellationTokenSource();
+        var token = _loadCts.Token;
+        await LoadThumbnailsAsync(_model.ThumbsGrid.FilteredItems.ToArray(), token);
+      });
+
+      await _loadTask;
+
       ScrollToCurrent();
     }
 
