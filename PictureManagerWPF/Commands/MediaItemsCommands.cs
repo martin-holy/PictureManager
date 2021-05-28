@@ -132,8 +132,12 @@ namespace PictureManager.Commands {
     }
 
     private static void Shuffle() {
-      App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Shuffle();
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems(false);
+      var thumbsGrid = App.Core.Model.MediaItems.ThumbsGrid;
+      thumbsGrid.FilteredItems.Shuffle();
+      thumbsGrid.GroupByFolders = false;
+      thumbsGrid.GroupByDate = false;
+      thumbsGrid.SortAll = false;
+      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private static bool CanResizeImages() {
