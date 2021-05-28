@@ -43,6 +43,8 @@ namespace PictureManager.CustomControls {
     private Slider _volumeSlider;
     private DispatcherTimer _timelineTimer;
     private DispatcherTimer _clipTimer;
+    private DateTime _mouseLastMove;
+    private bool _isMouseHidden;
     private bool _isTimelineTimerExecuting;
     private bool _wasPlaying;
     private int _repeatCount;
@@ -102,6 +104,25 @@ namespace PictureManager.CustomControls {
     static VideoPlayer() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(VideoPlayer), 
         new FrameworkPropertyMetadata(typeof(VideoPlayer)));
+    }
+
+    public VideoPlayer() {
+      MouseMove += delegate {
+        _mouseLastMove = DateTime.Now;
+        if (_isMouseHidden) {
+          _isMouseHidden = false;
+          Cursor = Cursors.Arrow;
+        }
+      };
+
+      var mouseHideTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(3000)};
+      mouseHideTimer.Tick += delegate {
+        if (!_isMouseHidden && DateTime.Now - _mouseLastMove >= mouseHideTimer.Interval) {
+          _isMouseHidden = true;
+          Cursor = Cursors.None;
+        }
+      };
+      mouseHideTimer.Start();
     }
 
     public void SetSource(MediaItem mediaItem) {
