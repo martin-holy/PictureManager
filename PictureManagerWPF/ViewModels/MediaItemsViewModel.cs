@@ -210,6 +210,8 @@ namespace PictureManager.ViewModels {
     }
 
     public async void ThumbsGridReloadItems() {
+      if (_model.ThumbsGrid.FilteredItems.Count == 0) return;
+
       // cancel previous work
       if (_loadCts != null) {
         _loadCts.Cancel();
