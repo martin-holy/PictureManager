@@ -391,7 +391,7 @@ namespace PictureManager.Domain.Models {
 
           if (token.IsCancellationRequested) break;
 
-          output.AddRange(folderMediaItems);
+          output.AddRange(folderMediaItems.OrderBy(x => x.FileName));
 
           // remove MediaItems deleted outside of this application
           foreach (var fmi in folder.MediaItems.ToArray()) {
