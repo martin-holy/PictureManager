@@ -224,41 +224,6 @@ namespace PictureManager.Domain.Models {
       row.Items.Add(mi);
     }
 
-    public void ReloadItems(double rowMaxWidth, bool withGroups) {
-      ClearRows();
-
-      const int itemOffset = 6; //border, margin, padding, ...
-      MediaItemsGroup group = null;
-      MediaItemsRow row = null;
-      var rowWidth = 0;
-
-      foreach (var mi in FilteredItems) {
-        if (withGroups) {
-          var miFolder = GetFolderGroup(mi.Folder.Title);
-          var miDate = GetDateGroup(mi.FileName);
-
-          if (group == null || !miDate.Equals(group.Date) && GroupByDate || !miFolder.Equals(group.Folder) && GroupByFolders) {
-            group = new MediaItemsGroup {Date = miDate, Folder = miFolder};
-            row = new MediaItemsRow();
-            Rows.Add(group);
-            Rows.Add(row);
-            rowWidth = 0;
-          }
-
-          group.ItemsCount++;
-        }
-
-        if (row == null || mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
-          rowWidth = 0;
-          row = new MediaItemsRow();
-          Rows.Add(row);
-        }
-
-        row.Items.Add(mi);
-        rowWidth += mi.ThumbWidth + itemOffset;
-      }
-    }
-
     public int GetRowIndexWith(MediaItem mi) {
       var rowIndex = 0;
       foreach (var row in Rows) {
