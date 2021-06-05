@@ -5,10 +5,10 @@ using System.Xml;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class GeoNames : BaseCategoryItem, ITable {
+  public sealed class GeoNames : BaseCatTreeViewCategory, ITable {
     public TableHelper Helper { get; set; }
-    public List<GeoName> All { get; } = new List<GeoName>();
-    public Dictionary<int, GeoName> AllDic { get; } = new Dictionary<int, GeoName>();
+    public List<IRecord> All { get; } = new List<IRecord>();
+    public Dictionary<int, GeoName> AllDic { get; set; }
 
     public GeoNames() : base(Category.GeoNames) {
       Title = "GeoNames";
@@ -25,22 +25,18 @@ namespace PictureManager.Domain.Models {
 
     public void LinkReferences() {
       // ID|Name|ToponymName|FCode|Parent
-      foreach (var geoName in All) {
+      foreach (var geoName in All.Cast<GeoName>()) {
         // reference to parent and back reference to children
-        if (!string.IsNullOrEmpty(geoName.Csv[4])) {
+        if (!string.IsNullOrEmpty(geoName.Csv[4]))
           geoName.Parent = AllDic[int.Parse(geoName.Csv[4])];
-          geoName.Parent.Items.Add(geoName);
-        }
+        else 
+          geoName.Parent = this;
+
+        geoName.Parent.Items.Add(geoName);
 
         // csv array is not needed any more
         geoName.Csv = null;
       }
-
-      Items.Clear();
-
-      var earth = All.SingleOrDefault(x => x.Parent == null);
-      if (earth == null) return;
-      Items.Add(earth);
     }
 
     public void SaveToFile() {
@@ -49,7 +45,7 @@ namespace PictureManager.Domain.Models {
 
     public void LoadFromFile() {
       All.Clear();
-      AllDic.Clear();
+      AllDic = new Dictionary<int, GeoName>();
       Helper.LoadFromFile();
     }
 
