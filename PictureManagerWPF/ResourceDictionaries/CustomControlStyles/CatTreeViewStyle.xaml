@@ -6,7 +6,6 @@
 <ResourceDictionary.MergedDictionaries>
   <ResourceDictionary Source="../Converters.xaml" />
   <ResourceDictionary Source="../Brushes/Brushes.xaml" />
-  <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
 </ResourceDictionary.MergedDictionaries>
 
   <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z" />
@@ -68,6 +67,26 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <Style x:Key="CatTreeViewTitle" TargetType="TextBlock">
+    <Setter Property="Text" Value="{Binding Title}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="5,0,0,0" />
+  </Style>
+
+  <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
+    <Setter Property="Text" Value="{Binding PicCount}" />
+    <Setter Property="Visibility" Value="Collapsed"/>
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="5,0,0,0" />
+    <Setter Property="Padding" Value="5,0" />
+    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+    <Style.Triggers>
+      <DataTrigger Binding="{Binding IsMarked}" Value="True">
+        <Setter Property="Visibility" Value="Visible"/>
+      </DataTrigger>
+    </Style.Triggers>
   </Style>
 
   <Style x:Key="CatTreeViewItem" TargetType="{x:Type TreeViewItem}">
@@ -213,21 +232,22 @@
     </Setter>
 
     <Style.Resources>
-      <!-- ICatTreeViewCatItem -->
+      <!-- ICatTreeViewCategory -->
       <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
         <Border Height="40">
           <StackPanel Orientation="Horizontal">
             <cc:IconRect IconName="{Binding IconName}" Size="24" />
-            <TextBlock Style="{StaticResource TreeViewTitle}" FontSize="18" />
+            <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="18" />
           </StackPanel>
         </Border>
       </HierarchicalDataTemplate>
 
-      <!-- ICatTreeViewBaseItem -->
-      <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewBaseItem}" ItemsSource="{Binding Items}">
+      <!-- ICatTreeViewItem -->
+      <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
         <StackPanel Orientation="Horizontal">
           <cc:IconRect IconName="{Binding IconName}" />
-          <TextBlock Style="{StaticResource TreeViewTitle}" FontSize="14" />
+          <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="14" />
+          <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
         </StackPanel>
       </HierarchicalDataTemplate>
     </Style.Resources>
