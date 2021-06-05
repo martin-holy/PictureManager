@@ -65,7 +65,7 @@ namespace SimpleDB {
       }
     }
 
-    private void SaveIdSequences() {
+    public void SaveIdSequences() {
       // check if something changed
       var isModified = false;
       foreach (var table in Tables) {
