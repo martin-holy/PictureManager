@@ -1,49 +1,57 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Keywords : BaseCategoryItem, ITable, ICategoryItem {
+  public sealed class Keywords : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<Keyword> All { get; } = new List<Keyword>();
-    public Dictionary<int, Keyword> AllDic { get; } = new Dictionary<int, Keyword>();
+    public List<IRecord> All { get; } = new List<IRecord>();
+    public Dictionary<int, Keyword> AllDic { get; set; }
 
-    private static readonly Mutex Mut = new Mutex();
-    private CategoryGroup _autoAddedGroup;
+    private ICatTreeViewGroup _autoAddedGroup;
 
     public Keywords() : base(Category.Keywords) {
       Title = "Keywords";
       IconName = IconName.TagLabel;
-    }
-
-    ~Keywords() {
-      Mut.Dispose();
+      CanHaveGroups = true;
+      CanHaveSubItems = true;
+      CanCreateItems = true;
+      CanRenameItems = true;
+      CanDeleteItems = true;
+      CanMoveItem = true;
     }
 
     public void SaveToFile() {
       Helper.SaveToFile(All);
+      Helper.IsModified = false;
     }
 
     public void LoadFromFile() {
       All.Clear();
-      AllDic.Clear();
+      AllDic = new Dictionary<int, Keyword>();
       Helper.LoadFromFile();
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|Parent|Index
+      // ID|Name|Parent
       var props = csv.Split('|');
-      if (props.Length != 4) return;
-      var id = int.Parse(props[0]);
-      AddRecord(new Keyword(id, props[1], null, int.Parse(props[3])) { Csv = props });
+      if (props.Length != 3) {
+        Core.Instance.Logger.LogError(new ArgumentException("Incorrect number of values."), csv);
+        return;
+      }
+      var keyword = new Keyword(int.Parse(props[0]), props[1], null) {Csv = props};
+      All.Add(keyword);
+      AllDic.Add(keyword.Id, keyword);
     }
 
     public void LinkReferences() {
-      // ID|Name|Parent|Index
+      // ID|Name|Parent
       // MediaItems to the Keyword are added in LinkReferences on MediaItem
-      foreach (var keyword in All) {
+
+      // link hierarchical keywords
+      foreach (var keyword in All.Cast<Keyword>()) {
         // reference to parent and back reference to children
         if (!string.IsNullOrEmpty(keyword.Csv[2])) {
           keyword.Parent = AllDic[int.Parse(keyword.Csv[2])];
@@ -55,117 +63,64 @@ namespace PictureManager.Domain.Models {
       }
 
       Items.Clear();
-      LoadGroups();
+      LoadGroupsAndItems(All);
 
       // group for keywords automatically added from MediaItems metadata
-      _autoAddedGroup = Items.OfType<CategoryGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
-                       GroupCreate("Auto Added");
-
-      // add Keywords without group
-      foreach (var keyword in All.Where(x => x.Parent == null)) {
-        keyword.Parent = this;
-        Items.Add(keyword);
-      }
-
-      // sort Keywords
-      Sort(Items, true);
-    }
-
-    public static void Sort(ObservableCollection<BaseTreeViewItem> items, bool recursive) {
-      var sorted = items.OfType<Keyword>().OrderBy(x => x.Idx).ThenBy(x => x.Title).ToList();
-      var groupsCount = items.Count - sorted.Count;
-
-      for (var i = 0; i < sorted.Count; i++)
-        items.Move(items.IndexOf(sorted[i]), i + groupsCount);
-
-      if (!recursive) return;
-      
-      foreach (var item in items)
-        Sort(item.Items, true);
-    }
-
-    private void AddRecord(Keyword record) {
-      All.Add(record);
-      AllDic.Add(record.Id, record);
+      _autoAddedGroup = Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
+                       GroupCreate(this,"Auto Added");
     }
 
     public Keyword GetByFullPath(string fullPath) {
       if (string.IsNullOrEmpty(fullPath)) return null;
 
-      Mut.WaitOne();
+      return Core.Instance.RunOnUiThread(() => {
+        var pathNames = fullPath.Split('/');
 
-      var pathNames = fullPath.Split('/');
+        // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
+        var keyword = All.Cast<Keyword>().SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
 
-      // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
-      var keyword = All.SingleOrDefault(x => !(x.Parent is Keyword) && x.Title.Equals(pathNames[0]));
+        // return Keyword if it was found and is 1 level type
+        if (keyword != null && pathNames.Length == 1)
+          return keyword;
 
-      // return Keyword if it was found and is 1 level type
-      if (keyword != null && pathNames.Length == 1) {
-        Mut.ReleaseMutex();
-        return keyword;
-      }
+        // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
+        var root = keyword?.Parent ?? _autoAddedGroup;
 
-      // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
-      var root = keyword?.Parent ?? _autoAddedGroup;
+        // for each keyword in pathNames => find or create
+        foreach (var name in pathNames)
+          root = root.Items.OfType<Keyword>().SingleOrDefault(x => x.Title.Equals(name)) ?? ItemCreate(root, name);
 
-      // for each keyword in pathNames => find or create
-      foreach (var name in pathNames) {
-        root = root.Items.OfType<Keyword>().SingleOrDefault(x => x.Title.Equals(name))
-               ?? CreateKeyword(root, name);
-      }
-
-      Mut.ReleaseMutex();
-      return root as Keyword;
+        return root as Keyword;
+      }).Result;
     }
 
-    private Keyword CreateKeyword(BaseTreeViewItem root, string name) {
-      Mut.WaitOne();
-      var keyword = new Keyword(Helper.GetNextId(), name, root, 0);
+    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+      var item = new Keyword(Helper.GetNextId(), name, root);
+      var idx = CatTreeViewUtils.SetItemInPlace(root, item);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
+      if (allIdx < 0) All.Add(item); else All.Insert(allIdx, item);
 
-      // add new Keyword to the database and to the tree
-      AddRecord(keyword);
-      ItemSetInPlace(root, true, keyword);
-
-      if (root is CategoryGroup)
-        Core.Instance.CategoryGroups.Helper.IsModified = true;
-
-      Mut.ReleaseMutex();
-
-      return keyword;
-    }
-
-    public string ValidateNewItemTitle(BaseTreeViewItem root, string name) {
-      return root.Items.SingleOrDefault(x => x.Title.Equals(name)) != null
-        ? $"{name} keyword already exists!"
-        : null;
-    }
-
-    public void ItemCreate(BaseTreeViewItem root, string name) {
-      CreateKeyword(root, name);
-      Core.Instance.Sdb.SaveAllTables();
-    }
-
-    public void ItemRename(BaseTreeViewItem item, string name) {
-      item.Title = name;
-      Sort(item.Parent.Items, false);
       SaveToFile();
+      if (root is ICatTreeViewGroup)
+        Core.Instance.CategoryGroups.SaveToFile();
+
+      Core.Instance.Sdb.SaveIdSequences();
+
+      return item;
     }
 
-    public void ItemDelete(BaseTreeViewItem item) {
+    public new void ItemDelete(ICatTreeViewItem item) {
       if (!(item is Keyword keyword)) return;
 
       // remove Keyword from the tree
-      keyword.Parent.Items.Remove(keyword);
+      item.Parent.Items.Remove(item);
 
-      // remove Keyword from the group
-      if (keyword.Parent is CategoryGroup group) {
-        group.Items.Remove(keyword);
-        Core.Instance.CategoryGroups.Helper.IsModified = true;
-      }
+      if (item.Parent is CategoryGroup)
+        Core.Instance.CategoryGroups.SaveToFile();
 
       // get all descending keywords
-      var keywords = new List<BaseTreeViewItem>();
-      keyword.GetThisAndItemsRecursive(ref keywords);
+      var keywords = new List<ICatTreeViewItem>();
+      CatTreeViewUtils.GetThisAndItemsRecursive(keyword, ref keywords);
 
       foreach (var k in keywords.Cast<Keyword>()) {
         // remove Keyword from MediaItems
@@ -182,34 +137,9 @@ namespace PictureManager.Domain.Models {
 
         // remove Keyword from DB
         All.Remove(k);
-        AllDic.Remove(k.Id);
       }
 
-      Helper.IsModified = true;
-    }
-
-    public void ItemMove(BaseTreeViewTagItem item, BaseTreeViewItem dest, bool dropOnTop) {
-      // move in a group
-      if (dest is Keyword && item.Parent == dest.Parent) {
-        var items = item.Parent.Items;
-        var srcIndex = items.IndexOf(item);
-        var destIndex = items.IndexOf(dest);
-        var newIndex = srcIndex > destIndex ? (dropOnTop ? destIndex : destIndex + 1) : (dropOnTop ? destIndex - 1 : destIndex);
-
-        items.Move(srcIndex, newIndex);
-
-        var i = 0;
-        foreach (var itm in items.OfType<Keyword>()) itm.Idx = i++;
-      }
-      // move between groups
-      else { 
-        if (!(item is Keyword keyword)) return;
-
-        keyword.Idx = 0;
-        ItemMove(item, dest);
-      }
-
-      Helper.IsModified = true;
+      SaveToFile();
     }
   }
 }
