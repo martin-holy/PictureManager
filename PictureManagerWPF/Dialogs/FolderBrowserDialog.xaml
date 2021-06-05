@@ -37,7 +37,7 @@
         <HierarchicalDataTemplate DataType="{x:Type dialogs:FolderTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <cc:IconRect IconName="{Binding IconName}" />
-            <TextBlock Style="{StaticResource TreeViewTitle}" />
+            <TextBlock Style="{StaticResource CatTreeViewTitle}" />
           </StackPanel>
         </HierarchicalDataTemplate>
       </TreeView.ItemTemplate>
