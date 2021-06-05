@@ -1,7 +1,8 @@
 ﻿using System;
+using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.Domain.Models {
-  public class MediaItemSize : BaseTreeViewTagItem {
+  public class MediaItemSize : CatTreeViewItem {
     private double _pixelMin;
     private double _pixelMax;
     private double _min;
