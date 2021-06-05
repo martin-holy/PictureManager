@@ -1,57 +1,27 @@
 ﻿using System.Collections.Generic;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public class CategoryGroups : ITable {
     public TableHelper Helper { get; set; }
-    public List<CategoryGroup> All { get; } = new List<CategoryGroup>();
+    public List<IRecord> All { get; } = new List<IRecord>();
 
     public void NewFromCsv(string csv) {
       // ID|Name|Category|GroupItems
       var props = csv.Split('|');
       if (props.Length != 4) return;
       var id = int.Parse(props[0]);
-      AddRecord(new CategoryGroup(id, props[1], (Category) int.Parse(props[2])) {Csv = props});
+      All.Add(new CategoryGroup(id, props[1], (Category) int.Parse(props[2])) {Csv = props});
     }
 
     public void LinkReferences() {
       // ID|Name|Category|GroupItems
-      foreach (var group in All) {
-        // reference to group items
-        switch (group.Category) {
-          case Category.People: {
-            group.Parent = Core.Instance.People;
-            if (string.IsNullOrEmpty(group.Csv[3])) continue;
-
-            foreach (var itemId in group.Csv[3].Split(',')) {
-              var p = Core.Instance.People.AllDic[int.Parse(itemId)];
-              p.Parent = group;
-              group.Items.Add(p);
-            }
-
-            break;
-          }
-          case Category.Keywords: {
-            group.Parent = Core.Instance.Keywords;
-            if (string.IsNullOrEmpty(group.Csv[3])) continue;
-
-            foreach (var itemId in group.Csv[3].Split(',')) {
-              var k = Core.Instance.Keywords.AllDic[int.Parse(itemId)];
-              k.Parent = group;
-              group.Items.Add(k);
-            }
-
-            break;
-          }
-        }
-
-        // csv array is not needed any more
-        group.Csv = null;
-      }
     }
 
     public void SaveToFile() {
       Helper.SaveToFile(All);
+      Helper.IsModified = false;
     }
 
     public void LoadFromFile() {
@@ -59,13 +29,40 @@ namespace PictureManager.Domain.Models {
       Helper.LoadFromFile();
     }
 
-    public void AddRecord(CategoryGroup record) {
-      All.Add(record);
+    public ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
+      var group = new CategoryGroup(Helper.GetNextId(), name, cat.Category) {
+        IconName = cat.CategoryGroupIconName,
+        Parent = cat
+      };
+
+      var idx = CatTreeViewUtils.SetItemInPlace(cat, group);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, cat, idx);
+      if (allIdx < 0) All.Add(group); else All.Insert(allIdx, group);
+
+      SaveToFile();
+      Core.Instance.Sdb.SaveIdSequences();
+
+      return group;
     }
 
-    public void DeleteRecord(CategoryGroup record) {
+    public void GroupRename(ICatTreeViewGroup group, string name) {
+      group.Title = name;
+
+      var idx = CatTreeViewUtils.SetItemInPlace(group.Parent, group);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, group.Parent, idx);
+
+      All.Move(group as CategoryGroup, allIdx);
+      SaveToFile();
+    }
+
+    public void GroupDelete(CategoryGroup record) {
       All.Remove(record);
-      Helper.IsModified = true;
+      SaveToFile();
+    }
+
+    public void GroupMove(CategoryGroup group, CategoryGroup dest, bool aboveDest) {
+      All.Move(group, dest, aboveDest);
+      SaveToFile();
     }
   }
 }
