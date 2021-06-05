@@ -4,38 +4,45 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Folders : BaseCategoryItem, ITable {
+  public sealed class Folders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<Folder> All { get; } = new List<Folder>();
+    public List<IRecord> All { get; } = new List<IRecord>();
     public Dictionary<int, Folder> AllDic { get; set; }
 
     public Folders() : base(Category.Folders) {
       Title = "Folders";
       IconName = IconName.Folder;
+      CanHaveSubItems = true;
+      CanCreateItems = true;
+      CanRenameItems = true;
+      CanDeleteItems = true;
+      CanMoveItem = true;
+      CanCopyItem = true;
     }
 
     public void NewFromCsv(string csv) {
       // ID|Name|Parent|IsFolderKeyword
       var props = csv.Split('|');
       if (props.Length != 4) return;
-      var id = int.Parse(props[0]);
-      AddRecord(new Folder(id, props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"});
+      var folder = new Folder(int.Parse(props[0]), props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"};
+      All.Add(folder);
+      AllDic.Add(folder.Id, folder);
     }
 
     public void LinkReferences() {
       // ID|Name|Parent|IsFolderKeyword
-      foreach (var folder in All) {
+      foreach (var folder in All.Cast<Folder>()) {
         // reference to Parent and back reference from Parent to SubFolder
-        if (!string.IsNullOrEmpty(folder.Csv[2])) {
+        if (!string.IsNullOrEmpty(folder.Csv[2]))
           folder.Parent = AllDic[int.Parse(folder.Csv[2])];
-          folder.Parent.Items.Add(folder);
-        }
-        else { // drive
-          Items.Add(folder);
-        }
+        else // drive
+          folder.Parent = this;
+
+        folder.Parent.Items.Add(folder);
 
         // csv array is not needed any more
         folder.Csv = null;
@@ -44,6 +51,7 @@ namespace PictureManager.Domain.Models {
 
     public void SaveToFile() {
       Helper.SaveToFile(All);
+      Helper.IsModified = false;
     }
 
     public void LoadFromFile() {
@@ -52,56 +60,8 @@ namespace PictureManager.Domain.Models {
       Helper.LoadFromFile();
     }
 
-    public void AddRecord(Folder record) {
-      All.Add(record);
-      AllDic?.Add(record.Id, record);
-    }
-
-    public void DeleteRecord(Folder folder) {
-      // delete folder, subfolders and mediaItems from cache
-      if (Directory.Exists(folder.FullPathCache)) {
-        Directory.Delete(folder.FullPathCache, true);
-      }
-
-      // remove Folder from the Tree
-      folder.Parent.Items.Remove(folder);
-
-      // collapse parent if doesn't have any subfolders
-      if (folder.Parent.Items.Count == 0)
-        folder.Parent.IsExpanded = false;
-
-      // get all folders recursive
-      var folders = new List<BaseTreeViewItem>();
-      folder.GetThisAndItemsRecursive(ref folders);
-
-      foreach (var f in folders.OfType<Folder>()) {
-        // remove Folder from DB
-        All.Remove(f);
-
-        // remove MediaItems
-        foreach (var mi in f.MediaItems.ToList())
-          Core.Instance.MediaItems.Delete(mi);
-
-        // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
-        f.MediaItems.Clear();
-
-        // remove Parent
-        f.Parent = null;
-
-        // clear subFolders
-        f.Items.Clear();
-
-        // remove FavoriteFolder
-        var ff = Core.Instance.FavoriteFolders.All.SingleOrDefault(x => x.Folder.Id.Equals(f.Id));
-        if (ff != null) Core.Instance.FavoriteFolders.Remove(ff);
-      }
-
-      // set Folders table as modified
-      Helper.IsModified = true;
-    }
-
     public void AddDrives() {
-      All.Where(x => x.IsHidden).ToList().ForEach(x => x.IsHidden = false);
+      All.Cast<Folder>().Where(x => x.IsHidden).ToList().ForEach(x => x.IsHidden = false);
 
       var drives = Environment.GetLogicalDrives();
       var drivesNames = new List<string>();
@@ -114,8 +74,8 @@ namespace PictureManager.Domain.Models {
 
         // add Drive to the database and to the tree if not already exists
         if (!(Items.SingleOrDefault(x => x.Title.Equals(driveName)) is Folder item)) {
-          item = new Folder(Helper.GetNextId(), driveName, null);
-          AddRecord(item);
+          item = new Folder(Helper.GetNextId(), driveName, this);
+          All.Add(item);
           Items.Add(item);
         }
 
@@ -131,7 +91,7 @@ namespace PictureManager.Domain.Models {
 
         // add placeholder so the Drive can be expanded
         if (di.IsReady && item.Items.Count == 0)
-          item.Items.Add(new BaseTreeViewItem());
+          item.Items.Add(new CatTreeViewItem());
       }
 
       // set not available drives as hidden
@@ -167,7 +127,7 @@ namespace PictureManager.Domain.Models {
       return folder?.GetMediaItemByPath(path);
     }
 
-    public bool GetVisibleTreeIndexFor(ObservableCollection<BaseTreeViewItem> folders, Folder folder, ref int index) {
+    public bool GetVisibleTreeIndexFor(ObservableCollection<ICatTreeViewItem> folders, Folder folder, ref int index) {
       foreach (var item in folders.Cast<Folder>()) {
         index++;
         if (item.Id.Equals(folder.Id)) return true;
@@ -176,8 +136,6 @@ namespace PictureManager.Domain.Models {
       }
       return false;
     }
-
-    
 
     public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder, IProgress<object[]> progress,
       MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
@@ -302,6 +260,143 @@ namespace PictureManager.Domain.Models {
           Extensions.DeleteDirectoryIfEmpty(srcDirPathCache);
         });
       }
+    }
+
+    public new bool CanDrop(object src, ICatTreeViewItem dest) {
+      switch (src) {
+        case Folder srcData: { // Folder
+          if (dest is Folder destData && !destData.HasThisParent(srcData) && !Equals(srcData, destData) &&
+              destData.IsAccessible && !Equals((Folder)srcData.Parent, destData)) return true;
+          
+          break;
+        }
+        case string[] dragged: { // MediaItems
+          var selected = Core.Instance.MediaItems.ThumbsGrid.FilteredItems
+            .Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
+
+          if (selected.SequenceEqual(dragged.OrderBy(x => x)) && dest is Folder destData && destData.IsAccessible) return true;
+
+          break;
+        }
+      }
+
+      return false;
+    }
+
+    public new void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
+      // handled in OnAfterOnDrop (TreeViewCategories)
+    }
+
+    public new bool CanCreateItem(ICatTreeViewItem item) {
+      return item is Folder;
+    }
+
+    public new bool CanRenameItem(ICatTreeViewItem item) {
+      return item is Folder && !(item.Parent is ICatTreeViewCategory);
+    }
+
+    public new bool CanDeleteItem(ICatTreeViewItem item) {
+      return item is Folder && !(item.Parent is ICatTreeViewCategory);
+    }
+
+    public new string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
+      // check if folder already exists
+      if (Directory.Exists(Extensions.PathCombine(((Folder)root).FullPath, name)))
+        return "Folder already exists!";
+
+      // check if is correct folder name
+      if (Path.GetInvalidPathChars().Any(name.Contains))
+        return "New folder's name contains incorrect character(s)!";
+
+      return null;
+    }
+
+    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+      root.IsExpanded = true;
+
+      // create Folder
+      Directory.CreateDirectory(Extensions.PathCombine(((Folder)root).FullPath, name));
+      var item = new Folder(Helper.GetNextId(), name, root) {IsAccessible = true};
+
+      // add new Folder to the database
+      All.Add(item);
+
+      // add new Folder to the tree
+      CatTreeViewUtils.SetItemInPlace(root, item);
+
+      SaveToFile();
+      Core.Instance.Sdb.SaveIdSequences();
+
+      // reload FolderKeywords
+      if (((Folder)root).IsFolderKeyword || ((Folder)root).FolderKeyword != null)
+        Core.Instance.FolderKeywords.Load();
+
+      return item;
+    }
+
+    public new void ItemRename(ICatTreeViewItem item, string name) {
+      var parent = (Folder) item.Parent;
+      var self = (Folder) item;
+      
+      Directory.Move(self.FullPath, Extensions.PathCombine(parent.FullPath, name));
+      if (Directory.Exists(self.FullPathCache))
+        Directory.Move(self.FullPathCache, Extensions.PathCombine(parent.FullPathCache, name));
+      
+      Title = name;
+
+      CatTreeViewUtils.SetItemInPlace(item.Parent, item);
+      SaveToFile();
+
+      // reload FolderKeywords
+      if (self.IsFolderKeyword || self.FolderKeyword != null)
+        Core.Instance.FolderKeywords.Load();
+    }
+
+    public new void ItemDelete(ICatTreeViewItem item) {
+      // remove Folder from the Tree
+      item.Parent.Items.Remove(item);
+
+      // collapse parent if doesn't have any subfolders
+      if (item.Parent.Items.Count == 0)
+        item.Parent.IsExpanded = false;
+
+      // get all folders recursive
+      var folders = new List<ICatTreeViewItem>();
+      CatTreeViewUtils.GetThisAndItemsRecursive(item, ref folders);
+
+      foreach (var f in folders.OfType<Folder>()) {
+        // remove Folder from DB
+        All.Remove(f);
+
+        // remove MediaItems
+        foreach (var mi in f.MediaItems.ToList())
+          Core.Instance.MediaItems.Delete(mi);
+
+        // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
+        f.MediaItems.Clear();
+
+        // remove Parent
+        f.Parent = null;
+
+        // clear subFolders
+        f.Items.Clear();
+
+        // remove FavoriteFolder
+        Core.Instance.FavoriteFolders.ItemDelete(
+          Core.Instance.FavoriteFolders.All.Cast<FavoriteFolder>().SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
+      }
+
+      Core.Instance.FolderKeywords.Load();
+
+      // set Folders table as modified
+      Helper.IsModified = true;
+
+      // delete folder, subfolders and mediaItems from cache
+      if (Directory.Exists(((Folder)item).FullPathCache))
+        Directory.Delete(((Folder)item).FullPathCache, true);
+
+      // delete folder, subfolders and mediaItems from file system
+      // done in OnAfterItemDelete (TreeViewItemsEvents)
     }
   }
 }
