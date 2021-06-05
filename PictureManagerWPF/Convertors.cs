@@ -237,7 +237,7 @@ namespace PictureManager {
     public double Length { get; set; }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (!(value is ICatTreeViewBaseItem tvi)) return new Thickness(0.0);
+      if (!(value is ICatTreeViewItem tvi)) return new Thickness(0.0);
 
       var levels = 0;
       var parent = tvi.Parent;
