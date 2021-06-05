@@ -4,10 +4,11 @@ using System.Windows;
 using System.Windows.Input;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public partial class WTest {
-    public ObservableCollection<ICatTreeViewBaseItem> Items { get; set; }
+    public ObservableCollection<ICatTreeViewItem> Items { get; set; }
     
     public WTest() {
       InitializeComponent();
@@ -28,9 +29,9 @@ namespace PictureManager {
 
     private void SetUpMediaItemTest() {
       App.Core.MediaItemClipsCategory.SetMediaItem(
-        Core.Instance.MediaItems.All.FirstOrDefault(mi => mi.Id == 138791));
+        Core.Instance.MediaItems.All.Cast<MediaItem>().FirstOrDefault(mi => mi.Id == 138791));
 
-      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewBaseItem> {App.Core.MediaItemClipsCategory};
+      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> {App.Core.MediaItemClipsCategory};
     }
 
     public void AllowDropCheck(object sender, DragEventArgs e) {

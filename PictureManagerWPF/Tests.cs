@@ -57,8 +57,7 @@ namespace PictureManager {
     }
 
     private void RemoveKeywordsFromAutoAddedCategory() {
-      var keywords = App.Core.Model.CategoryGroups.All.Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>()
-        .ToArray();
+      var keywords = App.Core.Model.CategoryGroups.All.Cast<CategoryGroup>().Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>().ToArray();
       foreach (var keyword in keywords) {
         App.Core.Model.Keywords.ItemDelete(keyword);
       }
@@ -174,7 +173,7 @@ namespace PictureManager {
     }
 
     private void BackdoorManipulations() {
-      var items = App.Core.Model.MediaItems.All.Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
+      var items = App.Core.Model.MediaItems.All.Cast<MediaItem>().Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         items.ToArray(),
