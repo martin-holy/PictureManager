@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.UserControls {
@@ -49,29 +50,29 @@ namespace PictureManager.UserControls {
       var sep = Path.DirectorySeparatorChar.ToString();
 
       // People
-      AddToSearchResult(App.Core.Model.People.All
+      AddToSearchResult(App.Core.Model.People.All.Cast<Person>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.People, x.Title, (x.Parent as CategoryGroup)?.Title, x)));
 
       // Keywords
-      AddToSearchResult(App.Core.Model.Keywords.All
+      AddToSearchResult(App.Core.Model.Keywords.All.Cast<Keyword>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.Tag, x.Title, x.FullPath, x)));
 
       // GeoNames
-      AddToSearchResult(App.Core.Model.GeoNames.All
+      AddToSearchResult(App.Core.Model.GeoNames.All.Cast<GeoName>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
-        .Select(x => new SearchItem(IconName.LocationCheckin, x.Title, x.GetFullPath(sep), x)));
+        .Select(x => new SearchItem(IconName.LocationCheckin, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
 
       // Folders
-      var result = App.Core.Model.Folders.All
+      var result = App.Core.Model.Folders.All.Cast<Folder>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.Folder, x.Title, x.FullPath, x)).ToList();
 
       // Folder Keywords
       result.AddRange(App.Core.Model.FolderKeywords.All
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
-        .Select(x => new SearchItem(IconName.FolderPuzzle, x.Title, x.GetFullPath(sep), x)));
+        .Select(x => new SearchItem(IconName.FolderPuzzle, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
       AddToSearchResult(result);
     }
 
@@ -79,8 +80,8 @@ namespace PictureManager.UserControls {
       var item = ((SearchItem)((ListBox)sender).SelectedItem)?.Item;
 
       if (item != null) {
-        BaseTreeViewItem.ExpandTo(item);
-        App.WMain.TreeViewCategories.TreeItemBringIntoView(item);
+        CatTreeViewUtils.ExpandTo(item);
+        App.WMain.TreeViewCategories.TvCategories.ScrollTo(item);
       }
 
       CloseSearch(null, null);
@@ -103,9 +104,9 @@ namespace PictureManager.UserControls {
     public IconName IconName { get; set; }
     public string Title { get; set; }
     public string ToolTip { get; set; }
-    public BaseTreeViewItem Item { get; set; }
+    public ICatTreeViewItem Item { get; set; }
 
-    public SearchItem(IconName iconName, string title, string toolTip, BaseTreeViewItem item) {
+    public SearchItem(IconName iconName, string title, string toolTip, ICatTreeViewItem item) {
       IconName = iconName;
       Title = title;
       ToolTip = toolTip;
