@@ -3,7 +3,7 @@ using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
-  public class VideoClipViewModel: CatTreeViewBaseItem {
+  public class VideoClipViewModel: CatTreeViewItem {
 
     public VideoClip Clip { get; }
     public string TimeStart => MediaItemClipsCategory.FormatTimeSpan(Clip.TimeStart);
