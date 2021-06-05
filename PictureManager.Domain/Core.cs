@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -14,7 +15,7 @@ namespace PictureManager.Domain {
     public ILogger Logger { get; set; }
 
     #region TreeView Roots and Categories
-    public ObservableCollection<BaseCategoryItem> TreeViewCategories { get; }
+    public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
     public FavoriteFolders FavoriteFolders { get; }
     public Folders Folders { get; }
     public Ratings Ratings { get; }
@@ -31,10 +32,10 @@ namespace PictureManager.Domain {
     public MediaItems MediaItems { get; }
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
-    public Collection<BaseTreeViewTagItem> MarkedTags { get; } = new Collection<BaseTreeViewTagItem>();
+    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new Collection<ICatTreeViewTagItem>();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
-    public HashSet<BaseTreeViewItem> ActiveFilterItems { get; } = new HashSet<BaseTreeViewItem>();
+    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new HashSet<ICatTreeViewItem>();
 
     private TaskScheduler UiTaskScheduler { get; }
 
@@ -45,13 +46,13 @@ namespace PictureManager.Domain {
       Folders = new Folders();
       Ratings = new Ratings();
       MediaItemSizes = new MediaItemSizes();
-      People = new People { CanHaveGroups = true, CanModifyItems = true };
+      People = new People();
       FolderKeywords = new FolderKeywords();
-      Keywords = new Keywords { CanHaveGroups = true, CanHaveSubItems = true, CanModifyItems = true };
+      Keywords = new Keywords();
       GeoNames = new GeoNames();
-      Viewers = new Viewers { CanModifyItems = true };
+      Viewers = new Viewers();
 
-      TreeViewCategories = new ObservableCollection<BaseCategoryItem>
+      TreeViewCategories = new ObservableCollection<ICatTreeViewCategory>
         {FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers};
 
       CategoryGroups = new CategoryGroups();
@@ -65,7 +66,7 @@ namespace PictureManager.Domain {
       return Task.Run(() => {
         Sdb = new SimpleDB.SimpleDB(Logger);
 
-        Sdb.AddTable(CategoryGroups); // needs to be before People and Keywords
+        Sdb.AddTable(CategoryGroups);
         Sdb.AddTable(Folders); // needs to be before Viewers
         Sdb.AddTable(Viewers);
         Sdb.AddTable(People);
@@ -86,11 +87,18 @@ namespace PictureManager.Domain {
         progress.Report("Loading Ratings");
         Ratings.Load();
 
+        // TODO better
         // cleanup
         Folders.AllDic.Clear();
         Folders.AllDic = null;
+        GeoNames.AllDic.Clear();
+        GeoNames.AllDic = null;
+        Keywords.AllDic.Clear();
+        Keywords.AllDic = null;
         MediaItems.AllDic.Clear();
         MediaItems.AllDic = null;
+        People.AllDic.Clear();
+        People.AllDic = null;
         VideoClips.AllDic.Clear();
         VideoClips.AllDic = null;
 
@@ -114,9 +122,10 @@ namespace PictureManager.Domain {
     }
 
     public void MarkUsedKeywordsAndPeople() {
-      //can by Person, Keyword, FolderKeyword, Rating or GeoName
+      //can be Person, Keyword, FolderKeyword, Rating or GeoName
 
-      void MarkedTagsAddWithIncrease(BaseTreeViewTagItem item) {
+      void MarkedTagsAddWithIncrease(ICatTreeViewTagItem item) {
+        if (item == null) return;
         item.PicCount++;
         if (item.IsMarked) return;
         item.IsMarked = true;
@@ -137,10 +146,7 @@ namespace PictureManager.Domain {
         if (mi.People != null)
           foreach (var person in mi.People) {
             MarkedTagsAddWithIncrease(person);
-
-            // Category Group
-            if (!(person.Parent is CategoryGroup group)) continue;
-            MarkedTagsAddWithIncrease(group);
+            MarkedTagsAddWithIncrease(person.Parent as CategoryGroup);
           }
 
         // Keywords
@@ -149,11 +155,7 @@ namespace PictureManager.Domain {
             var k = keyword;
             while (k != null) {
               MarkedTagsAddWithIncrease(k);
-
-              // Category Group
-              if (k.Parent is CategoryGroup group)
-                MarkedTagsAddWithIncrease(group);
-
+              MarkedTagsAddWithIncrease(k.Parent as CategoryGroup);
               k = k.Parent as Keyword;
             }
           }
@@ -183,6 +185,26 @@ namespace PictureManager.Domain {
         // Ratings
         MarkedTagsAddWithIncrease(Ratings.GetRatingByValue(mi.Rating));
       }
+    }
+
+    // get index for an item in DB in same order as it is in the tree
+    public static int GetAllIndexBasedOnTreeOrder(List<IRecord> all, ICatTreeViewItem root, int treeIdx) {
+      var allIdx = -1;
+      if (all == null || root == null || treeIdx < 0) return allIdx;
+
+      // if is item below
+      if (treeIdx < root.Items.Count - 1) {
+        allIdx = all.IndexOf(root.Items[treeIdx + 1] as IRecord);
+        if (allIdx >= 0) return allIdx;
+      }
+
+      // if is item above
+      if (treeIdx > 0) {
+        allIdx = all.IndexOf(root.Items[treeIdx - 1] as IRecord);
+        if (allIdx >= 0) return allIdx + 1;
+      }
+
+      return allIdx;
     }
 
     private static Core _instance;
