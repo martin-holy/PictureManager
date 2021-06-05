@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 
@@ -164,10 +165,10 @@ namespace PictureManager.Domain.Models {
 
       if (Keywords != null) {
         InfoBoxKeywords = new ObservableCollection<string>();
-        var allKeywords = new List<BaseTreeViewItem>();
+        var allKeywords = new List<ICatTreeViewItem>();
 
         foreach (var keyword in Keywords)
-          keyword.GetThisAndParentRecursive(ref allKeywords);
+          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
 
         foreach (var keyword in allKeywords.OfType<Keyword>().Distinct().OrderBy(x => x.FullPath)) {
           InfoBoxKeywords.Add(keyword.Title);
