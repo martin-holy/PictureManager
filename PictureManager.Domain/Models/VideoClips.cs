@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public class VideoClips : ITable {
     public TableHelper Helper { get; set; }
-    public List<VideoClip> All { get; } = new List<VideoClip>();
-    public Dictionary<int, VideoClip> AllDic { get; set; } = new Dictionary<int, VideoClip>();
+    public List<IRecord> All { get; } = new List<IRecord>();
+    public Dictionary<int, VideoClip> AllDic { get; set; }
 
     public void NewFromCsv(string csv) {
       // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
@@ -25,7 +26,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LinkReferences() {
-      foreach (var vc in All) {
+      foreach (var vc in All.Cast<VideoClip>()) {
         // reference to MediaItem and back reference from MediaItem to VideoClip without group
         vc.MediaItem = Core.Instance.MediaItems.AllDic[int.Parse(vc.Csv[1])];
         if (vc.Group == null)
@@ -70,7 +71,7 @@ namespace PictureManager.Domain.Models {
 
     public void LoadFromFile() {
       All.Clear();
-      AllDic.Clear();
+      AllDic = new Dictionary<int, VideoClip>();
       Helper.LoadFromFile();
     }
 
