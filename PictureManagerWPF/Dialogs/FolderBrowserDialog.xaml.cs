@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
@@ -41,7 +42,7 @@ namespace PictureManager.Dialogs {
         };
 
         // add placeholder so the Drive can be expanded
-        item.Items.Add(new BaseTreeViewItem());
+        item.Items.Add(new CatTreeViewItem());
 
         Drives.Add(item);
       }
@@ -58,8 +59,8 @@ namespace PictureManager.Dialogs {
     }
   }
 
-  public class FolderTreeViewItem : BaseTreeViewItem {
-    public string FullPath => GetFullPath(Path.DirectorySeparatorChar.ToString());
+  public class FolderTreeViewItem : CatTreeViewItem {
+    public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
     public override bool IsExpanded {
       get => base.IsExpanded;
       set {
@@ -86,7 +87,7 @@ namespace PictureManager.Dialogs {
         try {
           // add placeholder so the folder can be expanded
           if (Directory.EnumerateDirectories(folder.FullPath).GetEnumerator().MoveNext())
-            folder.Items.Add(new BaseTreeViewItem());
+            folder.Items.Add(new CatTreeViewItem());
 
           // add new Folder to the tree if is Accessible
           Items.Add(folder);
