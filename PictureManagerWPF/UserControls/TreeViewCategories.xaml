@@ -61,14 +61,13 @@
       </DockPanel>
     </Border>
 
-    <!-- TreeView Categories -->
-    <TreeView x:Name="TvCategories" Grid.Row="1" Background="Transparent" FocusManager.IsFocusScope="True"
-              ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}">
-      
+    <!-- CatTreeView Categories -->
+    <cc:CatTreeView x:Name="TvCategories" Grid.Row="1" FocusManager.IsFocusScope="True"
+                    ItemsSource="{Binding Model.TreeViewCategories, Source={x:Static pm:App.Core}}">
+
       <!-- BlurEffect when Search is visible -->
-      <TreeView.Style>
-        <Style TargetType="TreeView">
-          <Setter Property="BorderThickness" Value="0" />
+      <cc:CatTreeView.Style>
+        <Style TargetType="{x:Type cc:CatTreeView}" BasedOn="{StaticResource CatTreeView}">
           <Style.Triggers>
             <DataTrigger Binding="{Binding Visibility, ElementName=Search}" Value="Visible">
               <Setter Property="Effect">
@@ -79,77 +78,12 @@
             </DataTrigger>
           </Style.Triggers>
         </Style>
-      </TreeView.Style>
+      </cc:CatTreeView.Style>
 
-      <TreeView.Resources>
-        <!-- KeywordsPicCountStyle -->
-        <Style x:Key="KeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
-          <Setter Property="Text" Value="{Binding PicCount}" />
-          <Setter Property="Visibility" Value="Collapsed"/>
-          <Setter Property="VerticalAlignment" Value="Center" />
-          <Setter Property="Margin" Value="5,0,0,0" />
-          <Setter Property="Padding" Value="5,0" />
-          <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding IsMarked}" Value="True">
-              <Setter Property="Visibility" Value="Visible"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-
-        <!-- STreeViewStackPanel -->
-        <Style x:Key="STreeViewStackPanel" TargetType="{x:Type StackPanel}">
-          <Setter Property="Orientation" Value="Horizontal" />
-          <Setter Property="Background" Value="Transparent" />
-          <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
-          <EventSetter Event="PreviewMouseUp" Handler="TreeView_Select" />
-        </Style>
-
-        <!-- STreeViewKeywordsStackPanelWithDrop -->
-        <Style x:Key="STreeViewStackPanelWithDrop" BasedOn="{StaticResource STreeViewStackPanel}" TargetType="{x:Type StackPanel}">
-          <Setter Property="AllowDrop" Value="True" />
-          <EventSetter Event="Drop" Handler="TreeView_OnDrop" />
-          <EventSetter Event="DragEnter" Handler="TreeView_AllowDropCheck" />
-          <EventSetter Event="DragLeave" Handler="TreeView_AllowDropCheck" />
-          <EventSetter Event="DragOver" Handler="TreeView_AllowDropCheck" />
-        </Style>
-
-        <!-- STreeViewKeywordsStackPanelWithDragDrop -->
-        <Style x:Key="STreeViewStackPanelWithDragDrop" BasedOn="{StaticResource STreeViewStackPanelWithDrop}" TargetType="{x:Type StackPanel}">
-          <EventSetter Event="MouseLeftButtonDown" Handler="TreeView_OnMouseLeftButtonDown" />
-          <EventSetter Event="MouseMove" Handler="TreeView_OnMouseMove" />
-        </Style>
-
-        <!-- BaseCategoryItem -->
-        <HierarchicalDataTemplate DataType="{x:Type models:BaseCategoryItem}" ItemsSource="{Binding Items}">
-          <Border Height="40">
-            <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-              <cc:IconRect IconName="{Binding IconName}" Size="24" />
-              <TextBlock Style="{StaticResource TreeViewTitle}" FontSize="18" />
-            </StackPanel>
-          </Border>
-        </HierarchicalDataTemplate>
-
-        <!-- BaseTreeViewItem -->
-        <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewItem}" ItemsSource="{Binding Items}">
-          <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-            <cc:IconRect IconName="{Binding IconName}" />
-            <TextBlock Style="{StaticResource TreeViewTitle}" />
-          </StackPanel>
-        </HierarchicalDataTemplate>
-
-        <!-- BaseTreeViewTagItem -->
-        <HierarchicalDataTemplate DataType="{x:Type models:BaseTreeViewTagItem}" ItemsSource="{Binding Items}">
-          <StackPanel Style="{Binding RelativeSource={RelativeSource Self}, Converter={StaticResource TypeToStyleConverter}}">
-            <cc:IconRect IconName="{Binding IconName}" />
-            <TextBlock Style="{StaticResource TreeViewTitle}" />
-            <TextBlock Style="{StaticResource KeywordsPicCountStyle}" />
-          </StackPanel>
-        </HierarchicalDataTemplate>
-
+      <cc:CatTreeView.Resources>
         <!-- DataTemplate - Rating -->
         <HierarchicalDataTemplate DataType="{x:Type models:Rating}">
-          <StackPanel Style="{StaticResource STreeViewStackPanel}">
+          <StackPanel Orientation="Horizontal">
             <StackPanel Orientation="Horizontal">
               <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
               <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
@@ -163,7 +97,7 @@
 
         <!-- DataTemplate - MediaItemSize -->
         <HierarchicalDataTemplate DataType="{x:Type models:MediaItemSize}">
-          <StackPanel Style="{StaticResource STreeViewStackPanel}" Margin="0,0,3,3">
+          <StackPanel Orientation="Horizontal" Margin="0,0,3,3">
             <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
               <Grid.RowDefinitions>
                 <RowDefinition />
@@ -189,15 +123,16 @@
             </Grid>
           </StackPanel>
         </HierarchicalDataTemplate>
-      </TreeView.Resources>
+      </cc:CatTreeView.Resources>
 
-      <TreeView.ItemContainerStyle>
-        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
-          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+      <cc:CatTreeView.ItemContainerStyle>
+        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource CatTreeViewItem}">
           <Setter Property="VerticalContentAlignment" Value="Stretch" />
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
           <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
+          <EventSetter Event="MouseLeftButtonUp" Handler="TreeView_Select" />
+          <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
+          
           <Style.Triggers>
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
@@ -217,8 +152,8 @@
             </DataTrigger>
           </Style.Triggers>
         </Style>
-      </TreeView.ItemContainerStyle>
-    </TreeView>
+      </cc:CatTreeView.ItemContainerStyle>
+    </cc:CatTreeView>
 
     <!-- Search -->
     <uc:TreeViewSearch Grid.Row="1" x:Name="Search" Visibility="Collapsed" />
