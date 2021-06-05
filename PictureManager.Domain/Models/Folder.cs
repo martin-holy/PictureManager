@@ -2,17 +2,17 @@
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Folder : BaseTreeViewTagItem, IRecord, IEquatable<Folder> {
+  public sealed class Folder : CatTreeViewItem, IRecord, IEquatable<Folder>, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
-    private bool _isHidden;
     private bool _isFolderKeyword;
 
     public bool IsFolderKeyword {
@@ -23,20 +23,19 @@ namespace PictureManager.Domain.Models {
       }
     }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
-    public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
-    public string FullPath => GetFullPath(Path.DirectorySeparatorChar.ToString());
+    public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
     public override bool IsExpanded {
       get => base.IsExpanded;
       set {
         base.IsExpanded = value;
         if (value) LoadSubFolders(false);
-        if (Parent != null && !IsFolderKeyword) // not Drive Folder and not FolderKeyword
+        if (Parent is Folder && !IsFolderKeyword) // not Drive Folder and not FolderKeyword
           IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
       }
     }
 
-    public Folder(int id, string name, BaseTreeViewItem parent) {
+    public Folder(int id, string name, ICatTreeViewItem parent) {
       Id = id;
       Title = name;
       Parent = parent;
@@ -48,7 +47,7 @@ namespace PictureManager.Domain.Models {
       return string.Join("|",
         Id.ToString(),
         Title,
-        (Parent as Folder)?.Id.ToString(),
+        (Parent as Folder)?.Id.ToString() ?? string.Empty,
         IsFolderKeyword ? "1" : string.Empty);
     }
 
@@ -75,19 +74,6 @@ namespace PictureManager.Domain.Models {
     }
 
     #endregion
-
-    public void Rename(string newName) {
-      Directory.Move(FullPath, Extensions.PathCombine(((Folder) Parent).FullPath, newName));
-      if (Directory.Exists(FullPathCache))
-        Directory.Move(FullPathCache, Extensions.PathCombine(((Folder) Parent).FullPathCache, newName));
-      Title = newName;
-      Core.Instance.Folders.Helper.IsModified = true;
-
-      // sort
-      var newIndex = ((Folder) Parent).Items.OrderBy(x => x.Title).ToList().IndexOf(this);
-      var oldIndex = ((Folder) Parent).Items.IndexOf(this);
-      ((Folder) Parent).Items.Move(oldIndex, newIndex);
-    }
 
     public void CopyTo(Folder destFolder, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
       // reload destFolder so that new folder is added
@@ -121,7 +107,7 @@ namespace PictureManager.Domain.Models {
 
       // if srcFolder have subFolders and targetFolder not => add place holder
       if (Items.Count > 0 && targetFolder.Items.Count == 0)
-        targetFolder.Items.Add(new BaseTreeViewItem());
+        targetFolder.Items.Add(new CatTreeViewItem());
     }
 
     public void MoveTo(Folder destFolder, ref HashSet<string> skipped) {
@@ -143,9 +129,7 @@ namespace PictureManager.Domain.Models {
         }
 
         // insert folder to the tree in sort order
-        var folder = destFolder.Items.Cast<Folder>().FirstOrDefault(
-          f => string.Compare(f.Title, Title, StringComparison.OrdinalIgnoreCase) >= 0);
-        destFolder.Items.Insert(folder == null ? destFolder.Items.Count : destFolder.Items.IndexOf(folder), this);
+        CatTreeViewUtils.SetItemInPlace(destFolder, this);
 
         return;
       }
@@ -166,17 +150,16 @@ namespace PictureManager.Domain.Models {
       }
 
       // Move all subFolders
-      foreach (var subFolder in Items.OfType<Folder>().ToList()) {
+      foreach (var subFolder in Items.OfType<Folder>().ToList())
         subFolder.MoveTo(targetFolder, ref skipped);
-      }
 
       // if srcFolder have subFolders and targetFolder not => add place holder
       if (Items.Count > 0 && targetFolder.Items.Count == 0)
-        targetFolder.Items.Add(new BaseTreeViewItem());
+        targetFolder.Items.Add(new CatTreeViewItem());
 
       // delete if this folder was moved completely and the target folder was already in DB
       if (deleteThis)
-        Core.Instance.Folders.DeleteRecord(this);
+        Core.Instance.Folders.ItemDelete(this);
     }
 
     public void LoadSubFolders(bool recursive) {
@@ -198,7 +181,7 @@ namespace PictureManager.Domain.Models {
           isNew = true;
           // add new Folder to the database
           folder = new Folder(Core.Instance.Folders.Helper.GetNextId(), dirName, this);
-          Core.Instance.Folders.AddRecord(folder);
+          Core.Instance.Folders.All.Add(folder);
         }
 
         // if Viewer can't see this Folder set it as hidden and continue
@@ -230,7 +213,7 @@ namespace PictureManager.Domain.Models {
       // remove Folders deleted outside of this application
       foreach (var item in Items.ToList()) {
         if (dirNames.Contains(item.Title)) continue;
-        Core.Instance.Folders.DeleteRecord((Folder) item);
+        Core.Instance.Folders.ItemDelete(item);
       }
 
       // add placeholder so the folder can be expanded
@@ -248,8 +231,8 @@ namespace PictureManager.Domain.Models {
           }
           else {
             if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
-              item.Items.Add(new BaseTreeViewItem());
-              item.FolderKeyword?.Items.Add(new BaseTreeViewItem());
+              item.Items.Add(new CatTreeViewItem());
+              item.FolderKeyword?.Items.Add(new CatTreeViewItem());
             }
             item.IsAccessible = true;
           } 
@@ -262,37 +245,6 @@ namespace PictureManager.Domain.Models {
       
       // sort Items
       Items.Sort(x => x.Title);
-    }
-
-    public Folder New(string folderName) {
-      IsExpanded = true;
-
-      // create Folder
-      Directory.CreateDirectory(Extensions.PathCombine(FullPath, folderName));
-      var item = new Folder(Core.Instance.Folders.Helper.GetNextId(), folderName, this) { IsAccessible = true };
-
-      // add new Folder to the database
-      Core.Instance.Folders.AddRecord(item);
-
-      // add new Folder to the tree
-      var folder = Items.FirstOrDefault(f => string.Compare(f.Title, folderName, StringComparison.OrdinalIgnoreCase) >= 0);
-      Items.Insert(folder == null ? Items.Count : Items.IndexOf(folder), item);
-
-      return item;
-    }
-
-    public string ValidateNewFolderName(string name, bool rename) {
-      // check if folder already exists
-      if (Directory.Exists(Extensions.PathCombine(rename ? ((Folder)Parent).FullPath : FullPath, name))) {
-        return "Folder already exists!";
-      }
-
-      // check if is correct folder name
-      if (Path.GetInvalidPathChars().Any(name.Contains)) {
-        return "New folder's name contains incorrect character(s)!";
-      }
-
-      return null;
     }
 
     public bool HasThisParent(Folder parent) {
@@ -338,8 +290,8 @@ namespace PictureManager.Domain.Models {
       if (!recursive) return MediaItems;
 
       // get all Folders
-      var folders = new List<BaseTreeViewItem>();
-      GetThisAndItemsRecursive(ref folders);
+      var folders = new List<ICatTreeViewItem>();
+      CatTreeViewUtils.GetThisAndItemsRecursive(this, ref folders);
 
       // get all MediaItems from folders
       var mis = new List<MediaItem>();
@@ -366,10 +318,10 @@ namespace PictureManager.Domain.Models {
     public static List<Folder> GetFolders(List<Folder> roots, bool recursive) {
       if (!recursive) return roots;
 
-      var output = new List<BaseTreeViewItem>();
+      var output = new List<ICatTreeViewItem>();
       foreach (var root in roots) {
         root.LoadSubFolders(true);
-        root.GetThisAndItemsRecursive(ref output);
+        CatTreeViewUtils.GetThisAndItemsRecursive(root, ref output);
       }
 
       return output.Cast<Folder>().ToList();
