@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class People : BaseCategoryItem, ITable, ICategoryItem {
+  public sealed class People : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<Person> All { get; } = new List<Person>();
-    public Dictionary<int, Person> AllDic { get; } = new Dictionary<int, Person>();
-
-    private static readonly Mutex Mut = new Mutex();
+    public List<IRecord> All { get; } = new List<IRecord>();
+    public Dictionary<int, Person> AllDic { get; set; }
 
     public People() : base(Category.People) {
       Title = "People";
       IconName = IconName.PeopleMultiple;
-    }
-
-    ~People() {
-      Mut.Dispose();
+      CanHaveGroups = true;
+      CanCreateItems = true;
+      CanRenameItems = true;
+      CanDeleteItems = true;
+      CanMoveItem = true;
     }
 
     public void SaveToFile() {
@@ -26,7 +25,7 @@ namespace PictureManager.Domain.Models {
 
     public void LoadFromFile() {
       All.Clear();
-      AllDic.Clear();
+      AllDic = new Dictionary<int, Person>();
       Helper.LoadFromFile();
     }
 
@@ -35,75 +34,41 @@ namespace PictureManager.Domain.Models {
       var props = csv.Split('|');
       if (props.Length != 2) return;
       var id = int.Parse(props[0]);
-      AddRecord(new Person(id, props[1]));
+      var person = new Person(id, props[1]);
+      All.Add(person);
+      AllDic.Add(person.Id, person);
     }
 
     public void LinkReferences() {
       // MediaItems to the Person are added in LinkReferences on MediaItem
 
       Items.Clear();
-      LoadGroups();
-
-      // add People without group
-      foreach (var person in All.Where(x => x.Parent == null).OrderBy(x => x.Title)) {
-        person.Parent = this;
-        Items.Add(person);
-      }
-
-      // sort People in the Groups
-      foreach (var g in Items.OfType<CategoryGroup>())
-        g.Items.Sort(x => x.Title);
-    }
-
-    private void AddRecord(Person record) {
-      All.Add(record);
-      AllDic.Add(record.Id, record);
+      LoadGroupsAndItems(All);
     }
 
     public Person GetPerson(string name, bool create) {
       return Core.Instance.RunOnUiThread(() => {
-        var person = All.SingleOrDefault(x => x.Title.Equals(name));
-        return person ?? (create ? CreatePerson(this, name) : null);
+        var person = All.Cast<Person>().SingleOrDefault(x => x.Title.Equals(name));
+        return person ?? (create ? ItemCreate(this, name) as Person : null);
       }).Result;
-    } 
-
-    public Person CreatePerson(BaseTreeViewItem root, string name) {
-      Mut.WaitOne();
-      var person = new Person(Helper.GetNextId(), name);
-
-      // add new Person to the database
-      AddRecord(person);
-
-      // add new Person to the tree
-      person.Parent = root;
-      ItemSetInPlace(root, true, person);
-
-      if (root is CategoryGroup)
-        Core.Instance.CategoryGroups.Helper.IsModified = true;
-
-      Mut.ReleaseMutex();
-
-      return person;
     }
 
-    public string ValidateNewItemTitle(BaseTreeViewItem root, string name) {
-      return All.SingleOrDefault(x => x.Title.Equals(name)) != null
-        ? $"{name} person already exists!"
-        : null;
-    }
+    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+      var item = new Person(Helper.GetNextId(), name) {Parent = root};
+      var idx = CatTreeViewUtils.SetItemInPlace(root, item);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
+      if (allIdx < 0) All.Add(item); else All.Insert(allIdx, item);
 
-    public void ItemCreate(BaseTreeViewItem root, string name) {
-      CreatePerson(root, name);
-      Core.Instance.Sdb.SaveAllTables();
-    }
-
-    public void ItemRename(BaseTreeViewItem item, string name) {
-      item.Title = name;
-      ItemSetInPlace(item.Parent, false, item);
       SaveToFile();
+      if (root is ICatTreeViewGroup)
+        Core.Instance.CategoryGroups.SaveToFile();
+
+      Core.Instance.Sdb.SaveIdSequences();
+
+      return item;
     }
 
-    public void ItemDelete(BaseTreeViewItem item) {
+    public new void ItemDelete(ICatTreeViewItem item) {
       if (!(item is Person person)) return;
 
       // remove Person from MediaItems
@@ -113,17 +78,19 @@ namespace PictureManager.Domain.Models {
           if (mi.People.Count == 0)
             mi.People = null;
         }
-        Core.Instance.MediaItems.Helper.IsModified = true;
+        Core.Instance.MediaItems.SaveToFile();
       }
 
       // remove Person from the tree
-      person.Parent.Items.Remove(person);
+      item.Parent.Items.Remove(item);
+      if (item.Parent is CategoryGroup)
+        Core.Instance.CategoryGroups.SaveToFile();
+      item.Parent = null;
 
       // remove Person from DB
       All.Remove(person);
-      AllDic.Remove(person.Id);
 
-      Helper.IsModified = true;
+      SaveToFile();
     }
   }
 }
