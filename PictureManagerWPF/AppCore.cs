@@ -9,6 +9,7 @@ using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.Models;
@@ -36,7 +37,7 @@ namespace PictureManager {
       MediaItemClipsCategory = new MediaItemClipsCategory();
     }
 
-    public void SetBackgroundBrush(BaseTreeViewItem item, BackgroundBrush backgroundBrush) {
+    public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
       item.BackgroundBrush = backgroundBrush;
       if (backgroundBrush == BackgroundBrush.Default)
         Model.ActiveFilterItems.Remove(item);
@@ -48,13 +49,13 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public async void TreeView_Select(BaseTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
+    public async void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
       switch (item) {
         case FavoriteFolder favoriteFolder: {
           if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
-          BaseTreeViewItem.ExpandTo(favoriteFolder.Folder);
+          CatTreeViewUtils.ExpandTo(favoriteFolder.Folder);
 
           // scroll to folder
           var visibleTreeIndex = 0;
@@ -70,7 +71,7 @@ namespace PictureManager {
         case Keyword _:
         case GeoName _: {
           if (Model.MediaItems.IsEditModeOn && !loadByTag) {
-            if (!(item is BaseTreeViewTagItem bti)) return;
+            if (!(item is ICatTreeViewTagItem bti)) return;
 
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
@@ -89,8 +90,8 @@ namespace PictureManager {
             // get items by tag
             var items = new List<MediaItem>();
 
-            switch ((BaseTreeViewTagItem)item) {
-              case Rating rating: items = Model.MediaItems.All.Where(x => x.Rating == rating.Value).ToList(); break;
+            switch (item) {
+              case Rating rating: items = Model.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(); break;
               case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
               case Person person: items = person.MediaItems; break;
               case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
@@ -135,7 +136,7 @@ namespace PictureManager {
           Model.MarkUsedKeywordsAndPeople();
           break;
         }
-        case BaseCategoryItem _: {
+        case ICatTreeViewCategory _: {
           // if category is going to collapse and sub item is selected, category gets selected
           // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
           // this will only prevent selecting category if selection was made with mouse click
@@ -145,7 +146,7 @@ namespace PictureManager {
       }
     }
 
-    public void ActivateFilter(BaseTreeViewItem item, BackgroundBrush mode) {
+    public void ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
       SetBackgroundBrush(item, item.BackgroundBrush != BackgroundBrush.Default ? BackgroundBrush.Default : mode);
 
       // reload with new filter
