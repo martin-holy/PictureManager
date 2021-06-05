@@ -576,8 +576,7 @@ namespace PictureManager.ViewModels {
             var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
             if (!string.IsNullOrEmpty(tmpGId as string)) {
               // TODO dohledani/vytvoreni geoname
-              App.Core.Model.GeoNames.AllDic.TryGetValue(int.Parse(tmpGId.ToString()), out var geoname);
-              mi.GeoName = geoname;
+              mi.GeoName = App.Core.Model.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
             }
 
             mi.SetThumbSize(true);
