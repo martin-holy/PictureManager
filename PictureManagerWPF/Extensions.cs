@@ -74,6 +74,14 @@ namespace PictureManager {
       }
     }
 
+    public static T FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
+      while (true) {
+        if (child == null) return null;
+        if (child is T element && element.Name.Equals(name)) return element;
+        child = (FrameworkElement) (child.Parent ?? child.TemplatedParent);
+      }
+    }
+
     public static bool TryParseDoubleUniversal(this string s, out double result) {
       // TODO refactor
 
