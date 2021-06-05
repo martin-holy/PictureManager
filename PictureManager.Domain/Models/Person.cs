@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Person : BaseTreeViewTagItem, IRecord {
+  public sealed class Person : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
