@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
@@ -61,8 +62,8 @@ namespace PictureManager.ViewModels {
           return paths;
         }
 
-        var fks = new List<BaseTreeViewItem>();
-        CurrentMediaItem.Folder.FolderKeyword.GetThisAndParentRecursive(ref fks);
+        var fks = new List<ICatTreeViewItem>();
+        CatTreeViewUtils.GetThisAndParentRecursive(CurrentMediaItem.Folder.FolderKeyword, ref fks);
         fks.Reverse();
         foreach (var fk in fks)
           if (fk.Parent != null) {
@@ -106,7 +107,7 @@ namespace PictureManager.ViewModels {
         UpdateRating();
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
-        FullGeoName = _currentMediaItem?.GeoName?.GetFullPath("\n");
+        FullGeoName = CatTreeViewUtils.GetFullPath(_currentMediaItem?.GeoName, "\n");
         
         OnPropertyChanged(nameof(DateAndTime));
         OnPropertyChanged(nameof(FilePath));
