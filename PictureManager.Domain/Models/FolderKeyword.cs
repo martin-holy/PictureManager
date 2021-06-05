@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.Domain.Models {
-  public class FolderKeyword: BaseTreeViewTagItem {
+  public class FolderKeyword: CatTreeViewItem, ICatTreeViewTagItem {
     public List<Folder> Folders { get; } = new List<Folder>();
 
     public override bool IsExpanded {
