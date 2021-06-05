@@ -1,27 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Viewer : BaseTreeViewItem, IRecord {
+  public sealed class Viewer : CatTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; }
     public bool IsDefault { get; set; } 
 
-    public BaseTreeViewItem IncludedFolders { get; }
-    public BaseTreeViewItem ExcludedFolders { get; }
+    public CatTreeViewItem IncludedFolders { get; }
+    public CatTreeViewItem ExcludedFolders { get; }
 
     private readonly HashSet<int> _incFoIds;
     private readonly HashSet<int> _incFoTreeIds;
     private readonly HashSet<int> _excFoIds;
 
-    public Viewer(int id, string name, BaseTreeViewItem parent) {
+    public Viewer(int id, string name, ICatTreeViewItem parent) {
       Id = id;
       Title = name;
       Parent = parent;
 
-      IncludedFolders = new BaseTreeViewItem { Title = "Included Folders", IconName = IconName.FolderStar, Parent = this };
-      ExcludedFolders = new BaseTreeViewItem { Title = "Excluded Folders", IconName = IconName.FolderStar, Parent = this };
+      IncludedFolders = new CatTreeViewItem { Title = "Included Folders", IconName = IconName.FolderStar, Parent = this };
+      ExcludedFolders = new CatTreeViewItem { Title = "Excluded Folders", IconName = IconName.FolderStar, Parent = this };
 
       Items.Add(IncludedFolders);
       Items.Add(ExcludedFolders);
@@ -44,7 +45,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void AddFolder(Folder folder, bool included) {
-      var item = new BaseTreeViewItem {
+      var item = new CatTreeViewItem {
         Tag = folder.Id,
         Title = folder.Title,
         ToolTip = folder.FullPath,
@@ -57,8 +58,8 @@ namespace PictureManager.Domain.Models {
       // add IDs of Folder and Folder Tree
       if (included) {
         _incFoIds.Add(folder.Id);
-        var fos = new List<BaseTreeViewItem>();
-        folder.GetThisAndParentRecursive(ref fos);
+        var fos = new List<ICatTreeViewItem>();
+        CatTreeViewUtils.GetThisAndParentRecursive(folder, ref fos);
         foreach (var fo in fos.OfType<Folder>())
           _incFoTreeIds.Add(fo.Id);
       }
@@ -72,9 +73,9 @@ namespace PictureManager.Domain.Models {
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
 
-      var testFos = new List<BaseTreeViewItem>();
+      var testFos = new List<ICatTreeViewItem>();
 
-      folder.GetThisAndParentRecursive(ref testFos);
+      CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
 
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
                        || _incFoTreeIds.Any(incFoId => incFoId == folder.Id);
@@ -87,9 +88,9 @@ namespace PictureManager.Domain.Models {
     public bool CanSeeContentOfThisFolder(Folder folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
 
-      var testFos = new List<BaseTreeViewItem>();
+      var testFos = new List<ICatTreeViewItem>();
 
-      folder.GetThisAndParentRecursive(ref testFos);
+      CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
 
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
 
@@ -98,7 +99,7 @@ namespace PictureManager.Domain.Models {
       return incContain && !excContain;
     }
 
-    private static void SetInPlace(BaseTreeViewItem item) {
+    private static void SetInPlace(ICatTreeViewItem item) {
       item.Parent.Items.Add(item);
       var idx = item.Parent.Items.OrderBy(x => x.ToolTip).ToList().IndexOf(item);
       item.Parent.Items.Move(item.Parent.Items.IndexOf(item), idx);
