@@ -1,4 +1,4 @@
 namespace PictureManager.Domain.CatTreeViewModels {
-  public interface ICatTreeViewGroup: ICatTreeViewBaseItem {
+  public interface ICatTreeViewGroup: ICatTreeViewItem {
   }
 }
