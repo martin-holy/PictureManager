@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Ratings : BaseCategoryItem {
+  public sealed class Ratings : BaseCatTreeViewCategory {
 
     public Ratings() : base(Category.Ratings) {
       Title = "Ratings";
