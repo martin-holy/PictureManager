@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public class VideoClipsGroups : ITable {
     public TableHelper Helper { get; set; }
-    public List<VideoClipsGroup> All { get; } = new List<VideoClipsGroup>();
+    public List<IRecord> All { get; } = new List<IRecord>();
 
     public void NewFromCsv(string csv) {
       // ID|Name|MediaItem|Clips
@@ -14,7 +15,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LinkReferences() {
-      foreach (var vcg in All) {
+      foreach (var vcg in All.Cast<VideoClipsGroup>()) {
         // reference to MediaItem and back reference from MediaItem to VideoClipsGroup
         vcg.MediaItem = Core.Instance.MediaItems.AllDic[int.Parse(vcg.Csv[2])];
         vcg.MediaItem.VideoClipsGroupAdd(vcg);
