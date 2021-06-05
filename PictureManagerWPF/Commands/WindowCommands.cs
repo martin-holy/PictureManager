@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
 using PictureManager.Properties;
@@ -142,7 +143,7 @@ namespace PictureManager.Commands {
         // onCompleted
         delegate {
           App.Core.Model.Sdb.SaveAllTables();
-          App.Core.AppInfo.FullGeoName = App.Core.AppInfo.CurrentMediaItem?.GeoName?.GetFullPath("\n");
+          App.Core.AppInfo.FullGeoName = CatTreeViewUtils.GetFullPath(App.Core.AppInfo.CurrentMediaItem?.GeoName, "\n");
         });
 
       progress.StartDialog();
