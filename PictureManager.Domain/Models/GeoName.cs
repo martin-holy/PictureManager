@@ -1,16 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class GeoName : BaseTreeViewTagItem, IRecord {
+  public sealed class GeoName : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
 
-    public GeoName(int id, string name, string toponymName, string fCode, BaseTreeViewItem parent) {
+    public GeoName(int id, string name, string toponymName, string fCode, ICatTreeViewItem parent) {
       Id = id;
       Title = name;
       ToponymName = toponymName;
@@ -35,8 +36,8 @@ namespace PictureManager.Domain.Models {
 
     public MediaItem[] GetMediaItemsRecursive() {
       // get all GeoNames
-      var geoNames = new List<BaseTreeViewItem>();
-      GetThisAndItemsRecursive(ref geoNames);
+      var geoNames = new List<ICatTreeViewItem>();
+      CatTreeViewUtils.GetThisAndItemsRecursive(this, ref geoNames);
 
       // get all MediaItems from geoNames
       var mis = new List<MediaItem>();
