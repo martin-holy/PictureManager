@@ -143,7 +143,7 @@ namespace PictureManager.ViewModels {
           saveDb = true;
           if (Application.Current.Dispatcher != null)
             await Application.Current.Dispatcher.InvokeAsync(delegate {
-              Delete(_model.All.Where(x => x.IsNew).ToArray());
+              Delete(_model.All.Cast<MediaItem>().Where(x => x.IsNew).ToArray());
             });
         }
 
