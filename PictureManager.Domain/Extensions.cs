@@ -28,6 +28,15 @@ namespace PictureManager.Domain {
       list.Insert(i, item);
     }
 
+    public static void Move<T>(this List<T> list, T item, int newIndex) {
+      var oldIndex = list.IndexOf(item);
+      if (newIndex == oldIndex) return;
+      if (newIndex > oldIndex) newIndex--;
+
+      list.RemoveAt(oldIndex);
+      list.Insert(newIndex, item);
+    }
+
     public static void Move<T>(this List<T> list, T item, T dest, bool aboveDest) {
       var oldIndex = list.IndexOf(item);
       var newIndex = list.IndexOf(dest);
@@ -35,6 +44,7 @@ namespace PictureManager.Domain {
       if (newIndex > oldIndex && aboveDest) newIndex--;
       if (newIndex < oldIndex && !aboveDest) newIndex++;
       if (newIndex == oldIndex) return;
+      if (newIndex > oldIndex) newIndex--;
 
       list.RemoveAt(oldIndex);
       list.Insert(newIndex, item);
