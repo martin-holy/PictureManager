@@ -65,6 +65,10 @@
       <Project>{47205205-AA5E-44D1-97FB-6950C11BBD76}</Project>
       <Name>PictureManagerWPF</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj">
+      <Project>{4fa81047-f292-421a-924b-c085a383d740}</Project>
+      <Name>SimpleDB</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
