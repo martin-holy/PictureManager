@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FolderKeywords: BaseCategoryItem {
+  public sealed class FolderKeywords: BaseCatTreeViewCategory {
     public List<FolderKeyword> All { get; } = new List<FolderKeyword>();
 
     public FolderKeywords() : base (Category.FolderKeywords) {
@@ -14,7 +15,7 @@ namespace PictureManager.Domain.Models {
       Items.Clear();
       All.Clear();
 
-      var fkRoots = Core.Instance.Folders.All.Where(x => x.IsFolderKeyword);
+      var fkRoots = Core.Instance.Folders.All.Cast<Folder>().Where(x => x.IsFolderKeyword);
 
       foreach (var fkRoot in fkRoots) {
         if (fkRoot.IsThisOrParentHidden()) continue;
@@ -22,7 +23,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private void LoadRecursive(BaseTreeViewItem folder, BaseTreeViewItem folderKeyword) {
+    private void LoadRecursive(ICatTreeViewItem folder, ICatTreeViewItem folderKeyword) {
       foreach (var fi in folder.Items.OfType<Folder>()) {
         if (!Core.Instance.CanViewerSeeThisFolder(fi)) continue;
         if (fi.IsThisOrParentHidden()) continue;
