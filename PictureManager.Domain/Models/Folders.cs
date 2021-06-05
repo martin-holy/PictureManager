@@ -342,7 +342,7 @@ namespace PictureManager.Domain.Models {
       if (Directory.Exists(self.FullPathCache))
         Directory.Move(self.FullPathCache, Extensions.PathCombine(parent.FullPathCache, name));
       
-      Title = name;
+      item.Title = name;
 
       CatTreeViewUtils.SetItemInPlace(item.Parent, item);
       SaveToFile();
