@@ -7,11 +7,17 @@
 - zkontrolovat aby Thumbnails mely rozmery delitelny dvema
 - Clips: kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
 - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
+- MessageDialog nema ikonu
+- VideoPlayer mouseHideTimer start only when active
 
 #Update
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
 - pruhlednost statusbaru pri skryti nastavit na 0
 - SimpleDB: set IsModified = false in SaveToFile
+- èeknout jestli davam e.Handled = true na mouse eventech. pousti se pak ten kod vic krat
+- IsMarked & PicCount: mozna by stacilo mit jen PicCount
+- set on ITables IsModified or SaveToFile each time on insert, rename, move, delete, ...? set IsModified and add (DB) button to save it
+- error handle in loading records from DB
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
@@ -21,22 +27,30 @@
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
 - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
-- udelat do thumbnails kategorie podle slozek/datumu/...
-  kategorie budou mit ikonu a bude se zobrazovat asi slozka i datum, kazdy zvlast. muze tam bejt i pocet souboru, lidi, keywords
-- prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinan se mezi nima (pozor, delete je za selected)
+- do thumbnails gropus dodelat people and keywords
+- prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
 - on mouse over icon on TreeViewItem zobrazit u people/keywords/... actions and/or/not/load
 - pridat k rotate taky flip H a V
 - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 - nahledy k osobam na mouse over??? :)
 - filter na delku videa
 - zobrazovat ve status baru soucet MB za selected
-- ted to asi zrovna vychazi dobre, ale nastavit vychozi sirku treeview tak, aby zbyl prostor velkej 4:3
 - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
-  nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat pubodni video
+  nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat puvodni video
 - umoznit zmenit nahled u videa
-- hide mouse in fullmedia after 3sec
 - face recognition
 - prevest main CatTreeView na control CatTreeView
+  - TODO GeoNames, user name dat do prop na GeoNames, user name checkovat OnBeforeItemCreate, menuitem GeoNameNewCommand udelat obecne
+  - drag&drop se chova divne, kdyz zobrazim context menu a pak kliknu na jinej item
+  - test selected folder rename
+  - vymyslet jinej nazev pro PicCount a ICatTreeViewTagItem
+  - new func sort item in the tree
+  - ItemCreate na People a Keywords je skoro stejny
+- Clips: akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
+         lock na volume a speed, aby se ignorovalo to co je u clipu 
+- nova kategorie "keywords groups" kde budou kombinace keywords, people, ... ktery se vyskytujou na jednom MediaItem
+- IsHidden jsem dal na CatTreeViewItem, takze to muzu pouzit i na keywords, people, groups, ...
+- Log to file
 
 
 
