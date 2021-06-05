@@ -12,7 +12,7 @@ using SimpleDB;
 namespace PictureManager.Domain.Models {
   public class MediaItems : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
-    public List<MediaItem> All { get; } = new List<MediaItem>();
+    public List<IRecord> All { get; } = new List<IRecord>();
     public Dictionary<int, MediaItem> AllDic { get; set; }
 
     private bool _isEditModeOn;
@@ -47,7 +47,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LinkReferences() {
-      foreach (var mi in All) {
+      foreach (var mi in All.Cast<MediaItem>()) {
         // reference to Folder and back reference from Folder to MediaItems
         mi.Folder = Core.Instance.Folders.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);
