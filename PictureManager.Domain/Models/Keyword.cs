@@ -1,32 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Keyword : BaseTreeViewTagItem, IRecord {
+  public sealed class Keyword : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; }
-    public int Idx { get; set; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
 
     public string FullPath => GetFullPath();
 
-    public Keyword(int id, string name, BaseTreeViewItem parent, int index) {
+    public Keyword(int id, string name, ICatTreeViewItem parent) {
       Id = id;
       Title = name;
       Parent = parent;
-      Idx = index;
       IconName = IconName.Tag;
     }
 
     public string ToCsv() {
-      // ID|Name|Parent|Index
+      // ID|Name|Parent
       return string.Join("|",
         Id.ToString(),
         Title,
-        (Parent as Keyword)?.Id.ToString(),
-        Idx.ToString());
+        (Parent as Keyword)?.Id.ToString());
     }
 
     private string GetFullPath() {
@@ -48,8 +46,8 @@ namespace PictureManager.Domain.Models {
 
     public MediaItem[] GetMediaItemsRecursive() {
       // get all Keywords
-      var keywords = new List<BaseTreeViewItem>();
-      GetThisAndItemsRecursive(ref keywords);
+      var keywords = new List<ICatTreeViewItem>();
+      CatTreeViewUtils.GetThisAndItemsRecursive(this, ref keywords);
 
       // get all MediaItems from keywords
       var mis = new List<MediaItem>();
