@@ -1,14 +1,19 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFolders : BaseCategoryItem, ITable {
+  public sealed class FavoriteFolders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<FavoriteFolder> All { get; } = new List<FavoriteFolder>();
+    public List<IRecord> All { get; } = new List<IRecord>();
 
     public FavoriteFolders() : base(Category.FavoriteFolders) {
       Title = "Favorites";
       IconName = IconName.FolderStar;
+      CanRenameItems = true;
+      CanDeleteItems = true;
+      CanMoveItem = true;
     }
 
     public void SaveToFile() {
@@ -21,18 +26,18 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Folder
+      // ID|FolderId|Title
       var props = csv.Split('|');
-      if (props.Length != 2) return;
+      if (props.Length != 3) return;
       var id = int.Parse(props[0]);
-      AddRecord(new FavoriteFolder(id) {Csv = props});
+      All.Add(new FavoriteFolder(id) {Title = props[2], Csv = props});
     }
 
     public void LinkReferences() {
-      foreach (var item in All) {
+      foreach (var item in All.Cast<FavoriteFolder>()) {
         item.Folder = Core.Instance.Folders.AllDic[int.Parse(item.Csv[1])];
-        item.Title = item.Folder.Title;
         item.ToolTip = item.Folder.FullPath;
+        item.Parent = this;
         Items.Add(item);
 
         // csv array is not needed any more
@@ -40,28 +45,32 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private void AddRecord(FavoriteFolder record) {
-      All.Add(record);
+    public void ItemCreate(Folder folder) {
+      var ff = new FavoriteFolder(Helper.GetNextId()) {
+        Title = folder.Title,
+        Folder = folder,
+        Parent = this
+      };
+
+      var idx = CatTreeViewUtils.SetItemInPlace(this, ff);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, this, idx);
+      if (allIdx < 0) All.Add(ff); else All.Insert(allIdx, ff);
+
+      SaveToFile();
+      Core.Instance.Sdb.SaveIdSequences();
     }
 
-    public void Remove(FavoriteFolder folder) {
+    public new void ItemDelete(ICatTreeViewItem item) {
+      if (!(item is FavoriteFolder folder)) return;
+
       // remove from the Tree
-      Items.Remove(folder);
-      
+      item.Parent.Items.Remove(item);
+
       // remove from DB
       All.Remove(folder);
 
       folder.Folder = null;
-      Helper.IsModified = true;
-    }
-
-    public void Add(Folder folder) {
-      var ff = new FavoriteFolder(Helper.GetNextId()) {
-        Title = folder.Title,
-        Folder = folder
-      };
-      AddRecord(ff);
-      Items.Add(ff);
+      SaveToFile();
     }
   }
 }
