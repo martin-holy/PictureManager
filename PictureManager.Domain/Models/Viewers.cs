@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Viewers : BaseCategoryItem, ITable, ICategoryItem {
+  public sealed class Viewers : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<Viewer> All { get; } = new List<Viewer>();
+    public List<IRecord> All { get; } = new List<IRecord>();
 
     public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
       IconName = IconName.Eye;
+      CanCreateItems = true;
+      CanRenameItems = true;
+      CanDeleteItems = true;
     }
 
     public void SaveToFile() {
@@ -28,7 +32,7 @@ namespace PictureManager.Domain.Models {
       var id = int.Parse(props[0]);
       var viewer = new Viewer(id, props[1], this) {Csv = props, IsDefault = props[4] == "1"};
       if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
-      AddRecord(viewer);
+      All.Add(viewer);
     }
 
     public void LinkReferences() {
@@ -36,7 +40,7 @@ namespace PictureManager.Domain.Models {
 
       Items.Clear();
 
-      foreach (var viewer in All.OrderBy(x => x.Title)) {
+      foreach (var viewer in All.Cast<Viewer>().OrderBy(x => x.Title)) {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
@@ -59,41 +63,36 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private void AddRecord(Viewer record) {
-      All.Add(record);
+    public new bool CanCreateItem(ICatTreeViewItem item) {
+      return item is Viewers;
     }
 
-    private void CreateViewer(string name) {
-      var viewer = new Viewer(Helper.GetNextId(), name, this);
-      AddRecord(viewer);
-      Core.Instance.Sdb.SaveAllTables();
-      ItemSetInPlace(this, true, viewer);
+    public new bool CanRenameItem(ICatTreeViewItem item) {
+      return item is Viewer;
     }
 
-    public string ValidateNewItemTitle(BaseTreeViewItem root, string name) {
-      return All.SingleOrDefault(x => x.Title.Equals(name)) != null
-        ? $"{name} viewer already exists!"
-        : null;
+    public new bool CanDeleteItem(ICatTreeViewItem item) {
+      return item is Viewer || item.Parent?.Parent is Viewer;
     }
 
-    public void ItemCreate(BaseTreeViewItem root, string name) {
-      CreateViewer(name);
-    }
-
-    public void ItemRename(BaseTreeViewItem item, string name) {
-      item.Title = name;
-      ItemSetInPlace(item.Parent, false, item);
+    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+      var viewer = new Viewer(Helper.GetNextId(), name, root);
+      All.Add(viewer);
+      CatTreeViewUtils.SetItemInPlace(root, viewer);
       SaveToFile();
+      Core.Instance.Sdb.SaveIdSequences();
+
+      return viewer;
     }
 
-    public void ItemDelete(BaseTreeViewItem item) {
-      if (!(item is Viewer viewer)) return;
-      
-      // remove Viewer from the tree
-      item.Parent.Items.Remove(viewer);
+    public new void ItemDelete(ICatTreeViewItem item) {
+      // item can be Viewer or Inc/Excl Folder
+      item.Parent.Items.Remove(item);
 
       // remove Viewer from DB
-      All.Remove(viewer);
+      if (item is Viewer viewer)
+        All.Remove(viewer);
+
       SaveToFile();
     }
   }
