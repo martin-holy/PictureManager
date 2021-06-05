@@ -1,7 +1,8 @@
-﻿using SimpleDB;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class FavoriteFolder : BaseTreeViewItem, IRecord {
+  public class FavoriteFolder : CatTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; }
     public Folder Folder { get; set; }
@@ -12,8 +13,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public string ToCsv() {
-      // ID|Folder
-      return string.Join("|", Id.ToString(), Folder.Id.ToString());
+      // ID|FolderId|Title
+      return string.Join("|", Id.ToString(), Folder.Id.ToString(), Title);
     }
   }
 }
