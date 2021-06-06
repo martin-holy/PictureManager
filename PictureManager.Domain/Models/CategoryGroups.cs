@@ -21,7 +21,6 @@ namespace PictureManager.Domain.Models {
 
     public void SaveToFile() {
       Helper.SaveToFile(All);
-      Helper.IsModified = false;
     }
 
     public void LoadFromFile() {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace SimpleDB {
@@ -38,11 +39,8 @@ namespace SimpleDB {
     }
 
     public void SaveAllTables() {
-      foreach (var helper in Tables.Values) {
-        if (helper.IsModified == false) continue;
+      foreach (var helper in Tables.Values.Where(x => x.IsModified))
         helper.Table.SaveToFile();
-        helper.IsModified = false;
-      }
 
       SaveIdSequences();
     }

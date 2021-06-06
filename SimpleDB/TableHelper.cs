@@ -44,6 +44,8 @@ namespace SimpleDB {
           foreach (var item in records)
             sw.WriteLine(item.ToCsv());
         }
+
+        IsModified = false;
       }
       catch (Exception ex) {
         _logger.LogError(ex);
