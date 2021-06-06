@@ -2,6 +2,7 @@
 using System.Linq;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
@@ -162,14 +163,17 @@ namespace PictureManager.Domain.Models {
         Core.Instance.Folders.ItemDelete(this);
     }
 
-    public void LoadSubFolders(bool recursive) {
+    public async void LoadSubFolders(bool recursive) {
       // remove placeholder
       if (Items.Count == 1 && Items[0].Title == null) Items.Clear();
 
       var dirNames = new HashSet<string>();
       var fullPath = FullPath + Path.DirectorySeparatorChar;
 
-      if (!Directory.Exists(fullPath)) return;
+      // using task to wake up drive async
+      var dirExists = new Task<bool>(() => Directory.Exists(fullPath));
+      dirExists.Start();
+      if (!await dirExists) return;
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var isNew = false;
