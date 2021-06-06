@@ -12,6 +12,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand GroupNewCommand { get; } = new RoutedUICommand { Text = "New Group" };
     public static RoutedUICommand GroupRenameCommand { get; } = new RoutedUICommand { Text = "Rename Group" };
     public static RoutedUICommand GroupDeleteCommand { get; } = new RoutedUICommand { Text = "Delete Group" };
+    public static RoutedUICommand SortCommand { get; } = new RoutedUICommand { Text = "Sort" };
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, ItemNewCommand, ItemNew);
@@ -20,6 +21,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, GroupNewCommand, GroupNew);
       CommandsController.AddCommandBinding(cbc, GroupRenameCommand, GroupRename);
       CommandsController.AddCommandBinding(cbc, GroupDeleteCommand, GroupDelete);
+      CommandsController.AddCommandBinding(cbc, SortCommand, Sort);
     }
 
     public static void ItemNew(object parameter) {
@@ -127,6 +129,10 @@ namespace PictureManager.Commands {
         true)) return;
 
       cat.GroupDelete(item);
+    }
+
+    public static void Sort(object parameter) {
+      CatTreeViewUtils.Sort(parameter as ICatTreeViewItem);
     }
   }
 }

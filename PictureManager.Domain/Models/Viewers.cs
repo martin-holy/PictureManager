@@ -75,6 +75,10 @@ namespace PictureManager.Domain.Models {
       return item is Viewer || item.Parent?.Parent is Viewer;
     }
 
+    public new bool CanSort(ICatTreeViewItem root) {
+      return root.Items.Count > 0 && root is ICatTreeViewCategory;
+    }
+
     public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var viewer = new Viewer(Helper.GetNextId(), name, root);
       All.Add(viewer);

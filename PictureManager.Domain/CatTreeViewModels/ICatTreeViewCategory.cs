@@ -17,6 +17,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
     bool CanCreateItem(ICatTreeViewItem item);
     bool CanRenameItem(ICatTreeViewItem item);
     bool CanDeleteItem(ICatTreeViewItem item);
+    bool CanSort(ICatTreeViewItem root);
 
     string ValidateNewItemTitle(ICatTreeViewItem root, string name);
     ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name);

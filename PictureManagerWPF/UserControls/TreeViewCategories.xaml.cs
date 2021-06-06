@@ -12,6 +12,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.ViewModels;
+using SimpleDB;
 
 namespace PictureManager.UserControls {
   public partial class TreeViewCategories {
@@ -77,6 +78,30 @@ namespace PictureManager.UserControls {
 
         App.Core.Model.Sdb.SaveAllTables();
         App.Core.Model.MarkUsedKeywordsAndPeople();
+      };
+
+      CatTreeViewUtils.OnAfterSort += delegate(object sender, EventArgs args) {
+        // sort items in DB (items in root are already sorted from CatTreeViewUtils.Sort)
+        if (!(sender is ICatTreeViewItem root)) return;
+        if (!(CatTreeViewUtils.GetTopParent(root) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
+
+        // sort groups
+        var groups = root.Items.OfType<ICatTreeViewGroup>().ToArray();
+        foreach (var group in groups)
+          App.Core.Model.CategoryGroups.All.Remove(group as IRecord);
+        foreach (var group in groups)
+          App.Core.Model.CategoryGroups.All.Add(group as IRecord);
+        if (groups.Length != 0)
+          App.Core.Model.CategoryGroups.SaveToFile();
+
+        // sort items
+        var items = root.Items.Where(x => !(x is ICatTreeViewGroup)).ToArray();
+        foreach (var item in items)
+          table.All.Remove(item as IRecord);
+        foreach (var item in items)
+          table.All.Add(item as IRecord);
+        if (items.Length != 0)
+          table.SaveToFile();
       };
     }
 
