@@ -42,6 +42,7 @@ namespace PictureManager.CustomControls {
     private Slider _speedSlider;
     private Slider _volumeSlider;
     private DispatcherTimer _timelineTimer;
+    private DispatcherTimer _mouseHideTimer;
     private DispatcherTimer _clipTimer;
     private DateTime _mouseLastMove;
     private bool _isMouseHidden;
@@ -82,10 +83,12 @@ namespace PictureManager.CustomControls {
           StartClipTimer();
           Player.Play();
           _timelineTimer.Start();
+          _mouseHideTimer.Start();
         }
         else {
           Player.Pause();
           _timelineTimer.Stop();
+          _mouseHideTimer.Stop();
           _clipTimer.Stop();
         }
       }
@@ -115,14 +118,12 @@ namespace PictureManager.CustomControls {
         }
       };
 
-      var mouseHideTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(3000)};
-      mouseHideTimer.Tick += delegate {
-        if (!_isMouseHidden && DateTime.Now - _mouseLastMove >= mouseHideTimer.Interval) {
-          _isMouseHidden = true;
-          Cursor = Cursors.None;
-        }
+      _mouseHideTimer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(3000)};
+      _mouseHideTimer.Tick += delegate {
+        if (_isMouseHidden || DateTime.Now - _mouseLastMove < _mouseHideTimer.Interval) return;
+        _isMouseHidden = true;
+        Cursor = Cursors.None;
       };
-      mouseHideTimer.Start();
     }
 
     public void SetSource(MediaItem mediaItem) {
