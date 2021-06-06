@@ -180,6 +180,9 @@ namespace PictureManager.CustomControls {
             AddMenuItem(CatTreeViewCommands.GroupRenameCommand);
             AddMenuItem(CatTreeViewCommands.GroupDeleteCommand);
           }
+
+          if (category.CanSort(item))
+            AddMenuItem(CatTreeViewCommands.SortCommand);
         }
       }
 

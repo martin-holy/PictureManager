@@ -299,6 +299,10 @@ namespace PictureManager.Domain.Models {
       return item is Folder && !(item.Parent is ICatTreeViewCategory);
     }
 
+    public new bool CanSort(ICatTreeViewItem root) {
+      return false;
+    }
+
     public new string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
       // check if folder already exists
       if (Directory.Exists(Extensions.PathCombine(((Folder)root).FullPath, name)))

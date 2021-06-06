@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.CatTreeViewModels {
   public static class CatTreeViewUtils {
     public static EventHandler OnAfterItemRename;
     public static EventHandler OnAfterItemDelete;
     public static EventHandler OnAfterOnDrop;
+    public static EventHandler OnAfterSort;
 
     public static IconName GetCategoryGroupIconName(Category category) {
       switch (category) {
@@ -120,6 +122,24 @@ namespace PictureManager.Domain.CatTreeViewModels {
       if (!(src is ICatTreeViewGroup) && !Equals(src.Parent, dest)) return true;
 
       return false;
+    }
+
+    public static void Sort(ICatTreeViewItem root) {
+      if (root == null) return;
+
+      // sort groups
+      var groups = root.Items.OfType<ICatTreeViewGroup>()
+        .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
+      foreach (var group in groups)
+        root.Items.Move(root.Items.IndexOf(group), groups.IndexOf(group));
+
+      // sort items
+      var items = root.Items.Where(x => !(x is ICatTreeViewGroup))
+        .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
+      foreach (var item in items)
+        root.Items.Move(root.Items.IndexOf(item), items.IndexOf(item));
+
+      OnAfterSort?.Invoke(root, EventArgs.Empty);
     }
   }
 }

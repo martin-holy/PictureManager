@@ -48,6 +48,10 @@ namespace PictureManager.Domain.CatTreeViewModels {
       return CanDeleteItems;
     }
 
+    public bool CanSort(ICatTreeViewItem root) {
+      return root.Items.Count > 0 && (CanCreateItems || CanRenameItems);
+    }
+
     public string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
       return root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name)) != null
         ? $"{name} item already exists!"
