@@ -204,7 +204,7 @@ namespace PictureManager.Domain {
         if (allIdx >= 0) return allIdx + 1;
       }
 
-      return allIdx;
+      return 0;
     }
 
     private static Core _instance;
