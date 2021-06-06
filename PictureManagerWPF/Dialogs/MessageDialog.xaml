@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:cc="clr-namespace:PictureManager.CustomControls"
         mc:Ignorable="d"
         Title="{Binding TitleText}" SizeToContent="WidthAndHeight" MinWidth="300"
         BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -25,13 +26,8 @@
   </controls:MetroWindow.Resources>
 
   <StackPanel>
-    <StackPanel Orientation="Horizontal">
-      <Rectangle Width="32" Height="32" Margin="10" Fill="{StaticResource WhiteBrush}">
-        <Rectangle.OpacityMask>
-          <VisualBrush Stretch="Uniform" Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"/>
-        </Rectangle.OpacityMask>
-      </Rectangle>
-
+    <StackPanel Orientation="Horizontal" Margin="15">
+      <cc:IconRect IconName="{Binding IconName}" Size="32" Margin="0,0,5,0" />
       <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="0,0,10,0" />
     </StackPanel>
 
