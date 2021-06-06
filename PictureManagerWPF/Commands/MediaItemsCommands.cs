@@ -94,6 +94,7 @@ namespace PictureManager.Commands {
 
     private static void SelectAll() {
       App.Core.Model.MediaItems.ThumbsGrid.SelectAll();
+      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FileSize));
       App.Core.Model.MarkUsedKeywordsAndPeople();
     }
 
