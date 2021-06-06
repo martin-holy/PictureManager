@@ -57,8 +57,8 @@ namespace PictureManager.Domain.Models {
       var item = new Person(Helper.GetNextId(), name) {Parent = root};
       var idx = CatTreeViewUtils.SetItemInPlace(root, item);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
-      if (allIdx < 0) All.Add(item); else All.Insert(allIdx, item);
-
+      
+      All.Insert(allIdx, item);
       SaveToFile();
       if (root is ICatTreeViewGroup)
         Core.Instance.CategoryGroups.SaveToFile();

@@ -54,8 +54,8 @@ namespace PictureManager.Domain.Models {
 
       var idx = CatTreeViewUtils.SetItemInPlace(this, ff);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, this, idx);
-      if (allIdx < 0) All.Add(ff); else All.Insert(allIdx, ff);
-
+      
+      All.Insert(allIdx, ff);
       SaveToFile();
       Core.Instance.Sdb.SaveIdSequences();
     }
