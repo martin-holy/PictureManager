@@ -12,6 +12,7 @@ namespace SimpleDB {
 
     public SimpleDB(ILogger logger) {
       _logger = logger;
+      Directory.CreateDirectory("db");
       LoadIdSequences();
     }
 
@@ -37,7 +38,6 @@ namespace SimpleDB {
     }
 
     public void SaveAllTables() {
-      Directory.CreateDirectory("db");
       foreach (var helper in Tables.Values) {
         if (helper.IsModified == false) continue;
         helper.Table.SaveToFile();
