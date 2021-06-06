@@ -81,7 +81,7 @@ namespace PictureManager.Domain.Models {
       }
 
       foreach (var item in items.Cast<ICatTreeViewItem>().Where(x => x.Parent == null)) {
-        var group = recGroup[((IRecord)item).Id];
+        recGroup.TryGetValue(((IRecord) item).Id, out var group);
         if (group != null) {
           item.Parent = group;
           group.Items.Add(item);
