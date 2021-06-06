@@ -64,9 +64,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SaveToFile() {
-      if (!Helper.IsModified) return;
       Helper.SaveToFile(All);
-      Helper.IsModified = false;
     }
 
     public void LoadFromFile() {
