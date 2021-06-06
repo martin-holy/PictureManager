@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -19,8 +20,9 @@ namespace PictureManager.Domain.Models {
       // ID|Name|ToponymName|FCode|Parent
       var props = csv.Split('|');
       if (props.Length != 5) return;
-      var id = int.Parse(props[0]);
-      AddRecord(new GeoName(id, props[1], props[2], props[3], null) { Csv = props });
+      var geoName = new GeoName(int.Parse(props[0]), props[1], props[2], props[3], null) {Csv = props};
+      All.Add(geoName);
+      AllDic.Add(geoName.Id, geoName);
     }
 
     public void LinkReferences() {
@@ -49,11 +51,6 @@ namespace PictureManager.Domain.Models {
       Helper.LoadFromFile();
     }
 
-    private void AddRecord(GeoName record) {
-      All.Add(record);
-      AllDic.Add(record.Id, record);
-    }
-
     public GeoName InsertGeoNameHierarchy(double lat, double lng, string userName) {
       var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={userName}".Replace(",", ".");
       var xml = new XmlDocument();
@@ -64,8 +61,9 @@ namespace PictureManager.Domain.Models {
       GeoName parentGeoName = null;
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-
-        if (!AllDic.TryGetValue(geoNameId, out var dbGeoName)) {
+        var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
+        
+        if (dbGeoName == null) {
           dbGeoName = new GeoName(
             geoNameId,
             geoname.SelectSingleNode("name")?.InnerText,
@@ -73,12 +71,12 @@ namespace PictureManager.Domain.Models {
             geoname.SelectSingleNode("fcode")?.InnerText,
             parentGeoName);
 
-          AddRecord(dbGeoName);
-          parentGeoName?.Items.Add(dbGeoName);
+          All.Add(dbGeoName);
+          parentGeoName?.Items.Add((ICatTreeViewItem) dbGeoName);
           Helper.IsModified = true;
         }
 
-        parentGeoName = dbGeoName;
+        parentGeoName = dbGeoName as GeoName;
       }
 
       return parentGeoName;
