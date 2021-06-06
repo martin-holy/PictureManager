@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
@@ -56,14 +54,7 @@ namespace PictureManager {
         case FavoriteFolder favoriteFolder: {
           if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
           CatTreeViewUtils.ExpandTo(favoriteFolder.Folder);
-
-          // scroll to folder
-          var visibleTreeIndex = 0;
-          Model.Folders.GetVisibleTreeIndexFor(Model.Folders.Items, favoriteFolder.Folder, ref visibleTreeIndex);
-          var offset = (Model.FavoriteFolders.Items.Count + visibleTreeIndex - 1) * 25 + (2 * 40);
-          var border = VisualTreeHelper.GetChild(App.WMain.TreeViewCategories.TreeView, 0);
-          var scrollViewer = VisualTreeHelper.GetChild(border, 0) as ScrollViewer;
-          scrollViewer?.ScrollToVerticalOffset(offset);
+          App.WMain.TreeViewCategories.TvCategories.ScrollTo(favoriteFolder.Folder);
           break;
         }
         case Rating _:
