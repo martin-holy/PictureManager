@@ -189,7 +189,7 @@ namespace PictureManager.Domain {
 
     // get index for an item in DB in same order as it is in the tree
     public static int GetAllIndexBasedOnTreeOrder(List<IRecord> all, ICatTreeViewItem root, int treeIdx) {
-      var allIdx = -1;
+      var allIdx = 0;
       if (all == null || root == null || treeIdx < 0) return allIdx;
 
       // if is item below
