@@ -141,14 +141,16 @@ namespace PictureManager.Domain.Models {
       SetModified(item, false);
 
       // set MediaItems table as modified
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<MediaItems>();
     }
 
     public void SetModified(MediaItem mi, bool value) {
       if (mi.IsModified == value) return;
       mi.IsModified = value;
-      if (value)
+      if (value) {
         ModifiedItems.Add(mi);
+        Core.Instance.Sdb.SetModified<MediaItems>();
+      }
       else
         ModifiedItems.Remove(mi);
 

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
@@ -35,7 +36,7 @@ namespace PictureManager.Dialogs {
         Items.Remove(item);
       }
 
-      App.Core.Model.Folders.Helper.Table.SaveToFile();
+      Core.Instance.Sdb.SetModified<Folders>();
       App.Core.Model.FolderKeywords.Load();
     }
   }

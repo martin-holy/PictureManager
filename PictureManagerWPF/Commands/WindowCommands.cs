@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
@@ -20,6 +21,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ViewerChangeCommand { get; } = new RoutedUICommand { Text = "" };
     public static RoutedUICommand OpenFolderKeywordsListCommand { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
     public static RoutedUICommand OpenLogCommand { get; } = new RoutedUICommand { Text = "Log" };
+    public static RoutedUICommand SaveDbCommand { get; } = new RoutedUICommand { Text = "DB" };
 
     private bool _mainTreeViewIsPinnedInViewer;
     private bool _mainTreeViewIsPinnedInBrowser = true;
@@ -35,6 +37,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, OpenFolderKeywordsListCommand, OpenFolderKeywordsList);
       CommandsController.AddCommandBinding(cbc, ShowHideTabMainCommand, ShowHideTabMain);
       CommandsController.AddCommandBinding(cbc, OpenLogCommand, OpenLog);
+      CommandsController.AddCommandBinding(cbc, SaveDbCommand, SaveDb, CanSaveDb);
     }
 
     private static bool CanSwitchToFullScreen() {
@@ -137,12 +140,14 @@ namespace PictureManager.Commands {
 
           mi.GeoName = lastGeoName;
           MediaItemsViewModel.TryWriteMetadata(mi);
-          App.Core.Model.RunOnUiThread(mi.SetInfoBox);
+          Core.Instance.RunOnUiThread(() => {
+            mi.SetInfoBox();
+            Core.Instance.Sdb.SetModified<MediaItems>();
+          });
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Model.Sdb.SaveAllTables();
           App.Core.AppInfo.FullGeoName = CatTreeViewUtils.GetFullPath(App.Core.AppInfo.CurrentMediaItem?.GeoName, "\n");
         });
 
@@ -171,6 +176,14 @@ namespace PictureManager.Commands {
     private static void TestButton() {
       var tests = new Tests();
       tests.Run();
+    }
+
+    private static bool CanSaveDb() {
+      return Core.Instance.Sdb.Changes > 0;
+    }
+
+    private static void SaveDb() {
+      Core.Instance.Sdb.SaveAllTables();
     }
   }
 }

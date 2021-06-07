@@ -83,7 +83,7 @@ namespace PictureManager.Domain.Models {
       var viewer = new Viewer(Helper.GetNextId(), name, root);
       All.Add(viewer);
       CatTreeViewUtils.SetItemInPlace(root, viewer);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<Viewers>();
       Core.Instance.Sdb.SaveIdSequences();
 
       return viewer;
@@ -97,7 +97,7 @@ namespace PictureManager.Domain.Models {
       if (item is Viewer viewer)
         All.Remove(viewer);
 
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<Viewers>();
     }
   }
 }

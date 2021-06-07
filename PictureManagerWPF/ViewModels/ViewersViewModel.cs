@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
@@ -17,7 +18,7 @@ namespace PictureManager.ViewModels {
       }
 
       viewer.AddFolder(folder, included);
-      App.Core.Model.Viewers.Helper.Table.SaveToFile();
+      Core.Instance.Sdb.SetModified<Viewers>();
       App.Core.Model.Folders.AddDrives();
       App.Core.Model.FolderKeywords.Load();
     }

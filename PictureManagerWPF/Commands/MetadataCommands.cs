@@ -122,9 +122,10 @@ namespace PictureManager.Commands {
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
-      MediaItemsViewModel.TryWriteMetadata(current);
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
+      MediaItemsViewModel.TryWriteMetadata(current);
+      Core.Instance.Sdb.SetModified<MediaItems>();
     }
 
     private static bool CanReload(object parameter) {
@@ -153,8 +154,6 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Model.MediaItems.Helper.IsModified = true;
-          App.Core.Model.Sdb.SaveAllTables();
           App.Core.Model.MarkUsedKeywordsAndPeople();
         });
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
@@ -45,7 +46,7 @@ namespace PictureManager.ViewModels {
       OnPropertyChanged(nameof(Duration));
       OnPropertyChanged(nameof(Volume));
       OnPropertyChanged(nameof(Speed));
-      App.Core.Model.VideoClips.Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClips>();
     }
   }
 }

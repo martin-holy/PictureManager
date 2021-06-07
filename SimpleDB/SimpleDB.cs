@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SimpleDB {
-  public class SimpleDB {
+  public class SimpleDB : INotifyPropertyChanged {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public void OnPropertyChanged([CallerMemberName] string name = null) {
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
     public Dictionary<Type, TableHelper> Tables = new Dictionary<Type, TableHelper>();
+    public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
 
     private readonly Dictionary<string, int> _idSequences = new Dictionary<string, int>();
     private readonly ILogger _logger;
+    private int _changes;
 
     public SimpleDB(ILogger logger) {
       _logger = logger;
@@ -43,6 +53,7 @@ namespace SimpleDB {
         helper.Table.SaveToFile();
 
       SaveIdSequences();
+      Changes = 0;
     }
 
     private void LoadIdSequences() {
@@ -83,6 +94,12 @@ namespace SimpleDB {
       catch (Exception ex) {
         _logger.LogError(ex);
       }
+    }
+
+    public void SetModified<T>() {
+      if (!Tables.ContainsKey(typeof(T))) return;
+      Tables[typeof(T)].IsModified = true;
+      Changes++;
     }
   }
 }

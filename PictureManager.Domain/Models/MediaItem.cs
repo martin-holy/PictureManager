@@ -229,7 +229,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Rename(string newFileName) {
-      Core.Instance.MediaItems.Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<MediaItems>();
       var oldFilePath = FilePath;
       var oldFilePathCache = FilePathCache;
       FileName = newFileName;

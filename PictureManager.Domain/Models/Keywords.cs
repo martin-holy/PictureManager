@@ -99,9 +99,9 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
       
       All.Insert(allIdx, item);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<Keywords>();
       if (root is ICatTreeViewGroup)
-        Core.Instance.CategoryGroups.SaveToFile();
+        Core.Instance.Sdb.SetModified<CategoryGroups>();
 
       Core.Instance.Sdb.SaveIdSequences();
 
@@ -115,7 +115,7 @@ namespace PictureManager.Domain.Models {
       item.Parent.Items.Remove(item);
 
       if (item.Parent is CategoryGroup)
-        Core.Instance.CategoryGroups.SaveToFile();
+        Core.Instance.Sdb.SetModified<CategoryGroups>();
 
       // get all descending keywords
       var keywords = new List<ICatTreeViewItem>();
@@ -129,16 +129,15 @@ namespace PictureManager.Domain.Models {
             if (mi.Keywords.Count == 0)
               mi.Keywords = null;
           }
-          Core.Instance.MediaItems.Helper.IsModified = true;
+          Core.Instance.Sdb.SetModified<MediaItems>();
         }
 
         k.Parent = null;
 
         // remove Keyword from DB
         All.Remove(k);
+        Core.Instance.Sdb.SetModified<Keywords>();
       }
-
-      SaveToFile();
     }
   }
 }
