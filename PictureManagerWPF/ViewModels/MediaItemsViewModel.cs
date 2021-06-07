@@ -109,11 +109,8 @@ namespace PictureManager.ViewModels {
           currentGrid.LoadedItems.Add(mi);
         }
 
-        // filter Media Items and add them to FilteredItems
-        foreach (var mi in MediaItems.Filter(currentGrid.LoadedItems))
-          currentGrid.FilteredItems.Add(mi);
+        currentGrid.ReloadFilteredItems();
 
-        currentGrid.OnPropertyChanged(nameof(currentGrid.PositionSlashCount));
         await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), token);
         App.Core.Model.SetMediaItemSizesLoadedRange();
       });
@@ -127,9 +124,6 @@ namespace PictureManager.ViewModels {
       App.Core.AppInfo.ProgressBarValueB = 0;
 
       await Task.Run(async () => {
-        if (_model.ThumbsGrid.SortAll)
-          items = items.OrderBy(x => x.FileName).ToList();
-
         // read metadata for new items and add thumbnails to grid
         var metadata = ReadMetadataAndListThumbsAsync(items, token);
         // create thumbnails
@@ -338,7 +332,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void ReapplyFilter() {
-      _model.ThumbsGrid.ReapplyFilter();
+      _model.ThumbsGrid.ReloadFilteredItems();
       App.Core.Model.MarkUsedKeywordsAndPeople();
       ThumbsGridReloadItems();
     }

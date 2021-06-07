@@ -137,7 +137,6 @@ namespace PictureManager.Commands {
       thumbsGrid.FilteredItems.Shuffle();
       thumbsGrid.GroupByFolders = false;
       thumbsGrid.GroupByDate = false;
-      thumbsGrid.SortAll = false;
       App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
