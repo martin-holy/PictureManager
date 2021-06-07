@@ -121,7 +121,7 @@ namespace PictureManager.Utils {
       }
       catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
-        App.Core.LogError(ex, filePath);
+        App.Ui.LogError(ex, filePath);
       }
     }
 
@@ -140,7 +140,7 @@ namespace PictureManager.Utils {
                 workingOn++;
                 var workingOnInt = workingOn;
                 Application.Current.Dispatcher?.Invoke(delegate {
-                  App.Core.AppInfo.ProgressBarValueB = Convert.ToInt32((double)workingOnInt / count * 100);
+                  App.Ui.AppInfo.ProgressBarValueB = Convert.ToInt32((double)workingOnInt / count * 100);
                 });
 
                 var mi = partition.Current;

@@ -298,7 +298,7 @@ namespace PictureManager.CustomControls {
                 _timelineSlider.Value = vc.TimeStart;
               }
               else {
-                App.Core.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
+                App.Ui.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
               }
               break;
           }
@@ -339,7 +339,7 @@ namespace PictureManager.CustomControls {
       IsPlaying = true;
 
       if (PlayType != PlayType.Video)
-        App.Core.MediaItemClipsCategory.SelectNext(null, false);
+        App.Ui.MediaItemClipsCategory.SelectNext(null, false);
     }
 
     private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {

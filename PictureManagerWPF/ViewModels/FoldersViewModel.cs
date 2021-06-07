@@ -21,7 +21,7 @@ namespace PictureManager.ViewModels {
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(task => Core.Instance.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(task => App.Core.RunOnUiThread(() => fop.Close()));
 
       fop.ShowDialog();
     }

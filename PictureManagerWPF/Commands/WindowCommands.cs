@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
-using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
@@ -41,12 +40,12 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanSwitchToFullScreen() {
-      return App.Core.AppInfo.AppMode == AppMode.Browser;
+      return App.Ui.AppInfo.AppMode == AppMode.Browser;
     }
 
     public void SwitchToFullScreen() {
-      if (App.Core.Model.MediaItems.ThumbsGrid.Current == null) return;
-      App.Core.AppInfo.AppMode = AppMode.Viewer;
+      if (App.Core.MediaItems.ThumbsGrid.Current == null) return;
+      App.Ui.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
       App.WMain.IgnoreTaskbarOnMaximize = true;
@@ -54,7 +53,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanSwitchToBrowser() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer;
     }
 
     public void SwitchToBrowser() {
@@ -63,10 +62,10 @@ namespace PictureManager.Commands {
       App.WMain.IgnoreTaskbarOnMaximize = false;
       App.WMain.MainMenu.Visibility = Visibility.Visible;
 
-      App.Core.AppInfo.AppMode = AppMode.Browser;
+      App.Ui.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Core.MediaItemsViewModel.ScrollToCurrent();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Ui.MediaItemsViewModel.ScrollToCurrent();
+      App.Core.MarkUsedKeywordsAndPeople();
 
       App.WMain.PresentationPanel.Stop();
       App.WMain.FullImage.Stop();
@@ -94,7 +93,7 @@ namespace PictureManager.Commands {
       if (parameter != null)
         show = (bool)parameter;
       else {
-        switch (App.Core.AppInfo.AppMode) {
+        switch (App.Ui.AppInfo.AppMode) {
           case AppMode.Browser:
             reload = true;
             _mainTreeViewIsPinnedInBrowser = !_mainTreeViewIsPinnedInBrowser;
@@ -111,7 +110,7 @@ namespace PictureManager.Commands {
       App.WMain.SlidePanelMainTreeView.IsOpen = show;
 
       if (reload)
-        App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+        App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private void OpenFolderKeywordsList() {
@@ -120,7 +119,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {
@@ -128,44 +127,44 @@ namespace PictureManager.Commands {
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
-        App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
           if (mi.Lat == null || mi.Lng == null) MediaItemsViewModel.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
-          var lastGeoName = App.Core.Model.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
+          var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
           MediaItemsViewModel.TryWriteMetadata(mi);
-          Core.Instance.RunOnUiThread(() => {
+          App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
-            Core.Instance.Sdb.SetModified<MediaItems>();
+            App.Db.SetModified<MediaItems>();
           });
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.AppInfo.FullGeoName = CatTreeViewUtils.GetFullPath(App.Core.AppInfo.CurrentMediaItem?.GeoName, "\n");
+          App.Ui.AppInfo.FullGeoName = CatTreeViewUtils.GetFullPath(App.Ui.AppInfo.CurrentMediaItem?.GeoName, "\n");
         });
 
       progress.StartDialog();
     }
 
     private void ViewerChange(object parameter) {
-      if (App.Core.Model.CurrentViewer != null)
-        App.Core.Model.CurrentViewer.IsDefault = false;
+      if (App.Core.CurrentViewer != null)
+        App.Core.CurrentViewer.IsDefault = false;
 
       var viewer = (Viewer)parameter;
       viewer.IsDefault = true;
-      App.Core.Model.Viewers.Helper.Table.SaveToFile();
+      App.Core.Viewers.Helper.Table.SaveToFile();
 
       App.WMain.MenuViewers.Header = viewer.Title;
-      App.Core.Model.CurrentViewer = viewer;
-      App.Core.Model.Folders.AddDrives();
-      App.Core.Model.FolderKeywords.Load();
+      App.Core.CurrentViewer = viewer;
+      App.Core.Folders.AddDrives();
+      App.Core.FolderKeywords.Load();
     }
 
     private void OpenLog() {
@@ -179,11 +178,11 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanSaveDb() {
-      return Core.Instance.Sdb.Changes > 0;
+      return App.Db.Changes > 0;
     }
 
     private static void SaveDb() {
-      Core.Instance.Sdb.SaveAllTables();
+      App.Db.SaveAllTables();
     }
   }
 }

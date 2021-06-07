@@ -66,13 +66,13 @@ namespace PictureManager.Commands {
     }
 
     private static void FolderAddToFavorites(object parameter) {
-      App.Core.Model.FavoriteFolders.ItemCreate((Folder)parameter);
+      App.Core.FavoriteFolders.ItemCreate((Folder)parameter);
     }
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
-      Core.Instance.Sdb.SetModified<Folders>();
-      App.Core.Model.FolderKeywords.Load();
+      App.Db.SetModified<Folders>();
+      App.Core.FolderKeywords.Load();
     }
 
     private static void GeoNameNew(object parameter) {
@@ -91,19 +91,19 @@ namespace PictureManager.Commands {
     }
 
     private static void ActivateFilterAnd(object parameter) {
-      App.Core.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
+      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
     }
 
     private static void ActivateFilterOr(object parameter) {
-      App.Core.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
+      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
     }
 
     private static void ActivateFilterNot(object parameter) {
-      App.Core.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
+      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
     }
 
     private static void LoadByTag(object parameter) {
-      App.Core.TreeView_Select((ICatTreeViewItem)parameter,
+      App.Ui.TreeView_Select((ICatTreeViewItem)parameter,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0,

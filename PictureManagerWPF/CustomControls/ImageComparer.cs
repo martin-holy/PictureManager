@@ -63,7 +63,7 @@ namespace PictureManager.CustomControls {
     }
 
     public void Compare() {
-      var thumbsGrid = App.Core.Model.MediaItems.ThumbsGrid;
+      var thumbsGrid = App.Core.MediaItems.ThumbsGrid;
       var items = MediaItems.Filter(thumbsGrid.LoadedItems);
       List<MediaItem> similar = null;
 
@@ -90,8 +90,8 @@ namespace PictureManager.CustomControls {
           thumbsGrid.FilteredItems.Add(mi);
 
       thumbsGrid.Current = null;
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static List<MediaItem> GetSimilar(MediaItem[] items, int limit, Dictionary<MediaItem, long> hashes, HashMethod hashMethod) {

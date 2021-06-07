@@ -41,7 +41,7 @@ namespace PictureManager.Dialogs {
     public string DestFileModified => $"Modified: {DestFileInfo.LastWriteTime}";
     public string SrcDimensions => GetDimensions(SrcFileInfo.FullName);
     public string DestDimensions => GetDimensions(DestFileInfo.FullName);
-    public int MaxThumbSize => (int) (App.Core.Model.ThumbnailSize / App.Core.Model.WindowsDisplayScale * 100);
+    public int MaxThumbSize => (int) (App.Core.ThumbnailSize / App.Core.WindowsDisplayScale * 100);
     public Visibility SrcThumbVisibility => SrcMediaItem == null ? Visibility.Visible : Visibility.Collapsed;
     public Visibility SrcMediaItemThumbVisibility => SrcMediaItem != null ? Visibility.Visible : Visibility.Collapsed;
     public Visibility DestThumbVisibility => DestMediaItem == null ? Visibility.Visible : Visibility.Collapsed;

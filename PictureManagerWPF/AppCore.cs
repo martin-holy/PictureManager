@@ -16,31 +16,29 @@ using SimpleDB;
 
 namespace PictureManager {
   public class AppCore: ILogger {
-    public Core Model { get; }
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new AppInfo();
     public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
 
     public AppCore() {
-      Model = Core.Instance;
-      Model.CachePath = Settings.Default.CachePath;
-      Model.ThumbnailSize = Settings.Default.ThumbnailSize;
-      Model.Logger = this;
+      App.Core.CachePath = Settings.Default.CachePath;
+      App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
+      App.Core.Logger = this;
 
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
 
-      MediaItemsViewModel = new MediaItemsViewModel(this);
+      MediaItemsViewModel = new MediaItemsViewModel(App.Core);
       MediaItemClipsCategory = new MediaItemClipsCategory();
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
       item.BackgroundBrush = backgroundBrush;
       if (backgroundBrush == BackgroundBrush.Default)
-        Model.ActiveFilterItems.Remove(item);
+        App.Core.ActiveFilterItems.Remove(item);
       else
-        Model.ActiveFilterItems.Add(item);
+        App.Core.ActiveFilterItems.Add(item);
 
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
@@ -61,20 +59,20 @@ namespace PictureManager {
         case Person _:
         case Keyword _:
         case GeoName _: {
-          if (Model.MediaItems.IsEditModeOn && !loadByTag) {
+          if (App.Core.MediaItems.IsEditModeOn && !loadByTag) {
             if (!(item is ICatTreeViewTagItem bti)) return;
 
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
-              Model.MarkedTags.Add(bti);
+              App.Core.MarkedTags.Add(bti);
             else {
-              Model.MarkedTags.Remove(bti);
+              App.Core.MarkedTags.Remove(bti);
               bti.PicCount = 0;
             }
 
-            Model.MediaItems.SetMetadata(item);
+            App.Core.MediaItems.SetMetadata(item);
 
-            Model.MarkUsedKeywordsAndPeople();
+            App.Core.MarkUsedKeywordsAndPeople();
             AppInfo.UpdateRating();
           }
           else {
@@ -82,7 +80,7 @@ namespace PictureManager {
             var items = new List<MediaItem>();
 
             switch (item) {
-              case Rating rating: items = Model.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(); break;
+              case Rating rating: items = App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(); break;
               case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
               case Person person: items = person.MediaItems; break;
               case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
@@ -90,14 +88,14 @@ namespace PictureManager {
 
             // if CTRL is pressed, add new items to already loaded items
             if (and)
-              items = Model.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
+              items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
 
             // if ALT is pressed, remove new items from already loaded items
             if (hide)
-              items = Model.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
+              items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
 
             await MediaItemsViewModel.LoadAsync(items, null, item.Title);
-            Model.MarkUsedKeywordsAndPeople();
+            App.Core.MarkUsedKeywordsAndPeople();
           }
 
           break;
@@ -117,14 +115,14 @@ namespace PictureManager {
 
           // if CTRL is pressed, add items from new folders to already loaded items
           if (and)
-            folders = Model.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
+            folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
 
           // if ALT is pressed, remove items from new folders from already loaded items
           if (hide)
-            folders = Model.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
+            folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
 
           await MediaItemsViewModel.LoadAsync(null, folders, folders[0].Title);
-          Model.MarkUsedKeywordsAndPeople();
+          App.Core.MarkUsedKeywordsAndPeople();
           break;
         }
         case ICatTreeViewCategory _: {
@@ -145,7 +143,7 @@ namespace PictureManager {
     }
 
     public void ClearFilters() {
-      foreach (var item in Model.ActiveFilterItems.ToArray())
+      foreach (var item in App.Core.ActiveFilterItems.ToArray())
         SetBackgroundBrush(item, BackgroundBrush.Default);
 
       // reload with new filter
@@ -155,8 +153,8 @@ namespace PictureManager {
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
       var result = CollisionResult.Skip;
       var outFileName = fileName;
-      var srcMi = App.Core.Model.Folders.GetMediaItemByPath(srcFilePath);
-      var destMi = App.Core.Model.Folders.GetMediaItemByPath(destFilePath);
+      var srcMi = App.Core.Folders.GetMediaItemByPath(srcFilePath);
+      var destMi = App.Core.Folders.GetMediaItemByPath(destFilePath);
 
       Application.Current.Dispatcher?.Invoke(delegate {
         srcMi?.SetThumbSize();

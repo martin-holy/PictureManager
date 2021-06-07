@@ -42,8 +42,8 @@ namespace PictureManager.CustomControls {
         isShiftOn = false;
       }
 
-      App.Core.Model.MediaItems.ThumbsGrid.Select(isCtrlOn, isShiftOn, mi);
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItems.ThumbsGrid.Select(isCtrlOn, isShiftOn, mi);
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
@@ -53,8 +53,8 @@ namespace PictureManager.CustomControls {
       var mi = ((FrameworkElement)sender).DataContext as MediaItem;
 
       if (mi == null) return;
-      App.Core.Model.MediaItems.ThumbsGrid.DeselectAll();
-      App.Core.Model.MediaItems.ThumbsGrid.Current = mi;
+      App.Core.MediaItems.ThumbsGrid.DeselectAll();
+      App.Core.MediaItems.ThumbsGrid.Current = mi;
 
       if (mi.MediaType == MediaType.Video) {
         (App.WMain.VideoThumbnailPreview.Parent as Grid)?.Children.Remove(App.WMain.VideoThumbnailPreview);
@@ -68,7 +68,7 @@ namespace PictureManager.CustomControls {
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {
       if (!IsDragDropStarted(e)) return;
       var dob = new DataObject();
-      var data = App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
+      var data = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToList();
       if (data.Count == 0)
         data.Add(((MediaItem)((FrameworkElement)sender).DataContext).FilePath);
       dob.SetData(DataFormats.FileDrop, data.ToArray());

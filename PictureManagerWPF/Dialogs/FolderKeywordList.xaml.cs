@@ -20,7 +20,7 @@ namespace PictureManager.Dialogs {
     public ObservableCollection<Folder> Items { get; } = new ObservableCollection<Folder>();
 
     public FolderKeywordList() {
-      foreach (var folder in App.Core.Model.Folders.All.Cast<Folder>().Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
+      foreach (var folder in App.Core.Folders.All.Cast<Folder>().Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
         Items.Add(folder);
       }
 
@@ -36,8 +36,8 @@ namespace PictureManager.Dialogs {
         Items.Remove(item);
       }
 
-      Core.Instance.Sdb.SetModified<Folders>();
-      App.Core.Model.FolderKeywords.Load();
+      App.Db.SetModified<Folders>();
+      App.Core.FolderKeywords.Load();
     }
   }
 }

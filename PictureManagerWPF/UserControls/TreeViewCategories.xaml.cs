@@ -28,7 +28,7 @@ namespace PictureManager.UserControls {
         if (sender is Folder folder) {
           // reload if the folder was selected before
           if (folder.IsSelected)
-            App.Core.TreeView_Select(folder, false, false, false);
+            App.Ui.TreeView_Select(folder, false, false, false);
         }
       };
 
@@ -52,32 +52,32 @@ namespace PictureManager.UserControls {
             var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
             FoldersViewModel.CopyMove(foMode, srcData, (Folder) dest);
-            App.Core.Model.Sdb.SetModified<MediaItems>();
-            App.Core.Model.Sdb.SetModified<Folders>();
-            App.Core.Model.FolderKeywords.Load();
+            App.Db.SetModified<MediaItems>();
+            App.Db.SetModified<Folders>();
+            App.Core.FolderKeywords.Load();
 
             // reload last selected source if was moved
             if (foMode == FileOperationMode.Move && srcData.IsSelected) {
               var folder = ((Folder) dest)?.GetByPath(srcData.Title);
               if (folder == null) return;
               CatTreeViewUtils.ExpandTo(folder);
-              App.Core.TreeView_Select(folder, false, false, false);
+              App.Ui.TreeView_Select(folder, false, false, false);
             }
 
             break;
           }
           case string[] _: { // MediaItems
             var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
-            App.Core.MediaItemsViewModel.CopyMove(
-              foMode, App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
-            App.Core.Model.Sdb.SetModified<MediaItems>();
+            App.Ui.MediaItemsViewModel.CopyMove(
+              foMode, App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
+            App.Db.SetModified<MediaItems>();
 
             break;
           }
         }
 
-        App.Core.Model.Sdb.SaveAllTables();
-        App.Core.Model.MarkUsedKeywordsAndPeople();
+        App.Db.SaveAllTables();
+        App.Core.MarkUsedKeywordsAndPeople();
       };
 
       CatTreeViewUtils.OnAfterSort += delegate(object sender, EventArgs args) {
@@ -88,11 +88,11 @@ namespace PictureManager.UserControls {
         // sort groups
         var groups = root.Items.OfType<ICatTreeViewGroup>().ToArray();
         foreach (var group in groups)
-          App.Core.Model.CategoryGroups.All.Remove(group as IRecord);
+          App.Core.CategoryGroups.All.Remove(group as IRecord);
         foreach (var group in groups)
-          App.Core.Model.CategoryGroups.All.Add(group as IRecord);
+          App.Core.CategoryGroups.All.Add(group as IRecord);
         if (groups.Length != 0)
-          Core.Instance.Sdb.SetModified<CategoryGroups>();
+          App.Db.SetModified<CategoryGroups>();
 
         // sort items
         var items = root.Items.Where(x => !(x is ICatTreeViewGroup)).ToArray();
@@ -101,7 +101,7 @@ namespace PictureManager.UserControls {
         foreach (var item in items)
           table.All.Add(item as IRecord);
         if (items.Length != 0) {
-          Core.Instance.Sdb.Changes++;
+          App.Db.Changes++;
           table.Helper.IsModified = true;
         }
       };
@@ -196,15 +196,15 @@ namespace PictureManager.UserControls {
        */
       e.Handled = true;
       if (e.OriginalSource is ToggleButton) return;
-      App.Core.TreeView_Select(((TreeViewItem)sender).DataContext as ICatTreeViewItem,
+      App.Ui.TreeView_Select(((TreeViewItem)sender).DataContext as ICatTreeViewItem,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
     private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      App.Core.Model.MediaItemSizes.Size.SliderChanged = true;
-      App.Core.MediaItemsViewModel.ReapplyFilter();
+      App.Core.MediaItemSizes.Size.SliderChanged = true;
+      App.Ui.MediaItemsViewModel.ReapplyFilter();
     }
 
     private void ShowSearch(object sender, RoutedEventArgs e) {

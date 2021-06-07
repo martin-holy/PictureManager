@@ -29,10 +29,10 @@ namespace PictureManager.UserControls {
 
     private void OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
       var grid = (ThumbnailsGrid)((FrameworkElement)((TabControl)sender).SelectedItem).DataContext;
-      App.Core.Model.MediaItems.ThumbsGrid = grid;
+      App.Core.MediaItems.ThumbsGrid = grid;
       grid.UpdateSelected();
-      App.Core.AppInfo.CurrentMediaItem = grid.Current;
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Ui.AppInfo.CurrentMediaItem = grid.Current;
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private void OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -41,7 +41,7 @@ namespace PictureManager.UserControls {
 
     private void BtnCloseTab(object sender, RoutedEventArgs e) {
       if (!(((FrameworkElement)sender).DataContext is ThumbnailsGrid grid)) return;
-      App.Core.MediaItemsViewModel.RemoveThumbnailsGrid(Tabs, grid);
+      App.Ui.MediaItemsViewModel.RemoveThumbnailsGrid(Tabs, grid);
 
       // set new SelectedItem and remove TabItem
       var tab = ((FrameworkElement)sender).TryFindParent<TabItem>();
@@ -54,7 +54,7 @@ namespace PictureManager.UserControls {
     }
 
     private void BtnAddTab(object sender, RoutedEventArgs e) {
-      AddTab(App.Core.MediaItemsViewModel.AddThumbnailsGridModel());
+      AddTab(App.Ui.MediaItemsViewModel.AddThumbnailsGridModel());
     }
 
     private void UpdateTabMaxHeight() {
@@ -65,8 +65,8 @@ namespace PictureManager.UserControls {
     }
 
     private void Refresh(object sender, RoutedEventArgs e) {
-      App.Core.Model.MediaItems.ThumbsGrid.ReloadFilteredItems();
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MediaItems.ThumbsGrid.ReloadFilteredItems();
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }
 }

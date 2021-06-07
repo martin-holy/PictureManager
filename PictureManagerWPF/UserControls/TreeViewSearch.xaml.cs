@@ -50,27 +50,27 @@ namespace PictureManager.UserControls {
       var sep = Path.DirectorySeparatorChar.ToString();
 
       // People
-      AddToSearchResult(App.Core.Model.People.All.Cast<Person>()
+      AddToSearchResult(App.Core.People.All.Cast<Person>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.People, x.Title, (x.Parent as CategoryGroup)?.Title, x)));
 
       // Keywords
-      AddToSearchResult(App.Core.Model.Keywords.All.Cast<Keyword>()
+      AddToSearchResult(App.Core.Keywords.All.Cast<Keyword>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.Tag, x.Title, x.FullPath, x)));
 
       // GeoNames
-      AddToSearchResult(App.Core.Model.GeoNames.All.Cast<GeoName>()
+      AddToSearchResult(App.Core.GeoNames.All.Cast<GeoName>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.LocationCheckin, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
 
       // Folders
-      var result = App.Core.Model.Folders.All.Cast<Folder>()
+      var result = App.Core.Folders.All.Cast<Folder>()
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.Folder, x.Title, x.FullPath, x)).ToList();
 
       // Folder Keywords
-      result.AddRange(App.Core.Model.FolderKeywords.All
+      result.AddRange(App.Core.FolderKeywords.All
         .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
         .Select(x => new SearchItem(IconName.FolderPuzzle, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
       AddToSearchResult(result);
