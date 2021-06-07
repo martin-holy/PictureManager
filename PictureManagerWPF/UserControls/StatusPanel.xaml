@@ -7,7 +7,7 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              DataContext="{x:Static pm:App.Core}"
              PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
-             Foreground="White" Focusable="True" VerticalAlignment="Bottom" Cursor="Hand">
+             Foreground="White" Focusable="True" VerticalAlignment="Bottom">
 
   <UserControl.Resources>
     <Style x:Key="SOpacity" TargetType="{x:Type Grid}">
@@ -115,6 +115,7 @@
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}">
             <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="Margin" Value="2,2,0,0" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding AppInfo.FullGeoName, Converter={StaticResource AllToBoolConverter}}" Value="True">
                 <Setter Property="Visibility" Value="Visible" />
