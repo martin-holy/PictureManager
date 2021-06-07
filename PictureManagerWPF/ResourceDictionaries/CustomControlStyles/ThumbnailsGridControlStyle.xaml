@@ -45,7 +45,7 @@
               <DataTemplate DataType="{x:Type models:MediaItemsGroup}">
                 <Border BorderBrush="Black" BorderThickness="1" Margin="1,20,0,8" Background="#88000000">
                   <StackPanel Orientation="Horizontal">
-                    <StackPanel Orientation="Horizontal" Visibility="{Binding Folder, Converter={StaticResource AllToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal" ToolTip="{Binding FolderFullPath}" Visibility="{Binding Folder, Converter={StaticResource AllToVisibilityConverter}}">
                       <cc:IconRect IconName="{x:Static pmd:IconName.Folder}" Margin="8,8,0,8" />
                       <TextBlock Text="{Binding Folder}" FontSize="20" Padding="8" />
                     </StackPanel>

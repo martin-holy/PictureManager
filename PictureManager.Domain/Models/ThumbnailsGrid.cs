@@ -176,23 +176,22 @@ namespace PictureManager.Domain.Models {
       Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
     }
 
-    private string GetFolderGroup(string folderName) {
+    private string GetFolderTitle(string folderName) {
       if (!GroupByFolders) return string.Empty;
       var iOfL = folderName.FirstIndexOfLetter();
       return iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName.Substring(iOfL);
     }
 
-    private string GetDateGroup(string fileName) {
-      return !GroupByDate ? string.Empty : Extensions.DateTimeFromString(fileName, _dateFormats, null);
-    }
-
     private void AddGroup(MediaItem mi) {
       var group = Rows.OfType<MediaItemsGroup>().LastOrDefault();
-      var miFolder = GetFolderGroup(mi.Folder.Title);
-      var miDate = GetDateGroup(mi.FileName);
+      var miFolderTitle = GetFolderTitle(mi.Folder.Title);
+      var miFolderFullPath = mi.Folder.FolderKeyword != null
+        ? CatTreeViewUtils.GetFullPath(mi.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+        : mi.Folder.FullPath;
+      var miDate = !GroupByDate ? string.Empty : Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
 
-      if (group == null || !group.Date.Equals(miDate) && GroupByDate || !group.Folder.Equals(miFolder) && GroupByFolders) {
-        group = new MediaItemsGroup {Date = miDate, Folder = miFolder};
+      if (group == null || !group.Date.Equals(miDate) && GroupByDate || !group.FolderFullPath.Equals(miFolderFullPath) && GroupByFolders) {
+        group = new MediaItemsGroup {Date = miDate, Folder = miFolderTitle, FolderFullPath = miFolderFullPath};
         Rows.Add(group);
         Rows.Add(new MediaItemsRow());
       }
