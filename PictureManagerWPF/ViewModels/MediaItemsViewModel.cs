@@ -25,8 +25,8 @@ namespace PictureManager.ViewModels {
     private Task _loadTask;
     private readonly MediaItems _model;
 
-    public MediaItemsViewModel(AppCore core) {
-      _model = core.Model.MediaItems;
+    public MediaItemsViewModel(Core core) {
+      _model = core.MediaItems;
       // create default ThumbnailsGrid
       AddThumbnailsGridModel();
     }
@@ -68,7 +68,7 @@ namespace PictureManager.ViewModels {
     public void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
       var grid = (ThumbnailsGrid)sender;
       if (e.PropertyName.Equals(nameof(grid.Current))) {
-        App.Core.AppInfo.CurrentMediaItem = grid.Current;
+        App.Ui.AppInfo.CurrentMediaItem = grid.Current;
       }
     }
 
@@ -88,7 +88,7 @@ namespace PictureManager.ViewModels {
       currentGrid.ClearItBeforeLoad();
       App.WMain.ImageComparerTool.Close();
 
-      App.Core.AppInfo.ProgressBarIsIndeterminate = true;
+      App.Ui.AppInfo.ProgressBarIsIndeterminate = true;
 
       _loadTask = Task.Run(async () => {
         _loadCts?.Dispose();
@@ -112,16 +112,16 @@ namespace PictureManager.ViewModels {
         currentGrid.ReloadFilteredItems();
 
         await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), token);
-        App.Core.Model.SetMediaItemSizesLoadedRange();
+        App.Core.SetMediaItemSizesLoadedRange();
       });
 
       await _loadTask;
     }
 
     private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
-      App.Core.AppInfo.ProgressBarIsIndeterminate = false;
-      App.Core.AppInfo.ProgressBarValueA = 0;
-      App.Core.AppInfo.ProgressBarValueB = 0;
+      App.Ui.AppInfo.ProgressBarIsIndeterminate = false;
+      App.Ui.AppInfo.ProgressBarValueA = 0;
+      App.Ui.AppInfo.ProgressBarValueB = 0;
 
       await Task.Run(async () => {
         // read metadata for new items and add thumbnails to grid
@@ -142,7 +142,7 @@ namespace PictureManager.ViewModels {
         }
 
         if (saveDb)
-          App.Core.Model.Sdb.SaveAllTables();
+          App.Db.SaveAllTables();
       });
 
       // TODO: is this necessary?
@@ -183,7 +183,7 @@ namespace PictureManager.ViewModels {
                 _model.ThumbsGrid.LoadedItems.Remove(mi);
                 _model.ThumbsGrid.FilteredItems.Remove(mi);
                 _model.Delete(mi);
-                App.Core.AppInfo.ProgressBarValueA = percent;
+                App.Ui.AppInfo.ProgressBarValueA = percent;
               });
 
               continue;
@@ -195,7 +195,7 @@ namespace PictureManager.ViewModels {
           Application.Current.Dispatcher?.Invoke(delegate {
             mi.SetInfoBox();
             _model.ThumbsGrid.AddItem(mi, maxWidth);
-            App.Core.AppInfo.ProgressBarValueA = percent;
+            App.Ui.AppInfo.ProgressBarValueA = percent;
           });
         }
 
@@ -282,7 +282,7 @@ namespace PictureManager.ViewModels {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
           mi.ReloadThumbnail();
-          await Core.Instance.RunOnUiThread(Core.Instance.Sdb.SetModified<MediaItems>);
+          await App.Core.RunOnUiThread(App.Db.SetModified<MediaItems>);
         },
         mi => mi.FilePath,
         // onCompleted
@@ -313,7 +313,7 @@ namespace PictureManager.ViewModels {
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(task => Core.Instance.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(task => App.Core.RunOnUiThread(() => fop.Close()));
 
       fop.ShowDialog();
 
@@ -331,7 +331,7 @@ namespace PictureManager.ViewModels {
 
     public void ReapplyFilter() {
       _model.ThumbsGrid.ReloadFilteredItems();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MarkUsedKeywordsAndPeople();
       ThumbsGridReloadItems();
     }
 
@@ -343,7 +343,7 @@ namespace PictureManager.ViewModels {
         throw new Exception("Error writing metadata");
       }
       catch (Exception ex) {
-        App.Core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
+        App.Ui.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
         // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
         mediaItem.IsOnlyInDb = true;
         return false;
@@ -447,7 +447,7 @@ namespace PictureManager.ViewModels {
 
         // don't log error if hResult is -2146233033
         if (hResult != -2146233033)
-          App.Core.LogError(ex, mi.FilePath);
+          App.Ui.LogError(ex, mi.FilePath);
       }
 
       // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
@@ -484,10 +484,10 @@ namespace PictureManager.ViewModels {
 
               mi.SetThumbSize(true);
 
-              App.Core.Model.Sdb.SetModified<MediaItems>();
+              App.Db.SetModified<MediaItems>();
             }
             catch (Exception ex) {
-              App.Core.LogError(ex, mi.FilePath);
+              App.Ui.LogError(ex, mi.FilePath);
             }
           });
         }
@@ -499,7 +499,7 @@ namespace PictureManager.ViewModels {
             mi.Height = frame.PixelHeight;
             mi.SetThumbSize(true);
 
-            App.Core.Model.Sdb.SetModified<MediaItems>();
+            App.Db.SetModified<MediaItems>();
 
             // true because only media item dimensions are required
             if (!(frame.Metadata is BitmapMetadata bm)) return true;
@@ -533,7 +533,7 @@ namespace PictureManager.ViewModels {
                 foreach (var region in regions) {
                   var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
                   if (personDisplayName != null) {
-                    var person = App.Core.Model.People.GetPerson(personDisplayName.ToString(), true);
+                    var person = App.Core.People.GetPerson(personDisplayName.ToString(), true);
                     person.MediaItems.Add(mi);
                     mi.People.Add(person);
                   }
@@ -557,7 +557,7 @@ namespace PictureManager.ViewModels {
               // Filter out duplicities
               foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
                 if (mi.Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-                var keyword = App.Core.Model.Keywords.GetByFullPath(k);
+                var keyword = App.Core.Keywords.GetByFullPath(k);
                 if (keyword != null) {
                   keyword.MediaItems.Add(mi);
                   mi.Keywords.Add(keyword);
@@ -569,7 +569,7 @@ namespace PictureManager.ViewModels {
             var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
             if (!string.IsNullOrEmpty(tmpGId as string)) {
               // TODO dohledani/vytvoreni geoname
-              mi.GeoName = App.Core.Model.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
+              mi.GeoName = App.Core.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
             }
 
             mi.SetThumbSize(true);
@@ -577,7 +577,7 @@ namespace PictureManager.ViewModels {
         }
       }
       catch (Exception ex) {
-        App.Core.LogError(ex, mi.FilePath);
+        App.Ui.LogError(ex, mi.FilePath);
 
         // No imaging component suitable to complete this operation was found.
         if ((ex.InnerException as COMException)?.HResult == -2003292336)

@@ -5,7 +5,7 @@
 
   <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
               SelectionChanged="OnSelectionChanged" SizeChanged="OnSizeChanged"
-              Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Core},
+              Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={x:Static pm:AppMode.Browser}}">
 

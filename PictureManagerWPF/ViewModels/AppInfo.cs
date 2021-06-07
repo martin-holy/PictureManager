@@ -87,7 +87,7 @@ namespace PictureManager.ViewModels {
       get {
         try {
           var size = CurrentMediaItem == null
-            ? App.Core.Model.MediaItems.ThumbsGrid.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
+            ? App.Core.MediaItems.ThumbsGrid.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
             : new FileInfo(CurrentMediaItem.FilePath).Length;
 
           return size == 0 ? string.Empty : Extensions.FileSizeToString(size);
@@ -122,7 +122,7 @@ namespace PictureManager.ViewModels {
     }
 
     private static string GetActiveFilterCountFor(BackgroundBrush bgb) {
-      var count = App.Core.Model.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
+      var count = App.Core.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
       return count == 0 ? string.Empty : count.ToString();
     }
   }

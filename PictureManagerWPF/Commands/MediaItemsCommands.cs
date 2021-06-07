@@ -53,12 +53,12 @@ namespace PictureManager.Commands {
     }
 
     public static bool CanNext() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.Model.MediaItems.ThumbsGrid.GetNext() != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.GetNext() != null;
     }
 
     public void Next() {
-      var current = App.Core.Model.MediaItems.ThumbsGrid.GetNext();
-      App.Core.Model.MediaItems.ThumbsGrid.Current = current;
+      var current = App.Core.MediaItems.ThumbsGrid.GetNext();
+      App.Core.MediaItems.ThumbsGrid.Current = current;
       var decoded = App.WMain.PresentationPanel.IsRunning && current.MediaType == MediaType.Image && current.IsPanoramic;
       App.WMain.SetMediaItemSource(decoded);
 
@@ -72,56 +72,56 @@ namespace PictureManager.Commands {
           App.WMain.PresentationPanel.Start(true);
       }
 
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     public static bool CanPrevious() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.Model.MediaItems.ThumbsGrid.GetPrevious() != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.GetPrevious() != null;
     }
 
     public void Previous() {
       if (App.WMain.PresentationPanel.IsRunning)
         App.WMain.PresentationPanel.Stop();
 
-      App.Core.Model.MediaItems.ThumbsGrid.Current = App.Core.Model.MediaItems.ThumbsGrid.GetPrevious();
+      App.Core.MediaItems.ThumbsGrid.Current = App.Core.MediaItems.ThumbsGrid.GetPrevious();
       App.WMain.SetMediaItemSource();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanSelectAll() {
-      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void SelectAll() {
-      App.Core.Model.MediaItems.ThumbsGrid.SelectAll();
-      App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FileSize));
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItems.ThumbsGrid.SelectAll();
+      App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FileSize));
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanSelectNotModified() {
-      return App.Core.AppInfo.AppMode == AppMode.Browser && App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void SelectNotModified() {
-      App.Core.Model.MediaItems.ThumbsGrid.SelectNotModified();
-      App.Core.Model.MarkUsedKeywordsAndPeople();
+      App.Core.MediaItems.ThumbsGrid.SelectNotModified();
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanDelete() {
-      return App.Core.Model.MediaItems.ThumbsGrid.Selected > 0;
+      return App.Core.MediaItems.ThumbsGrid.Selected > 0;
     }
 
     private void Delete() {
-      var items = App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
+      var items = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      App.Core.Model.MediaItems.ThumbsGrid.Remove(items,true, AppCore.FileOperationDelete);
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MediaItems.ThumbsGrid.Remove(items,true, AppCore.FileOperationDelete);
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
-      if (App.Core.AppInfo.AppMode == AppMode.Viewer) {
-        if (App.Core.Model.MediaItems.ThumbsGrid.Current != null)
+      if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
+        if (App.Core.MediaItems.ThumbsGrid.Current != null)
           App.WMain.SetMediaItemSource();
         else
           App.WMain.CommandsController.WindowCommands.SwitchToBrowser();
@@ -129,34 +129,34 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanShuffle() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void Shuffle() {
-      var thumbsGrid = App.Core.Model.MediaItems.ThumbsGrid;
+      var thumbsGrid = App.Core.MediaItems.ThumbsGrid;
       thumbsGrid.FilteredItems.Shuffle();
       thumbsGrid.GroupByFolders = false;
       thumbsGrid.GroupByDate = false;
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private static bool CanResizeImages() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void ResizeImages() {
-      ResizeImagesDialog.Show(App.WMain, App.Core.Model.MediaItems.ThumbsGrid.GetSelectedOrAll());
+      ResizeImagesDialog.Show(App.WMain, App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll());
     }
 
     private static bool CanImagesToVideo() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
     }
 
     private static void ImagesToVideo() {
       ImagesToVideoDialog.ShowDialog(App.WMain,
-        App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image), 
+        App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image), 
         async delegate(Folder folder, string fileName) {
-          var mmi = App.Core.Model.MediaItems;
+          var mmi = App.Core.MediaItems;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = new MediaItem(mmi.Helper.GetNextId(), folder, fileName);
@@ -168,24 +168,24 @@ namespace PictureManager.Commands {
 
           // reload grid
           mmi.ThumbsGrid.LoadedItems.AddInOrder(mi, (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          App.Core.MediaItemsViewModel.ReapplyFilter();
-          App.Core.MediaItemsViewModel.ScrollTo(mi);
+          App.Ui.MediaItemsViewModel.ReapplyFilter();
+          App.Ui.MediaItemsViewModel.ScrollTo(mi);
         }
       );
     }
 
     private static bool CanCopyPaths() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private static void CopyPaths() {
       Clipboard.SetText(
         string.Join("\n",
-          App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath)));
+          App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath)));
     }
 
     private static bool CanCompare() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void Compare() {
@@ -196,7 +196,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanCompress() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private void Compress() {
@@ -204,20 +204,20 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanRotate() {
-      return App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void Rotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
-      App.Core.MediaItemsViewModel.SetOrientation(App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
+      App.Ui.MediaItemsViewModel.SetOrientation(App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
-      if (App.Core.AppInfo.AppMode != AppMode.Viewer) return;
+      if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
       App.WMain.SetMediaItemSource();
     }
 
     public bool CanRebuildThumbnails(object parameter) {
-      return parameter is Folder || App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     public void RebuildThumbnails(object parameter) {
@@ -227,7 +227,7 @@ namespace PictureManager.Commands {
       switch (parameter) {
         case Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
         case List<MediaItem> items: mediaItems = items; break;
-        default: mediaItems = App.Core.Model.MediaItems.ThumbsGrid.GetSelectedOrAll(); break;
+        default: mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll(); break;
       }
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
@@ -241,7 +241,7 @@ namespace PictureManager.Commands {
         },
         mi => mi.FilePath,
         delegate {
-          App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+          App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
         });
 
       progress.Start();
@@ -259,7 +259,7 @@ namespace PictureManager.Commands {
             return true;
           }
           catch (Exception ex) {
-            App.Core.LogError(ex, destination);
+            App.Ui.LogError(ex, destination);
             return false;
           }
         },
@@ -273,7 +273,7 @@ namespace PictureManager.Commands {
             Imaging.ResizeJpg(src, dest, px, withMetadata, withThumbnail);
           }
           catch (Exception ex) {
-            App.Core.LogError(ex, mi.FilePath);
+            App.Ui.LogError(ex, mi.FilePath);
           }
         },
         // customMessage
@@ -285,7 +285,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanPresentation() {
-      return App.Core.AppInfo.AppMode == AppMode.Viewer && App.Core.Model.MediaItems.ThumbsGrid.Current != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.Current != null;
     }
 
     private void Presentation() {
@@ -302,11 +302,11 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanRename() {
-      return App.Core.Model.MediaItems.ThumbsGrid.Current != null;
+      return App.Core.MediaItems.ThumbsGrid.Current != null;
     }
 
     private static void Rename() {
-      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
+      var current = App.Core.MediaItems.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -337,13 +337,13 @@ namespace PictureManager.Commands {
 
       try {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
-        App.Core.Model.MediaItems.ThumbsGrid.FilteredItemsSetInPlace(current);
-        App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
-        App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FilePath));
-        App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.DateAndTime));
+        App.Core.MediaItems.ThumbsGrid.FilteredItemsSetInPlace(current);
+        App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+        App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FilePath));
+        App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.DateAndTime));
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        App.Ui.LogError(ex);
       }
     }
 
@@ -356,16 +356,16 @@ namespace PictureManager.Commands {
       if (vc != null && vc.Clip.TimeEnd == 0)
         App.WMain.FullMedia.SetMarker(vc, false);
       else
-        App.Core.MediaItemClipsCategory.ItemCreate(App.Core.MediaItemClipsCategory, string.Empty);
+        App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
     }
 
     private static bool CanVideoClipsSave() {
-      return App.Core.Model.VideoClips.Helper.IsModified || App.Core.Model.VideoClipsGroups.Helper.IsModified;
+      return App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
     }
 
     private static void VideoClipsSave() {
-      App.Core.Model.VideoClips.SaveToFile();
-      App.Core.Model.VideoClipsGroups.SaveToFile();
+      App.Core.VideoClips.SaveToFile();
+      App.Core.VideoClipsGroups.SaveToFile();
     }
   }
 }

@@ -11,16 +11,16 @@ namespace PictureManager.ViewModels {
       if (!(dir.ShowDialog() ?? true)) return;
       if ((included ? viewer.IncludedFolders : viewer.ExcludedFolders).Items.Any(x => x.ToolTip.Equals(dir.SelectedPath))) return;
 
-      var folder = App.Core.Model.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
+      var folder = App.Core.Folders.GetByPath(dir.SelectedPath.TrimEnd(Path.DirectorySeparatorChar));
       if (folder == null) {
         MessageDialog.Show("Information", "Select this folder in Folders tree first.", false);
         return;
       }
 
       viewer.AddFolder(folder, included);
-      Core.Instance.Sdb.SetModified<Viewers>();
-      App.Core.Model.Folders.AddDrives();
-      App.Core.Model.FolderKeywords.Load();
+      App.Db.SetModified<Viewers>();
+      App.Core.Folders.AddDrives();
+      App.Core.FolderKeywords.Load();
     }
   }
 }

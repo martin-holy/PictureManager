@@ -23,7 +23,7 @@ namespace PictureManager {
       InitializeComponent();
 
       // add default ThumbnailsGridControl
-      ThumbnailsTabs.AddTab(App.Core.Model.MediaItems.ThumbsGrid);
+      ThumbnailsTabs.AddTab(App.Core.MediaItems.ThumbsGrid);
 
       PresentationPanel.Elapsed = delegate {
         Application.Current.Dispatcher?.Invoke(delegate {
@@ -36,7 +36,7 @@ namespace PictureManager {
       };
 
       FullMedia.ApplyTemplate();
-      FullMedia.MediaItemClips.Add(App.Core.MediaItemClipsCategory);
+      FullMedia.MediaItemClips.Add(App.Ui.MediaItemClipsCategory);
       FullMedia.RepeatEnded += delegate {
         if (!PresentationPanel.IsPaused) return;
         PresentationPanel.Start(false);
@@ -53,7 +53,7 @@ namespace PictureManager {
         ((MediaElement) o).Position = TimeSpan.FromMilliseconds(1);
       };
 
-      MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Core.MediaItemsViewModel.ThumbsGridReloadItems(); };
+      MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Ui.MediaItemsViewModel.ThumbsGridReloadItems(); };
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
@@ -67,21 +67,21 @@ namespace PictureManager {
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       CommandsController.AddCommandBindings(CommandBindings);
       CommandsController.AddInputBindings();
-      App.Core.Model.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
-      MenuViewers.Header = App.Core.Model.CurrentViewer?.Title ?? "Viewer";
+      App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
+      MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
     }
 
     public void SetMediaItemSource(bool decoded = false) {
-      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
+      var current = App.Core.MediaItems.ThumbsGrid.Current;
       switch (current.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(current, decoded);
-          App.Core.MediaItemClipsCategory.SetMediaItem(null);
+          App.Ui.MediaItemClipsCategory.SetMediaItem(null);
           FullMedia.SetSource(null);
           break;
         }
         case MediaType.Video: {
-          App.Core.MediaItemClipsCategory.SetMediaItem(current);
+          App.Ui.MediaItemClipsCategory.SetMediaItem(current);
           FullMedia.SetSource(current);
           break;
         }
@@ -107,24 +107,24 @@ namespace PictureManager {
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
-      if (App.Core.Model.MediaItems.ModifiedItems.Count > 0 &&
+      if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
         CommandsController.MetadataCommands.Save();
       }
-      App.Core.Model.Sdb.SaveAllTables();
+      App.Db.SaveAllTables();
     }
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-      if (App.Core.AppInfo.AppMode == AppMode.Viewer) return;
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      if (App.Ui.AppInfo.AppMode == AppMode.Viewer) return;
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
-      App.Core.ClearFilters();
+      App.Ui.ClearFilters();
     }
 
     private void OnMediaTypesChanged(object sender, RoutedEventArgs e) {
-      App.Core.MediaItemsViewModel.ReapplyFilter();
+      App.Ui.MediaItemsViewModel.ReapplyFilter();
     }
   }
 }

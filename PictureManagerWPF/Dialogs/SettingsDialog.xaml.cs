@@ -8,8 +8,8 @@ namespace PictureManager.Dialogs {
     }
 
     private void Save(object sender, RoutedEventArgs e) {
-      App.Core.Model.CachePath = Settings.Default.CachePath;
-      App.Core.Model.ThumbnailSize = Settings.Default.ThumbnailSize;
+      App.Core.CachePath = Settings.Default.CachePath;
+      App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
 
       DialogResult = true;
     }

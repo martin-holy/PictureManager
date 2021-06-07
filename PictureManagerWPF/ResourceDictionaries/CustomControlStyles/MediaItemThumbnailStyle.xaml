@@ -33,7 +33,7 @@
                       <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=Border}, Path=IsMouseOver}" Value="True">
                         <Setter Property="Visibility" Value="Hidden"/>
                       </DataTrigger>
-                      <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Core}}" Value="False">
+                      <DataTrigger Binding="{Binding AppInfo.IsThumbInfoVisible, Source={x:Static pm:App.Ui}}" Value="False">
                         <Setter Property="Visibility" Value="Hidden"/>
                       </DataTrigger>
                     </Style.Triggers>

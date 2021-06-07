@@ -28,28 +28,28 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanEdit() {
-      return !App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private static void Edit() {
-      App.Core.Model.MediaItems.IsEditModeOn = true;
+      App.Core.MediaItems.IsEditModeOn = true;
     }
 
     private static bool CanSave() {
-      return App.Core.Model.MediaItems.IsEditModeOn && App.Core.Model.MediaItems.ModifiedItems.Count > 0;
+      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
     }
 
     public void Save() {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
-        App.Core.Model.MediaItems.ModifiedItems.ToArray(),
+        App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
           MediaItemsViewModel.TryWriteMetadata(mi);
 
           Application.Current.Dispatcher?.Invoke(delegate {
-            App.Core.Model.MediaItems.SetModified(mi, false);
+            App.Core.MediaItems.SetModified(mi, false);
           });
         },
         mi => mi.FilePath,
@@ -58,49 +58,49 @@ namespace PictureManager.Commands {
           if (e.Cancelled)
             Cancel();
           else
-            App.Core.Model.MediaItems.IsEditModeOn = false;
+            App.Core.MediaItems.IsEditModeOn = false;
 
-          App.Core.AppInfo.OnPropertyChanged(nameof(App.Core.AppInfo.FileSize));
+          App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FileSize));
         });
 
       progress.StartDialog();
     }
 
     private static bool CanCancel() {
-      return App.Core.Model.MediaItems.IsEditModeOn;
+      return App.Core.MediaItems.IsEditModeOn;
     }
 
     private void Cancel() {
       var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
-        App.Core.Model.MediaItems.ModifiedItems.ToArray(),
+        App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
         delegate (MediaItem mi) {
           MediaItemsViewModel.ReadMetadata(mi);
 
           Application.Current.Dispatcher?.Invoke(delegate {
-            App.Core.Model.MediaItems.SetModified(mi, false);
+            App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Model.Sdb.SaveAllTables();
-          App.Core.Model.MarkUsedKeywordsAndPeople();
-          App.Core.Model.MediaItems.IsEditModeOn = false;
+          App.Db.SaveAllTables();
+          App.Core.MarkUsedKeywordsAndPeople();
+          App.Core.MediaItems.IsEditModeOn = false;
         });
 
       progress.StartDialog();
     }
 
     private static bool CanComment() {
-      return App.Core.Model.MediaItems.ThumbsGrid.Current != null;
+      return App.Core.MediaItems.ThumbsGrid.Current != null;
     }
 
     private void Comment() {
-      var current = App.Core.Model.MediaItems.ThumbsGrid.Current;
+      var current = App.Core.MediaItems.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -125,11 +125,11 @@ namespace PictureManager.Commands {
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
       MediaItemsViewModel.TryWriteMetadata(current);
-      Core.Instance.Sdb.SetModified<MediaItems>();
+      App.Db.SetModified<MediaItems>();
     }
 
     private static bool CanReload(object parameter) {
-      return parameter is Folder || App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
     }
 
     private void Reload(object parameter) {
@@ -137,7 +137,7 @@ namespace PictureManager.Commands {
       var folder = parameter as Folder;
       var mediaItems = folder != null
         ? folder.GetMediaItems(recursive)
-        : App.Core.Model.MediaItems.ThumbsGrid.GetSelectedOrAll();
+        : App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
@@ -154,7 +154,7 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Model.MarkUsedKeywordsAndPeople();
+          App.Core.MarkUsedKeywordsAndPeople();
         });
 
       progress.Start();

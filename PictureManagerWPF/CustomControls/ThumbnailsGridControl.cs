@@ -18,11 +18,11 @@ namespace PictureManager.CustomControls {
 
     private static void Grid_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) == 0) return;
-      if (e.Delta < 0 && App.Core.Model.ThumbScale < .1) return;
-      App.Core.Model.ThumbScale += e.Delta > 0 ? .05 : -.05;
-      App.Core.AppInfo.IsThumbInfoVisible = App.Core.Model.ThumbScale > 0.5;
-      App.Core.Model.MediaItems.ThumbsGrid.ResetThumbsSize();
-      App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
+      if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
+      App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
+      App.Ui.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
+      App.Core.MediaItems.ThumbsGrid.ResetThumbsSize();
+      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }
 }

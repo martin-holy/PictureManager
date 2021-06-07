@@ -37,7 +37,7 @@ namespace PictureManager {
       var test2 = Text2Path("⤺");
       var test3 = Text2Path("⤺", false, true);*/
 
-      /*foreach (var mi in App.Core.MediaItems.Items) {
+      /*foreach (var mi in App.Ui.MediaItems.Items) {
         mi.ReloadThumbnail();
       }*/
 
@@ -57,11 +57,11 @@ namespace PictureManager {
     }
 
     private void RemoveKeywordsFromAutoAddedCategory() {
-      var keywords = App.Core.Model.CategoryGroups.All.Cast<CategoryGroup>().Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>().ToArray();
+      var keywords = App.Core.CategoryGroups.All.Cast<CategoryGroup>().Single(x => x.Title.Equals("Auto Added")).Items.Cast<Keyword>().ToArray();
       foreach (var keyword in keywords) {
-        App.Core.Model.Keywords.ItemDelete(keyword);
+        App.Core.Keywords.ItemDelete(keyword);
       }
-      App.Core.Model.Sdb.SaveAllTables();
+      App.Db.SaveAllTables();
     }
 
     private void TestFolderBrowserDialog() {
@@ -71,7 +71,7 @@ namespace PictureManager {
     }
 
     private void CreateThumbnailAsyncTest() {
-      var folder = App.Core.Model.Folders.GetByPath(@"D:\!test");
+      var folder = App.Core.Folders.GetByPath(@"D:\!test");
       var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Video).ToArray();
       var index = 0;
 
@@ -90,7 +90,7 @@ namespace PictureManager {
 
       /*Parallel.ForEach(items, new ParallelOptions {MaxDegreeOfParallelism = 1}, async mi => {
         Console.WriteLine("loop before");
-        await App.Core.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
+        await App.Ui.CreateThumbnailAsync(mi.FilePath, mi.FilePathCache, Settings.Default.ThumbnailSize);
         Console.WriteLine("loop after");
       });*/
 
@@ -119,7 +119,7 @@ namespace PictureManager {
     }
 
     private void ProgressBarTest() {
-      //var folder = App.Core.Folders.GetByPath(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018");
+      //var folder = App.Ui.Folders.GetByPath(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018");
       //var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).ToArray();
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Test");
@@ -141,7 +141,7 @@ namespace PictureManager {
       Directory.CreateDirectory(destPhone);
       Directory.CreateDirectory(destWeb);
 
-      var folder = App.Core.Model.Folders.GetByPath(src);
+      var folder = App.Core.Folders.GetByPath(src);
 
       //var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).ToArray();
       //App.WMain.MediaItemsResize(items, 2500000, destPhone, true, false);
@@ -151,13 +151,13 @@ namespace PictureManager {
     }
 
     private void ResizeTest() {
-      //App.WMain.MediaItemsResize(new List<MediaItem> {App.Core.MediaItems.All.Single(x => x.Id == 1861) }, 1500000, @"D:\", true, false);
+      //App.WMain.MediaItemsResize(new List<MediaItem> {App.Ui.MediaItems.All.Single(x => x.Id == 1861) }, 1500000, @"D:\", true, false);
 
       //, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
 
       try {
         /*var year = 2010;
-        var folder = App.Core.Folders.GetByPath($"D:\\Pictures\\01 Digital_Foto\\-=Hotovo\\{year}");
+        var folder = App.Ui.Folders.GetByPath($"D:\\Pictures\\01 Digital_Foto\\-=Hotovo\\{year}");
         var items = folder.GetMediaItems(true).Where(x => x.MediaType == MediaType.Image && x.Rating > 2).OrderBy(x => x.FilePath).ToArray();
         App.WMain.MediaItemsResize(items, 2500000, $"D:\\{year}", true, false);*/
 
@@ -167,13 +167,13 @@ namespace PictureManager {
         //MediaItems.Resize(@"D:\Pictures\01 Digital_Foto\-=Hotovo\2018\2018_01_01+ - Isi & Bettina\20180101_133736_Martin.jpg", @"D:\000\20180101_133736_Martin.jpg", 2500000, true, false);
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        App.Ui.LogError(ex);
       }
       
     }
 
     private void BackdoorManipulations() {
-      var items = App.Core.Model.MediaItems.All.Cast<MediaItem>().Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
+      var items = App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.MediaType == MediaType.Video && (x.Width == 0 || x.Height == 0));
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         items.ToArray(),
@@ -185,13 +185,13 @@ namespace PictureManager {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.Model.MediaItems.Helper.IsModified = true;
-          App.Core.Model.Sdb.SaveAllTables();
+          App.Core.MediaItems.Helper.IsModified = true;
+          App.Db.SaveAllTables();
         });
 
       progress.Start();
 
-      /*var items = App.Core.MediaItems.All.Where(x => x.MediaType == MediaType.Video).ToList();
+      /*var items = App.Ui.MediaItems.All.Where(x => x.MediaType == MediaType.Video).ToList();
       foreach (var mi in items) {
         mi.SetThumbSize();
       }
@@ -199,13 +199,13 @@ namespace PictureManager {
     }
 
     public void LogTest() {
-      App.Core.Log.Clear();
-      App.Core.Log.Add(new LogItem("1 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "1 foreach (var mi in aCore.MediaItems.All\n.Where(x => x.MediaType == \nMediaType.Image && x.Width == 0))"));
-      App.Core.Log.Add(new LogItem("2 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "2 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
-      App.Core.Log.Add(new LogItem("3 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "3 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
-      App.Core.Log.Add(new LogItem("4 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "4 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
-      App.Core.Log.Add(new LogItem("5 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "5 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
-      App.Core.Log.Add(new LogItem("6 App.Core.MediaItems.All.Where(x => x.IsSelected).ToArray()", "6 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Clear();
+      App.Ui.Log.Add(new LogItem("1 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "1 foreach (var mi in aCore.MediaItems.All\n.Where(x => x.MediaType == \nMediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Add(new LogItem("2 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "2 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Add(new LogItem("3 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "3 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Add(new LogItem("4 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "4 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Add(new LogItem("5 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "5 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
+      App.Ui.Log.Add(new LogItem("6 App.Ui.MediaItems.All.Where(x => x.IsSelected).ToArray()", "6 foreach (var mi in aCore.MediaItems.All.Where(x => x.MediaType == MediaType.Image && x.Width == 0))"));
 
       var dlg = new LogDialog();
       dlg.ShowDialog();
@@ -220,7 +220,7 @@ namespace PictureManager {
     }
 
     public void GetByPathTest() {
-      var f = App.Core.Model.Folders.GetByPath(@"D:\!test2");
+      var f = App.Core.Folders.GetByPath(@"D:\!test2");
       var f2 = f.GetByPath(@"D:\!test2\2019");
     }
 

@@ -20,10 +20,10 @@
     <DataTemplate>
       <Grid>
         <StackPanel Orientation="Vertical">
-          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Ui}" 
                        Value="{Binding AppInfo.ProgressBarValueA}" BorderThickness="1,1,1,0"
                        IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
-          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Core}" 
+          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Ui}" 
                        Value="{Binding AppInfo.ProgressBarValueB}" BorderThickness="1,0,1,1"
                        IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
         </StackPanel>
@@ -91,8 +91,8 @@
           <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Style="{StaticResource StyleMenuItemRoot}" Icon="{StaticResource EyeIcon}"
-                  ItemsSource="{Binding Model.Viewers.Items, Source={x:Static pm:App.Core}}"
-                  Visibility="{Binding Model.Viewers.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+                  ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}"
+                  Visibility="{Binding Viewers.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource StyleBaseMenuItem}">
               <Setter Property="Header" Value="{Binding Title}" />
@@ -106,10 +106,10 @@
       </Menu>
 
       <!-- Media Items Count -->
-      <TextBlock Text="{Binding Model.MediaItems.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
+      <TextBlock Text="{Binding MediaItems.MediaItemsCount, Source={x:Static pm:App.Core}}" VerticalAlignment="Center" Margin="5,0" />
       
       <!-- Filters Panel -->
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Core}"
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Ui}"
                   ToolTip="Clear filters" Cursor="Hand" PreviewMouseLeftButtonUp="FiltersPanel_ClearFilters">
         <!-- And -->
         <Border Background="#8EC163" Style="{StaticResource SBorderActiveFilter}">
@@ -130,11 +130,11 @@
       <!-- Media Types -->
       <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Image" Click="OnMediaTypesChanged"
-                      IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
+                      IsChecked="{Binding MediaItems.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
           <cc:IconRect IconName="{x:Static pmd:IconName.Image}" />
         </ToggleButton>
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Video" Click="OnMediaTypesChanged"
-                      IsChecked="{Binding Model.MediaItems.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
+                      IsChecked="{Binding MediaItems.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
           <cc:IconRect IconName="{x:Static pmd:IconName.MovieClapper}" />
         </ToggleButton>
       </StackPanel>
@@ -145,17 +145,17 @@
               VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch">
         <Grid >
           <TextBlock Text="DB" VerticalAlignment="Top" />
-          <Label Content="{Binding Model.Sdb.Changes, Source={x:Static pm:App.Core}}" 
+          <Label Content="{Binding Changes, Source={x:Static pm:App.Db}}" 
                  Style="{StaticResource SShadowLabel}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
         </Grid>
       </Button>
 
       <!-- Log Button -->
       <Button Background="Red" Command="cmd:WindowCommands.OpenLogCommand" Height="24" Margin="2,0,2,0"
-        Visibility="{Binding Log.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+        Visibility="{Binding Log.Count, Source={x:Static pm:App.Ui}, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <TextBlock Text="Log " />
-          <TextBlock Text="{Binding Log.Count, Source={x:Static pm:App.Core}}" />
+          <TextBlock Text="{Binding Log.Count, Source={x:Static pm:App.Ui}}" />
         </StackPanel>
       </Button>
 
@@ -179,7 +179,7 @@
       </cc:SlidePanelsGrid.ContentLeft>
 
       <cc:SlidePanelsGrid.ContentMiddle>
-        <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Core}">
+        <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Ui}">
           <!-- Thumbnails Tabs -->
           <uc:ThumbnailsTabs x:Name="ThumbnailsTabs" />
 
@@ -187,15 +187,17 @@
           <Grid x:Name="PanelFullScreen" Background="Transparent"
               MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
               Visibility="{Binding AppInfo.AppMode, 
+                Source={x:Static pm:App.Ui},
                 Converter={StaticResource AllToVisibilityConverter}, 
                 ConverterParameter={x:Static pm:AppMode.Viewer}}">
 
             <!-- Full Media Image -->
-            <Grid Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType, 
+            <Grid Visibility="{Binding MediaItems.ThumbsGrid.Current.MediaType, 
+                Source={x:Static pm:App.Core},
                 Converter={StaticResource AllToVisibilityConverter}, 
                 ConverterParameter={x:Static pmd:MediaType.Image}}">
 
-              <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Core}" />
+              <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Ui}" />
 
               <!-- Presentation Panel -->
               <uc:PresentationPanel x:Name="PresentationPanel" />
@@ -203,7 +205,7 @@
 
             <!-- Full Media Video -->
             <cc:VideoPlayer x:Name="FullMedia"
-                  Visibility="{Binding Model.MediaItems.ThumbsGrid.Current.MediaType,
+                  Visibility="{Binding MediaItems.ThumbsGrid.Current.MediaType,
                   Source={x:Static pm:App.Core},
                   Converter={StaticResource AllToVisibilityConverter}, 
                   ConverterParameter={x:Static pmd:MediaType.Video}}" />
