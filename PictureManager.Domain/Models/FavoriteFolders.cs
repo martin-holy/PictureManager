@@ -56,7 +56,7 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, this, idx);
       
       All.Insert(allIdx, ff);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<FavoriteFolders>();
       Core.Instance.Sdb.SaveIdSequences();
     }
 
@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
       All.Remove(folder);
 
       folder.Folder = null;
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<FavoriteFolders>();
     }
   }
 }

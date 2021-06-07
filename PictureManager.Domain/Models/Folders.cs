@@ -327,7 +327,7 @@ namespace PictureManager.Domain.Models {
       // add new Folder to the tree
       CatTreeViewUtils.SetItemInPlace(root, item);
 
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<Folders>();
       Core.Instance.Sdb.SaveIdSequences();
 
       // reload FolderKeywords
@@ -348,7 +348,7 @@ namespace PictureManager.Domain.Models {
       item.Title = name;
 
       CatTreeViewUtils.SetItemInPlace(item.Parent, item);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<Folders>();
 
       // reload FolderKeywords
       if (self.IsFolderKeyword || self.FolderKeyword != null)
@@ -387,12 +387,12 @@ namespace PictureManager.Domain.Models {
         // remove FavoriteFolder
         Core.Instance.FavoriteFolders.ItemDelete(
           Core.Instance.FavoriteFolders.All.Cast<FavoriteFolder>().SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
+
+        // set Folders table as modified
+        Core.Instance.Sdb.SetModified<Folders>();
       }
 
       Core.Instance.FolderKeywords.Load();
-
-      // set Folders table as modified
-      Helper.IsModified = true;
 
       // delete folder, subfolders and mediaItems from cache
       if (Directory.Exists(((Folder)item).FullPathCache))

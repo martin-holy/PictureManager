@@ -71,7 +71,7 @@ namespace PictureManager.Commands {
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
-      App.Core.Model.Folders.Helper.Table.SaveToFile();
+      Core.Instance.Sdb.SetModified<Folders>();
       App.Core.Model.FolderKeywords.Load();
     }
 

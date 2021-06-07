@@ -38,7 +38,7 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, cat, idx);
       
       All.Insert(allIdx, group);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<CategoryGroups>();
       Core.Instance.Sdb.SaveIdSequences();
 
       return group;
@@ -51,17 +51,17 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, group.Parent, idx);
 
       All.Move(group as CategoryGroup, allIdx);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
 
     public void GroupDelete(CategoryGroup record) {
       All.Remove(record);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
 
     public void GroupMove(CategoryGroup group, CategoryGroup dest, bool aboveDest) {
       All.Move(group, dest, aboveDest);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
   }
 }

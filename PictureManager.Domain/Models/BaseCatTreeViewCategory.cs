@@ -20,7 +20,9 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, item.Parent, idx);
 
       table.All.Move(item as IRecord, allIdx);
-      table.SaveToFile();
+
+      Core.Instance.Sdb.Changes++;
+      table.Helper.IsModified = true;
     }
 
     public new void ItemDelete(ICatTreeViewItem item) {
@@ -41,9 +43,11 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, item.Parent, idx);
 
       table.All.Move(item as IRecord, allIdx);
-      table.SaveToFile();
+      table.Helper.IsModified = true;
+      Core.Instance.Sdb.Changes++;
+
       if (saveGroups)
-        Core.Instance.CategoryGroups.SaveToFile();
+        Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
 
     public new ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {

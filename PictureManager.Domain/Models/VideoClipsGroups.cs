@@ -52,19 +52,19 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(VideoClipsGroup vcg, string name) {
       vcg.Name = name;
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClipsGroups>();
     }
 
     public void ItemDelete(VideoClipsGroup vcg) {
       vcg.MediaItem.VideoClipsGroups.Remove(vcg);
       All.Remove(vcg);
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClipsGroups>();
     }
 
     public void GroupMove(VideoClipsGroup group, VideoClipsGroup dest, bool aboveDest) {
       All.Move(group, dest, aboveDest);
       group.MediaItem.VideoClipsGroups.Move(group, dest, aboveDest);
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClipsGroups>();
     }
   }
 }

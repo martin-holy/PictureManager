@@ -245,8 +245,6 @@ namespace PictureManager.ViewModels {
     }
 
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
-      _model.Helper.IsModified = true;
-
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
       progress.AddEvents(
         mediaItems,
@@ -284,12 +282,12 @@ namespace PictureManager.ViewModels {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
           mi.ReloadThumbnail();
+          await Core.Instance.RunOnUiThread(Core.Instance.Sdb.SetModified<MediaItems>);
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
           ThumbsGridReloadItems();
-          App.Core.Model.Sdb.SaveAllTables();
         });
 
       progress.StartDialog();
@@ -338,7 +336,6 @@ namespace PictureManager.ViewModels {
     }
 
     public static bool TryWriteMetadata(MediaItem mediaItem) {
-      App.Core.Model.MediaItems.Helper.IsModified = true;
       if (mediaItem.IsOnlyInDb) return true;
       try {
         var bSuccess = WriteMetadata(mediaItem);
@@ -486,6 +483,8 @@ namespace PictureManager.ViewModels {
               }
 
               mi.SetThumbSize(true);
+
+              App.Core.Model.Sdb.SetModified<MediaItems>();
             }
             catch (Exception ex) {
               App.Core.LogError(ex, mi.FilePath);
@@ -500,7 +499,7 @@ namespace PictureManager.ViewModels {
             mi.Height = frame.PixelHeight;
             mi.SetThumbSize(true);
 
-            App.Core.Model.MediaItems.Helper.IsModified = true;
+            App.Core.Model.Sdb.SetModified<MediaItems>();
 
             // true because only media item dimensions are required
             if (!(frame.Metadata is BitmapMetadata bm)) return true;

@@ -52,8 +52,8 @@ namespace PictureManager.UserControls {
             var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
             FoldersViewModel.CopyMove(foMode, srcData, (Folder) dest);
-            App.Core.Model.MediaItems.Helper.IsModified = true;
-            App.Core.Model.Folders.Helper.IsModified = true;
+            App.Core.Model.Sdb.SetModified<MediaItems>();
+            App.Core.Model.Sdb.SetModified<Folders>();
             App.Core.Model.FolderKeywords.Load();
 
             // reload last selected source if was moved
@@ -70,7 +70,7 @@ namespace PictureManager.UserControls {
             var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
             App.Core.MediaItemsViewModel.CopyMove(
               foMode, App.Core.Model.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
-            App.Core.Model.MediaItems.Helper.IsModified = true;
+            App.Core.Model.Sdb.SetModified<MediaItems>();
 
             break;
           }
@@ -92,7 +92,7 @@ namespace PictureManager.UserControls {
         foreach (var group in groups)
           App.Core.Model.CategoryGroups.All.Add(group as IRecord);
         if (groups.Length != 0)
-          App.Core.Model.CategoryGroups.SaveToFile();
+          Core.Instance.Sdb.SetModified<CategoryGroups>();
 
         // sort items
         var items = root.Items.Where(x => !(x is ICatTreeViewGroup)).ToArray();
@@ -100,8 +100,10 @@ namespace PictureManager.UserControls {
           table.All.Remove(item as IRecord);
         foreach (var item in items)
           table.All.Add(item as IRecord);
-        if (items.Length != 0)
-          table.SaveToFile();
+        if (items.Length != 0) {
+          Core.Instance.Sdb.Changes++;
+          table.Helper.IsModified = true;
+        }
       };
     }
 

@@ -59,9 +59,9 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
       
       All.Insert(allIdx, item);
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<People>();
       if (root is ICatTreeViewGroup)
-        Core.Instance.CategoryGroups.SaveToFile();
+        Core.Instance.Sdb.SetModified<CategoryGroups>();
 
       Core.Instance.Sdb.SaveIdSequences();
 
@@ -78,19 +78,19 @@ namespace PictureManager.Domain.Models {
           if (mi.People.Count == 0)
             mi.People = null;
         }
-        Core.Instance.MediaItems.SaveToFile();
+        Core.Instance.Sdb.SetModified<MediaItems>();
       }
 
       // remove Person from the tree
       item.Parent.Items.Remove(item);
-      if (item.Parent is CategoryGroup)
-        Core.Instance.CategoryGroups.SaveToFile();
+      if (item.Parent is ICatTreeViewGroup)
+        Core.Instance.Sdb.SetModified<CategoryGroups>();
       item.Parent = null;
 
       // remove Person from DB
       All.Remove(person);
 
-      SaveToFile();
+      Core.Instance.Sdb.SetModified<People>();
     }
   }
 }

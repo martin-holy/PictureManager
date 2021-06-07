@@ -73,7 +73,7 @@ namespace PictureManager.Domain.Models {
 
           All.Add(dbGeoName);
           parentGeoName?.Items.Add((ICatTreeViewItem) dbGeoName);
-          Helper.IsModified = true;
+          Core.Instance.RunOnUiThread(Core.Instance.Sdb.SetModified<GeoNames>);
         }
 
         parentGeoName = dbGeoName as GeoName;
@@ -87,7 +87,6 @@ namespace PictureManager.Domain.Models {
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
 
       InsertGeoNameHierarchy(lat, lng, userName);
-      SaveToFile();
     }
   }
 }

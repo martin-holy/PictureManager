@@ -88,7 +88,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(VideoClip vc, string name) {
       vc.Name = name;
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClips>();
     }
 
     public void ItemDelete(VideoClip vc) {
@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
       if (vc.Group != null) {
         vc.Group.Clips.Remove(vc);
         vc.Group = null;
-        Core.Instance.VideoClipsGroups.Helper.IsModified = true;
+        Core.Instance.Sdb.SetModified<VideoClipsGroups>();
       }
 
       if (vc.People != null)
@@ -116,7 +116,7 @@ namespace PictureManager.Domain.Models {
         }
 
       All.Remove(vc);
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClips>();
     }
 
     public void ItemMove(VideoClip vc, VideoClip dest, bool aboveDest) {
@@ -127,7 +127,7 @@ namespace PictureManager.Domain.Models {
       else
         vc.Group.Clips.Move(vc, dest, aboveDest);
 
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClips>();
     }
 
     public void ItemMove(VideoClip vc, VideoClipsGroup dest) {
@@ -142,9 +142,8 @@ namespace PictureManager.Domain.Models {
       else
         dest.Clips.Add(vc);
 
-      Core.Instance.VideoClipsGroups.Helper.IsModified = true;
-
-      Helper.IsModified = true;
+      Core.Instance.Sdb.SetModified<VideoClipsGroups>();
+      Core.Instance.Sdb.SetModified<VideoClips>();
     }
   }
 }
