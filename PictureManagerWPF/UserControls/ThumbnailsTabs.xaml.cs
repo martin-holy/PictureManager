@@ -65,6 +65,7 @@ namespace PictureManager.UserControls {
     }
 
     private void Refresh(object sender, RoutedEventArgs e) {
+      App.Core.Model.MediaItems.ThumbsGrid.ReloadFilteredItems();
       App.Core.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }

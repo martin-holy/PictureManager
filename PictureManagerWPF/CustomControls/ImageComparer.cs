@@ -82,7 +82,6 @@ namespace PictureManager.CustomControls {
 
       thumbsGrid.GroupByFolders = false;
       thumbsGrid.GroupByDate = false;
-      thumbsGrid.SortAll = false;
 
       thumbsGrid.FilteredItems.Clear();
 
