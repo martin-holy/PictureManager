@@ -160,7 +160,7 @@ namespace PictureManager.Commands {
 
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = new MediaItem(mmi.Helper.GetNextId(), folder, fileName);
-          mmi.AddRecord(mi);
+          mmi.All.Add(mi);
           folder.MediaItems.Add(mi);
           MediaItemsViewModel.ReadMetadata(mi);
           mi.SetThumbSize(true);

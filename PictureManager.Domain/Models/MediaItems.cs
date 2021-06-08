@@ -34,8 +34,7 @@ namespace PictureManager.Domain.Models {
       // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
       var props = csv.Split('|');
       if (props.Length != 12) return;
-      var id = int.Parse(props[0]);
-      AddRecord(new MediaItem(id, null, props[2]) {
+      var mi = new MediaItem(int.Parse(props[0]), null, props[2]) {
         Csv = props,
         Width = props[3].IntParseOrDefault(0),
         Height = props[4].IntParseOrDefault(0),
@@ -43,7 +42,9 @@ namespace PictureManager.Domain.Models {
         Rating = props[6].IntParseOrDefault(0),
         Comment = string.IsNullOrEmpty(props[7]) ? null : props[7],
         IsOnlyInDb = props[11] == "1"
-      });
+      };
+      All.Add(mi);
+      AllDic.Add(mi.Id, mi);
     }
 
     public void LinkReferences() {
@@ -94,11 +95,6 @@ namespace PictureManager.Domain.Models {
       AllDic = new Dictionary<int, MediaItem>();
       Helper.LoadFromFile();
       MediaItemsCount = All.Count;
-    }
-
-    public void AddRecord(MediaItem record) {
-      All.Add(record);
-      AllDic?.Add(record.Id, record);
     }
 
     public void Delete(MediaItem item) {
@@ -385,7 +381,7 @@ namespace PictureManager.Domain.Models {
             fmis.TryGetValue(fileName, out var inDbFile);
             if (inDbFile == null) {
               inDbFile = new MediaItem(Helper.GetNextId(), folder, fileName, true);
-              AddRecord(inDbFile);
+              All.Add(inDbFile);
               folder.MediaItems.Add(inDbFile);
             }
             folderMediaItems.Add(inDbFile);
