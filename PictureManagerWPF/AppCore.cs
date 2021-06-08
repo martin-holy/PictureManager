@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Domain;
@@ -195,7 +194,7 @@ namespace PictureManager {
     }
 
     public void LogError(Exception ex, string msg) {
-      Application.Current.Invoke(delegate {
+      App.Core.RunOnUiThread(() => {
         Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}"));
       });
     }
