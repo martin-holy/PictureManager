@@ -139,7 +139,8 @@ namespace PictureManager.Utils {
 
                 workingOn++;
                 var workingOnInt = workingOn;
-                Application.Current.Dispatcher?.Invoke(delegate {
+
+                await App.Core.RunOnUiThread(() => {
                   App.Ui.AppInfo.ProgressBarValueB = Convert.ToInt32((double)workingOnInt / count * 100);
                 });
 

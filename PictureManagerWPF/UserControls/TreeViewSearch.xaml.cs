@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Threading;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
@@ -92,11 +91,8 @@ namespace PictureManager.UserControls {
     }
 
     private void TbSearch_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
-      if (Visibility == Visibility.Visible) {
-        Dispatcher.BeginInvoke((Action)delegate {
-          Keyboard.Focus(TbSearch);
-        }, DispatcherPriority.Render);
-      }
+      if (Visibility == Visibility.Visible)
+        Keyboard.Focus(TbSearch);
     }
   }
 

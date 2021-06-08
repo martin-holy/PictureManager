@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Windows;
 using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
@@ -48,7 +47,7 @@ namespace PictureManager.Commands {
         delegate (MediaItem mi) {
           MediaItemsViewModel.TryWriteMetadata(mi);
 
-          Application.Current.Dispatcher?.Invoke(delegate {
+          App.Core.RunOnUiThread(() => {
             App.Core.MediaItems.SetModified(mi, false);
           });
         },
@@ -78,8 +77,8 @@ namespace PictureManager.Commands {
         // action
         delegate (MediaItem mi) {
           MediaItemsViewModel.ReadMetadata(mi);
-
-          Application.Current.Dispatcher?.Invoke(delegate {
+          
+          App.Core.RunOnUiThread(() => {
             App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -148,7 +147,7 @@ namespace PictureManager.Commands {
 
           // set info box just for loaded media items
           if (folder == null)
-            Application.Current.Dispatcher?.Invoke(mi.SetInfoBox);
+            App.Core.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

@@ -131,12 +131,10 @@ namespace PictureManager.ViewModels {
 
         await Task.WhenAll(metadata, thumbs);
 
-        if (token.IsCancellationRequested) {
-          if (Application.Current.Dispatcher != null)
-            await Application.Current.Dispatcher.InvokeAsync(delegate {
-              Delete(_model.All.Cast<MediaItem>().Where(x => x.IsNew).ToArray());
-            });
-        }
+        if (token.IsCancellationRequested)
+          await App.Core.RunOnUiThread(() => {
+            Delete(_model.All.Cast<MediaItem>().Where(x => x.IsNew).ToArray());
+          });
       });
 
       // TODO: is this necessary?
@@ -150,7 +148,7 @@ namespace PictureManager.ViewModels {
 
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
       var maxWidth = 0.0;
-      Application.Current.Dispatcher?.Invoke(delegate {
+      App.Core.RunOnUiThread(() => {
         maxWidth = App.WMain.ThumbnailsTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
         _model.ThumbsGrid.ClearRows();
       });
@@ -169,11 +167,11 @@ namespace PictureManager.ViewModels {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            Application.Current.Dispatcher?.Invoke(delegate { _model.MediaItemsCount++; });
+            App.Core.RunOnUiThread(() => { _model.MediaItemsCount++; });
 
             if (!ReadMetadata(mi)) {
               // delete corrupted MediaItems
-              Application.Current.Dispatcher?.Invoke(delegate {
+              App.Core.RunOnUiThread(() => {
                 _model.ThumbsGrid.LoadedItems.Remove(mi);
                 _model.ThumbsGrid.FilteredItems.Remove(mi);
                 _model.Delete(mi);
@@ -186,7 +184,7 @@ namespace PictureManager.ViewModels {
             mediaItemsModified = true;
           }
 
-          Application.Current.Dispatcher?.Invoke(delegate {
+          App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             _model.ThumbsGrid.AddItem(mi, maxWidth);
             App.Ui.AppInfo.ProgressBarValueA = percent;
@@ -463,7 +461,7 @@ namespace PictureManager.ViewModels {
     public static bool ReadMetadata(MediaItem mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
-          Application.Current.Dispatcher?.Invoke(delegate {
+          App.Core.RunOnUiThread(() => {
             try {
               var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
               mi.Height = (int)size[0];
