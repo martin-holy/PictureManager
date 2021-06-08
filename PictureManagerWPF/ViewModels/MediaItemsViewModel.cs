@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using MahApps.Metro.Controls;
@@ -142,6 +141,9 @@ namespace PictureManager.ViewModels {
         _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, false);
         _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, true);
       }
+
+      App.Ui.AppInfo.ProgressBarValueA = 100;
+      App.Ui.AppInfo.ProgressBarValueB = 100;
 
       GC.Collect();
     }
