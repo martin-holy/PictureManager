@@ -65,7 +65,7 @@ namespace PictureManager.UserControls {
 
       // Folders
       var result = App.Core.Folders.All.Cast<Folder>()
-        .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0)
+        .Where(x => x.Title.IndexOf(SearchText, StringComparison.OrdinalIgnoreCase) >= 0 && !x.IsThisOrParentHidden())
         .Select(x => new SearchItem(IconName.Folder, x.Title, x.FullPath, x)).ToList();
 
       // Folder Keywords
