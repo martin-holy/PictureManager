@@ -36,10 +36,7 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Name|Parent
       var props = csv.Split('|');
-      if (props.Length != 3) {
-        Core.Instance.Logger.LogError(new ArgumentException("Incorrect number of values."), csv);
-        return;
-      }
+      if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
       var keyword = new Keyword(int.Parse(props[0]), props[1], null) {Csv = props};
       All.Add(keyword);
       AllDic.Add(keyword.Id, keyword);

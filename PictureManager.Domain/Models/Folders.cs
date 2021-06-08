@@ -27,7 +27,7 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Name|Parent|IsFolderKeyword
       var props = csv.Split('|');
-      if (props.Length != 4) return;
+      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
       var folder = new Folder(int.Parse(props[0]), props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"};
       All.Add(folder);
       AllDic.Add(folder.Id, folder);

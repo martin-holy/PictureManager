@@ -33,7 +33,7 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
       var props = csv.Split('|');
-      if (props.Length != 12) return;
+      if (props.Length != 12) throw new ArgumentException("Incorrect number of values.", csv);
       var mi = new MediaItem(int.Parse(props[0]), null, props[2]) {
         Csv = props,
         Width = props[3].IntParseOrDefault(0),

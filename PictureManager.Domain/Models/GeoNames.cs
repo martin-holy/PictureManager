@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
@@ -19,7 +20,7 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Name|ToponymName|FCode|Parent
       var props = csv.Split('|');
-      if (props.Length != 5) return;
+      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var geoName = new GeoName(int.Parse(props[0]), props[1], props[2], props[3], null) {Csv = props};
       All.Add(geoName);
       AllDic.Add(geoName.Id, geoName);

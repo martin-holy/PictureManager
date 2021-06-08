@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
@@ -28,9 +29,8 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
       var props = csv.Split('|');
-      if (props.Length != 5) return;
-      var id = int.Parse(props[0]);
-      var viewer = new Viewer(id, props[1], this) {Csv = props, IsDefault = props[4] == "1"};
+      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
+      var viewer = new Viewer(int.Parse(props[0]), props[1], this) {Csv = props, IsDefault = props[4] == "1"};
       if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
       All.Add(viewer);
     }

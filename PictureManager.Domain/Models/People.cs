@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
@@ -32,9 +33,8 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|Name
       var props = csv.Split('|');
-      if (props.Length != 2) return;
-      var id = int.Parse(props[0]);
-      var person = new Person(id, props[1]);
+      if (props.Length != 2) throw new ArgumentException("Incorrect number of values.", csv);
+      var person = new Person(int.Parse(props[0]), props[1]);
       All.Add(person);
       AllDic.Add(person.Id, person);
     }
