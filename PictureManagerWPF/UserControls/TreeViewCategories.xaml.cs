@@ -76,7 +76,6 @@ namespace PictureManager.UserControls {
           }
         }
 
-        App.Db.SaveAllTables();
         App.Core.MarkUsedKeywordsAndPeople();
       };
 

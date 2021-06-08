@@ -87,7 +87,6 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Db.SaveAllTables();
           App.Core.MarkUsedKeywordsAndPeople();
           App.Core.MediaItems.IsEditModeOn = false;
         });
