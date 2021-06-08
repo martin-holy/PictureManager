@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleDB;
 
@@ -11,7 +12,7 @@ namespace PictureManager.Domain.Models {
     public void NewFromCsv(string csv) {
       // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
       var props = csv.Split('|');
-      if (props.Length != 11) return;
+      if (props.Length != 11) throw new ArgumentException("Incorrect number of values.", csv);
       var vc = new VideoClip(int.Parse(props[0]), null) {
         TimeStart = props[2].IntParseOrDefault(0),
         TimeEnd = props[3].IntParseOrDefault(0),
