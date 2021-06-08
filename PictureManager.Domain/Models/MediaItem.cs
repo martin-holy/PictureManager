@@ -212,7 +212,7 @@ namespace PictureManager.Domain.Models {
       copy.SetThumbSize();
       copy.SetInfoBox();
 
-      Core.Instance.MediaItems.AddRecord(copy);
+      Core.Instance.MediaItems.All.Add(copy);
       Core.Instance.MediaItems.MediaItemsCount++;
 
       return copy;

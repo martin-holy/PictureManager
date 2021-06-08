@@ -12,17 +12,19 @@ namespace PictureManager.Domain.Models {
       // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
       var props = csv.Split('|');
       if (props.Length != 11) return;
-      AddRecord(
-        new VideoClip(int.Parse(props[0]),null) {
-          TimeStart = props[2].IntParseOrDefault(0),
-          TimeEnd = props[3].IntParseOrDefault(0),
-          Name = string.IsNullOrEmpty(props[4]) ? null : props[4],
-          Csv = props,
-          Volume = props[5].IntParseOrDefault(50) / 100.0,
-          Speed = props[6].IntParseOrDefault(10) / 10.0,
-          Rating = props[7].IntParseOrDefault(0),
-          Comment = string.IsNullOrEmpty(props[8]) ? null : props[8]
-        });
+      var vc = new VideoClip(int.Parse(props[0]), null) {
+        TimeStart = props[2].IntParseOrDefault(0),
+        TimeEnd = props[3].IntParseOrDefault(0),
+        Name = string.IsNullOrEmpty(props[4]) ? null : props[4],
+        Csv = props,
+        Volume = props[5].IntParseOrDefault(50) / 100.0,
+        Speed = props[6].IntParseOrDefault(10) / 10.0,
+        Rating = props[7].IntParseOrDefault(0),
+        Comment = string.IsNullOrEmpty(props[8]) ? null : props[8]
+      };
+
+      All.Add(vc);
+      AllDic.Add(vc.Id, vc);
     }
 
     public void LinkReferences() {
@@ -71,11 +73,6 @@ namespace PictureManager.Domain.Models {
       All.Clear();
       AllDic = new Dictionary<int, VideoClip>();
       Helper.LoadFromFile();
-    }
-
-    private void AddRecord(VideoClip record) {
-      All.Add(record);
-      AllDic.Add(record.Id, record);
     }
 
     public VideoClip ItemCreate(string name, MediaItem mediaItem, VideoClipsGroup group) {
