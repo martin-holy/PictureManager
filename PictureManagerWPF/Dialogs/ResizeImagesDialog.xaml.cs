@@ -13,7 +13,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.Utils;
-using Application = System.Windows.Application;
 
 namespace PictureManager.Dialogs {
   public partial class ResizeImagesDialog: INotifyPropertyChanged {
@@ -76,7 +75,7 @@ namespace PictureManager.Dialogs {
 
           Parallel.ForEach(_items, po, mi => {
             index++;
-            Application.Current.Dispatcher?.Invoke(delegate {
+            App.Core.RunOnUiThread(() => {
               PbProgress.Value = index;
               FileName = mi.FileName;
             });

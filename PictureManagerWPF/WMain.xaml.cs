@@ -26,7 +26,7 @@ namespace PictureManager {
       ThumbnailsTabs.AddTab(App.Core.MediaItems.ThumbsGrid);
 
       PresentationPanel.Elapsed = delegate {
-        Application.Current.Dispatcher?.Invoke(delegate {
+        App.Core.RunOnUiThread(() => {
           if (PresentationPanel.IsPaused) return;
           if (MediaItemsCommands.CanNext())
             CommandsController.MediaItemsCommands.Next();
