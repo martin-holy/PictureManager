@@ -44,7 +44,12 @@ namespace SimpleDB {
     public void LinkReferences(IProgress<string> progress) {
       foreach (var table in Tables) {
         progress.Report($"Loading data for {table.Key.Name}");
-        table.Value.Table.LinkReferences();
+        try {
+          table.Value.Table.LinkReferences();
+        }
+        catch (Exception ex) {
+          _logger.LogError(ex, table.Key.Name);
+        }
       }
     }
 
