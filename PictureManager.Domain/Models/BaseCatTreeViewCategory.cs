@@ -7,9 +7,7 @@ namespace PictureManager.Domain.Models {
   public class BaseCatTreeViewCategory: CatTreeViewCategory, ICatTreeViewCategory {
     public BaseCatTreeViewCategory(Category category) : base(category) { }
 
-    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      throw new System.NotImplementedException();
-    }
+    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) => throw new System.NotImplementedException();
 
     public new void ItemRename(ICatTreeViewItem item, string name) {
       if (!(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
@@ -25,13 +23,9 @@ namespace PictureManager.Domain.Models {
       table.Helper.IsModified = true;
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
-      throw new System.NotImplementedException();
-    }
+    public new void ItemDelete(ICatTreeViewItem item) => throw new System.NotImplementedException();
 
-    public new void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) {
-      throw new System.NotImplementedException();
-    }
+    public new void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) => throw new System.NotImplementedException();
 
     public new void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
       if (!(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
@@ -50,13 +44,11 @@ namespace PictureManager.Domain.Models {
         Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
 
-    public new ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
-      return Core.Instance.CategoryGroups.GroupCreate(cat, name);
-    }
+    public new ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) =>
+      Core.Instance.CategoryGroups.GroupCreate(cat, name);
 
-    public new void GroupRename(ICatTreeViewGroup group, string name) {
-      Core.Instance.CategoryGroups.GroupRename(group, name);
-    }
+    public new void GroupRename(ICatTreeViewGroup group, string name) =>
+      Core.Instance.CategoryGroups.GroupRename(@group, name);
 
     public new void GroupDelete(ICatTreeViewGroup group) {
       base.GroupDelete(group);
@@ -72,7 +64,7 @@ namespace PictureManager.Domain.Models {
       var recGroup = new Dictionary<int, CategoryGroup>();
 
       foreach (var group in Core.Instance.CategoryGroups.All.Cast<CategoryGroup>().Where(x => x.Category == Category)) {
-        group.IconName = GetCategoryGroupIconName();
+        group.IconName = CatTreeViewUtils.GetCategoryGroupIconName(Category);
         group.Parent = this;
         Items.Add(group);
 
@@ -94,21 +86,6 @@ namespace PictureManager.Domain.Models {
           item.Parent = this;
           Items.Add(item);
         }
-      }
-    }
-
-    public IconName GetCategoryGroupIconName() {
-      switch (Category) {
-        case Category.FavoriteFolders: return IconName.FolderStar;
-        case Category.Folders: return IconName.Folder;
-        case Category.Ratings: return IconName.Star;
-        case Category.People: return IconName.PeopleMultiple;
-        case Category.FolderKeywords: return IconName.Folder;
-        case Category.Keywords: return IconName.TagLabel;
-        case Category.Filters: return IconName.Filter;
-        case Category.Viewers: return IconName.Eye;
-        case Category.SqlQueries: return IconName.DatabaseSql;
-        default: return IconName.Bug;
       }
     }
   }
