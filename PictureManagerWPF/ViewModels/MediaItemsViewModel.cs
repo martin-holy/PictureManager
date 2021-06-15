@@ -318,6 +318,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void Delete(MediaItem[] items) {
+      if (items.Length == 0) return;
       var progress = new ProgressBarDialog(App.WMain, false, 1, "Removing Media Items from database ...");
       progress.AddEvents(items, null, _model.Delete, mi => mi.FilePath, null);
       progress.StartDialog();
