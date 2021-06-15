@@ -27,11 +27,10 @@ namespace SimpleDB {
     public void LoadFromFile() {
       if (!File.Exists(_tableFilePath)) return;
       try {
-        using (var sr = new StreamReader(_tableFilePath, Encoding.UTF8)) {
-          string line;
-          while ((line = sr.ReadLine()) != null)
-            Table.NewFromCsv(line);
-        }
+        using var sr = new StreamReader(_tableFilePath, Encoding.UTF8);
+        string line;
+        while ((line = sr.ReadLine()) != null)
+          Table.NewFromCsv(line);
       }
       catch (Exception ex) {
         _logger.LogError(ex);
@@ -40,10 +39,9 @@ namespace SimpleDB {
 
     public void SaveToFile(IEnumerable<IRecord> records) {
       try {
-        using (var sw = new StreamWriter(_tableFilePath, false, Encoding.UTF8, 65536)) {
-          foreach (var item in records)
-            sw.WriteLine(item.ToCsv());
-        }
+        using var sw = new StreamWriter(_tableFilePath, false, Encoding.UTF8, 65536);
+        foreach (var item in records)
+          sw.WriteLine(item.ToCsv());
 
         IsModified = false;
       }
