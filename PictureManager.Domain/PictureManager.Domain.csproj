@@ -12,6 +12,7 @@
     <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
