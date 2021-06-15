@@ -2,28 +2,20 @@
 - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka (neni to tim ze se dela ReloadThumbnail v jinem vlakne?)
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
-- na M:\done\m se pravidelne nedokoncuje progress bar pri nacitani
 - disky identifikovat podle ID a ne podle pismena
-- zkontrolovat aby Thumbnails mely rozmery delitelny dvema
 - Clips: kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
-- zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
-- MessageDialog nema ikonu
-- VideoPlayer mouseHideTimer start only when active
+- CatTreeView drag&drop se chova divne, kdyz zobrazim context menu a pak kliknu na jinej item
 
 #Update
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
-- pruhlednost statusbaru pri skryti nastavit na 0
-- SimpleDB: set IsModified = false in SaveToFile
-- èeknout jestli davam e.Handled = true na mouse eventech. pousti se pak ten kod vic krat
 - IsMarked & PicCount: mozna by stacilo mit jen PicCount
-- set on ITables IsModified or SaveToFile each time on insert, rename, move, delete, ...? set IsModified and add (DB) button to save it
-- error handle in loading records from DB
+- zkontrolovat aby Thumbnails mely rozmery delitelny dvema
+- zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
+  - nebo nastavit FocusVisualStyle na null
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
 - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
-- zmenit title na favorite folder
-- nacteni slozky ve favorites udelat async
 - poresit errory, tak aby bylo poznat jestli je to problem, nebo ne a co to je konkretne za problem
 - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
@@ -34,17 +26,13 @@
 - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 - nahledy k osobam na mouse over??? :)
 - filter na delku videa
-- zobrazovat ve status baru soucet MB za selected
 - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
   nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se pude prehravat puvodni video
 - umoznit zmenit nahled u videa
 - face recognition
-- prevest main CatTreeView na control CatTreeView
+- CatTreeView
   - TODO GeoNames, user name dat do prop na GeoNames, user name checkovat OnBeforeItemCreate, menuitem GeoNameNewCommand udelat obecne
-  - drag&drop se chova divne, kdyz zobrazim context menu a pak kliknu na jinej item
-  - test selected folder rename
   - vymyslet jinej nazev pro PicCount a ICatTreeViewTagItem
-  - new func sort item in the tree
   - ItemCreate na People a Keywords je skoro stejny
 - Clips: akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
          lock na volume a speed, aby se ignorovalo to co je u clipu 
@@ -52,11 +40,5 @@
 - IsHidden jsem dal na CatTreeViewItem, takze to muzu pouzit i na keywords, people, groups, ...
 - Log to file
 
-
-
-#Code Cleaning
-- odstranit vsude AllDic, pokud se to pouziva pouze na nacteni, jako jsem to udelal na MediaItems a Folders
-
-
-shortcuts:
-ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
+#Shortcuts:
+- ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
