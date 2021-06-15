@@ -17,9 +17,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       CategoryGroupIconName = CatTreeViewUtils.GetCategoryGroupIconName(category);
     }
 
-    public bool CanDrop(object src, ICatTreeViewItem dest) {
-      return CatTreeViewUtils.CanDrop(src as ICatTreeViewItem, dest);
-    }
+    public bool CanDrop(object src, ICatTreeViewItem dest) => CatTreeViewUtils.CanDrop(src as ICatTreeViewItem, dest);
 
     public void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
       // groups
@@ -29,34 +27,25 @@ namespace PictureManager.Domain.CatTreeViewModels {
       }
 
       // items
-      if (src is ICatTreeViewItem srcItem && dest is ICatTreeViewItem destItem)
+      if (src is ICatTreeViewItem srcItem && dest != null)
         if (copy)
-          ItemCopy(srcItem, destItem);
+          ItemCopy(srcItem, dest);
         else
-          ItemMove(srcItem, destItem, aboveDest);
+          ItemMove(srcItem, dest, aboveDest);
     }
 
-    public bool CanCreateItem(ICatTreeViewItem item) {
-      return CanCreateItems;
-    }
+    public bool CanCreateItem(ICatTreeViewItem item) => CanCreateItems;
 
-    public bool CanRenameItem(ICatTreeViewItem item) {
-      return CanRenameItems;
-    }
+    public bool CanRenameItem(ICatTreeViewItem item) => CanRenameItems;
 
-    public bool CanDeleteItem(ICatTreeViewItem item) {
-      return CanDeleteItems;
-    }
+    public bool CanDeleteItem(ICatTreeViewItem item) => CanDeleteItems;
 
-    public bool CanSort(ICatTreeViewItem root) {
-      return root.Items.Count > 0 && (CanCreateItems || CanRenameItems);
-    }
+    public bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && (CanCreateItems || CanRenameItems);
 
-    public string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
-      return root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name)) != null
+    public string ValidateNewItemTitle(ICatTreeViewItem root, string name) =>
+      root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name)) != null
         ? $"{name} item already exists!"
         : null;
-    }
 
     public ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var item = new CatTreeViewItem {Title = name, Parent = root};
@@ -70,9 +59,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       CatTreeViewUtils.SetItemInPlace(item.Parent, item);
     }
 
-    public void ItemDelete(ICatTreeViewItem item) {
-      item.Parent.Items.Remove(item);
-    }
+    public void ItemDelete(ICatTreeViewItem item) => item.Parent.Items.Remove(item);
 
     public void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) {
       var copy = new CatTreeViewItem {Title = item.Title, Parent = dest};
@@ -92,11 +79,10 @@ namespace PictureManager.Domain.CatTreeViewModels {
       }
     }
 
-    public string ValidateNewGroupTitle(ICatTreeViewItem root, string name) {
-      return root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name)) != null
+    public string ValidateNewGroupTitle(ICatTreeViewItem root, string name) =>
+      root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name)) != null
         ? $"{name} group already exists!"
         : null;
-    }
 
     public ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
       var group = new CatTreeViewGroup {Title = name, IconName = CategoryGroupIconName, Parent = cat};
@@ -119,8 +105,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       Items.Remove(group);
     }
 
-    public void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) {
+    public void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) =>
       group.Parent.Items.Move(group, dest, aboveDest);
-    }
   }
 }
