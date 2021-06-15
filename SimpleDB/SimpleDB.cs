@@ -10,9 +10,8 @@ namespace SimpleDB {
   public class SimpleDB : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     public Dictionary<Type, TableHelper> Tables = new Dictionary<Type, TableHelper>();
     public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
@@ -65,13 +64,12 @@ namespace SimpleDB {
       var filePath = Path.Combine("db", "IdSequences.csv");
       try {
         if (!File.Exists(filePath)) return;
-        using (var sr = new StreamReader(filePath, Encoding.UTF8)) {
-          string line;
-          while ((line = sr.ReadLine()) != null) {
-            var vals = line.Split('|');
-            if (vals.Length != 2) continue;
-            _idSequences.Add(vals[0], int.Parse(vals[1]));
-          }
+        using var sr = new StreamReader(filePath, Encoding.UTF8);
+        string line;
+        while ((line = sr.ReadLine()) != null) {
+          var vals = line.Split('|');
+          if (vals.Length != 2) throw new ArgumentException("Incorrect number of values.", line);
+          _idSequences.Add(vals[0], int.Parse(vals[1]));
         }
       }
       catch (Exception ex) {
@@ -91,10 +89,9 @@ namespace SimpleDB {
       if (!isModified) return;
 
       try {
-        using (var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8)) {
-          foreach (var table in Tables)
-            sw.WriteLine(string.Join("|", table.Key.Name, table.Value.MaxId));
-        }
+        using var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8);
+        foreach (var table in Tables)
+          sw.WriteLine(string.Join("|", table.Key.Name, table.Value.MaxId));
       }
       catch (Exception ex) {
         _logger.LogError(ex);
