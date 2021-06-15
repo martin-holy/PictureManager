@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
@@ -14,8 +13,7 @@ namespace PictureManager {
       InitializeComponent();
       //LoadCatTreeViewData();
       //SetUpMediaItemTest();
-      StrToDoubleTest();
-
+      //StrToDoubleTest();
       App.WMain.CommandsController.AddCommandBindings(CommandBindings);
     }
 
