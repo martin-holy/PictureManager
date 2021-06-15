@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WGI = Windows.Graphics.Imaging;
+using WMFA = Windows.Media.FaceAnalysis;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
@@ -306,6 +308,23 @@ namespace PictureManager.Utils {
       }
       catch (Exception) {
         return false;
+      }
+    }
+
+    public static async Task<IList<WMFA.DetectedFace>> DetectFaces(Stream fileStream) {
+      try {
+        var stream = fileStream.AsRandomAccessStream();
+        var bitmapDecoder = await WGI.BitmapDecoder.CreateAsync(stream);
+        using var bitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
+        var bmp = WMFA.FaceDetector.IsBitmapPixelFormatSupported(bitmap.BitmapPixelFormat)
+          ? bitmap : WGI.SoftwareBitmap.Convert(bitmap, WGI.BitmapPixelFormat.Gray8);
+        var faceDetector = await WMFA.FaceDetector.CreateAsync();
+        var detectedFaces = await faceDetector.DetectFacesAsync(bmp);
+
+        return detectedFaces;
+      }
+      catch {
+        return null;
       }
     }
   }
