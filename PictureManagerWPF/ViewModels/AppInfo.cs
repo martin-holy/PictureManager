@@ -86,6 +86,8 @@ namespace PictureManager.ViewModels {
     public string FileSize {
       get {
         try {
+          if (App.Core.MediaItems.ThumbsGrid == null) return string.Empty;
+
           var size = CurrentMediaItem == null
             ? App.Core.MediaItems.ThumbsGrid.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
             : new FileInfo(CurrentMediaItem.FilePath).Length;

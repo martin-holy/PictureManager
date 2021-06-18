@@ -53,7 +53,7 @@ namespace PictureManager.Commands {
     }
 
     public static bool CanNext() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.GetNext() != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.GetNext() != null;
     }
 
     public void Next() {
@@ -76,7 +76,7 @@ namespace PictureManager.Commands {
     }
 
     public static bool CanPrevious() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.GetPrevious() != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.GetPrevious() != null;
     }
 
     public void Previous() {
@@ -89,7 +89,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanSelectAll() {
-      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void SelectAll() {
@@ -99,7 +99,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanSelectNotModified() {
-      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void SelectNotModified() {
@@ -108,7 +108,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanDelete() {
-      return App.Core.MediaItems.ThumbsGrid.Selected > 0;
+      return App.Core.MediaItems.ThumbsGrid?.Selected > 0;
     }
 
     private void Delete() {
@@ -129,7 +129,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanShuffle() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void Shuffle() {
@@ -141,7 +141,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanResizeImages() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void ResizeImages() {
@@ -149,7 +149,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanImagesToVideo() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
     }
 
     private static void ImagesToVideo() {
@@ -175,7 +175,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanCopyPaths() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private static void CopyPaths() {
@@ -185,7 +185,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanCompare() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void Compare() {
@@ -196,7 +196,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanCompress() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private void Compress() {
@@ -204,7 +204,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanRotate() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void Rotate() {
@@ -217,7 +217,7 @@ namespace PictureManager.Commands {
     }
 
     public bool CanRebuildThumbnails(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     public void RebuildThumbnails(object parameter) {
@@ -285,7 +285,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanPresentation() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid.Current != null;
+      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.Current != null;
     }
 
     private void Presentation() {
@@ -302,7 +302,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanRename() {
-      return App.Core.MediaItems.ThumbsGrid.Current != null;
+      return App.Core.MediaItems.ThumbsGrid?.Current != null;
     }
 
     private static void Rename() {

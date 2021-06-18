@@ -27,7 +27,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanEdit() {
-      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private static void Edit() {
@@ -94,7 +94,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanComment() {
-      return App.Core.MediaItems.ThumbsGrid.Current != null;
+      return App.Core.MediaItems.ThumbsGrid?.Current != null;
     }
 
     private void Comment() {
@@ -127,7 +127,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanReload(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.ThumbsGrid.FilteredItems.Count > 0;
+      return parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
     }
 
     private void Reload(object parameter) {
