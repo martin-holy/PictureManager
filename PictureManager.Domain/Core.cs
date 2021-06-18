@@ -115,7 +115,7 @@ namespace PictureManager.Domain {
     }
 
     public void SetMediaItemSizesLoadedRange() {
-      var zeroItems = MediaItems.ThumbsGrid.FilteredItems.Count == 0;
+      var zeroItems = MediaItems.ThumbsGrid == null || MediaItems.ThumbsGrid.FilteredItems.Count == 0;
       var min = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
       var max = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
       MediaItemSizes.Size.SetLoadedRange(min, max);
@@ -138,6 +138,8 @@ namespace PictureManager.Domain {
         item.PicCount = 0;
       }
       MarkedTags.Clear();
+
+      if (MediaItems.ThumbsGrid == null) return;
 
       var mediaItems = MediaItems.ThumbsGrid.GetSelectedOrAll();
       foreach (var mi in mediaItems) {

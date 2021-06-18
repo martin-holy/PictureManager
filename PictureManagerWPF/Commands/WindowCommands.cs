@@ -44,7 +44,7 @@ namespace PictureManager.Commands {
     }
 
     public void SwitchToFullScreen() {
-      if (App.Core.MediaItems.ThumbsGrid.Current == null) return;
+      if (App.Core.MediaItems.ThumbsGrid?.Current == null) return;
       App.Ui.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
@@ -119,7 +119,7 @@ namespace PictureManager.Commands {
     }
 
     private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.MediaItems.ThumbsGrid.FilteredItems.Count(x => x.IsSelected) > 0;
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
     }
 
     private void AddGeoNamesFromFiles() {

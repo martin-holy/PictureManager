@@ -270,6 +270,8 @@ namespace PictureManager.Domain.Models {
           break;
         }
         case string[] dragged: { // MediaItems
+          if (Core.Instance.MediaItems.ThumbsGrid == null) break;
+
           var selected = Core.Instance.MediaItems.ThumbsGrid.FilteredItems
             .Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
