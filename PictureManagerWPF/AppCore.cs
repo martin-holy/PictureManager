@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Domain;
@@ -46,6 +47,30 @@ namespace PictureManager {
 
     public async void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
+
+      // MainTabs Tab Content Type
+      switch (item) {
+        case Rating _:
+        case Person _:
+        case Keyword _:
+        case GeoName _:
+        case Folder _:
+        case FolderKeyword _: {
+          if (App.WMain.MainTabs.SelectedTabItemContentType == typeof(ThumbnailsGridControl)) break;
+          
+          App.WMain.MainTabs.SetTab(
+            App.Ui.MediaItemsViewModel.AddThumbnailsGridModel(),
+            new ThumbnailsGridControl {Name = "ThumbsGridControl"});
+          
+          break;
+        }
+        case ICatTreeViewGroup _: {
+          break;
+        }
+        case ICatTreeViewCategory _: {
+          break;
+        }
+      }
 
       switch (item) {
         case FavoriteFolder favoriteFolder: {
