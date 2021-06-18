@@ -41,27 +41,18 @@ namespace PictureManager.ViewModels {
       var grid = new ThumbnailsGrid();
       grid.PropertyChanged += OnCurrentMediaItemChange;
 
-      if (_model.ThumbnailsGrids.Count == 0)
-        grid.ShowAddTabButton = true;
-
       _model.ThumbnailsGrids.Add(grid);
       _model.ThumbsGrid = grid;
 
       return grid;
     }
 
-    public void RemoveThumbnailsGrid(TabControl tabControl, ThumbnailsGrid grid) {
+    public void RemoveThumbnailsGrid(ThumbnailsGrid grid) {
+      if (grid == null) return;
+
       grid.ClearItBeforeLoad();
       grid.PropertyChanged -= OnCurrentMediaItemChange;
       _model.ThumbnailsGrids.Remove(grid);
-      
-      if (_model.ThumbnailsGrids.Count == 0)
-        App.WMain.ThumbnailsTabs.AddTab(AddThumbnailsGridModel());
-
-      // show/hide AddTabButton
-      foreach (var tGrid in _model.ThumbnailsGrids)
-        tGrid.ShowAddTabButton = false;
-      _model.ThumbnailsGrids[0].ShowAddTabButton = true;
     }
 
     public void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
@@ -137,7 +128,7 @@ namespace PictureManager.ViewModels {
       });
 
       // TODO: is this necessary?
-      if (_model.ThumbsGrid.Current != null) {
+      if (_model.ThumbsGrid?.Current != null) {
         _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, false);
         _model.ThumbsGrid.SetSelected(_model.ThumbsGrid.Current, true);
       }
@@ -151,7 +142,7 @@ namespace PictureManager.ViewModels {
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
       var maxWidth = 0.0;
       App.Core.RunOnUiThread(() => {
-        maxWidth = App.WMain.ThumbnailsTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
+        maxWidth = App.WMain.MainTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
         _model.ThumbsGrid.ClearRows();
       });
 
@@ -229,12 +220,12 @@ namespace PictureManager.ViewModels {
     }
 
     public void ScrollToTop() {
-      App.WMain.ThumbnailsTabs.FindChild<ScrollViewer>("ThumbsBoxScrollViewer")?.ScrollToTop();
+      App.WMain.MainTabs.FindChild<ScrollViewer>("ThumbsBoxScrollViewer")?.ScrollToTop();
       App.WMain.UpdateLayout();
     }
 
     public void ScrollTo(MediaItem mi) {
-      App.WMain.ThumbnailsTabs.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel")
+      App.WMain.MainTabs.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel")
         .BringIndexIntoViewPublic(_model.ThumbsGrid.GetRowIndexWith(mi));
     }
 
