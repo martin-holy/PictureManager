@@ -138,6 +138,9 @@
     <Compile Include="UserControls\InfoPanel.xaml.cs">
       <DependentUpon>InfoPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\MainTabs.xaml.cs">
+      <DependentUpon>MainTabs.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\PresentationPanel.xaml.cs">
       <DependentUpon>PresentationPanel.xaml</DependentUpon>
     </Compile>
@@ -146,9 +149,6 @@
     </Compile>
     <Compile Include="CustomControls\WheelSpeedScrollViewer.cs" />
     <Compile Include="CustomControls\ZoomImageBox.cs" />
-    <Compile Include="UserControls\ThumbnailsTabs.xaml.cs">
-      <DependentUpon>ThumbnailsTabs.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UserControls\TreeViewCategories.xaml.cs">
       <DependentUpon>TreeViewCategories.xaml</DependentUpon>
     </Compile>
@@ -365,15 +365,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UserControls\MainTabs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\PresentationPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\StatusPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UserControls\ThumbnailsTabs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
