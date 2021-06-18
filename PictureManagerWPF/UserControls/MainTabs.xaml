@@ -1,13 +1,14 @@
-﻿<UserControl x:Class="PictureManager.UserControls.ThumbnailsTabs"
+﻿<UserControl x:Class="PictureManager.UserControls.MainTabs"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:pm="clr-namespace:PictureManager">
 
-  <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left"
-              SelectionChanged="OnSelectionChanged" SizeChanged="OnSizeChanged"
+
+  <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left" SizeChanged="OnSizeChanged"
               Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={x:Static pm:AppMode.Browser}}">
+    
 
     <!-- When are TabItems created thru binding, ScrollViewer is shared between TabItems! -->
 
@@ -15,9 +16,9 @@
       <DataTemplate x:Key="ThumbsTabItemTemplate">
         <StackPanel Orientation="Vertical" ToolTip="{Binding Title}"
                     DataContext="{Binding DataContext, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
-          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab"
-                  Visibility="{Binding ShowAddTabButton, Converter={StaticResource AllToVisibilityConverter}}"  />
-          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="BtnCloseTab" />
+          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab_Click" x:Name="BtnAddTab" 
+                  Visibility="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, Converter={StaticResource AllToVisibilityConverter}}" />
+          <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="BtnCloseTab_Click" />
           <TextBlock Text="{Binding Title}" Margin="0,8">
             <TextBlock.LayoutTransform>
               <RotateTransform Angle="270" />
@@ -30,7 +31,7 @@
               <MenuItem Header="Group by Date" IsCheckable="True" IsChecked="{Binding GroupByDate}" Click="Refresh" />
             </ContextMenu>
           </StackPanel.ContextMenu>
-          
+
         </StackPanel>
       </DataTemplate>
     </TabControl.Resources>

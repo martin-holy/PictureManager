@@ -181,7 +181,7 @@
       <cc:SlidePanelsGrid.ContentMiddle>
         <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Ui}">
           <!-- Thumbnails Tabs -->
-          <uc:ThumbnailsTabs x:Name="ThumbnailsTabs" />
+          <uc:MainTabs x:Name="MainTabs" />
 
           <!-- Full Media -->
           <Grid x:Name="PanelFullScreen" Background="Transparent"

@@ -10,6 +10,7 @@ using PictureManager.Commands;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager {
   /// <summary>
@@ -22,8 +23,19 @@ namespace PictureManager {
     public WMain() {
       InitializeComponent();
 
-      // add default ThumbnailsGridControl
-      ThumbnailsTabs.AddTab(App.Core.MediaItems.ThumbsGrid);
+      // MainTabs
+      MainTabs.AddTab();
+      MainTabs.OnTabItemClose += delegate (object sender, EventArgs e) {
+        App.Ui.MediaItemsViewModel.RemoveThumbnailsGrid(sender as ThumbnailsGrid);
+      };
+      MainTabs.Tabs.SelectionChanged += delegate (object sender, SelectionChangedEventArgs e) {
+        var grid = ((FrameworkElement)((TabControl)sender).SelectedItem).DataContext as ThumbnailsGrid;
+
+        App.Core.MediaItems.ThumbsGrid = grid;
+        grid?.UpdateSelected();
+        App.Ui.AppInfo.CurrentMediaItem = grid?.Current;
+        App.Core.MarkUsedKeywordsAndPeople();
+      };
 
       PresentationPanel.Elapsed = delegate {
         App.Core.RunOnUiThread(() => {
