@@ -16,7 +16,6 @@ namespace PictureManager.Domain.Models {
     private int? _indexOfCurrent;
     private int _selected;
     private string _title;
-    private bool _showAddTabButton;
     private bool _showImages = true;
     private bool _showVideos = true;
     private bool _groupByFolders = true;
@@ -30,7 +29,6 @@ namespace PictureManager.Domain.Models {
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } } 
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
-    public bool ShowAddTabButton { get => _showAddTabButton; set { _showAddTabButton = value; OnPropertyChanged(); } }
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
