@@ -37,7 +37,7 @@
 
       <!-- PositionSlashCount / Selected / Modified -->
       <Border Style="{StaticResource SBorderGroup}"
-              Visibility="{Binding MediaItems.ThumbsGrid.FilteredItems.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+              Visibility="{Binding MediaItems.ThumbsGrid, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <!-- Icon -->
           <cc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
