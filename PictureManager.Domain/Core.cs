@@ -32,6 +32,7 @@ namespace PictureManager.Domain {
     public MediaItems MediaItems { get; }
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
+    public Faces Faces { get; }
     public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new Collection<ICatTreeViewTagItem>();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -60,6 +61,7 @@ namespace PictureManager.Domain {
       MediaItems = new MediaItems();
       VideoClips = new VideoClips();
       VideoClipsGroups = new VideoClipsGroups();
+      Faces = new Faces();
     }
 
     public Task InitAsync(IProgress<string> progress) {
@@ -76,6 +78,7 @@ namespace PictureManager.Domain {
         Sdb.AddTable(VideoClipsGroups); // needs to be before VideoClips
         Sdb.AddTable(VideoClips);
         Sdb.AddTable(FavoriteFolders);
+        Sdb.AddTable(Faces, false);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
