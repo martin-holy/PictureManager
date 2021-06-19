@@ -117,7 +117,7 @@ namespace PictureManager.Domain.Models {
     public Folder GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
       var pathParts = path.Split(Path.DirectorySeparatorChar);
-      var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0])) as Folder;
+      var drive = Items.SingleOrDefault(x => x.Title.Equals(pathParts[0], StringComparison.CurrentCultureIgnoreCase)) as Folder;
       return pathParts.Length == 1 ? drive : drive?.GetByPath(path);
     }
 

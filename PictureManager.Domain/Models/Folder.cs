@@ -268,13 +268,13 @@ namespace PictureManager.Domain.Models {
       if (FullPath.Equals(path)) return this;
 
       var root = this;
-      var pathParts = (path.StartsWith(FullPath) 
+      var pathParts = (path.StartsWith(FullPath, StringComparison.CurrentCultureIgnoreCase) 
         ? path.Substring(FullPath.Length + 1) 
         : path)
         .Split(Path.DirectorySeparatorChar);
 
       foreach (var pathPart in pathParts) {
-        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart));
+        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart, StringComparison.CurrentCultureIgnoreCase));
         if (folder == null) return null;
         root = (Folder) folder;
       }
