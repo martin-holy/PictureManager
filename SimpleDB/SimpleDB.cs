@@ -26,15 +26,16 @@ namespace SimpleDB {
       LoadIdSequences();
     }
 
-    public void AddTable(ITable table) {
+    public void AddTable(ITable table, bool autoLoad = true) {
       if (!_idSequences.TryGetValue(table.GetType().Name, out var maxId))
         _idSequences.Add(table.GetType().Name, 0);
 
-      Tables.Add(table.GetType(), new TableHelper(table, maxId, _logger));
+      Tables.Add(table.GetType(), new TableHelper(table, maxId, _logger, autoLoad));
     }
 
     public void LoadAllTables(IProgress<string> progress) {
       foreach (var table in Tables) {
+        if (!table.Value.AutoLoad) continue;
         progress.Report($"Loading data for {table.Key.Name}");
         table.Value.Table.LoadFromFile();
       }
@@ -42,6 +43,7 @@ namespace SimpleDB {
 
     public void LinkReferences(IProgress<string> progress) {
       foreach (var table in Tables) {
+        if (!table.Value.AutoLoad) continue;
         progress.Report($"Loading data for {table.Key.Name}");
         try {
           table.Value.Table.LinkReferences();

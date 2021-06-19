@@ -8,14 +8,16 @@ namespace SimpleDB {
     public int MaxId { get; set; }
     public ITable Table { get; set; }
     public bool IsModified { get; set; }
+    public bool AutoLoad { get; set; }
     private readonly string _tableFilePath;
     private readonly ILogger _logger;
 
-    public TableHelper(ITable table, int maxId, ILogger logger) {
+    public TableHelper(ITable table, int maxId, ILogger logger, bool autoLoad) {
       _logger = logger;
       table.Helper = this;
       Table = table;
       MaxId = maxId;
+      AutoLoad = autoLoad;
       _tableFilePath = Path.Combine("db", $"{Table.GetType().Name}.csv");
     }
 
