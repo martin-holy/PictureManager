@@ -10,12 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using MahApps.Metro.Controls;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
+using PictureManager.UserControls;
 using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
@@ -23,11 +24,12 @@ namespace PictureManager.ViewModels {
     private CancellationTokenSource _loadCts;
     private Task _loadTask;
     private readonly MediaItems _model;
+    private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string> { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
+
+    public VirtualizingWrapPanel CurrentThumbsGrid { get; set; }
 
     public MediaItemsViewModel(Core core) {
       _model = core.MediaItems;
-      // create default ThumbnailsGrid
-      AddThumbnailsGridModel();
     }
 
     ~MediaItemsViewModel() {
@@ -37,7 +39,30 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public ThumbnailsGrid AddThumbnailsGridModel() {
+    public void RegisterEvents() {
+      App.WMain.MainTabs.OnTabItemClose += (o, e) => {
+        if (!(o is TabItem tab) || !(tab.DataContext is ThumbnailsGrid grid)) return;
+
+        (tab.Content as VirtualizingWrapPanel)?.ClearRows();
+        grid.ClearItBeforeLoad();
+        grid.PropertyChanged -= OnCurrentMediaItemChange;
+        _model.ThumbnailsGrids.Remove(grid);
+      };
+
+      App.WMain.MainTabs.Tabs.SelectionChanged += (o, e) => {
+        var tabItem = ((TabControl) o).SelectedItem as TabItem;
+        var grid = tabItem?.DataContext as ThumbnailsGrid;
+
+        CurrentThumbsGrid = grid == null ? null : (tabItem.Content as MediaItemsThumbsGrid)?.ThumbsGrid;
+
+        _model.ThumbsGrid = grid;
+        grid?.UpdateSelected();
+        App.Ui.AppInfo.CurrentMediaItem = grid?.Current;
+        App.Core.MarkUsedKeywordsAndPeople();
+      };
+    }
+
+    private ThumbnailsGrid AddThumbnailsGridModel() {
       var grid = new ThumbnailsGrid();
       grid.PropertyChanged += OnCurrentMediaItemChange;
 
@@ -47,19 +72,21 @@ namespace PictureManager.ViewModels {
       return grid;
     }
 
-    public void RemoveThumbnailsGrid(ThumbnailsGrid grid) {
-      if (grid == null) return;
-
-      grid.ClearItBeforeLoad();
-      grid.PropertyChanged -= OnCurrentMediaItemChange;
-      _model.ThumbnailsGrids.Remove(grid);
-    }
-
-    public void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
+    private void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
       var grid = (ThumbnailsGrid)sender;
       if (e.PropertyName.Equals(nameof(grid.Current))) {
         App.Ui.AppInfo.CurrentMediaItem = grid.Current;
       }
+    }
+
+    public void SetTabContent() {
+      if (App.WMain.MainTabs.IsThisContentSet(typeof(MediaItemsThumbsGrid))) return;
+
+      var dataContext = AddThumbnailsGridModel();
+      var content = new MediaItemsThumbsGrid {DataContext = dataContext};
+      var contextMenu = content.FindResource("ThumbsGridContextMenu") as ContextMenu;
+      CurrentThumbsGrid = content.ThumbsGrid;
+      App.WMain.MainTabs.SetTab(dataContext, content, contextMenu);
     }
 
     public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
@@ -140,10 +167,9 @@ namespace PictureManager.ViewModels {
     }
 
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
-      var maxWidth = 0.0;
       App.Core.RunOnUiThread(() => {
-        maxWidth = App.WMain.MainTabs.FindChild<ThumbnailsGridControl>("ThumbsGridControl").ActualWidth;
-        _model.ThumbsGrid.ClearRows();
+        CurrentThumbsGrid.ClearRows();
+        CurrentThumbsGrid.SetMaxRowWidth();
       });
 
       return Task.Run(() => {
@@ -177,9 +203,10 @@ namespace PictureManager.ViewModels {
             mediaItemsModified = true;
           }
 
+          AddMediaItemToGrid(mi);
+
           App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
-            _model.ThumbsGrid.AddItem(mi, maxWidth);
             App.Ui.AppInfo.ProgressBarValueA = percent;
           });
         }
@@ -188,8 +215,34 @@ namespace PictureManager.ViewModels {
       });
     }
 
+    private void AddMediaItemToGrid(MediaItem mi) {
+      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+      var groupItems = new List<VirtualizingWrapPanelGroupItem>();
+
+      if (_model.ThumbsGrid.GroupByFolders) {
+        var folderName = mi.Folder.Title;
+        var iOfL = folderName.FirstIndexOfLetter();
+        var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName.Substring(iOfL);
+        var toolTip = mi.Folder.FolderKeyword != null
+          ? CatTreeViewUtils.GetFullPath(mi.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+          : mi.Folder.FullPath;
+        groupItems.Add(new VirtualizingWrapPanelGroupItem {Icon = IconName.Folder, Title = title, ToolTip = toolTip });
+      }
+
+      if (_model.ThumbsGrid.GroupByDate) {
+        var title = Domain.Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
+        if (!string.IsNullOrEmpty(title))
+          groupItems.Add(new VirtualizingWrapPanelGroupItem { Icon = IconName.Calendar, Title = title });
+      }
+
+      App.Core.RunOnUiThread(() => {
+        CurrentThumbsGrid.AddItem(mi, mi.ThumbWidth + itemOffset, groupItems.ToArray());
+      });
+    }
+
     public async void ThumbsGridReloadItems() {
-      if (_model.ThumbsGrid.FilteredItems.Count == 0) return;
+      CurrentThumbsGrid?.ClearRows();
+      if (_model.ThumbsGrid == null || _model.ThumbsGrid.FilteredItems.Count == 0) return;
 
       // cancel previous work
       if (_loadCts != null) {
@@ -220,14 +273,11 @@ namespace PictureManager.ViewModels {
     }
 
     public void ScrollToTop() {
-      App.WMain.MainTabs.FindChild<ScrollViewer>("ThumbsBoxScrollViewer")?.ScrollToTop();
+      CurrentThumbsGrid.ScrollToTop();
       App.WMain.UpdateLayout();
     }
 
-    public void ScrollTo(MediaItem mi) {
-      App.WMain.MainTabs.FindChild<VirtualizingStackPanel>("ThumbsBoxStackPanel")
-        .BringIndexIntoViewPublic(_model.ThumbsGrid.GetRowIndexWith(mi));
-    }
+    public void ScrollTo(MediaItem mi) => CurrentThumbsGrid.ScrollTo(mi);
 
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
