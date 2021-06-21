@@ -10,12 +10,8 @@ using PictureManager.Commands;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
 
 namespace PictureManager {
-  /// <summary>
-  /// Interaction logic for WMain.xaml
-  /// </summary>
   public partial class WMain {
     public MediaElement VideoThumbnailPreview;
     public CommandsController CommandsController => CommandsController.Instance;
@@ -23,19 +19,8 @@ namespace PictureManager {
     public WMain() {
       InitializeComponent();
 
-      // MainTabs
+      // Add Default MainTabs Tab
       MainTabs.AddTab();
-      MainTabs.OnTabItemClose += delegate (object sender, EventArgs e) {
-        App.Ui.MediaItemsViewModel.RemoveThumbnailsGrid(sender as ThumbnailsGrid);
-      };
-      MainTabs.Tabs.SelectionChanged += delegate (object sender, SelectionChangedEventArgs e) {
-        var grid = ((FrameworkElement)((TabControl)sender).SelectedItem).DataContext as ThumbnailsGrid;
-
-        App.Core.MediaItems.ThumbsGrid = grid;
-        grid?.UpdateSelected();
-        App.Ui.AppInfo.CurrentMediaItem = grid?.Current;
-        App.Core.MarkUsedKeywordsAndPeople();
-      };
 
       PresentationPanel.Elapsed = delegate {
         App.Core.RunOnUiThread(() => {
@@ -81,6 +66,7 @@ namespace PictureManager {
       CommandsController.AddInputBindings();
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
+      App.Ui.MediaItemsViewModel.RegisterEvents();
     }
 
     public void SetMediaItemSource(bool decoded = false) {
