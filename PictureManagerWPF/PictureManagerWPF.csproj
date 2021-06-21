@@ -93,9 +93,9 @@
     <Compile Include="CustomControls\IconRect.cs" />
     <Compile Include="CustomControls\ImageComparer.cs" />
     <Compile Include="CustomControls\MediaItemThumbnail.cs" />
-    <Compile Include="CustomControls\ThumbnailsGridControl.cs" />
     <Compile Include="CustomControls\CatTreeView.cs" />
     <Compile Include="CustomControls\VideoPlayer.cs" />
+    <Compile Include="CustomControls\VirtualizingWrapPanel.cs" />
     <Compile Include="Dialogs\DirectorySelectDialog.xaml.cs">
       <DependentUpon>DirectorySelectDialog.xaml</DependentUpon>
     </Compile>
@@ -135,11 +135,17 @@
     <Compile Include="ShellStuff\FileInformation.cs" />
     <Compile Include="Patterns\Singleton.cs" />
     <Compile Include="Tests.cs" />
+    <Compile Include="UserControls\FaceRecognitionControl.xaml.cs">
+      <DependentUpon>FaceRecognitionControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\InfoPanel.xaml.cs">
       <DependentUpon>InfoPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\MainTabs.xaml.cs">
       <DependentUpon>MainTabs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\MediaItemsThumbsGrid.xaml.cs">
+      <DependentUpon>MediaItemsThumbsGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserControls\PresentationPanel.xaml.cs">
       <DependentUpon>PresentationPanel.xaml</DependentUpon>
@@ -293,11 +299,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ResourceDictionaries\CustomControlStyles\ThumbnailsGridControlStyle.xaml">
+    <Page Include="ResourceDictionaries\CustomControlStyles\VideoPlayerStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ResourceDictionaries\CustomControlStyles\VideoPlayerStyle.xaml">
+    <Page Include="ResourceDictionaries\CustomControlStyles\VirtualizingWrapPanelStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -345,6 +351,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UserControls\FaceRecognitionControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\InfoPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -366,6 +376,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\MainTabs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\MediaItemsThumbsGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
