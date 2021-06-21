@@ -20,8 +20,7 @@ namespace PictureManager.Domain.Models {
     private bool _showVideos = true;
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
-    private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string>{{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}};
-
+    
     public List<MediaItem> SelectedItems { get; } = new List<MediaItem>();
     public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
     public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
@@ -59,14 +58,6 @@ namespace PictureManager.Domain.Models {
       SelectedItems.Clear();
       LoadedItems.Clear();
       FilteredItems.Clear();
-      ClearRows();
-    }
-
-    public void ClearRows() {
-      foreach (var row in Rows.OfType<MediaItemsRow>())
-        row.Items.Clear();
-
-      Rows.Clear();
     }
 
     public void SetSelected(MediaItem mi, bool value) {
@@ -172,64 +163,6 @@ namespace PictureManager.Domain.Models {
 
     public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) {
       Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
-    }
-
-    private string GetFolderTitle(string folderName) {
-      if (!GroupByFolders) return string.Empty;
-      var iOfL = folderName.FirstIndexOfLetter();
-      return iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName.Substring(iOfL);
-    }
-
-    private void AddGroup(MediaItem mi) {
-      var group = Rows.OfType<MediaItemsGroup>().LastOrDefault();
-      var miFolderTitle = GetFolderTitle(mi.Folder.Title);
-      var miFolderFullPath = mi.Folder.FolderKeyword != null
-        ? CatTreeViewUtils.GetFullPath(mi.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
-        : mi.Folder.FullPath;
-      var miDate = !GroupByDate ? string.Empty : Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
-
-      if (group == null || !group.Date.Equals(miDate) && GroupByDate || !group.FolderFullPath.Equals(miFolderFullPath) && GroupByFolders) {
-        group = new MediaItemsGroup {Date = miDate, Folder = miFolderTitle, FolderFullPath = miFolderFullPath};
-        Rows.Add(group);
-        Rows.Add(new MediaItemsRow());
-      }
-
-      group.ItemsCount++;
-    }
-
-    public void AddItem(MediaItem mi, double rowMaxWidth) {
-      // Add Media Items Group
-      AddGroup(mi);
-
-      // Add Media Items Row
-      var row = Rows.OfType<MediaItemsRow>().LastOrDefault();
-      if (row == null) {
-        row = new MediaItemsRow();
-        Rows.Add(row);
-      }
-
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
-      var rowWidth = row.Items.Sum(x => x.ThumbWidth + itemOffset);
-
-      if (row.Items.Count > 0 && mi.ThumbWidth + itemOffset > rowMaxWidth - rowWidth) {
-        row = new MediaItemsRow();
-        Rows.Add(row);
-      }
-
-      // Add Media Item
-      row.Items.Add(mi);
-    }
-
-    public int GetRowIndexWith(MediaItem mi) {
-      var rowIndex = 0;
-      foreach (var row in Rows) {
-        if (row is MediaItemsRow itemsRow)
-          if (itemsRow.Items.Any(x => x.Id.Equals(mi.Id)))
-            break;
-        rowIndex++;
-      }
-
-      return rowIndex;
     }
 
     public void ResetThumbsSize() {
