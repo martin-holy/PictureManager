@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.ShellStuff;
 using PictureManager.Domain;
@@ -56,12 +55,7 @@ namespace PictureManager {
         case GeoName _:
         case Folder _:
         case FolderKeyword _: {
-          if (App.WMain.MainTabs.SelectedTabItemContentType == typeof(ThumbnailsGridControl)) break;
-          
-          App.WMain.MainTabs.SetTab(
-            App.Ui.MediaItemsViewModel.AddThumbnailsGridModel(),
-            new ThumbnailsGridControl {Name = "ThumbsGridControl"});
-          
+          App.Ui.MediaItemsViewModel.SetTabContent();
           break;
         }
         case ICatTreeViewGroup _: {
