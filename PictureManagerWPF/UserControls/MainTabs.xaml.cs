@@ -2,40 +2,35 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using MahApps.Metro.Controls;
 
 namespace PictureManager.UserControls {
   public partial class MainTabs {
     public EventHandler OnTabItemClose;
-    public Type SelectedTabItemContentType { get; set; }
 
     public MainTabs() {
       InitializeComponent();
       UpdateTabMaxHeight();
-
-      Tabs.SelectionChanged += (o, e) => {
-        SelectedTabItemContentType = ((TabItem) Tabs.SelectedItem)?.Content?.GetType();
-      };
     }
 
-    public void SetTab(object dataContext, object content) {
-      if (Tabs.SelectedItem is TabItem tab) {
-        OnTabItemClose?.Invoke(tab.DataContext, null);
+    public bool IsThisContentSet(Type type) => ((FrameworkElement) ((TabItem) Tabs.SelectedItem).Content)?.GetType() == type;
 
-        tab.HeaderTemplate = Tabs.FindResource("ThumbsTabItemTemplate") as DataTemplate;
+    public void SetTab(object dataContext, object content, ContextMenu contextMenu) {
+      if (Tabs.SelectedItem is TabItem tab) {
+        OnTabItemClose?.Invoke(tab, null);
+
         tab.DataContext = dataContext;
         tab.Content = content;
+        tab.ContextMenu = contextMenu;
+        BindingOperations.SetBinding(tab, HeaderedContentControl.HeaderProperty, new Binding("Title"));
       }
 
       UpdateTabMaxHeight();
     }
 
     public void AddTab() {
-      var tabItem = new TabItem {
-        HeaderTemplate = Tabs.FindResource("ThumbsTabItemTemplate") as DataTemplate
-      };
-
-      Tabs.SelectedIndex = Tabs.Items.Add(tabItem);
+      Tabs.SelectedIndex = Tabs.Items.Add(new TabItem());
 
       SetAddTabButton();
     }
@@ -44,11 +39,9 @@ namespace PictureManager.UserControls {
 
     private void BtnCloseTab_Click(object sender, RoutedEventArgs e) {
       if (!(sender is FrameworkElement elm)) return;
-
-      OnTabItemClose?.Invoke(elm.DataContext, null);
-
-      Tabs.Items.Remove(elm.TryFindParent<TabItem>());
-
+      var tab = elm.TryFindParent<TabItem>();
+      OnTabItemClose?.Invoke(tab, null);
+      Tabs.Items.Remove(tab);
       SetAddTabButton();
     }
 
@@ -68,12 +61,6 @@ namespace PictureManager.UserControls {
 
       foreach (var tabItem in Tabs.Items.Cast<TabItem>())
         tabItem.MaxHeight = maxHeight;
-    }
-
-    //TODO
-    private void Refresh(object sender, RoutedEventArgs e) {
-      App.Core.MediaItems.ThumbsGrid?.ReloadFilteredItems();
-      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }
 }
