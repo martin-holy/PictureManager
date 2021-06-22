@@ -55,6 +55,7 @@ namespace PictureManager.CustomControls {
 
       var grid = (ItemsControl) Template.FindName("PART_Grid", this);
       grid.ApplyTemplate();
+      grid.SizeChanged += (o, e) => { _maxRowWidth = ActualWidth; };
 
       var itemsPresenter = (ItemsPresenter) grid.Template.FindName("PART_ItemsPresenter", grid);
       itemsPresenter.ApplyTemplate();
@@ -62,8 +63,6 @@ namespace PictureManager.CustomControls {
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
       _rowsScrollViewer = (ScrollViewer) grid.Template.FindName("PART_RowsScrollViewer", grid);
     }
-
-    public void SetMaxRowWidth() => _maxRowWidth = ActualWidth;
 
     public void ScrollTo(int index) => _rowsStackPanel.BringIndexIntoViewPublic(index);
 
