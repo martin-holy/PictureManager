@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
@@ -17,6 +18,7 @@ using WMFA = Windows.Media.FaceAnalysis;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
+using Point = System.Windows.Point;
 
 namespace PictureManager.Utils {
   public static class Imaging {
@@ -105,7 +107,7 @@ namespace PictureManager.Utils {
       var newFile = new FileInfo(filePath + "_newFile");
       try {
         using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          using (var bmp = new System.Drawing.Bitmap(originalFileStream)) {
+          using (var bmp = new Bitmap(originalFileStream)) {
             using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
               var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
               if (encoder == null) return;
@@ -311,9 +313,16 @@ namespace PictureManager.Utils {
       }
     }
 
-    public static async Task<IList<WMFA.DetectedFace>> DetectFaces(Stream fileStream) {
+    /// <summary>
+    /// Detect faces in an image
+    /// </summary>
+    /// <param name="srcStream">Stream to the source of an image</param>
+    /// <param name="faceBoxExpand">The extension of face box in percentage</param>
+    /// <returns>The list of box coordinates around face expanded by faceBoxExpand percentage</returns>
+    public static async Task<IList<Int32Rect>> DetectFaces(Stream srcStream, int faceBoxExpand) {
       try {
-        var stream = fileStream.AsRandomAccessStream();
+        // detect faces
+        var stream = srcStream.AsRandomAccessStream();
         var bitmapDecoder = await WGI.BitmapDecoder.CreateAsync(stream);
         using var bitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
         var bmp = WMFA.FaceDetector.IsBitmapPixelFormatSupported(bitmap.BitmapPixelFormat)
@@ -321,11 +330,65 @@ namespace PictureManager.Utils {
         var faceDetector = await WMFA.FaceDetector.CreateAsync();
         var detectedFaces = await faceDetector.DetectFacesAsync(bmp);
 
-        return detectedFaces;
+        // convert detected faces to List<Int32Rect> and expand rects
+        var faceBoxes = new List<Int32Rect>();
+        foreach (var fBox in detectedFaces) {
+          var rect = new Int32Rect(
+            (int) fBox.FaceBox.X,
+            (int) fBox.FaceBox.Y,
+            (int) fBox.FaceBox.Width,
+            (int) fBox.FaceBox.Height);
+
+          if (faceBoxExpand == 0) {
+            faceBoxes.Add(rect);
+            continue;
+          }
+
+          // calc percentage expand
+          var exp = (int)((fBox.FaceBox.Width / 100.0) * faceBoxExpand);
+          if (exp % 2 != 0) exp++;
+          var halfExp = exp / 2;
+
+          // expand rect in a way that doesn't overflow image
+          rect.X = rect.X > halfExp ? rect.X - halfExp : 0;
+          rect.Y = rect.Y > halfExp ? rect.Y - halfExp : 0;
+          rect.Width = rect.X + rect.Width + exp < bmp.PixelWidth ? rect.Width + exp : bmp.PixelWidth - rect.X;
+          rect.Height = rect.Y + rect.Height + exp < bmp.PixelHeight ? rect.Height + exp : bmp.PixelHeight - rect.Y;
+
+          // make it square
+          if (rect.Height > rect.Width) {
+            var diff = rect.Height - rect.Width;
+            rect.Height -= diff;
+            rect.Y += diff / 2;
+          }
+          else {
+            var diff = rect.Width - rect.Height;
+            rect.Width -= diff;
+            rect.X += diff / 2;
+          }
+
+          faceBoxes.Add(rect);
+        }
+
+        return faceBoxes;
       }
       catch {
         return null;
       }
+    }
+
+    public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
+      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+      var bmp = new BitmapImage();
+      bmp.BeginInit();
+      bmp.CacheOption = BitmapCacheOption.OnLoad;
+      bmp.StreamSource = fileStream;
+      bmp.SourceRect = rect;
+      bmp.DecodePixelWidth = size;
+      bmp.EndInit();
+
+      return bmp;
     }
   }
 }
