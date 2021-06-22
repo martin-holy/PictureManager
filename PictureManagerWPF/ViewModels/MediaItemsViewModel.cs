@@ -169,7 +169,6 @@ namespace PictureManager.ViewModels {
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
       App.Core.RunOnUiThread(() => {
         CurrentThumbsGrid.ClearRows();
-        CurrentThumbsGrid.SetMaxRowWidth();
       });
 
       return Task.Run(() => {
