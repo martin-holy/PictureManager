@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="PictureManager.UserControls.FaceRecognitionControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:vm="clr-namespace:PictureManager.ViewModels"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+
+  <cc:VirtualizingWrapPanel x:Name="ThumbsGrid" Rows="{Binding Rows}">
+    <cc:VirtualizingWrapPanel.ItemDataTemplate>
+      <DataTemplate DataType="{x:Type vm:FaceViewModel}">
+        <Border DataContext="{Binding}" BorderThickness="2">
+          <StackPanel>
+            <!--<TextBlock Text="{Binding Face.MediaItem.FileName}" />-->
+            <Image Source="{Binding Picture}" Width="100"  />
+          </StackPanel>
+        </Border>
+      </DataTemplate>
+    </cc:VirtualizingWrapPanel.ItemDataTemplate>
+  </cc:VirtualizingWrapPanel>
+
+</UserControl>
