@@ -163,6 +163,7 @@
     </Compile>
     <Compile Include="Utils\Imaging.cs" />
     <Compile Include="Utils\StringUtils.cs" />
+    <Compile Include="ViewModels\FaceViewModel.cs" />
     <Compile Include="ViewModels\FoldersViewModel.cs" />
     <Compile Include="ViewModels\GeoNamesViewModel.cs" />
     <Compile Include="ViewModels\MediaItemClipsCategory.cs" />
