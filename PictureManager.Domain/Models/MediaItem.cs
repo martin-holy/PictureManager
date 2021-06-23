@@ -43,7 +43,9 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
 
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
-    public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
+
+    public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
+                                   (MediaType == MediaType.Image ? string.Empty : ".jpg");
     public Uri FilePathUri => new Uri(FilePath);
     public Uri FilePathCacheUri => new Uri(FilePathCache);
     public int ThumbSize { get; set; }
