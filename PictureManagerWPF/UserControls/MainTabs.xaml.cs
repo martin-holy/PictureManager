@@ -14,7 +14,11 @@ namespace PictureManager.UserControls {
       UpdateTabMaxHeight();
     }
 
-    public bool IsThisContentSet(Type type) => ((FrameworkElement) ((TabItem) Tabs.SelectedItem).Content)?.GetType() == type;
+    public bool IsThisContentSet(Type type) =>
+      ((FrameworkElement) ((TabItem) Tabs.SelectedItem).Content)?.GetType() == type;
+
+    public TabItem GetTabWithContentTypeOf(Type type) =>
+      Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
 
     public void SetTab(object dataContext, object content, ContextMenu contextMenu) {
       if (Tabs.SelectedItem is TabItem tab) {
@@ -22,7 +26,10 @@ namespace PictureManager.UserControls {
 
         tab.DataContext = dataContext;
         tab.Content = content;
-        tab.ContextMenu = contextMenu;
+        var tabHeader = tab.FindChild<StackPanel>("TabHeader");
+        if (tabHeader != null)
+          tabHeader.ContextMenu = contextMenu;
+
         BindingOperations.SetBinding(tab, HeaderedContentControl.HeaderProperty, new Binding("Title"));
       }
 

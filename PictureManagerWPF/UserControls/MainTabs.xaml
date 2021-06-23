@@ -13,7 +13,7 @@
         <Setter Property="HeaderTemplate">
           <Setter.Value>
             <DataTemplate>
-              <StackPanel Orientation="Vertical" ToolTip="{Binding}">
+              <StackPanel Orientation="Vertical" ToolTip="{Binding}" x:Name="TabHeader">
                 <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab_Click" 
                         Visibility="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, 
                                                   Converter={StaticResource AllToVisibilityConverter}}" />
