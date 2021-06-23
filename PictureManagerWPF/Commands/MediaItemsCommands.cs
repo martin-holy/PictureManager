@@ -9,6 +9,7 @@ using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
+using PictureManager.UserControls;
 using PictureManager.Utils;
 using PictureManager.ViewModels;
 
@@ -31,6 +32,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
     public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
     public static RoutedUICommand VideoClipsSaveCommand { get; } = new RoutedUICommand { Text = "Save Video Clips" };
+    public static RoutedUICommand FaceRecognitionCommand { get; } = new RoutedUICommand { Text = "Face Recognition" };
 
     public void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
@@ -50,6 +52,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
       CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
       CommandsController.AddCommandBinding(cbc, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
+      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
     }
 
     public static bool CanNext() {
@@ -366,6 +369,27 @@ namespace PictureManager.Commands {
     private static void VideoClipsSave() {
       App.Core.VideoClips.SaveToFile();
       App.Core.VideoClipsGroups.SaveToFile();
+    }
+
+    private static bool CanFaceRecognition() {
+      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
+    }
+
+    private static void FaceRecognition() {
+      var mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
+      var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
+      
+      if (!(tab?.Content is FaceRecognitionControl control)) {
+        control = new FaceRecognitionControl();
+        App.WMain.MainTabs.AddTab();
+        App.WMain.MainTabs.SetTab(control, control, null);
+        App.WMain.MainMenu.UpdateLayout();
+      }
+      else {
+        tab.IsSelected = true;
+      }
+      
+      control.Recognize(mediaItems);
     }
   }
 }
