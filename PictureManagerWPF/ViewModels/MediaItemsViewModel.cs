@@ -84,7 +84,8 @@ namespace PictureManager.ViewModels {
 
       var dataContext = AddThumbnailsGridModel();
       var content = new MediaItemsThumbsGrid {DataContext = dataContext};
-      var contextMenu = content.FindResource("ThumbsGridContextMenu") as ContextMenu;
+      var contextMenu = (ContextMenu) content.FindResource("ThumbsGridContextMenu");
+      contextMenu.DataContext = dataContext;
       CurrentThumbsGrid = content.ThumbsGrid;
       App.WMain.MainTabs.SetTab(dataContext, content, contextMenu);
     }
