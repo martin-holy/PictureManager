@@ -316,12 +316,13 @@ namespace PictureManager.Utils {
     /// <summary>
     /// Detect faces in an image
     /// </summary>
-    /// <param name="srcStream">Stream to the source of an image</param>
+    /// <param name="filePath">File path to an image</param>
     /// <param name="faceBoxExpand">The extension of face box in percentage</param>
     /// <returns>The list of box coordinates around face expanded by faceBoxExpand percentage</returns>
-    public static async Task<IList<Int32Rect>> DetectFaces(Stream srcStream, int faceBoxExpand) {
+    public static async Task<IList<Int32Rect>> DetectFaces(string filePath, int faceBoxExpand) {
       try {
         // detect faces
+        using Stream srcStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         var stream = srcStream.AsRandomAccessStream();
         var bitmapDecoder = await WGI.BitmapDecoder.CreateAsync(stream);
         using var bitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
