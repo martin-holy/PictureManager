@@ -9,7 +9,7 @@
                            ConverterParameter={x:Static pm:AppMode.Browser}}">
 
     <TabControl.Resources>
-      <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MetroTabItem}">
+      <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MahApps.Styles.TabItem}">
         <Setter Property="HeaderTemplate">
           <Setter.Value>
             <DataTemplate>

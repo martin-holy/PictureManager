@@ -215,7 +215,7 @@ ModelManifest.xml
 FastPictureManager_2015_10_18.zip
 PictureManager před čištěním.7z
 PictureManager_pred prespisem do WPF.zip
-PictureManager/
+PictureManager_WinForms/
 /PictureManagerWPF/user.config
 /SimpleDB55k.zip
 /PictureManagerWPF_SQLite_version.zip
@@ -231,3 +231,4 @@ PictureManager/
 /PictureManagerWPF_2019_09_06.7z
 /PictureManagerWPF_2020_04_15.7z
 /MigrationBackup/af5da076/PictureManagerWPF
+/PictureManagerWPF_2021_06_23.7z

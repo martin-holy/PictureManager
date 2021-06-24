@@ -157,7 +157,7 @@
                 </Style>
 
                 <!-- Slider style -->
-                <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MetroSlider}">
+                <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MahApps.Styles.Slider}">
                   <Setter Property="IsTabStop" Value="False" />
                   <Setter Property="VerticalAlignment" Value="Center" />
                 </Style>
