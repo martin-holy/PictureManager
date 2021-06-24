@@ -540,6 +540,11 @@ namespace PictureManager.Utils {
       var output = new List<object>();
       var set = new HashSet<int>();
 
+      if (itemsLength == 1) {
+        output.Add(items[0]);
+        return output;
+      }
+
       for (var i = 0; i < itemsLength; i++) {
         var similar = new Dictionary<int, int>();
 
