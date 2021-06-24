@@ -366,7 +366,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void ReapplyFilter() {
-      _model.ThumbsGrid.ReloadFilteredItems();
+      _model.ThumbsGrid?.ReloadFilteredItems();
       App.Core.MarkUsedKeywordsAndPeople();
       ThumbsGridReloadItems();
     }
