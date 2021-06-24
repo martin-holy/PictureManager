@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -9,7 +9,6 @@ using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class FaceRecognitionControl: INotifyPropertyChanged {
@@ -38,19 +37,28 @@ namespace PictureManager.UserControls {
       var mediaItemsToDetect = mediaItems.Except(detectedFaces.Select(x => x.MediaItem).Distinct());
       var facesToDisplay = new Dictionary<object, long>();
 
-      foreach (var face in notRecognizedFaces)
-        facesToDisplay.Add(AddFaceToGrid(face), face.AvgHash);
+      foreach (var face in notRecognizedFaces) {
+        AddFaceToGrid(face);
+        facesToDisplay.Add(face, face.AvgHash);
+      }
 
       foreach (var mi in mediaItemsToDetect) {
         var filePath = mi.MediaType == MediaType.Image ? mi.FilePath : mi.FilePathCache;
-        var faces = await Imaging.DetectFaces(filePath, 40);
+        IList<Int32Rect> faceRects = null;
         
-        foreach (var face in faces) {
-          var rect = new Rectangle(face.X, face.Y, face.Width, face.Height);
-          var rect2 = new Int32Rect(face.X, face.Y, face.Width, face.Height);
-          var avgHash = Imaging.GetAvgHash(filePath, rect2);
-          var newFace = new Face(App.Core.Faces.Helper.GetNextId(), 0, rect, avgHash) {MediaItem = mi};
-          facesToDisplay.Add(AddFaceToGrid(newFace), newFace.AvgHash);
+        try {
+          faceRects = await Imaging.DetectFaces(filePath, 40);
+        }
+        catch (Exception ex) {
+          App.Ui.LogError(ex, filePath);
+        }
+        
+        if (faceRects == null) continue;
+        foreach (var faceRect in faceRects) {
+          var avgHash = Imaging.GetAvgHash(filePath, faceRect);
+          var newFace = new Face(App.Core.Faces.Helper.GetNextId(), 0, faceRect, avgHash) {MediaItem = mi};
+          AddFaceToGrid(newFace);
+          facesToDisplay.Add(newFace, newFace.AvgHash);
           App.Core.Faces.All.Add(newFace);
         }
       }
@@ -65,17 +73,14 @@ namespace PictureManager.UserControls {
         ThumbsGrid.AddItem(face, 100 + itemOffset, new VirtualizingWrapPanelGroupItem[0]);
     }
 
-    private FaceViewModel AddFaceToGrid(Face face) {
+    private void AddFaceToGrid(Face face) {
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
 
       var rect = new Int32Rect(face.FaceBox.X, face.FaceBox.Y, face.FaceBox.Width, face.FaceBox.Height);
       var filePath = face.MediaItem.MediaType == MediaType.Image ? face.MediaItem.FilePath : face.MediaItem.FilePathCache;
-      var picture = Imaging.GetCroppedBitmapSource(filePath, rect, 100);
-      var faceVm = new FaceViewModel {Face = face, Picture = picture};
+      face.Picture = Imaging.GetCroppedBitmapSource(filePath, rect, 100);
 
-      ThumbsGrid.AddItem(faceVm, 100 + itemOffset, new VirtualizingWrapPanelGroupItem[0]);
-
-      return faceVm;
+      ThumbsGrid.AddItem(face, 100 + itemOffset, new VirtualizingWrapPanelGroupItem[0]);
     }
   }
 }
