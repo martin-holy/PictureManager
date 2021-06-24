@@ -1,17 +1,21 @@
-﻿using System.Drawing;
+﻿using System.Windows;
+using System.Windows.Media.Imaging;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class Face: IRecord {
+  public class Face: ObservableObject, IRecord {
+    private BitmapSource _picture;
+
     public string[] Csv { get; set; }
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
     public Person Person { get; set; }
     public int PersonId { get; set; } // < 0 for unknown people, 0 for unknown, > 0 for known people
-    public Rectangle FaceBox { get; set; }
+    public Int32Rect FaceBox { get; set; }
     public long AvgHash { get; set; }
+    public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
 
-    public Face(int id, int personId, Rectangle faceBox, long avgHash) {
+    public Face(int id, int personId, Int32Rect faceBox, long avgHash) {
       Id = id;
       PersonId = personId;
       FaceBox = faceBox;
