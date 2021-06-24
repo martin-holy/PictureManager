@@ -320,62 +320,57 @@ namespace PictureManager.Utils {
     /// <param name="faceBoxExpand">The extension of face box in percentage</param>
     /// <returns>The list of box coordinates around face expanded by faceBoxExpand percentage</returns>
     public static async Task<IList<Int32Rect>> DetectFaces(string filePath, int faceBoxExpand) {
-      try {
-        // detect faces
-        using Stream srcStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        var stream = srcStream.AsRandomAccessStream();
-        var bitmapDecoder = await WGI.BitmapDecoder.CreateAsync(stream);
-        using var bitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
-        var bmp = WMFA.FaceDetector.IsBitmapPixelFormatSupported(bitmap.BitmapPixelFormat)
-          ? bitmap : WGI.SoftwareBitmap.Convert(bitmap, WGI.BitmapPixelFormat.Gray8);
-        var faceDetector = await WMFA.FaceDetector.CreateAsync();
-        var detectedFaces = await faceDetector.DetectFacesAsync(bmp);
+      // detect faces
+      await using Stream srcStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+      var stream = srcStream.AsRandomAccessStream();
+      var bitmapDecoder = await WGI.BitmapDecoder.CreateAsync(stream);
+      using var bitmap = await bitmapDecoder.GetSoftwareBitmapAsync();
+      var bmp = WMFA.FaceDetector.IsBitmapPixelFormatSupported(bitmap.BitmapPixelFormat)
+        ? bitmap : WGI.SoftwareBitmap.Convert(bitmap, WGI.BitmapPixelFormat.Gray8);
+      var faceDetector = await WMFA.FaceDetector.CreateAsync();
+      var detectedFaces = await faceDetector.DetectFacesAsync(bmp);
 
-        // convert detected faces to List<Int32Rect> and expand rects
-        var faceBoxes = new List<Int32Rect>();
-        foreach (var fBox in detectedFaces) {
-          var rect = new Int32Rect(
-            (int) fBox.FaceBox.X,
-            (int) fBox.FaceBox.Y,
-            (int) fBox.FaceBox.Width,
-            (int) fBox.FaceBox.Height);
+      // convert detected faces to List<Int32Rect> and expand rects
+      var faceBoxes = new List<Int32Rect>();
+      foreach (var fBox in detectedFaces) {
+        var rect = new Int32Rect(
+          (int) fBox.FaceBox.X,
+          (int) fBox.FaceBox.Y,
+          (int) fBox.FaceBox.Width,
+          (int) fBox.FaceBox.Height);
 
-          if (faceBoxExpand == 0) {
-            faceBoxes.Add(rect);
-            continue;
-          }
-
-          // calc percentage expand
-          var exp = (int)((fBox.FaceBox.Width / 100.0) * faceBoxExpand);
-          if (exp % 2 != 0) exp++;
-          var halfExp = exp / 2;
-
-          // expand rect in a way that doesn't overflow image
-          rect.X = rect.X > halfExp ? rect.X - halfExp : 0;
-          rect.Y = rect.Y > halfExp ? rect.Y - halfExp : 0;
-          rect.Width = rect.X + rect.Width + exp < bmp.PixelWidth ? rect.Width + exp : bmp.PixelWidth - rect.X;
-          rect.Height = rect.Y + rect.Height + exp < bmp.PixelHeight ? rect.Height + exp : bmp.PixelHeight - rect.Y;
-
-          // make it square
-          if (rect.Height > rect.Width) {
-            var diff = rect.Height - rect.Width;
-            rect.Height -= diff;
-            rect.Y += diff / 2;
-          }
-          else {
-            var diff = rect.Width - rect.Height;
-            rect.Width -= diff;
-            rect.X += diff / 2;
-          }
-
+        if (faceBoxExpand == 0) {
           faceBoxes.Add(rect);
+          continue;
         }
 
-        return faceBoxes;
+        // calc percentage expand
+        var exp = (int)((fBox.FaceBox.Width / 100.0) * faceBoxExpand);
+        if (exp % 2 != 0) exp++;
+        var halfExp = exp / 2;
+
+        // expand rect in a way that doesn't overflow image
+        rect.X = rect.X > halfExp ? rect.X - halfExp : 0;
+        rect.Y = rect.Y > halfExp ? rect.Y - halfExp : 0;
+        rect.Width = rect.X + rect.Width + exp < bmp.PixelWidth ? rect.Width + exp : bmp.PixelWidth - rect.X;
+        rect.Height = rect.Y + rect.Height + exp < bmp.PixelHeight ? rect.Height + exp : bmp.PixelHeight - rect.Y;
+
+        // make it square
+        if (rect.Height > rect.Width) {
+          var diff = rect.Height - rect.Width;
+          rect.Height -= diff;
+          rect.Y += diff / 2;
+        }
+        else {
+          var diff = rect.Width - rect.Height;
+          rect.Width -= diff;
+          rect.X += diff / 2;
+        }
+
+        faceBoxes.Add(rect);
       }
-      catch {
-        return null;
-      }
+
+      return faceBoxes;
     }
 
     public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
