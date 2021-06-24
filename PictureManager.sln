@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManagerWPF", "PictureManagerWPF\PictureManagerWPF.csproj", "{47205205-AA5E-44D1-97FB-6950C11BBD76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.UnitTests", "PictureManagerWPF.UnitTests\PictureManager.UnitTests.csproj", "{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManagerWPF.UnitTests", "PictureManagerWPF.UnitTests\PictureManagerWPF.UnitTests.csproj", "{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleDB", "SimpleDB\SimpleDB.csproj", "{4FA81047-F292-421A-924B-C085A383D740}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleDB", "SimpleDB\SimpleDB.csproj", "{4FA81047-F292-421A-924B-C085A383D740}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager.Domain", "PictureManager.Domain\PictureManager.Domain.csproj", "{69B135E7-8722-45ED-9F48-C769CD60B0FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PictureManager.Domain", "PictureManager.Domain\PictureManager.Domain.csproj", "{69B135E7-8722-45ED-9F48-C769CD60B0FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PictureManager", "PictureManagerWPF\PictureManager.csproj", "{C233162F-32FB-45D7-BCC9-FB3D898416FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{47205205-AA5E-44D1-97FB-6950C11BBD76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{47205205-AA5E-44D1-97FB-6950C11BBD76}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{47205205-AA5E-44D1-97FB-6950C11BBD76}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{47205205-AA5E-44D1-97FB-6950C11BBD76}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EFCC5B2-C7B5-4FF8-AA06-B67CBA6A89BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -33,6 +29,10 @@ Global
 		{69B135E7-8722-45ED-9F48-C769CD60B0FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69B135E7-8722-45ED-9F48-C769CD60B0FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69B135E7-8722-45ED-9F48-C769CD60B0FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C233162F-32FB-45D7-BCC9-FB3D898416FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C233162F-32FB-45D7-BCC9-FB3D898416FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C233162F-32FB-45D7-BCC9-FB3D898416FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C233162F-32FB-45D7-BCC9-FB3D898416FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

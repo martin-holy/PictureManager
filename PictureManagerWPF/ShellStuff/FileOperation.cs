@@ -2,9 +2,9 @@
 
 using System;
 using System.IO;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Windows.Interop;
 using PictureManager.ShellStuff.Interfaces;
 
 namespace PictureManager.ShellStuff {

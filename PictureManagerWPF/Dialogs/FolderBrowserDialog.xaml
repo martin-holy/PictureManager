@@ -24,7 +24,7 @@
     <!-- TreeView -->
     <TreeView x:Name="TreeViewFolders">
       <TreeView.ItemContainerStyle>
-        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MetroTreeViewItem}">
+        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MahApps.Styles.TreeViewItem}">
           <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
           <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
           <Setter Property="ToolTip" Value="{Binding FullPath}" />

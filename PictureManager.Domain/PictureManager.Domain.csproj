@@ -1,9 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Authors>Martin Holý</Authors>
-    <Company />
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -11,8 +9,15 @@
     <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
     <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
+    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <LangVersion>8.0</LangVersion>
+    <Authors>Martin Holý</Authors>
+    <Copyright>Martin Holý (2015 - 2021)</Copyright>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
