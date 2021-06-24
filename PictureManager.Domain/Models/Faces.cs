@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Windows;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -26,7 +26,7 @@ namespace PictureManager.Domain.Models {
       var face = new Face(
         int.Parse(props[0]),
         int.Parse(props[2]),
-        new Rectangle(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3])),
+        new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3])), 
         long.Parse(props[4])) {Csv = props};
 
       All.Add(face);
