@@ -2,12 +2,12 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:vm="clr-namespace:PictureManager.ViewModels"
+             xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <cc:VirtualizingWrapPanel x:Name="ThumbsGrid" Rows="{Binding Rows}">
     <cc:VirtualizingWrapPanel.ItemDataTemplate>
-      <DataTemplate DataType="{x:Type vm:FaceViewModel}">
+      <DataTemplate DataType="{x:Type models:Face}">
         <Border DataContext="{Binding}" BorderThickness="2">
           <StackPanel>
             <!--<TextBlock Text="{Binding Face.MediaItem.FileName}" />-->
