@@ -69,5 +69,7 @@
       </Trigger>
     </Style.Triggers>
   </Style>
+  
+  <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleBaseButtonBase}" />
 
 </ResourceDictionary>
