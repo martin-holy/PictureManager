@@ -1,11 +1,11 @@
 // Stephen Toub
 
+using PictureManager.ShellStuff.Interfaces;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Interop;
-using PictureManager.ShellStuff.Interfaces;
 
 namespace PictureManager.ShellStuff {
   internal class FileOperation : IDisposable {
@@ -14,15 +14,15 @@ namespace PictureManager.ShellStuff {
     private readonly FileOperationProgressSink _callbackSink;
     public uint SinkCookie { get; }
 
-    public FileOperation() : this(null) {}
-    public FileOperation(FileOperationProgressSink callbackSink) : this(callbackSink, null) {}
+    public FileOperation() : this(null) { }
+    public FileOperation(FileOperationProgressSink callbackSink) : this(callbackSink, null) { }
     public FileOperation(FileOperationProgressSink callbackSink, IWin32Window owner) {
       _callbackSink = callbackSink;
-      _fileOperation = (IFileOperation) Activator.CreateInstance(_fileOperationType);
+      _fileOperation = (IFileOperation)Activator.CreateInstance(_fileOperationType);
 
       _fileOperation.SetOperationFlags(FileOperationFlags.FOF_NOCONFIRMMKDIR);
       if (_callbackSink != null) SinkCookie = _fileOperation.Advise(_callbackSink);
-      if (owner != null) _fileOperation.SetOwnerWindow((uint) owner.Handle);
+      if (owner != null) _fileOperation.SetOwnerWindow((uint)owner.Handle);
     }
 
     public void SetOperationFlags(FileOperationFlags operationFlags) {
@@ -69,9 +69,7 @@ namespace PictureManager.ShellStuff {
     public void PerformOperations() {
       ThrowIfDisposed();
       try { _fileOperation.PerformOperations(); }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
-      catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
+      catch (Exception) {
         // canceling operation cause exception :-/
       }
     }
@@ -96,11 +94,9 @@ namespace PictureManager.ShellStuff {
           if (!di.Exists)
             di.Create();
         }
-        return new ComReleaser<IShellItem>((IShellItem) SHCreateItemFromParsingName(path, null, ref _shellItemGuid));
+        return new ComReleaser<IShellItem>((IShellItem)SHCreateItemFromParsingName(path, null, ref _shellItemGuid));
       }
-#pragma warning disable CS0168 // The variable 'ex' is declared but never used
-      catch (Exception ex) {
-#pragma warning restore CS0168 // The variable 'ex' is declared but never used
+      catch (Exception) {
         return null;
       }
     }
@@ -112,6 +108,6 @@ namespace PictureManager.ShellStuff {
 
     private static readonly Guid CLSID_FileOperation = new Guid("3ad05575-8857-4850-9277-11b85bdb8e09");
     private static readonly Type _fileOperationType = Type.GetTypeFromCLSID(CLSID_FileOperation);
-    private static Guid _shellItemGuid = typeof (IShellItem).GUID;
+    private static Guid _shellItemGuid = typeof(IShellItem).GUID;
   }
 }

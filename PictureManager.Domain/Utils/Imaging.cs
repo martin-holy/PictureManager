@@ -4,12 +4,11 @@ using System.Linq;
 
 namespace PictureManager.Domain.Utils {
   public static class Imaging {
-    public static string[] SupportedExts = { ".jpg", ".jpeg", ".mp4" };
-    public static string[] SupportedImageExts = { ".jpg", ".jpeg" };
+    private static readonly string[] SupportedExts = { ".jpg", ".jpeg", ".mp4" };
+    private static readonly string[] SupportedImageExts = { ".jpg", ".jpeg" };
 
-    public static bool IsSupportedFileType(string filePath) {
-      return SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
-    }
+    public static bool IsSupportedFileType(string filePath) =>
+      SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 
     public static MediaType GetMediaType(string filePath) {
       return SupportedImageExts.Any(

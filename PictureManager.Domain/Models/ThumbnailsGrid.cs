@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.Domain.Models {
   // On Tab Activate
@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Models {
 
   // filter by mel bejt taky asi na tab
 
-  public class ThumbnailsGrid: ObservableObject {
+  public class ThumbnailsGrid : ObservableObject {
     private MediaItem _current;
     private int? _indexOfCurrent;
     private int _selected;
@@ -20,13 +20,13 @@ namespace PictureManager.Domain.Models {
     private bool _showVideos = true;
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
-    
-    public List<MediaItem> SelectedItems { get; } = new List<MediaItem>();
-    public List<MediaItem> LoadedItems { get; } = new List<MediaItem>();
-    public ObservableCollection<MediaItem> FilteredItems { get; } = new ObservableCollection<MediaItem>();
-    public ObservableCollection<object> Rows { get; } = new ObservableCollection<object>();
+
+    public List<MediaItem> SelectedItems { get; } = new();
+    public List<MediaItem> LoadedItems { get; } = new();
+    public ObservableCollection<MediaItem> FilteredItems { get; } = new();
+    public ObservableCollection<object> Rows { get; } = new();
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } } 
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
@@ -40,7 +40,7 @@ namespace PictureManager.Domain.Models {
         if (_current != null) SetSelected(_current, false);
         _current = value;
         if (_current != null) SetSelected(_current, true);
-        _indexOfCurrent = value == null ? null : (int?)FilteredItems.IndexOf(value);
+        _indexOfCurrent = value == null ? null : FilteredItems.IndexOf(value);
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
       }
@@ -133,7 +133,7 @@ namespace PictureManager.Domain.Models {
       if (items.Count == 0) return;
 
       // set Current to next MediaItem after last selected or one before first selected or null
-      var indexOfNewCurrent = FilteredItems.IndexOf(items[items.Count - 1]) + 1;
+      var indexOfNewCurrent = FilteredItems.IndexOf(items[^1]) + 1;
       if (indexOfNewCurrent == FilteredItems.Count)
         indexOfNewCurrent = FilteredItems.IndexOf(items[0]) - 1;
       Current = indexOfNewCurrent >= 0 ? FilteredItems[indexOfNewCurrent] : null;
@@ -153,7 +153,7 @@ namespace PictureManager.Domain.Models {
       }
 
       // update Current after the FilteredItems were changed
-      Current = Current;
+      OnPropertyChanged(nameof(Current));
 
       if (delete) {
         fileOperationDelete.Invoke(files, true, false);
@@ -161,18 +161,15 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) {
+    public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) =>
       Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
-    }
 
     public void ResetThumbsSize() {
       foreach (var item in LoadedItems)
         item.SetThumbSize(true);
     }
 
-    public List<MediaItem> GetSelectedOrAll() {
-      return SelectedItems.Count == 0 ? FilteredItems.ToList() : SelectedItems;
-    }
+    public List<MediaItem> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems.ToList() : SelectedItems;
 
     public void SelectNotModified() {
       Current = null;

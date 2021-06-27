@@ -1,17 +1,12 @@
-﻿using System.ComponentModel;
+﻿using PictureManager.Domain;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using PictureManager.Domain;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for InputDialog.xaml
-  /// </summary>
   public partial class MessageDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private IconName _iconName = IconName.Bug;
     private string _titleText;

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System;
+using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
   public class CategoryGroups : ITable {
@@ -12,15 +12,11 @@ namespace PictureManager.Domain.Models {
       // ID|Name|Category|GroupItems
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      All.Add(new CategoryGroup(int.Parse(props[0]), props[1], (Category) int.Parse(props[2])) {Csv = props});
+      All.Add(new CategoryGroup(int.Parse(props[0]), props[1], (Category)int.Parse(props[2])) { Csv = props });
     }
 
     public void LinkReferences() {
       // ID|Name|Category|GroupItems
-    }
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
     }
 
     public void LoadFromFile() {
@@ -36,7 +32,7 @@ namespace PictureManager.Domain.Models {
 
       var idx = CatTreeViewUtils.SetItemInPlace(cat, group);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, cat, idx);
-      
+
       All.Insert(allIdx, group);
       Core.Instance.Sdb.SetModified<CategoryGroups>();
       Core.Instance.Sdb.SaveIdSequences();

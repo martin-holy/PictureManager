@@ -1,3 +1,6 @@
+using MahApps.Metro.Controls;
+using PictureManager.Commands;
+using PictureManager.Domain.CatTreeViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,17 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using MahApps.Metro.Controls;
-using PictureManager.Commands;
-using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.CustomControls {
-  public class CatTreeView: TreeView {
+  public class CatTreeView : TreeView {
     private ScrollViewer _scrollViewer;
-    
+
     static CatTreeView() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView),
-        new FrameworkPropertyMetadata(typeof(CatTreeView)));
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
     }
 
     public void ScrollTo(ICatTreeViewItem item) {
@@ -62,10 +61,10 @@ namespace PictureManager.CustomControls {
 
     private void SetDragObject(object sender, MouseButtonEventArgs e) {
       _dragDropSource = null;
-      _dragDropStartPosition = new Point(0,0);
+      _dragDropStartPosition = new Point(0, 0);
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
       if (tvi == null || tvi.DataContext is ICatTreeViewCategory) return;
-      if (!(CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewItem) is ICatTreeViewCategory cat)) return;
+      if (CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewItem) is not ICatTreeViewCategory cat) return;
 
       if (tvi.DataContext is ICatTreeViewGroup)
         _dragDropEffects = DragDropEffects.Move;
@@ -84,9 +83,7 @@ namespace PictureManager.CustomControls {
       _dragDropStartPosition = e.GetPosition(null);
     }
 
-    private void ReleaseDragObject(object sender, MouseButtonEventArgs e) {
-      _dragDropSource = null;
-    }
+    private void ReleaseDragObject(object sender, MouseButtonEventArgs e) => _dragDropSource = null;
 
     private void StartDragDrop(object sender, MouseEventArgs e) {
       if (_dragDropSource == null || !IsDragDropStarted(e)) return;
@@ -110,8 +107,8 @@ namespace PictureManager.CustomControls {
 
       var dest = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource)?.DataContext;
       var destCat = CatTreeViewUtils.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
-      var src = ((object[]) e.Data.GetData(typeof(object[])))?[0] ?? 
-                (string[]) e.Data.GetData(DataFormats.FileDrop);
+      var src = ((object[])e.Data.GetData(typeof(object[])))?[0] ??
+                (string[])e.Data.GetData(DataFormats.FileDrop);
 
       if (destCat?.CanDrop(src, dest as ICatTreeViewItem) == true) return;
 
@@ -121,20 +118,20 @@ namespace PictureManager.CustomControls {
     }
 
     private static void OnDrop(object sender, DragEventArgs e) {
-      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement) e.OriginalSource);
-      
-      if (!(tvi?.DataContext is ICatTreeViewItem dest)) return;
-      if (!(CatTreeViewUtils.GetTopParent(dest) is ICatTreeViewCategory cat)) return;
+      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
+
+      if (tvi?.DataContext is not ICatTreeViewItem dest ||
+        CatTreeViewUtils.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
 
       var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
-      var src = ((object[]) e.Data.GetData(typeof(object[])))?[0] ??
-                (string[]) e.Data.GetData(DataFormats.FileDrop);
+      var src = ((object[])e.Data.GetData(typeof(object[])))?[0] ??
+                (string[])e.Data.GetData(DataFormats.FileDrop);
 
       cat.OnDrop(src, dest, aboveDest, e.KeyStates == DragDropKeyStates.ControlKey);
-      
+
       // TODO send args in EventArgs
       CatTreeViewUtils.OnAfterOnDrop?.Invoke(
-        new [] {src, dest, aboveDest, e.KeyStates == DragDropKeyStates.ControlKey }, 
+        new[] { src, dest, aboveDest, e.KeyStates == DragDropKeyStates.ControlKey },
         EventArgs.Empty);
     }
 
@@ -145,7 +142,7 @@ namespace PictureManager.CustomControls {
 
       var b = Extensions.FindThisOrParent<Border>(e.OriginalSource as FrameworkElement, "Border");
 
-      if (b == null || b.ContextMenu != null || !(b.DataContext is ICatTreeViewItem item)) return;
+      if (b == null || b.ContextMenu != null || b.DataContext is not ICatTreeViewItem item) return;
 
       var menu = new ContextMenu();
       var binding = new Binding(nameof(ContextMenu.PlacementTarget)) {
@@ -193,12 +190,12 @@ namespace PictureManager.CustomControls {
 
   public sealed class CatTreeViewInterfaceTemplateSelector : DataTemplateSelector {
     public override DataTemplate SelectTemplate(object item, DependencyObject container) {
-      if (item == null || !(container is FrameworkElement containerElement))
+      if (item == null || container is not FrameworkElement containerElement)
         return base.SelectTemplate(item, container);
 
       var itemType = item.GetType();
       var dataTypes = new[] {
-        itemType, 
+        itemType,
         itemType.GetInterface(nameof(ICatTreeViewCategory)),
         itemType.GetInterface(nameof(ICatTreeViewItem))
       };

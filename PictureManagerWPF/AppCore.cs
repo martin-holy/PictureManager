@@ -1,24 +1,25 @@
-﻿using System;
+﻿using PictureManager.Commands;
+using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
+using PictureManager.Models;
+using PictureManager.Properties;
+using PictureManager.ShellStuff;
+using PictureManager.ViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using PictureManager.Dialogs;
-using PictureManager.ShellStuff;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
-using PictureManager.Models;
-using PictureManager.ViewModels;
-using SimpleDB;
 
 namespace PictureManager {
-  public class AppCore: ILogger {
+  public class AppCore : ILogger {
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
-    public AppInfo AppInfo { get; } = new AppInfo();
-    public ObservableCollection<LogItem> Log { get; set; } = new ObservableCollection<LogItem>();
+    public AppInfo AppInfo { get; } = new();
+    public ObservableCollection<LogItem> Log { get; set; } = new();
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
@@ -28,8 +29,8 @@ namespace PictureManager {
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
 
-      MediaItemsViewModel = new MediaItemsViewModel(App.Core);
-      MediaItemClipsCategory = new MediaItemClipsCategory();
+      MediaItemsViewModel = new(App.Core);
+      MediaItemClipsCategory = new();
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -78,7 +79,7 @@ namespace PictureManager {
         case Keyword _:
         case GeoName _: {
           if (App.Core.MediaItems.IsEditModeOn && !loadByTag) {
-            if (!(item is ICatTreeViewTagItem bti)) return;
+            if (item is not ICatTreeViewTagItem bti) return;
 
             bti.IsMarked = !bti.IsMarked;
             if (bti.IsMarked)
@@ -95,14 +96,13 @@ namespace PictureManager {
           }
           else {
             // get items by tag
-            var items = new List<MediaItem>();
-
-            switch (item) {
-              case Rating rating: items = App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(); break;
-              case Keyword keyword: items = keyword.GetMediaItems(recursive).ToList(); break;
-              case Person person: items = person.MediaItems; break;
-              case GeoName geoName: items = geoName.GetMediaItems(recursive).ToList(); break;
-            }
+            List<MediaItem> items = item switch {
+              Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
+              Person person => person.MediaItems,
+              Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
+              GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
+              _ => new()
+            };
 
             // if CTRL is pressed, add new items to already loaded items
             if (and)
@@ -124,11 +124,10 @@ namespace PictureManager {
 
           item.IsSelected = true;
 
-          if (AppInfo.AppMode == AppMode.Viewer) {
-            App.WMain.CommandsController.WindowCommands.SwitchToBrowser();
-          }
+          if (AppInfo.AppMode == AppMode.Viewer)
+            WindowCommands.SwitchToBrowser();
 
-          var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> {(Folder) item};
+          var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
           var folders = Folder.GetFolders(roots, recursive);
 
           // if CTRL is pressed, add items from new folders to already loaded items
@@ -180,10 +179,10 @@ namespace PictureManager {
         destMi?.SetThumbSize();
         destMi?.SetInfoBox();
 
-        var focd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
-        focd.ShowDialog();
-        result = focd.Result;
-        outFileName = focd.FileName;
+        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
+        cd.ShowDialog();
+        result = cd.Result;
+        outFileName = cd.FileName;
       });
 
       fileName = outFileName;
@@ -193,17 +192,17 @@ namespace PictureManager {
 
     public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
       var fops = new PicFileOperationProgressSink();
-      using (var fo = new FileOperation(fops)) {
-        fo.SetOperationFlags(
-          (recycle ? FileOperationFlags.FOFX_RECYCLEONDELETE : FileOperationFlags.FOF_WANTNUKEWARNING) |
-          (silent
-            ? FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
-              FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE
-            : FileOperationFlags.FOF_NOCONFIRMMKDIR));
+      using var fo = new FileOperation(fops);
+      fo.SetOperationFlags(
+        (recycle ? FileOperationFlags.FOFX_RECYCLEONDELETE : FileOperationFlags.FOF_WANTNUKEWARNING) |
+        (silent
+          ? FileOperationFlags.FOF_SILENT | FileOperationFlags.FOF_NOCONFIRMATION |
+            FileOperationFlags.FOF_NOERRORUI | FileOperationFlags.FOFX_KEEPNEWERFILE
+          : FileOperationFlags.FOF_NOCONFIRMMKDIR));
 
-        items.ForEach(x => fo.DeleteItem(x));
-        fo.PerformOperations();
-      }
+      foreach (var x in items)
+        fo.DeleteItem(x);
+      fo.PerformOperations();
 
       return fops.FileOperationResult;
     }

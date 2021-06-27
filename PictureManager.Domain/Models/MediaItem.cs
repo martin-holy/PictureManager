@@ -1,14 +1,14 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Utils;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.IO;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Utils;
-using SimpleDB;
+using System.Runtime.CompilerServices;
 
 namespace PictureManager.Domain.Models {
   public class MediaItem : INotifyPropertyChanged, IRecord, IEquatable<MediaItem> {
@@ -46,8 +46,8 @@ namespace PictureManager.Domain.Models {
 
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");
-    public Uri FilePathUri => new Uri(FilePath);
-    public Uri FilePathCacheUri => new Uri(FilePathCache);
+    public Uri FilePathUri => new(FilePath);
+    public Uri FilePathCacheUri => new(FilePathCache);
     public int ThumbSize { get; set; }
     public double? Lat { get; set; }
     public double? Lng { get; set; }
@@ -58,9 +58,8 @@ namespace PictureManager.Domain.Models {
     public bool HasVideoClips => VideoClips?.Count > 0 || VideoClipsGroups?.Count > 0;
 
     public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     public MediaItem(int id, Folder folder, string fileName, bool isNew = false) {
       Id = id;
@@ -72,31 +71,21 @@ namespace PictureManager.Domain.Models {
 
     #region IEquatable implementation
 
-    public bool Equals(MediaItem other) {
-      return Id == other?.Id;
-    }
+    public bool Equals(MediaItem other) => Id == other?.Id;
 
-    public override bool Equals(object obj) {
-      return Equals(obj as MediaItem);
-    }
+    public override bool Equals(object obj) => Equals(obj as MediaItem);
 
-    public override int GetHashCode() {
-      return Id;
-    }
+    public override int GetHashCode() => Id;
 
-    public static bool operator ==(MediaItem mi1, MediaItem mi2) {
-      return mi1?.Equals(mi2) ?? ReferenceEquals(mi2, null);
-    }
+    public static bool operator ==(MediaItem mi1, MediaItem mi2) => mi1?.Equals(mi2) ?? mi2 is null;
 
-    public static bool operator !=(MediaItem mi1, MediaItem mi2) {
-      return !(mi1 == mi2);
-    }
+    public static bool operator !=(MediaItem mi1, MediaItem mi2) => !(mi1 == mi2);
 
     #endregion
 
-    public string ToCsv() {
-      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
-      return string.Join("|",
+    // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
+    public string ToCsv() =>
+      string.Join("|",
         Id.ToString(),
         Folder.Id.ToString(),
         FileName,
@@ -109,19 +98,14 @@ namespace PictureManager.Domain.Models {
         People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)),
         IsOnlyInDb ? "1" : string.Empty);
-    }
 
-    public int RotationAngle {
-      get {
-        switch ((MediaOrientation) Orientation) {
-          case MediaOrientation.Rotate90: return 90;
-          case MediaOrientation.Rotate180: return 180;
-          case MediaOrientation.Rotate270: return 270;
-        }
-
-        return 0;
-      }
-    }
+    public int RotationAngle =>
+      (MediaOrientation)Orientation switch {
+        MediaOrientation.Rotate90 => 90,
+        MediaOrientation.Rotate180 => 180,
+        MediaOrientation.Rotate270 => 270,
+        _ => 0,
+      };
 
     public void SetThumbSize(bool reload = false) {
       if (ThumbSize != 0 && !reload) return;
@@ -129,7 +113,7 @@ namespace PictureManager.Domain.Models {
 
       // TODO: move next and last line calculation elsewhere
       var desiredSize = (int)(Core.Instance.ThumbnailSize / Core.Instance.WindowsDisplayScale * 100 * Core.Instance.ThumbScale);
-      var rotated = Orientation == (int) MediaOrientation.Rotate90 || Orientation == (int) MediaOrientation.Rotate270;
+      var rotated = Orientation is ((int)MediaOrientation.Rotate90) or ((int)MediaOrientation.Rotate270);
       Imaging.GetThumbSize(rotated ? Height : Width, rotated ? Width : Height, desiredSize, out _thumbWidth, out _thumbHeight);
 
       IsPanoramic = ThumbWidth > desiredSize;
@@ -210,7 +194,7 @@ namespace PictureManager.Domain.Models {
 
       copy.Folder.MediaItems.Add(copy);
       copy.GeoName?.MediaItems.Add(copy);
-      
+
       copy.SetThumbSize();
       copy.SetInfoBox();
 
@@ -239,9 +223,7 @@ namespace PictureManager.Domain.Models {
       File.Move(oldFilePathCache, FilePathCache);
     }
 
-    public void ReloadThumbnail() {
-      OnPropertyChanged(nameof(FilePathCacheUri));
-    }
+    public void ReloadThumbnail() => OnPropertyChanged(nameof(FilePathCacheUri));
 
     public static string GetDateTimeFromName(MediaItem mi, string format) {
       if (mi == null) return string.Empty;

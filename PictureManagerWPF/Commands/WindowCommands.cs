@@ -1,31 +1,30 @@
-﻿using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using PictureManager.Dialogs;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
-using PictureManager.Patterns;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PictureManager.Commands {
-  public class WindowCommands: Singleton<WindowCommands> {
-    public static RoutedUICommand SwitchToFullScreenCommand { get; } = new RoutedUICommand();
+  public static class WindowCommands {
+    public static RoutedUICommand SwitchToFullScreenCommand { get; } = new();
     public static RoutedUICommand SwitchToBrowserCommand { get; } = CommandsController.CreateCommand("Switch to Browser", "SwitchToBrowser", new KeyGesture(Key.Escape));
     public static RoutedUICommand TestButtonCommand { get; } = CommandsController.CreateCommand("Test Button", "TestButton", new KeyGesture(Key.D, ModifierKeys.Control));
-    public static RoutedUICommand OpenSettingsCommand { get; } = new RoutedUICommand { Text = "Settings" };
-    public static RoutedUICommand OpenAboutCommand { get; } = new RoutedUICommand { Text = "About" };
+    public static RoutedUICommand OpenSettingsCommand { get; } = new() { Text = "Settings" };
+    public static RoutedUICommand OpenAboutCommand { get; } = new() { Text = "About" };
     public static RoutedUICommand ShowHideTabMainCommand { get; } = CommandsController.CreateCommand("S/H", "ShowHideTabMain", new KeyGesture(Key.T, ModifierKeys.Control));
-    public static RoutedUICommand AddGeoNamesFromFilesCommand { get; } = new RoutedUICommand { Text = "GeoNames" };
-    public static RoutedUICommand ViewerChangeCommand { get; } = new RoutedUICommand { Text = "" };
-    public static RoutedUICommand OpenFolderKeywordsListCommand { get; } = new RoutedUICommand { Text = "Folder Keyword List" };
-    public static RoutedUICommand OpenLogCommand { get; } = new RoutedUICommand { Text = "Log" };
-    public static RoutedUICommand SaveDbCommand { get; } = new RoutedUICommand { Text = "DB" };
+    public static RoutedUICommand AddGeoNamesFromFilesCommand { get; } = new() { Text = "GeoNames" };
+    public static RoutedUICommand ViewerChangeCommand { get; } = new() { Text = "" };
+    public static RoutedUICommand OpenFolderKeywordsListCommand { get; } = new() { Text = "Folder Keyword List" };
+    public static RoutedUICommand OpenLogCommand { get; } = new() { Text = "Log" };
+    public static RoutedUICommand SaveDbCommand { get; } = new() { Text = "DB" };
 
-    private bool _mainTreeViewIsPinnedInViewer;
-    private bool _mainTreeViewIsPinnedInBrowser = true;
+    private static bool _mainTreeViewIsPinnedInViewer;
+    private static bool _mainTreeViewIsPinnedInBrowser = true;
 
-    public void AddCommandBindings(CommandBindingCollection cbc) {
+    public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, SwitchToFullScreenCommand, SwitchToFullScreen, CanSwitchToFullScreen);
       CommandsController.AddCommandBinding(cbc, SwitchToBrowserCommand, SwitchToBrowser, CanSwitchToBrowser);
       CommandsController.AddCommandBinding(cbc, TestButtonCommand, TestButton);
@@ -39,11 +38,9 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, SaveDbCommand, SaveDb, CanSaveDb);
     }
 
-    private static bool CanSwitchToFullScreen() {
-      return App.Ui.AppInfo.AppMode == AppMode.Browser;
-    }
+    private static bool CanSwitchToFullScreen() => App.Ui.AppInfo.AppMode == AppMode.Browser;
 
-    public void SwitchToFullScreen() {
+    public static void SwitchToFullScreen() {
       if (App.Core.MediaItems.ThumbsGrid?.Current == null) return;
       App.Ui.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
@@ -52,11 +49,9 @@ namespace PictureManager.Commands {
       App.WMain.MainMenu.Visibility = Visibility.Hidden;
     }
 
-    private static bool CanSwitchToBrowser() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer;
-    }
+    private static bool CanSwitchToBrowser() => App.Ui.AppInfo.AppMode == AppMode.Viewer;
 
-    public void SwitchToBrowser() {
+    public static void SwitchToBrowser() {
       App.WMain.UseNoneWindowStyle = false;
       App.WMain.ShowTitleBar = true;
       App.WMain.IgnoreTaskbarOnMaximize = false;
@@ -74,7 +69,7 @@ namespace PictureManager.Commands {
       App.WMain.FullMedia.SetSource(null);
     }
 
-    private void OpenSettings() {
+    private static void OpenSettings() {
       var settings = new SettingsDialog { Owner = App.WMain };
       if (settings.ShowDialog() ?? true)
         Settings.Default.Save();
@@ -82,27 +77,29 @@ namespace PictureManager.Commands {
         Settings.Default.Reload();
     }
 
-    private void OpenAbout() {
+    private static void OpenAbout() {
       var about = new AboutDialog { Owner = App.WMain };
       about.ShowDialog();
     }
 
-    private void ShowHideTabMain(object parameter) {
+    private static void ShowHideTabMain(object parameter) {
       var show = false;
       var reload = false;
       if (parameter != null)
         show = (bool)parameter;
       else {
         switch (App.Ui.AppInfo.AppMode) {
-          case AppMode.Browser:
+          case AppMode.Browser: {
             reload = true;
             _mainTreeViewIsPinnedInBrowser = !_mainTreeViewIsPinnedInBrowser;
             show = _mainTreeViewIsPinnedInBrowser;
             break;
-          case AppMode.Viewer:
+          }
+          case AppMode.Viewer: {
             _mainTreeViewIsPinnedInViewer = !_mainTreeViewIsPinnedInViewer;
             show = _mainTreeViewIsPinnedInViewer;
             break;
+          }
         }
       }
 
@@ -113,16 +110,14 @@ namespace PictureManager.Commands {
         App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
-    private void OpenFolderKeywordsList() {
+    private static void OpenFolderKeywordsList() {
       var fkl = new FolderKeywordList { Owner = App.WMain };
       fkl.ShowDialog();
     }
 
-    private static bool CanAddGeoNamesFromFiles() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
-    }
+    private static bool CanAddGeoNamesFromFiles() => App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
 
-    private void AddGeoNamesFromFiles() {
+    private static void AddGeoNamesFromFiles() {
       if (!GeoNamesViewModel.IsGeoNamesUserNameInSettings()) return;
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
@@ -153,13 +148,13 @@ namespace PictureManager.Commands {
       progress.StartDialog();
     }
 
-    private void ViewerChange(object parameter) {
+    private static void ViewerChange(object parameter) {
       if (App.Core.CurrentViewer != null)
         App.Core.CurrentViewer.IsDefault = false;
 
       var viewer = (Viewer)parameter;
       viewer.IsDefault = true;
-      App.Core.Viewers.Helper.Table.SaveToFile();
+      ((SimpleDB.ITable)App.Core.Viewers).SaveToFile();
 
       App.WMain.MenuViewers.Header = viewer.Title;
       App.Core.CurrentViewer = viewer;
@@ -167,22 +162,15 @@ namespace PictureManager.Commands {
       App.Core.FolderKeywords.Load();
     }
 
-    private void OpenLog() {
+    private static void OpenLog() {
       var log = new LogDialog { Owner = App.WMain };
       log.ShowDialog();
     }
 
-    private static void TestButton() {
-      var tests = new Tests();
-      tests.Run();
-    }
+    private static void TestButton() => Tests.Run();
 
-    private static bool CanSaveDb() {
-      return App.Db.Changes > 0;
-    }
+    private static bool CanSaveDb() => App.Db.Changes > 0;
 
-    private static void SaveDb() {
-      App.Db.SaveAllTables();
-    }
+    private static void SaveDb() => App.Db.SaveAllTables();
   }
 }

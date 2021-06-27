@@ -1,12 +1,12 @@
-﻿using System;
+﻿using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public class VideoClips : ITable {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, VideoClip> AllDic { get; set; }
 
     public void NewFromCsv(string csv) {
@@ -38,11 +38,11 @@ namespace PictureManager.Domain.Models {
         // reference to People and back reference from Person to VideoClip
         if (!string.IsNullOrEmpty(vc.Csv[9])) {
           var ids = vc.Csv[9].Split(',');
-          vc.People = new List<Person>(ids.Length);
+          vc.People = new(ids.Length);
           foreach (var personId in ids) {
             var p = Core.Instance.People.AllDic[int.Parse(personId)];
             if (p.VideoClips == null)
-              p.VideoClips = new List<VideoClip>();
+              p.VideoClips = new();
             p.VideoClips.Add(vc);
             vc.People.Add(p);
           }
@@ -51,11 +51,11 @@ namespace PictureManager.Domain.Models {
         // reference to Keywords and back reference from Keyword to VideoClip
         if (!string.IsNullOrEmpty(vc.Csv[10])) {
           var ids = vc.Csv[10].Split(',');
-          vc.Keywords = new List<Keyword>(ids.Length);
+          vc.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
             var k = Core.Instance.Keywords.AllDic[int.Parse(keywordId)];
             if (k.VideoClips == null)
-              k.VideoClips = new List<VideoClip>();
+              k.VideoClips = new();
             k.VideoClips.Add(vc);
             vc.Keywords.Add(k);
           }
@@ -66,10 +66,6 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
-    }
-
     public void LoadFromFile() {
       All.Clear();
       AllDic = new Dictionary<int, VideoClip>();
@@ -77,14 +73,14 @@ namespace PictureManager.Domain.Models {
     }
 
     public VideoClip ItemCreate(string name, MediaItem mediaItem, VideoClipsGroup group) {
-      var vc = new VideoClip(Helper.GetNextId(), mediaItem) {Name = name};
+      var vc = new VideoClip(Helper.GetNextId(), mediaItem) { Name = name };
       vc.MediaItem.VideoClipAdd(vc, group);
       All.Add(vc);
 
       return vc;
     }
 
-    public void ItemRename(VideoClip vc, string name) {
+    public static void ItemRename(VideoClip vc, string name) {
       vc.Name = name;
       Core.Instance.Sdb.SetModified<VideoClips>();
     }
@@ -92,7 +88,7 @@ namespace PictureManager.Domain.Models {
     public void ItemDelete(VideoClip vc) {
       vc.MediaItem.VideoClips?.Remove(vc);
       vc.MediaItem = null;
-      
+
       if (vc.Group != null) {
         vc.Group.Clips.Remove(vc);
         vc.Group = null;
@@ -105,7 +101,7 @@ namespace PictureManager.Domain.Models {
           if (p.VideoClips.Count == 0)
             p.VideoClips = null;
         }
-      
+
       if (vc.Keywords != null)
         foreach (var k in vc.Keywords) {
           k.VideoClips.Remove(vc);
@@ -119,7 +115,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemMove(VideoClip vc, VideoClip dest, bool aboveDest) {
       All.Move(vc, dest, aboveDest);
-      
+
       if (vc.Group == null)
         vc.MediaItem.VideoClips.Move(vc, dest, aboveDest);
       else
@@ -128,7 +124,7 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SetModified<VideoClips>();
     }
 
-    public void ItemMove(VideoClip vc, VideoClipsGroup dest) {
+    public static void ItemMove(VideoClip vc, VideoClipsGroup dest) {
       if (vc.Group == null)
         vc.MediaItem.VideoClips.Remove(vc);
 

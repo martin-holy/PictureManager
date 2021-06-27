@@ -1,23 +1,17 @@
-﻿using System.Collections.ObjectModel;
+﻿using PictureManager.Domain.Models;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for FolderKeywordList.xaml
-  /// </summary>
   public partial class FolderKeywordList : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
-    public ObservableCollection<Folder> Items { get; } = new ObservableCollection<Folder>();
+    public ObservableCollection<Folder> Items { get; } = new();
 
     public FolderKeywordList() {
       foreach (var folder in App.Core.Folders.All.Cast<Folder>().Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {

@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FolderKeywords: BaseCatTreeViewCategory {
-    public List<FolderKeyword> All { get; } = new List<FolderKeyword>();
+  public sealed class FolderKeywords : BaseCatTreeViewCategory {
+    public List<FolderKeyword> All { get; } = new();
 
-    public FolderKeywords() : base (Category.FolderKeywords) {
+    public FolderKeywords() : base(Category.FolderKeywords) {
       Title = "Folder Keywords";
       IconName = IconName.FolderPuzzle;
     }
@@ -29,7 +29,7 @@ namespace PictureManager.Domain.Models {
         if (fi.IsThisOrParentHidden()) continue;
 
         // create new FolderKeyword if doesn't exists
-        if (!(folderKeyword.Items.SingleOrDefault(x => x.Title.Equals(fi.Title)) is FolderKeyword fk)) {
+        if (folderKeyword.Items.SingleOrDefault(x => x.Title.Equals(fi.Title)) is not FolderKeyword fk) {
           fk = new FolderKeyword {
             Title = fi.Title,
             Parent = folderKeyword

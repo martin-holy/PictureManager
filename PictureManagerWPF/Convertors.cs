@@ -1,17 +1,15 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
+using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Net.Cache;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public static class Convertors {
@@ -21,35 +19,22 @@ namespace PictureManager {
       if (parameter != null)
         return value.Equals(parameter);
 
-      switch (value) {
-        case string s: {
-          return !string.IsNullOrEmpty(s);
-        }
-        case bool b: {
-          return b;
-        }
-        case int i: {
-          return i > 0;
-        }
-        case Collection<string> c: {
-          return c.Count > 0;
-        }
-      }
-
-      // value != null
-      return true;
+      return value switch {
+        string s => !string.IsNullOrEmpty(s),
+        bool b => b,
+        int i => i > 0,
+        Collection<string> c => c.Count > 0,
+        _ => true, // value != null
+      };
     }
   }
 
   public class StaticResourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
-      return Application.Current.FindResource((string) value);
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+      value == null ? throw new ArgumentNullException(nameof(value)) : Application.Current.FindResource((string)value);
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
   }
 
   public class IconNameToStaticResourceConverter : IValueConverter {
@@ -57,124 +42,86 @@ namespace PictureManager {
       if (value == null)
         value = IconName.Bug;
 
-      var resourceName = $"appbar{Regex.Replace(((IconName) value).ToString(), @"([A-Z])", "_$1").ToLower()}";
-      
+      var resourceName = $"appbar{Regex.Replace(((IconName)value).ToString(), @"([A-Z])", "_$1").ToLower(CultureInfo.CurrentCulture)}";
+
       return Application.Current.FindResource(resourceName);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
-  }
-
-  public class TypeToStyleConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
-      var dataContext = ((StackPanel) value).DataContext;
-
-      switch (dataContext) {
-        case Keyword _:
-        case Folder _:
-        case Person _:
-          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDragDrop");
-        case CategoryGroup _:
-        case Keywords _:
-        case People _:
-          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanelWithDrop");
-        default:
-          return App.WMain.TreeViewCategories.TreeView.FindResource("STreeViewStackPanel");
-      }
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      throw new NotSupportedException();
-    }
   }
 
   public class IconNameToBrushConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
+      if (value == null) throw new ArgumentNullException(nameof(value));
+      var resName = "ColorBrushWhite";
 
-      switch ((IconName) value) {
+      switch ((IconName)value) {
         case IconName.Folder:
         case IconName.FolderStar:
         case IconName.FolderLock:
         case IconName.FolderPuzzle:
-        case IconName.FolderOpen: return App.WMain.FindResource("ColorBrushFolder");
+        case IconName.FolderOpen: resName = "ColorBrushFolder"; break;
         case IconName.Tag:
-        case IconName.TagLabel: return App.WMain.FindResource("ColorBrushTag");
+        case IconName.TagLabel: resName = "ColorBrushTag"; break;
         case IconName.People:
-        case IconName.PeopleMultiple: return App.WMain.FindResource("ColorBrushPeople");
+        case IconName.PeopleMultiple: resName = "ColorBrushPeople"; break;
         case IconName.Drive:
         case IconName.DriveError:
-        case IconName.Cd: return App.WMain.FindResource("ColorBrushDrive");
-        default: return App.WMain.FindResource("ColorBrushWhite");
+        case IconName.Cd: resName = "ColorBrushDrive"; break;
       }
+
+      return App.WMain.FindResource(resName);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
   }
 
   public class RatingConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null || parameter == null) throw new ArgumentNullException();
-      return int.Parse((string) parameter) < (int) value
+      if (value == null) throw new ArgumentNullException(nameof(value));
+      if (parameter == null) throw new ArgumentNullException(nameof(parameter));
+
+      return int.Parse((string)parameter) < (int)value
         ? new SolidColorBrush(Color.FromRgb(255, 255, 255))
         : new SolidColorBrush(Color.FromRgb(104, 104, 104));
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
   }
 
   public class AllToVisibilityConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return Convertors.AllToBool(value, parameter) ? Visibility.Visible : Visibility.Collapsed;
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+      Convertors.AllToBool(value, parameter) ? Visibility.Visible : Visibility.Collapsed;
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
   }
 
   public class AllToBoolConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return Convertors.AllToBool(value, parameter);
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+      Convertors.AllToBool(value, parameter);
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
   }
 
   public class BackgroundColorConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException();
+      if (value == null) throw new ArgumentNullException(nameof(value));
 
-      switch ((BackgroundBrush)value) {
-        case BackgroundBrush.AndThis: return new SolidColorBrush(Color.FromRgb(142, 193, 99));
-        case BackgroundBrush.OrThis: return new SolidColorBrush(Color.FromRgb(21, 133, 181));
-        case BackgroundBrush.Hidden: return new SolidColorBrush(Color.FromRgb(222, 87, 58));
-        default: return new SolidColorBrush(Color.FromRgb(37, 37, 37));
-      }
+      return (BackgroundBrush)value switch {
+        BackgroundBrush.AndThis => new SolidColorBrush(Color.FromRgb(142, 193, 99)),
+        BackgroundBrush.OrThis => new SolidColorBrush(Color.FromRgb(21, 133, 181)),
+        BackgroundBrush.Hidden => new SolidColorBrush(Color.FromRgb(222, 87, 58)),
+        _ => new SolidColorBrush(Color.FromRgb(37, 37, 37)),
+      };
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-    }
-  }
-
-  public class DataBindingDebugConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
   }
 
   public class ImageSourceConverter : IValueConverter {
@@ -187,8 +134,8 @@ namespace PictureManager {
 
         var src = new BitmapImage();
         src.BeginInit();
-        
-        if (parameter is string s && s.Equals("IgnoreImageCache")) {
+
+        if (parameter is string s && s.Equals("IgnoreImageCache", StringComparison.Ordinal)) {
           src.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
           src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
         }
@@ -204,40 +151,21 @@ namespace PictureManager {
       }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
   }
 
   public class MediaItemSizeConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value == null ? string.Empty : $"{Math.Round((double) value / 1000000, 1)} MPx";
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+      value == null ? string.Empty : $"{Math.Round((double)value / 1000000, 1)} MPx";
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
-  }
-
-  public class DataTypeConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null || parameter == null) return false;
-      // check for type
-      if (value.GetType() == parameter.GetType()) return true;
-      // check for interface
-      return value.GetType().GetInterface(parameter.ToString()) != null;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
   }
 
   public class CatTreeViewMarginConverter : IValueConverter {
     public double Length { get; set; }
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (!(value is ICatTreeViewItem tvi)) return new Thickness(0.0);
+      if (value is not ICatTreeViewItem tvi) return new Thickness(0.0);
 
       var levels = 0;
       var parent = tvi.Parent;
@@ -249,8 +177,6 @@ namespace PictureManager {
       return new Thickness(Length * levels, 0.0, 0.0, 0.0);
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
-      return value;
-    }
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
   }
 }

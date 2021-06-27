@@ -12,7 +12,6 @@
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
-    <LangVersion>8.0</LangVersion>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2021)</Copyright>
   </PropertyGroup>

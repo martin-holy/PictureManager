@@ -1,9 +1,9 @@
-﻿using System.Windows;
+﻿using SimpleDB;
+using System.Windows;
 using System.Windows.Media.Imaging;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class Face: ObservableObject, IRecord {
+  public class Face : ObservableObject, IRecord {
     private BitmapSource _picture;
 
     public string[] Csv { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace PictureManager.Domain.CatTreeViewModels {
   public class CatTreeViewCategory : CatTreeViewItem, ICatTreeViewCategory {
@@ -43,12 +44,12 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && (CanCreateItems || CanRenameItems);
 
     public string ValidateNewItemTitle(ICatTreeViewItem root, string name) =>
-      root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name)) != null
+      root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name, StringComparison.Ordinal)) != null
         ? $"{name} item already exists!"
         : null;
 
     public ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var item = new CatTreeViewItem {Title = name, Parent = root};
+      var item = new CatTreeViewItem { Title = name, Parent = root };
       CatTreeViewUtils.SetItemInPlace(root, item);
 
       return item;
@@ -62,14 +63,14 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public void ItemDelete(ICatTreeViewItem item) => item.Parent.Items.Remove(item);
 
     public void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) {
-      var copy = new CatTreeViewItem {Title = item.Title, Parent = dest};
+      var copy = new CatTreeViewItem { Title = item.Title, Parent = dest };
       CatTreeViewUtils.SetItemInPlace(dest, copy);
     }
 
     public void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
       item.Parent.Items.Remove(item);
 
-      if (dest is ICatTreeViewCategory || dest is ICatTreeViewGroup) {
+      if (dest is ICatTreeViewCategory or ICatTreeViewGroup) {
         item.Parent = dest;
         CatTreeViewUtils.SetItemInPlace(dest, item);
       }
@@ -80,12 +81,12 @@ namespace PictureManager.Domain.CatTreeViewModels {
     }
 
     public string ValidateNewGroupTitle(ICatTreeViewItem root, string name) =>
-      root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name)) != null
+      root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name, StringComparison.Ordinal)) != null
         ? $"{name} group already exists!"
         : null;
 
     public ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
-      var group = new CatTreeViewGroup {Title = name, IconName = CategoryGroupIconName, Parent = cat};
+      var group = new CatTreeViewGroup { Title = name, IconName = CategoryGroupIconName, Parent = cat };
       CatTreeViewUtils.SetItemInPlace(cat, group);
 
       return group;

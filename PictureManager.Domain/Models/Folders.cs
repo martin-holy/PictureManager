@@ -1,16 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class Folders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, Folder> AllDic { get; set; }
 
     public Folders() : base(Category.Folders) {
@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Models {
       // ID|Name|Parent|IsFolderKeyword
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var folder = new Folder(int.Parse(props[0]), props[1], null) {Csv = props, IsFolderKeyword = props[3] == "1"};
+      var folder = new Folder(int.Parse(props[0]), props[1], null) { Csv = props, IsFolderKeyword = props[3] == "1" };
       All.Add(folder);
       AllDic.Add(folder.Id, folder);
     }
@@ -37,20 +37,11 @@ namespace PictureManager.Domain.Models {
       // ID|Name|Parent|IsFolderKeyword
       foreach (var folder in All.Cast<Folder>()) {
         // reference to Parent and back reference from Parent to SubFolder
-        if (!string.IsNullOrEmpty(folder.Csv[2]))
-          folder.Parent = AllDic[int.Parse(folder.Csv[2])];
-        else // drive
-          folder.Parent = this;
-
+        folder.Parent = !string.IsNullOrEmpty(folder.Csv[2]) ? AllDic[int.Parse(folder.Csv[2])] : this;
         folder.Parent.Items.Add(folder);
-
         // csv array is not needed any more
         folder.Csv = null;
       }
-    }
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
     }
 
     public void LoadFromFile() {
@@ -72,7 +63,7 @@ namespace PictureManager.Domain.Models {
         drivesNames.Add(driveName);
 
         // add Drive to the database and to the tree if not already exists
-        if (!(Items.SingleOrDefault(x => x.Title.Equals(driveName)) is Folder item)) {
+        if (Items.SingleOrDefault(x => x.Title.Equals(driveName, StringComparison.Ordinal)) is not Folder item) {
           item = new Folder(Helper.GetNextId(), driveName, this);
           All.Add(item);
           Items.Add(item);
@@ -96,23 +87,17 @@ namespace PictureManager.Domain.Models {
       // set not available drives as hidden
       foreach (var item in Items) {
         if (drivesNames.Any(x => x.Equals(item.Title))) continue;
-        ((Folder) item).IsHidden = true;
+        ((Folder)item).IsHidden = true;
       }
     }
 
-    public static IconName GetDriveIconName(DriveType type) {
-      switch (type) {
-        case DriveType.CDRom:
-          return IconName.Cd;
-        case DriveType.Network:
-          return IconName.Drive;
-        case DriveType.NoRootDirectory:
-        case DriveType.Unknown:
-          return IconName.DriveError;
-        default:
-          return IconName.Drive;
-      }
-    }
+    public static IconName GetDriveIconName(DriveType type) =>
+      type switch {
+        DriveType.CDRom => IconName.Cd,
+        DriveType.Network => IconName.Drive,
+        DriveType.NoRootDirectory or DriveType.Unknown => IconName.DriveError,
+        _ => IconName.Drive,
+      };
 
     public Folder GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
@@ -121,10 +106,8 @@ namespace PictureManager.Domain.Models {
       return pathParts.Length == 1 ? drive : drive?.GetByPath(path);
     }
 
-    public MediaItem GetMediaItemByPath(string path) {
-      var folder = GetByPath(path.Substring(0, path.LastIndexOf(Path.DirectorySeparatorChar)));
-      return folder?.GetMediaItemByPath(path);
-    }
+    public MediaItem GetMediaItemByPath(string path) =>
+      GetByPath(path[..path.LastIndexOf(Path.DirectorySeparatorChar)])?.GetMediaItemByPath(path);
 
     public bool GetVisibleTreeIndexFor(ObservableCollection<ICatTreeViewItem> folders, Folder folder, ref int index) {
       foreach (var item in folders.Cast<Folder>()) {
@@ -147,10 +130,11 @@ namespace PictureManager.Domain.Models {
 
       // update objects with skipped and renamed files in mind
       switch (mode) {
-        case FileOperationMode.Copy:
+        case FileOperationMode.Copy: {
           Core.Instance.RunOnUiThread(() => srcFolder.CopyTo(destFolder, ref skippedFiles, ref renamedFiles));
           break;
-        case FileOperationMode.Move:
+        }
+        case FileOperationMode.Move: {
           // Rename Renamed Files
           foreach (var renamedFile in renamedFiles) {
             var mi = srcFolder.GetMediaItemByPath(renamedFile.Key);
@@ -161,6 +145,7 @@ namespace PictureManager.Domain.Models {
 
           Core.Instance.RunOnUiThread(() => srcFolder.MoveTo(destFolder, ref skippedFiles));
           break;
+        }
       }
     }
 
@@ -173,7 +158,7 @@ namespace PictureManager.Domain.Models {
 
       // run this function for each sub directory
       foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
-        CopyMoveFilesAndCache(mode, dir, Extensions.PathCombine(destDirPath, dir.Substring(srcDirPathLength)),
+        CopyMoveFilesAndCache(mode, dir, Extensions.PathCombine(destDirPath, dir[srcDirPathLength..]),
           ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
       }
 
@@ -189,13 +174,13 @@ namespace PictureManager.Domain.Models {
           continue;
         }
 
-        var srcFileName = srcFilePath.Substring(srcDirPathLength);
+        var srcFileName = srcFilePath[srcDirPathLength..];
         var destFileName = srcFileName;
         var destFilePath = Extensions.PathCombine(destDirPath, destFileName);
         var srcFilePathCache = Extensions.PathCombine(srcDirPathCache, srcFileName);
         var destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
 
-        progress.Report(new object[] {0, srcDirPath, destDirPath, srcFileName});
+        progress.Report(new object[] { 0, srcDirPath, destDirPath, srcFileName });
 
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
@@ -204,45 +189,49 @@ namespace PictureManager.Domain.Models {
 
           switch (result) {
             case CollisionResult.Rename: {
-                renamedFiles.Add(srcFilePath, destFileName);
-                destFilePath = Extensions.PathCombine(destDirPath, destFileName);
-                destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
-                break;
-              }
+              renamedFiles.Add(srcFilePath, destFileName);
+              destFilePath = Extensions.PathCombine(destDirPath, destFileName);
+              destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
+              break;
+            }
             case CollisionResult.Replace: {
-                File.Delete(destFilePath);
-                break;
-              }
+              File.Delete(destFilePath);
+              break;
+            }
             case CollisionResult.Skip: {
-                skippedFiles.Add(srcFilePath);
-                continue;
-              }
+              skippedFiles.Add(srcFilePath);
+              continue;
+            }
           }
         }
 
         try {
           // Copy/Move Files
           switch (mode) {
-            case FileOperationMode.Copy:
+            case FileOperationMode.Copy: {
               File.Copy(srcFilePath, destFilePath, true);
               break;
-            case FileOperationMode.Move:
+            }
+            case FileOperationMode.Move: {
               File.Move(srcFilePath, destFilePath);
               break;
+            }
           }
 
           // Copy/Move Cache
           if (File.Exists(srcFilePathCache)) {
             Directory.CreateDirectory(destDirPathCache);
             switch (mode) {
-              case FileOperationMode.Copy:
+              case FileOperationMode.Copy: {
                 File.Copy(srcFilePathCache, destFilePathCache, true);
                 break;
-              case FileOperationMode.Move:
+              }
+              case FileOperationMode.Move: {
                 if (File.Exists(destFilePathCache))
                   File.Delete(destFilePathCache);
                 File.Move(srcFilePathCache, destFilePathCache);
                 break;
+              }
             }
           }
         }
@@ -266,7 +255,7 @@ namespace PictureManager.Domain.Models {
         case Folder srcData: { // Folder
           if (dest is Folder destData && !destData.HasThisParent(srcData) && !Equals(srcData, destData) &&
               destData.IsAccessible && !Equals((Folder)srcData.Parent, destData)) return true;
-          
+
           break;
         }
         case string[] dragged: { // MediaItems
@@ -288,21 +277,13 @@ namespace PictureManager.Domain.Models {
       // handled in OnAfterOnDrop (TreeViewCategories)
     }
 
-    public new bool CanCreateItem(ICatTreeViewItem item) {
-      return item is Folder;
-    }
+    public new bool CanCreateItem(ICatTreeViewItem item) => item is Folder;
 
-    public new bool CanRenameItem(ICatTreeViewItem item) {
-      return item is Folder && !(item.Parent is ICatTreeViewCategory);
-    }
+    public new bool CanRenameItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
 
-    public new bool CanDeleteItem(ICatTreeViewItem item) {
-      return item is Folder && !(item.Parent is ICatTreeViewCategory);
-    }
+    public new bool CanDeleteItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
 
-    public new bool CanSort(ICatTreeViewItem root) {
-      return false;
-    }
+    public new bool CanSort(ICatTreeViewItem root) => false;
 
     public new string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
       // check if folder already exists
@@ -321,7 +302,7 @@ namespace PictureManager.Domain.Models {
 
       // create Folder
       Directory.CreateDirectory(Extensions.PathCombine(((Folder)root).FullPath, name));
-      var item = new Folder(Helper.GetNextId(), name, root) {IsAccessible = true};
+      var item = new Folder(Helper.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
       All.Add(item);
@@ -340,13 +321,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public new void ItemRename(ICatTreeViewItem item, string name) {
-      var parent = (Folder) item.Parent;
-      var self = (Folder) item;
-      
+      var parent = (Folder)item.Parent;
+      var self = (Folder)item;
+
       Directory.Move(self.FullPath, Extensions.PathCombine(parent.FullPath, name));
       if (Directory.Exists(self.FullPathCache))
         Directory.Move(self.FullPathCache, Extensions.PathCombine(parent.FullPathCache, name));
-      
+
       item.Title = name;
 
       CatTreeViewUtils.SetItemInPlace(item.Parent, item);

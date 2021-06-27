@@ -7,9 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Domain {
   public static class Extensions {
-    public static int IntParseOrDefault(this string s, int d) {
-      return Int32.TryParse(s, out var result) ? result : d;
-    }
+    public static int IntParseOrDefault(this string s, int d) => int.TryParse(s, out var result) ? result : d;
 
     public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection,
       Func<TSource, TKey> keySelector) {
@@ -67,9 +65,7 @@ namespace PictureManager.Domain {
     /// <param name="path1">path with no directory separator on the end</param>
     /// <param name="path2"></param>
     /// <returns></returns>
-    public static string PathCombine(string path1, string path2) {
-      return path1 + Path.DirectorySeparatorChar + path2;
-    }
+    public static string PathCombine(string path1, string path2) => string.Join(null, path1, Path.DirectorySeparatorChar, path2);
 
     public static void DeleteDirectoryIfEmpty(string path) {
       if (Directory.Exists(path) && !Directory.EnumerateFileSystemEntries(path).GetEnumerator().MoveNext())
@@ -92,15 +88,15 @@ namespace PictureManager.Domain {
         locDateFormats["M"] = string.Empty;
         text = $"{text.Substring(0, 5)}1{text.Substring(6, 9)}";
       }
-      
+
       if (text.Substring(6, 2) == "00") {
         locDateFormats["d"] = string.Empty;
         text = $"{text.Substring(0, 7)}1{text.Substring(8, 7)}";
       }
-      
+
       if (text.Length > 15) text = text.Substring(0, 15);
 
-      if (!DateTime.TryParseExact(text, "yyyyMMdd_HHmmss", 
+      if (!DateTime.TryParseExact(text, "yyyyMMdd_HHmmss",
         CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
         return string.Empty;
 
@@ -113,12 +109,12 @@ namespace PictureManager.Domain {
 
     public static string GetNewFileName(string directory, string fileName) {
       if (!Directory.Exists(directory)) return string.Empty;
-      
+
       var name = Path.GetFileNameWithoutExtension(fileName);
       var ext = Path.GetExtension(fileName);
       var outFileName = fileName;
       var counter = 0;
-      
+
       while (File.Exists(Path.Combine(directory, outFileName))) {
         counter++;
         outFileName = $"{name}{counter}{ext}";

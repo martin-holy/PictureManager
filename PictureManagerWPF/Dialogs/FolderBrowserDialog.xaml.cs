@@ -1,31 +1,26 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
   public partial class FolderBrowserDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
-    public ObservableCollection<FolderTreeViewItem> Drives;
-    public string SelectedPath => ((FolderTreeViewItem) TreeViewFolders.SelectedValue)?.FullPath;
+    public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
+    public string SelectedPath => ((FolderTreeViewItem)TreeViewFolders.SelectedValue)?.FullPath;
 
     public FolderBrowserDialog(Window owner) {
-      Owner = owner;
       InitializeComponent();
-
-      Drives = new ObservableCollection<FolderTreeViewItem>();
+      Owner = owner;
       TreeViewFolders.ItemsSource = Drives;
-
       AddDrives();
     }
 
@@ -79,7 +74,7 @@ namespace PictureManager.Dialogs {
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var folder = new FolderTreeViewItem {
-          Title = dir.Substring(fullPath.Length),
+          Title = dir[fullPath.Length..],
           Parent = this,
           IconName = IconName.Folder
         };

@@ -1,24 +1,19 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for WCompress.xaml
-  /// </summary>
-  public partial class CompressDialog : INotifyPropertyChanged {
+  public partial class CompressDialog : INotifyPropertyChanged, IDisposable {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private BackgroundWorker _compress;
 
@@ -35,6 +30,8 @@ namespace PictureManager.Dialogs {
       JpegQualityLevel = Properties.Settings.Default.JpegQualityLevel;
     }
 
+    public void Dispose() => _compress.Dispose();
+
     private void BtnCompress_OnClick(object sender, RoutedEventArgs e) {
       GbSettings.IsEnabled = false;
       BtnCompress.IsEnabled = false;
@@ -46,7 +43,7 @@ namespace PictureManager.Dialogs {
       OnPropertyChanged(nameof(TotalSourceSize));
       OnPropertyChanged(nameof(TotalCompressedSize));
 
-      _compress = new BackgroundWorker {WorkerReportsProgress = true, WorkerSupportsCancellation = true};
+      _compress = new() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
       _compress.DoWork += Compress_DoWork;
       _compress.ProgressChanged += Compress_ProgressChanged;
       _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
@@ -56,8 +53,8 @@ namespace PictureManager.Dialogs {
     }
 
     private static void Compress_DoWork(object sender, DoWorkEventArgs e) {
-      var worker = (BackgroundWorker) sender;
-      var mis = (List<MediaItem>) e.Argument;
+      var worker = (BackgroundWorker)sender;
+      var mis = (List<MediaItem>)e.Argument;
       var count = mis.Count;
       var done = 0;
 
@@ -70,16 +67,16 @@ namespace PictureManager.Dialogs {
         var originalSize = new FileInfo(mi.FilePath).Length;
         var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
         var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
-        long[] fileSizes = {originalSize, newSize};
+        long[] fileSizes = { originalSize, newSize };
         done++;
-        worker.ReportProgress(Convert.ToInt32(((double)done / count) * 100), fileSizes);
+        worker.ReportProgress(Convert.ToInt32((double)done / count * 100), fileSizes);
       }
     }
 
     private void Compress_ProgressChanged(object sender, ProgressChangedEventArgs e) {
       PbCompressProgress.Value = e.ProgressPercentage;
       if (e.UserState == null) return;
-      _totalSourceSize += ((long[]) e.UserState)[0];
+      _totalSourceSize += ((long[])e.UserState)[0];
       _totalCompressedSize += ((long[])e.UserState)[1];
       OnPropertyChanged(nameof(TotalSourceSize));
       OnPropertyChanged(nameof(TotalCompressedSize));
@@ -97,7 +94,7 @@ namespace PictureManager.Dialogs {
     }
 
     public static void ShowDialog(Window owner) {
-      var compress = new CompressDialog {Owner = owner};
+      var compress = new CompressDialog { Owner = owner };
       compress.ShowDialog();
     }
   }

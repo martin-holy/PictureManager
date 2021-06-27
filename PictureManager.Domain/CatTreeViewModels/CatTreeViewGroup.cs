@@ -1,4 +1,4 @@
 namespace PictureManager.Domain.CatTreeViewModels {
-  public class CatTreeViewGroup: CatTreeViewItem, ICatTreeViewGroup {
+  public class CatTreeViewGroup : CatTreeViewItem, ICatTreeViewGroup {
   }
 }

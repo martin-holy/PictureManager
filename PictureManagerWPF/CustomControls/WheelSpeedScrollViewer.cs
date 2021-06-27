@@ -4,19 +4,18 @@ using System.Windows.Input;
 
 namespace PictureManager.CustomControls {
   public class WheelSpeedScrollViewer : ScrollViewer {
-    public static readonly DependencyProperty SpeedFactorProperty = DependencyProperty.Register(nameof(SpeedFactor),
-      typeof(double), typeof(WheelSpeedScrollViewer), new PropertyMetadata(2.5));
+    public static readonly DependencyProperty SpeedFactorProperty = DependencyProperty.Register(nameof(SpeedFactor), typeof(double), typeof(WheelSpeedScrollViewer), new PropertyMetadata(2.5));
 
     public double SpeedFactor {
-      get => (double) GetValue(SpeedFactorProperty);
+      get => (double)GetValue(SpeedFactorProperty);
       set => SetValue(SpeedFactorProperty, value);
     }
 
     protected override void OnPreviewMouseWheel(MouseWheelEventArgs e) {
-      if (e.Handled || !(ScrollInfo is VirtualizingStackPanel vsp) ||
+      if (e.Handled || ScrollInfo is not VirtualizingStackPanel vsp ||
           ComputedVerticalScrollBarVisibility != Visibility.Visible) return;
 
-      vsp.SetVerticalOffset(VerticalOffset - e.Delta * SpeedFactor);
+      vsp.SetVerticalOffset(VerticalOffset - (e.Delta * SpeedFactor));
       e.Handled = true;
     }
   }

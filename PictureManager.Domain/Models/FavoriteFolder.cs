@@ -12,9 +12,7 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Folder;
     }
 
-    public string ToCsv() {
-      // ID|FolderId|Title
-      return string.Join("|", Id.ToString(), Folder.Id.ToString(), Title);
-    }
+    // ID|FolderId|Title
+    public string ToCsv() => string.Join("|", Id.ToString(), Folder.Id.ToString(), Title);
   }
 }

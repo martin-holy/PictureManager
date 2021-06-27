@@ -1,15 +1,15 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class GeoNames : BaseCatTreeViewCategory, ITable {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, GeoName> AllDic { get; set; }
 
     public GeoNames() : base(Category.GeoNames) {
@@ -21,7 +21,7 @@ namespace PictureManager.Domain.Models {
       // ID|Name|ToponymName|FCode|Parent
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var geoName = new GeoName(int.Parse(props[0]), props[1], props[2], props[3], null) {Csv = props};
+      var geoName = new GeoName(int.Parse(props[0]), props[1], props[2], props[3], null) { Csv = props };
       All.Add(geoName);
       AllDic.Add(geoName.Id, geoName);
     }
@@ -30,20 +30,11 @@ namespace PictureManager.Domain.Models {
       // ID|Name|ToponymName|FCode|Parent
       foreach (var geoName in All.Cast<GeoName>()) {
         // reference to parent and back reference to children
-        if (!string.IsNullOrEmpty(geoName.Csv[4]))
-          geoName.Parent = AllDic[int.Parse(geoName.Csv[4])];
-        else 
-          geoName.Parent = this;
-
+        geoName.Parent = !string.IsNullOrEmpty(geoName.Csv[4]) ? AllDic[int.Parse(geoName.Csv[4])] : this;
         geoName.Parent.Items.Add(geoName);
-
         // csv array is not needed any more
         geoName.Csv = null;
       }
-    }
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
     }
 
     public void LoadFromFile() {
@@ -63,7 +54,7 @@ namespace PictureManager.Domain.Models {
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
         var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
-        
+
         if (dbGeoName == null) {
           dbGeoName = new GeoName(
             geoNameId,
@@ -73,7 +64,7 @@ namespace PictureManager.Domain.Models {
             parentGeoName);
 
           All.Add(dbGeoName);
-          parentGeoName?.Items.Add((ICatTreeViewItem) dbGeoName);
+          parentGeoName?.Items.Add((ICatTreeViewItem)dbGeoName);
           Core.Instance.RunOnUiThread(Core.Instance.Sdb.SetModified<GeoNames>);
         }
 

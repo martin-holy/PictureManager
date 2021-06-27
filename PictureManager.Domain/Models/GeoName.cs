@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class GeoName : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
@@ -9,7 +9,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; } // this is GeoNameId not just DB Id
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
-    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new();
 
     public GeoName(int id, string name, string toponymName, string fCode, ICatTreeViewItem parent) {
       Id = id;
@@ -20,19 +20,10 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.LocationCheckin;
     }
 
-    public string ToCsv() {
-      // ID|Name|ToponymName|FCode|Parent
-      return string.Join("|",
-        Id.ToString(),
-        Title,
-        ToponymName,
-        Fcode,
-        (Parent as GeoName)?.Id.ToString());
-    }
+    // ID|Name|ToponymName|FCode|Parent
+    public string ToCsv() => string.Join("|", Id.ToString(), Title, ToponymName, Fcode, (Parent as GeoName)?.Id.ToString());
 
-    public MediaItem[] GetMediaItems(bool recursive) {
-      return recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
-    }
+    public MediaItem[] GetMediaItems(bool recursive) => recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
 
     public MediaItem[] GetMediaItemsRecursive() {
       // get all GeoNames

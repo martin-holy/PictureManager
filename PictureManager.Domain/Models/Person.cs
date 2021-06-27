@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
   public sealed class Person : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
@@ -15,9 +15,7 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.People;
     }
 
-    public string ToCsv() {
-      // ID|Name
-      return string.Join("|", Id.ToString(), Title);
-    }
+    // ID|Name
+    public string ToCsv() => string.Join("|", Id.ToString(), Title);
   }
 }

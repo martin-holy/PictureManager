@@ -22,7 +22,7 @@ namespace PictureManager.ShellStuff {
       int.TryParse(data[2], out var o);
       data[3].TryParseDoubleUniversal(out var fps);
 
-      return new object[] {h, w, o, fps};
+      return new object[] { h, w, o, fps };
     }
 
     internal static List<string> GetAllVideoMetadata(string filePath) {

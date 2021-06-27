@@ -1,22 +1,17 @@
-﻿using System;
+﻿using PictureManager.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for DirectorySelectDialog.xaml
-  /// </summary>
-  public partial class DirectorySelectDialog: INotifyPropertyChanged {
+  public partial class DirectorySelectDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private string _iconName = "appbar_folder";
     private string _answer;

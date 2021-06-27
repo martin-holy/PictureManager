@@ -1,4 +1,9 @@
-﻿using System;
+﻿using PictureManager.Commands;
+using PictureManager.Domain;
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
+using SimpleDB;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,58 +12,50 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using PictureManager.Commands;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
-using SimpleDB;
 
 namespace PictureManager.UserControls {
   public partial class TreeViewCategories {
-    public TreeView TreeView => TvCategories;
-
     public TreeViewCategories() {
       InitializeComponent();
       TreeViewItemsEvents();
     }
 
     private static void TreeViewItemsEvents() {
-      CatTreeViewUtils.OnAfterItemRename += delegate(object sender, EventArgs args) {
-        if (sender is Folder folder) {
+      CatTreeViewUtils.OnAfterItemRename += (o, e) => {
+        if (o is Folder folder) {
           // reload if the folder was selected before
           if (folder.IsSelected)
             App.Ui.TreeView_Select(folder, false, false, false);
         }
       };
 
-      CatTreeViewUtils.OnAfterItemDelete += delegate (object sender, EventArgs args) {
-        if (sender is Folder folder) {
+      CatTreeViewUtils.OnAfterItemDelete += (o, e) => {
+        if (o is Folder folder) {
           // delete folder, subfolders and mediaItems from file system
           if (Directory.Exists(folder.FullPath))
             AppCore.FileOperationDelete(new List<string> { folder.FullPath }, true, false);
         }
       };
 
-      CatTreeViewUtils.OnAfterOnDrop += delegate(object sender, EventArgs args) {
-        var data = (object[]) sender;
+      CatTreeViewUtils.OnAfterOnDrop += (o, e) => {
+        var data = (object[])o;
         var src = data[0];
         var dest = data[1] as ICatTreeViewItem;
         //var aboveDest = (bool) data[2];
-        var copy = (bool) data[3];
+        var copy = (bool)data[3];
 
         switch (src) {
           case Folder srcData: { // Folder
             var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
-            FoldersViewModel.CopyMove(foMode, srcData, (Folder) dest);
+            FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
             App.Db.SetModified<MediaItems>();
             App.Db.SetModified<Folders>();
             App.Core.FolderKeywords.Load();
 
             // reload last selected source if was moved
             if (foMode == FileOperationMode.Move && srcData.IsSelected) {
-              var folder = ((Folder) dest)?.GetByPath(srcData.Title);
+              var folder = ((Folder)dest)?.GetByPath(srcData.Title);
               if (folder == null) return;
               CatTreeViewUtils.ExpandTo(folder);
               App.Ui.TreeView_Select(folder, false, false, false);
@@ -79,10 +76,10 @@ namespace PictureManager.UserControls {
         App.Core.MarkUsedKeywordsAndPeople();
       };
 
-      CatTreeViewUtils.OnAfterSort += delegate(object sender, EventArgs args) {
+      CatTreeViewUtils.OnAfterSort += (o, e) => {
         // sort items in DB (items in root are already sorted from CatTreeViewUtils.Sort)
-        if (!(sender is ICatTreeViewItem root)) return;
-        if (!(CatTreeViewUtils.GetTopParent(root) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
+        if (o is not ICatTreeViewItem root) return;
+        if (CatTreeViewUtils.GetTopParent(root) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
         // sort groups
         var groups = root.Items.OfType<ICatTreeViewGroup>().ToArray();
@@ -94,7 +91,7 @@ namespace PictureManager.UserControls {
           App.Db.SetModified<CategoryGroups>();
 
         // sort items
-        var items = root.Items.Where(x => !(x is ICatTreeViewGroup)).ToArray();
+        var items = root.Items.Where(x => x is not ICatTreeViewGroup).ToArray();
         foreach (var item in items)
           table.All.Remove(item as IRecord);
         foreach (var item in items)
@@ -106,9 +103,8 @@ namespace PictureManager.UserControls {
       };
     }
 
-    private void BtnNavCategory_OnClick(object sender, RoutedEventArgs e) {
+    private void BtnNavCategory_OnClick(object sender, RoutedEventArgs e) =>
       TvCategories.ScrollTo((ICatTreeViewItem)((Button)sender).DataContext);
-    }
 
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       e.Handled = true;
@@ -150,33 +146,33 @@ namespace PictureManager.UserControls {
 
       switch (item) {
         case Folder folder: {
-            if (!(folder.Parent is ICatTreeViewCategory))
-              AddMenuItem(TreeViewCommands.FolderAddToFavoritesCommand);
+          if (!(folder.Parent is ICatTreeViewCategory))
+            AddMenuItem(TreeViewCommands.FolderAddToFavoritesCommand);
 
-            AddMenuItem(TreeViewCommands.FolderSetAsFolderKeywordCommand);
-            AddMenuItem(MetadataCommands.Reload2Command);
-            AddMenuItem(MediaItemsCommands.RebuildThumbnailsCommand);
-            break;
-          }
+          AddMenuItem(TreeViewCommands.FolderSetAsFolderKeywordCommand);
+          AddMenuItem(MetadataCommands.Reload2Command);
+          AddMenuItem(MediaItemsCommands.RebuildThumbnailsCommand);
+          break;
+        }
         case Viewer _: {
-            AddMenuItem(TreeViewCommands.ViewerIncludeFolderCommand);
-            AddMenuItem(TreeViewCommands.ViewerExcludeFolderCommand);
-            break;
-          }
+          AddMenuItem(TreeViewCommands.ViewerIncludeFolderCommand);
+          AddMenuItem(TreeViewCommands.ViewerExcludeFolderCommand);
+          break;
+        }
         case Rating _:
         case Person _:
         case Keyword _:
         case GeoName _: {
-            AddMenuItem(TreeViewCommands.LoadByTagCommand);
-            AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
-            AddMenuItem(TreeViewCommands.ActivateFilterOrCommand);
-            AddMenuItem(TreeViewCommands.ActivateFilterNotCommand);
-            break;
-          }
+          AddMenuItem(TreeViewCommands.LoadByTagCommand);
+          AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
+          AddMenuItem(TreeViewCommands.ActivateFilterOrCommand);
+          AddMenuItem(TreeViewCommands.ActivateFilterNotCommand);
+          break;
+        }
         case FolderKeywords _: {
-            AddMenuItem(WindowCommands.OpenFolderKeywordsListCommand);
-            break;
-          }
+          AddMenuItem(WindowCommands.OpenFolderKeywordsListCommand);
+          break;
+        }
       }
 
       if (menu.Items.Count > 0 && b.ContextMenu == null)

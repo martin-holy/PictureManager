@@ -1,18 +1,18 @@
-﻿using System;
+﻿using PictureManager.Domain.Utils;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using PictureManager.Domain.Utils;
 using Directory = System.IO.Directory;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public class MediaItems : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, MediaItem> AllDic { get; set; }
 
     private bool _isEditModeOn;
@@ -26,8 +26,8 @@ namespace PictureManager.Domain.Models {
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public int ModifiedCount => ModifiedItems.Count;
-    public List<MediaItem> ModifiedItems = new List<MediaItem>();
-    public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new ObservableCollection<ThumbnailsGrid>();
+    public List<MediaItem> ModifiedItems { get; } = new();
+    public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new();
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public void NewFromCsv(string csv) {
@@ -56,7 +56,7 @@ namespace PictureManager.Domain.Models {
         // reference to People and back reference from Person to MediaItems
         if (!string.IsNullOrEmpty(mi.Csv[9])) {
           var ids = mi.Csv[9].Split(',');
-          mi.People = new List<Person>(ids.Length);
+          mi.People = new(ids.Length);
           foreach (var personId in ids) {
             var p = Core.Instance.People.AllDic[int.Parse(personId)];
             p.MediaItems.Add(mi);
@@ -67,7 +67,7 @@ namespace PictureManager.Domain.Models {
         // reference to Keywords and back reference from Keyword to MediaItems
         if (!string.IsNullOrEmpty(mi.Csv[10])) {
           var ids = mi.Csv[10].Split(',');
-          mi.Keywords = new List<Keyword>(ids.Length);
+          mi.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
             var k = Core.Instance.Keywords.AllDic[int.Parse(keywordId)];
             k.MediaItems.Add(mi);
@@ -86,10 +86,6 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
-    }
-
     public void LoadFromFile() {
       All.Clear();
       AllDic = new Dictionary<int, MediaItem>();
@@ -99,7 +95,7 @@ namespace PictureManager.Domain.Models {
 
     public void Delete(MediaItem item) {
       if (item == null) return;
-        
+
       // remove People
       if (item.People != null) {
         foreach (var person in item.People)
@@ -181,7 +177,7 @@ namespace PictureManager.Domain.Models {
                 mi.Keywords = null;
               break;
             }
-            
+
             if (mi.Keywords != null) {
               // skip if any Parent of MediaItem Keywords is marked Keyword
               var skip = false;
@@ -209,7 +205,7 @@ namespace PictureManager.Domain.Models {
                 }
               }
             }
-            
+
             if (mi.Keywords == null)
               mi.Keywords = new List<Keyword>();
             mi.Keywords.Add(k);
@@ -243,7 +239,7 @@ namespace PictureManager.Domain.Models {
           break;
 
         progress.Report(new object[]
-          {Convert.ToInt32(((double) done / count) * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName});
+          {Convert.ToInt32((double) done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName});
 
         var miNewFileName = mi.FileName;
         var destFilePath = Extensions.PathCombine(destFolder.FullPath, mi.FileName);
@@ -261,33 +257,33 @@ namespace PictureManager.Domain.Models {
 
         switch (mode) {
           case FileOperationMode.Copy: {
-              // create object copy
-              var miCopy = mi.CopyTo(destFolder, miNewFileName);
-              // copy MediaItem and cache on file system
-              Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
-              File.Copy(mi.FilePath, miCopy.FilePath, true);
-              File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
-              break;
-            }
+            // create object copy
+            var miCopy = mi.CopyTo(destFolder, miNewFileName);
+            // copy MediaItem and cache on file system
+            Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
+            File.Copy(mi.FilePath, miCopy.FilePath, true);
+            File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+            break;
+          }
           case FileOperationMode.Move: {
-              var srcFilePath = mi.FilePath;
-              var srcFilePathCache = mi.FilePathCache;
+            var srcFilePath = mi.FilePath;
+            var srcFilePathCache = mi.FilePathCache;
 
-              // DB
-              mi.MoveTo(destFolder, miNewFileName);
+            // DB
+            mi.MoveTo(destFolder, miNewFileName);
 
-              // File System
-              if (File.Exists(mi.FilePath))
-                File.Delete(mi.FilePath);
-              File.Move(srcFilePath, mi.FilePath);
+            // File System
+            if (File.Exists(mi.FilePath))
+              File.Delete(mi.FilePath);
+            File.Move(srcFilePath, mi.FilePath);
 
-              // Cache
-              if (File.Exists(mi.FilePathCache))
-                File.Delete(mi.FilePathCache);
-              Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
-              File.Move(srcFilePathCache, mi.FilePathCache);
-              break;
-            }
+            // Cache
+            if (File.Exists(mi.FilePathCache))
+              File.Delete(mi.FilePathCache);
+            Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
+            File.Move(srcFilePathCache, mi.FilePathCache);
+            break;
+          }
         }
 
         done++;
@@ -397,7 +393,7 @@ namespace PictureManager.Domain.Models {
             Delete(fmi);
           }
         }
-      });
+      }, token);
 
       return output;
     }
@@ -422,7 +418,7 @@ namespace PictureManager.Domain.Models {
           if (File.Exists(mi.FilePath) == false) continue;
           output.Add(mi);
         }
-      });
+      }, token);
 
       return output;
     }

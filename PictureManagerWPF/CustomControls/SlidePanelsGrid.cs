@@ -4,16 +4,12 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PictureManager.CustomControls {
-  public class SlidePanelsGrid: Control {
+  public class SlidePanelsGrid : Control {
 
-    public static readonly DependencyProperty ContentLeftProperty = DependencyProperty.Register(
-      nameof(ContentLeft), typeof(SlidePanel), typeof(SlidePanelsGrid));
-    public static readonly DependencyProperty ContentMiddleProperty = DependencyProperty.Register(
-      nameof(ContentMiddle), typeof(FrameworkElement), typeof(SlidePanelsGrid));
-    public static readonly DependencyProperty ContentRightProperty = DependencyProperty.Register(
-      nameof(ContentRight), typeof(SlidePanel), typeof(SlidePanelsGrid));
-    public static readonly DependencyProperty GridSplitterWidthProperty = DependencyProperty.Register(
-      nameof(GridSplitterWidth), typeof(int), typeof(SlidePanelsGrid), new PropertyMetadata(3));
+    public static readonly DependencyProperty ContentLeftProperty = DependencyProperty.Register(nameof(ContentLeft), typeof(SlidePanel), typeof(SlidePanelsGrid));
+    public static readonly DependencyProperty ContentMiddleProperty = DependencyProperty.Register(nameof(ContentMiddle), typeof(FrameworkElement), typeof(SlidePanelsGrid));
+    public static readonly DependencyProperty ContentRightProperty = DependencyProperty.Register(nameof(ContentRight), typeof(SlidePanel), typeof(SlidePanelsGrid));
+    public static readonly DependencyProperty GridSplitterWidthProperty = DependencyProperty.Register(nameof(GridSplitterWidth), typeof(int), typeof(SlidePanelsGrid), new PropertyMetadata(3));
 
     public SlidePanel ContentLeft {
       get => (SlidePanel)GetValue(ContentLeftProperty);
@@ -31,27 +27,26 @@ namespace PictureManager.CustomControls {
     }
 
     public int GridSplitterWidth {
-      get => (int) GetValue(GridSplitterWidthProperty);
+      get => (int)GetValue(GridSplitterWidthProperty);
       set => SetValue(GridSplitterWidthProperty, value);
     }
 
-    public Action OnContentLeftWidthChanged;
-    public Action OnContentRightWidthChanged;
+    public Action OnContentLeftWidthChanged { get; set; }
+    public Action OnContentRightWidthChanged { get; set; }
 
     private Grid _mainGrid;
 
     static SlidePanelsGrid() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(SlidePanelsGrid),
-        new FrameworkPropertyMetadata(typeof(SlidePanelsGrid)));
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(SlidePanelsGrid), new FrameworkPropertyMetadata(typeof(SlidePanelsGrid)));
     }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
       // open SlidePanel if is not open and mouse cursor is close to left or right edge of SlidePanelsGrid
-      MouseMove += delegate(object sender, MouseEventArgs e) {
+      MouseMove += delegate (object sender, MouseEventArgs e) {
         var pos = e.GetPosition(this);
-        
+
         // to stop opening panel by it self in some cases
         if (pos.X == 0 && pos.Y == 0) return;
 
@@ -76,22 +71,22 @@ namespace PictureManager.CustomControls {
       }
 
       if (ContentLeft != null) {
-        _mainGrid.ColumnDefinitions[0].Width = new GridLength(ContentLeft.Width);
-        _mainGrid.ColumnDefinitions[1].Width = new GridLength(GridSplitterWidth);
+        _mainGrid.ColumnDefinitions[0].Width = new(ContentLeft.Width);
+        _mainGrid.ColumnDefinitions[1].Width = new(GridSplitterWidth);
 
         ContentLeft.OnIsPinnedChanged += delegate {
-          _mainGrid.ColumnDefinitions[0].Width = new GridLength(ContentLeft.IsPinned ? ContentLeft.Width : 0);
-          _mainGrid.ColumnDefinitions[1].Width = new GridLength(ContentLeft.IsPinned ? GridSplitterWidth : 0);
+          _mainGrid.ColumnDefinitions[0].Width = new(ContentLeft.IsPinned ? ContentLeft.Width : 0);
+          _mainGrid.ColumnDefinitions[1].Width = new(ContentLeft.IsPinned ? GridSplitterWidth : 0);
         };
       }
 
       if (ContentRight != null) {
-        _mainGrid.ColumnDefinitions[3].Width = new GridLength(GridSplitterWidth);
-        _mainGrid.ColumnDefinitions[4].Width = new GridLength(ContentRight.Width);
+        _mainGrid.ColumnDefinitions[3].Width = new(GridSplitterWidth);
+        _mainGrid.ColumnDefinitions[4].Width = new(ContentRight.Width);
 
         ContentRight.OnIsPinnedChanged += delegate {
-          _mainGrid.ColumnDefinitions[3].Width = new GridLength(ContentRight.IsPinned ? GridSplitterWidth : 0);
-          _mainGrid.ColumnDefinitions[4].Width = new GridLength(ContentRight.IsPinned ? ContentRight.Width : 0);
+          _mainGrid.ColumnDefinitions[3].Width = new(ContentRight.IsPinned ? GridSplitterWidth : 0);
+          _mainGrid.ColumnDefinitions[4].Width = new(ContentRight.IsPinned ? ContentRight.Width : 0);
         };
       }
     }
@@ -109,6 +104,5 @@ namespace PictureManager.CustomControls {
       ContentRight.UpdateAnimation();
       OnContentRightWidthChanged?.Invoke();
     }
-
   }
 }

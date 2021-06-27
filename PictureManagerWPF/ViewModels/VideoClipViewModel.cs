@@ -1,10 +1,9 @@
-﻿using System;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
+using System;
 
 namespace PictureManager.ViewModels {
-  public class VideoClipViewModel: CatTreeViewItem {
+  public class VideoClipViewModel : CatTreeViewItem {
 
     public VideoClip Clip { get; }
     public string TimeStart => MediaItemClipsCategory.FormatTimeSpan(Clip.TimeStart);
@@ -20,7 +19,7 @@ namespace PictureManager.ViewModels {
 
     private Uri GetThumbPath() {
       var fpc = Clip.MediaItem.FilePathCache;
-      return new Uri($"{fpc.Substring(0, fpc.LastIndexOf('.'))}_{Clip.Id}.jpg");
+      return new Uri($"{fpc[..fpc.LastIndexOf('.')]}_{Clip.Id}.jpg");
     }
 
     public void SetMarker(bool start, int ms, double volume, double speed) {

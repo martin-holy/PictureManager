@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
-  public class FolderKeyword: CatTreeViewItem, ICatTreeViewTagItem {
-    public List<Folder> Folders { get; } = new List<Folder>();
+  public class FolderKeyword : CatTreeViewItem, ICatTreeViewTagItem {
+    public List<Folder> Folders { get; } = new();
 
     public override bool IsExpanded {
       get => base.IsExpanded;

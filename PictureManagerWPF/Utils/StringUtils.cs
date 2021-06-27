@@ -3,12 +3,11 @@ using System.Linq;
 
 namespace PictureManager.Utils {
   public static class StringUtils {
-    private static readonly HashSet<char> CommentAllowedCharacters = new HashSet<char>("@#$€_&+-()*'.:;!?=<>% ");
+    private static readonly HashSet<char> CommentAllowedCharacters = new("@#$€_&+-()*'.:;!?=<>% ");
 
-    public static string NormalizeComment(string comment) {
-      return string.IsNullOrEmpty(comment)
+    public static string NormalizeComment(string comment) =>
+      string.IsNullOrEmpty(comment)
         ? null
         : new string(comment.Where(x => char.IsLetterOrDigit(x) || CommentAllowedCharacters.Contains(x)).ToArray());
-    }
   }
 }

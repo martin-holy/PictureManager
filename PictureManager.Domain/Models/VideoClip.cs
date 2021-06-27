@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using SimpleDB;
+using System.Collections.Generic;
 using System.Linq;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClip : IRecord {
     public string[] Csv { get; set; }
-    
+
     // DB Fields
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
@@ -21,9 +21,9 @@ namespace PictureManager.Domain.Models {
 
     public VideoClipsGroup Group { get; set; }
 
-    public string ToCsv() {
-      // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
-      return string.Join("|",
+    // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
+    public string ToCsv() =>
+      string.Join("|",
         Id.ToString(),
         MediaItem.Id.ToString(),
         TimeStart.ToString(),
@@ -35,7 +35,6 @@ namespace PictureManager.Domain.Models {
         Comment ?? string.Empty,
         People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
-    }
 
     public VideoClip(int id, MediaItem mediaItem) {
       Id = id;

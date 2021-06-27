@@ -1,23 +1,22 @@
-﻿using System;
-using System.ComponentModel;
-using System.Windows.Input;
-using PictureManager.Dialogs;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Patterns;
 using PictureManager.Utils;
 using PictureManager.ViewModels;
+using System;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace PictureManager.Commands {
-  public class MetadataCommands : Singleton<MetadataCommands> {
+  public static class MetadataCommands {
     public static RoutedUICommand EditCommand { get; } = CommandsController.CreateCommand("Edit", "MetadataEdit", new KeyGesture(Key.E, ModifierKeys.Control));
     public static RoutedUICommand SaveCommand { get; } = CommandsController.CreateCommand("Save", "MetadataSave", new KeyGesture(Key.S, ModifierKeys.Control));
     public static RoutedUICommand CancelCommand { get; } = CommandsController.CreateCommand("Cancel", "MetadataCancel", new KeyGesture(Key.Q, ModifierKeys.Control));
     public static RoutedUICommand CommentCommand { get; } = CommandsController.CreateCommand("Comment", "MetadataComment", new KeyGesture(Key.K, ModifierKeys.Control));
-    public static RoutedUICommand ReloadCommand { get; } = new RoutedUICommand { Text = "Reload" };
-    public static RoutedUICommand Reload2Command { get; } = new RoutedUICommand { Text = "Reload Metadata" };
+    public static RoutedUICommand ReloadCommand { get; } = new() { Text = "Reload" };
+    public static RoutedUICommand Reload2Command { get; } = new() { Text = "Reload Metadata" };
 
-    public void AddCommandBindings(CommandBindingCollection cbc) {
+    public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, EditCommand, Edit, CanEdit);
       CommandsController.AddCommandBinding(cbc, SaveCommand, Save, CanSave);
       CommandsController.AddCommandBinding(cbc, CancelCommand, Cancel, CanCancel);
@@ -26,19 +25,13 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, Reload2Command, Reload, CanReload);
     }
 
-    private static bool CanEdit() {
-      return !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanEdit() => !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
 
-    private static void Edit() {
-      App.Core.MediaItems.IsEditModeOn = true;
-    }
+    private static void Edit() => App.Core.MediaItems.IsEditModeOn = true;
 
-    private static bool CanSave() {
-      return App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
-    }
+    private static bool CanSave() => App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
 
-    public void Save() {
+    public static void Save() {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
         App.Core.MediaItems.ModifiedItems.ToArray(),
@@ -65,11 +58,9 @@ namespace PictureManager.Commands {
       progress.StartDialog();
     }
 
-    private static bool CanCancel() {
-      return App.Core.MediaItems.IsEditModeOn;
-    }
+    private static bool CanCancel() => App.Core.MediaItems.IsEditModeOn;
 
-    private void Cancel() {
+    private static void Cancel() {
       var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         App.Core.MediaItems.ModifiedItems.ToArray(),
@@ -77,7 +68,7 @@ namespace PictureManager.Commands {
         // action
         delegate (MediaItem mi) {
           MediaItemsViewModel.ReadMetadata(mi);
-          
+
           App.Core.RunOnUiThread(() => {
             App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
@@ -93,11 +84,9 @@ namespace PictureManager.Commands {
       progress.StartDialog();
     }
 
-    private static bool CanComment() {
-      return App.Core.MediaItems.ThumbsGrid?.Current != null;
-    }
+    private static bool CanComment() => App.Core.MediaItems.ThumbsGrid?.Current != null;
 
-    private void Comment() {
+    private static void Comment() {
       var current = App.Core.MediaItems.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
@@ -126,11 +115,9 @@ namespace PictureManager.Commands {
       App.Db.SetModified<MediaItems>();
     }
 
-    private static bool CanReload(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanReload(object parameter) => parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
 
-    private void Reload(object parameter) {
+    private static void Reload(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var folder = parameter as Folder;
       var mediaItems = folder != null
@@ -157,6 +144,5 @@ namespace PictureManager.Commands {
 
       progress.Start();
     }
-
   }
 }

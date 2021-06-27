@@ -1,40 +1,41 @@
-﻿using System;
+﻿using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.UserControls;
+using PictureManager.Utils;
+using PictureManager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Patterns;
-using PictureManager.UserControls;
-using PictureManager.Utils;
-using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
-  public class MediaItemsCommands: Singleton<MediaItemsCommands> {
+  public static class MediaItemsCommands {
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
     public static RoutedUICommand PreviousCommand { get; } = CommandsController.CreateCommand("Previous", "Previous", new KeyGesture(Key.Left));
     public static RoutedUICommand SelectAllCommand { get; } = CommandsController.CreateCommand("Select All", "SelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
-    public static RoutedUICommand SelectNotModifiedCommand { get; } = new RoutedUICommand { Text = "Select Not Modified" };
+    public static RoutedUICommand SelectNotModifiedCommand { get; } = new() { Text = "Select Not Modified" };
     public static RoutedUICommand DeleteCommand { get; } = CommandsController.CreateCommand("Delete", "Delete", new KeyGesture(Key.Delete));
     public static RoutedUICommand PresentationCommand { get; } = CommandsController.CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
-    public static RoutedUICommand CompressCommand { get; } = new RoutedUICommand { Text = "Compress" };
+    public static RoutedUICommand CompressCommand { get; } = new() { Text = "Compress" };
     public static RoutedUICommand RotateCommand { get; } = CommandsController.CreateCommand("Rotate", "Rotate", new KeyGesture(Key.R, ModifierKeys.Control));
-    public static RoutedUICommand RebuildThumbnailsCommand { get; } = new RoutedUICommand { Text = "Rebuild Thumbnails" };
-    public static RoutedUICommand ShuffleCommand { get; } = new RoutedUICommand { Text = "Shuffle" };
-    public static RoutedUICommand ResizeImagesCommand { get; } = new RoutedUICommand { Text = "Resize Images" };
-    public static RoutedUICommand CopyPathsCommand { get; } = new RoutedUICommand { Text = "Copy Paths" };
-    public static RoutedUICommand CompareCommand { get; } = new RoutedUICommand { Text = "Compare" };
-    public static RoutedUICommand ImagesToVideoCommand { get; } = new RoutedUICommand { Text = "Images to Video" };
+    public static RoutedUICommand RebuildThumbnailsCommand { get; } = new() { Text = "Rebuild Thumbnails" };
+    public static RoutedUICommand ShuffleCommand { get; } = new() { Text = "Shuffle" };
+    public static RoutedUICommand ResizeImagesCommand { get; } = new() { Text = "Resize Images" };
+    public static RoutedUICommand CopyPathsCommand { get; } = new() { Text = "Copy Paths" };
+    public static RoutedUICommand CompareCommand { get; } = new() { Text = "Compare" };
+    public static RoutedUICommand ImagesToVideoCommand { get; } = new() { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
     public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
-    public static RoutedUICommand VideoClipsSaveCommand { get; } = new RoutedUICommand { Text = "Save Video Clips" };
-    public static RoutedUICommand FaceRecognitionCommand { get; } = new RoutedUICommand { Text = "Face Recognition" };
+    public static RoutedUICommand VideoClipsSaveCommand { get; } = new() { Text = "Save Video Clips" };
+    public static RoutedUICommand FaceRecognitionCommand { get; } = new() { Text = "Face Recognition" };
 
-    public void AddCommandBindings(CommandBindingCollection cbc) {
+    private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
+
+    public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
       CommandsController.AddCommandBinding(cbc, PreviousCommand, Previous, CanPrevious);
       CommandsController.AddCommandBinding(cbc, SelectAllCommand, SelectAll, CanSelectAll);
@@ -55,13 +56,11 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
     }
 
-    public static bool CanNext() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.GetNext() != null;
-    }
+    public static bool CanNext() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.GetNext() != null;
 
-    public void Next() {
-      var current = App.Core.MediaItems.ThumbsGrid.GetNext();
-      App.Core.MediaItems.ThumbsGrid.Current = current;
+    public static void Next() {
+      var current = ThumbsGrid.GetNext();
+      ThumbsGrid.Current = current;
       var decoded = App.WMain.PresentationPanel.IsRunning && current.MediaType == MediaType.Image && current.IsPanoramic;
       App.WMain.SetMediaItemSource(decoded);
 
@@ -78,87 +77,70 @@ namespace PictureManager.Commands {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    public static bool CanPrevious() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.GetPrevious() != null;
-    }
+    public static bool CanPrevious() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.GetPrevious() != null;
 
-    public void Previous() {
+    public static void Previous() {
       if (App.WMain.PresentationPanel.IsRunning)
         App.WMain.PresentationPanel.Stop();
 
-      App.Core.MediaItems.ThumbsGrid.Current = App.Core.MediaItems.ThumbsGrid.GetPrevious();
+      ThumbsGrid.Current = ThumbsGrid.GetPrevious();
       App.WMain.SetMediaItemSource();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanSelectAll() {
-      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void SelectAll() {
-      App.Core.MediaItems.ThumbsGrid.SelectAll();
+      ThumbsGrid.SelectAll();
       App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FileSize));
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanSelectNotModified() {
-      return App.Ui.AppInfo.AppMode == AppMode.Browser && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanSelectNotModified() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void SelectNotModified() {
-      App.Core.MediaItems.ThumbsGrid.SelectNotModified();
+      ThumbsGrid.SelectNotModified();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanDelete() {
-      return App.Core.MediaItems.ThumbsGrid?.Selected > 0;
-    }
+    private static bool CanDelete() => ThumbsGrid?.Selected > 0;
 
-    private void Delete() {
-      var items = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
+    private static void Delete() {
+      var items = ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      App.Core.MediaItems.ThumbsGrid.Remove(items,true, AppCore.FileOperationDelete);
+      ThumbsGrid.Remove(items, true, AppCore.FileOperationDelete);
       App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
-        if (App.Core.MediaItems.ThumbsGrid.Current != null)
+        if (ThumbsGrid.Current != null)
           App.WMain.SetMediaItemSource();
         else
-          App.WMain.CommandsController.WindowCommands.SwitchToBrowser();
+          WindowCommands.SwitchToBrowser();
       }
     }
 
-    private static bool CanShuffle() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanShuffle() => ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void Shuffle() {
-      var thumbsGrid = App.Core.MediaItems.ThumbsGrid;
-      thumbsGrid.FilteredItems.Shuffle();
-      thumbsGrid.GroupByFolders = false;
-      thumbsGrid.GroupByDate = false;
+      ThumbsGrid.FilteredItems.Shuffle();
+      ThumbsGrid.GroupByFolders = false;
+      ThumbsGrid.GroupByDate = false;
       App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
-    private static bool CanResizeImages() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanResizeImages() => ThumbsGrid?.FilteredItems.Count > 0;
 
-    private static void ResizeImages() {
-      ResizeImagesDialog.Show(App.WMain, App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll());
-    }
+    private static void ResizeImages() => ResizeImagesDialog.Show(App.WMain, ThumbsGrid.GetSelectedOrAll());
 
-    private static bool CanImagesToVideo() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
-    }
+    private static bool CanImagesToVideo() => ThumbsGrid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 0;
 
     private static void ImagesToVideo() {
       ImagesToVideoDialog.ShowDialog(App.WMain,
-        App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image), 
-        async delegate(Folder folder, string fileName) {
+        ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+        async delegate (Folder folder, string fileName) {
           var mmi = App.Core.MediaItems;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
@@ -170,26 +152,20 @@ namespace PictureManager.Commands {
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0);
 
           // reload grid
-          mmi.ThumbsGrid.LoadedItems.AddInOrder(mi, (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
+          mmi.ThumbsGrid.LoadedItems.AddInOrder(mi,
+            (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
           App.Ui.MediaItemsViewModel.ReapplyFilter();
           App.Ui.MediaItemsViewModel.ScrollTo(mi);
         }
       );
     }
 
-    private static bool CanCopyPaths() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
-    }
+    private static bool CanCopyPaths() => ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
 
-    private static void CopyPaths() {
-      Clipboard.SetText(
-        string.Join("\n",
-          App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath)));
-    }
+    private static void CopyPaths() =>
+      Clipboard.SetText(string.Join("\n", ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath)));
 
-    private static bool CanCompare() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanCompare() => ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void Compare() {
       App.WMain.ImageComparerTool.Visibility = Visibility.Visible;
@@ -198,40 +174,30 @@ namespace PictureManager.Commands {
       App.WMain.ImageComparerTool.Compare();
     }
 
-    private static bool CanCompress() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanCompress() => ThumbsGrid?.FilteredItems.Count > 0;
 
-    private void Compress() {
-      CompressDialog.ShowDialog(App.WMain);
-    }
+    private static void Compress() => CompressDialog.ShowDialog(App.WMain);
 
-    private static bool CanRotate() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
-    }
+    private static bool CanRotate() => ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
 
-    private void Rotate() {
+    private static void Rotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
-      App.Ui.MediaItemsViewModel.SetOrientation(App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
+      App.Ui.MediaItemsViewModel.SetOrientation(ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
       App.WMain.SetMediaItemSource();
     }
 
-    public bool CanRebuildThumbnails(object parameter) {
-      return parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    public static bool CanRebuildThumbnails(object parameter) => parameter is Folder || ThumbsGrid?.FilteredItems.Count > 0;
 
-    public void RebuildThumbnails(object parameter) {
+    public static void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      List<MediaItem> mediaItems;
-
-      switch (parameter) {
-        case Folder folder: mediaItems = folder.GetMediaItems(recursive); break;
-        case List<MediaItem> items: mediaItems = items; break;
-        default: mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll(); break;
-      }
+      var mediaItems = parameter switch {
+        Folder folder => folder.GetMediaItems(recursive),
+        List<MediaItem> items => items,
+        _ => ThumbsGrid.GetSelectedOrAll(),
+      };
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
       progress.AddEvents(
@@ -250,7 +216,7 @@ namespace PictureManager.Commands {
       progress.Start();
     }
 
-    public void Resize(MediaItem[] items, int px, string destination, bool withMetadata, bool withThumbnail) {
+    public static void Resize(MediaItem[] items, int px, string destination, bool withMetadata, bool withThumbnail) {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Resizing Images ...");
 
       progress.AddEvents(
@@ -287,11 +253,9 @@ namespace PictureManager.Commands {
       progress.Start();
     }
 
-    private static bool CanPresentation() {
-      return App.Ui.AppInfo.AppMode == AppMode.Viewer && App.Core.MediaItems.ThumbsGrid?.Current != null;
-    }
+    private static bool CanPresentation() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.Current != null;
 
-    private void Presentation() {
+    private static void Presentation() {
       if (App.WMain.FullImage.IsAnimationOn) {
         App.WMain.FullImage.Stop();
         App.WMain.PresentationPanel.Stop();
@@ -304,12 +268,10 @@ namespace PictureManager.Commands {
         App.WMain.PresentationPanel.Start(true);
     }
 
-    private static bool CanRename() {
-      return App.Core.MediaItems.ThumbsGrid?.Current != null;
-    }
+    private static bool CanRename() => ThumbsGrid?.Current != null;
 
     private static void Rename() {
-      var current = App.Core.MediaItems.ThumbsGrid.Current;
+      var current = ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -340,7 +302,7 @@ namespace PictureManager.Commands {
 
       try {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
-        App.Core.MediaItems.ThumbsGrid.FilteredItemsSetInPlace(current);
+        ThumbsGrid.FilteredItemsSetInPlace(current);
         App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
         App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FilePath));
         App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.DateAndTime));
@@ -350,9 +312,7 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static bool VideoSourceIsNotNull() {
-      return App.WMain.FullMedia.Player.Source != null;
-    }
+    private static bool VideoSourceIsNotNull() => App.WMain.FullMedia.Player.Source != null;
 
     private static void VideoClipSplit() {
       var vc = App.WMain.FullMedia.CurrentVideoClip;
@@ -362,24 +322,21 @@ namespace PictureManager.Commands {
         App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
     }
 
-    private static bool CanVideoClipsSave() {
-      return App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
-    }
+    private static bool CanVideoClipsSave() =>
+      App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
 
     private static void VideoClipsSave() {
-      App.Core.VideoClips.SaveToFile();
-      App.Core.VideoClipsGroups.SaveToFile();
+      ((SimpleDB.ITable)App.Core.VideoClips).SaveToFile();
+      ((SimpleDB.ITable)App.Core.VideoClipsGroups).SaveToFile();
     }
 
-    private static bool CanFaceRecognition() {
-      return App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
-    }
+    private static bool CanFaceRecognition() => ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void FaceRecognition() {
-      var mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
+      var mediaItems = ThumbsGrid.GetSelectedOrAll();
       var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
-      
-      if (!(tab?.Content is FaceRecognitionControl control)) {
+
+      if (tab?.Content is not FaceRecognitionControl control) {
         control = new FaceRecognitionControl();
         App.WMain.MainTabs.AddTab();
         App.WMain.MainTabs.SetTab(control, control, null);
@@ -388,7 +345,7 @@ namespace PictureManager.Commands {
       else {
         tab.IsSelected = true;
       }
-      
+
       control.Recognize(mediaItems);
     }
   }
