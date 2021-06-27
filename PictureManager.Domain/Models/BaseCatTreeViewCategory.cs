@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public class BaseCatTreeViewCategory: CatTreeViewCategory, ICatTreeViewCategory {
+  public class BaseCatTreeViewCategory : CatTreeViewCategory, ICatTreeViewCategory {
     public BaseCatTreeViewCategory(Category category) : base(category) { }
 
     public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) => throw new System.NotImplementedException();
 
     public new void ItemRename(ICatTreeViewItem item, string name) {
-      if (!(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
+      if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       item.Title = name;
 
@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Models {
     public new void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) => throw new System.NotImplementedException();
 
     public new void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
-      if (!(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat) || !(cat is ITable table)) return;
+      if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       var saveGroups = dest is ICatTreeViewCategory || dest is ICatTreeViewGroup || !Equals(item.Parent, dest.Parent);
 
@@ -48,7 +48,7 @@ namespace PictureManager.Domain.Models {
       Core.Instance.CategoryGroups.GroupCreate(cat, name);
 
     public new void GroupRename(ICatTreeViewGroup group, string name) =>
-      Core.Instance.CategoryGroups.GroupRename(@group, name);
+      Core.Instance.CategoryGroups.GroupRename(group, name);
 
     public new void GroupDelete(ICatTreeViewGroup group) {
       base.GroupDelete(group);
@@ -77,7 +77,7 @@ namespace PictureManager.Domain.Models {
       }
 
       foreach (var item in items.Cast<ICatTreeViewItem>().Where(x => x.Parent == null)) {
-        recGroup.TryGetValue(((IRecord) item).Id, out var group);
+        recGroup.TryGetValue(((IRecord)item).Id, out var group);
         if (group != null) {
           item.Parent = group;
           group.Items.Add(item);

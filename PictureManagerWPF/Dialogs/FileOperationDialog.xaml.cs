@@ -1,18 +1,16 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using PictureManager.Domain;
 
 namespace PictureManager.Dialogs {
   public partial class FileOperationDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private string _dirFrom;
     private string _dirTo;
@@ -20,7 +18,7 @@ namespace PictureManager.Dialogs {
 
     public CancellationTokenSource LoadCts { get; set; }
     public Task RunTask { get; set; }
-    public IProgress<object[]> Progress;
+    public IProgress<object[]> Progress { get; set; }
     public string DirFrom { get => _dirFrom; set { _dirFrom = value; OnPropertyChanged(); } }
     public string DirTo { get => _dirTo; set { _dirTo = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
@@ -32,7 +30,7 @@ namespace PictureManager.Dialogs {
       Title = $"File Operation Dialog ({mode})";
 
       Progress = new Progress<object[]>(e => {
-        PbProgress.Value = (int) e[0];
+        PbProgress.Value = (int)e[0];
         DirFrom = e[1].ToString();
         DirTo = e[2].ToString();
         FileName = e[3].ToString();

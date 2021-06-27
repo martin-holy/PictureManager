@@ -1,20 +1,20 @@
-﻿using System;
-using System.Windows;
-using PictureManager.Dialogs;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
+using System;
+using System.Windows;
 
 namespace PictureManager {
   public partial class App {
-    public static Core Core => (Core) Current.Properties[nameof(AppProperty.Core)];
-    public static SimpleDB.SimpleDB Db => (SimpleDB.SimpleDB) Current.Properties[nameof(AppProperty.Db)];
+    public static Core Core => (Core)Current.Properties[nameof(AppProperty.Core)];
+    public static SimpleDB.SimpleDB Db => (SimpleDB.SimpleDB)Current.Properties[nameof(AppProperty.Db)];
     public static AppCore Ui => (AppCore)Current.Properties[nameof(AppProperty.Ui)];
     public static WMain WMain => (WMain)Current.Properties[nameof(AppProperty.WMain)];
 
     protected override async void OnStartup(StartupEventArgs e) {
       base.OnStartup(e);
 
-      AppDomain.CurrentDomain.UnhandledException += delegate(object o, UnhandledExceptionEventArgs exArgs) {
-        var wError = new UnhandledErrorDialog {TbError = {Text = ((Exception) exArgs.ExceptionObject).ToString()}};
+      AppDomain.CurrentDomain.UnhandledException += delegate (object o, UnhandledExceptionEventArgs exArgs) {
+        var wError = new UnhandledErrorDialog { TbError = { Text = ((Exception)exArgs.ExceptionObject).ToString() } };
         wError.ShowDialog();
       };
 

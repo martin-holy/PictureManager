@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.IO;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class Folder : CatTreeViewItem, IRecord, IEquatable<Folder>, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; }
-    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new();
     public FolderKeyword FolderKeyword { get; set; }
 
     private bool _isAccessible;
@@ -43,36 +43,25 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Folder;
     }
 
-    public string ToCsv() {
-      // ID|Name|Parent|IsFolderKeyword
-      return string.Join("|",
+    // ID|Name|Parent|IsFolderKeyword
+    public string ToCsv() =>
+      string.Join("|",
         Id.ToString(),
         Title,
         (Parent as Folder)?.Id.ToString() ?? string.Empty,
         IsFolderKeyword ? "1" : string.Empty);
-    }
 
     #region IEquatable implementation
 
-    public bool Equals(Folder other) {
-      return Id == other?.Id;
-    }
+    public bool Equals(Folder other) => Id == other?.Id;
 
-    public override bool Equals(object obj) {
-      return Equals(obj as Folder);
-    }
+    public override bool Equals(object obj) => Equals(obj as Folder);
 
-    public override int GetHashCode() {
-      return Id;
-    }
+    public override int GetHashCode() => Id;
 
-    public static bool operator ==(Folder f1, Folder f2) {
-      return f1?.Equals(f2) ?? ReferenceEquals(f2, null);
-    }
+    public static bool operator ==(Folder f1, Folder f2) => f1?.Equals(f2) ?? f2 is null;
 
-    public static bool operator !=(Folder f1, Folder f2) {
-      return !(f1 == f2);
-    }
+    public static bool operator !=(Folder f1, Folder f2) => !(f1 == f2);
 
     #endregion
 
@@ -113,7 +102,7 @@ namespace PictureManager.Domain.Models {
 
     public void MoveTo(Folder destFolder, ref HashSet<string> skipped) {
       // get target folder without reload!
-      var targetFolder = (Folder) destFolder.Items.SingleOrDefault(x => x.Title.Equals(Title));
+      var targetFolder = (Folder)destFolder.Items.SingleOrDefault(x => x.Title.Equals(Title));
       var srcExists = Directory.Exists(FullPath);
       var deleteThis = !srcExists && targetFolder != null;
 
@@ -177,11 +166,11 @@ namespace PictureManager.Domain.Models {
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
         var isNew = false;
-        var dirName = dir.Substring(fullPath.Length);
+        var dirName = dir[fullPath.Length..];
         dirNames.Add(dirName);
 
         // get existing Folder in the tree
-        if (!(Items.SingleOrDefault(x => x.Title.Equals(dirName)) is Folder folder)) {
+        if (Items.SingleOrDefault(x => x.Title.Equals(dirName, StringComparison.Ordinal)) is not Folder folder) {
           isNew = true;
           // add new Folder to the database
           folder = new Folder(Core.Instance.Folders.Helper.GetNextId(), dirName, this);
@@ -205,8 +194,8 @@ namespace PictureManager.Domain.Models {
         if (FolderKeyword.Items.Count == 1 && FolderKeyword.Items[0].Title == null)
           FolderKeyword.Items.Clear();
 
-        if (!(FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title)) is FolderKeyword fk)) {
-          fk = new FolderKeyword {Title = folder.Title, Parent = FolderKeyword};
+        if (FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title, StringComparison.Ordinal)) is not FolderKeyword fk) {
+          fk = new FolderKeyword { Title = folder.Title, Parent = FolderKeyword };
           FolderKeyword.Items.Add(fk);
           FolderKeyword.Items.Sort(x => x.Title);
         }
@@ -239,14 +228,14 @@ namespace PictureManager.Domain.Models {
               item.FolderKeyword?.Items.Add(new CatTreeViewItem());
             }
             item.IsAccessible = true;
-          } 
+          }
         }
         catch (UnauthorizedAccessException) {
           item.IconName = IconName.FolderLock;
           item.IsAccessible = false;
         }
       }
-      
+
       // sort Items
       Items.Sort(x => x.Title);
     }
@@ -265,18 +254,18 @@ namespace PictureManager.Domain.Models {
     /// <param name="path">full or partial folder path with no directory separator on the end</param>
     public Folder GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
-      if (FullPath.Equals(path)) return this;
+      if (FullPath.Equals(path, StringComparison.Ordinal)) return this;
 
       var root = this;
-      var pathParts = (path.StartsWith(FullPath, StringComparison.CurrentCultureIgnoreCase) 
-        ? path.Substring(FullPath.Length + 1) 
+      var pathParts = (path.StartsWith(FullPath, StringComparison.CurrentCultureIgnoreCase)
+        ? path[(FullPath.Length + 1)..]
         : path)
         .Split(Path.DirectorySeparatorChar);
 
       foreach (var pathPart in pathParts) {
-        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart, StringComparison.CurrentCultureIgnoreCase));
+        var folder = root.Items.SingleOrDefault(x => x.Title.Equals(pathPart, StringComparison.OrdinalIgnoreCase));
         if (folder == null) return null;
-        root = (Folder) folder;
+        root = (Folder)folder;
       }
 
       return root;
@@ -285,9 +274,9 @@ namespace PictureManager.Domain.Models {
     public MediaItem GetMediaItemByPath(string path) {
       var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
       var folderPath = path.Substring(0, lioSep);
-      var fileName = path.Substring(lioSep + 1);
+      var fileName = path[(lioSep + 1)..];
       var folder = GetByPath(folderPath);
-      return folder?.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName));
+      return folder?.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
     }
 
     public List<MediaItem> GetMediaItems(bool recursive) {

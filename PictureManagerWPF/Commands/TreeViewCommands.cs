@@ -1,15 +1,15 @@
-﻿using System.Linq;
-using System.Windows.Input;
-using PictureManager.Dialogs;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Patterns;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
+using System.Linq;
+using System.Windows.Input;
 
 namespace PictureManager.Commands {
-  public class TreeViewCommands: Singleton<TreeViewCommands> {
+  public class TreeViewCommands : Singleton<TreeViewCommands> {
     public static RoutedUICommand TagItemDeleteNotUsedCommand { get; } = new RoutedUICommand { Text = "Delete not used" };
     public static RoutedUICommand FolderAddToFavoritesCommand { get; } = new RoutedUICommand { Text = "Add to Favorites" };
     public static RoutedUICommand FolderSetAsFolderKeywordCommand { get; } = new RoutedUICommand { Text = "Set as Folder Keyword" };
@@ -21,7 +21,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ActivateFilterNotCommand { get; } = new RoutedUICommand { Text = "Filter Not" };
     public static RoutedUICommand LoadByTagCommand { get; } = new RoutedUICommand { Text = "Load" };
 
-    public void AddCommandBindings(CommandBindingCollection cbc) {
+    public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, TagItemDeleteNotUsedCommand, TagItemDeleteNotUsed);
       CommandsController.AddCommandBinding(cbc, FolderAddToFavoritesCommand, FolderAddToFavorites);
       CommandsController.AddCommandBinding(cbc, FolderSetAsFolderKeywordCommand, FolderSetAsFolderKeyword);
@@ -35,8 +35,7 @@ namespace PictureManager.Commands {
     }
 
     private static void TagItemDeleteNotUsed(object parameter) {
-      if (!(parameter is ICatTreeViewItem item)) return;
-      if (!(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete not used items in '{item.Title}'?", true)) return;
@@ -57,17 +56,11 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static void ViewerIncludeFolder(object parameter) {
-      ViewersViewModel.AddFolder((Viewer) parameter, true);
-    }
+    private static void ViewerIncludeFolder(object parameter) => ViewersViewModel.AddFolder((Viewer)parameter, true);
 
-    private static void ViewerExcludeFolder(object parameter) {
-      ViewersViewModel.AddFolder((Viewer) parameter, false);
-    }
+    private static void ViewerExcludeFolder(object parameter) => ViewersViewModel.AddFolder((Viewer)parameter, false);
 
-    private static void FolderAddToFavorites(object parameter) {
-      App.Core.FavoriteFolders.ItemCreate((Folder)parameter);
-    }
+    private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFolders.ItemCreate((Folder)parameter);
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
@@ -87,27 +80,19 @@ namespace PictureManager.Commands {
         out var output);
 
       if (!result) return;
-      ((GeoNames) parameter).New(output, Settings.Default.GeoNamesUserName);
+      ((GeoNames)parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
-    private static void ActivateFilterAnd(object parameter) {
-      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
-    }
+    private static void ActivateFilterAnd(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
 
-    private static void ActivateFilterOr(object parameter) {
-      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
-    }
+    private static void ActivateFilterOr(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
 
-    private static void ActivateFilterNot(object parameter) {
-      App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
-    }
+    private static void ActivateFilterNot(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
 
-    private static void LoadByTag(object parameter) {
+    private static void LoadByTag(object parameter) =>
       App.Ui.TreeView_Select((ICatTreeViewItem)parameter,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
-        (Keyboard.Modifiers & ModifierKeys.Shift) > 0,
-        true);
-    }
+        (Keyboard.Modifiers & ModifierKeys.Shift) > 0, true);
   }
 }

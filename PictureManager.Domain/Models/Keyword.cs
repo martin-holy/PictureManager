@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class Keyword : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
     public string[] Csv { get; set; }
     public int Id { get; }
-    public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
+    public List<MediaItem> MediaItems { get; } = new();
     public List<VideoClip> VideoClips { get; set; }
 
     public string FullPath => GetFullPath();
@@ -19,13 +19,8 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Tag;
     }
 
-    public string ToCsv() {
-      // ID|Name|Parent
-      return string.Join("|",
-        Id.ToString(),
-        Title,
-        (Parent as Keyword)?.Id.ToString());
-    }
+    // ID|Name|Parent
+    public string ToCsv() => string.Join("|", Id.ToString(), Title, (Parent as Keyword)?.Id.ToString());
 
     private string GetFullPath() {
       var parent = Parent as Keyword;

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class Viewers : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
 
     public Viewers() : base(Category.Viewers) {
       Title = "Viewers";
@@ -15,10 +15,6 @@ namespace PictureManager.Domain.Models {
       CanCreateItems = true;
       CanRenameItems = true;
       CanDeleteItems = true;
-    }
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
     }
 
     public void LoadFromFile() {
@@ -30,7 +26,7 @@ namespace PictureManager.Domain.Models {
       // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new Viewer(int.Parse(props[0]), props[1], this) {Csv = props, IsDefault = props[4] == "1"};
+      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[4] == "1" };
       if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
       All.Add(viewer);
     }
@@ -63,21 +59,13 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public new bool CanCreateItem(ICatTreeViewItem item) {
-      return item is Viewers;
-    }
+    public new bool CanCreateItem(ICatTreeViewItem item) => item is Viewers;
 
-    public new bool CanRenameItem(ICatTreeViewItem item) {
-      return item is Viewer;
-    }
+    public new bool CanRenameItem(ICatTreeViewItem item) => item is Viewer;
 
-    public new bool CanDeleteItem(ICatTreeViewItem item) {
-      return item is Viewer || item.Parent?.Parent is Viewer;
-    }
+    public new bool CanDeleteItem(ICatTreeViewItem item) => item is Viewer || item.Parent?.Parent is Viewer;
 
-    public new bool CanSort(ICatTreeViewItem root) {
-      return root.Items.Count > 0 && root is ICatTreeViewCategory;
-    }
+    public new bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && root is ICatTreeViewCategory;
 
     public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var viewer = new Viewer(Helper.GetNextId(), name, root);

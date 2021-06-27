@@ -1,11 +1,11 @@
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
+using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using SimpleDB;
 
 namespace PictureManager.Domain {
   public class Core {
@@ -33,40 +33,39 @@ namespace PictureManager.Domain {
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
     public Faces Faces { get; }
-    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new Collection<ICatTreeViewTagItem>();
+    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
-    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new HashSet<ICatTreeViewItem>();
+    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new();
 
     private TaskScheduler UiTaskScheduler { get; }
 
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-      FavoriteFolders = new FavoriteFolders();
-      Folders = new Folders();
-      Ratings = new Ratings();
-      MediaItemSizes = new MediaItemSizes();
-      People = new People();
-      FolderKeywords = new FolderKeywords();
-      Keywords = new Keywords();
-      GeoNames = new GeoNames();
-      Viewers = new Viewers();
+      FavoriteFolders = new();
+      Folders = new();
+      Ratings = new();
+      MediaItemSizes = new();
+      People = new();
+      FolderKeywords = new();
+      Keywords = new();
+      GeoNames = new();
+      Viewers = new();
 
-      TreeViewCategories = new ObservableCollection<ICatTreeViewCategory>
-        {FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers};
+      TreeViewCategories = new() { FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers };
 
-      CategoryGroups = new CategoryGroups();
+      CategoryGroups = new();
 
-      MediaItems = new MediaItems();
-      VideoClips = new VideoClips();
-      VideoClipsGroups = new VideoClipsGroups();
-      Faces = new Faces();
+      MediaItems = new();
+      VideoClips = new();
+      VideoClipsGroups = new();
+      Faces = new();
     }
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
-        Sdb = new SimpleDB.SimpleDB(Logger);
+        Sdb = new(Logger);
 
         Sdb.AddTable(CategoryGroups);
         Sdb.AddTable(Folders); // needs to be before Viewers
@@ -109,13 +108,9 @@ namespace PictureManager.Domain {
       });
     }
 
-    public bool CanViewerSeeThisFolder(Folder folder) {
-      return CurrentViewer == null || CurrentViewer.CanSeeThisFolder(folder);
-    }
+    public bool CanViewerSeeThisFolder(Folder folder) => CurrentViewer == null || CurrentViewer.CanSeeThisFolder(folder);
 
-    public bool CanViewerSeeContentOfThisFolder(Folder folder) {
-      return CurrentViewer == null || CurrentViewer.CanSeeContentOfThisFolder(folder);
-    }
+    public bool CanViewerSeeContentOfThisFolder(Folder folder) => CurrentViewer == null || CurrentViewer.CanSeeContentOfThisFolder(folder);
 
     public void SetMediaItemSizesLoadedRange() {
       var zeroItems = MediaItems.ThumbsGrid == null || MediaItems.ThumbsGrid.FilteredItems.Count == 0;
@@ -213,11 +208,11 @@ namespace PictureManager.Domain {
     }
 
     private static Core _instance;
-    private static readonly object Lock = new object();
+    private static readonly object Lock = new();
     public static Core Instance {
       get {
         lock (Lock) {
-          return _instance ?? (_instance = new Core());
+          return _instance ??= new();
         }
       }
     }

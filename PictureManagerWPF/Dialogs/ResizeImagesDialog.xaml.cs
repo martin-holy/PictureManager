@@ -1,4 +1,8 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Properties;
+using PictureManager.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,18 +13,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
-using PictureManager.Utils;
 
 namespace PictureManager.Dialogs {
-  public partial class ResizeImagesDialog: INotifyPropertyChanged {
+  public partial class ResizeImagesDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private CancellationTokenSource _cts;
     private readonly MediaItem[] _items;
@@ -39,9 +37,8 @@ namespace PictureManager.Dialogs {
       Owner = owner;
       _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
 
-      DirPaths = new ObservableCollection<string>(
-        Settings.Default.DirectorySelectFolders.Split(new[] {Environment.NewLine},
-          StringSplitOptions.RemoveEmptyEntries));
+      DirPaths = new(Settings.Default.DirectorySelectFolders.Split(new[] { Environment.NewLine },
+        StringSplitOptions.RemoveEmptyEntries));
 
       SetMaxMpx();
     }
@@ -63,7 +60,7 @@ namespace PictureManager.Dialogs {
     }
 
     private async void ResizeImages(string destination, int px, bool withMetadata, bool withThumbnail) {
-      _cts = new CancellationTokenSource();
+      _cts = new();
 
       PbProgress.Value = 0;
       PbProgress.Maximum = _items.Length;
@@ -71,7 +68,7 @@ namespace PictureManager.Dialogs {
       await Task.Run(() => {
         try {
           var index = 0;
-          var po = new ParallelOptions {MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cts.Token};
+          var po = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount, CancellationToken = _cts.Token };
 
           Parallel.ForEach(_items, po, mi => {
             index++;
@@ -138,8 +135,6 @@ namespace PictureManager.Dialogs {
       CmbDirPaths.SelectedIndex = 0;
     }
 
-    private void CmbDirPaths_OnSelectionChanged(object sender, SelectionChangedEventArgs e) {
-      Error = false;
-    }
+    private void CmbDirPaths_OnSelectionChanged(object sender, SelectionChangedEventArgs e) => Error = false;
   }
 }

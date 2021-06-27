@@ -1,20 +1,19 @@
-using System;
-using System.Windows.Input;
 using PictureManager.Dialogs;
 using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Patterns;
+using System;
+using System.Windows.Input;
 
 namespace PictureManager.Commands {
-  public class CatTreeViewCommands: Singleton<CatTreeViewCommands> {
-    public static RoutedUICommand ItemNewCommand { get; } = new RoutedUICommand { Text = "New" };
-    public static RoutedUICommand ItemRenameCommand { get; } = new RoutedUICommand { Text = "Rename" };
-    public static RoutedUICommand ItemDeleteCommand { get; } = new RoutedUICommand { Text = "Delete" };
-    public static RoutedUICommand GroupNewCommand { get; } = new RoutedUICommand { Text = "New Group" };
-    public static RoutedUICommand GroupRenameCommand { get; } = new RoutedUICommand { Text = "Rename Group" };
-    public static RoutedUICommand GroupDeleteCommand { get; } = new RoutedUICommand { Text = "Delete Group" };
-    public static RoutedUICommand SortCommand { get; } = new RoutedUICommand { Text = "Sort" };
+  public static class CatTreeViewCommands {
+    public static RoutedUICommand ItemNewCommand { get; } = new() { Text = "New" };
+    public static RoutedUICommand ItemRenameCommand { get; } = new() { Text = "Rename" };
+    public static RoutedUICommand ItemDeleteCommand { get; } = new() { Text = "Delete" };
+    public static RoutedUICommand GroupNewCommand { get; } = new() { Text = "New Group" };
+    public static RoutedUICommand GroupRenameCommand { get; } = new() { Text = "Rename Group" };
+    public static RoutedUICommand GroupDeleteCommand { get; } = new() { Text = "Delete Group" };
+    public static RoutedUICommand SortCommand { get; } = new() { Text = "Sort" };
 
-    public void AddCommandBindings(CommandBindingCollection cbc) {
+    public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, ItemNewCommand, ItemNew);
       CommandsController.AddCommandBinding(cbc, ItemRenameCommand, ItemRename);
       CommandsController.AddCommandBinding(cbc, ItemDeleteCommand, ItemDelete);
@@ -25,8 +24,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemNew(object parameter) {
-      if (!(parameter is ICatTreeViewItem item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -47,8 +45,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemRename(object parameter) {
-      if (!(parameter is ICatTreeViewItem item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -70,8 +67,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemDelete(object parameter) {
-      if (!(parameter is ICatTreeViewItem item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
@@ -88,8 +84,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupNew(object parameter) {
-      if (!(parameter is ICatTreeViewItem item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -104,8 +99,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupRename(object parameter) {
-      if (!(parameter is ICatTreeViewGroup item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewGroup item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -120,8 +114,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupDelete(object parameter) {
-      if (!(parameter is ICatTreeViewGroup item) ||
-          !(CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory cat)) return;
+      if (parameter is not ICatTreeViewGroup item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
@@ -131,8 +124,6 @@ namespace PictureManager.Commands {
       cat.GroupDelete(item);
     }
 
-    public static void Sort(object parameter) {
-      CatTreeViewUtils.Sort(parameter as ICatTreeViewItem);
-    }
+    public static void Sort(object parameter) => CatTreeViewUtils.Sort(parameter as ICatTreeViewItem);
   }
 }

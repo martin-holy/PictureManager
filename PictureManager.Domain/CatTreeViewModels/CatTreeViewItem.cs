@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace PictureManager.Domain.CatTreeViewModels {
   public class CatTreeViewItem : INotifyPropertyChanged, ICatTreeViewItem {
-    public ObservableCollection<ICatTreeViewItem> Items { get; set; } = new ObservableCollection<ICatTreeViewItem>();
+    public ObservableCollection<ICatTreeViewItem> Items { get; set; } = new();
     public object Tag { get; set; }
 
     private bool _isExpanded;

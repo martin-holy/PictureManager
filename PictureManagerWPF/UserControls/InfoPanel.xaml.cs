@@ -1,17 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using PictureManager.Domain;
+using System.Collections.ObjectModel;
 using System.Windows;
-using PictureManager.Domain;
 
 namespace PictureManager.UserControls {
   public partial class InfoPanel {
-    public static readonly DependencyProperty IconNameProperty = DependencyProperty.Register(
-      nameof(IconName), typeof(IconName), typeof(InfoPanel));
-
-    public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
-      nameof(Item), typeof(string), typeof(InfoPanel));
-
-    public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register(
-      nameof(Items), typeof(ObservableCollection<string>), typeof(InfoPanel));
+    public static readonly DependencyProperty IconNameProperty = DependencyProperty.Register(nameof(IconName), typeof(IconName), typeof(InfoPanel));
+    public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(nameof(Item), typeof(string), typeof(InfoPanel));
+    public static readonly DependencyProperty ItemsProperty = DependencyProperty.Register(nameof(Items), typeof(ObservableCollection<string>), typeof(InfoPanel));
 
     public IconName IconName {
       get => (IconName)GetValue(IconNameProperty);
@@ -27,6 +22,7 @@ namespace PictureManager.UserControls {
       get => (ObservableCollection<string>)GetValue(ItemsProperty);
       set => SetValue(ItemsProperty, value);
     }
+
     public InfoPanel() {
       InitializeComponent();
     }

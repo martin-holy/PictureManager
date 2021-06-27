@@ -1,5 +1,5 @@
-﻿using System;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using System;
 
 namespace PictureManager.Domain.Models {
   public class MediaItemSize : CatTreeViewItem {
@@ -9,10 +9,10 @@ namespace PictureManager.Domain.Models {
     private double _max;
 
     public double PixelMin { get => _pixelMin; set { _pixelMin = value; OnPropertyChanged(); } }
-    public double PixelMax {get => _pixelMax; set { _pixelMax = value; OnPropertyChanged(); } }
+    public double PixelMax { get => _pixelMax; set { _pixelMax = value; OnPropertyChanged(); } }
     public double Min { get => _min; set { _min = value; OnPropertyChanged(); } }
     public double Max { get => _max; set { _max = value; OnPropertyChanged(); } }
-    public bool SliderChanged;
+    public bool SliderChanged { get; set; }
     public bool AllSizes() => !SliderChanged;
     public bool Fits(int size) => size >= PixelMin && size <= PixelMax;
 

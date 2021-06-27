@@ -1,19 +1,14 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using PictureManager.Domain;
 
 namespace PictureManager.Dialogs {
-  /// <summary>
-  /// Interaction logic for InputDialog.xaml
-  /// </summary>
-  public partial class InputDialog: INotifyPropertyChanged {
+  public partial class InputDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
 
     private IconName _iconName = IconName.Bug;
     private string _question;
@@ -35,9 +30,7 @@ namespace PictureManager.Dialogs {
       Error = true;
     }
 
-    private void TxtAnswer_OnKeyUp(object sender, KeyEventArgs e) {
-      Answer = TxtAnswer.Text;
-    }
+    private void TxtAnswer_OnKeyUp(object sender, KeyEventArgs e) => Answer = TxtAnswer.Text;
 
     public static bool Open(IconName iconName, string title, string question, string answer, Func<string, string> validator, out string output) {
       var inputDialog = new InputDialog {

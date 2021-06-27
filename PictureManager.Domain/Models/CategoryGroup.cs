@@ -1,6 +1,6 @@
-﻿using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class CategoryGroup : CatTreeViewGroup, IRecord, ICatTreeViewTagItem {
@@ -19,7 +19,7 @@ namespace PictureManager.Domain.Models {
       return string.Join("|",
         Id.ToString(),
         Title,
-        (int) Category,
+        (int)Category,
         string.Join(",", Items.Cast<IRecord>().Select(x => x.Id)));
     }
   }

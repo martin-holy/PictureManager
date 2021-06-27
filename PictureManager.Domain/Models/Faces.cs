@@ -1,17 +1,13 @@
-﻿using System;
+﻿using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class Faces: ITable {
+  public class Faces : ITable {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
-    }
+    public List<IRecord> All { get; } = new();
 
     public void LoadFromFile() {
       All.Clear();
@@ -26,8 +22,8 @@ namespace PictureManager.Domain.Models {
       var face = new Face(
         int.Parse(props[0]),
         int.Parse(props[2]),
-        new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3])), 
-        long.Parse(props[4])) {Csv = props};
+        new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3])),
+        long.Parse(props[4])) { Csv = props };
 
       All.Add(face);
     }

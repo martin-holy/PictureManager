@@ -1,13 +1,13 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class People : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, Person> AllDic { get; set; }
 
     public People() : base(Category.People) {
@@ -18,10 +18,6 @@ namespace PictureManager.Domain.Models {
       CanRenameItems = true;
       CanDeleteItems = true;
       CanMoveItem = true;
-    }
-
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
     }
 
     public void LoadFromFile() {
@@ -46,18 +42,17 @@ namespace PictureManager.Domain.Models {
       LoadGroupsAndItems(All);
     }
 
-    public Person GetPerson(string name, bool create) {
-      return Core.Instance.RunOnUiThread(() => {
+    public Person GetPerson(string name, bool create) =>
+      Core.Instance.RunOnUiThread(() => {
         var person = All.Cast<Person>().SingleOrDefault(x => x.Title.Equals(name));
         return person ?? (create ? ItemCreate(this, name) as Person : null);
       }).Result;
-    }
 
     public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var item = new Person(Helper.GetNextId(), name) {Parent = root};
+      var item = new Person(Helper.GetNextId(), name) { Parent = root };
       var idx = CatTreeViewUtils.SetItemInPlace(root, item);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
-      
+
       All.Insert(allIdx, item);
       Core.Instance.Sdb.SetModified<People>();
       if (root is ICatTreeViewGroup)
@@ -69,7 +64,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public new void ItemDelete(ICatTreeViewItem item) {
-      if (!(item is Person person)) return;
+      if (item is not Person person) return;
 
       // remove Person from MediaItems
       if (person.MediaItems.Count > 0) {

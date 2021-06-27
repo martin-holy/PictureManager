@@ -1,8 +1,7 @@
-﻿using System.IO;
-using System.Linq;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain.Models;
+using System.IO;
+using System.Linq;
 
 namespace PictureManager.ViewModels {
   public static class ViewersViewModel {

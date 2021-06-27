@@ -1,13 +1,13 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using MahApps.Metro.Controls;
 
 namespace PictureManager.UserControls {
   public partial class MainTabs {
-    public EventHandler OnTabItemClose;
+    public EventHandler OnTabItemClose { get; set; }
 
     public MainTabs() {
       InitializeComponent();
@@ -15,7 +15,7 @@ namespace PictureManager.UserControls {
     }
 
     public bool IsThisContentSet(Type type) =>
-      ((FrameworkElement) ((TabItem) Tabs.SelectedItem).Content)?.GetType() == type;
+      ((FrameworkElement)((TabItem)Tabs.SelectedItem).Content)?.GetType() == type;
 
     public TabItem GetTabWithContentTypeOf(Type type) =>
       Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
@@ -45,7 +45,7 @@ namespace PictureManager.UserControls {
     private void BtnAddTab_Click(object sender, RoutedEventArgs e) => AddTab();
 
     private void BtnCloseTab_Click(object sender, RoutedEventArgs e) {
-      if (!(sender is FrameworkElement elm)) return;
+      if (sender is not FrameworkElement elm) return;
       var tab = elm.TryFindParent<TabItem>();
       OnTabItemClose?.Invoke(tab, null);
       Tabs.Items.Remove(tab);
@@ -56,7 +56,7 @@ namespace PictureManager.UserControls {
       if (Tabs.Items.Count == 0) AddTab();
 
       // Tag == true => show add tab button
-      ((TabItem) Tabs.Items[0]).Tag = true;
+      ((TabItem)Tabs.Items[0]).Tag = true;
 
       UpdateTabMaxHeight();
     }

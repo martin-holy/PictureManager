@@ -1,13 +1,13 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class Keywords : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
     public TableHelper Helper { get; set; }
-    public List<IRecord> All { get; } = new List<IRecord>();
+    public List<IRecord> All { get; } = new();
     public Dictionary<int, Keyword> AllDic { get; set; }
 
     private ICatTreeViewGroup _autoAddedGroup;
@@ -23,10 +23,6 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
     }
 
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
-    }
-
     public void LoadFromFile() {
       All.Clear();
       AllDic = new Dictionary<int, Keyword>();
@@ -37,7 +33,7 @@ namespace PictureManager.Domain.Models {
       // ID|Name|Parent
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      var keyword = new Keyword(int.Parse(props[0]), props[1], null) {Csv = props};
+      var keyword = new Keyword(int.Parse(props[0]), props[1], null) { Csv = props };
       All.Add(keyword);
       AllDic.Add(keyword.Id, keyword);
     }
@@ -63,7 +59,7 @@ namespace PictureManager.Domain.Models {
 
       // group for keywords automatically added from MediaItems metadata
       _autoAddedGroup = Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals("Auto Added")) ??
-                       GroupCreate(this,"Auto Added");
+                       GroupCreate(this, "Auto Added");
     }
 
     public Keyword GetByFullPath(string fullPath) {
@@ -94,7 +90,7 @@ namespace PictureManager.Domain.Models {
       var item = new Keyword(Helper.GetNextId(), name, root);
       var idx = CatTreeViewUtils.SetItemInPlace(root, item);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
-      
+
       All.Insert(allIdx, item);
       Core.Instance.Sdb.SetModified<Keywords>();
       if (root is ICatTreeViewGroup)
@@ -106,7 +102,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public new void ItemDelete(ICatTreeViewItem item) {
-      if (!(item is Keyword keyword)) return;
+      if (item is not Keyword keyword) return;
 
       // remove Keyword from the tree
       item.Parent.Items.Remove(item);

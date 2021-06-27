@@ -1,5 +1,5 @@
-﻿using System.Windows;
-using PictureManager.Properties;
+﻿using PictureManager.Properties;
+using System.Windows;
 
 namespace PictureManager.Dialogs {
   public partial class SettingsDialog {

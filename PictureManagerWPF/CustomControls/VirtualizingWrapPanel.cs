@@ -1,30 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using PictureManager.Domain;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using PictureManager.Domain;
 
 namespace PictureManager.CustomControls {
-  public class VirtualizingWrapPanel: Control {
+  public class VirtualizingWrapPanel : Control {
 
     private ScrollViewer _rowsScrollViewer;
     private VirtualizingStackPanel _rowsStackPanel;
     private double _maxRowWidth;
 
-    public static readonly DependencyProperty ItemDataTemplateProperty = DependencyProperty.Register(
-      nameof(ItemDataTemplate), typeof(DataTemplate), typeof(VirtualizingWrapPanel));
-
-    public static readonly DependencyProperty ShowGroupItemsCountProperty = DependencyProperty.Register(
-      nameof(ShowGroupItemsCount), typeof(bool), typeof(VirtualizingWrapPanel));
-
-    public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(
-      nameof(GroupItemsCountIcon), typeof(IconName), typeof(VirtualizingWrapPanel));
-
-    public static readonly DependencyProperty RowsProperty = DependencyProperty.Register(
-      nameof(Rows), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty ItemDataTemplateProperty = DependencyProperty.Register(nameof(ItemDataTemplate), typeof(DataTemplate), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty ShowGroupItemsCountProperty = DependencyProperty.Register(nameof(ShowGroupItemsCount), typeof(bool), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(nameof(GroupItemsCountIcon), typeof(IconName), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty RowsProperty = DependencyProperty.Register(nameof(Rows), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel));
 
     public DataTemplate ItemDataTemplate {
       get => (DataTemplate)GetValue(ItemDataTemplateProperty);
@@ -46,22 +39,22 @@ namespace PictureManager.CustomControls {
       set => SetValue(RowsProperty, value);
     }
 
-    static VirtualizingWrapPanel() =>
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(VirtualizingWrapPanel),
-        new FrameworkPropertyMetadata(typeof(VirtualizingWrapPanel)));
+    static VirtualizingWrapPanel() {
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(VirtualizingWrapPanel), new FrameworkPropertyMetadata(typeof(VirtualizingWrapPanel)));
+    }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      var grid = (ItemsControl) Template.FindName("PART_Grid", this);
+      var grid = (ItemsControl)Template.FindName("PART_Grid", this);
       grid.ApplyTemplate();
       grid.SizeChanged += (o, e) => { _maxRowWidth = ActualWidth; };
 
-      var itemsPresenter = (ItemsPresenter) grid.Template.FindName("PART_ItemsPresenter", grid);
+      var itemsPresenter = (ItemsPresenter)grid.Template.FindName("PART_ItemsPresenter", grid);
       itemsPresenter.ApplyTemplate();
 
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
-      _rowsScrollViewer = (ScrollViewer) grid.Template.FindName("PART_RowsScrollViewer", grid);
+      _rowsScrollViewer = (ScrollViewer)grid.Template.FindName("PART_RowsScrollViewer", grid);
     }
 
     public void ScrollTo(int index) => _rowsStackPanel.BringIndexIntoViewPublic(index);
@@ -108,7 +101,7 @@ namespace PictureManager.CustomControls {
       var group = Rows.OfType<VirtualizingWrapPanelGroup>().LastOrDefault();
       if (group == null || !GroupItemsEquals(group.Items.ToArray(), groupItems)) {
         group = new VirtualizingWrapPanelGroup();
-        
+
         foreach (var groupItem in groupItems)
           group.Items.Add(groupItem);
 
@@ -133,19 +126,21 @@ namespace PictureManager.CustomControls {
   }
 
   public class VirtualizingWrapPanelRow {
-    public ObservableCollection<object> Items { get; } = new ObservableCollection<object>();
+    public ObservableCollection<object> Items { get; } = new();
     public double SpaceLeft { get; set; }
-    public VirtualizingWrapPanelRow(double maxWidth) => SpaceLeft = maxWidth;
+    public VirtualizingWrapPanelRow(double maxWidth) {
+      SpaceLeft = maxWidth;
+    }
   }
 
-  public class VirtualizingWrapPanelGroup: ObservableObject {
+  public class VirtualizingWrapPanelGroup : ObservableObject {
     private int _itemsCount;
 
     public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
-    public ObservableCollection<VirtualizingWrapPanelGroupItem> Items { get; } = new ObservableCollection<VirtualizingWrapPanelGroupItem>();
+    public ObservableCollection<VirtualizingWrapPanelGroupItem> Items { get; } = new();
   }
 
-  public class VirtualizingWrapPanelGroupItem: ObservableObject {
+  public class VirtualizingWrapPanelGroupItem : ObservableObject {
     private IconName _icon;
     private string _title;
     private string _toolTip;

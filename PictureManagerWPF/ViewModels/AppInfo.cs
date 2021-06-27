@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.IO;
-using System.Linq;
-using PictureManager.Domain;
+﻿using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace PictureManager.ViewModels {
   public class AppInfoRating {
@@ -14,6 +14,10 @@ namespace PictureManager.ViewModels {
   }
 
   public class AppInfo : INotifyPropertyChanged {
+    public event PropertyChangedEventHandler PropertyChanged;
+    public void OnPropertyChanged([CallerMemberName] string name = null) =>
+      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
     private int _progressBarValueA;
     private int _progressBarValueB;
     private bool _progressBarIsIndeterminate;
@@ -22,26 +26,21 @@ namespace PictureManager.ViewModels {
     private bool _isThumbInfoVisible = true;
     private string _dimension = string.Empty;
     private string _fullGeoName = string.Empty;
-    private readonly Dictionary<string, string> _dateFormats = new Dictionary<string, string>{{"d", "d. "}, {"M", "MMMM "}, {"y", "yyyy"}};
+    private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
     public int ProgressBarValueA { get => _progressBarValueA; set { _progressBarValueA = value; OnPropertyChanged(); } }
     public int ProgressBarValueB { get => _progressBarValueB; set { _progressBarValueB = value; OnPropertyChanged(); } }
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
-    public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
+    public static string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
-    public ObservableCollection<AppInfoRating> Rating { get; } = new ObservableCollection<AppInfoRating>();
+    public ObservableCollection<AppInfoRating> Rating { get; } = new();
     public string DateAndTime => Domain.Extensions.DateTimeFromString(CurrentMediaItem?.FileName, _dateFormats, "H:mm:ss");
 
-    public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
-    public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
-    public string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
-
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) {
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-    }
+    public static string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
+    public static string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
+    public static string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
 
     public AppMode AppMode {
       get => _appMode;
@@ -71,12 +70,10 @@ namespace PictureManager.ViewModels {
 
             if (fk.Title.Length - 1 == startIndex) continue;
 
-            paths.Add(startIndex == 0 ? fk.Title : fk.Title.Substring(startIndex));
+            paths.Add(startIndex == 0 ? fk.Title : fk.Title[startIndex..]);
           }
 
-        var fileName = string.IsNullOrEmpty(DateAndTime)
-          ? CurrentMediaItem.FileName
-          : CurrentMediaItem.FileName.Substring(15);
+        var fileName = string.IsNullOrEmpty(DateAndTime) ? CurrentMediaItem.FileName : CurrentMediaItem.FileName[15..];
         paths.Add(fileName);
 
         return paths;
@@ -110,7 +107,7 @@ namespace PictureManager.ViewModels {
 
         Dimension = _currentMediaItem == null ? string.Empty : $"{_currentMediaItem.Width}x{_currentMediaItem.Height}";
         FullGeoName = CatTreeViewUtils.GetFullPath(_currentMediaItem?.GeoName, "\n");
-        
+
         OnPropertyChanged(nameof(DateAndTime));
         OnPropertyChanged(nameof(FilePath));
         OnPropertyChanged(nameof(FileSize));

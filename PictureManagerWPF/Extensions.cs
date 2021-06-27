@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows;
 
 namespace PictureManager {
-  static class Extensions {
+  public static class Extensions {
     /// <summary>
     /// Move directory but don't crash when directory exists or not exists
     /// </summary>
@@ -16,11 +16,11 @@ namespace PictureManager {
         var srcPathLength = srcPath.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
         foreach (var dir in Directory.EnumerateDirectories(srcPath)) {
-          MoveDirectory(dir, Path.Combine(destPath, dir.Substring(srcPathLength)));
+          MoveDirectory(dir, Path.Combine(destPath, dir[srcPathLength..]));
         }
 
         foreach (var file in Directory.EnumerateFiles(srcPath)) {
-          var destFilePath = Path.Combine(destPath, file.Substring(srcPathLength));
+          var destFilePath = Path.Combine(destPath, file[srcPathLength..]);
           if (File.Exists(destFilePath))
             File.Delete(destFilePath);
           File.Move(file, destFilePath);
@@ -32,7 +32,7 @@ namespace PictureManager {
       }
       else {
         var destParentPath = Path.GetDirectoryName(destPath.TrimEnd(Path.DirectorySeparatorChar)) ??
-                             throw new ArgumentNullException();
+                             throw new ArgumentNullException(nameof(destPath));
         Directory.CreateDirectory(destParentPath);
         Directory.Move(srcPath, destPath);
       }
@@ -57,7 +57,7 @@ namespace PictureManager {
     public static string FileSizeToString(long size) {
       string[] sizes = { "B", "KB", "MB", "GB" };
       var order = 0;
-      var doubleSize = (double) size;
+      var doubleSize = (double)size;
       while (doubleSize >= 1024 && order + 1 < sizes.Length) {
         order++;
         doubleSize /= 1024;
@@ -70,15 +70,15 @@ namespace PictureManager {
       while (true) {
         if (child?.TemplatedParent == null) return null;
         if (child.TemplatedParent is T parent) return parent;
-        child = (FrameworkElement) child.TemplatedParent;
+        child = (FrameworkElement)child.TemplatedParent;
       }
     }
 
     public static T FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
       while (true) {
         if (child == null) return null;
-        if (child is T element && element.Name.Equals(name)) return element;
-        child = (FrameworkElement) (child.Parent ?? child.TemplatedParent);
+        if (child is T element && element.Name.Equals(name, StringComparison.Ordinal)) return element;
+        child = (FrameworkElement)(child.Parent ?? child.TemplatedParent);
       }
     }
 

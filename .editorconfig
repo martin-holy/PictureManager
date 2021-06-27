@@ -1,0 +1,18 @@
+﻿[*.cs]
+
+# IDE0011: Add braces
+csharp_prefer_braces = false
+csharp_style_var_for_built_in_types=true:silent
+csharp_style_var_when_type_is_apparent=true:silent
+csharp_style_var_elsewhere=true:silent
+csharp_style_expression_bodied_methods=when_on_single_line:silent
+csharp_style_expression_bodied_operators=when_on_single_line:silent
+csharp_style_expression_bodied_local_functions=when_on_single_line:silent
+csharp_indent_case_contents=false
+csharp_indent_case_contents_when_block=false
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none
+
+[*.{cs,vb}]
+dotnet_style_parentheses_in_other_operators=always_for_clarity:silent

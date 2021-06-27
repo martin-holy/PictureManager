@@ -13,10 +13,10 @@ namespace SimpleDB {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public Dictionary<Type, TableHelper> Tables = new Dictionary<Type, TableHelper>();
+    public Dictionary<Type, TableHelper> Tables = new();
     public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
 
-    private readonly Dictionary<string, int> _idSequences = new Dictionary<string, int>();
+    private readonly Dictionary<string, int> _idSequences = new();
     private readonly ILogger _logger;
     private int _changes;
 

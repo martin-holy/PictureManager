@@ -1,4 +1,8 @@
-﻿using System;
+﻿using PictureManager.Commands;
+using PictureManager.CustomControls;
+using PictureManager.Dialogs;
+using PictureManager.Domain;
+using System;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,16 +10,11 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using PictureManager.Commands;
-using PictureManager.CustomControls;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
 
 namespace PictureManager {
   public partial class WMain {
     public MediaElement VideoThumbnailPreview;
-    public CommandsController CommandsController => CommandsController.Instance;
-    
+
     public WMain() {
       InitializeComponent();
 
@@ -26,7 +25,7 @@ namespace PictureManager {
         App.Core.RunOnUiThread(() => {
           if (PresentationPanel.IsPaused) return;
           if (MediaItemsCommands.CanNext())
-            CommandsController.MediaItemsCommands.Next();
+            MediaItemsCommands.Next();
           else
             PresentationPanel.Stop();
         });
@@ -39,7 +38,7 @@ namespace PictureManager {
         PresentationPanel.Start(false);
       };
 
-      VideoThumbnailPreview = new MediaElement {
+      VideoThumbnailPreview = new() {
         LoadedBehavior = MediaState.Manual,
         IsMuted = true,
         Stretch = Stretch.Fill
@@ -47,7 +46,7 @@ namespace PictureManager {
 
       VideoThumbnailPreview.MediaEnded += (o, args) => {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
-        ((MediaElement) o).Position = TimeSpan.FromMilliseconds(1);
+        ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
 
       MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Ui.MediaItemsViewModel.ThumbsGridReloadItems(); };
@@ -56,8 +55,8 @@ namespace PictureManager {
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
 
       StatusPanel.SizeChanged += delegate {
-        SlidePanelMainTreeView.BorderMargin = new Thickness(0,0,0, StatusPanel.ActualHeight);
-        FullMedia.ClipsPanel.BorderMargin = new Thickness(0, 0, 0, StatusPanel.ActualHeight);
+        SlidePanelMainTreeView.BorderMargin = new(0, 0, 0, StatusPanel.ActualHeight);
+        FullMedia.ClipsPanel.BorderMargin = new(0, 0, 0, StatusPanel.ActualHeight);
       };
     }
 
@@ -87,27 +86,26 @@ namespace PictureManager {
     }
 
     private void PanelFullScreen_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      if (e.ClickCount == 2) {
-        CommandsController.WindowCommands.SwitchToBrowser();
-      }
+      if (e.ClickCount == 2)
+        WindowCommands.SwitchToBrowser();
     }
 
     private void PanelFullScreen_OnMouseWheel(object sender, MouseWheelEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return;
       if (e.Delta < 0) {
         if (MediaItemsCommands.CanNext())
-          CommandsController.MediaItemsCommands.Next();
+          MediaItemsCommands.Next();
       }
       else {
         if (MediaItemsCommands.CanPrevious())
-          CommandsController.MediaItemsCommands.Previous();
+          MediaItemsCommands.Previous();
       }
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
       if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
-        CommandsController.MetadataCommands.Save();
+        MetadataCommands.Save();
       }
       App.Db.SaveAllTables();
     }

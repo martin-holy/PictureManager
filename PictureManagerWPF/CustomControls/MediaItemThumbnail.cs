@@ -1,20 +1,20 @@
-﻿using System;
+﻿using PictureManager.Commands;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
 
 namespace PictureManager.CustomControls {
-  public class MediaItemThumbnail: Control {
+  public class MediaItemThumbnail : Control {
     private Point _dragDropStartPosition;
     private Grid _grid;
 
     static MediaItemThumbnail() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(MediaItemThumbnail),
-        new FrameworkPropertyMetadata(typeof(MediaItemThumbnail)));
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(MediaItemThumbnail), new FrameworkPropertyMetadata(typeof(MediaItemThumbnail)));
     }
 
     public override void OnApplyTemplate() {
@@ -37,7 +37,7 @@ namespace PictureManager.CustomControls {
       var mi = (MediaItem)((FrameworkElement)sender).DataContext;
 
       // use middle and right button like CTRL + left button
-      if (e.ChangedButton == MouseButton.Middle || e.ChangedButton == MouseButton.Right) {
+      if (e.ChangedButton is MouseButton.Middle or MouseButton.Right) {
         isCtrlOn = true;
         isShiftOn = false;
       }
@@ -61,7 +61,7 @@ namespace PictureManager.CustomControls {
         App.WMain.VideoThumbnailPreview.Source = null;
       }
 
-      App.WMain.CommandsController.WindowCommands.SwitchToFullScreen();
+      WindowCommands.SwitchToFullScreen();
       App.WMain.SetMediaItemSource();
     }
 
@@ -90,9 +90,7 @@ namespace PictureManager.CustomControls {
       player.Play();
     }
 
-    public void InsertPlayer(UIElement player) {
-      _grid.Children.Insert(2, player);
-    }
+    public void InsertPlayer(UIElement player) => _grid.Children.Insert(2, player);
 
     private void Thumb_OnMouseLeave(object sender, MouseEventArgs e) {
       var mi = ((FrameworkElement)sender).DataContext as MediaItem;

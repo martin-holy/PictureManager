@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PictureManager.Domain.CatTreeViewModels;
+using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class FavoriteFolders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
@@ -17,10 +17,6 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
     }
 
-    public void SaveToFile() {
-      Helper.SaveToFile(All);
-    }
-
     public void LoadFromFile() {
       All.Clear();
       Helper.LoadFromFile();
@@ -30,7 +26,7 @@ namespace PictureManager.Domain.Models {
       // ID|FolderId|Title
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      All.Add(new FavoriteFolder(int.Parse(props[0])) {Title = props[2], Csv = props});
+      All.Add(new FavoriteFolder(int.Parse(props[0])) { Title = props[2], Csv = props });
     }
 
     public void LinkReferences() {
@@ -54,14 +50,14 @@ namespace PictureManager.Domain.Models {
 
       var idx = CatTreeViewUtils.SetItemInPlace(this, ff);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, this, idx);
-      
+
       All.Insert(allIdx, ff);
       Core.Instance.Sdb.SetModified<FavoriteFolders>();
       Core.Instance.Sdb.SaveIdSequences();
     }
 
     public new void ItemDelete(ICatTreeViewItem item) {
-      if (!(item is FavoriteFolder folder)) return;
+      if (item is not FavoriteFolder folder) return;
 
       // remove from the Tree
       item.Parent.Items.Remove(item);

@@ -1,34 +1,32 @@
-﻿using System;
+﻿using PictureManager.Dialogs;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using PictureManager.Dialogs;
-using PictureManager.Domain.Models;
-using PictureManager.Utils;
 
 namespace PictureManager.CustomControls {
   public class ImageComparer : Control {
-    public static readonly DependencyProperty DiffProperty = DependencyProperty.Register(
-      nameof(Diff), typeof(int), typeof(ImageComparer));
+    public static readonly DependencyProperty DiffProperty = DependencyProperty.Register(nameof(Diff), typeof(int), typeof(ImageComparer));
 
     public int Diff {
-      get => (int) GetValue(DiffProperty);
+      get => (int)GetValue(DiffProperty);
       set => SetValue(DiffProperty, value);
     }
 
-    public bool[] ModeArray { get; } = {true, false};
+    public bool[] ModeArray { get; } = { true, false };
     public int SelectedMode => Array.IndexOf(ModeArray, true);
 
     public delegate long HashMethod(string srcPath, Int32Rect rect);
 
-    private readonly Dictionary<object, long> _avgHashes = new Dictionary<object, long>();
-    private readonly Dictionary<object, long> _pHashes = new Dictionary<object, long>();
+    private readonly Dictionary<object, long> _avgHashes = new();
+    private readonly Dictionary<object, long> _pHashes = new();
     private RadioButton _rbAvgHash;
 
     static ImageComparer() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageComparer),
-        new FrameworkPropertyMetadata(typeof(ImageComparer)));
+      DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageComparer), new FrameworkPropertyMetadata(typeof(ImageComparer)));
     }
 
     public override void OnApplyTemplate() {

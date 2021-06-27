@@ -1,17 +1,17 @@
-﻿using System;
+﻿using PictureManager.CustomControls;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.CustomControls;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Utils;
 
 namespace PictureManager.UserControls {
-  public partial class FaceRecognitionControl: INotifyPropertyChanged {
+  public partial class FaceRecognitionControl : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -45,18 +45,18 @@ namespace PictureManager.UserControls {
       foreach (var mi in mediaItemsToDetect) {
         var filePath = mi.MediaType == MediaType.Image ? mi.FilePath : mi.FilePathCache;
         IList<Int32Rect> faceRects = null;
-        
+
         try {
           faceRects = await Imaging.DetectFaces(filePath, 40);
         }
         catch (Exception ex) {
           App.Ui.LogError(ex, filePath);
         }
-        
+
         if (faceRects == null) continue;
         foreach (var faceRect in faceRects) {
           var avgHash = Imaging.GetAvgHash(filePath, faceRect);
-          var newFace = new Face(App.Core.Faces.Helper.GetNextId(), 0, faceRect, avgHash) {MediaItem = mi};
+          var newFace = new Face(App.Core.Faces.Helper.GetNextId(), 0, faceRect, avgHash) { MediaItem = mi };
           AddFaceToGrid(newFace);
           facesToDisplay.Add(newFace, newFace.AvgHash);
           App.Core.Faces.All.Add(newFace);

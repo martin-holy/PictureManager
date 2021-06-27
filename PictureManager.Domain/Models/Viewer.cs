@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class Viewer : CatTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; }
-    public bool IsDefault { get; set; } 
+    public bool IsDefault { get; set; }
 
     public CatTreeViewItem IncludedFolders { get; }
     public CatTreeViewItem ExcludedFolders { get; }
@@ -21,28 +21,27 @@ namespace PictureManager.Domain.Models {
       Title = name;
       Parent = parent;
 
-      IncludedFolders = new CatTreeViewItem { Title = "Included Folders", IconName = IconName.FolderStar, Parent = this };
-      ExcludedFolders = new CatTreeViewItem { Title = "Excluded Folders", IconName = IconName.FolderStar, Parent = this };
+      IncludedFolders = new() { Title = "Included Folders", IconName = IconName.FolderStar, Parent = this };
+      ExcludedFolders = new() { Title = "Excluded Folders", IconName = IconName.FolderStar, Parent = this };
 
       Items.Add(IncludedFolders);
       Items.Add(ExcludedFolders);
 
       IconName = IconName.Eye;
 
-      _incFoIds = new HashSet<int>();
-      _incFoTreeIds = new HashSet<int>();
-      _excFoIds = new HashSet<int>();
+      _incFoIds = new();
+      _incFoTreeIds = new();
+      _excFoIds = new();
     }
 
-    public string ToCsv() {
-      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
-      return string.Join("|",
+    // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
+    public string ToCsv() =>
+      string.Join("|",
         Id.ToString(),
         Title,
         string.Join(",", IncludedFolders.Items.Select(x => x.Tag)),
         string.Join(",", ExcludedFolders.Items.Select(x => x.Tag)),
         IsDefault ? "1" : string.Empty);
-    }
 
     public void AddFolder(Folder folder, bool included) {
       var item = new CatTreeViewItem {
@@ -72,14 +71,10 @@ namespace PictureManager.Domain.Models {
       // If Any part of Test Folder ID matches Any Included Folder ID
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
-
       var testFos = new List<ICatTreeViewItem>();
-
       CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
-
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
                        || _incFoTreeIds.Any(incFoId => incFoId == folder.Id);
-
       var excContain = testFos.OfType<Folder>().Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
 
       return incContain && !excContain;
@@ -87,13 +82,9 @@ namespace PictureManager.Domain.Models {
 
     public bool CanSeeContentOfThisFolder(Folder folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
-
       var testFos = new List<ICatTreeViewItem>();
-
       CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
-
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
-
       var excContain = testFos.OfType<Folder>().Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
 
       return incContain && !excContain;

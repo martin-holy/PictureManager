@@ -51,7 +51,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public static string GetFullPath(ICatTreeViewItem item, string separator) {
       if (item == null) return null;
       var parent = item.Parent;
-      var names = new List<string> {item.Title};
+      var names = new List<string> { item.Title };
       while (parent != null) {
         if (parent is ICatTreeViewCategory) break;
         names.Add(parent.Title);
@@ -89,7 +89,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       var idx = 0;
       foreach (var i in root.Items) {
         if (itemIsGroup) {
-          if (!(i is ICatTreeViewGroup)) break;
+          if (i is not ICatTreeViewGroup) break;
         }
         else {
           if (i is ICatTreeViewGroup) {
@@ -97,7 +97,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
             continue;
           }
         }
-        
+
         if (string.Compare(item.Title, i.Title, StringComparison.CurrentCultureIgnoreCase) < 0) break;
         idx++;
       }
@@ -110,12 +110,10 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public static bool CanDrop(ICatTreeViewItem src, ICatTreeViewItem dest) {
       // if src or dest are null or they are equal
       if (src == null || dest == null || Equals(src, dest)) return false;
-      
-      var srcCat = GetTopParent(src) as ICatTreeViewCategory;
-      var destCat = GetTopParent(dest) as ICatTreeViewCategory;
-
       // if src or dest categories are null or they are not equal
-      if (srcCat == null || destCat == null || !Equals(srcCat, destCat)) return false;
+      if (GetTopParent(src) is not ICatTreeViewCategory srcCat ||
+          GetTopParent(dest) is not ICatTreeViewCategory destCat ||
+        !Equals(srcCat, destCat)) return false;
       // if src and dest are groups
       if (src is ICatTreeViewGroup && dest is ICatTreeViewGroup) return true;
       // if src is item and src parent is not dest
@@ -134,7 +132,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
         root.Items.Move(root.Items.IndexOf(group), groups.IndexOf(group));
 
       // sort items
-      var items = root.Items.Where(x => !(x is ICatTreeViewGroup))
+      var items = root.Items.Where(x => x is not ICatTreeViewGroup)
         .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
       foreach (var item in items)
         root.Items.Move(root.Items.IndexOf(item), items.IndexOf(item));

@@ -11,7 +11,6 @@
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
-    <LangVersion>8.0</LangVersion>
     <Authors>Martin Holý</Authors>
     <Description>DB using CSV files for storage</Description>
   </PropertyGroup>

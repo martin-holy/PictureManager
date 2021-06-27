@@ -6,7 +6,8 @@ namespace SimpleDB {
     List<IRecord> All { get; }
     void NewFromCsv(string csv);
     void LinkReferences();
-    void SaveToFile();
     void LoadFromFile();
+
+    public void SaveToFile() => Helper.SaveToFile(All);
   }
 }

@@ -3,21 +3,27 @@
 - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 - MediaElement: if SpeedRatio is > 2, Pause()/Play() will cause ignorig SpeedRatio and plays on SpeedRatio = 1
 - disky identifikovat podle ID a ne podle pismena
-- Clips: - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
-         - zmena poradi klipu se neulozi
-         - ulozeni v klipech nezmeni modifed v main toolbaru
+- Clips: 
+    - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
+    - zmena poradi klipu se neulozi
+    - ulozeni v klipech nezmeni modifed v main toolbaru
 - CatTreeView drag&drop se chova divne, kdyz zobrazim context menu a pak kliknu na jinej item
 - Thumbnails Groups: sort by date first, than by folder
+- Face Recognition:
+    - èasto to pada na DetectFaces bitmapDecoder.GetSoftwareBitmapAsync(), nahodne i jen na jednom souboru
+- RotationDialog nema style na buttonech
 
 #Update
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
 - IsMarked & PicCount: mozna by stacilo mit jen PicCount
 - zkontrolovat aby Thumbnails mely rozmery delitelny dvema
 - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
-  - nebo nastavit FocusVisualStyle na null
+    - nebo nastavit FocusVisualStyle na null
 - DB:
-  - kdyz je ted All typu List<IRecord>, tak by SaveToFile a LoadFromFile mohli bejt v base class (ITable) 
-    (to bych to ale musel mit .net standard 2.1, coz neni kompatibilni s .net framework 4.8)
+    - kdyz je ted All typu List<IRecord>, tak by SaveToFile a LoadFromFile mohli bejt v base class (ITable) 
+      (to bych to ale musel mit .net standard 2.1, coz neni kompatibilni s .net framework 4.8)
+- check strings Equals and deside which StringComparison use
+- GetPerceptualHash a GetAvgHash ma podobnej kod, mozna bych to pouzil i jinde az po CopyPixels
 
 #New
 - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(

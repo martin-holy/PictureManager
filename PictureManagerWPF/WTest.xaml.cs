@@ -1,20 +1,21 @@
+using PictureManager.Commands;
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public partial class WTest {
     public ObservableCollection<ICatTreeViewItem> Items { get; set; }
-    
+
     public WTest() {
       InitializeComponent();
       //LoadCatTreeViewData();
       //SetUpMediaItemTest();
       //StrToDoubleTest();
-      App.WMain.CommandsController.AddCommandBindings(CommandBindings);
+      CommandsController.AddCommandBindings(CommandBindings);
     }
 
     private void StrToDoubleTest() {
@@ -29,7 +30,7 @@ namespace PictureManager {
       App.Ui.MediaItemClipsCategory.SetMediaItem(
         App.Core.MediaItems.All.Cast<MediaItem>().FirstOrDefault(mi => mi.Id == 138791));
 
-      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> {App.Ui.MediaItemClipsCategory};
+      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> { App.Ui.MediaItemClipsCategory };
     }
 
     public void AllowDropCheck(object sender, DragEventArgs e) {
@@ -37,7 +38,7 @@ namespace PictureManager {
     }
 
     private void EventSetter_OnHandler(object sender, MouseEventArgs e) {
-      
+
     }
   }
 }

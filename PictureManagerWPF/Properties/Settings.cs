@@ -13,7 +13,7 @@
     private static void SettingChangingEventHandler(object sender, System.Configuration.SettingChangingEventArgs e) {
       switch (e.SettingName) {
         case "CachePath": {
-          var val = (string) e.NewValue;
+          var val = (string)e.NewValue;
           if (val.Length < 4 || !val.StartsWith(":\\") || !val.EndsWith("\\")) {
             e.Cancel = true;
           }

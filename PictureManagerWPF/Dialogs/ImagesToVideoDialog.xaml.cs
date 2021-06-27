@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Properties;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -7,9 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
   public partial class ImagesToVideoDialog {
@@ -25,7 +25,7 @@ namespace PictureManager.Dialogs {
 
     public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
       InitializeComponent();
-      
+
       _items = items.ToArray();
       var firstMi = _items.First();
       var fileName = Domain.Extensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
@@ -46,10 +46,9 @@ namespace PictureManager.Dialogs {
     // create input list of items for FFMPEG
     private bool CreateTempListFile() {
       try {
-        using (var sw = new StreamWriter(_inputListPath, false, new UTF8Encoding(false), 65536)) {
-          foreach (var item in _items)
-            sw.WriteLine($"file '{item.FilePath}'");
-        }
+        using var sw = new StreamWriter(_inputListPath, false, new UTF8Encoding(false), 65536);
+        foreach (var item in _items)
+          sw.WriteLine($"file '{item.FilePath}'");
 
         return true;
       }
@@ -73,29 +72,28 @@ namespace PictureManager.Dialogs {
       var mi = _items.First();
 
       // Scale
-      var height = (double) Settings.Default.ImagesToVideoHeight;
-      var width = mi.Orientation == (int) MediaOrientation.Rotate270 ||
-                  mi.Orientation == (int) MediaOrientation.Rotate90
+      var height = (double)Settings.Default.ImagesToVideoHeight;
+      var width = mi.Orientation is (int)MediaOrientation.Rotate270 or (int)MediaOrientation.Rotate90
         ? Math.Round(mi.Height / (mi.Width / height), 0)
         : Math.Round(mi.Width / (mi.Height / height), 0);
       if (width % 2 != 0) width++;
       var scale = $"{width}x{height}";
 
       // Rotate
-      var rotation = string.Empty;
-      switch ((MediaOrientation) mi.Orientation) {
-        case MediaOrientation.Rotate180: rotation = "transpose=clock,transpose=clock,"; break;
-        case MediaOrientation.Rotate270: rotation = "transpose=clock:passthrough=portrait,"; break;
-        case MediaOrientation.Rotate90: rotation = "transpose=cclock:passthrough=portrait,"; break;
-      }
+      var rotation = (MediaOrientation)mi.Orientation switch {
+        MediaOrientation.Rotate180 => "transpose=clock,transpose=clock,",
+        MediaOrientation.Rotate270 => "transpose=clock:passthrough=portrait,",
+        MediaOrientation.Rotate90 => "transpose=cclock:passthrough=portrait,",
+        _ => string.Empty
+      };
 
       var speedStr = Settings.Default.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
       var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Settings.Default.ImagesToVideoQuality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
       var tcs = new TaskCompletionSource<bool>();
 
-      _process = new Process {
+      _process = new() {
         EnableRaisingEvents = true,
-        StartInfo = new ProcessStartInfo {
+        StartInfo = new() {
           Arguments = args,
           FileName = Settings.Default.FfmpegPath,
           UseShellExecute = false,
@@ -126,7 +124,7 @@ namespace PictureManager.Dialogs {
       // check for FFMPEG
       if (!File.Exists(Settings.Default.FfmpegPath)) {
         MessageDialog.Show(
-          "FFMPEG not found", 
+          "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",
           false);
         Close();

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Properties;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,12 +16,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Point = System.Windows.Point;
 using WGI = Windows.Graphics.Imaging;
 using WMFA = Windows.Media.FaceAnalysis;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
-using Point = System.Windows.Point;
 
 namespace PictureManager.Utils {
   public static class Imaging {
@@ -42,63 +42,62 @@ namespace PictureManager.Utils {
       var srcFile = new FileInfo(src);
       var destFile = new FileInfo(dest);
 
-      using (Stream srcFileStream = File.Open(srcFile.FullName, FileMode.Open, FileAccess.Read)) {
-        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-        if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
+      using Stream srcFileStream = File.Open(srcFile.FullName, FileMode.Open, FileAccess.Read);
+      var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+      if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
 
-        var firstFrame = decoder.Frames[0];
+      var firstFrame = decoder.Frames[0];
 
-        var pxw = firstFrame.PixelWidth; // image width
-        var pxh = firstFrame.PixelHeight; // image height
-        var gcd = GreatestCommonDivisor(pxw, pxh);
-        var rw = pxw / gcd; // image ratio
-        var rh = pxh / gcd; // image ratio
-        var q = Math.Sqrt((double)px / (rw * rh)); // Bulgarian constant
-        var stw = (q * rw) / pxw; // scale transform X
-        var sth = (q * rh) / pxh; // scale transform Y
+      var pxw = firstFrame.PixelWidth; // image width
+      var pxh = firstFrame.PixelHeight; // image height
+      var gcd = GreatestCommonDivisor(pxw, pxh);
+      var rw = pxw / gcd; // image ratio
+      var rh = pxh / gcd; // image ratio
+      var q = Math.Sqrt((double)px / (rw * rh)); // Bulgarian constant
+      var stw = q * rw / pxw; // scale transform X
+      var sth = q * rh / pxh; // scale transform Y
 
-        var resized = new TransformedBitmap(firstFrame, new ScaleTransform(stw, sth, 0, 0));
-        var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata : new BitmapMetadata("jpg");
-        var thumbnail = withThumbnail ? firstFrame.Thumbnail : null;
+      var resized = new TransformedBitmap(firstFrame, new ScaleTransform(stw, sth, 0, 0));
+      var metadata = withMetadata ? firstFrame.Metadata?.Clone() as BitmapMetadata : new BitmapMetadata("jpg");
+      var thumbnail = withThumbnail ? firstFrame.Thumbnail : null;
 
-        if (!withMetadata) {
-          // even when withMetadata == false, set orientation
-          var orientation = ((BitmapMetadata)firstFrame.Metadata)?.GetQuery("System.Photo.Orientation") ?? (ushort)1;
-          metadata.SetQuery("System.Photo.Orientation", orientation);
-        }
-
-        // ifd ImageWidth a ImageHeight
-        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=256}", resized.PixelWidth);
-        SetIfContainsQuery(metadata, "/app1/ifd/{ushort=257}", resized.PixelHeight);
-        // exif ExifImageWidth a ExifImageHeight
-        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40962}", resized.PixelWidth);
-        SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40963}", resized.PixelHeight);
-
-        var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
-
-        encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
-
-        using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-          encoder.Save(destFileStream);
-        }
-
-        // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
-        var date = DateTime.MinValue;
-
-        // try to first get dateTaken from file name
-        var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
-        if (match.Success)
-          DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
-
-        // try to get dateTaken from metadata
-        if (date == DateTime.MinValue) {
-          var dateTaken = ((BitmapMetadata)firstFrame.Metadata)?.DateTaken;
-          DateTime.TryParse(dateTaken, out date);
-        }
-
-        if (date != DateTime.MinValue)
-          destFile.LastWriteTime = date;
+      if (!withMetadata) {
+        // even when withMetadata == false, set orientation
+        var orientation = ((BitmapMetadata)firstFrame.Metadata)?.GetQuery("System.Photo.Orientation") ?? (ushort)1;
+        metadata.SetQuery("System.Photo.Orientation", orientation);
       }
+
+      // ifd ImageWidth a ImageHeight
+      SetIfContainsQuery(metadata, "/app1/ifd/{ushort=256}", resized.PixelWidth);
+      SetIfContainsQuery(metadata, "/app1/ifd/{ushort=257}", resized.PixelHeight);
+      // exif ExifImageWidth a ExifImageHeight
+      SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40962}", resized.PixelWidth);
+      SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40963}", resized.PixelHeight);
+
+      var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+
+      encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
+
+      using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
+        encoder.Save(destFileStream);
+      }
+
+      // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
+      var date = DateTime.MinValue;
+
+      // try to first get dateTaken from file name
+      var match = Regex.Match(srcFile.Name, "[0-9]{8}_[0-9]{6}");
+      if (match.Success)
+        DateTime.TryParseExact(match.Value, "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+
+      // try to get dateTaken from metadata
+      if (date == DateTime.MinValue) {
+        var dateTaken = ((BitmapMetadata)firstFrame.Metadata)?.DateTaken;
+        DateTime.TryParse(dateTaken, out date);
+      }
+
+      if (date != DateTime.MinValue)
+        destFile.LastWriteTime = date;
     }
 
     public static void ReSaveImage(string filePath) {
@@ -107,16 +106,14 @@ namespace PictureManager.Utils {
       var newFile = new FileInfo(filePath + "_newFile");
       try {
         using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
-          using (var bmp = new Bitmap(originalFileStream)) {
-            using (Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-              var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
-              if (encoder == null) return;
-              var encParams = new EncoderParameters(1) {
-                Param = { [0] = new EncoderParameter(Encoder.Quality, Settings.Default.JpegQualityLevel) }
-              };
-              bmp.Save(newFileStream, encoder, encParams);
-            }
-          }
+          using var bmp = new Bitmap(originalFileStream);
+          using Stream newFileStream = File.Open(newFile.FullName, FileMode.Create, FileAccess.ReadWrite);
+          var encoder = ImageCodecInfo.GetImageDecoders().SingleOrDefault(x => x.FormatID == bmp.RawFormat.Guid);
+          if (encoder == null) return;
+          var encParams = new EncoderParameters(1) {
+            Param = { [0] = new EncoderParameter(Encoder.Quality, Settings.Default.JpegQualityLevel) }
+          };
+          bmp.Save(newFileStream, encoder, encParams);
         }
 
         newFile.CreationTime = original.CreationTime;
@@ -158,14 +155,13 @@ namespace PictureManager.Utils {
               }
             }
           }));
-      });
+      }, token);
     }
 
-    public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle) {
-      return type == MediaType.Image
+    public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle) =>
+      type == MediaType.Image
         ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size))
         : CreateThumbnailAsync(srcPath, destPath, size, rotationAngle);
-    }
 
     public static bool CreateImageThumbnail(string srcPath, string destPath, int desiredSize) {
       try {
@@ -180,11 +176,10 @@ namespace PictureManager.Utils {
 
           var frame = decoder.Frames[0];
           var orientation = (MediaOrientation)((ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1);
-          var rotated = orientation == MediaOrientation.Rotate90 ||
-                        orientation == MediaOrientation.Rotate270;
+          var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
           var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
           var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
-          
+
           Domain.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
 
           var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
@@ -195,12 +190,10 @@ namespace PictureManager.Utils {
             output = new TransformedBitmap(output, new RotateTransform(angle));
           }
 
+          using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
           var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
           encoder.Frames.Add(BitmapFrame.Create(output));
-
-          using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
-            encoder.Save(destFileStream);
-          }
+          encoder.Save(destFileStream);
         }
 
         return true;
@@ -214,7 +207,7 @@ namespace PictureManager.Utils {
       var tcs = new TaskCompletionSource<bool>();
       var process = new Process {
         EnableRaisingEvents = true,
-        StartInfo = new ProcessStartInfo {
+        StartInfo = new() {
           Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{80}\" size|\"{size}\" rotationAngle|\"{rotationAngle}\"",
           FileName = "ThumbnailCreator.exe",
           UseShellExecute = false,
@@ -234,11 +227,10 @@ namespace PictureManager.Utils {
     public static Task<int[]> GetImageDimensionsAsync(string filePath) {
       return Task.Run(() => {
         try {
-          using (Stream srcFileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-            var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-            var frame = decoder.Frames[0];
-            return new[] { frame.PixelWidth, frame.PixelHeight };
-          }
+          using Stream srcFileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+          var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+          var frame = decoder.Frames[0];
+          return new[] { frame.PixelWidth, frame.PixelHeight };
         }
         catch (Exception) {
           return null;
@@ -253,7 +245,7 @@ namespace PictureManager.Utils {
 
       var process = new Process {
         EnableRaisingEvents = true,
-        StartInfo = new ProcessStartInfo {
+        StartInfo = new() {
           Arguments = args,
           FileName = Settings.Default.FfmpegPath,
           UseShellExecute = false,
@@ -278,7 +270,7 @@ namespace PictureManager.Utils {
         Directory.CreateDirectory(dir);
 
         // get offset of visual from its parent
-        var offset = visual.TranslatePoint(new Point(0, 0), (UIElement) visual.Parent);
+        var offset = visual.TranslatePoint(new Point(0, 0), (UIElement)visual.Parent);
 
         // round all variables for safer calculation
         var ox = Math.Round(offset.X, 0);
@@ -302,9 +294,8 @@ namespace PictureManager.Utils {
         encoder.Frames.Add(BitmapFrame.Create(thumb));
 
         // save thumbnail
-        using (Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite)) {
-          encoder.Save(destFileStream);
-        }
+        using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
+        encoder.Save(destFileStream);
 
         return true;
       }
@@ -334,10 +325,10 @@ namespace PictureManager.Utils {
       var faceBoxes = new List<Int32Rect>();
       foreach (var fBox in detectedFaces) {
         var rect = new Int32Rect(
-          (int) fBox.FaceBox.X,
-          (int) fBox.FaceBox.Y,
-          (int) fBox.FaceBox.Width,
-          (int) fBox.FaceBox.Height);
+          (int)fBox.FaceBox.X,
+          (int)fBox.FaceBox.Y,
+          (int)fBox.FaceBox.Width,
+          (int)fBox.FaceBox.Height);
 
         if (faceBoxExpand == 0) {
           faceBoxes.Add(rect);
@@ -465,11 +456,10 @@ namespace PictureManager.Utils {
 
       // compute average only from top-left 8x8 minus first value
       double total = 0;
-      for (var x = 0; x < 8; x++) {
-        for (var y = 0; y < 8; y++) {
+      for (var x = 0; x < 8; x++)
+        for (var y = 0; y < 8; y++)
           total += pixelsDct[x, y];
-        }
-      }
+
       total -= pixelsDct[0, 0];
       var avg = total / (8 * 8 - 1);
 
@@ -497,18 +487,10 @@ namespace PictureManager.Utils {
 
       for (var i = 0; i < m; i++) {
         for (var j = 0; j < n; j++) {
-          double ci, cj;
           // ci and cj depends on frequency as well as 
           // number of row and columns of specified matrix 
-          if (i == 0)
-            ci = 1 / Math.Sqrt(m);
-          else
-            ci = Math.Sqrt(2) / Math.Sqrt(m);
-
-          if (j == 0)
-            cj = 1 / Math.Sqrt(n);
-          else
-            cj = Math.Sqrt(2) / Math.Sqrt(n);
+          var ci = i == 0 ? 1 / Math.Sqrt(m) : Math.Sqrt(2) / Math.Sqrt(m);
+          var cj = j == 0 ? 1 / Math.Sqrt(n) : Math.Sqrt(2) / Math.Sqrt(n);
 
           // sum will temporarily store the sum of  
           // cosine signals 

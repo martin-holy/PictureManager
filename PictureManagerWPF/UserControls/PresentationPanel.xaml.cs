@@ -1,22 +1,17 @@
-﻿using System;
+﻿using PictureManager.CustomControls;
+using PictureManager.Domain;
+using System;
 using System.Timers;
 using System.Windows;
-using PictureManager.CustomControls;
-using PictureManager.Domain;
 
 namespace PictureManager.UserControls {
   public partial class PresentationPanel {
-    public static readonly DependencyProperty IsRunningProperty = DependencyProperty.Register(
-      nameof(IsRunning), typeof(bool), typeof(PresentationPanel));
-    
-    public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register(
-      nameof(Interval), typeof(int), typeof(PresentationPanel), new UIPropertyMetadata(3));
-
-    public static readonly DependencyProperty PlayPanoramicImagesProperty = DependencyProperty.Register(
-      nameof(PlayPanoramicImages), typeof(bool), typeof(PresentationPanel), new UIPropertyMetadata(true));
+    public static readonly DependencyProperty IsRunningProperty = DependencyProperty.Register(nameof(IsRunning), typeof(bool), typeof(PresentationPanel));
+    public static readonly DependencyProperty IntervalProperty = DependencyProperty.Register(nameof(Interval), typeof(int), typeof(PresentationPanel), new UIPropertyMetadata(3));
+    public static readonly DependencyProperty PlayPanoramicImagesProperty = DependencyProperty.Register(nameof(PlayPanoramicImages), typeof(bool), typeof(PresentationPanel), new UIPropertyMetadata(true));
 
     public bool IsRunning {
-      get => (bool) GetValue(IsRunningProperty);
+      get => (bool)GetValue(IsRunningProperty);
       set {
         SetValue(IsRunningProperty, value);
         _timer.Enabled = value;
@@ -24,7 +19,7 @@ namespace PictureManager.UserControls {
     }
 
     public int Interval {
-      get => (int) GetValue(IntervalProperty);
+      get => (int)GetValue(IntervalProperty);
       set {
         SetValue(IntervalProperty, value);
         _timer.Interval = value * 1000;
@@ -32,7 +27,7 @@ namespace PictureManager.UserControls {
     }
 
     public bool PlayPanoramicImages {
-      get => (bool) GetValue(PlayPanoramicImagesProperty);
+      get => (bool)GetValue(PlayPanoramicImagesProperty);
       set => SetValue(PlayPanoramicImagesProperty, value);
     }
 
@@ -48,7 +43,7 @@ namespace PictureManager.UserControls {
     private readonly Timer _timer;
 
     public bool IsPaused { get; private set; }
-    
+
     public Action Elapsed;
 
     ~PresentationPanel() {
@@ -85,7 +80,7 @@ namespace PictureManager.UserControls {
     }
 
     private void ChangeInterval(object sender, RoutedPropertyChangedEventArgs<double> e) {
-      Interval = (int) IntervalSlider.Value;
+      Interval = (int)IntervalSlider.Value;
     }
   }
 }
