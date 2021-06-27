@@ -235,8 +235,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public VideoClipsGroup VideoClipsGroupAdd(VideoClipsGroup group) {
-      if (VideoClipsGroups == null)
-        VideoClipsGroups = new ObservableCollection<VideoClipsGroup>();
+      VideoClipsGroups ??= new();
       VideoClipsGroups.Add(group);
 
       return group;
@@ -244,8 +243,7 @@ namespace PictureManager.Domain.Models {
 
     public VideoClip VideoClipAdd(VideoClip vc, VideoClipsGroup group) {
       if (group == null) {
-        if (VideoClips == null)
-          VideoClips = new ObservableCollection<VideoClip>();
+        VideoClips ??= new();
         VideoClips.Add(vc);
       }
       else {

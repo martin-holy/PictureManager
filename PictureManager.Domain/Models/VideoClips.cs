@@ -41,8 +41,7 @@ namespace PictureManager.Domain.Models {
           vc.People = new(ids.Length);
           foreach (var personId in ids) {
             var p = Core.Instance.People.AllDic[int.Parse(personId)];
-            if (p.VideoClips == null)
-              p.VideoClips = new();
+            p.VideoClips ??= new();
             p.VideoClips.Add(vc);
             vc.People.Add(p);
           }
@@ -54,8 +53,7 @@ namespace PictureManager.Domain.Models {
           vc.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
             var k = Core.Instance.Keywords.AllDic[int.Parse(keywordId)];
-            if (k.VideoClips == null)
-              k.VideoClips = new();
+            k.VideoClips ??= new();
             k.VideoClips.Add(vc);
             vc.Keywords.Add(k);
           }
