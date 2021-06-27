@@ -11,7 +11,6 @@
 - Thumbnails Groups: sort by date first, than by folder
 - Face Recognition:
     - èasto to pada na DetectFaces bitmapDecoder.GetSoftwareBitmapAsync(), nahodne i jen na jednom souboru
-- RotationDialog nema style na buttonech
 
 #Update
 - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props

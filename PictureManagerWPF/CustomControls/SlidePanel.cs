@@ -85,18 +85,15 @@ namespace PictureManager.CustomControls {
 
     // creates new or update existing animation if panel width changes
     public void UpdateAnimation() {
-      if (_openAnimation == null)
-        _openAnimation = new() {
-          Duration = new(TimeSpan.FromMilliseconds(250)),
-          To = new(0, Margin.Top, 0, Margin.Bottom)
-        };
+      _openAnimation ??= new() {
+        Duration = new(TimeSpan.FromMilliseconds(250)),
+        To = new(0, Margin.Top, 0, Margin.Bottom)
+      };
 
-      if (_closeAnimation == null)
-        _closeAnimation = new() {
-          Duration = new(TimeSpan.FromMilliseconds(250)),
-          From = new(0, Margin.Top, 0, Margin.Bottom)
-        };
-
+      _closeAnimation ??= new() {
+        Duration = new(TimeSpan.FromMilliseconds(250)),
+        From = new(0, Margin.Top, 0, Margin.Bottom)
+      };
 
       var th = Position switch {
         Dock.Left => new Thickness(Width * -1, Margin.Top, 0, Margin.Bottom),

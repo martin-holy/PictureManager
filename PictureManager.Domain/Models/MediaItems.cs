@@ -156,8 +156,7 @@ namespace PictureManager.Domain.Models {
         switch (tag) {
           case Person p: {
             if (p.IsMarked) {
-              if (mi.People == null)
-                mi.People = new List<Person>();
+              mi.People ??= new();
               mi.People.Add(p);
               p.MediaItems.Add(mi);
             }
@@ -206,8 +205,7 @@ namespace PictureManager.Domain.Models {
               }
             }
 
-            if (mi.Keywords == null)
-              mi.Keywords = new List<Keyword>();
+            mi.Keywords ??= new();
             mi.Keywords.Add(k);
             k.MediaItems.Add(mi);
 

@@ -41,8 +41,7 @@ namespace PictureManager {
     private static Random _random;
 
     public static void Shuffle<T>(this IList<T> list) {
-      if (_random == null)
-        _random = new Random();
+      _random ??= new();
 
       var n = list.Count;
       while (n > 1) {
