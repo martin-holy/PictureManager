@@ -1,21 +1,23 @@
 ﻿using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.ViewModels;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PictureManager.Dialogs {
-  public partial class CompressDialog : INotifyPropertyChanged, IDisposable {
+  public partial class CompressDialog : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private BackgroundWorker _compress;
+    private CancellationTokenSource _cts;
+    private Task _workTask;
 
     private int _jpegQualityLevel;
     private long _totalSourceSize;
@@ -30,66 +32,61 @@ namespace PictureManager.Dialogs {
       JpegQualityLevel = Properties.Settings.Default.JpegQualityLevel;
     }
 
-    public void Dispose() => _compress.Dispose();
+    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<MediaItem> items, [EnumeratorCancellation] CancellationToken token = default) {
+      foreach (var mi in items) {
+        if (token.IsCancellationRequested) yield break;
 
-    private void BtnCompress_OnClick(object sender, RoutedEventArgs e) {
-      GbSettings.IsEnabled = false;
-      BtnCompress.IsEnabled = false;
-      BtnCancel.Content = "Cancel";
+        yield return await Task.Run(() => {
+          var originalSize = new FileInfo(mi.FilePath).Length;
+          var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
+          var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
+          return new long[] { originalSize, newSize };
+        });
+      }
+    }
 
+    private async Task Compress() {
+      var items = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x =>
+        x.MediaType == MediaType.Image && (OptSelected.IsChecked != true || x.IsSelected)).ToList();
+
+      PbCompressProgress.Maximum = items.Count;
       PbCompressProgress.Value = 0;
       _totalSourceSize = 0;
       _totalCompressedSize = 0;
       OnPropertyChanged(nameof(TotalSourceSize));
       OnPropertyChanged(nameof(TotalCompressedSize));
 
-      _compress = new() { WorkerReportsProgress = true, WorkerSupportsCancellation = true };
-      _compress.DoWork += Compress_DoWork;
-      _compress.ProgressChanged += Compress_ProgressChanged;
-      _compress.RunWorkerCompleted += Compress_RunWorkerCompleted;
-      _compress.RunWorkerAsync(OptSelected.IsChecked != null && OptSelected.IsChecked.Value
-        ? App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image).ToList()
-        : App.Core.MediaItems.ThumbsGrid.FilteredItems.ToList());
-    }
+      _cts?.Dispose();
+      _cts = new();
 
-    private static void Compress_DoWork(object sender, DoWorkEventArgs e) {
-      var worker = (BackgroundWorker)sender;
-      var mis = (List<MediaItem>)e.Argument;
-      var count = mis.Count;
-      var done = 0;
-
-      foreach (var mi in mis) {
-        if (worker.CancellationPending) {
-          e.Cancel = true;
-          break;
-        }
-
-        var originalSize = new FileInfo(mi.FilePath).Length;
-        var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
-        var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
-        long[] fileSizes = { originalSize, newSize };
-        done++;
-        worker.ReportProgress(Convert.ToInt32((double)done / count * 100), fileSizes);
+      await foreach (var fileSizes in CompressMediaItemsAsync(items, _cts.Token)) {
+        PbCompressProgress.Value++;
+        _totalSourceSize += fileSizes[0];
+        _totalCompressedSize += fileSizes[1];
+        OnPropertyChanged(nameof(TotalSourceSize));
+        OnPropertyChanged(nameof(TotalCompressedSize));
       }
+
+      _cts?.Dispose();
+      _cts = null;
     }
 
-    private void Compress_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-      PbCompressProgress.Value = e.ProgressPercentage;
-      if (e.UserState == null) return;
-      _totalSourceSize += ((long[])e.UserState)[0];
-      _totalCompressedSize += ((long[])e.UserState)[1];
-      OnPropertyChanged(nameof(TotalSourceSize));
-      OnPropertyChanged(nameof(TotalCompressedSize));
-    }
+    private async void BtnCompress_OnClick(object sender, RoutedEventArgs e) {
+      GbSettings.IsEnabled = false;
+      BtnCompress.IsEnabled = false;
+      BtnCancel.Content = "Cancel";
 
-    private void Compress_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+      _workTask = Compress();
+      await _workTask;
+
       GbSettings.IsEnabled = true;
       BtnCompress.IsEnabled = true;
       BtnCancel.Content = "Close";
     }
 
-    private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
-      _compress?.CancelAsync();
+    private async void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
+      _cts?.Cancel();
+      await _workTask;
       Close();
     }
 
