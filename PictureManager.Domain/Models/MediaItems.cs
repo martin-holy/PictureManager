@@ -363,8 +363,7 @@ namespace PictureManager.Domain.Models {
           var folderMediaItems = new List<MediaItem>();
 
           // add MediaItems from current Folder to dictionary for faster search
-          var fmis = new Dictionary<string, MediaItem>();
-          folder.MediaItems.ForEach(mi => fmis.Add(mi.FileName, mi));
+          var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
 
           foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
             if (token.IsCancellationRequested) break;
