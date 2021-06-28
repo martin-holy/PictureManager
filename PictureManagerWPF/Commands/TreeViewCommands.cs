@@ -10,16 +10,16 @@ using System.Windows.Input;
 
 namespace PictureManager.Commands {
   public class TreeViewCommands : Singleton<TreeViewCommands> {
-    public static RoutedUICommand TagItemDeleteNotUsedCommand { get; } = new RoutedUICommand { Text = "Delete not used" };
-    public static RoutedUICommand FolderAddToFavoritesCommand { get; } = new RoutedUICommand { Text = "Add to Favorites" };
-    public static RoutedUICommand FolderSetAsFolderKeywordCommand { get; } = new RoutedUICommand { Text = "Set as Folder Keyword" };
-    public static RoutedUICommand ViewerIncludeFolderCommand { get; } = new RoutedUICommand { Text = "Include for Viewer" };
-    public static RoutedUICommand ViewerExcludeFolderCommand { get; } = new RoutedUICommand { Text = "Exclude for Viewer" };
-    public static RoutedUICommand GeoNameNewCommand { get; } = new RoutedUICommand { Text = "New" };
-    public static RoutedUICommand ActivateFilterAndCommand { get; } = new RoutedUICommand { Text = "Filter And" };
-    public static RoutedUICommand ActivateFilterOrCommand { get; } = new RoutedUICommand { Text = "Filter Or" };
-    public static RoutedUICommand ActivateFilterNotCommand { get; } = new RoutedUICommand { Text = "Filter Not" };
-    public static RoutedUICommand LoadByTagCommand { get; } = new RoutedUICommand { Text = "Load" };
+    public static RoutedUICommand TagItemDeleteNotUsedCommand { get; } = new() { Text = "Delete not used" };
+    public static RoutedUICommand FolderAddToFavoritesCommand { get; } = new() { Text = "Add to Favorites" };
+    public static RoutedUICommand FolderSetAsFolderKeywordCommand { get; } = new() { Text = "Set as Folder Keyword" };
+    public static RoutedUICommand ViewerIncludeFolderCommand { get; } = new() { Text = "Include for Viewer" };
+    public static RoutedUICommand ViewerExcludeFolderCommand { get; } = new() { Text = "Exclude for Viewer" };
+    public static RoutedUICommand GeoNameNewCommand { get; } = new() { Text = "New" };
+    public static RoutedUICommand ActivateFilterAndCommand { get; } = new() { Text = "Filter And" };
+    public static RoutedUICommand ActivateFilterOrCommand { get; } = new() { Text = "Filter Or" };
+    public static RoutedUICommand ActivateFilterNotCommand { get; } = new() { Text = "Filter Not" };
+    public static RoutedUICommand LoadByTagCommand { get; } = new() { Text = "Load" };
 
     public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, TagItemDeleteNotUsedCommand, TagItemDeleteNotUsed);
