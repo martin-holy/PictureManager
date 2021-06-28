@@ -7,9 +7,9 @@ namespace PictureManager.Domain.Models {
   public class BaseCatTreeViewCategory : CatTreeViewCategory, ICatTreeViewCategory {
     public BaseCatTreeViewCategory(Category category) : base(category) { }
 
-    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) => throw new System.NotImplementedException();
+    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) => throw new System.NotImplementedException();
 
-    public new void ItemRename(ICatTreeViewItem item, string name) {
+    public override void ItemRename(ICatTreeViewItem item, string name) {
       if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       item.Title = name;
@@ -23,11 +23,11 @@ namespace PictureManager.Domain.Models {
       table.Helper.IsModified = true;
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) => throw new System.NotImplementedException();
+    public override void ItemDelete(ICatTreeViewItem item) => throw new System.NotImplementedException();
 
-    public new void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) => throw new System.NotImplementedException();
+    public override void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) => throw new System.NotImplementedException();
 
-    public new void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
+    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
       if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       var saveGroups = dest is ICatTreeViewCategory || dest is ICatTreeViewGroup || !Equals(item.Parent, dest.Parent);
@@ -44,18 +44,18 @@ namespace PictureManager.Domain.Models {
         Core.Instance.Sdb.SetModified<CategoryGroups>();
     }
 
-    public new ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) =>
+    public override ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) =>
       Core.Instance.CategoryGroups.GroupCreate(cat, name);
 
-    public new void GroupRename(ICatTreeViewGroup group, string name) =>
+    public override void GroupRename(ICatTreeViewGroup group, string name) =>
       Core.Instance.CategoryGroups.GroupRename(group, name);
 
-    public new void GroupDelete(ICatTreeViewGroup group) {
+    public override void GroupDelete(ICatTreeViewGroup group) {
       base.GroupDelete(group);
       Core.Instance.CategoryGroups.GroupDelete(group as CategoryGroup);
     }
 
-    public new void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) {
+    public override void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) {
       base.GroupMove(group, dest, aboveDest);
       Core.Instance.CategoryGroups.GroupMove(group as CategoryGroup, dest as CategoryGroup, aboveDest);
     }
