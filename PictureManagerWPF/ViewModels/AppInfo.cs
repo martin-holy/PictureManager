@@ -33,14 +33,14 @@ namespace PictureManager.ViewModels {
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
-    public static string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
+    public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new();
     public string DateAndTime => Domain.Extensions.DateTimeFromString(CurrentMediaItem?.FileName, _dateFormats, "H:mm:ss");
 
-    public static string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
-    public static string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
-    public static string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
+    public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
+    public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
+    public string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
 
     public AppMode AppMode {
       get => _appMode;
