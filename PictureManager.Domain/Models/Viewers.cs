@@ -59,15 +59,15 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public new bool CanCreateItem(ICatTreeViewItem item) => item is Viewers;
+    public override bool CanCreateItem(ICatTreeViewItem item) => item is Viewers;
 
-    public new bool CanRenameItem(ICatTreeViewItem item) => item is Viewer;
+    public override bool CanRenameItem(ICatTreeViewItem item) => item is Viewer;
 
-    public new bool CanDeleteItem(ICatTreeViewItem item) => item is Viewer || item.Parent?.Parent is Viewer;
+    public override bool CanDeleteItem(ICatTreeViewItem item) => item is Viewer || item.Parent?.Parent is Viewer;
 
-    public new bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && root is ICatTreeViewCategory;
+    public override bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && root is ICatTreeViewCategory;
 
-    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var viewer = new Viewer(Helper.GetNextId(), name, root);
       All.Add(viewer);
       CatTreeViewUtils.SetItemInPlace(root, viewer);
@@ -77,7 +77,7 @@ namespace PictureManager.Domain.Models {
       return viewer;
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
+    public override void ItemDelete(ICatTreeViewItem item) {
       // item can be Viewer or Inc/Excl Folder
       item.Parent.Items.Remove(item);
 

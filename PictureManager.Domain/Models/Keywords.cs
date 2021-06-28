@@ -86,7 +86,7 @@ namespace PictureManager.Domain.Models {
       }).Result;
     }
 
-    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var item = new Keyword(Helper.GetNextId(), name, root);
       var idx = CatTreeViewUtils.SetItemInPlace(root, item);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
@@ -101,7 +101,7 @@ namespace PictureManager.Domain.Models {
       return item;
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
+    public override void ItemDelete(ICatTreeViewItem item) {
       if (item is not Keyword keyword) return;
 
       // remove Keyword from the tree

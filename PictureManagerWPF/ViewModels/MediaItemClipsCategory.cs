@@ -116,7 +116,7 @@ namespace PictureManager.ViewModels {
     private static ICatTreeViewItem CreateClipItem(VideoClip clip, ICatTreeViewItem parent) =>
       new VideoClipViewModel(clip) {
         Parent = parent,
-        Title = string.IsNullOrEmpty(clip.Name) ? $"Clip #{parent.Items.Count(x => !(x is ICatTreeViewGroup)) + 1}" : clip.Name,
+        Title = string.IsNullOrEmpty(clip.Name) ? $"Clip #{parent.Items.Count(x => x is not ICatTreeViewGroup) + 1}" : clip.Name,
         IconName = IconName.MovieClapper,
         Tag = clip
       };
@@ -130,9 +130,9 @@ namespace PictureManager.ViewModels {
         }
     }
 
-    public new void ItemCreate(ICatTreeViewItem root, string name) {
+    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       var vc = App.Core.VideoClips.ItemCreate(name, CurrentMediaItem, root.Tag as VideoClipsGroup);
-      if (CreateClipItem(vc, root) is not VideoClipViewModel vcvm) return;
+      if (CreateClipItem(vc, root) is not VideoClipViewModel vcvm) return null;
 
       var player = App.WMain.FullMedia.Player;
       App.WMain.FullMedia.SetMarker(vcvm, true);
@@ -143,14 +143,16 @@ namespace PictureManager.ViewModels {
       CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
 
       CustomControls.VideoPlayer.CreateThumbnail(vcvm, player, true);
+
+      return vcvm;
     }
 
-    public new void ItemRename(ICatTreeViewItem item, string name) {
+    public override void ItemRename(ICatTreeViewItem item, string name) {
       item.Title = name;
       VideoClips.ItemRename(item.Tag as VideoClip, name);
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
+    public override void ItemDelete(ICatTreeViewItem item) {
       if (item is not VideoClipViewModel vc) return;
 
       File.Delete(vc.ThumbPath.LocalPath);
@@ -162,7 +164,7 @@ namespace PictureManager.ViewModels {
       CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
     }
 
-    public new void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
+    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
       var items = item.Parent.Items.Union(dest is VideoClipViewModel ? dest.Parent.Items : dest.Items).OfType<VideoClipViewModel>();
 
       // move item to end of category or group
@@ -187,19 +189,19 @@ namespace PictureManager.ViewModels {
       UpdateClipTitles(items);
     }
 
-    public new ICatTreeViewGroup GroupCreate(ICatTreeViewCategory root, string name) {
+    public override ICatTreeViewGroup GroupCreate(ICatTreeViewCategory root, string name) {
       var vcg = App.Core.VideoClipsGroups.ItemCreate(name, CurrentMediaItem);
       var ctvg = CreateGroupItem(vcg, root);
       root.Items.Insert(root.Items.Count(x => x is ICatTreeViewGroup), ctvg);
       return ctvg;
     }
 
-    public new void GroupRename(ICatTreeViewGroup group, string name) {
+    public override void GroupRename(ICatTreeViewGroup group, string name) {
       group.Title = name;
       VideoClipsGroups.ItemRename(group.Tag as VideoClipsGroup, name);
     }
 
-    public new void GroupDelete(ICatTreeViewGroup group) {
+    public override void GroupDelete(ICatTreeViewGroup group) {
       foreach (var item in group.Items)
         ItemDelete(item);
 
@@ -208,7 +210,7 @@ namespace PictureManager.ViewModels {
       App.Core.VideoClipsGroups.ItemDelete(group.Tag as VideoClipsGroup);
     }
 
-    public new void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) {
+    public override void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) {
       App.Core.VideoClipsGroups.GroupMove(group.Tag as VideoClipsGroup, dest.Tag as VideoClipsGroup, aboveDest);
       group.Parent.Items.Move(group, dest, aboveDest);
     }

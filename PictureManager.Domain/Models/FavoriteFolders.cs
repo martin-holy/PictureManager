@@ -56,7 +56,7 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SaveIdSequences();
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
+    public override void ItemDelete(ICatTreeViewItem item) {
       if (item is not FavoriteFolder folder) return;
 
       // remove from the Tree

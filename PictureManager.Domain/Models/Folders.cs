@@ -250,7 +250,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public new bool CanDrop(object src, ICatTreeViewItem dest) {
+    public override bool CanDrop(object src, ICatTreeViewItem dest) {
       switch (src) {
         case Folder srcData: { // Folder
           if (dest is Folder destData && !destData.HasThisParent(srcData) && !Equals(srcData, destData) &&
@@ -273,19 +273,19 @@ namespace PictureManager.Domain.Models {
       return false;
     }
 
-    public new void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
+    public override void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
       // handled in OnAfterOnDrop (TreeViewCategories)
     }
 
-    public new bool CanCreateItem(ICatTreeViewItem item) => item is Folder;
+    public override bool CanCreateItem(ICatTreeViewItem item) => item is Folder;
 
-    public new bool CanRenameItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
+    public override bool CanRenameItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
 
-    public new bool CanDeleteItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
+    public override bool CanDeleteItem(ICatTreeViewItem item) => item is Folder && !(item.Parent is ICatTreeViewCategory);
 
-    public new bool CanSort(ICatTreeViewItem root) => false;
+    public override bool CanSort(ICatTreeViewItem root) => false;
 
-    public new string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
+    public override string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
       // check if folder already exists
       if (Directory.Exists(Extensions.PathCombine(((Folder)root).FullPath, name)))
         return "Folder already exists!";
@@ -297,7 +297,7 @@ namespace PictureManager.Domain.Models {
       return null;
     }
 
-    public new ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
+    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
       root.IsExpanded = true;
 
       // create Folder
@@ -320,7 +320,7 @@ namespace PictureManager.Domain.Models {
       return item;
     }
 
-    public new void ItemRename(ICatTreeViewItem item, string name) {
+    public override void ItemRename(ICatTreeViewItem item, string name) {
       var parent = (Folder)item.Parent;
       var self = (Folder)item;
 
@@ -338,7 +338,7 @@ namespace PictureManager.Domain.Models {
         Core.Instance.FolderKeywords.Load();
     }
 
-    public new void ItemDelete(ICatTreeViewItem item) {
+    public override void ItemDelete(ICatTreeViewItem item) {
       // remove Folder from the Tree
       item.Parent.Items.Remove(item);
 
