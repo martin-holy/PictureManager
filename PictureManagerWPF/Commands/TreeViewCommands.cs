@@ -2,14 +2,13 @@
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
-using PictureManager.Patterns;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
 using System.Windows.Input;
 
 namespace PictureManager.Commands {
-  public class TreeViewCommands : Singleton<TreeViewCommands> {
+  public static class TreeViewCommands {
     public static RoutedUICommand TagItemDeleteNotUsedCommand { get; } = new() { Text = "Delete not used" };
     public static RoutedUICommand FolderAddToFavoritesCommand { get; } = new() { Text = "Add to Favorites" };
     public static RoutedUICommand FolderSetAsFolderKeywordCommand { get; } = new() { Text = "Set as Folder Keyword" };
