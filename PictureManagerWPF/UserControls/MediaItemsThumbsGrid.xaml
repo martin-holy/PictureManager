@@ -19,6 +19,7 @@
     <ContextMenu x:Key="ThumbsGridContextMenu">
       <MenuItem Header="Group by Folders" IsCheckable="True" IsChecked="{Binding GroupByFolders}" Click="Refresh" />
       <MenuItem Header="Group by Date" IsCheckable="True" IsChecked="{Binding GroupByDate}" Click="Refresh" />
+      <MenuItem Header="Sort by File first" IsCheckable="True" IsChecked="{Binding SortByFileFirst}" Click="Refresh" />
     </ContextMenu>
   </UserControl.Resources>
 </UserControl>

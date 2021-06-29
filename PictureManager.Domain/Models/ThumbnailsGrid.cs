@@ -20,6 +20,7 @@ namespace PictureManager.Domain.Models {
     private bool _showVideos = true;
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
+    private bool _sortByFileFirst = true;
 
     public List<MediaItem> SelectedItems { get; } = new();
     public List<MediaItem> LoadedItems { get; } = new();
@@ -32,6 +33,7 @@ namespace PictureManager.Domain.Models {
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
     public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
+    public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
 
     public MediaItem Current {
@@ -203,12 +205,19 @@ namespace PictureManager.Domain.Models {
 
       var filtered = MediaItems.Filter(LoadedItems);
 
-      var sorted = GroupByFolders
-        ? filtered.OrderBy(x =>
-          x.Folder.FolderKeyword != null
-            ? CatTreeViewUtils.GetFullPath(x.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
-            : x.Folder.FullPath).ThenBy(x => x.FileName)
-        : filtered.OrderBy(x => x.FileName);
+      var sorted = SortByFileFirst
+        ? filtered.OrderBy(x => x.FileName).ThenBy(
+          x => GroupByFolders
+            ? x.Folder.FolderKeyword != null
+              ? CatTreeViewUtils.GetFullPath(x.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+              : x.Folder.FullPath
+            : string.Empty)
+        : GroupByFolders
+          ? filtered.OrderBy(
+            x => x.Folder.FolderKeyword != null
+              ? CatTreeViewUtils.GetFullPath(x.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+              : x.Folder.FullPath).ThenBy(x => x.FileName)
+          : filtered.OrderBy(x => x.FileName);
 
       foreach (var mi in sorted)
         FilteredItems.Add(mi);
