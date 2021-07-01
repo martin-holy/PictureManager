@@ -1,6 +1,6 @@
 ﻿using PictureManager.Dialogs;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

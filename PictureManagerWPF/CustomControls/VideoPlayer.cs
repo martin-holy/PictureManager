@@ -1,5 +1,6 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System;
@@ -387,7 +388,7 @@ namespace PictureManager.CustomControls {
 
     public static void CreateThumbnail(VideoClipViewModel vc, FrameworkElement visual, bool reCreate = false) {
       if (!File.Exists(vc.ThumbPath.LocalPath) || reCreate) {
-        Utils.Imaging.CreateVideoThumbnailFromVisual(visual, vc.ThumbPath.LocalPath, Settings.Default.ThumbnailSize);
+        Imaging.CreateVideoThumbnailFromVisual(visual, vc.ThumbPath.LocalPath, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel);
 
         vc.OnPropertyChanged(nameof(vc.ThumbPath));
       }

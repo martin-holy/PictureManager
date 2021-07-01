@@ -1,7 +1,7 @@
 ﻿using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -79,7 +79,7 @@ namespace PictureManager.Dialogs {
 
             try {
               var dest = Path.Combine(destination, mi.FileName);
-              Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail);
+              Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Settings.Default.JpegQualityLevel);
             }
             catch (Exception ex) {
               App.Ui.LogError(ex, mi.FilePath);
