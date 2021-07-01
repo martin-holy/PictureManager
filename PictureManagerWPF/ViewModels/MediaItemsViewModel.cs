@@ -3,6 +3,7 @@ using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 using PictureManager.UserControls;
 using PictureManager.Utils;
@@ -143,7 +144,8 @@ namespace PictureManager.ViewModels {
         // read metadata for new items and add thumbnails to grid
         var metadata = ReadMetadataAndListThumbsAsync(items, token);
         // create thumbnails
-        var thumbs = Imaging.CreateThumbnailsAsync(items, token);
+        var progress = new Progress<int>(x => App.Ui.AppInfo.ProgressBarValueB = x);
+        var thumbs = Imaging.CreateThumbnailsAsync(items, token, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress);
 
         await Task.WhenAll(metadata, thumbs);
 
@@ -313,7 +315,7 @@ namespace PictureManager.ViewModels {
 
           TryWriteMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
           await App.Core.RunOnUiThread(App.Db.SetModified<MediaItems>);
         },

@@ -1,7 +1,7 @@
 ﻿using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -67,8 +67,8 @@ namespace PictureManager.Dialogs {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        await Imaging.CreateThumbnailAsync(Domain.Utils.Imaging.GetMediaType(filePath), filePath, thumbPath,
-          Settings.Default.ThumbnailSize, 0);
+        await Imaging.CreateThumbnailAsync(Imaging.GetMediaType(filePath), filePath, thumbPath,
+          Settings.Default.ThumbnailSize, 0, Settings.Default.JpegQualityLevel);
       }
 
       return new Uri(thumbPath);

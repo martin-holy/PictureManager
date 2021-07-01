@@ -1,6 +1,8 @@
 ﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
+using PictureManager.Properties;
 using PictureManager.UserControls;
 using PictureManager.Utils;
 using PictureManager.ViewModels;
@@ -149,7 +151,7 @@ namespace PictureManager.Commands {
           folder.MediaItems.Add(mi);
           MediaItemsViewModel.ReadMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
 
           // reload grid
           mmi.ThumbsGrid.LoadedItems.AddInOrder(mi,
@@ -205,7 +207,7 @@ namespace PictureManager.Commands {
         null,
         async delegate (MediaItem mi) {
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
@@ -239,7 +241,7 @@ namespace PictureManager.Commands {
           try {
             var src = mi.FilePath;
             var dest = Path.Combine(destination, mi.FileName);
-            Imaging.ResizeJpg(src, dest, px, withMetadata, withThumbnail);
+            Imaging.ResizeJpg(src, dest, px, withMetadata, withThumbnail, Settings.Default.JpegQualityLevel);
           }
           catch (Exception ex) {
             App.Ui.LogError(ex, mi.FilePath);
