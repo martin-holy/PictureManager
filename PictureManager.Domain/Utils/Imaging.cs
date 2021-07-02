@@ -407,18 +407,21 @@ namespace PictureManager.Domain.Utils {
       return faceBoxes;
     }
 
-    public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
-      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+    public static Task<BitmapImage> GetCroppedBitmapImageAsync(string filePath, Int32Rect rect, int size) {
+      return Task.Run(() => {
+        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-      var bmp = new BitmapImage();
-      bmp.BeginInit();
-      bmp.CacheOption = BitmapCacheOption.OnLoad;
-      bmp.StreamSource = fileStream;
-      bmp.SourceRect = rect;
-      bmp.DecodePixelWidth = size;
-      bmp.EndInit();
+        var bmp = new BitmapImage();
+        bmp.BeginInit();
+        bmp.CacheOption = BitmapCacheOption.OnLoad;
+        bmp.StreamSource = fileStream;
+        bmp.SourceRect = rect;
+        bmp.DecodePixelWidth = size;
+        bmp.EndInit();
+        bmp.Freeze();
 
-      return bmp;
+        return bmp;
+      });
     }
 
     public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).Result;
