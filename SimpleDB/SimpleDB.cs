@@ -38,6 +38,7 @@ namespace SimpleDB {
         if (!table.Value.AutoLoad) continue;
         progress.Report($"Loading data for {table.Key.Name}");
         table.Value.Table.LoadFromFile();
+        table.Value.LoadPropsFromFile();
       }
     }
 
@@ -57,6 +58,9 @@ namespace SimpleDB {
     public void SaveAllTables() {
       foreach (var helper in Tables.Values.Where(x => x.IsModified))
         helper.Table.SaveToFile();
+
+      foreach (var helper in Tables.Values.Where(x => x.AreTablePropsModified))
+        helper.SaveTablePropsToFile();
 
       SaveIdSequences();
       Changes = 0;

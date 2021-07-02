@@ -9,5 +9,6 @@ namespace SimpleDB {
     void LoadFromFile();
 
     public void SaveToFile() => Helper.SaveToFile(All);
+    public virtual void TablePropsToCsv() {}
   }
 }
