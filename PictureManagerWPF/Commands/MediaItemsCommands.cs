@@ -342,13 +342,12 @@ namespace PictureManager.Commands {
         control = new FaceRecognitionControl();
         App.WMain.MainTabs.AddTab();
         App.WMain.MainTabs.SetTab(control, control, null);
-        App.WMain.MainMenu.UpdateLayout();
       }
       else {
         tab.IsSelected = true;
       }
 
-      control.Recognize(mediaItems);
+      control.LoadFaces(mediaItems);
     }
   }
 }
