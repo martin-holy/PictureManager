@@ -2,17 +2,35 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <cc:VirtualizingWrapPanel x:Name="ThumbsGrid" Rows="{Binding Rows}">
     <cc:VirtualizingWrapPanel.ItemDataTemplate>
       <DataTemplate DataType="{x:Type models:Face}">
-        <Border DataContext="{Binding}" BorderThickness="2">
+        <Border DataContext="{Binding}" BorderThickness="2" Margin="1" PreviewMouseUp="Face_PreviewMouseUp">
+          <Border.Style>
+            <Style TargetType="{x:Type Border}">
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                  <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </Border.Style>
+          
           <StackPanel>
-            <!--<TextBlock Text="{Binding Face.MediaItem.FileName}" />-->
-            <Image Source="{Binding Picture}" Width="100"  />
+            <Image Source="{Binding Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pmd:Core.Instance}}" />
           </StackPanel>
+          
+          <Border.ToolTip>
+            <StackPanel Orientation="Vertical">
+              <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
+              <TextBlock Text="{Binding MediaItem.FileName}" />
+            </StackPanel>
+          </Border.ToolTip>
+          
         </Border>
       </DataTemplate>
     </cc:VirtualizingWrapPanel.ItemDataTemplate>

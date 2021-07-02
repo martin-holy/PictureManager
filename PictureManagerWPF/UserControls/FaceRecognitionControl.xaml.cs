@@ -1,14 +1,14 @@
 ﻿using PictureManager.CustomControls;
-using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace PictureManager.UserControls {
   public partial class FaceRecognitionControl : INotifyPropertyChanged {
@@ -16,71 +16,80 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+    private CancellationTokenSource _cts;
+    private Task _workTask;
+    private readonly IProgress<int> _progress;
     private string _title;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public ObservableCollection<object> Rows { get; } = new ObservableCollection<object>();
+    public ObservableCollection<object> Rows { get; } = new();
 
     public FaceRecognitionControl() {
       InitializeComponent();
 
       Title = "Face Recognition";
-    }
-
-    public async void Recognize(List<MediaItem> mediaItems) {
-      ThumbsGrid.ClearRows();
       App.Core.Faces.LoadFromFile();
+      App.Core.Faces.Helper.LoadPropsFromFile();
       App.Core.Faces.LinkReferences();
 
-      var detectedFaces = App.Core.Faces.All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
-      var notRecognizedFaces = detectedFaces.Where(x => x.PersonId == 0);
-      var mediaItemsToDetect = mediaItems.Except(detectedFaces.Select(x => x.MediaItem).Distinct());
-      var facesToDisplay = new Dictionary<object, long>();
+      _progress = new Progress<int>(x => {
+        App.Ui.AppInfo.ProgressBarValueA = x;
+        App.Ui.AppInfo.ProgressBarValueB = x;
+      });
+    }
 
-      foreach (var face in notRecognizedFaces) {
-        AddFaceToGrid(face);
-        facesToDisplay.Add(face, face.AvgHash);
+    public async void LoadFaces(List<MediaItem> mediaItems) {
+      // cancel previous work
+      if (_workTask != null) {
+        _cts?.Cancel();
+        await _workTask;
       }
 
-      foreach (var mi in mediaItemsToDetect) {
-        var filePath = mi.MediaType == MediaType.Image ? mi.FilePath : mi.FilePathCache;
-        IList<Int32Rect> faceRects = null;
+      _cts?.Dispose();
+      _cts = new();
 
-        try {
-          faceRects = await Imaging.DetectFaces(filePath, 40);
-        }
-        catch (Exception ex) {
-          App.Ui.LogError(ex, filePath);
-        }
+      ThumbsGrid.ClearRows();
+      App.Ui.AppInfo.ProgressBarValueA = 0;
+      App.Ui.AppInfo.ProgressBarValueB = 0;
+      
+      _workTask = Task.Run(async () => {
+        await foreach (var face in App.Core.Faces.GetFacesAsync(mediaItems, _progress, _cts.Token))
+          await App.Core.RunOnUiThread(() => { AddFaceToGrid(face); });
+      });
 
-        if (faceRects == null) continue;
-        foreach (var faceRect in faceRects) {
-          var avgHash = Imaging.GetAvgHash(filePath, faceRect);
-          var newFace = new Face(App.Core.Faces.Helper.GetNextId(), 0, faceRect, avgHash) { MediaItem = mi };
-          AddFaceToGrid(newFace);
-          facesToDisplay.Add(newFace, newFace.AvgHash);
-          App.Core.Faces.All.Add(newFace);
-        }
-      }
+      await _workTask;
+      _cts?.Dispose();
+      _cts = null;
+
+      if (App.Core.Faces.Helper.IsModified)
+        App.Core.Faces.Helper.SaveToFile(App.Core.Faces.All);
+      if (App.Core.Faces.Helper.AreTablePropsModified)
+        App.Core.Faces.Helper.SaveTablePropsToFile();
 
       // sort by similarity
-      var sorted = Imaging.GetSimilarImages(facesToDisplay, -1);
-
-      // display faces sorted
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
+      App.Core.Faces.SortLoaded();
       ThumbsGrid.ClearRows();
-      foreach (var face in sorted)
-        ThumbsGrid.AddItem(face, 100 + itemOffset, new VirtualizingWrapPanelGroupItem[0]);
+      foreach (var face in App.Core.Faces.Loaded)
+        AddFaceToGrid(face);
     }
 
     private void AddFaceToGrid(Face face) {
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
-
-      var rect = new Int32Rect(face.FaceBox.X, face.FaceBox.Y, face.FaceBox.Width, face.FaceBox.Height);
-      var filePath = face.MediaItem.MediaType == MediaType.Image ? face.MediaItem.FilePath : face.MediaItem.FilePathCache;
-      face.Picture = Imaging.GetCroppedBitmapSource(filePath, rect, 100);
-
       ThumbsGrid.AddItem(face, 100 + itemOffset, new VirtualizingWrapPanelGroupItem[0]);
+    }
+
+    private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+      var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var face = (Face)((FrameworkElement)sender).DataContext;
+
+      // use middle and right button like CTRL + left button
+      if (e.ChangedButton is MouseButton.Middle or MouseButton.Right) {
+        isCtrlOn = true;
+        isShiftOn = false;
+      }
+
+      App.Core.Faces.Select(isCtrlOn, isShiftOn, face);
     }
   }
 }
