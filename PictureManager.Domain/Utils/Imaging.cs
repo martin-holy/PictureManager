@@ -421,45 +421,51 @@ namespace PictureManager.Domain.Utils {
       return bmp;
     }
 
+    public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).Result;
+
+    public static long GetPerceptualHash(string filePath, Int32Rect rect) => GetPerceptualHashAsync(filePath, rect).Result;
+
     /// <summary>
     /// Compute AVG hash from image
     /// </summary>
     /// <param name="filePath">File path to the image</param>
     /// <param name="rect">Compute AVG hash only on a part of the image. Use Int32Rect.Empty for the whole image.</param>
     /// <returns>AVG hash of the image</returns>
-    public static long GetAvgHash(string filePath, Int32Rect rect) {
-      // create source
-      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-      var bmpSource = new BitmapImage();
-      bmpSource.BeginInit();
-      bmpSource.CacheOption = BitmapCacheOption.None;
-      bmpSource.StreamSource = fileStream;
-      bmpSource.SourceRect = rect;
-      bmpSource.EndInit();
+    public static Task<long> GetAvgHashAsync(string filePath, Int32Rect rect) {
+      return Task.Run(() => {
+        // create source
+        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var bmpSource = new BitmapImage();
+        bmpSource.BeginInit();
+        bmpSource.CacheOption = BitmapCacheOption.None;
+        bmpSource.StreamSource = fileStream;
+        bmpSource.SourceRect = rect;
+        bmpSource.EndInit();
 
-      // resize
-      var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(8.0 / bmpSource.PixelWidth, 8.0 / bmpSource.PixelHeight));
+        // resize
+        var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(8.0 / bmpSource.PixelWidth, 8.0 / bmpSource.PixelHeight));
 
-      // convert to gray scale
-      var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
+        // convert to gray scale
+        var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
 
-      // copy pixels
-      var pixels = new byte[64];
-      grayScale.CopyPixels(pixels, 8, 0);
+        // copy pixels
+        var pixels = new byte[64];
+        grayScale.CopyPixels(pixels, 8, 0);
 
-      // compute average
-      var sum = 0;
-      for (var i = 0; i < 64; i++)
-        sum += pixels[i];
-      var avg = sum / 64;
+        // compute average
+        var sum = 0;
+        for (var i = 0; i < 64; i++)
+          sum += pixels[i];
+        var avg = sum / 64;
 
-      // compute bits
-      long hash = 0;
-      for (var i = 0; i < 64; i++)
-        if (pixels[i] > avg)
-          hash |= 1 << i;
+        // compute bits
+        long hash = 0;
+        for (var i = 0; i < 64; i++)
+          if (pixels[i] > avg)
+            hash |= 1 << i;
 
-      return hash;
+        return hash;
+      });
     }
 
     /// <summary>
@@ -468,56 +474,58 @@ namespace PictureManager.Domain.Utils {
     /// <param name="filePath">File path to the image</param>
     /// <param name="rect">Compute Perceptual hash only on a part of the image. Use Int32Rect.Empty for the whole image.</param>
     /// <returns>Perceptual hash of the image</returns>
-    public static long GetPerceptualHash(string filePath, Int32Rect rect) {
-      // create source
-      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-      var bmpSource = new BitmapImage();
-      bmpSource.BeginInit();
-      bmpSource.CacheOption = BitmapCacheOption.None;
-      bmpSource.StreamSource = fileStream;
-      bmpSource.SourceRect = rect;
-      bmpSource.EndInit();
+    public static Task<long> GetPerceptualHashAsync(string filePath, Int32Rect rect) {
+      return Task.Run(() => {
+        // create source
+        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+        var bmpSource = new BitmapImage();
+        bmpSource.BeginInit();
+        bmpSource.CacheOption = BitmapCacheOption.None;
+        bmpSource.StreamSource = fileStream;
+        bmpSource.SourceRect = rect;
+        bmpSource.EndInit();
 
-      // resize
-      var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(32.0 / bmpSource.PixelWidth, 32.0 / bmpSource.PixelHeight));
+        // resize
+        var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(32.0 / bmpSource.PixelWidth, 32.0 / bmpSource.PixelHeight));
 
-      // convert to gray scale
-      var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
+        // convert to gray scale
+        var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
 
-      // copy pixels
-      var pixels = new byte[1024];
-      grayScale.CopyPixels(pixels, 32, 0);
-      var pixels2D = new byte[32, 32];
-      var row = -1;
-      for (var i = 0; i < 1024; i++) {
-        if (i % 32 == 0) row++;
-        pixels2D[row, i - (row * 32)] = pixels[i];
-      }
-
-      // compute DCT
-      var pixelsDct = ApplyDiscreteCosineTransform(pixels2D, 32);
-
-      // compute average only from top-left 8x8 minus first value
-      double total = 0;
-      for (var x = 0; x < 8; x++)
-        for (var y = 0; y < 8; y++)
-          total += pixelsDct[x, y];
-
-      total -= pixelsDct[0, 0];
-      var avg = total / ((8 * 8) - 1);
-
-      // compute bits
-      long hash = 0;
-      var bi = 0;
-      for (var x = 0; x < 8; x++) {
-        for (var y = 0; y < 8; y++) {
-          if (pixelsDct[x, y] > avg)
-            hash |= 1 << bi;
-          bi++;
+        // copy pixels
+        var pixels = new byte[1024];
+        grayScale.CopyPixels(pixels, 32, 0);
+        var pixels2D = new byte[32, 32];
+        var row = -1;
+        for (var i = 0; i < 1024; i++) {
+          if (i % 32 == 0) row++;
+          pixels2D[row, i - (row * 32)] = pixels[i];
         }
-      }
 
-      return hash;
+        // compute DCT
+        var pixelsDct = ApplyDiscreteCosineTransform(pixels2D, 32);
+
+        // compute average only from top-left 8x8 minus first value
+        double total = 0;
+        for (var x = 0; x < 8; x++)
+          for (var y = 0; y < 8; y++)
+            total += pixelsDct[x, y];
+
+        total -= pixelsDct[0, 0];
+        var avg = total / ((8 * 8) - 1);
+
+        // compute bits
+        long hash = 0;
+        var bi = 0;
+        for (var x = 0; x < 8; x++) {
+          for (var y = 0; y < 8; y++) {
+            if (pixelsDct[x, y] > avg)
+              hash |= 1 << bi;
+            bi++;
+          }
+        }
+
+        return hash;
+      });
     }
 
     public static double[,] ApplyDiscreteCosineTransform(byte[,] input, int size) {
