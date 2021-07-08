@@ -407,21 +407,64 @@ namespace PictureManager.Domain.Utils {
       return faceBoxes;
     }
 
-    public static Task<BitmapImage> GetCroppedBitmapImageAsync(string filePath, Int32Rect rect, int size) {
-      return Task.Run(() => {
-        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+    public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
+      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
-        var bmp = new BitmapImage();
-        bmp.BeginInit();
-        bmp.CacheOption = BitmapCacheOption.OnLoad;
-        bmp.StreamSource = fileStream;
-        bmp.SourceRect = rect;
-        bmp.DecodePixelWidth = size;
-        bmp.EndInit();
-        bmp.Freeze();
+      var bmp = new BitmapImage();
+      bmp.BeginInit();
+      bmp.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+      bmp.StreamSource = fileStream;
+      bmp.SourceRect = rect;
+      bmp.EndInit();
+      bmp.Freeze();
 
-        return bmp;
-      });
+      var bmpResized = bmp.Resize(size);
+      bmpResized.Freeze();
+
+      return bmpResized;
+    }
+
+    public static WriteableBitmap Resize(this BitmapSource bitmapSource, int size) {
+      var pxW = bitmapSource.PixelWidth;
+      var pxH = bitmapSource.PixelHeight;
+      var sizeW = pxW > pxH ? size : size * (pxW / (pxH / 100.0)) / 100;
+      var sizeH = pxH > pxW ? size : size * (pxH / (pxW / 100.0)) / 100;
+      var scaleX = sizeW / pxW;
+      var scaleY = sizeH / pxH;
+
+      return new WriteableBitmap(new TransformedBitmap(bitmapSource, new ScaleTransform(scaleX, scaleY, 0, 0)));
+    }
+
+    public static FormatConvertedBitmap ToGray(this BitmapSource bitmapSource) =>
+      new(bitmapSource, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
+
+    public static CroppedBitmap Cropp(this BitmapSource bitmapSource, Int32Rect sourceRect) =>
+      new(bitmapSource, sourceRect);
+
+    public static Bitmap ToBitmap(this BitmapSource bitmapSource) {
+      var format = bitmapSource.Format.ToImaging();
+      var bmp = new Bitmap(bitmapSource.PixelWidth, bitmapSource.PixelHeight, format);
+
+      if (format == System.Drawing.Imaging.PixelFormat.Format8bppIndexed) {
+        var cp = bmp.Palette;
+        for (var i = 0; i < 256; i++)
+          cp.Entries[i] = System.Drawing.Color.FromArgb(i, i, i);
+        bmp.Palette = cp;
+      }
+
+      var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
+      bitmapSource.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
+      bmp.UnlockBits(data);
+      return bmp;
+    }
+
+    public static System.Drawing.Imaging.PixelFormat ToImaging(this System.Windows.Media.PixelFormat pixelFormat) {
+      if (pixelFormat == PixelFormats.Indexed8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
+      if (pixelFormat == PixelFormats.Gray8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
+      if (pixelFormat == PixelFormats.Bgr24) return System.Drawing.Imaging.PixelFormat.Format24bppRgb;
+      if (pixelFormat == PixelFormats.Bgr32) return System.Drawing.Imaging.PixelFormat.Format32bppRgb;
+      if (pixelFormat == PixelFormats.Bgra32) return System.Drawing.Imaging.PixelFormat.Format32bppArgb;
+      throw new NotImplementedException($"Conversion from pixel format {pixelFormat} is not supported.");
     }
 
     public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).Result;
@@ -586,7 +629,7 @@ namespace PictureManager.Domain.Utils {
 
         for (var j = i + 1; j < itemsLength; j++) {
           var diff = CompareHashes(hashes[items[i]], hashes[items[j]]);
-          if (limit > -1 && diff > limit) continue;
+          if (diff > limit) continue;
           similar.Add(j, diff);
         }
 
