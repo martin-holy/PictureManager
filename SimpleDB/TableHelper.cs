@@ -14,8 +14,9 @@ namespace SimpleDB {
     private readonly string _tableFilePath;
     private readonly string _tablePropsFilePath;
     private readonly ILogger _logger;
+    private readonly SimpleDB _db;
 
-    public TableHelper(ITable table, int maxId, ILogger logger, bool autoLoad) {
+    public TableHelper(ITable table, int maxId, ILogger logger, bool autoLoad, SimpleDB db) {
       _logger = logger;
       table.Helper = this;
       Table = table;
@@ -23,10 +24,12 @@ namespace SimpleDB {
       AutoLoad = autoLoad;
       _tableFilePath = Path.Combine("db", $"{Table.GetType().Name}.csv");
       _tablePropsFilePath = Path.Combine("db", $"{Table.GetType().Name}_props.csv");
+      _db = db;
     }
 
     public int GetNextId() {
       IsModified = true;
+      _db.Changes++;
       return ++MaxId;
     }
 
