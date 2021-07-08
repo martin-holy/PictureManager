@@ -9,6 +9,20 @@ namespace PictureManager.Domain {
   public static class Extensions {
     public static int IntParseOrDefault(this string s, int d) => int.TryParse(s, out var result) ? result : d;
 
+    private static Random _random;
+    public static void Shuffle<T>(this IList<T> list) {
+      _random ??= new();
+
+      var n = list.Count;
+      while (n > 1) {
+        n--;
+        var k = _random.Next(n + 1);
+        var value = list[k];
+        list[k] = list[n];
+        list[n] = value;
+      }
+    }
+
     public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection,
       Func<TSource, TKey> keySelector) {
       var sorted = collection.OrderBy(keySelector).ToList();
