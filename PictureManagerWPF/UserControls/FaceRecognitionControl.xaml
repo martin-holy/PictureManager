@@ -6,34 +6,86 @@
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
-  <cc:VirtualizingWrapPanel x:Name="ThumbsGrid" Rows="{Binding Rows}">
-    <cc:VirtualizingWrapPanel.ItemDataTemplate>
-      <DataTemplate DataType="{x:Type models:Face}">
-        <Border DataContext="{Binding}" BorderThickness="2" Margin="1" PreviewMouseUp="Face_PreviewMouseUp">
-          <Border.Style>
-            <Style TargetType="{x:Type Border}">
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                  <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Border.Style>
+  <Grid>
+    <Grid.Resources>
+      <Style TargetType="{x:Type Path}" x:Key="CheckmarkPath">
+        <Setter Property="Stretch" Value="Fill" />
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Data" Value="{StaticResource Checkmark}" />
+        <Setter Property="Fill" Value="LimeGreen" />
+        <Setter Property="HorizontalAlignment" Value="Right" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Margin" Value="0,2,2,0" />
+        <Setter Property="Visibility" Value="Visible" />
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding IsUnknown}" Value="True">
+            <Setter Property="Visibility" Value="Hidden" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </Grid.Resources>
+    <cc:VirtualizingWrapPanel x:Name="ThumbsGrid" Rows="{Binding Rows}">
+      <cc:VirtualizingWrapPanel.ItemDataTemplate>
+        <DataTemplate DataType="{x:Type models:Face}">
+          <Border DataContext="{Binding}" BorderThickness="2" Margin="1" PreviewMouseUp="Face_PreviewMouseUp">
+            <Border.Style>
+              <Style TargetType="{x:Type Border}">
+                <Setter Property="BorderBrush" Value="Black" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
           
-          <StackPanel>
-            <Image Source="{Binding Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pmd:Core.Instance}}" />
-          </StackPanel>
+            <Grid>
+              <Image Source="{Binding Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pmd:Core.Instance}}" />
+              <Label Content="{Binding Sim}" Style="{StaticResource SShadowLabel}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+              <Path Style="{StaticResource CheckmarkPath}" />
+            </Grid>
           
-          <Border.ToolTip>
-            <StackPanel Orientation="Vertical">
-              <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
-              <TextBlock Text="{Binding MediaItem.FileName}" />
-            </StackPanel>
-          </Border.ToolTip>
+            <Border.ToolTip>
+              <StackPanel Orientation="Vertical">
+                <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
+                <TextBlock Text="{Binding MediaItem.FileName}" />
+                <TextBlock Text="{Binding Id}" />
+                <TextBlock Text="{Binding PersonId}" />
+                <TextBlock Text="{Binding Sim}" />
+              </StackPanel>
+            </Border.ToolTip>
           
-        </Border>
-      </DataTemplate>
-    </cc:VirtualizingWrapPanel.ItemDataTemplate>
-  </cc:VirtualizingWrapPanel>
+          </Border>
+        </DataTemplate>
+      </cc:VirtualizingWrapPanel.ItemDataTemplate>
+    </cc:VirtualizingWrapPanel>
+    
+    <StackPanel Orientation="Horizontal" Height="30" VerticalAlignment="Top" HorizontalAlignment="Center" 
+                Background="#88000000">
+      <StackPanel.Resources>
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleBaseButtonBase}">
+          <Setter Property="MinWidth" Value="60" />
+          <Setter Property="MaxHeight" Value="28" />
+          <Setter Property="Padding" Value="5,0" />
+          <Setter Property="Margin" Value="5,0" />
+        </Style>
+      </StackPanel.Resources>
+      
+      <Button Content="{Binding Faces.SelectedCount, Source={x:Static pmd:Core.Instance}}" />
+      <Button Content="Same person" Click="BtnSamePersonClick" />
+      <Button Content="Not this person" Click="BtnNotThisPersonClick" />
+      <Button Content="Not a face" />
+      <Button Content="Sort" Click="BtnSortClick" />
+      <Slider Value="{Binding Faces.SimilarityLimit, Source={x:Static pmd:Core.Instance}}" 
+              Minimum="{Binding Faces.SimilarityLimitMin, Source={x:Static pmd:Core.Instance}}" 
+              Maximum="100" Width="100" AutoToolTipPlacement="BottomRight" Margin="8,0" />
+    </StackPanel>
+  </Grid>
 
 </UserControl>
