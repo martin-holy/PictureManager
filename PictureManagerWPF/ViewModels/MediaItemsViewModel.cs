@@ -137,8 +137,7 @@ namespace PictureManager.ViewModels {
 
     private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
       App.Ui.AppInfo.ProgressBarIsIndeterminate = false;
-      App.Ui.AppInfo.ProgressBarValueA = 0;
-      App.Ui.AppInfo.ProgressBarValueB = 0;
+      App.Ui.AppInfo.ResetProgressBars(100);
 
       await Task.Run(async () => {
         // read metadata for new items and add thumbnails to grid

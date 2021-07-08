@@ -20,11 +20,13 @@
     <DataTemplate>
       <Grid>
         <StackPanel Orientation="Vertical">
-          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Ui}" 
-                       Value="{Binding AppInfo.ProgressBarValueA}" BorderThickness="1,1,1,0"
+          <ProgressBar Width="250" Height="11" BorderThickness="1,1,1,0" DataContext="{x:Static pm:App.Ui}" 
+                       Value="{Binding AppInfo.ProgressBarValueA}"
+                       Maximum="{Binding AppInfo.ProgressBarMaxA}"
                        IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
-          <ProgressBar Width="250" Height="11" Maximum="100" DataContext="{x:Static pm:App.Ui}" 
-                       Value="{Binding AppInfo.ProgressBarValueB}" BorderThickness="1,0,1,1"
+          <ProgressBar Width="250" Height="11" BorderThickness="1,0,1,1" DataContext="{x:Static pm:App.Ui}" 
+                       Value="{Binding AppInfo.ProgressBarValueB}"
+                       Maximum="{Binding AppInfo.ProgressBarMaxB}"
                        IsIndeterminate="{Binding AppInfo.ProgressBarIsIndeterminate}" />
         </StackPanel>
         <TextBlock Text="{TemplateBinding Content}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" HorizontalAlignment="Center"
