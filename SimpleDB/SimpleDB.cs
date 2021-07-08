@@ -13,7 +13,7 @@ namespace SimpleDB {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public Dictionary<Type, TableHelper> Tables = new();
+    public Dictionary<Type, TableHelper> Tables { get; } = new();
     public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
 
     private readonly Dictionary<string, int> _idSequences = new();
@@ -30,7 +30,7 @@ namespace SimpleDB {
       if (!_idSequences.TryGetValue(table.GetType().Name, out var maxId))
         _idSequences.Add(table.GetType().Name, 0);
 
-      Tables.Add(table.GetType(), new TableHelper(table, maxId, _logger, autoLoad));
+      Tables.Add(table.GetType(), new TableHelper(table, maxId, _logger, autoLoad, this));
     }
 
     public void LoadAllTables(IProgress<string> progress) {
