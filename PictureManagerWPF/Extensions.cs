@@ -38,21 +38,6 @@ namespace PictureManager {
       }
     }
 
-    private static Random _random;
-
-    public static void Shuffle<T>(this IList<T> list) {
-      _random ??= new();
-
-      var n = list.Count;
-      while (n > 1) {
-        n--;
-        var k = _random.Next(n + 1);
-        var value = list[k];
-        list[k] = list[n];
-        list[n] = value;
-      }
-    }
-
     public static string FileSizeToString(long size) {
       string[] sizes = { "B", "KB", "MB", "GB" };
       var order = 0;
