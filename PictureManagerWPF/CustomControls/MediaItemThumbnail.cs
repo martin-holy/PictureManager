@@ -62,7 +62,7 @@ namespace PictureManager.CustomControls {
       }
 
       WindowCommands.SwitchToFullScreen();
-      App.WMain.SetMediaItemSource();
+      App.WMain.SetMediaItemSource(mi);
     }
 
     private void Thumb_OnMouseMove(object sender, MouseEventArgs e) {

@@ -2,6 +2,7 @@
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -68,18 +69,17 @@ namespace PictureManager {
       App.Ui.MediaItemsViewModel.RegisterEvents();
     }
 
-    public void SetMediaItemSource(bool decoded = false) {
-      var current = App.Core.MediaItems.ThumbsGrid.Current;
-      switch (current.MediaType) {
+    public void SetMediaItemSource(MediaItem mediaItem, bool decoded = false) {
+      switch (mediaItem.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(current, decoded);
+          FullImage.SetSource(mediaItem, decoded);
           App.Ui.MediaItemClipsCategory.SetMediaItem(null);
           FullMedia.SetSource(null);
           break;
         }
         case MediaType.Video: {
-          App.Ui.MediaItemClipsCategory.SetMediaItem(current);
-          FullMedia.SetSource(current);
+          App.Ui.MediaItemClipsCategory.SetMediaItem(mediaItem);
+          FullMedia.SetSource(mediaItem);
           break;
         }
       }
