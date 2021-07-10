@@ -41,7 +41,7 @@ namespace PictureManager.Commands {
     private static bool CanSwitchToFullScreen() => App.Ui.AppInfo.AppMode == AppMode.Browser;
 
     public static void SwitchToFullScreen() {
-      if (App.Core.MediaItems.ThumbsGrid?.Current == null) return;
+      if (App.Core.MediaItems.Current == null) return;
       App.Ui.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
