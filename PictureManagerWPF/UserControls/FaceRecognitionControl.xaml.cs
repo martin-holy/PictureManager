@@ -1,4 +1,5 @@
-﻿using PictureManager.CustomControls;
+﻿using PictureManager.Commands;
+using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace PictureManager.UserControls {
   public partial class FaceRecognitionControl : INotifyPropertyChanged {
@@ -20,6 +22,7 @@ namespace PictureManager.UserControls {
 
     private CancellationTokenSource _cts;
     private Task _workTask;
+    private readonly Random _random = new();
     private readonly IProgress<int> _progressA;
     private readonly IProgress<int> _progressB;
     private string _title;
@@ -57,6 +60,7 @@ namespace PictureManager.UserControls {
       _cts?.Dispose();
       _cts = new();
 
+      App.Core.Faces.ConfirmedPeople.Clear();
       ThumbsGrid.ClearRows();
       App.Ui.AppInfo.ResetProgressBarA(mediaItems.Count);
       App.Ui.AppInfo.ResetProgressBarB(1);
@@ -67,7 +71,7 @@ namespace PictureManager.UserControls {
         await foreach (var face in App.Core.Faces.GetFacesAsync(mediaItems, _progressA, _cts.Token))
           await App.Core.RunOnUiThread(() => { AddFaceToGrid(face, groupItems); });
 
-        await App.Core.RunOnUiThread(() => { App.Ui.AppInfo.ResetProgressBarB(App.Core.Faces.Loaded.Count); });
+        await App.Core.RunOnUiThread(() => { App.Ui.AppInfo.ResetProgressBarB(App.Core.Faces.Loaded.Count * 2); });
         App.Core.Faces.FindSimilarities(_progressB);
       });
 
@@ -86,6 +90,61 @@ namespace PictureManager.UserControls {
       ThumbsGrid.AddItem(face, 100 + itemOffset, groupItems);
     }
 
+    private int GetTopRowIndex() {
+      var rowIndex = 0;
+      var mouseLoc = Mouse.GetPosition(ThumbsGrid);
+      mouseLoc.X = 50;
+      VisualTreeHelper.HitTest(ThumbsGrid, null, (e) => {
+        if (e.VisualHit is FrameworkElement elm) {
+          switch (elm.DataContext) {
+            case VirtualizingWrapPanelGroup g: {
+              for (var i = 0; i < ThumbsGrid.Rows.Count; i++) {
+                if (ThumbsGrid.Rows[i] == g) {
+                  rowIndex = i;
+                  break;
+                }
+              }
+              return HitTestResultBehavior.Stop;
+            }
+            case Face f: {
+              rowIndex = ThumbsGrid.GetRowIndex(f);
+              return HitTestResultBehavior.Stop;
+            }
+          }
+        }
+        return HitTestResultBehavior.Continue;
+      }, new PointHitTestParameters(mouseLoc));
+
+      return rowIndex;
+    }
+
+    private async void Sort() {
+      await App.Core.Faces.SortLoadedAsync();
+      Reload();
+    }
+
+    private void Reload() {
+      var rowIndex = GetTopRowIndex();
+      App.Core.Faces.ConfirmedPeople.Clear();
+      ThumbsGrid.ClearRows();
+
+      foreach (var group in App.Core.Faces.LoadedInGroups.Where(x => x.Count > 0)) {
+        if (group[0].PersonId != 0) {
+          var randomFaceIndex = _random.Next(group.Count(x => x.PersonId != 0) - 1);
+          App.Core.Faces.ConfirmedPeople.Add(group[randomFaceIndex]);
+        }
+
+        var groupItems = new VirtualizingWrapPanelGroupItem[] {
+          new() { Icon = IconName.People, Title = group[0].PersonId.ToString() } };
+
+        foreach (var face in group)
+          AddFaceToGrid(face, groupItems);
+      }
+
+      if (rowIndex != 0)
+        ThumbsGrid.ScrollTo(rowIndex);
+    }
+
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
@@ -100,19 +159,32 @@ namespace PictureManager.UserControls {
       App.Core.Faces.Select(isCtrlOn, isShiftOn, face);
     }
 
-    private async void BtnSortClick(object sender, RoutedEventArgs e) {
-      await App.Core.Faces.SortLoadedAsync();
-      ThumbsGrid.ClearRows();
-
-      foreach (var group in App.Core.Faces.LoadedInGroups.Where(x => x.Count > 0)) {
-        var groupItems = new VirtualizingWrapPanelGroupItem[] {
-          new() { Icon = IconName.People, Title = group[0].PersonId.ToString() } };
-        foreach (var face in group)
-          AddFaceToGrid(face, groupItems);
-      }
+    private void Face_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+      if (e.ClickCount != 2) return;
+      var face = (Face)((FrameworkElement)sender).DataContext;
+      App.Core.MediaItems.Current = face.MediaItem;
+      WindowCommands.SwitchToFullScreen();
+      App.WMain.SetMediaItemSource(face.MediaItem);
     }
 
-    private void BtnSamePersonClick(object sender, RoutedEventArgs e) => App.Core.Faces.SetSelectedAsSamePerson();
-    private void BtnNotThisPersonClick(object sender, RoutedEventArgs e) => App.Core.Faces.SetSelectedAsNotThisPerson();
+    private void ControlSizeChanged(object sender, SizeChangedEventArgs e) => Reload();
+    private void BtnSortClick(object sender, RoutedEventArgs e) => Sort();
+    private void BtnSamePersonClick(object sender, RoutedEventArgs e) {
+      App.Core.Faces.SetSelectedAsSamePerson();
+      if (ChbAutoSort.IsChecked == true)
+        Sort();
+    }
+
+    private void BtnNotThisPersonClick(object sender, RoutedEventArgs e) {
+      App.Core.Faces.SetSelectedAsNotThisPerson();
+      if (ChbAutoSort.IsChecked == true)
+        Sort();
+    }
+
+    private void BtnAnotherPersonClick(object sender, RoutedEventArgs e) {
+      App.Core.Faces.SetSelectedAsAnotherPerson();
+      if (ChbAutoSort.IsChecked == true)
+        Sort();
+    }
   }
 }
