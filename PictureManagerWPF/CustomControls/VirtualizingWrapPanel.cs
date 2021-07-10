@@ -78,6 +78,8 @@ namespace PictureManager.CustomControls {
 
     public void ScrollToTop() => _rowsScrollViewer?.ScrollToTop();
 
+    public void UpdateMaxRowWidth() => _maxRowWidth = ActualWidth;
+
     public void ClearRows() {
       foreach (var row in Rows) {
         switch (row) {
