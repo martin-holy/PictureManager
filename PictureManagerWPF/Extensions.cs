@@ -72,7 +72,7 @@ namespace PictureManager {
       result = 0.0;
       if (string.IsNullOrEmpty(s)) return false;
 
-      var clean = new string(s.Where(x => char.IsDigit(x) || x == '.' || x == ',').ToArray());
+      var clean = new string(s.Where(x => char.IsDigit(x) || x == '.' || x == ',' || x == '-').ToArray());
       var iOfSep = clean.LastIndexOfAny(new[] { ',', '.' });
       var partA = clean.Substring(0, iOfSep).Replace(",", string.Empty).Replace(".", string.Empty);
       var partB = clean.Substring(iOfSep + 1);
