@@ -70,17 +70,11 @@ namespace PictureManager.Domain.Models {
     }
 
     #region IEquatable implementation
-
     public bool Equals(MediaItem other) => Id == other?.Id;
-
     public override bool Equals(object obj) => Equals(obj as MediaItem);
-
     public override int GetHashCode() => Id;
-
-    public static bool operator ==(MediaItem mi1, MediaItem mi2) => mi1?.Equals(mi2) ?? mi2 is null;
-
-    public static bool operator !=(MediaItem mi1, MediaItem mi2) => !(mi1 == mi2);
-
+    public static bool operator ==(MediaItem a, MediaItem b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(MediaItem a, MediaItem b) => !(a == b);
     #endregion
 
     // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
