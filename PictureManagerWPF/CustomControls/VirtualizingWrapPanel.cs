@@ -57,9 +57,14 @@ namespace PictureManager.CustomControls {
       _rowsScrollViewer = (ScrollViewer)grid.Template.FindName("PART_RowsScrollViewer", grid);
     }
 
-    public void ScrollTo(int index) => _rowsStackPanel.BringIndexIntoViewPublic(index);
+    public void ScrollTo(int index) {
+      if (Rows.Count - 1 < index) return;
+      _rowsStackPanel.BringIndexIntoViewPublic(index);
+    }
 
-    public void ScrollTo(object item) {
+    public void ScrollTo(object item) => ScrollTo(GetRowIndex(item));
+
+    public int GetRowIndex(object item) {
       var rowIndex = 0;
       foreach (var row in Rows) {
         if (row is VirtualizingWrapPanelRow itemsRow)
@@ -68,7 +73,7 @@ namespace PictureManager.CustomControls {
         rowIndex++;
       }
 
-      ScrollTo(rowIndex);
+      return rowIndex;
     }
 
     public void ScrollToTop() => _rowsScrollViewer?.ScrollToTop();
