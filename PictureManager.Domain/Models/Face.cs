@@ -1,13 +1,15 @@
 ﻿using PictureManager.Domain.Utils;
 using SimpleDB;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Domain.Models {
-  public class Face : ObservableObject, IRecord {
+  public class Face : ObservableObject, IRecord, IEquatable<Face> {
     private BitmapSource _picture;
     private bool _isSelected;
 
@@ -27,6 +29,7 @@ namespace PictureManager.Domain.Models {
       }
     }
     public Int32Rect FaceBox { get; set; }
+    public List<Face> NotSimilar { get; set; }
     #endregion
 
     #region temp
@@ -46,10 +49,19 @@ namespace PictureManager.Domain.Models {
       FaceBox = faceBox;
     }
 
-    // ID|MediaItemId|PersonId|FaceBox
+    #region IEquatable implementation
+    public bool Equals(Face other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as Face);
+    public override int GetHashCode() => Id;
+    public static bool operator ==(Face a, Face b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(Face a, Face b) => !(a == b);
+    #endregion
+
+    // ID|MediaItemId|PersonId|FaceBox|NotSimilar
     public string ToCsv() {
       var faceBox = string.Join(",", FaceBox.X, FaceBox.Y, FaceBox.Width, FaceBox.Height);
-      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), faceBox);
+      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), faceBox,
+        NotSimilar == null ? string.Empty : string.Join(",", NotSimilar.Select(x => x.Id)));
     }
 
     public async Task SetPictureAsync(int size) {
