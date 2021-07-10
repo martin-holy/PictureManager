@@ -268,15 +268,15 @@ namespace PictureManager.ViewModels {
       if (_model.ThumbsGrid?.Current == null)
         ScrollToTop();
       else
-        ScrollTo(_model.ThumbsGrid.Current);
+        ScrollTo(_model.ThumbsGrid?.Current);
     }
 
     public void ScrollToTop() {
-      CurrentThumbsGrid.ScrollToTop();
+      CurrentThumbsGrid?.ScrollToTop();
       App.WMain.UpdateLayout();
     }
 
-    public void ScrollTo(MediaItem mi) => CurrentThumbsGrid.ScrollTo(mi);
+    public void ScrollTo(MediaItem mi) => CurrentThumbsGrid?.ScrollTo(mi);
 
     public void SetOrientation(MediaItem[] mediaItems, Rotation rotation) {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
