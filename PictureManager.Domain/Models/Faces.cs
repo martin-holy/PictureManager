@@ -335,15 +335,15 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    /// Sets new PersonId to all Faces that are selected or that have the same PersonId as some of the selected.
-    /// The new PersonId is the ...
+    /// Sets new PersonId to all Faces that are selected or that have the same PersonId (not 0) as some of the selected.
+    /// The new PersonId is the highest PersonId from the selected or highest unused negative id if PersonsIds are 0.
     /// </summary>
     public int SetSelectedAsSamePerson() {
       if (Selected.Count == 0) return 0;
 
-      var selectedPeopleIds = Selected.Select(x => x.PersonId).Distinct().OrderByDescending(x => x).ToArray();
+      var personsIds = Selected.Select(x => x.PersonId).Distinct().OrderByDescending(x => x).ToArray();
       // prefer known person id (id > 0)
-      var newId = selectedPeopleIds[0] > 0 ? selectedPeopleIds[0] : selectedPeopleIds.Where(x => x != 0).Max();
+      var newId = personsIds[0] != 0 ? personsIds[0] : personsIds.Length > 1 ? personsIds[1] : 0;
 
       if (newId == 0) { // get unused min ID
         var usedIds = All.Cast<Face>().Where(x => x.PersonId < 0).
@@ -357,12 +357,12 @@ namespace PictureManager.Domain.Models {
 
       Face[] toUpdate;
 
-      if (selectedPeopleIds.Length == 1 && selectedPeopleIds[0] == 0)
+      if (personsIds.Length == 1 && personsIds[0] == 0)
         toUpdate = Selected.ToArray();
       else {
         // take just faces with unknown people
         var allWithSameId = All.Cast<Face>().
-          Where(x => x.PersonId < 0 && x.PersonId != newId && selectedPeopleIds.Contains(x.PersonId));
+          Where(x => x.PersonId < 0 && x.PersonId != newId && personsIds.Contains(x.PersonId));
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
