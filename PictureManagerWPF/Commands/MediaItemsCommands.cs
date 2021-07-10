@@ -4,7 +4,6 @@ using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 using PictureManager.UserControls;
-using PictureManager.Utils;
 using PictureManager.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -64,7 +63,7 @@ namespace PictureManager.Commands {
       var current = ThumbsGrid.GetNext();
       ThumbsGrid.Current = current;
       var decoded = App.WMain.PresentationPanel.IsRunning && current.MediaType == MediaType.Image && current.IsPanoramic;
-      App.WMain.SetMediaItemSource(decoded);
+      App.WMain.SetMediaItemSource(current, decoded);
 
       if (App.WMain.PresentationPanel.IsRunning && (
             current.MediaType == MediaType.Video ||
@@ -86,7 +85,7 @@ namespace PictureManager.Commands {
         App.WMain.PresentationPanel.Stop();
 
       ThumbsGrid.Current = ThumbsGrid.GetPrevious();
-      App.WMain.SetMediaItemSource();
+      App.WMain.SetMediaItemSource(ThumbsGrid.Current);
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -118,7 +117,7 @@ namespace PictureManager.Commands {
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
         if (ThumbsGrid.Current != null)
-          App.WMain.SetMediaItemSource();
+          App.WMain.SetMediaItemSource(ThumbsGrid.Current);
         else
           WindowCommands.SwitchToBrowser();
       }
@@ -188,7 +187,7 @@ namespace PictureManager.Commands {
       App.Ui.MediaItemsViewModel.SetOrientation(ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
-      App.WMain.SetMediaItemSource();
+      App.WMain.SetMediaItemSource(ThumbsGrid.Current);
     }
 
     public static bool CanRebuildThumbnails(object parameter) => parameter is Folder || ThumbsGrid?.FilteredItems.Count > 0;
