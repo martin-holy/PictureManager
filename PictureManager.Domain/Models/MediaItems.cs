@@ -17,8 +17,18 @@ namespace PictureManager.Domain.Models {
 
     private bool _isEditModeOn;
     private int _mediaItemsCount;
+    private MediaItem _current;
     private ThumbnailsGrid _currentThumbsGrid;
 
+    public MediaItem Current {
+      get => _current;
+      set {
+        _current = value;
+        if (ThumbsGrid != null && ThumbsGrid.Current != value)
+          ThumbsGrid.Current = value;
+        OnPropertyChanged(nameof(Current));
+      }
+    }
     public ThumbnailsGrid ThumbsGrid {
       get => _currentThumbsGrid;
       set { _currentThumbsGrid = value; OnPropertyChanged(nameof(ThumbsGrid)); }

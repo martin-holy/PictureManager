@@ -43,6 +43,11 @@ namespace PictureManager.Domain.Models {
         _current = value;
         if (_current != null) SetSelected(_current, true);
         _indexOfCurrent = value == null ? null : FilteredItems.IndexOf(value);
+
+        // temporary
+        if (Core.Instance.MediaItems.Current != value)
+          Core.Instance.MediaItems.Current = value;
+
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
       }
