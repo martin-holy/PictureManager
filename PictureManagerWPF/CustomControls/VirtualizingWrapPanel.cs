@@ -12,6 +12,8 @@ namespace PictureManager.CustomControls {
 
     private ScrollViewer _rowsScrollViewer;
     private VirtualizingStackPanel _rowsStackPanel;
+    private VirtualizingWrapPanelGroup _lastGroup;
+    private VirtualizingWrapPanelRow _lastRow;
     private double _maxRowWidth;
 
     public static readonly DependencyProperty ItemDataTemplateProperty = DependencyProperty.Register(nameof(ItemDataTemplate), typeof(DataTemplate), typeof(VirtualizingWrapPanel));
@@ -91,32 +93,32 @@ namespace PictureManager.CustomControls {
       Rows.Clear();
     }
 
-    public void AddItem(object item, int itemWidth, VirtualizingWrapPanelGroupItem[] groupItems) {
-      AddGroup(groupItems);
+    public void AddGroup(VirtualizingWrapPanelGroupItem[] groupItems) {
+      _lastGroup = new VirtualizingWrapPanelGroup();
 
-      var row = Rows.OfType<VirtualizingWrapPanelRow>().LastOrDefault();
-      if (row == null || (row.Items.Count > 0 && itemWidth > row.SpaceLeft)) {
-        row = new VirtualizingWrapPanelRow(_maxRowWidth);
-        Rows.Add(row);
-      }
+      foreach (var groupItem in groupItems)
+        _lastGroup.Items.Add(groupItem);
 
-      row.Items.Add(item);
-      row.SpaceLeft -= itemWidth;
+      Rows.Add(_lastGroup);
+      _lastRow = null;
     }
 
-    private void AddGroup(VirtualizingWrapPanelGroupItem[] groupItems) {
-      var group = Rows.OfType<VirtualizingWrapPanelGroup>().LastOrDefault();
-      if (group == null || !GroupItemsEquals(group.Items.ToArray(), groupItems)) {
-        group = new VirtualizingWrapPanelGroup();
+    public void AddGroupIfNew(VirtualizingWrapPanelGroupItem[] groupItems) {
+      if (_lastGroup == null || !GroupItemsEquals(_lastGroup.Items.ToArray(), groupItems))
+        AddGroup(groupItems);
+    }
 
-        foreach (var groupItem in groupItems)
-          group.Items.Add(groupItem);
-
-        Rows.Add(group);
-        Rows.Add(new VirtualizingWrapPanelRow(_maxRowWidth));
+    public void AddItem(object item, int itemWidth) {
+      if (_lastRow == null || (_lastRow.Items.Count > 0 && itemWidth > _lastRow.SpaceLeft)) {
+        _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth);
+        Rows.Add(_lastRow);
       }
 
-      group.ItemsCount++;
+      _lastRow.Items.Add(item);
+      _lastRow.SpaceLeft -= itemWidth;
+
+      if (_lastGroup != null)
+        _lastGroup.ItemsCount++;
     }
 
     private static bool GroupItemsEquals(VirtualizingWrapPanelGroupItem[] gis1, VirtualizingWrapPanelGroupItem[] gis2) {
