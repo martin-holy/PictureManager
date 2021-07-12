@@ -235,7 +235,8 @@ namespace PictureManager.ViewModels {
       }
 
       App.Core.RunOnUiThread(() => {
-        CurrentThumbsGrid.AddItem(mi, mi.ThumbWidth + itemOffset, groupItems.ToArray());
+        CurrentThumbsGrid.AddGroupIfNew(groupItems.ToArray());
+        CurrentThumbsGrid.AddItem(mi, mi.ThumbWidth + itemOffset);
       });
     }
 
