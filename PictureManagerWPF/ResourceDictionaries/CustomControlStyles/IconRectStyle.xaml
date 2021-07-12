@@ -13,14 +13,25 @@
       <Setter.Value>
         <ControlTemplate TargetType="cc:IconRect">
           <Rectangle DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:IconRect}}}"
-                     Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}"
                      Width="{Binding Size}" 
                      Height="{Binding Size}" 
                      VerticalAlignment="Center">
+            
+            <Rectangle.Style>
+              <Style TargetType="{x:Type Rectangle}">
+                <Setter Property="Fill" Value="{Binding IconFill}" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IconFill}" Value="{x:Null}">
+                    <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Rectangle.Style>
+            
             <Rectangle.OpacityMask>
-              <VisualBrush Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}"
-                           Stretch="Uniform" />
+              <VisualBrush Visual="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" Stretch="Uniform" />
             </Rectangle.OpacityMask>
+            
           </Rectangle>
         </ControlTemplate>
       </Setter.Value>
