@@ -59,7 +59,9 @@
           </Border.Style>
           
           <Grid>
-            <Image Source="{Binding Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
+            <Image Source="{Binding Picture}" Stretch="Fill"
+                   Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
+                   Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
             <Label Content="{Binding Sim}" Style="{StaticResource SShadowLabel}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
             <Path Style="{StaticResource CheckmarkPath}" />
           </Grid>
