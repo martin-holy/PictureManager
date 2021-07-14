@@ -19,6 +19,7 @@ namespace PictureManager.Domain.Models {
     private int _compareFaceSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
+    private bool _loadedSortedByFileName = true;
 
     public List<Face> Loaded { get; } = new();
     public List<List<Face>> LoadedInGroups { get; } = new();
@@ -305,6 +306,14 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public void SortLoadedByFileName() {
+      if (_loadedSortedByFileName) return;
+      var sorted = Loaded.OrderBy(x => x.MediaItem.FileName).ToArray();
+      Loaded.Clear();
+      Loaded.AddRange(sorted);
+      _loadedSortedByFileName = true;
+    }
+
     public async Task SortLoadedAsync() {
       await Task.Run(() => {
         foreach (var group in LoadedInGroups)
@@ -371,6 +380,7 @@ namespace PictureManager.Domain.Models {
         DeselectAll();
         Loaded.Clear();
         Loaded.AddRange(newLoaded);
+        _loadedSortedByFileName = false;
       });
     }
 
