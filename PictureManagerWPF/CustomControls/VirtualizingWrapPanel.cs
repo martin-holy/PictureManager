@@ -10,6 +10,8 @@ using System.Windows.Media;
 namespace PictureManager.CustomControls {
   public class VirtualizingWrapPanel : Control {
 
+    private ItemsControl _grid;
+    private UIElement _rowToScrollToTop;
     private ScrollViewer _rowsScrollViewer;
     private VirtualizingStackPanel _rowsStackPanel;
     private VirtualizingWrapPanelGroup _lastGroup;
@@ -48,20 +50,30 @@ namespace PictureManager.CustomControls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      var grid = (ItemsControl)Template.FindName("PART_Grid", this);
-      grid.ApplyTemplate();
-      grid.SizeChanged += (o, e) => { _maxRowWidth = ActualWidth; };
+      _grid = (ItemsControl)Template.FindName("PART_Grid", this);
+      _grid.ApplyTemplate();
+      _grid.SizeChanged += (o, e) => { _maxRowWidth = ActualWidth; };
 
-      var itemsPresenter = (ItemsPresenter)grid.Template.FindName("PART_ItemsPresenter", grid);
+      var itemsPresenter = (ItemsPresenter)_grid.Template.FindName("PART_ItemsPresenter", _grid);
       itemsPresenter.ApplyTemplate();
 
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
-      _rowsScrollViewer = (ScrollViewer)grid.Template.FindName("PART_RowsScrollViewer", grid);
+      _rowsScrollViewer = (ScrollViewer)_grid.Template.FindName("PART_RowsScrollViewer", _grid);
+
+      LayoutUpdated += (o, e) => {
+        if (_rowToScrollToTop == null) return;
+        _rowsScrollViewer?.ScrollToVerticalOffset(_rowsStackPanel.GetItemOffset(_rowToScrollToTop));
+        _rowToScrollToTop = null;
+      };
     }
 
     public void ScrollTo(int index) {
       if (Rows.Count - 1 < index) return;
+
       _rowsStackPanel.BringIndexIntoViewPublic(index);
+
+      // Scroll the row to top (the row will be scrolled to top in the LayoutUpdated event)
+      _rowToScrollToTop = _grid.ItemContainerGenerator.ContainerFromIndex(index) as UIElement;
     }
 
     public void ScrollTo(object item) => ScrollTo(GetRowIndex(item));
@@ -91,6 +103,8 @@ namespace PictureManager.CustomControls {
       }
 
       Rows.Clear();
+      _lastGroup = null;
+      _lastRow = null;
     }
 
     public void AddGroup(VirtualizingWrapPanelGroupItem[] groupItems) {
