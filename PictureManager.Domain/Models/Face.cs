@@ -29,19 +29,20 @@ namespace PictureManager.Domain.Models {
       }
     }
     public Int32Rect FaceBox { get; set; }
-    public List<Face> NotSimilar { get; set; }
+    public HashSet<Face> NotSimilar { get; set; }
     #endregion
 
     #region temp
     private double _sim;
     public double Sim { get => _sim; set { _sim = value; OnPropertyChanged(); } }
+    public double SimMax { get; set; }
     #endregion
 
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
     public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsUnknown => PersonId == 0;
-    public List<(Face face, double similarity)> Similar { get; set; }
+    public Dictionary<Face, double> Similar { get; set; }
 
     public Face(int id, int personId, Int32Rect faceBox) {
       Id = id;
@@ -67,13 +68,19 @@ namespace PictureManager.Domain.Models {
     public async Task SetPictureAsync(int size) {
       Picture ??= await Task.Run(() => {
         var filePath = MediaItem.MediaType == MediaType.Image ? MediaItem.FilePath : MediaItem.FilePathCache;
-        return Imaging.GetCroppedBitmapSource(filePath, FaceBox, size);
+        try {
+          return Imaging.GetCroppedBitmapSource(filePath, FaceBox, size);
+        }
+        catch (Exception ex) {
+          Core.Instance.Logger.LogError(ex, filePath);
+          return null;
+        }
       });
     }
 
     public async Task SetComparePictureAsync(int size) {
       ComparePicture ??= await Task.Run(() => {
-        return Picture.ToGray().Resize(size).ToBitmap();
+        return Picture?.ToGray().Resize(size).ToBitmap();
       });
     }
   }
