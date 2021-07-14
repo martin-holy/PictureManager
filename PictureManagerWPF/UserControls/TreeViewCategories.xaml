@@ -150,6 +150,24 @@
             <DataTrigger Binding="{Binding ToolTip, Converter={StaticResource AllToBoolConverter}}" Value="True">
               <Setter Property="ToolTip" Value="{Binding ToolTip}" />
             </DataTrigger>
+            
+            <!-- Persons Face -->
+            <MultiDataTrigger>
+              <MultiDataTrigger.Conditions>
+                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type models:Person}" />
+                <Condition Binding="{Binding Face, Converter={StaticResource AllToBoolConverter}}" Value="True" />
+              </MultiDataTrigger.Conditions>
+              <Setter Property="ToolTip">
+                <Setter.Value>
+                  <ToolTip BorderThickness="0" Padding="0">
+                    <Border BorderThickness="1" BorderBrush="Black">
+                      <Image Source="{Binding Face.Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
+                    </Border>
+                  </ToolTip>
+                </Setter.Value>
+              </Setter>
+            </MultiDataTrigger>
+
           </Style.Triggers>
         </Style>
       </cc:CatTreeView.ItemContainerStyle>
