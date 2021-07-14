@@ -12,4 +12,5 @@
   <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
   <pm:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
+  <pm:DataTypeConverter x:Key="DataTypeConverter" />
 </ResourceDictionary>
