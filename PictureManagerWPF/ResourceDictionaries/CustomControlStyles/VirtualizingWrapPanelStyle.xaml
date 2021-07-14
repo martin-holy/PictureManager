@@ -13,10 +13,11 @@
                         ItemsSource="{Binding Rows}"
                         VirtualizingStackPanel.IsVirtualizing="True" 
                         VirtualizingPanel.ScrollUnit="Pixel" 
+                        VirtualizingPanel.VirtualizationMode="Recycling"
                         ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4"/>
+                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
