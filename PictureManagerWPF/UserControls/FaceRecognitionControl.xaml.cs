@@ -152,7 +152,8 @@ namespace PictureManager.UserControls {
       }
       else {
         FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
-        foreach (var face in App.Core.Faces.Loaded.OrderBy(x => x.MediaItem.FileName))
+        App.Core.Faces.SortLoadedByFileName();
+        foreach (var face in App.Core.Faces.Loaded)
           AddFaceToGrid(FacesGrid, face);
       }
 
