@@ -124,4 +124,13 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
   <Canvas x:Key="appbar_run_fast">
     <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M16.5,5.5A2,2 0 0,0 18.5,3.5A2,2 0 0,0 16.5,1.5A2,2 0 0,0 14.5,3.5A2,2 0 0,0 16.5,5.5M12.9,19.4L13.9,15L16,17V23H18V15.5L15.9,13.5L16.5,10.5C17.89,12.09 19.89,13 22,13V11C20.24,11.03 18.6,10.11 17.7,8.6L16.7,7C16.34,6.4 15.7,6 15,6C14.7,6 14.5,6.1 14.2,6.1L9,8.3V13H11V9.6L12.8,8.9L11.2,17L6.3,16L5.9,18L12.9,19.4M4,9A1,1 0 0,1 3,8A1,1 0 0,1 4,7H7V9H4M5,5A1,1 0 0,1 4,4A1,1 0 0,1 5,3H10V5H5M3,13A1,1 0 0,1 2,12A1,1 0 0,1 3,11H7V13H3Z"/>
   </Canvas>
+  <Canvas x:Key="appbar_checkmark">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M 0,5.1 L 1.7,5.2 L 3.4,7.1 L 8,0.4 L 9.2,0 L 3.3,10.8 Z"/>
+  </Canvas>
+  <Canvas x:Key="appbar_x_cross">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M64 320L128 256 64 192 96 160 160 224 224 160 256 192 192 256 256 320 224 352 160 288 96 352 64 320Z"/>
+  </Canvas>
+  <Canvas x:Key="appbar_sort">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M3,13H15V11H3M3,6V8H21V6M3,18H9V16H3V18Z"/>
+  </Canvas>
 </ResourceDictionary>
