@@ -6,6 +6,7 @@ using PictureManager.Domain.Models;
 using PictureManager.Models;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
+using PictureManager.UserControls;
 using PictureManager.ViewModels;
 using SimpleDB;
 using System;
@@ -47,6 +48,12 @@ namespace PictureManager {
 
     public async void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
+
+      if (item is Person p && App.WMain.MainTabs.IsThisContentSet(typeof(FaceRecognitionControl))) {
+        var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
+        if (tab?.Content is FaceRecognitionControl frc) frc.ChangePerson(p);
+        return;
+      }
 
       // MainTabs Tab Content Type
       switch (item) {
