@@ -8,6 +8,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
+    public Face Face { get; set; }
 
     public Person(int id, string name) {
       Id = id;
