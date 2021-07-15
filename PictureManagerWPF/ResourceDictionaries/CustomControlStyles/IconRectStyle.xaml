@@ -6,12 +6,12 @@
     <ResourceDictionary Source="../Converters.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <Style TargetType="cc:IconRect">
+  <Style TargetType="{x:Type cc:IconRect}">
     <Setter Property="IsTabStop" Value="False" />
     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="cc:IconRect">
+        <ControlTemplate TargetType="{x:Type cc:IconRect}">
           <Rectangle DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:IconRect}}}"
                      Width="{Binding Size}" 
                      Height="{Binding Size}" 
@@ -36,6 +36,12 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+    <Setter Property="Visibility" Value="Visible" />
+    <Style.Triggers>
+      <Trigger Property="IsHidden" Value="True">
+        <Setter Property="Visibility" Value="Hidden" />
+      </Trigger>
+    </Style.Triggers>
   </Style>
     
 </ResourceDictionary>
