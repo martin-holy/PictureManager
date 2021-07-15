@@ -17,7 +17,7 @@
                         ScrollViewer.CanContentScroll="True">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <VirtualizingStackPanel CacheLengthUnit="Item" CacheLength="4" />
+                <VirtualizingStackPanel CacheLengthUnit="Page" CacheLength="2" />
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -67,7 +67,7 @@
 
             <ItemsControl.Template>
               <ControlTemplate>
-                <cc:WheelSpeedScrollViewer x:Name="PART_RowsScrollViewer">
+                <cc:WheelSpeedScrollViewer x:Name="PART_RowsScrollViewer" SpeedFactor="{Binding ScrollViewerSpeedFactor}">
                   <ItemsPresenter x:Name="PART_ItemsPresenter" />
                 </cc:WheelSpeedScrollViewer>
               </ControlTemplate>
