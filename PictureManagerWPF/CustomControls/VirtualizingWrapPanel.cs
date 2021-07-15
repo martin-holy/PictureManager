@@ -22,6 +22,7 @@ namespace PictureManager.CustomControls {
     public static readonly DependencyProperty ShowGroupItemsCountProperty = DependencyProperty.Register(nameof(ShowGroupItemsCount), typeof(bool), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(nameof(GroupItemsCountIcon), typeof(IconName), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty RowsProperty = DependencyProperty.Register(nameof(Rows), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(nameof(ScrollViewerSpeedFactor), typeof(double), typeof(VirtualizingWrapPanel), new PropertyMetadata(2.5));
 
     public DataTemplate ItemDataTemplate {
       get => (DataTemplate)GetValue(ItemDataTemplateProperty);
@@ -41,6 +42,11 @@ namespace PictureManager.CustomControls {
     public ObservableCollection<object> Rows {
       get => (ObservableCollection<object>)GetValue(RowsProperty);
       set => SetValue(RowsProperty, value);
+    }
+
+    public double ScrollViewerSpeedFactor {
+      get => (double)GetValue(ScrollViewerSpeedFactorProperty);
+      set => SetValue(ScrollViewerSpeedFactorProperty, value);
     }
 
     static VirtualizingWrapPanel() {
