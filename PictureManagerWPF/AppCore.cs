@@ -105,7 +105,7 @@ namespace PictureManager {
             // get items by tag
             List<MediaItem> items = item switch {
               Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
-              Person person => person.MediaItems,
+              Person person => person.GetMediaItems().ToList(),
               Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
               GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
               _ => new()
