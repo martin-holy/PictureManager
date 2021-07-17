@@ -3,7 +3,6 @@ using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -14,12 +13,13 @@ namespace PictureManager.Domain.Models {
     private bool _isSelected;
 
     #region DB Properties
+    private Person _person;
     private int _personId;
 
     public string[] Csv { get; set; }
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
-    public Person Person { get; set; }
+    public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
     public int PersonId { // < 0 for unknown people, 0 for unknown, > 0 for known people
       get => _personId;
       set {
@@ -29,13 +29,6 @@ namespace PictureManager.Domain.Models {
       }
     }
     public Int32Rect FaceBox { get; set; }
-    public HashSet<Face> NotSimilar { get; set; }
-    #endregion
-
-    #region temp
-    private double _sim;
-    public double Sim { get => _sim; set { _sim = value; OnPropertyChanged(); } }
-    public double SimMax { get; set; }
     #endregion
 
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
@@ -43,6 +36,7 @@ namespace PictureManager.Domain.Models {
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsUnknown => PersonId == 0;
     public Dictionary<Face, double> Similar { get; set; }
+    public double SimMax { get; set; }
 
     public Face(int id, int personId, Int32Rect faceBox) {
       Id = id;
@@ -58,11 +52,10 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(Face a, Face b) => !(a == b);
     #endregion
 
-    // ID|MediaItemId|PersonId|FaceBox|NotSimilar
+    // ID|MediaItemId|PersonId|FaceBox
     public string ToCsv() {
       var faceBox = string.Join(",", FaceBox.X, FaceBox.Y, FaceBox.Width, FaceBox.Height);
-      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), faceBox,
-        NotSimilar == null ? string.Empty : string.Join(",", NotSimilar.Select(x => x.Id)));
+      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), faceBox);
     }
 
     public async Task SetPictureAsync(int size) {
