@@ -346,7 +346,8 @@ namespace PictureManager.Commands {
         tab.IsSelected = true;
       }
 
-      control.LoadFaces(mediaItems);
+      control.MediaItems = mediaItems;
+      control.LoadFaces(false);
     }
   }
 }

@@ -19,7 +19,8 @@ namespace PictureManager.Domain.Models {
     private int _compareFaceSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
-    private bool _loadedSortedByFileName = true;
+    private bool _groupFaces;
+    private bool _groupConfirmedFaces;
 
     public List<Face> Loaded { get; } = new();
     public List<List<Face>> LoadedInGroups { get; } = new();
@@ -32,6 +33,8 @@ namespace PictureManager.Domain.Models {
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
     public int SelectedCount => Selected.Count;
+    public bool GroupFaces { get => _groupFaces; set { _groupFaces = value; OnPropertyChanged(); } }
+    public bool GroupConfirmedFaces { get => _groupConfirmedFaces; set { _groupConfirmedFaces = value; OnPropertyChanged(); } }
 
     #region ITable Methods
     public void LoadFromFile() {
@@ -40,9 +43,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|MediaItemId|PersonId|FaceBox|NotSimilar
+      // ID|MediaItemId|PersonId|FaceBox
       var props = csv.Split('|');
-      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
+      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[3].Split(',');
       var face = new Face(
         int.Parse(props[0]),
@@ -66,15 +69,8 @@ namespace PictureManager.Domain.Models {
             face.Person = person;
             if (person.Face == null) {
               person.Face = face;
-              face.SetPictureAsync(FaceSize);
+              _ = face.SetPictureAsync(FaceSize);
             }
-          }
-
-          if (!string.IsNullOrEmpty(face.Csv[4])) {
-            var ids = face.Csv[4].Split(',');
-            face.NotSimilar = new(ids.Length);
-            foreach (var faceId in ids)
-              face.NotSimilar.Add(faces[int.Parse(faceId)]);
           }
         }
         else
@@ -139,9 +135,10 @@ namespace PictureManager.Domain.Models {
 
       // multi select
       if (isShiftOn) {
-        var indexOfFace = Loaded.IndexOf(face);
-        var fromFace = Loaded.FirstOrDefault(x => x.IsSelected);
-        var from = fromFace == null ? 0 : Loaded.IndexOf(fromFace);
+        var list = GroupFaces ? LoadedInGroups.Single(x => x.Contains(face)) : Loaded;
+        var indexOfFace = list.IndexOf(face);
+        var fromFace = list.FirstOrDefault(x => x.IsSelected);
+        var from = fromFace == null ? 0 : list.IndexOf(fromFace);
         var to = indexOfFace;
 
         if (from > to) {
@@ -150,7 +147,7 @@ namespace PictureManager.Domain.Models {
         }
 
         for (var i = from; i < to + 1; i++)
-          SetSelected(Loaded[i], true);
+          SetSelected(list[i], true);
       }
     }
 
@@ -174,13 +171,17 @@ namespace PictureManager.Domain.Models {
       LoadedInGroups.Clear();
     }
 
-    public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
+    public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, bool detectNewFaces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
 
       var detectedFaces = All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
       var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem);
-      var mediaItemsToDetect = mediaItems.Except(detectedFaces.Select(x => x.MediaItem).Distinct()).Except(WithoutFaces);
-      var done = mediaItems.Count - misWithDetectedFaces.Count() - mediaItemsToDetect.Count();
+      var mediaItemsToDetect = Array.Empty<MediaItem>();
+
+      if (detectNewFaces)
+        mediaItemsToDetect = mediaItems.Except(detectedFaces.Select(x => x.MediaItem).Distinct()).Except(WithoutFaces).ToArray();
+
+      var done = mediaItems.Count - misWithDetectedFaces.Count() - mediaItemsToDetect.Length;
 
       progress.Report(done);
 
@@ -189,7 +190,6 @@ namespace PictureManager.Domain.Models {
           if (token.IsCancellationRequested) yield break;
 
           await face.SetPictureAsync(FaceSize);
-          await face.SetComparePictureAsync(CompareFaceSize);
           Loaded.Add(face);
 
           yield return face;
@@ -197,6 +197,8 @@ namespace PictureManager.Domain.Models {
 
         progress.Report(++done);
       }
+
+      if (!detectNewFaces) yield break;
 
       foreach (var mi in mediaItemsToDetect) {
         if (token.IsCancellationRequested) yield break;
@@ -222,7 +224,6 @@ namespace PictureManager.Domain.Models {
           var newFace = new Face(Helper.GetNextId(), 0, faceRect) { MediaItem = mi };
 
           await newFace.SetPictureAsync(FaceSize);
-          await newFace.SetComparePictureAsync(CompareFaceSize);
           Loaded.Add(newFace);
           All.Add(newFace);
 
@@ -233,43 +234,53 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void FindSimilarities(IProgress<int> progress) {
-      // clear previous loaded similar
-      foreach (var face in Loaded) {
-        face.Similar?.Clear();
-        face.SimMax = 0;
-      }
-
-      var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
-      var done = 0;
-
-      foreach (var faceA in Loaded) {
-        faceA.Similar ??= new();
-        foreach (var faceB in Loaded) {
-          if (faceA.Id == faceB.Id || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)
-            || faceA.ComparePicture == null || faceB.ComparePicture == null) continue;
-          var matchings = tm.ProcessImage(faceB.ComparePicture, faceA.ComparePicture);
-          var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
-          if (sim < SimilarityLimitMin) continue;
-          faceA.Similar.Add(faceB, sim);
-          if (faceA.SimMax < sim) faceA.SimMax = sim;
+    public Task FindSimilaritiesAsync(IProgress<int> progress, CancellationToken token) {
+      return Task.Run(async () => {
+        // clear previous loaded similar
+        foreach (var face in Loaded) {
+          face.Similar?.Clear();
+          face.SimMax = 0;
         }
 
-        progress.Report(++done);
-      }
+        var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
+        var done = 0;
 
-      // remove similar faces from face if the similar face is more similar to another face
-      foreach (var face in Loaded)
-        foreach (var sim in face.Similar.Where(x => x.Key.Similar.Count > 0).ToArray())
-          if (sim.Value < sim.Key.SimMax)
-            face.Similar.Remove(sim.Key);
+        foreach (var faceA in Loaded) {
+          if (token.IsCancellationRequested) break;
+          await faceA.SetComparePictureAsync(CompareFaceSize);
+          if (faceA.ComparePicture == null) continue;
+
+          faceA.Similar ??= new();
+          foreach (var faceB in Loaded) {
+            if (token.IsCancellationRequested) break;
+            if (faceA.Id == faceB.Id || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
+
+            await faceB.SetComparePictureAsync(CompareFaceSize);
+            if (faceB.ComparePicture == null) continue;
+
+            var matchings = tm.ProcessImage(faceB.ComparePicture, faceA.ComparePicture);
+            var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
+            if (sim < SimilarityLimitMin) continue;
+
+            faceA.Similar.Add(faceB, sim);
+            if (faceA.SimMax < sim) faceA.SimMax = sim;
+          }
+
+          if (faceA.Similar.Count == 0) {
+            faceA.Similar = null;
+            faceA.SimMax = 0;
+          }
+
+          progress.Report(++done);
+        }
+      }, token);
     }
 
     /// <summary>
     /// Compares faces with same person id to other faces with same person id 
     /// and select random face from each group for display
     /// </summary>
-    public void SortConfirmed() {
+    public void ReloadConfirmedFaces() {
       var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
       var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
       var groups = groupsA.Concat(groupsB);
@@ -306,81 +317,57 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void SortLoadedByFileName() {
-      if (_loadedSortedByFileName) return;
-      var sorted = Loaded.OrderBy(x => x.MediaItem.FileName).ToArray();
-      Loaded.Clear();
-      Loaded.AddRange(sorted);
-      _loadedSortedByFileName = true;
-    }
-
-    public async Task SortLoadedAsync() {
-      await Task.Run(() => {
+    public Task ReloadLoadedInGroupsAsync() {
+      return Task.Run(() => {
+        // clear
         foreach (var group in LoadedInGroups)
           group.Clear();
         LoadedInGroups.Clear();
 
-        var set = new HashSet<int>();
-        var toLoad = new List<Face>();
+        List<Face> facesGroup;
 
-        // add face if is not already in LoadedInGroups to last group
-        void AddIfToLoad(Face face, double sim) {
-          if (set.Add(face.Id)) {
-            toLoad.Add(face);
-            LoadedInGroups[^1].Add(face);
-            face.Sim = sim;
-          }
-        }
-
-        // add faces to new group in LoadedInGroups (same person first, than with similarities and last without similar)
-        void AddToLoad(IEnumerable<Face> faces, bool isSamePerson) {
-          var withSimilar = faces.Where(x => x.Similar != null && x.Similar.Count > 0).
-            OrderByDescending(x => x.Similar.Max(y => y.Value));
-          var withoutSimilar = faces.Except(withSimilar);
-
-          LoadedInGroups.Add(new());
-
-          if (isSamePerson)
-            foreach (var face in faces)
-              AddIfToLoad(face, 100);
-
-          foreach (var face in withSimilar) {
-            /*var simFaces = face.Similar.Where(
-              x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit &&
-              (face.NotSimilar == null || !face.NotSimilar.Contains(x.Key))).
-              OrderByDescending(x => x.Value);*/
-            var simFaces = face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).OrderByDescending(x => x.Value);
-            foreach (var simFace in simFaces) {
-              AddIfToLoad(face, simFace.Value);
-              AddIfToLoad(simFace.Key, simFace.Value);
-            }
-          }
-
-          foreach(var face in withoutSimilar)
-            AddIfToLoad(face, 0);
-        }
-        
+        // add faces with PersonId != 0 with all similar with PersonId == 0
         var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
         var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
         var samePerson = groupsA.Concat(groupsB);
-        //var samePerson = Loaded.Where(x => x.PersonId != 0).OrderByDescending(x => x.PersonId).GroupBy(x => x.PersonId);
+        foreach (var faces in samePerson) {
+          var sims = new List<(Face face, double sim)>();
+          facesGroup = new List<Face>();
+
+          foreach (var face in faces) {
+            facesGroup.Add(face);
+            if (face.Similar == null) continue;
+            sims.AddRange(face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).Select(x => (x.Key, x.Value)));
+          }
+
+          foreach (var face in sims.OrderByDescending(x => x.sim).Select(x => x.face).Distinct())
+            facesGroup.Add(face);
+
+          if (facesGroup.Count != 0)
+            LoadedInGroups.Add(facesGroup);
+        }
+
+        // add faces with PersonId == 0 ordered by similar
         var unknown = Loaded.Where(x => x.PersonId == 0);
+        var withSimilar = unknown.Where(x => x.Similar != null).OrderByDescending(x => x.SimMax);
+        var withoutSimilar = unknown.Except(withSimilar);
+        var set = new HashSet<int>();
+        facesGroup = new List<Face>();
 
-        foreach (var faces in samePerson)
-          AddToLoad(faces, true);
+        foreach (var face in withSimilar) {
+          var simFaces = face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).OrderByDescending(x => x.Value);
+          foreach (var simFace in simFaces) {
+            if (set.Add(face.Id)) facesGroup.Add(face);
+            if (set.Add(simFace.Key.Id)) facesGroup.Add(simFace.Key);
+          }
+        }
 
-        AddToLoad(unknown, false);
+        // add rest of the faces
+        foreach (var face in unknown.Where(x => !set.Contains(x.Id)))
+          facesGroup.Add(face);
 
-        var notSimilar = Loaded.Except(toLoad);
-        var newLoaded = toLoad.Concat(notSimilar).ToList();
-
-        foreach (var face in notSimilar)
-          LoadedInGroups[^1].Add(face);
-
-        DeselectAll();
-        Loaded.Clear();
-        Loaded.AddRange(newLoaded);
-        _loadedSortedByFileName = false;
+        if (facesGroup.Count != 0)
+          LoadedInGroups.Add(facesGroup);
       });
     }
 
@@ -388,8 +375,8 @@ namespace PictureManager.Domain.Models {
     /// Sets new PersonId to all Faces that are selected or that have the same PersonId (not 0) as some of the selected.
     /// The new PersonId is the highest PersonId from the selected or highest unused negative id if PersonsIds are 0.
     /// </summary>
-    public int SetSelectedAsSamePerson() {
-      if (Selected.Count == 0) return 0;
+    public void SetSelectedAsSamePerson() {
+      if (Selected.Count == 0) return;
 
       var personsIds = Selected.Select(x => x.PersonId).Distinct().OrderByDescending(x => x).ToArray();
       // prefer known person id (id > 0)
@@ -412,40 +399,20 @@ namespace PictureManager.Domain.Models {
       else {
         // take just faces with unknown people
         var allWithSameId = All.Cast<Face>().
-          Where(x => x.PersonId < 0 && x.PersonId != newId && personsIds.Contains(x.PersonId));
+          Where(x => x.PersonId != 0 && x.PersonId != newId && personsIds.Contains(x.PersonId));
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
+      var person = newId < 1 ? null : Core.Instance.People.All.FirstOrDefault(x => x.Id == newId) as Person;
+
       foreach (var face in toUpdate) {
         face.PersonId = newId;
-        face.NotSimilar?.Clear();
-        face.NotSimilar = null;
+        face.Person = person;
         Core.Instance.Sdb.SetModified<Faces>();
       }
 
-      return newId;
+      return;
     }
-
-    /*public void SetSelectedAsNotThisPerson() {
-      foreach (var faceToRemove in Selected.Where(x => x.PersonId == 0)) {
-        foreach (var group in LoadedInGroups) {
-          if (group.Contains(faceToRemove)) {
-            foreach (var faceInGroup in group.Where(x => x.PersonId != 0)) {
-              foreach (var simFace in faceInGroup.Similar) {
-                if (simFace.Key.Id == faceToRemove.Id) {
-                  faceInGroup.Similar.Remove(simFace.Key);
-                  faceInGroup.NotSimilar ??= new();
-                  faceInGroup.NotSimilar.Add(simFace.Key);
-                  Core.Instance.Sdb.SetModified<Faces>();
-                  break;
-                }
-              }
-            }
-            break;
-          }
-        }
-      }
-    }*/
 
     public void SetSelectedAsAnotherPerson() {
       foreach (var face in Selected)
@@ -461,13 +428,7 @@ namespace PictureManager.Domain.Models {
     public static void ChangePerson(Face face, Person person) {
       face.PersonId = person.Id;
       face.Person = person;
-      face.NotSimilar?.Clear();
-      face.NotSimilar = null;
-
-      if (person.Face == null) {
-        person.Face = face;
-        person.OnPropertyChanged(nameof(person.Face));
-      }
+      person.Face ??= face;
 
       Core.Instance.Sdb.SetModified<Faces>();
     }
@@ -475,9 +436,11 @@ namespace PictureManager.Domain.Models {
     public void DeleteSelected() {
       foreach (var face in Selected.ToArray()) {
         SetSelected(face, false);
-        face.Person = null;
-        face.NotSimilar?.Clear();
-        face.NotSimilar = null;
+        if (face.Person != null) {
+          face.Person.Face = null;
+          face.Person = null;
+        }
+
         face.Similar?.Clear();
         face.Picture = null;
         All.Remove(face);

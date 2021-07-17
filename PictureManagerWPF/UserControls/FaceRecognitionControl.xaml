@@ -10,38 +10,13 @@
 
   <Grid>
     <Grid.Resources>
-      <Style TargetType="{x:Type Path}" x:Key="CheckmarkPath">
-        <Setter Property="Stretch" Value="Fill" />
-        <Setter Property="Width" Value="20" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="Data" Value="{StaticResource Checkmark}" />
-        <Setter Property="Fill" Value="LimeGreen" />
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="VerticalAlignment" Value="Top" />
-        <Setter Property="Margin" Value="0,2,2,0" />
-        <Setter Property="Visibility" Value="Visible" />
-        <Setter Property="Effect">
-          <Setter.Value>
-            <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
-          </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-          <DataTrigger Binding="{Binding IsUnknown}" Value="True">
-            <Setter Property="Visibility" Value="Hidden" />
-          </DataTrigger>
-        </Style.Triggers>
-      </Style>
-      
+      <DropShadowEffect x:Key="_Shadow" BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
+            
       <Style TargetType="{x:Type Button}" x:Key="_IconButton" BasedOn="{StaticResource StyleButtonIcon}">
         <Setter Property="Height" Value="26" />
         <Setter Property="Width" Value="26" />
-        <Setter Property="Padding" Value="5,0" />
         <Setter Property="Margin" Value="2,0" />
-        <Setter Property="Effect">
-          <Setter.Value>
-            <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
-          </Setter.Value>
-        </Setter>
+        <Setter Property="Effect" Value="{StaticResource _Shadow}" />
       </Style>
       
       <DataTemplate x:Key="FaceDataTemplate" DataType="{x:Type models:Face}">
@@ -62,25 +37,34 @@
             <Image Source="{Binding Picture}" Stretch="Fill"
                    Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
                    Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
-            <Label Content="{Binding Sim}" Style="{StaticResource SShadowLabel}" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
-            <Path Style="{StaticResource CheckmarkPath}" />
+            <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                         Margin="0,2,2,0" Effect="{StaticResource _Shadow}" IsHidden="{Binding IsUnknown}" />
           </Grid>
           
           <Border.ToolTip>
-            <StackPanel Orientation="Vertical">
-              <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
-              <TextBlock Text="{Binding MediaItem.FileName}" />
-              <TextBlock Text="{Binding Person.Title}" />
-              <TextBlock Text="{Binding Id}" />
-              <TextBlock Text="{Binding PersonId}" />
-              <TextBlock Text="{Binding Sim}" />
-            </StackPanel>
+            <ToolTip Padding="0">
+              <DockPanel>
+                <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" DockPanel.Dock="Top" />
+                <StackPanel Orientation="Vertical" Margin="1">
+                  <Border BorderThickness="1" BorderBrush="Black" Background="#88000000"
+                          Visibility="{Binding Person, Converter={StaticResource AllToVisibilityConverter}}">
+                    <TextBlock Text="{Binding Person.Title}" FontSize="18" Margin="5,2" />
+                  </Border>
+
+                  <TextBlock Text="{Binding MediaItem.FileName}" TextWrapping="Wrap"
+                             MaxWidth="{Binding MediaItem.ThumbWidth}" />
+              
+                  <TextBlock Text="{Binding PersonId}" />
+                </StackPanel>
+              </DockPanel>
+            </ToolTip>
           </Border.ToolTip>
           
         </Border>
       </DataTemplate>
     </Grid.Resources>
     
+    <!-- Faces Grids -->
     <Grid>
       <Grid.ColumnDefinitions>
         <ColumnDefinition>
@@ -100,39 +84,49 @@
       </Grid.ColumnDefinitions>
       
       <Grid Grid.Column="0">
-        <cc:VirtualizingWrapPanel x:Name="ConfirmedFacesGrid"
+        <cc:VirtualizingWrapPanel x:Name="ConfirmedFacesGrid" ScrollViewerSpeedFactor="1"
                                   DataContext="{Binding ElementName=ConfirmedFacesGrid}"
                                   ItemDataTemplate="{StaticResource FaceDataTemplate}"
                                   SizeChanged="ControlSizeChanged" />
         
-        <ToggleButton x:Name="BtnGroupConfirmed" Style="{StaticResource StyleToggleButtonIconFlat}"
+        <ToggleButton x:Name="BtnGroupConfirmed" ToolTip="Groups with similarities"
+                      VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0" IsThreeState="False"
+                      Style="{StaticResource StyleToggleButtonIconFlat}"
                       Visibility="{Binding ElementName=ConfirmedFacesGrid, Path=Rows.Count, Converter={StaticResource AllToVisibilityConverter}}"
-                      VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0"
-                      IsChecked="False" Click="BtnGroupConfirmed_Click" ToolTip="Groups with similarities">
+                      IsChecked="{Binding Faces.GroupConfirmedFaces, Source={x:Static pm:App.Core}}">
           <cc:IconRect IconName="{x:Static pmd:IconName.PeopleMultiple}" IconFill="White" />
         </ToggleButton>
       </Grid>
 
       <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" Background="Transparent" />
 
-      <cc:VirtualizingWrapPanel x:Name="FacesGrid" Grid.Column="2"
+      <cc:VirtualizingWrapPanel x:Name="FacesGrid" Grid.Column="2" ScrollViewerSpeedFactor="1"
                                 DataContext="{Binding ElementName=FacesGrid}"
                                 ItemDataTemplate="{StaticResource FaceDataTemplate}"
                                 ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" />
     </Grid>
 
     <StackPanel Orientation="Horizontal" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,10,0">
-      <ToggleButton x:Name="BtnGroupFaces" Style="{StaticResource StyleToggleButtonIconFlat}"
-                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0"
-                    IsChecked="False" Click="BtnGroupFaces_Click" ToolTip="Group by Person or sort by file name">
+      <ToggleButton x:Name="BtnGroupFaces" ToolTip="Group by Person or sort by file name"
+                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0" IsThreeState="False"
+                    Style="{StaticResource StyleToggleButtonIconFlat}"
+                    IsChecked="{Binding Faces.GroupFaces, Source={x:Static pm:App.Core}}">
         <cc:IconRect IconName="{x:Static pmd:IconName.PeopleMultiple}" IconFill="White" />
       </ToggleButton>
       
-      <Button Click="BtnSortClick" ToolTip="Sort" Style="{StaticResource _IconButton}">
+      <Button x:Name="BtnDetectNew" ToolTip="Detect new" Style="{StaticResource _IconButton}">
+        <cc:IconRect IconName="Magnify" />
+      </Button>
+
+      <Button x:Name="BtnCompare" ToolTip="Compare" Style="{StaticResource _IconButton}">
+        <cc:IconRect IconName="Compare" />
+      </Button>
+      
+      <Button x:Name="BtnSort" ToolTip="Sort" Style="{StaticResource _IconButton}">
         <cc:IconRect IconName="Sort" />
       </Button>
       
-      <CheckBox x:Name="ChbAutoSort" IsChecked="False" Content="Auto Sort" />
+      <CheckBox x:Name="ChbAutoSort" IsChecked="False" Content="Auto Sort" IsThreeState="False" />
       
       <Slider Value="{Binding Faces.SimilarityLimit, Source={x:Static pm:App.Core}}" 
               Minimum="{Binding Faces.SimilarityLimitMin, Source={x:Static pm:App.Core}}" 
@@ -140,28 +134,28 @@
     </StackPanel>
     
     <!-- Semaphore Control Buttons -->
-    <StackPanel x:Name="ControlButtons" Orientation="Horizontal" Background="#88000000" Height="30" Width="120"
+    <StackPanel x:Name="ControlButtons" Orientation="Horizontal" Background="#88000000" Height="30" Width="108"
                 HorizontalAlignment="Left" VerticalAlignment="Top"
                 Visibility="{Binding Faces.SelectedCount, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
       <StackPanel.Resources>
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource _IconButton}" />
+        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource _IconButton}">
+          <Setter Property="Margin" Value="0" />
+        </Style>
       </StackPanel.Resources>
+      
       <!-- Selected -->
-      <Border Background="#1181B1" Style="{StaticResource SBorderGroup}" VerticalAlignment="Center">
+      <Border Background="#1181B1" Style="{StaticResource SBorderGroup}" VerticalAlignment="Center" Margin="2,0">
         <TextBlock Text="{Binding Faces.SelectedCount, Source={x:Static pm:App.Core}}" Style="{StaticResource STextBlock}" />
       </Border>
       
-      <Button Click="BtnSamePersonClick" ToolTip="Same Person">
-        <cc:IconRect IconName="People" IconFill="LimeGreen" />
+      <Button x:Name="BtnSamePerson" ToolTip="Same Person">
+        <cc:IconRect IconName="People" IconFill="LimeGreen" Size="17" />
       </Button>
-      <Button Click="BtnAnotherPersonClick" ToolTip="Another Person">
-        <cc:IconRect IconName="People" IconFill="Orange" />
+      <Button x:Name="BtnAnotherPerson" ToolTip="Another Person">
+        <cc:IconRect IconName="People" IconFill="Orange" Size="17" />
       </Button>
-      <!--<Button Click="BtnNotThisPersonClick" ToolTip="Not This Person">
-        <cc:IconRect IconName="People" IconFill="Red" />
-      </Button>-->
-      <Button Click="BtnNotAFaceClick" ToolTip="Not a face">
-        <cc:IconRect IconName="People" IconFill="Red" />
+      <Button x:Name="BtnNotAFace" ToolTip="Not a face">
+        <cc:IconRect IconName="People" IconFill="Red" Size="17" />
       </Button>
     </StackPanel>
   </Grid>
