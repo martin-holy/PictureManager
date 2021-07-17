@@ -96,6 +96,14 @@ namespace PictureManager.CustomControls {
       return rowIndex;
     }
 
+    public int GetRowIndex(FrameworkElement element) {
+      foreach (var row in _rowsStackPanel.Children.Cast<DependencyObject>())
+        if (element.IsDescendantOf(row))
+          return _grid.ItemContainerGenerator.IndexFromContainer(row);
+
+      return 0;
+    }
+
     public void ScrollToTop() => _rowsScrollViewer?.ScrollToTop();
 
     public void UpdateMaxRowWidth() => _maxRowWidth = ActualWidth;
