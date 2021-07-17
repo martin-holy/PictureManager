@@ -33,10 +33,4 @@
     <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Accord.Imaging">
-      <HintPath>D:\Download\Internet\!Dev\Accord.NET-3.8.0-libsonly\Release\net462\Accord.Imaging.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
 </Project>
