@@ -11,7 +11,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -114,8 +113,7 @@ namespace PictureManager.UserControls {
       _cts = null;
 
       _loading = false;
-      App.Core.Faces.ReloadConfirmedFaces();
-      ReloadConfirmedFaces();
+      SortAndReload(App.Core.Faces.GroupFaces, true);
 
       if (App.Core.Faces.Helper.IsModified)
         App.Core.Faces.Helper.SaveToFile(App.Core.Faces.All);
