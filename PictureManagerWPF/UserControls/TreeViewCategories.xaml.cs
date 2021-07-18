@@ -190,7 +190,7 @@ namespace PictureManager.UserControls {
        (Rating)(filter) => MBL => OR between ratings, AND in files
        */
       e.Handled = true;
-      if (e.OriginalSource is ToggleButton) return;
+      if (e.OriginalSource is ToggleButton || Search.Visibility == Visibility.Visible) return;
       App.Ui.TreeView_Select(((TreeViewItem)sender).DataContext as ICatTreeViewItem,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
