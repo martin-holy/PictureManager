@@ -55,7 +55,11 @@ namespace PictureManager {
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
         MetadataCommands.Save();
       }
-      App.Db.SaveAllTables();
+
+      if (App.Db.Changes > 0 &&
+          MessageDialog.Show("Database changes", "There are some changes in database, do you want to save them?", true)) {
+        App.Db.SaveAllTables();
+      }
     }
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
