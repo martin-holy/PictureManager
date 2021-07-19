@@ -186,39 +186,19 @@
           <!-- Thumbnails Tabs -->
           <uc:MainTabs x:Name="MainTabs" />
 
-          <!-- Full Media -->
-          <Grid x:Name="PanelFullScreen" Background="Transparent"
-              MouseLeftButtonDown="PanelFullScreen_OnMouseLeftButtonDown" MouseWheel="PanelFullScreen_OnMouseWheel"
-              Visibility="{Binding AppInfo.AppMode, 
-                Source={x:Static pm:App.Ui},
-                Converter={StaticResource AllToVisibilityConverter}, 
-                ConverterParameter={x:Static pm:AppMode.Viewer}}">
-
-            <!-- Full Media Image -->
-            <Grid Visibility="{Binding MediaItems.Current.MediaType, 
-                Source={x:Static pm:App.Core},
-                Converter={StaticResource AllToVisibilityConverter}, 
-                ConverterParameter={x:Static pmd:MediaType.Image}}">
-
-              <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Ui}" />
-
-              <!-- Presentation Panel -->
-              <uc:PresentationPanel x:Name="PresentationPanel" />
-            </Grid>
-
-            <!-- Full Media Video -->
-            <cc:VideoPlayer x:Name="FullMedia"
-                  Visibility="{Binding MediaItems.Current.MediaType,
-                  Source={x:Static pm:App.Core},
-                  Converter={StaticResource AllToVisibilityConverter}, 
-                  ConverterParameter={x:Static pmd:MediaType.Video}}" />
-          </Grid>
+          <!-- MediaViewer -->
+          <uc:MediaViewer x:Name="MediaViewer"
+            Visibility="{Binding AppInfo.AppMode, 
+              Source={x:Static pm:App.Ui},
+              Converter={StaticResource AllToVisibilityConverter}, 
+              ConverterParameter={x:Static pm:AppMode.Viewer}}"/>
+          
         </Grid>
       </cc:SlidePanelsGrid.ContentMiddle>
     </cc:SlidePanelsGrid>
 
     <!-- Status Panel -->
-    <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" MouseWheel="PanelFullScreen_OnMouseWheel" />
+    <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" />
   </Grid>
   
 </controls:MetroWindow>

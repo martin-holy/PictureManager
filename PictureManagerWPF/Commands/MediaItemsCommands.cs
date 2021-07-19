@@ -15,12 +15,9 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.Commands {
   public static class MediaItemsCommands {
-    public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
-    public static RoutedUICommand PreviousCommand { get; } = CommandsController.CreateCommand("Previous", "Previous", new KeyGesture(Key.Left));
     public static RoutedUICommand SelectAllCommand { get; } = CommandsController.CreateCommand("Select All", "SelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
     public static RoutedUICommand SelectNotModifiedCommand { get; } = new() { Text = "Select Not Modified" };
     public static RoutedUICommand DeleteCommand { get; } = CommandsController.CreateCommand("Delete", "Delete", new KeyGesture(Key.Delete));
-    public static RoutedUICommand PresentationCommand { get; } = CommandsController.CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
     public static RoutedUICommand CompressCommand { get; } = new() { Text = "Compress" };
     public static RoutedUICommand RotateCommand { get; } = CommandsController.CreateCommand("Rotate", "Rotate", new KeyGesture(Key.R, ModifierKeys.Control));
     public static RoutedUICommand RebuildThumbnailsCommand { get; } = new() { Text = "Rebuild Thumbnails" };
@@ -30,19 +27,14 @@ namespace PictureManager.Commands {
     public static RoutedUICommand CompareCommand { get; } = new() { Text = "Compare" };
     public static RoutedUICommand ImagesToVideoCommand { get; } = new() { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
-    public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
-    public static RoutedUICommand VideoClipsSaveCommand { get; } = new() { Text = "Save Video Clips" };
     public static RoutedUICommand FaceRecognitionCommand { get; } = new() { Text = "Face Recognition" };
 
     private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
 
     public static void AddCommandBindings(CommandBindingCollection cbc) {
-      CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
-      CommandsController.AddCommandBinding(cbc, PreviousCommand, Previous, CanPrevious);
       CommandsController.AddCommandBinding(cbc, SelectAllCommand, SelectAll, CanSelectAll);
       CommandsController.AddCommandBinding(cbc, SelectNotModifiedCommand, SelectNotModified, CanSelectNotModified);
       CommandsController.AddCommandBinding(cbc, DeleteCommand, Delete, CanDelete);
-      CommandsController.AddCommandBinding(cbc, PresentationCommand, Presentation, CanPresentation);
       CommandsController.AddCommandBinding(cbc, CompressCommand, Compress, CanCompress);
       CommandsController.AddCommandBinding(cbc, RotateCommand, Rotate, CanRotate);
       CommandsController.AddCommandBinding(cbc, RebuildThumbnailsCommand, RebuildThumbnails, CanRebuildThumbnails);
@@ -52,41 +44,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
-      CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
-      CommandsController.AddCommandBinding(cbc, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
       CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
-    }
-
-    public static bool CanNext() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.GetNext() != null;
-
-    public static void Next() {
-      var current = ThumbsGrid.GetNext();
-      ThumbsGrid.Current = current;
-      var decoded = App.WMain.PresentationPanel.IsRunning && current.MediaType == MediaType.Image && current.IsPanoramic;
-      App.WMain.SetMediaItemSource(current, decoded);
-
-      if (App.WMain.PresentationPanel.IsRunning && (
-            current.MediaType == MediaType.Video ||
-            (current.IsPanoramic && App.WMain.PresentationPanel.PlayPanoramicImages))) {
-
-        App.WMain.PresentationPanel.Pause();
-
-        if (current.MediaType == MediaType.Image && current.IsPanoramic)
-          App.WMain.PresentationPanel.Start(true);
-      }
-
-      App.Core.MarkUsedKeywordsAndPeople();
-    }
-
-    public static bool CanPrevious() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.GetPrevious() != null;
-
-    public static void Previous() {
-      if (App.WMain.PresentationPanel.IsRunning)
-        App.WMain.PresentationPanel.Stop();
-
-      ThumbsGrid.Current = ThumbsGrid.GetPrevious();
-      App.WMain.SetMediaItemSource(ThumbsGrid.Current);
-      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
@@ -117,7 +75,7 @@ namespace PictureManager.Commands {
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
         if (ThumbsGrid.Current != null)
-          App.WMain.SetMediaItemSource(ThumbsGrid.Current);
+          App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
         else
           WindowCommands.SwitchToBrowser();
       }
@@ -187,7 +145,7 @@ namespace PictureManager.Commands {
       App.Ui.MediaItemsViewModel.SetOrientation(ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
-      App.WMain.SetMediaItemSource(ThumbsGrid.Current);
+      App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
     }
 
     public static bool CanRebuildThumbnails(object parameter) => parameter is Folder || ThumbsGrid?.FilteredItems.Count > 0;
@@ -254,21 +212,6 @@ namespace PictureManager.Commands {
       progress.Start();
     }
 
-    private static bool CanPresentation() => App.Ui.AppInfo.AppMode == AppMode.Viewer && ThumbsGrid?.Current != null;
-
-    private static void Presentation() {
-      if (App.WMain.FullImage.IsAnimationOn) {
-        App.WMain.FullImage.Stop();
-        App.WMain.PresentationPanel.Stop();
-        return;
-      }
-
-      if (App.WMain.PresentationPanel.IsRunning || App.WMain.PresentationPanel.IsPaused)
-        App.WMain.PresentationPanel.Stop();
-      else
-        App.WMain.PresentationPanel.Start(true);
-    }
-
     private static bool CanRename() => ThumbsGrid?.Current != null;
 
     private static void Rename() {
@@ -311,24 +254,6 @@ namespace PictureManager.Commands {
       catch (Exception ex) {
         App.Ui.LogError(ex);
       }
-    }
-
-    private static bool VideoSourceIsNotNull() => App.WMain.FullMedia.Player.Source != null;
-
-    private static void VideoClipSplit() {
-      var vc = App.WMain.FullMedia.CurrentVideoClip;
-      if (vc != null && vc.Clip.TimeEnd == 0)
-        App.WMain.FullMedia.SetMarker(vc, false);
-      else
-        App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
-    }
-
-    private static bool CanVideoClipsSave() =>
-      App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
-
-    private static void VideoClipsSave() {
-      ((SimpleDB.ITable)App.Core.VideoClips).SaveToFile();
-      ((SimpleDB.ITable)App.Core.VideoClipsGroups).SaveToFile();
     }
 
     private static bool CanFaceRecognition() => ThumbsGrid?.FilteredItems.Count > 0;

@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="PictureManager.UserControls.MediaViewer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+  
+  <Grid Background="Transparent">
+
+    <!-- Full Media Image -->
+    <Grid Visibility="{Binding Current.MediaType,
+      Converter={StaticResource AllToVisibilityConverter},
+      ConverterParameter={x:Static pmd:MediaType.Image}}">
+
+      <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Ui}" />
+
+      <!-- Presentation Panel -->
+      <uc:PresentationPanel x:Name="PresentationPanel" />
+    </Grid>
+
+    <!-- Full Media Video -->
+    <cc:VideoPlayer x:Name="FullVideo"
+      Visibility="{Binding Current.MediaType,
+      Converter={StaticResource AllToVisibilityConverter}, 
+      ConverterParameter={x:Static pmd:MediaType.Video}}" />
+    
+  </Grid>
+</UserControl>

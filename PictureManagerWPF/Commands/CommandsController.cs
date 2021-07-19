@@ -14,14 +14,10 @@ namespace PictureManager.Commands {
     }
 
     public static void AddInputBindings() {
-      MediaCommands.TogglePlayPause.InputGestures.Add(new KeyGesture(Key.Space));
-      MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
-
-      SetTargetToCommand(MediaCommands.TogglePlayPause, App.WMain.FullMedia);
       SetTargetToCommand(MediaItemsCommands.SelectAllCommand, App.WMain.MainTabs);
     }
 
-    private static void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {
+    public static void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {
       foreach (InputGesture ig in command.InputGestures)
         App.WMain.InputBindings.Add(new InputBinding(command, ig) { CommandTarget = commandTarget });
     }

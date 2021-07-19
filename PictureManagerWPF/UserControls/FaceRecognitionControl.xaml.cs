@@ -270,7 +270,8 @@ namespace PictureManager.UserControls {
       var face = (Face)((FrameworkElement)sender).DataContext;
       App.Core.MediaItems.Current = face.MediaItem;
       WindowCommands.SwitchToFullScreen();
-      App.WMain.SetMediaItemSource(face.MediaItem);
+      App.WMain.MediaViewer.SetMediaItems(new List<MediaItem> { face.MediaItem }); //TODO
+      App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
     }
 
     private void ControlSizeChanged(object sender, SizeChangedEventArgs e) {

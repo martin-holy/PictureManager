@@ -37,7 +37,7 @@ namespace PictureManager.ViewModels {
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
     public string Dimension { get => _dimension; set { _dimension = value; OnPropertyChanged(); } }
-    public string ZoomActualFormatted => App.WMain?.FullImage.ZoomActualFormatted;
+    public string ZoomActualFormatted => App.WMain?.MediaViewer.FullImage.ZoomActualFormatted;
     public string FullGeoName { get => _fullGeoName; set { _fullGeoName = value; OnPropertyChanged(); } }
     public ObservableCollection<AppInfoRating> Rating { get; } = new();
     public string DateAndTime => Domain.Extensions.DateTimeFromString(CurrentMediaItem?.FileName, _dateFormats, "H:mm:ss");

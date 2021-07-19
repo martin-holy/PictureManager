@@ -62,11 +62,7 @@ namespace PictureManager.Commands {
       App.Ui.MediaItemsViewModel.ScrollToCurrent();
       App.Core.MarkUsedKeywordsAndPeople();
 
-      App.WMain.PresentationPanel.Stop();
-      App.WMain.FullImage.Stop();
-      App.WMain.FullImage.SetSource(null);
-      App.WMain.FullMedia.IsPlaying = false;
-      App.WMain.FullMedia.SetSource(null);
+      App.WMain.MediaViewer.Deactivate();
     }
 
     private static void OpenSettings() {
