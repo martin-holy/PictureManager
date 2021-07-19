@@ -28,7 +28,7 @@
     </Grid>
 
     <!-- Search Result -->
-    <ListBox Grid.Row="1" ItemsSource="{Binding SearchResult}" SelectionChanged="NavigateTo" MaxHeight="400"
+    <ListBox Grid.Row="1" ItemsSource="{Binding SearchResult}" PreviewMouseUp="SearchResult_PreviewMouseUp" MaxHeight="400"
              Visibility="{Binding SearchResult.Count, Converter={StaticResource AllToVisibilityConverter}}">
       <ListBox.ItemTemplate>
         <DataTemplate>
