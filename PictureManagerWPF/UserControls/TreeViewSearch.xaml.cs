@@ -73,9 +73,7 @@ namespace PictureManager.UserControls {
       AddToSearchResult(result);
     }
 
-    private void NavigateTo(object sender, SelectionChangedEventArgs e) {
-      var item = ((SearchItem)((ListBox)sender).SelectedItem)?.Item;
-
+    private void NavigateTo(ICatTreeViewItem item) {
       if (item != null) {
         CatTreeViewUtils.ExpandTo(item);
         App.WMain.TreeViewCategories.TvCategories.ScrollTo(item);
@@ -89,6 +87,12 @@ namespace PictureManager.UserControls {
     private void TbSearch_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e) {
       if (Visibility == Visibility.Visible)
         Keyboard.Focus(TbSearch);
+    }
+
+    private void SearchResult_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      e.Handled = true;
+      var item = ((SearchItem)((ListBox)sender).SelectedItem)?.Item;
+      NavigateTo(item);
     }
   }
 
