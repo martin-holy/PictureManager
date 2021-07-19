@@ -127,16 +127,14 @@ namespace PictureManager.CustomControls {
         Cursor = Cursors.None;
       };
 
-      Loaded += (o, e) => {
-        SetUpCommands();
-      };
+      Loaded += (o, e) => SetUpCommands(App.WMain.CommandBindings);
     }
 
-    private void SetUpCommands() {
+    private void SetUpCommands(CommandBindingCollection cbc) {
       MediaCommands.TogglePlayPause.InputGestures.Add(new KeyGesture(Key.Space));
       MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
-      CommandsController.AddCommandBinding(CommandBindings, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
-      CommandsController.AddCommandBinding(CommandBindings, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
+      CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
+      CommandsController.AddCommandBinding(cbc, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
       CommandsController.SetTargetToCommand(MediaCommands.TogglePlayPause, this);
     }
 
