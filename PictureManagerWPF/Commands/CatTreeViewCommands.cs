@@ -37,7 +37,8 @@ namespace PictureManager.Commands {
       if (!result) return;
 
       try {
-        cat.ItemCreate(item, output);
+        var tvi = cat.ItemCreate(item, output);
+        App.WMain.TreeViewCategories.TvCategories.ScrollTo(tvi);
       }
       catch (Exception ex) {
         ErrorDialog.Show(ex);
