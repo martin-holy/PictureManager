@@ -270,7 +270,10 @@ namespace PictureManager.UserControls {
       var face = (Face)((FrameworkElement)sender).DataContext;
       App.Core.MediaItems.Current = face.MediaItem;
       WindowCommands.SwitchToFullScreen();
-      App.WMain.MediaViewer.SetMediaItems(new List<MediaItem> { face.MediaItem }); //TODO
+      var items = face.PersonId == 0
+        ? new List<MediaItem> { face.MediaItem }
+        : App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
+      App.WMain.MediaViewer.SetMediaItems(items);
       App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
     }
 
