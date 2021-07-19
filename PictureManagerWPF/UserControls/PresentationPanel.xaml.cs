@@ -44,26 +44,24 @@ namespace PictureManager.UserControls {
 
     public bool IsPaused { get; private set; }
 
-    public Action Elapsed;
+    public Action Elapsed { get; set; }
 
     ~PresentationPanel() {
       _timer?.Dispose();
     }
 
     public void Start(bool delay) {
-      if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
-
-      var current = App.Core.MediaItems.ThumbsGrid.Current;
+      var current = App.WMain.MediaViewer.Current;
       if (delay && current.MediaType == MediaType.Image && current.IsPanoramic && PlayPanoramicImages) {
         Pause();
-        App.WMain.FullImage.Play(Interval * 1000, delegate { Start(false); });
+        App.WMain.MediaViewer.FullImage.Play(Interval * 1000, delegate { Start(false); });
         return;
       }
 
       IsPaused = false;
       IsRunning = true;
-      App.WMain.FullMedia.PlayType = PlayType.Video;
-      App.WMain.FullMedia.RepeatForSeconds = Interval;
+      App.WMain.MediaViewer.FullVideo.PlayType = PlayType.Video;
+      App.WMain.MediaViewer.FullVideo.RepeatForSeconds = Interval;
 
       if (!delay) Elapsed();
     }
@@ -71,7 +69,7 @@ namespace PictureManager.UserControls {
     public void Stop() {
       IsPaused = false;
       IsRunning = false;
-      App.WMain.FullMedia.RepeatForSeconds = 0; // infinity
+      App.WMain.MediaViewer.FullVideo.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {
