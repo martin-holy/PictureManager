@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
+﻿using PictureManager.Commands;
+using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -28,6 +29,9 @@ namespace PictureManager.CustomControls {
     public static readonly DependencyProperty RotationProperty = DependencyProperty.Register(nameof(Rotation), typeof(double), typeof(VideoPlayer));
     public static readonly DependencyProperty RepeatForSecondsProperty = DependencyProperty.Register(nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new PropertyMetadata(3));
     public static readonly DependencyProperty PlayTypeProperty = DependencyProperty.Register(nameof(PlayType), typeof(PlayType), typeof(VideoPlayer));
+
+    public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
+    public static RoutedUICommand VideoClipsSaveCommand { get; } = new() { Text = "Save Video Clips" };
 
     public MediaElement Player { get; set; }
     public Action RepeatEnded { get; set; }
@@ -122,6 +126,18 @@ namespace PictureManager.CustomControls {
         _isMouseHidden = true;
         Cursor = Cursors.None;
       };
+
+      Loaded += (o, e) => {
+        SetUpCommands();
+      };
+    }
+
+    private void SetUpCommands() {
+      MediaCommands.TogglePlayPause.InputGestures.Add(new KeyGesture(Key.Space));
+      MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
+      CommandsController.AddCommandBinding(CommandBindings, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
+      CommandsController.AddCommandBinding(CommandBindings, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
+      CommandsController.SetTargetToCommand(MediaCommands.TogglePlayPause, this);
     }
 
     public void SetSource(MediaItem mediaItem) {
@@ -157,7 +173,7 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-
+      
       MediaItemClips = new ObservableCollection<ICatTreeViewCategory>();
 
       if (Template.FindName("PART_SpeedSlider", this) is Slider speedSlider) {
@@ -392,6 +408,23 @@ namespace PictureManager.CustomControls {
 
         vc.OnPropertyChanged(nameof(vc.ThumbPath));
       }
+    }
+
+    private bool VideoSourceIsNotNull() => Player.Source != null;
+
+    private void VideoClipSplit() {
+      if (CurrentVideoClip != null && CurrentVideoClip.Clip.TimeEnd == 0)
+        SetMarker(CurrentVideoClip, false);
+      else
+        App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
+    }
+
+    private static bool CanVideoClipsSave() =>
+      App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
+
+    private static void VideoClipsSave() {
+      ((SimpleDB.ITable)App.Core.VideoClips).SaveToFile();
+      ((SimpleDB.ITable)App.Core.VideoClipsGroups).SaveToFile();
     }
   }
 }
