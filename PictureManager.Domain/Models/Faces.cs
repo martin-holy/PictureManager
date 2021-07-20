@@ -192,10 +192,10 @@ namespace PictureManager.Domain.Models {
 
       // load max {MaxFacesInGroup} faces from each PersonId
       var random = new Random();
-      var knownFaces = detectedFaces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId)
-        .Select(x => x.OrderBy(y => random.Next()).Take(MaxFacesInGroup))
-        .Aggregate((all, next) => all.Concat(next));
-      var faces = knownFaces.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
+      var knownFacesA = detectedFaces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId)
+        .Select(x => x.OrderBy(y => random.Next()).Take(MaxFacesInGroup));
+      var knownFacesB = knownFacesA.Any() ? knownFacesA.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
+      var faces = knownFacesB.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
       var doneFaces = 0.0;
       var doneFacesVsMediaItems = (double)misWithDetectedFaces.Count() / faces.Length;
 
