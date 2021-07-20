@@ -10,10 +10,9 @@ using System.Windows;
 
 namespace PictureManager.Domain.Models {
   public class Faces : ObservableObject, ITable {
-    #region ITable Properties
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
-    #endregion
+    public Dictionary<int, Face> AllDic { get; set; }
 
     private int _faceSize = 100;
     private int _compareFaceSize = 32;
@@ -41,6 +40,7 @@ namespace PictureManager.Domain.Models {
     #region ITable Methods
     public void LoadFromFile() {
       All.Clear();
+      AllDic = new Dictionary<int, Face>();
       Helper.LoadFromFile();
     }
 
@@ -55,6 +55,7 @@ namespace PictureManager.Domain.Models {
         new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3]))) { Csv = props };
 
       All.Add(face);
+      AllDic.Add(face.Id, face);
     }
 
     public void LinkReferences() {
