@@ -340,8 +340,11 @@ namespace PictureManager.Domain.Models {
             sims.AddRange(face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).Select(x => (x.Key, x.Value)));
           }
 
-          foreach (var face in sims.OrderByDescending(x => x.sim).Select(x => x.face).Distinct())
+          // order by number of similar than by similarity
+          foreach (var face in sims.GroupBy(x => x.face).OrderByDescending(g => g.Count())
+                                   .Select(g => g.OrderByDescending(x => x.sim).First().face)) {
             facesGroup.Add(face);
+          }
 
           if (facesGroup.Count != 0)
             LoadedInGroups.Add(facesGroup);
