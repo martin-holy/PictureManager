@@ -74,17 +74,21 @@ namespace PictureManager.UserControls {
         Reload(true, false);
       };
 
-      BtnDetectNew.Click += (o, e) => LoadFaces(true);
+      BtnDetectNew.Click += (o, e) => LoadFaces(true, false);
 
       BtnCompare.Click += async (o, e) => {
         await CompareAsync();
         SortAndReload(true, true);
       };
 
+      BtnCompareAllGroups.Click += (o, e) => {
+        LoadFaces(false, true);
+      };
+
       BtnSort.Click += (o, e) => SortAndReload(true, true);
     }
 
-    public async void LoadFaces(bool detectNewFaces) {
+    public async void LoadFaces(bool detectNewFaces, bool withPersonOnly) {
       _loading = true;
 
       // cancel previous work
@@ -99,13 +103,28 @@ namespace PictureManager.UserControls {
       FacesGrid.ClearRows();
       FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
       ConfirmedFacesGrid.ClearRows();
-      App.Ui.AppInfo.ResetProgressBars(MediaItems.Count);
+      App.Core.Faces.GroupFaces = false;
+      App.Ui.AppInfo.ResetProgressBars(withPersonOnly
+        ? (App.Core.Faces.All.Cast<Face>().GroupBy(x => x.PersonId).Count() - 1) * App.Core.Faces.MaxFacesInGroup
+        : MediaItems.Count);
 
       _workTask = Task.Run(async () => {
-        await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _cts.Token))
+        if (withPersonOnly) {
+          await foreach (var face in App.Core.Faces.GetAllFacesAsync(_progress, _cts.Token))
+            await App.Core.RunOnUiThread(() => {
+              FacesGrid.AddItem(face, _faceGridWidth);
+            });
+
           await App.Core.RunOnUiThread(() => {
-            FacesGrid.AddItem(face, _faceGridWidth);
+            _progress.Report(App.Ui.AppInfo.ProgressBarMaxA); //TODO count real value
           });
+        }
+        else {
+          await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _cts.Token))
+            await App.Core.RunOnUiThread(() => {
+              FacesGrid.AddItem(face, _faceGridWidth);
+            });
+        }
       });
 
       await _workTask;

@@ -176,6 +176,13 @@ namespace PictureManager.Domain.Models {
       LoadedInGroups.Clear();
     }
 
+    private static IEnumerable<Face> GetSomeFacesForEachPerson(IEnumerable<Face> faces, int count) {
+      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+      var facesA = faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(x => x.OrderBy(y => random.Next()).Take(count));
+      var facesB = facesA.Any() ? facesA.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
+      return facesB;
+    }
+
     public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, bool detectNewFaces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
 
@@ -191,11 +198,8 @@ namespace PictureManager.Domain.Models {
       progress.Report(done);
 
       // load max {MaxFacesInGroup} faces from each PersonId
-      var random = new Random();
-      var knownFacesA = detectedFaces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId)
-        .Select(x => x.OrderBy(y => random.Next()).Take(MaxFacesInGroup));
-      var knownFacesB = knownFacesA.Any() ? knownFacesA.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
-      var faces = knownFacesB.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
+      var knownFaces = GetSomeFacesForEachPerson(detectedFaces, MaxFacesInGroup);
+      var faces = knownFaces.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
       var doneFaces = 0.0;
       var doneFacesVsMediaItems = (double)misWithDetectedFaces.Count() / faces.Length;
 
@@ -303,6 +307,23 @@ namespace PictureManager.Domain.Models {
           progress.Report(++done);
         }
       }, token);
+    }
+
+    public async IAsyncEnumerable<Face> GetAllFacesAsync(IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
+      ResetBeforeNewLoad();
+      var done = 0;
+
+      foreach (var face in GetSomeFacesForEachPerson(All.Cast<Face>(), MaxFacesInGroup)) {
+        if (token.IsCancellationRequested) yield break;
+
+        await face.SetPictureAsync(FaceSize);
+        face.MediaItem.SetThumbSize();
+        Loaded.Add(face);
+
+        yield return face;
+
+        progress.Report(++done);
+      }
     }
 
     /// <summary>
