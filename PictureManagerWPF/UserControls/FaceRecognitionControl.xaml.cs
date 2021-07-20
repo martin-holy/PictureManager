@@ -50,20 +50,20 @@ namespace PictureManager.UserControls {
       BtnSamePerson.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsSamePerson();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, true);
+        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnAnotherPerson.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsAnotherPerson();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, true);
+        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnNotAFace.Click += (o, e) => {
         if (!MessageDialog.Show("Delete Confirmation", "Do you really want to delete selected faces?", true)) return;
         App.Core.Faces.DeleteSelected();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, true);
+        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnGroupConfirmed.Click += (o, e) => Reload(false, true);
@@ -240,7 +240,7 @@ namespace PictureManager.UserControls {
         Faces.ChangePerson(face, person);
 
       App.Core.Faces.DeselectAll();
-      SortAndReload(ChbAutoSort.IsChecked == true, true);
+      SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
     }
 
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
