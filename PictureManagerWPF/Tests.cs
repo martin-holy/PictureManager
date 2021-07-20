@@ -1,18 +1,24 @@
 ﻿using PictureManager.Dialogs;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Media.Imaging;
 
 namespace PictureManager {
   public class Tests {
 
     public static void Run() {
-      var wtest = new WTest();
-      wtest.Show();
+      //var wtest = new WTest();
+      //wtest.Show();
     }
+
+    
 
     private static void ChangeDate() {
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Change date");
