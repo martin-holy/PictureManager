@@ -19,6 +19,7 @@ namespace PictureManager.Domain.Models {
     private int _compareFaceSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
+    private int _maxFacesInGroup = 5;
     private bool _groupFaces;
     private bool _groupConfirmedFaces;
 
@@ -32,6 +33,7 @@ namespace PictureManager.Domain.Models {
     public int FaceBoxExpand { get; set; } = 40;
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
+    public int MaxFacesInGroup { get => _maxFacesInGroup; set { _maxFacesInGroup = value; OnPropertyChanged(); } }
     public int SelectedCount => Selected.Count;
     public bool GroupFaces { get => _groupFaces; set { _groupFaces = value; OnPropertyChanged(); } }
     public bool GroupConfirmedFaces { get => _groupConfirmedFaces; set { _groupConfirmedFaces = value; OnPropertyChanged(); } }
@@ -101,6 +103,8 @@ namespace PictureManager.Domain.Models {
         SimilarityLimit = int.Parse(similarityLimit);
       if (Helper.TableProps.TryGetValue(nameof(SimilarityLimitMin), out var similarityLimitMin))
         SimilarityLimitMin = int.Parse(similarityLimitMin);
+      if (Helper.TableProps.TryGetValue(nameof(MaxFacesInGroup), out var maxFacesInGroup))
+        MaxFacesInGroup = int.Parse(maxFacesInGroup);
 
       // table props are not needed any more
       Helper.TableProps.Clear();
@@ -116,6 +120,7 @@ namespace PictureManager.Domain.Models {
       Helper.TableProps.Add(nameof(FaceBoxExpand), FaceBoxExpand.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimit), SimilarityLimit.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimitMin), SimilarityLimitMin.ToString());
+      Helper.TableProps.Add(nameof(MaxFacesInGroup), MaxFacesInGroup.ToString());
     }
     #endregion
 
@@ -185,7 +190,31 @@ namespace PictureManager.Domain.Models {
 
       progress.Report(done);
 
-      foreach (var miGroup in misWithDetectedFaces) {
+      // load max {MaxFacesInGroup} faces from each PersonId
+      var random = new Random();
+      var knownFaces = detectedFaces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId)
+        .Select(x => x.OrderBy(y => random.Next()).Take(MaxFacesInGroup))
+        .Aggregate((all, next) => all.Concat(next));
+      var faces = knownFaces.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
+      var doneFaces = 0.0;
+      var doneFacesVsMediaItems = (double)misWithDetectedFaces.Count() / faces.Length;
+
+      foreach (var face in faces) {
+        if (token.IsCancellationRequested) yield break;
+
+        await face.SetPictureAsync(FaceSize);
+        Loaded.Add(face);
+
+        yield return face;
+
+        doneFaces += doneFacesVsMediaItems;
+        progress.Report(done + (int)doneFaces);
+      }
+
+      done += (int)doneFaces;
+
+      // load all
+      /*foreach (var miGroup in misWithDetectedFaces) {
         foreach (var face in miGroup) {
           if (token.IsCancellationRequested) yield break;
 
@@ -196,7 +225,7 @@ namespace PictureManager.Domain.Models {
         }
 
         progress.Report(++done);
-      }
+      }*/
 
       if (!detectNewFaces) yield break;
 
