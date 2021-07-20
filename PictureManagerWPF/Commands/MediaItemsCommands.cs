@@ -272,7 +272,7 @@ namespace PictureManager.Commands {
       }
 
       control.MediaItems = mediaItems;
-      control.LoadFaces(false);
+      control.LoadFaces(false, false);
     }
   }
 }

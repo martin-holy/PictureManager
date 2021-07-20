@@ -106,6 +106,7 @@
                                 ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" />
     </Grid>
 
+    <!-- Control Buttons -->
     <StackPanel Orientation="Horizontal" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,10,0">
       <ToggleButton x:Name="BtnGroupFaces" ToolTip="Group by Person or sort by file name"
                     VerticalAlignment="Top" HorizontalAlignment="Left" Margin="2,2,0,0" IsThreeState="False"
@@ -113,6 +114,10 @@
                     IsChecked="{Binding Faces.GroupFaces, Source={x:Static pm:App.Core}}">
         <cc:IconRect IconName="{x:Static pmd:IconName.PeopleMultiple}" IconFill="White" />
       </ToggleButton>
+      
+      <Button x:Name="BtnCompareAllGroups" ToolTip="Compare all groups of faces" Style="{StaticResource _IconButton}">
+        <cc:IconRect IconName="Star" />
+      </Button>
       
       <Button x:Name="BtnDetectNew" ToolTip="Detect new" Style="{StaticResource _IconButton}">
         <cc:IconRect IconName="Magnify" />
