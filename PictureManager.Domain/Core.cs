@@ -103,6 +103,8 @@ namespace PictureManager.Domain {
         People.AllDic = null;
         VideoClips.AllDic.Clear();
         VideoClips.AllDic = null;
+        Faces.AllDic.Clear();
+        Faces.AllDic = null;
 
         Folders.IsExpanded = true;
       });
