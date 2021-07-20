@@ -11,6 +11,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
+    public List<Face> Faces { get; set; }
     public Face Face { get => _face; set { _face = value; OnPropertyChanged(); } }
 
     public Person(int id, string name) {
@@ -20,7 +21,10 @@ namespace PictureManager.Domain.Models {
     }
 
     // ID|Name
-    public string ToCsv() => string.Join("|", Id.ToString(), Title);
+    public string ToCsv() => string.Join("|",
+      Id.ToString(),
+      Title,
+      Faces == null ? string.Empty : string.Join(",", Faces.Select(x => x.Id)));
 
     public MediaItem[] GetMediaItems() =>
       Core.Instance.Faces.All.Cast<Face>().Where(x => x.PersonId == Id).Select(x => x.MediaItem)
