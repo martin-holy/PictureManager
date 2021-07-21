@@ -491,6 +491,8 @@ namespace PictureManager.Domain.Models {
       foreach (var face in Selected.ToArray()) {
         SetSelected(face, false);
         if (face.Person != null) {
+          if (face.Person.Faces.Remove(face))
+            Core.Instance.Sdb.SetModified<People>();
           face.Person.Face = null;
           face.Person = null;
         }
