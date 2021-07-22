@@ -8,7 +8,7 @@ namespace PictureManager.CustomControls {
     public static readonly DependencyProperty IconNameProperty = DependencyProperty.Register(nameof(IconName), typeof(IconName), typeof(IconRect));
     public static readonly DependencyProperty IconFillProperty = DependencyProperty.Register(nameof(IconFill), typeof(Brush), typeof(IconRect));
     public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(nameof(Size), typeof(double), typeof(IconRect), new PropertyMetadata(18.0));
-    public static readonly DependencyProperty IsHiddenProperty = DependencyProperty.Register(nameof(IsHidden), typeof(bool), typeof(IconRect), new PropertyMetadata(false));
+    public static readonly DependencyProperty IsIconVisibleProperty = DependencyProperty.Register(nameof(IsIconVisible), typeof(bool), typeof(IconRect), new PropertyMetadata(true));
 
     public IconName IconName {
       get => (IconName)GetValue(IconNameProperty);
@@ -25,9 +25,9 @@ namespace PictureManager.CustomControls {
       set => SetValue(SizeProperty, value);
     }
 
-    public bool IsHidden {
-      get => (bool)GetValue(IsHiddenProperty);
-      set => SetValue(IsHiddenProperty, value);
+    public bool IsIconVisible {
+      get => (bool)GetValue(IsIconVisibleProperty);
+      set => SetValue(IsIconVisibleProperty, value);
     }
 
     static IconRect() {

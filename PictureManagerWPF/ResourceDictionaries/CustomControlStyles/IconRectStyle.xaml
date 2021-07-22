@@ -38,8 +38,8 @@
     </Setter>
     <Setter Property="Visibility" Value="Visible" />
     <Style.Triggers>
-      <Trigger Property="IsHidden" Value="True">
-        <Setter Property="Visibility" Value="Hidden" />
+      <Trigger Property="IsIconVisible" Value="False">
+        <Setter Property="Visibility" Value="Collapsed" />
       </Trigger>
     </Style.Triggers>
   </Style>
