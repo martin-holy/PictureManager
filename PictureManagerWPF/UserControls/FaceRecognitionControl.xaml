@@ -9,14 +9,12 @@
              SizeChanged="ControlSizeChanged">
 
   <Grid>
-    <Grid.Resources>
-      <DropShadowEffect x:Key="_Shadow" BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
-            
+    <Grid.Resources>           
       <Style TargetType="{x:Type Button}" x:Key="_IconButton" BasedOn="{StaticResource StyleButtonIcon}">
         <Setter Property="Height" Value="26" />
         <Setter Property="Width" Value="26" />
         <Setter Property="Margin" Value="2,0" />
-        <Setter Property="Effect" Value="{StaticResource _Shadow}" />
+        <Setter Property="Effect" Value="{StaticResource Res_ShadowEffect}" />
       </Style>
       
       <DataTemplate x:Key="FaceDataTemplate" DataType="{x:Type models:Face}">
@@ -38,7 +36,7 @@
                    Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
                    Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
             <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                         Margin="0,2,2,0" Effect="{StaticResource _Shadow}" IsHidden="{Binding IsUnknown}" />
+                         Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}" IsIconVisible="{Binding IsNotUnknown}" />
           </Grid>
           
           <Border.ToolTip>
