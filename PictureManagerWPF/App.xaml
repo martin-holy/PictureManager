@@ -20,6 +20,8 @@
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/IconRectStyle.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
+        
+        <ResourceDictionary Source="ResourceDictionaries/MixedStyles.xaml" />
 
         <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
 
