@@ -70,10 +70,7 @@ namespace PictureManager.Domain.Models {
 
           if (face.PersonId > 0 && people.TryGetValue(face.PersonId, out var person)) {
             face.Person = person;
-            if (person.Face == null) {
-              person.Face = face;
-              _ = face.SetPictureAsync(FaceSize);
-            }
+            person.Face ??= face;
           }
         }
         else
