@@ -1,6 +1,7 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
 using SimpleDB;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
@@ -11,7 +12,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
-    public List<Face> Faces { get; set; }
+    public ObservableCollection<Face> Faces { get; set; }
     public Face Face { get => _face; set { _face = value; OnPropertyChanged(); } }
 
     public Person(int id, string name) {
