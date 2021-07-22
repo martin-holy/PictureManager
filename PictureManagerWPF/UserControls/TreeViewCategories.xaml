@@ -132,6 +132,7 @@
           <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
           <EventSetter Event="MouseLeftButtonUp" Handler="TreeView_Select" />
           <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
+          <EventSetter Event="ToolTipOpening" Handler="ItemToolTip_ToolTipOpening" />
           
           <Style.Triggers>
             <MultiDataTrigger>

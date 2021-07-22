@@ -206,5 +206,8 @@ namespace PictureManager.UserControls {
       Search.TbSearch.Text = string.Empty;
       Search.Visibility = Visibility.Visible;
     }
+
+    private void ItemToolTip_ToolTipOpening(object sender, ToolTipEventArgs e) =>
+      (((FrameworkElement)sender).DataContext as Person)?.Face?.SetPictureAsync(App.Core.Faces.FaceSize);
   }
 }
