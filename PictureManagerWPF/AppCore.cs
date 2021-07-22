@@ -69,7 +69,21 @@ namespace PictureManager {
         case ICatTreeViewGroup _: {
           break;
         }
-        case ICatTreeViewCategory _: {
+        case ICatTreeViewCategory cat: {
+          if (cat is People people) {
+            var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(PeopleControl));
+
+            if (tab?.Content is not PeopleControl control) {
+              control = new PeopleControl();
+              App.WMain.MainTabs.AddTab();
+              App.WMain.MainTabs.SetTab(control, control, null);
+            }
+            else {
+              tab.IsSelected = true;
+            }
+
+            control.Reload();
+          }
           break;
         }
       }
