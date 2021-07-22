@@ -121,6 +121,9 @@ namespace PictureManager.CustomControls {
       _lastRow = null;
     }
 
+    public void AddGroup(IconName icon, string title) =>
+      AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = icon, Title = title } });
+
     public void AddGroup(VirtualizingWrapPanelGroupItem[] groupItems) {
       _lastGroup = new VirtualizingWrapPanelGroup();
 
