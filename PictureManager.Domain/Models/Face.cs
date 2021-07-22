@@ -25,7 +25,7 @@ namespace PictureManager.Domain.Models {
       set {
         _personId = value;
         OnPropertyChanged();
-        OnPropertyChanged(nameof(IsUnknown));
+        OnPropertyChanged(nameof(IsNotUnknown));
       }
     }
     public Int32Rect FaceBox { get; set; }
@@ -34,7 +34,7 @@ namespace PictureManager.Domain.Models {
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
     public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public bool IsUnknown => PersonId == 0;
+    public bool IsNotUnknown => PersonId != 0;
     public Dictionary<Face, double> Similar { get; set; }
     public double SimMax { get; set; }
 
