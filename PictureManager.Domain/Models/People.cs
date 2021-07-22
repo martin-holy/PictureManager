@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
       foreach (var person in All.Cast<Person>()) {
         if (!string.IsNullOrEmpty(person.Csv[2])) {
           var ids = person.Csv[2].Split(',');
-          person.Faces = new(ids.Length);
+          person.Faces = new();
           foreach (var faceId in ids)
             person.Faces.Add(Core.Instance.Faces.AllDic[int.Parse(faceId)]);
         }
