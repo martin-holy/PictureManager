@@ -44,7 +44,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
-      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
+      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition);
     }
 
     private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
@@ -256,10 +256,8 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static bool CanFaceRecognition() => ThumbsGrid?.FilteredItems.Count > 0;
-
     private static void FaceRecognition() {
-      var mediaItems = ThumbsGrid.GetSelectedOrAll();
+      var mediaItems = ThumbsGrid?.GetSelectedOrAll();
       var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
 
       if (tab?.Content is not FaceRecognitionControl control) {
@@ -272,7 +270,7 @@ namespace PictureManager.Commands {
       }
 
       control.MediaItems = mediaItems;
-      control.LoadFaces(false, false);
+      control.LoadFaces(false, mediaItems == null ? true : false);
     }
   }
 }
