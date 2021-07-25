@@ -18,7 +18,7 @@ namespace PictureManager.UserControls {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     private readonly int _faceGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
-    private WorkTask _workTask = new();
+    private readonly WorkTask _workTask = new();
     private bool _loading;
     private string _title;
 
@@ -40,11 +40,9 @@ namespace PictureManager.UserControls {
             await person.Face.SetPictureAsync(App.Core.Faces.FaceSize);
             person.Face.MediaItem.SetThumbSize();
           }
-          await App.Core.RunOnUiThread(() => {
-            PeopleGrid.AddItem(person, _faceGridWidth);
-          });
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _faceGridWidth));
         }
-      };
+      }
 
       _loading = true;
       await _workTask.Cancel();
@@ -55,17 +53,13 @@ namespace PictureManager.UserControls {
       await _workTask.Start(Task.Run(async () => {
         foreach (var group in App.Core.People.Items.OfType<ICatTreeViewGroup>()) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => {
-            PeopleGrid.AddGroup(IconName.People, group.Title);
-          });
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.Title));
           await AddPeopleAsync(group.Items.Cast<Person>(), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Core.People.Items.OfType<Person>().ToArray();
         if (peopleWithoutGroup.Length > 0) {
-          await App.Core.RunOnUiThread(() => {
-            PeopleGrid.AddGroup(IconName.People, string.Empty);
-          });
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, string.Empty));
           await AddPeopleAsync(peopleWithoutGroup, _workTask.Token);
         }
       }));
@@ -79,7 +73,7 @@ namespace PictureManager.UserControls {
       PeopleGrid.ScrollToTop();
     }
 
-    private async void Face_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+    private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       if (((FrameworkElement)sender).DataContext is Face face)
         await PersonFacesEditor.ReloadPersonFacesAsync(face.Person);
     }

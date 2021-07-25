@@ -10,7 +10,7 @@
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:FaceControl DataContext="{Binding Face}" MouseLeftButtonDown="Face_MouseLeftButtonDown">
+          <cc:FaceControl DataContext="{Binding Face}" MouseLeftButtonUp="Face_MouseLeftButtonUp">
             <cc:FaceControl.Style>
               <Style TargetType="{x:Type cc:FaceControl}">
                 <Setter Property="IsCheckmarkVisible" Value="False" />
