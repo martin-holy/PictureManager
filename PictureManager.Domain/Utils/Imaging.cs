@@ -458,6 +458,19 @@ namespace PictureManager.Domain.Utils {
       return bmp;
     }
 
+    public static BitmapSource ToBitmapSource(this Bitmap bitmap) {
+      var format = bitmap.PixelFormat.ToWPF();
+
+      var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+      var bitmapSource = BitmapSource.Create(bitmapData.Width, bitmapData.Height,
+          bitmap.HorizontalResolution, bitmap.VerticalResolution, format, null,
+          bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
+
+      bitmap.UnlockBits(bitmapData);
+      return bitmapSource;
+    }
+
     public static System.Drawing.Imaging.PixelFormat ToImaging(this System.Windows.Media.PixelFormat pixelFormat) {
       if (pixelFormat == PixelFormats.Indexed8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
       if (pixelFormat == PixelFormats.Gray8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
@@ -466,6 +479,19 @@ namespace PictureManager.Domain.Utils {
       if (pixelFormat == PixelFormats.Bgra32) return System.Drawing.Imaging.PixelFormat.Format32bppArgb;
       throw new NotImplementedException($"Conversion from pixel format {pixelFormat} is not supported.");
     }
+
+    public static System.Windows.Media.PixelFormat ToWPF(this System.Drawing.Imaging.PixelFormat pixelFormat) {
+      return pixelFormat switch {
+        System.Drawing.Imaging.PixelFormat.Format1bppIndexed => PixelFormats.BlackWhite,
+        System.Drawing.Imaging.PixelFormat.Format4bppIndexed => PixelFormats.Gray4,
+        System.Drawing.Imaging.PixelFormat.Format8bppIndexed => PixelFormats.Gray8,
+        System.Drawing.Imaging.PixelFormat.Format24bppRgb => PixelFormats.Bgr24,
+        System.Drawing.Imaging.PixelFormat.Format32bppRgb => PixelFormats.Bgr32,
+        System.Drawing.Imaging.PixelFormat.Format32bppArgb => PixelFormats.Bgra32,
+        _ => throw new NotImplementedException($"Conversion from pixel format {pixelFormat} is not supported."),
+      };
+    }
+
 
     public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).Result;
 
