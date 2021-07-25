@@ -47,6 +47,7 @@ namespace PictureManager.Domain.Models {
           person.Faces = new();
           foreach (var faceId in ids)
             person.Faces.Add(Core.Instance.Faces.AllDic[int.Parse(faceId)]);
+          person.Face = person.Faces[0];
         }
 
         // csv array is not needed any more
