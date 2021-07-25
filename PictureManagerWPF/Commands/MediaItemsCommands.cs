@@ -28,6 +28,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ImagesToVideoCommand { get; } = new() { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
     public static RoutedUICommand FaceRecognitionCommand { get; } = new() { Text = "Face Recognition" };
+    public static RoutedUICommand ViewMediaItemsWithFaceCommand { get; } = new();
 
     private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
 
@@ -45,6 +46,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
       CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition);
+      CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithFaceCommand, ViewMediaItemsWithFace);
     }
 
     private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
@@ -271,6 +273,17 @@ namespace PictureManager.Commands {
 
       control.MediaItems = mediaItems;
       control.LoadFaces(false, mediaItems == null ? true : false);
+    }
+
+    private static void ViewMediaItemsWithFace(object parameter) {
+      if (parameter is not Face face) return;
+      App.Core.MediaItems.Current = face.MediaItem;
+      WindowCommands.SwitchToFullScreen();
+      var items = face.PersonId == 0
+        ? new List<MediaItem> { face.MediaItem }
+        : App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
+      App.WMain.MediaViewer.SetMediaItems(items);
+      App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
     }
   }
 }
