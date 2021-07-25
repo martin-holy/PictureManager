@@ -17,48 +17,8 @@
         <Setter Property="Effect" Value="{StaticResource Res_ShadowEffect}" />
       </Style>
       
-      <DataTemplate x:Key="FaceDataTemplate" DataType="{x:Type models:Face}">
-        <Border DataContext="{Binding}" BorderThickness="2" Margin="1" 
-                PreviewMouseUp="Face_PreviewMouseUp" MouseLeftButtonDown="Face_MouseLeftButtonDown">
-          <Border.Style>
-            <Style TargetType="{x:Type Border}">
-              <Setter Property="BorderBrush" Value="Black" />
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                  <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Border.Style>
-          
-          <Grid>
-            <Image Source="{Binding Picture}" Stretch="Fill"
-                   Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
-                   Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
-            <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                         Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}" IsIconVisible="{Binding IsNotUnknown}" />
-          </Grid>
-          
-          <Border.ToolTip>
-            <ToolTip Padding="0">
-              <DockPanel>
-                <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" DockPanel.Dock="Top" />
-                <StackPanel Orientation="Vertical" Margin="1">
-                  <Border BorderThickness="1" BorderBrush="Black" Background="#88000000"
-                          Visibility="{Binding Person, Converter={StaticResource AllToVisibilityConverter}}">
-                    <TextBlock Text="{Binding Person.Title}" FontSize="18" Margin="5,2" />
-                  </Border>
-
-                  <TextBlock Text="{Binding MediaItem.FileName}" TextWrapping="Wrap"
-                             MaxWidth="{Binding MediaItem.ThumbWidth}" />
-              
-                  <TextBlock Text="{Binding PersonId}" />
-                </StackPanel>
-              </DockPanel>
-            </ToolTip>
-          </Border.ToolTip>
-          
-        </Border>
+      <DataTemplate x:Key="FaceDataTemplate">
+        <cc:FaceControl DataContext="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" PreviewMouseUp="Face_PreviewMouseUp" />
       </DataTemplate>
     </Grid.Resources>
     
