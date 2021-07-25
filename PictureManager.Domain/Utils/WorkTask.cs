@@ -1,8 +1,9 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Utils {
-  public class WorkTask {
+  public class WorkTask : IDisposable {
     private CancellationTokenSource _cts;
     private Task _task;
 
@@ -11,7 +12,8 @@ namespace PictureManager.Domain.Utils {
     public async Task Cancel() {
       if (_task != null) {
         _cts?.Cancel();
-        await _task;
+        if (_task.Status != TaskStatus.Canceled)
+          await _task;
       }
     }
 
@@ -22,13 +24,16 @@ namespace PictureManager.Domain.Utils {
       if (_task.Status == TaskStatus.Created)
         _task.Start();
 
-      return _task.ContinueWith((x) => { Dispose(); });
+      return _task.ContinueWith((_) => Dispose());
     }
 
-    private void Dispose() {
-      _task?.Dispose();
-      _cts?.Dispose();
-      _cts = null;
+    public void Dispose() {
+      try {
+        _task?.Dispose();
+        _cts?.Dispose();
+        _cts = null;
+      }
+      catch (Exception) { }
     }
   }
 }
