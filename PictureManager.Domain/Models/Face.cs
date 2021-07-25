@@ -28,6 +28,7 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged(nameof(IsNotUnknown));
       }
     }
+    public int GroupId { get; set; } // 0 = not in the group of similar
     public Int32Rect FaceBox { get; set; }
     #endregion
 
@@ -52,10 +53,10 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(Face a, Face b) => !(a == b);
     #endregion
 
-    // ID|MediaItemId|PersonId|FaceBox
+    // ID|MediaItemId|PersonId|GroupId|FaceBox
     public string ToCsv() {
       var faceBox = string.Join(",", FaceBox.X, FaceBox.Y, FaceBox.Width, FaceBox.Height);
-      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), faceBox);
+      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), faceBox);
     }
 
     public async Task SetPictureAsync(int size) {

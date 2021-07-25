@@ -18,7 +18,7 @@ namespace PictureManager.Domain.Models {
     private int _compareFaceSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
-    private int _maxFacesInGroup = 5;
+    private int _maxFacesInGroup = 3;
     private bool _groupFaces;
     private bool _groupConfirmedFaces;
 
@@ -45,14 +45,12 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|MediaItemId|PersonId|FaceBox
+      // ID|MediaItemId|PersonId|GroupId|FaceBox
       var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var rect = props[3].Split(',');
-      var face = new Face(
-        int.Parse(props[0]),
-        int.Parse(props[2]),
-        new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3]))) { Csv = props };
+      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
+      var rect = props[4].Split(',');
+      var rect2 = new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3]));
+      var face = new Face(int.Parse(props[0]), int.Parse(props[2]), rect2) { Csv = props, GroupId = int.Parse(props[3]) };
 
       All.Add(face);
       AllDic.Add(face.Id, face);
@@ -174,9 +172,50 @@ namespace PictureManager.Domain.Models {
       LoadedInGroups.Clear();
     }
 
+    public void ReloadFaceGroups(int personId, double similarity) =>
+      ReloadFaceGroups(All.Cast<Face>().Where(x => x.PersonId == personId), similarity);
+
+    public async void ReloadFaceGroups(IEnumerable<Face> faces, double similarity) {
+      //var notInGroup = faces.Where(x => x.GroupId == 0);
+      //var groups = faces.Where(x => x.GroupId != 0).GroupBy(x => x.GroupId).Select(x => x.ToList()).ToList();
+      var groups = new List<List<Face>>();
+      var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
+
+      foreach (var face0 in faces) {
+        await face0.SetPictureAsync(FaceSize);
+        await face0.SetComparePictureAsync(CompareFaceSize);
+        if (face0.ComparePicture == null) continue;
+
+        var res = new List<(List<Face> group, Face face, double sim)>();
+        foreach (var group in groups) {
+          foreach (var face in group) {
+            await face.SetPictureAsync(FaceSize);
+            await face.SetComparePictureAsync(CompareFaceSize);
+
+            var matchings = tm.ProcessImage(face0.ComparePicture, face.ComparePicture);
+            var sim = matchings.Max(x => x.Similarity);
+            if (sim < similarity) continue;
+            res.Add(new(group, face, sim));
+          }
+        }
+
+        if (res.Count == 0)
+          groups.Add(new List<Face>() { face0 });
+        else
+          res.OrderByDescending(x => x.sim).First().group.Add(face0);
+      }
+
+      for (var i = 0; i < groups.Count; i++)
+        foreach (var face in groups[i])
+          face.GroupId = i + 1;
+
+      Core.Instance.Sdb.SetModified<Faces>();
+    }
+
     private static IEnumerable<Face> GetSomeFacesForEachPerson(IEnumerable<Face> faces, int count) {
       var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-      var facesA = faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(x => x.OrderBy(y => random.Next()).Take(count));
+      var facesA = faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(
+        x => x.First().Person?.Faces != null ? x.First().Person.Faces : x.OrderBy(y => random.Next()).Take(count));
       var facesB = facesA.Any() ? facesA.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
       return facesB;
     }
@@ -205,6 +244,7 @@ namespace PictureManager.Domain.Models {
         if (token.IsCancellationRequested) yield break;
 
         await face.SetPictureAsync(FaceSize);
+        face.MediaItem.SetThumbSize();
         Loaded.Add(face);
 
         yield return face;
@@ -278,6 +318,7 @@ namespace PictureManager.Domain.Models {
 
         foreach (var faceA in Loaded) {
           if (token.IsCancellationRequested) break;
+          await faceA.SetPictureAsync(FaceSize);
           await faceA.SetComparePictureAsync(CompareFaceSize);
           if (faceA.ComparePicture == null) continue;
 
@@ -286,6 +327,7 @@ namespace PictureManager.Domain.Models {
             if (token.IsCancellationRequested) break;
             if (faceA.Id == faceB.Id || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
 
+            await faceA.SetPictureAsync(FaceSize);
             await faceB.SetComparePictureAsync(CompareFaceSize);
             if (faceB.ComparePicture == null) continue;
 
