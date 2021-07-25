@@ -1,14 +1,13 @@
-﻿using PictureManager.Commands;
-using PictureManager.CustomControls;
+﻿using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -20,8 +19,7 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private CancellationTokenSource _cts;
-    private Task _workTask;
+    private readonly WorkTask _workTask = new();
     private readonly IProgress<int> _progress;
     private string _title;
     private bool _loading;
@@ -77,28 +75,19 @@ namespace PictureManager.UserControls {
       BtnDetectNew.Click += (o, e) => LoadFaces(true, false);
 
       BtnCompare.Click += async (o, e) => {
+        if (_loading) return;
         await CompareAsync();
         SortAndReload(true, true);
       };
 
-      BtnCompareAllGroups.Click += (o, e) => {
-        LoadFaces(false, true);
-      };
+      BtnCompareAllGroups.Click += (o, e) => LoadFaces(false, true);
 
       BtnSort.Click += (o, e) => SortAndReload(true, true);
     }
 
     public async void LoadFaces(bool detectNewFaces, bool withPersonOnly) {
       _loading = true;
-
-      // cancel previous work
-      if (_workTask != null) {
-        _cts?.Cancel();
-        await _workTask;
-      }
-
-      _cts?.Dispose();
-      _cts = new();
+      await _workTask.Cancel();
 
       FacesGrid.ClearRows();
       FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
@@ -108,28 +97,19 @@ namespace PictureManager.UserControls {
         ? (App.Core.Faces.All.Cast<Face>().GroupBy(x => x.PersonId).Count() - 1) * App.Core.Faces.MaxFacesInGroup
         : MediaItems.Count);
 
-      _workTask = Task.Run(async () => {
+      await _workTask.Start(Task.Run(async () => {
         if (withPersonOnly) {
-          await foreach (var face in App.Core.Faces.GetAllFacesAsync(_progress, _cts.Token))
-            await App.Core.RunOnUiThread(() => {
-              FacesGrid.AddItem(face, _faceGridWidth);
-            });
+          await foreach (var face in App.Core.Faces.GetAllFacesAsync(_progress, _workTask.Token))
+            await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
 
-          await App.Core.RunOnUiThread(() => {
-            _progress.Report(App.Ui.AppInfo.ProgressBarMaxA); //TODO count real value
-          });
+          //TODO count real value
+          await App.Core.RunOnUiThread(() => _progress.Report(App.Ui.AppInfo.ProgressBarMaxA));
         }
         else {
-          await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _cts.Token))
-            await App.Core.RunOnUiThread(() => {
-              FacesGrid.AddItem(face, _faceGridWidth);
-            });
+          await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _workTask.Token))
+            await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
         }
-      });
-
-      await _workTask;
-      _cts?.Dispose();
-      _cts = null;
+      }));
 
       _loading = false;
       SortAndReload(App.Core.Faces.GroupFaces, true);
@@ -141,24 +121,9 @@ namespace PictureManager.UserControls {
     }
 
     public async Task CompareAsync() {
-      if (_loading) return;
-
-      // cancel previous work
-      if (_workTask != null) {
-        _cts?.Cancel();
-        await _workTask;
-      }
-
-      _cts?.Dispose();
-      _cts = new();
-
+      await _workTask.Cancel();
       App.Ui.AppInfo.ResetProgressBars(App.Core.Faces.Loaded.Count);
-
-      _workTask = App.Core.Faces.FindSimilaritiesAsync(_progress, _cts.Token);
-
-      await _workTask;
-      _cts?.Dispose();
-      _cts = null;
+      await _workTask.Start(App.Core.Faces.FindSimilaritiesAsync(_progress, _workTask.Token));
     }
 
     private static int GetTopRowIndex(VirtualizingWrapPanel panel) {
@@ -249,8 +214,8 @@ namespace PictureManager.UserControls {
       var facesB = App.Core.Faces.Selected.Where(x => x.PersonId == 0);
       var groupsIds = facesA.Select(x => x.Key).OrderByDescending(x => x);
 
-      if (groupsIds.Any())
-        if (!MessageDialog.Show("Change Person", $"Set Person ({person.Title}) to Faces with ID ({string.Join(", ", groupsIds.ToArray())})?", true)) return;
+      if (groupsIds.Any() && !MessageDialog.Show("Change Person", $"Set Person ({person.Title}) to Faces with ID ({string.Join(", ", groupsIds.ToArray())})?", true))
+        return;
 
       foreach (var group in facesA)
         App.Core.Faces.ChangePerson(group.Key, person);
@@ -282,18 +247,6 @@ namespace PictureManager.UserControls {
       mouseLoc.Y += ControlButtons.Height + 10;
       mouseLoc.X -= ControlButtons.Width / 2;
       ControlButtons.RenderTransform = new TranslateTransform(mouseLoc.X, mouseLoc.Y);
-    }
-
-    private void Face_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
-      if (e.ClickCount != 2) return;
-      var face = (Face)((FrameworkElement)sender).DataContext;
-      App.Core.MediaItems.Current = face.MediaItem;
-      WindowCommands.SwitchToFullScreen();
-      var items = face.PersonId == 0
-        ? new List<MediaItem> { face.MediaItem }
-        : App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
-      App.WMain.MediaViewer.SetMediaItems(items);
-      App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
     }
 
     private void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
