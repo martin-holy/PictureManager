@@ -16,6 +16,7 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+    //private readonly int _faceGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
     public ObservableCollection<Face> AllPersonFaces { get; } = new();
@@ -25,6 +26,8 @@ namespace PictureManager.UserControls {
       InitializeComponent();
 
       AttachEvents();
+
+      //VwpAllFaces.Rows = new();
     }
 
     private void AttachEvents() {
@@ -38,6 +41,11 @@ namespace PictureManager.UserControls {
       Drop += OnDrop;
 
       BtnClose.Click += (o, e) => Visibility = Visibility.Collapsed;
+      //BtnUpdateFaceGroups.Click += async (o, e) => {
+      //  App.Core.Faces.ReloadFaceGroups(Person.Id, App.Core.Faces.SimilarityLimit / 100.0);
+      //  await ReloadPersonFacesAsync(Person);
+      //  UpdateLayout();
+      //};
     }
 
     public async Task ReloadPersonFacesAsync(Person person) {
@@ -59,9 +67,35 @@ namespace PictureManager.UserControls {
       IcAllFaces.FindChild<ScrollViewer>().ScrollToHome();
     }
 
+    // faces in groups version (current face comparer (template matching) is not sufficiente enough to find groups of similar faces)
+    //public async Task ReloadPersonFacesAsync(Person person) {
+    //  Person = person;
+    //  VwpAllFaces.ClearRows();
+    //  Visibility = Visibility.Visible;
+
+    //  await Task.Run(async () => {
+    //    foreach (var group in App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == person.Id).GroupBy(x => x.GroupId)) {
+    //      await App.Core.RunOnUiThread(() => {
+    //        VwpAllFaces.AddGroup(IconName.PeopleMultiple, group.Key.ToString());
+    //      });
+    //      foreach (var face in group) {
+    //        await face.SetPictureAsync(App.Core.Faces.FaceSize);
+    //        face.MediaItem.SetThumbSize();
+    //        await App.Core.RunOnUiThread(() => {
+    //          VwpAllFaces.AddItem(face, _faceGridWidth);
+    //        });
+    //      }
+    //    }
+    //  });
+
+    //  IcTopFaces.FindChild<ScrollViewer>().ScrollToHome();
+    //  IcAllFaces.FindChild<ScrollViewer>().ScrollToHome();
+    //  VwpAllFaces.ScrollToTop();
+    //}
+
     private void MouseWheelScroll(object sender, MouseWheelEventArgs e) {
       var sv = (ScrollViewer)sender;
-      sv.ScrollToHorizontalOffset(sv.ContentHorizontalOffset + e.Delta * - 1);
+      sv.ScrollToHorizontalOffset(sv.ContentHorizontalOffset + (e.Delta * -1));
       e.Handled = true;
     }
 
@@ -87,7 +121,7 @@ namespace PictureManager.UserControls {
 
     private void StartDragDrop(object sender, MouseEventArgs e) {
       if (_dragDropSource == null || !IsDragDropStarted(e)) return;
-      DragDrop.DoDragDrop(_dragDropSource, _dragDropSource.DataContext, _dragDropEffects);
+      _ = DragDrop.DoDragDrop(_dragDropSource, _dragDropSource.DataContext, _dragDropEffects);
     }
 
     private bool IsDragDropStarted(MouseEventArgs e) {
@@ -127,10 +161,13 @@ namespace PictureManager.UserControls {
         Person.Faces.Add(face);
       }
       else {
-        Person.Faces.Remove(face);
+        _ = Person.Faces.Remove(face);
         if (Person.Faces.Count == 0)
           Person.Faces = null;
       }
+
+      if (Person.Faces?.Count > 0)
+        Person.Face = Person.Faces[0];
 
       App.Db.SetModified<People>();
     }
