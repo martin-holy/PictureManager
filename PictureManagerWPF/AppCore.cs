@@ -80,9 +80,8 @@ namespace PictureManager {
             }
             else {
               tab.IsSelected = true;
+              control.Reload();
             }
-
-            control.Reload();
           }
           break;
         }
