@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using PictureManager.Commands;
+using PictureManager.Domain.Models;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace PictureManager.CustomControls {
@@ -12,6 +14,12 @@ namespace PictureManager.CustomControls {
 
     static FaceControl() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(FaceControl), new FrameworkPropertyMetadata(typeof(FaceControl)));
+    }
+
+    public override void OnApplyTemplate() {
+      PreviewMouseDoubleClick += (o, e) => MediaItemsCommands.ViewMediaItemsWithFaceCommand.Execute((Face)DataContext, this);
+
+      base.OnApplyTemplate();
     }
   }
 }
