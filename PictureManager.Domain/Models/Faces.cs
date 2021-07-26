@@ -120,7 +120,7 @@ namespace PictureManager.Domain.Models {
     }
     #endregion
 
-    public void Select(bool isCtrlOn, bool isShiftOn, Face face) {
+    public void Select(bool isCtrlOn, bool isShiftOn, List<Face> list, Face face) {
       // single select
       if (!isCtrlOn && !isShiftOn) {
         DeselectAll();
@@ -136,9 +136,8 @@ namespace PictureManager.Domain.Models {
 
       // multi select
       if (isShiftOn) {
-        var list = GroupFaces ? LoadedInGroups.Single(x => x.Contains(face)) : Loaded;
         var indexOfFace = list.IndexOf(face);
-        var fromFace = list.FirstOrDefault(x => x.IsSelected);
+        var fromFace = list.Find(x => x.IsSelected && x != face);
         var from = fromFace == null ? 0 : list.IndexOf(fromFace);
         var to = indexOfFace;
 
