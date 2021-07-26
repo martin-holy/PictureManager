@@ -14,8 +14,7 @@ namespace PictureManager.UserControls {
       UpdateTabMaxHeight();
     }
 
-    public bool IsThisContentSet(Type type) =>
-      ((FrameworkElement)((TabItem)Tabs.SelectedItem).Content)?.GetType() == type;
+    public bool IsThisContentSet(Type type) => ((TabItem)Tabs.SelectedItem).Content?.GetType() == type;
 
     public TabItem GetTabWithContentTypeOf(Type type) =>
       Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
