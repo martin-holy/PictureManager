@@ -3,6 +3,7 @@ using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
+using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -228,17 +229,10 @@ namespace PictureManager.UserControls {
     }
 
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
-      var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-      var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var face = (Face)((FrameworkElement)sender).DataContext;
-
-      // use middle and right button like CTRL + left button
-      if (e.ChangedButton is MouseButton.Middle or MouseButton.Right) {
-        isCtrlOn = true;
-        isShiftOn = false;
-      }
-
-      App.Core.Faces.Select(isCtrlOn, isShiftOn, face);
+      var list = App.Core.Faces.GroupFaces ? App.Core.Faces.LoadedInGroups.Single(x => x.Contains(face)) : App.Core.Faces.Loaded;
+      App.Core.Faces.Select(isCtrlOn, isShiftOn, list, face);
       MoveControlButtons();
     }
 
