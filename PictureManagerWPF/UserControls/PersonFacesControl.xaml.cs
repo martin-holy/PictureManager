@@ -1,5 +1,7 @@
 ﻿using MahApps.Metro.Controls;
+using PictureManager.Dialogs;
 using PictureManager.Domain.Models;
+using PictureManager.Utils;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -48,6 +50,22 @@ namespace PictureManager.UserControls {
       //};
     }
 
+    public void ChangePerson(Person person) {
+      if (!MessageDialog.Show("Change Person", $"Do you realy want to change selected ({App.Core.Faces.SelectedCount}) faces to person ({person.Title})?", true))
+        return;
+
+      foreach (var face in App.Core.Faces.Selected) {
+        Faces.ChangePerson(face, person);
+        _ = AllPersonFaces.Remove(face);
+        if (Person.Face == face)
+          Person.Face = null;
+        if (Person.Faces.Remove(face))
+          App.Db.SetModified<People>();
+      }
+
+      App.Core.Faces.DeselectAll();
+    }
+
     public async Task ReloadPersonFacesAsync(Person person) {
       Person = person;
       AllPersonFaces.Clear();
@@ -57,9 +75,7 @@ namespace PictureManager.UserControls {
         foreach (var face in App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == person.Id)) {
           await face.SetPictureAsync(App.Core.Faces.FaceSize);
           face.MediaItem.SetThumbSize();
-          await App.Core.RunOnUiThread(() => {
-            AllPersonFaces.Add(face);
-          });
+          await App.Core.RunOnUiThread(() => AllPersonFaces.Add(face));
         }
       });
 
@@ -138,7 +154,7 @@ namespace PictureManager.UserControls {
       var face = e.Data.GetData(typeof(Face)) as Face;
 
       if (face != null
-        && ((isInTop && (Person.Faces == null || !Person.Faces.Contains(face)))
+        && ((isInTop && (Person.Faces?.Contains(face) != true))
         || (isFromTop && !isInTop && _dragDropSource != dest))) return;
 
       // can't be dropped
@@ -172,6 +188,12 @@ namespace PictureManager.UserControls {
       App.Db.SetModified<People>();
     }
 
-    #endregion
+    #endregion Drag & Drop
+
+    private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
+      var face = (Face)((FrameworkElement)sender).DataContext;
+      App.Core.Faces.Select(isCtrlOn, isShiftOn, AllPersonFaces.ToList(), face);
+    }
   }
 }

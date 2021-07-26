@@ -67,6 +67,11 @@ namespace PictureManager.UserControls {
       _loading = false;
     }
 
+    public void ChangePerson(Person person) {
+      if (PersonFacesEditor.Visibility != Visibility.Visible) return;
+      PersonFacesEditor.ChangePerson(person);
+    }
+
     private void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
       if (_loading) return;
       Reload();
