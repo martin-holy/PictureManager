@@ -14,5 +14,8 @@ csharp_indent_case_contents_when_block=false
 # CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = none
 
+# RCS1090: Add call to 'ConfigureAwait' (or vice versa).
+dotnet_diagnostic.RCS1090.severity = none
+
 [*.{cs,vb}]
 dotnet_style_parentheses_in_other_operators=always_for_clarity:silent
