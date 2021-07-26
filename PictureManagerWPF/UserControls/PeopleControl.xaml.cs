@@ -28,8 +28,6 @@ namespace PictureManager.UserControls {
       InitializeComponent();
 
       Title = "People";
-
-      PeopleGrid.Rows = new();
     }
 
     public async void Reload() {
