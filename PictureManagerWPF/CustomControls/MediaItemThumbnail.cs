@@ -1,6 +1,7 @@
 ﻿using PictureManager.Commands;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Utils;
 using System;
 using System.Linq;
 using System.Windows;
@@ -32,16 +33,8 @@ namespace PictureManager.CustomControls {
     }
 
     private static void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
-      var isCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-      var isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var mi = (MediaItem)((FrameworkElement)sender).DataContext;
-
-      // use middle and right button like CTRL + left button
-      if (e.ChangedButton is MouseButton.Middle or MouseButton.Right) {
-        isCtrlOn = true;
-        isShiftOn = false;
-      }
-
       App.Core.MediaItems.ThumbsGrid.Select(isCtrlOn, isShiftOn, mi);
       App.Core.MarkUsedKeywordsAndPeople();
     }
