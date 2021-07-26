@@ -1,5 +1,4 @@
-﻿using PictureManager.Commands;
-using PictureManager.Dialogs;
+﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
@@ -14,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace PictureManager {
   public class AppCore : ILogger {
@@ -46,130 +46,67 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public async void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
+    public void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
-      if (item is Person p && App.WMain.MainTabs.IsThisContentSet(typeof(FaceRecognitionControl))) {
-        var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
-        if (tab?.Content is FaceRecognitionControl frc) frc.ChangePerson(p);
-        return;
-      }
+      if (item is ICatTreeViewCategory cat && cat is People) {
+        var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(PeopleControl));
 
-      // MainTabs Tab Content Type
-      switch (item) {
-        case Rating _:
-        case Person _:
-        case Keyword _:
-        case GeoName _:
-        case Folder _:
-        case FolderKeyword _: {
-          App.Ui.MediaItemsViewModel.SetTabContent();
-          break;
+        if (tab?.Content is not PeopleControl control) {
+          control = new PeopleControl();
+          App.WMain.MainTabs.AddTab();
+          App.WMain.MainTabs.SetTab(control, control, null);
         }
-        case ICatTreeViewGroup _: {
-          break;
-        }
-        case ICatTreeViewCategory cat: {
-          if (cat is People people) {
-            var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(PeopleControl));
-
-            if (tab?.Content is not PeopleControl control) {
-              control = new PeopleControl();
-              App.WMain.MainTabs.AddTab();
-              App.WMain.MainTabs.SetTab(control, control, null);
-            }
-            else {
-              tab.IsSelected = true;
-              control.Reload();
-            }
-          }
-          break;
+        else {
+          tab.IsSelected = true;
+          control.Reload();
         }
       }
 
-      switch (item) {
-        case FavoriteFolder favoriteFolder: {
+      switch (((TabItem)App.WMain.MainTabs.Tabs.SelectedItem).Content) {
+        case FaceRecognitionControl frc:
+        if (item is Person frcp)
+          frc.ChangePerson(frcp);
+        break;
+
+        case PeopleControl pc:
+        if (item is Person pcp)
+          pc.ChangePerson(pcp);
+        break;
+
+        case null:
+        case MediaItemsThumbsGrid:
+        MediaItemsViewModel.SetTabContent();
+        switch (item) {
+          case FavoriteFolder favoriteFolder:
           if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
           CatTreeViewUtils.ExpandTo(favoriteFolder.Folder);
           App.WMain.TreeViewCategories.TvCategories.ScrollTo(favoriteFolder.Folder);
           break;
-        }
-        case Rating _:
-        case Person _:
-        case Keyword _:
-        case GeoName _: {
-          if (App.Core.MediaItems.IsEditModeOn && !loadByTag) {
-            if (item is not ICatTreeViewTagItem bti) return;
 
-            bti.IsMarked = !bti.IsMarked;
-            if (bti.IsMarked)
-              App.Core.MarkedTags.Add(bti);
-            else {
-              App.Core.MarkedTags.Remove(bti);
-              bti.PicCount = 0;
-            }
+          case Rating:
+          case Person:
+          case Keyword:
+          case GeoName:
+          if (App.Core.MediaItems.IsEditModeOn && !loadByTag)
+            MediaItemsViewModel.SetMetadata(item);
+          else
+            MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
+          break;
 
-            App.Core.MediaItems.SetMetadata(item);
-
-            App.Core.MarkUsedKeywordsAndPeople();
-            AppInfo.UpdateRating();
-          }
-          else {
-            // get items by tag
-            List<MediaItem> items = item switch {
-              Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
-              Person person => person.GetMediaItems().ToList(),
-              Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
-              GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
-              _ => new()
-            };
-
-            // if CTRL is pressed, add new items to already loaded items
-            if (and)
-              items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
-
-            // if ALT is pressed, remove new items from already loaded items
-            if (hide)
-              items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
-
-            await MediaItemsViewModel.LoadAsync(items, null, item.Title);
-            App.Core.MarkUsedKeywordsAndPeople();
-          }
-
+          case Folder:
+          case FolderKeyword:
+          MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
           break;
         }
-        case Folder _:
-        case FolderKeyword _: {
-          if (item is Folder folder && !folder.IsAccessible) return;
-
-          item.IsSelected = true;
-
-          if (AppInfo.AppMode == AppMode.Viewer)
-            WindowCommands.SwitchToBrowser();
-
-          var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
-          var folders = Folder.GetFolders(roots, recursive);
-
-          // if CTRL is pressed, add items from new folders to already loaded items
-          if (and)
-            folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
-
-          // if ALT is pressed, remove items from new folders from already loaded items
-          if (hide)
-            folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
-
-          await MediaItemsViewModel.LoadAsync(null, folders, folders[0].Title);
-          App.Core.MarkUsedKeywordsAndPeople();
-          break;
-        }
-        case ICatTreeViewCategory _: {
-          // if category is going to collapse and sub item is selected, category gets selected
-          // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
-          // this will only prevent selecting category if selection was made with mouse click
-          item.IsSelected = false;
-          break;
-        }
+        break;
       }
+
+      // if category is going to collapse and sub item is selected, category gets selected
+      // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
+      // this will only prevent selecting category if selection was made with mouse click
+      if (item is ICatTreeViewCategory)
+        item.IsSelected = false;
     }
 
     public void ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
@@ -227,14 +164,10 @@ namespace PictureManager {
       return fops.FileOperationResult;
     }
 
-    public void LogError(Exception ex) {
-      LogError(ex, string.Empty);
-    }
+    public void LogError(Exception ex) => LogError(ex, string.Empty);
 
-    public void LogError(Exception ex, string msg) {
-      App.Core.RunOnUiThread(() => {
-        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}"));
-      });
-    }
+    public void LogError(Exception ex, string msg) =>
+      App.Core.RunOnUiThread(() =>
+        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
   }
 }
