@@ -9,7 +9,6 @@ using System.Windows.Media;
 
 namespace PictureManager.CustomControls {
   public class VirtualizingWrapPanel : Control {
-
     private ItemsControl _grid;
     private UIElement _rowToScrollToTop;
     private ScrollViewer _rowsScrollViewer;
@@ -18,10 +17,11 @@ namespace PictureManager.CustomControls {
     private VirtualizingWrapPanelRow _lastRow;
     private double _maxRowWidth;
 
+    public ObservableCollection<object> Rows { get; } = new();
+
     public static readonly DependencyProperty ItemDataTemplateProperty = DependencyProperty.Register(nameof(ItemDataTemplate), typeof(DataTemplate), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty ShowGroupItemsCountProperty = DependencyProperty.Register(nameof(ShowGroupItemsCount), typeof(bool), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(nameof(GroupItemsCountIcon), typeof(IconName), typeof(VirtualizingWrapPanel));
-    public static readonly DependencyProperty RowsProperty = DependencyProperty.Register(nameof(Rows), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(nameof(ScrollViewerSpeedFactor), typeof(double), typeof(VirtualizingWrapPanel), new PropertyMetadata(2.5));
 
     public DataTemplate ItemDataTemplate {
@@ -39,11 +39,6 @@ namespace PictureManager.CustomControls {
       set => SetValue(GroupItemsCountIconProperty, value);
     }
 
-    public ObservableCollection<object> Rows {
-      get => (ObservableCollection<object>)GetValue(RowsProperty);
-      set => SetValue(RowsProperty, value);
-    }
-
     public double ScrollViewerSpeedFactor {
       get => (double)GetValue(ScrollViewerSpeedFactorProperty);
       set => SetValue(ScrollViewerSpeedFactorProperty, value);
@@ -55,13 +50,14 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
+      DataContext = this;
 
       _grid = (ItemsControl)Template.FindName("PART_Grid", this);
-      _grid.ApplyTemplate();
-      _grid.SizeChanged += (o, e) => { _maxRowWidth = ActualWidth; };
+      _ = _grid.ApplyTemplate();
+      _grid.SizeChanged += (o, e) => _maxRowWidth = ActualWidth;
 
       var itemsPresenter = (ItemsPresenter)_grid.Template.FindName("PART_ItemsPresenter", _grid);
-      itemsPresenter.ApplyTemplate();
+      _ = itemsPresenter.ApplyTemplate();
 
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
       _rowsScrollViewer = (ScrollViewer)_grid.Template.FindName("PART_RowsScrollViewer", _grid);
@@ -87,9 +83,8 @@ namespace PictureManager.CustomControls {
     public int GetRowIndex(object item) {
       var rowIndex = 0;
       foreach (var row in Rows) {
-        if (row is VirtualizingWrapPanelRow itemsRow)
-          if (itemsRow.Items.Any(x => x.Equals(item)))
-            break;
+        if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item)))
+          break;
         rowIndex++;
       }
 
@@ -97,9 +92,10 @@ namespace PictureManager.CustomControls {
     }
 
     public int GetRowIndex(FrameworkElement element) {
-      foreach (var row in _rowsStackPanel.Children.Cast<DependencyObject>())
+      foreach (var row in _rowsStackPanel.Children.Cast<DependencyObject>()) {
         if (element.IsDescendantOf(row))
           return _grid.ItemContainerGenerator.IndexFromContainer(row);
+      }
 
       return 0;
     }

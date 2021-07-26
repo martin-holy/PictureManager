@@ -39,9 +39,6 @@ namespace PictureManager.UserControls {
         App.Ui.AppInfo.ProgressBarValueB = x;
       });
 
-      FacesGrid.Rows = new();
-      ConfirmedFacesGrid.Rows = new();
-
       AttachEvents();
     }
 

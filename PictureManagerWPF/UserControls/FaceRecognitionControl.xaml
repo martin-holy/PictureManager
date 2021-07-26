@@ -43,7 +43,6 @@
       
       <Grid Grid.Column="0">
         <cc:VirtualizingWrapPanel x:Name="ConfirmedFacesGrid" ScrollViewerSpeedFactor="1"
-                                  DataContext="{Binding ElementName=ConfirmedFacesGrid}"
                                   ItemDataTemplate="{StaticResource FaceDataTemplate}"
                                   SizeChanged="ControlSizeChanged" />
         
@@ -59,7 +58,6 @@
       <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" Background="Transparent" />
 
       <cc:VirtualizingWrapPanel x:Name="FacesGrid" Grid.Column="2" ScrollViewerSpeedFactor="1"
-                                DataContext="{Binding ElementName=FacesGrid}"
                                 ItemDataTemplate="{StaticResource FaceDataTemplate}"
                                 ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" />
     </Grid>

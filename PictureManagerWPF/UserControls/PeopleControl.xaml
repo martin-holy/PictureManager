@@ -5,7 +5,7 @@
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   <Grid>
-    <cc:VirtualizingWrapPanel x:Name="PeopleGrid" DataContext="{Binding ElementName=PeopleGrid}" ScrollViewerSpeedFactor="1"
+    <cc:VirtualizingWrapPanel x:Name="PeopleGrid" ScrollViewerSpeedFactor="1"
       ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" SizeChanged="ControlSizeChanged">
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>

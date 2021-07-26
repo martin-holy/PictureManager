@@ -63,7 +63,7 @@
         <TextBlock Text="{Binding AllPersonFaces.Count, StringFormat='All Faces ({0}):'}" Margin="5" />
         <ItemsControl ItemsSource="{Binding AllPersonFaces}" x:Name="IcAllFaces" Style="{StaticResource _itemsControl}" />
         
-        <!--<cc:VirtualizingWrapPanel x:Name="VwpAllFaces" DataContext="{Binding ElementName=VwpAllFaces}" ScrollViewerSpeedFactor="1"
+        <!--<cc:VirtualizingWrapPanel x:Name="VwpAllFaces" ScrollViewerSpeedFactor="1"
           ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" Height="300">
           <cc:VirtualizingWrapPanel.ItemDataTemplate>
             <DataTemplate>

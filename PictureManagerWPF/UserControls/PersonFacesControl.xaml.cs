@@ -28,8 +28,6 @@ namespace PictureManager.UserControls {
       InitializeComponent();
 
       AttachEvents();
-
-      //VwpAllFaces.Rows = new();
     }
 
     private void AttachEvents() {

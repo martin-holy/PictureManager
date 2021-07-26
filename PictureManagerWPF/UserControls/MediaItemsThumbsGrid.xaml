@@ -6,7 +6,6 @@
   <cc:VirtualizingWrapPanel x:Name="ThumbsGrid"
                             ShowGroupItemsCount="True" 
                             GroupItemsCountIcon="ImageMultiple" 
-                            Rows="{Binding Rows}"
                             PreviewMouseWheel="OnPreviewMouseWheel">
     <cc:VirtualizingWrapPanel.ItemDataTemplate>
       <DataTemplate>
