@@ -1,4 +1,5 @@
-﻿using PictureManager.CustomControls;
+﻿using PictureManager.Commands;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
@@ -87,6 +88,68 @@ namespace PictureManager.ViewModels {
       contextMenu.DataContext = dataContext;
       CurrentThumbsGrid = content.ThumbsGrid;
       App.WMain.MainTabs.SetTab(dataContext, content, contextMenu);
+    }
+
+    public static void SetMetadata(ICatTreeViewItem item) {
+      if (item is not ICatTreeViewTagItem bti) return;
+
+      bti.IsMarked = !bti.IsMarked;
+      if (bti.IsMarked) {
+        App.Core.MarkedTags.Add(bti);
+      }
+      else {
+        App.Core.MarkedTags.Remove(bti);
+        bti.PicCount = 0;
+      }
+
+      App.Core.MediaItems.SetMetadata(item);
+
+      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.AppInfo.UpdateRating();
+    }
+
+    public async void LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
+      List<MediaItem> items = item switch {
+        Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
+        Person person => person.GetMediaItems().ToList(),
+        Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
+        GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
+        _ => new()
+      };
+
+      // if CTRL is pressed, add new items to already loaded items
+      if (and)
+        items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
+
+      // if ALT is pressed, remove new items from already loaded items
+      if (hide)
+        items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
+
+      await LoadAsync(items, null, item.Title);
+      App.Core.MarkUsedKeywordsAndPeople();
+    }
+
+    public async void LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
+      if (item is Folder folder && !folder.IsAccessible) return;
+
+      item.IsSelected = true;
+
+      if (App.Ui.AppInfo.AppMode == AppMode.Viewer)
+        WindowCommands.SwitchToBrowser();
+
+      var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
+      var folders = Folder.GetFolders(roots, recursive);
+
+      // if CTRL is pressed, add items from new folders to already loaded items
+      if (and)
+        folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
+
+      // if ALT is pressed, remove items from new folders from already loaded items
+      if (hide)
+        folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
+
+      await LoadAsync(null, folders, folders[0].Title);
+      App.Core.MarkUsedKeywordsAndPeople();
     }
 
     public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
