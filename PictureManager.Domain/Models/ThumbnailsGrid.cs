@@ -25,7 +25,6 @@ namespace PictureManager.Domain.Models {
     public List<MediaItem> SelectedItems { get; } = new();
     public List<MediaItem> LoadedItems { get; } = new();
     public ObservableCollection<MediaItem> FilteredItems { get; } = new();
-    public ObservableCollection<object> Rows { get; } = new();
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
