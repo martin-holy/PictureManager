@@ -1,4 +1,5 @@
-﻿using PictureManager.CustomControls;
+﻿using MahApps.Metro.Controls;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -228,7 +230,9 @@ namespace PictureManager.UserControls {
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var face = (Face)((FrameworkElement)sender).DataContext;
-      var list = App.Core.Faces.GroupFaces ? App.Core.Faces.LoadedInGroups.Single(x => x.Contains(face)) : App.Core.Faces.Loaded;
+      var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row
+        ? row.Group.Items.Cast<Face>().ToList()
+        : App.Core.Faces.Loaded;
       App.Core.Faces.Select(isCtrlOn, isShiftOn, list, face);
       MoveControlButtons();
     }
