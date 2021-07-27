@@ -313,8 +313,8 @@ namespace PictureManager.ViewModels {
         await _loadTask;
       }
 
-      ScrollToTop();
-      App.WMain.UpdateLayout();
+      //ScrollToTop();
+      //App.WMain.UpdateLayout();
 
       _loadTask = Task.Run(async () => {
         _loadCts?.Dispose();
