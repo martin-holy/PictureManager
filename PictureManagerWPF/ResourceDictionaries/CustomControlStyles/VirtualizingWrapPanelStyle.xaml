@@ -46,7 +46,7 @@
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelGroup}">
                 <Border BorderBrush="Black" BorderThickness="1" Margin="1,2,0,2" Background="#88000000">
                   <StackPanel Orientation="Horizontal">
-                    <ItemsControl ItemsSource="{Binding Items}" ItemTemplate="{StaticResource GroupItemDataTemplate}">
+                    <ItemsControl ItemsSource="{Binding GroupInfo}" ItemTemplate="{StaticResource GroupItemDataTemplate}">
                       <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                           <StackPanel Orientation="Horizontal" />

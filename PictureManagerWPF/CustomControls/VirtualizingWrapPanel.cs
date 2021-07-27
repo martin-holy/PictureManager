@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -107,8 +108,14 @@ namespace PictureManager.CustomControls {
     public void ClearRows() {
       foreach (var row in Rows) {
         switch (row) {
-          case VirtualizingWrapPanelRow r: r.Items.Clear(); break;
-          case VirtualizingWrapPanelGroup g: g.Items.Clear(); break;
+          case VirtualizingWrapPanelRow r:
+          r.Items.Clear();
+          break;
+
+          case VirtualizingWrapPanelGroup g:
+          g.GroupInfo.Clear();
+          g.Items.Clear();
+          break;
         }
       }
 
@@ -124,23 +131,24 @@ namespace PictureManager.CustomControls {
       _lastGroup = new VirtualizingWrapPanelGroup();
 
       foreach (var groupItem in groupItems)
-        _lastGroup.Items.Add(groupItem);
+        _lastGroup.GroupInfo.Add(groupItem);
 
       Rows.Add(_lastGroup);
       _lastRow = null;
     }
 
     public void AddGroupIfNew(VirtualizingWrapPanelGroupItem[] groupItems) {
-      if (_lastGroup == null || !GroupItemsEquals(_lastGroup.Items.ToArray(), groupItems))
+      if (_lastGroup == null || !GroupItemsEquals(_lastGroup.GroupInfo.ToArray(), groupItems))
         AddGroup(groupItems);
     }
 
     public void AddItem(object item, int itemWidth) {
       if (_lastRow == null || (_lastRow.Items.Count > 0 && itemWidth > _lastRow.SpaceLeft)) {
-        _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth);
+        _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth, _lastGroup);
         Rows.Add(_lastRow);
       }
 
+      _lastGroup?.Items.Add(item);
       _lastRow.Items.Add(item);
       _lastRow.SpaceLeft -= itemWidth;
 
@@ -162,9 +170,11 @@ namespace PictureManager.CustomControls {
   }
 
   public class VirtualizingWrapPanelRow {
+    public VirtualizingWrapPanelGroup Group { get; }
     public ObservableCollection<object> Items { get; } = new();
     public double SpaceLeft { get; set; }
-    public VirtualizingWrapPanelRow(double maxWidth) {
+    public VirtualizingWrapPanelRow(double maxWidth, VirtualizingWrapPanelGroup group) {
+      Group = group;
       SpaceLeft = maxWidth;
     }
   }
@@ -173,7 +183,8 @@ namespace PictureManager.CustomControls {
     private int _itemsCount;
 
     public int ItemsCount { get => _itemsCount; set { _itemsCount = value; OnPropertyChanged(); } }
-    public ObservableCollection<VirtualizingWrapPanelGroupItem> Items { get; } = new();
+    public ObservableCollection<VirtualizingWrapPanelGroupItem> GroupInfo { get; } = new();
+    public List<object> Items { get; } = new();
   }
 
   public class VirtualizingWrapPanelGroupItem : ObservableObject {
