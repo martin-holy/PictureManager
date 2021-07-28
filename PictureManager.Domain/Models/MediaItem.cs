@@ -41,6 +41,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
     public ObservableCollection<VideoClip> VideoClips { get; set; }
     public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
+    public ObservableCollection<Face> Faces { get; set; }
 
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
 
