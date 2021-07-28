@@ -65,14 +65,17 @@ namespace PictureManager.Domain.Models {
       foreach (var face in All.Cast<Face>()) {
         if (mediaItems.TryGetValue(int.Parse(face.Csv[1]), out var mi)) {
           face.MediaItem = mi;
+          mi.Faces ??= new();
+          mi.Faces.Add(face);
 
           if (face.PersonId > 0 && people.TryGetValue(face.PersonId, out var person)) {
             face.Person = person;
             person.Face ??= face;
           }
         }
-        else
+        else {
           withoutMediaItem.Add(face);
+        }
 
         // csv array is not needed any more
         face.Csv = null;
