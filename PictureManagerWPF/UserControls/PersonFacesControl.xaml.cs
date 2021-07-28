@@ -123,8 +123,8 @@ namespace PictureManager.UserControls {
       _dragDropSource = null;
       _dragDropStartPosition = new Point(0, 0);
 
-      var src = (FrameworkElement)e.OriginalSource;
-      if (src.DataContext is not Face) return;
+      var src = e.OriginalSource as FrameworkElement;
+      if (src?.DataContext is not Face) return;
 
       _dragDropSource = src;
       _dragDropEffects = DragDropEffects.Copy;
