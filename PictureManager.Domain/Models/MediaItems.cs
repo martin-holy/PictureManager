@@ -128,6 +128,13 @@ namespace PictureManager.Domain.Models {
       item.GeoName?.MediaItems.Remove(item);
       item.GeoName = null;
 
+      // remove Faces
+      if (item.Faces != null) {
+        foreach (var face in item.Faces)
+          Core.Instance.Faces.Delete(face);
+        item.Faces = null;
+      }
+
       // remove from ThumbnailsGrids
       foreach (var thumbnailsGrid in ThumbnailsGrids) {
         thumbnailsGrid.FilteredItems.Remove(item);
