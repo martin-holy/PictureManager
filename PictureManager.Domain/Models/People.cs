@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class People : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
+  public sealed class People : BaseCatTreeViewCategory, ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Person> AllDic { get; set; }
@@ -94,6 +94,16 @@ namespace PictureManager.Domain.Models {
       if (item.Parent is ICatTreeViewGroup)
         Core.Instance.Sdb.SetModified<CategoryGroups>();
       item.Parent = null;
+
+      // set Person Faces to unknown
+      if (person.Faces != null) {
+        foreach (var face in person.Faces) {
+          face.PersonId = 0;
+          face.Person = null;
+          Core.Instance.Sdb.SetModified<Faces>();
+        }
+        person.Faces = null;
+      }
 
       // remove Person from DB
       All.Remove(person);
