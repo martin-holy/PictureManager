@@ -51,7 +51,6 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-      DataContext = this;
 
       _grid = (ItemsControl)Template.FindName("PART_Grid", this);
       _ = _grid.ApplyTemplate();
