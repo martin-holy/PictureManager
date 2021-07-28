@@ -101,9 +101,6 @@ namespace PictureManager.UserControls {
         if (withPersonOnly) {
           await foreach (var face in App.Core.Faces.GetAllFacesAsync(_progress, _workTask.Token))
             await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
-
-          //TODO count real value
-          await App.Core.RunOnUiThread(() => _progress.Report(App.Ui.AppInfo.ProgressBarMaxA));
         }
         else {
           await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _workTask.Token))
@@ -111,11 +108,12 @@ namespace PictureManager.UserControls {
         }
       }));
 
+      //TODO count real value for withPersonOnly
+      await App.Core.RunOnUiThread(() => _progress.Report(App.Ui.AppInfo.ProgressBarMaxA));
+
       _loading = false;
       SortAndReload(App.Core.Faces.GroupFaces, true);
 
-      if (App.Core.Faces.Helper.IsModified)
-        App.Core.Faces.Helper.SaveToFile(App.Core.Faces.All);
       if (App.Core.Faces.Helper.AreTablePropsModified)
         App.Core.Faces.Helper.SaveTablePropsToFile();
     }
@@ -230,9 +228,9 @@ namespace PictureManager.UserControls {
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var face = (Face)((FrameworkElement)sender).DataContext;
-      var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row
+      var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row && row.Group != null
         ? row.Group.Items.Cast<Face>().ToList()
-        : App.Core.Faces.Loaded;
+        : new List<Face>() { face };
       App.Core.Faces.Select(isCtrlOn, isShiftOn, list, face);
       MoveControlButtons();
     }
