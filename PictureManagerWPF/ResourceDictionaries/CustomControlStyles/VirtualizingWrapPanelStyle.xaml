@@ -9,8 +9,8 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type cc:VirtualizingWrapPanel}">
-          <ItemsControl x:Name="PART_Grid" 
-                        ItemsSource="{Binding Rows}"
+          <ItemsControl x:Name="PART_Grid"
+                        ItemsSource="{Binding Rows, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
                         VirtualizingStackPanel.IsVirtualizing="True" 
                         VirtualizingPanel.ScrollUnit="Pixel" 
                         VirtualizingPanel.VirtualizationMode="Recycling"
@@ -24,7 +24,7 @@
             <ItemsControl.Resources>
               <!-- Row -->
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelRow}">
-                <ItemsControl ItemsSource="{Binding Items}" 
+                <ItemsControl DataContext="{Binding}" ItemsSource="{Binding Items}" 
                               ItemTemplate="{Binding ItemDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}">
                   <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -36,7 +36,7 @@
 
               <!-- GroupItem -->
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelGroupItem}" x:Key="GroupItemDataTemplate">
-                <StackPanel Orientation="Horizontal" DataContext="{Binding}" ToolTip="{Binding ToolTip}">
+                <StackPanel DataContext="{Binding}" Orientation="Horizontal" ToolTip="{Binding ToolTip}">
                   <cc:IconRect IconName="{Binding Icon}" Margin="8,8,0,8" />
                   <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
                 </StackPanel>
@@ -56,7 +56,7 @@
 
                     <!-- Group Items Count -->
                     <StackPanel Orientation="Horizontal" Visibility="{Binding ShowGroupItemsCount, Converter={StaticResource AllToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}">
-                      <cc:IconRect IconName="{Binding GroupItemsCountIcon, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}" Margin="8,8,0,8" />
+                      <cc:IconRect Margin="8,8,0,8" IconName="{Binding GroupItemsCountIcon, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}" />
                       <TextBlock Text="{Binding ItemsCount}" FontSize="20" Padding="8" />
                     </StackPanel>
                   </StackPanel>
@@ -67,7 +67,7 @@
 
             <ItemsControl.Template>
               <ControlTemplate>
-                <cc:WheelSpeedScrollViewer x:Name="PART_RowsScrollViewer" SpeedFactor="{Binding ScrollViewerSpeedFactor}">
+                <cc:WheelSpeedScrollViewer x:Name="PART_RowsScrollViewer" SpeedFactor="{Binding ScrollViewerSpeedFactor, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}">
                   <ItemsPresenter x:Name="PART_ItemsPresenter" />
                 </cc:WheelSpeedScrollViewer>
               </ControlTemplate>
