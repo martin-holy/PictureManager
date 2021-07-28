@@ -135,12 +135,21 @@ namespace PictureManager.Domain.Models {
       if (GeoName != null)
         InfoBoxThumb.Add(GeoName.Title);
 
-      if (People != null) {
-        InfoBoxPeople = new ObservableCollection<string>();
+      if (People != null || Faces != null) {
+        var people = Enumerable.Empty<string>();
 
-        foreach (var p in People.OrderBy(x => x.Title)) {
-          InfoBoxPeople.Add(p.Title);
-          InfoBoxThumb.Add(p.Title);
+        if (People != null)
+          people = People.Select(x => x.Title);
+        if (Faces != null)
+          people = people.Concat(Faces.Where(x => x.Person != null).Select(x => x.Person.Title));
+
+        if (people.Any()) {
+          InfoBoxPeople = new ObservableCollection<string>();
+
+          foreach (var p in people.Distinct().OrderBy(x => x)) {
+            InfoBoxPeople.Add(p);
+            InfoBoxThumb.Add(p);
+          }
         }
       }
 
