@@ -24,7 +24,7 @@
         <Setter Property="ItemTemplate">
           <Setter.Value>
             <DataTemplate>
-              <cc:FaceControl DataContext="{Binding}" IsCheckmarkVisible="False" PreviewMouseUp="Face_PreviewMouseUp" />
+              <cc:FaceControl Face="{Binding}" IsCheckmarkVisible="False" PreviewMouseUp="Face_PreviewMouseUp" />
             </DataTemplate>
           </Setter.Value>
         </Setter>
@@ -67,7 +67,7 @@
           ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" Height="300">
           <cc:VirtualizingWrapPanel.ItemDataTemplate>
             <DataTemplate>
-              <cc:FaceControl DataContext="{Binding}" IsCheckmarkVisible="False" />
+              <cc:FaceControl Face="{Binding}" IsCheckmarkVisible="False" />
             </DataTemplate>
           </cc:VirtualizingWrapPanel.ItemDataTemplate>
         </cc:VirtualizingWrapPanel>-->
