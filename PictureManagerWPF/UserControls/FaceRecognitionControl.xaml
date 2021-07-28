@@ -18,7 +18,7 @@
       </Style>
       
       <DataTemplate x:Key="FaceDataTemplate">
-        <cc:FaceControl DataContext="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" PreviewMouseUp="Face_PreviewMouseUp" />
+        <cc:FaceControl Face="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" PreviewMouseUp="Face_PreviewMouseUp" />
       </DataTemplate>
     </Grid.Resources>
     

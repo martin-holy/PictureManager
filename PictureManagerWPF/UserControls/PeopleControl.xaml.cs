@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain;
+﻿using PictureManager.CustomControls;
+using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
@@ -77,8 +78,8 @@ namespace PictureManager.UserControls {
     }
 
     private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      if (((FrameworkElement)sender).DataContext is Face face)
-        await PersonFacesEditor.ReloadPersonFacesAsync(face.Person);
+      if (sender is FaceControl fc)
+        await PersonFacesEditor.ReloadPersonFacesAsync(fc.Face.Person);
     }
   }
 }
