@@ -537,6 +537,9 @@ namespace PictureManager.Domain.Models {
         face.Person = null;
       }
 
+      face.MediaItem.Faces.Remove(face);
+      if (!face.MediaItem.Faces.Any())
+        face.MediaItem.Faces = null;
       face.Similar?.Clear();
       face.Picture = null;
       face.ComparePicture = null;
