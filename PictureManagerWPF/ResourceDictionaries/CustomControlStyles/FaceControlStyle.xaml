@@ -42,14 +42,25 @@
                       </ItemsControl.ItemsPanel>
                       <ItemsControl.ItemContainerStyle>
                         <Style TargetType="{x:Type ContentPresenter}">
-                          <Setter Property="Canvas.Top" Value="{Binding Y}" />
-                          <Setter Property="Canvas.Left" Value="{Binding X}" />
+                          <Setter Property="Canvas.Top" Value="{Binding Item1.Y}" />
+                          <Setter Property="Canvas.Left" Value="{Binding Item1.X}" />
                         </Style>
                       </ItemsControl.ItemContainerStyle>
                       <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                          <Rectangle Width="{Binding Width}" Height="{Binding Height}" 
-                                     StrokeThickness="1" Stroke="White" Effect="{StaticResource Res_ShadowEffect}" />
+                          <Rectangle Width="{Binding Item1.Width}" Height="{Binding Item1.Height}" 
+                                     StrokeThickness="1" Effect="{StaticResource Res_ShadowEffect}">
+                            <Rectangle.Style>
+                              <Style TargetType="{x:Type Rectangle}">
+                                <Setter Property="Stroke" Value="White" />
+                                <Style.Triggers>
+                                  <DataTrigger Binding="{Binding Item2}" Value="True">
+                                    <Setter Property="Stroke" Value="LimeGreen" />
+                                  </DataTrigger>
+                                </Style.Triggers>
+                              </Style>
+                            </Rectangle.Style>
+                          </Rectangle>
                         </DataTemplate>
                       </ItemsControl.ItemTemplate>
                     </ItemsControl>

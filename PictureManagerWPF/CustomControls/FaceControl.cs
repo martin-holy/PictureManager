@@ -1,8 +1,10 @@
 ﻿using PictureManager.Commands;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace PictureManager.CustomControls {
   public class FaceControl : Control {
@@ -19,7 +21,7 @@ namespace PictureManager.CustomControls {
       set => SetValue(IsCheckmarkVisibleProperty, value);
     }
 
-    public ObservableCollection<Int32Rect> MediaItemFaceRects { get; } = new();
+    public ObservableCollection<Tuple<Int32Rect, bool>> MediaItemFaceRects { get; } = new();
 
     static FaceControl() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(FaceControl), new FrameworkPropertyMetadata(typeof(FaceControl)));
@@ -28,15 +30,17 @@ namespace PictureManager.CustomControls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      PreviewMouseDoubleClick += (o, e) => MediaItemsCommands.ViewMediaItemsWithFaceCommand.Execute((Face)DataContext, this);
+      PreviewMouseDoubleClick += (o, e) => {
+        if (e.LeftButton != MouseButtonState.Pressed) return;
+        MediaItemsCommands.ViewMediaItemsWithFaceCommand.Execute(Face, this);
+      };
 
       if (Template.FindName("PART_Border", this) is Border b)
         b.ToolTipOpening += (o, e) => ReloadMediaItemFaceRects();
     }
 
     public void ReloadMediaItemFaceRects() {
-      if (Face == null) return;
-      //if (MediaItemFaceRects.Any()) return;
+      if (Face == null || Face.MediaItem.Faces == null) return;
 
       var scale = Face.MediaItem.Width / (double)Face.MediaItem.ThumbWidth;
       MediaItemFaceRects.Clear();
@@ -44,7 +48,7 @@ namespace PictureManager.CustomControls {
       foreach (var f in Face.MediaItem.Faces) {
         var fb = f.FaceBox;
         var rect = new Int32Rect((int)(fb.X / scale), (int)(fb.Y / scale), (int)(fb.Width / scale), (int)(fb.Height / scale));
-        MediaItemFaceRects.Add(rect);
+        MediaItemFaceRects.Add(new Tuple<Int32Rect, bool>(rect, f == Face));
       }
     }
   }
