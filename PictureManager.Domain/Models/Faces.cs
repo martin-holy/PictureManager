@@ -528,26 +528,30 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SetModified<Faces>();
     }
 
-    public void DeleteSelected() {
-      foreach (var face in Selected.ToArray()) {
-        SetSelected(face, false);
-        if (face.Person != null) {
-          if (face.Person.Faces.Remove(face))
-            Core.Instance.Sdb.SetModified<People>();
-          face.Person.Face = null;
-          face.Person = null;
-        }
-
-        face.Similar?.Clear();
-        face.Picture = null;
-        All.Remove(face);
-        Loaded.Remove(face);
-
-        foreach (var simFace in Loaded)
-          simFace.Similar?.Remove(face);
-
-        Core.Instance.Sdb.SetModified<Faces>();
+    public void Delete(Face face) {
+      SetSelected(face, false);
+      if (face.Person != null) {
+        if (face.Person.Faces.Remove(face))
+          Core.Instance.Sdb.SetModified<People>();
+        face.Person.Face = null;
+        face.Person = null;
       }
+
+      face.Similar?.Clear();
+      face.Picture = null;
+      face.ComparePicture = null;
+      All.Remove(face);
+      Loaded.Remove(face);
+
+      foreach (var simFace in Loaded)
+        simFace.Similar?.Remove(face);
+
+      Core.Instance.Sdb.SetModified<Faces>();
+    }
+
+    public void DeleteSelected() {
+      foreach (var face in Selected.ToArray())
+        Delete(face);
     }
   }
 }
