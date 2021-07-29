@@ -424,6 +424,19 @@ namespace PictureManager.Domain.Utils {
       return bmpResized;
     }
 
+    public static BitmapSource GetBitmapSource(string filePath) {
+      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+      var bmp = new BitmapImage();
+      bmp.BeginInit();
+      bmp.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+      bmp.StreamSource = fileStream;
+      bmp.EndInit();
+      bmp.Freeze();
+
+      return bmp;
+    }
+
     public static WriteableBitmap Resize(this BitmapSource bitmapSource, int size) {
       var pxW = bitmapSource.PixelWidth;
       var pxH = bitmapSource.PixelHeight;
@@ -469,6 +482,13 @@ namespace PictureManager.Domain.Utils {
 
       bitmap.UnlockBits(bitmapData);
       return bitmapSource;
+    }
+
+    public static void SaveAsJpg(this BitmapSource bitmapSource, int quality, string destFilePath) {
+      var encoder = new JpegBitmapEncoder { QualityLevel = quality };
+      encoder.Frames.Add(BitmapFrame.Create(bitmapSource));
+      using Stream destFileStream = File.Open(destFilePath, FileMode.Create, FileAccess.ReadWrite);
+      encoder.Save(destFileStream);
     }
 
     public static System.Drawing.Imaging.PixelFormat ToImaging(this System.Windows.Media.PixelFormat pixelFormat) {
