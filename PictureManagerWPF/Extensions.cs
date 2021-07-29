@@ -67,8 +67,6 @@ namespace PictureManager {
     }
 
     public static bool TryParseDoubleUniversal(this string s, out double result) {
-      // TODO refactor
-
       result = 0.0;
       if (string.IsNullOrEmpty(s)) return false;
 
@@ -78,11 +76,10 @@ namespace PictureManager {
       var partB = clean.Substring(iOfSep + 1);
       if (!int.TryParse(partA, out var intA)) return false;
       if (!int.TryParse(partB, out var intB)) return false;
+      if (intA < 0) intB *= -1;
+      var dp = double.Parse("1".PadRight(partB.Length + 1, '0'));
 
-      var bla = double.Parse("1".PadRight(partB.Length + 1, '0'));
-
-      result = intA + intB / bla;
-
+      result = intA + intB / dp;
       return true;
     }
   }
