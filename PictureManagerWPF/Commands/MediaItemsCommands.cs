@@ -229,7 +229,7 @@ namespace PictureManager.Commands {
       inputDialog.BtnDialogOk.Click += delegate {
         var newFileName = inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName);
 
-        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) > 0)) {
+        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1)) {
           inputDialog.ShowErrorMessage("New file name contains invalid character!");
           return;
         }
@@ -272,7 +272,7 @@ namespace PictureManager.Commands {
       }
 
       control.MediaItems = mediaItems;
-      control.LoadFaces(false, mediaItems == null ? true : false);
+      _ = control.LoadFaces(false, mediaItems == null);
     }
 
     private static void ViewMediaItemsWithFace(object parameter) {
