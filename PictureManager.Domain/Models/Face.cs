@@ -3,6 +3,7 @@ using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -38,6 +39,7 @@ namespace PictureManager.Domain.Models {
     public bool IsNotUnknown => PersonId != 0;
     public Dictionary<Face, double> Similar { get; set; }
     public double SimMax { get; set; }
+    public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"face_{Id}.jpg");
 
     public Face(int id, int personId, Int32Rect faceBox) {
       Id = id;
@@ -63,7 +65,15 @@ namespace PictureManager.Domain.Models {
       Picture ??= await Task.Run(() => {
         var filePath = MediaItem.MediaType == MediaType.Image ? MediaItem.FilePath : MediaItem.FilePathCache;
         try {
-          return Imaging.GetCroppedBitmapSource(filePath, FaceBox, size);
+          var cacheFilePath = CacheFilePath;
+          if (File.Exists(cacheFilePath)) {
+            return Imaging.GetBitmapSource(cacheFilePath);
+          }
+          else {
+            var src = Imaging.GetCroppedBitmapSource(filePath, FaceBox, size);
+            src.SaveAsJpg(80, cacheFilePath);
+            return src;
+          }
         }
         catch (Exception ex) {
           Core.Instance.Logger.LogError(ex, filePath);
