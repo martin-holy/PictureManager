@@ -60,7 +60,6 @@ namespace PictureManager.Domain.Models {
     public void LinkReferences() {
       var mediaItems = Core.Instance.MediaItems.AllDic;
       var people = Core.Instance.People.AllDic;
-      var faces = All.Cast<Face>().ToDictionary(x => x.Id);
       var withoutMediaItem = new List<Face>();
 
       foreach (var face in All.Cast<Face>()) {
@@ -298,6 +297,8 @@ namespace PictureManager.Domain.Models {
           var newFace = new Face(Helper.GetNextId(), 0, faceRect) { MediaItem = mi };
 
           await newFace.SetPictureAsync(FaceSize);
+          mi.Faces ??= new();
+          mi.Faces.Add(newFace);
           Loaded.Add(newFace);
           All.Add(newFace);
 
