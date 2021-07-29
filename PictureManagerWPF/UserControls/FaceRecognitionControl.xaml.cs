@@ -48,20 +48,20 @@ namespace PictureManager.UserControls {
       BtnSamePerson.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsSamePerson();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnAnotherPerson.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsAnotherPerson();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnNotAFace.Click += (o, e) => {
         if (!MessageDialog.Show("Delete Confirmation", "Do you really want to delete selected faces?", true)) return;
         App.Core.Faces.DeleteSelected();
         App.Core.Faces.DeselectAll();
-        SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
       BtnGroupConfirmed.Click += (o, e) => Reload(false, true);
@@ -72,20 +72,20 @@ namespace PictureManager.UserControls {
         Reload(true, false);
       };
 
-      BtnDetectNew.Click += (o, e) => LoadFaces(true, false);
+      BtnDetectNew.Click += (o, e) => _ = LoadFaces(true, false);
 
       BtnCompare.Click += async (o, e) => {
         if (_loading) return;
         await CompareAsync();
-        SortAndReload(true, true);
+        _ = SortAndReload(true, true);
       };
 
-      BtnCompareAllGroups.Click += (o, e) => LoadFaces(false, true);
+      BtnCompareAllGroups.Click += (o, e) => _ = LoadFaces(false, true);
 
-      BtnSort.Click += (o, e) => SortAndReload(true, true);
+      BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
     }
 
-    public async void LoadFaces(bool detectNewFaces, bool withPersonOnly) {
+    public async Task LoadFaces(bool detectNewFaces, bool withPersonOnly) {
       _loading = true;
       await _workTask.Cancel();
 
@@ -112,7 +112,7 @@ namespace PictureManager.UserControls {
       await App.Core.RunOnUiThread(() => _progress.Report(App.Ui.AppInfo.ProgressBarMaxA));
 
       _loading = false;
-      SortAndReload(App.Core.Faces.GroupFaces, true);
+      _ = SortAndReload(App.Core.Faces.GroupFaces, true);
 
       if (App.Core.Faces.Helper.AreTablePropsModified)
         App.Core.Faces.Helper.SaveTablePropsToFile();
@@ -137,7 +137,7 @@ namespace PictureManager.UserControls {
       return rowIndex;
     }
 
-    private async void SortAndReload(bool faces, bool confirmedFaces) {
+    private async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
       Reload(faces, confirmedFaces);
     }
@@ -148,11 +148,11 @@ namespace PictureManager.UserControls {
     }
 
     private void Reload(bool faces, bool confirmedFaces) {
-      if (faces) ReloadFaces();
+      if (faces) _ = ReloadFaces();
       if (confirmedFaces) ReloadConfirmedFaces();
     }
 
-    private async void ReloadFaces() {
+    private async Task ReloadFaces() {
       if (_loading) return;
       var rowIndex = GetTopRowIndex(FacesGrid);
       FacesGrid.ClearRows();
@@ -188,19 +188,19 @@ namespace PictureManager.UserControls {
       ConfirmedFacesGrid.UpdateMaxRowWidth();
 
       if (App.Core.Faces.GroupConfirmedFaces) {
-        foreach (var group in App.Core.Faces.ConfirmedFaces) {
-          var groupTitle = group.face.Person != null ? group.face.Person.Title : group.personId.ToString();
+        foreach (var (personId, face, similar) in App.Core.Faces.ConfirmedFaces) {
+          var groupTitle = face.Person != null ? face.Person.Title : personId.ToString();
           ConfirmedFacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] {
             new() { Icon = IconName.People, Title = groupTitle } });
 
-          ConfirmedFacesGrid.AddItem(group.face, _faceGridWidth);
-          foreach (var simGroup in group.similar.OrderByDescending(x => x.sim))
+          ConfirmedFacesGrid.AddItem(face, _faceGridWidth);
+          foreach (var simGroup in similar.OrderByDescending(x => x.sim))
             ConfirmedFacesGrid.AddItem(simGroup.face, _faceGridWidth);
         }
       }
       else {
-        foreach (var group in App.Core.Faces.ConfirmedFaces)
-          ConfirmedFacesGrid.AddItem(group.face, _faceGridWidth);
+        foreach (var (_, face, _) in App.Core.Faces.ConfirmedFaces)
+          ConfirmedFacesGrid.AddItem(face, _faceGridWidth);
       }
 
       if (rowIndex != 0)
@@ -222,7 +222,7 @@ namespace PictureManager.UserControls {
         Faces.ChangePerson(face, person);
 
       App.Core.Faces.DeselectAll();
-      SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+      _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
     }
 
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
