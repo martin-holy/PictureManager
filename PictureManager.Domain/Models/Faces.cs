@@ -2,6 +2,7 @@
 using SimpleDB;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -530,6 +531,7 @@ namespace PictureManager.Domain.Models {
 
     public void Delete(Face face) {
       SetSelected(face, false);
+
       if (face.Person != null) {
         if (face.Person.Faces.Remove(face))
           Core.Instance.Sdb.SetModified<People>();
@@ -540,9 +542,11 @@ namespace PictureManager.Domain.Models {
       face.MediaItem.Faces.Remove(face);
       if (!face.MediaItem.Faces.Any())
         face.MediaItem.Faces = null;
+
       face.Similar?.Clear();
       face.Picture = null;
       face.ComparePicture = null;
+
       All.Remove(face);
       Loaded.Remove(face);
 
@@ -550,6 +554,13 @@ namespace PictureManager.Domain.Models {
         simFace.Similar?.Remove(face);
 
       Core.Instance.Sdb.SetModified<Faces>();
+
+      try {
+        File.Delete(face.CacheFilePath);
+      }
+      catch (Exception ex) {
+        Core.Instance.Logger.LogError(ex);
+      }
     }
 
     public void DeleteSelected() {
