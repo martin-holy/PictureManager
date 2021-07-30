@@ -272,7 +272,7 @@ namespace PictureManager.Commands {
       }
 
       control.MediaItems = mediaItems;
-      _ = control.LoadFaces(false, mediaItems == null);
+      _ = control.LoadFacesAsync(false, mediaItems == null);
     }
 
     private static void ViewMediaItemsWithFace(object parameter) {

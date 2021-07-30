@@ -60,19 +60,19 @@ namespace PictureManager.UserControls {
       BtnNotAFace.Click += (o, e) => {
         if (!MessageDialog.Show("Delete Confirmation", "Do you really want to delete selected faces?", true)) return;
         App.Core.Faces.DeleteSelected();
-        App.Core.Faces.DeselectAll();
         _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
-      BtnGroupConfirmed.Click += (o, e) => Reload(false, true);
+      BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
 
       BtnGroupFaces.Click += (o, e) => {
+        // TODO je potreba ScrollToTop pred reload?
         FacesGrid.ScrollToTop();
         UpdateLayout();
-        Reload(true, false);
+        _ = Reload(true, false);
       };
 
-      BtnDetectNew.Click += (o, e) => _ = LoadFaces(true, false);
+      BtnDetectNew.Click += (o, e) => _ = LoadFacesAsync(true, false);
 
       BtnCompare.Click += async (o, e) => {
         if (_loading) return;
@@ -80,12 +80,12 @@ namespace PictureManager.UserControls {
         _ = SortAndReload(true, true);
       };
 
-      BtnCompareAllGroups.Click += (o, e) => _ = LoadFaces(false, true);
+      BtnCompareAllGroups.Click += (o, e) => _ = LoadFacesAsync(false, true);
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
     }
 
-    public async Task LoadFaces(bool detectNewFaces, bool withPersonOnly) {
+    public async Task LoadFacesAsync(bool detectNewFaces, bool withPersonOnly) {
       _loading = true;
       await _workTask.Cancel();
 
@@ -94,7 +94,7 @@ namespace PictureManager.UserControls {
       ConfirmedFacesGrid.ClearRows();
       App.Core.Faces.GroupFaces = false;
       App.Ui.AppInfo.ResetProgressBars(withPersonOnly
-        ? (App.Core.Faces.All.Cast<Face>().GroupBy(x => x.PersonId).Count() - 1) * App.Core.Faces.MaxFacesInGroup
+        ? App.Core.Faces.All.Cast<Face>().Select(x => x.PersonId).Distinct().Count() - 1
         : MediaItems.Count);
 
       await _workTask.Start(Task.Run(async () => {
@@ -108,20 +108,15 @@ namespace PictureManager.UserControls {
         }
       }));
 
-      //TODO count real value for withPersonOnly
-      await App.Core.RunOnUiThread(() => _progress.Report(App.Ui.AppInfo.ProgressBarMaxA));
-
       _loading = false;
       _ = SortAndReload(App.Core.Faces.GroupFaces, true);
-
-      if (App.Core.Faces.Helper.AreTablePropsModified)
-        App.Core.Faces.Helper.SaveTablePropsToFile();
     }
 
     public async Task CompareAsync() {
       await _workTask.Cancel();
-      App.Ui.AppInfo.ResetProgressBars(App.Core.Faces.Loaded.Count);
-      await _workTask.Start(App.Core.Faces.FindSimilaritiesAsync(_progress, _workTask.Token));
+      await App.Core.Faces.SetFacesForComparison();
+      App.Ui.AppInfo.ResetProgressBars(App.Core.Faces.FacesForComparison.Count());
+      await _workTask.Start(App.Core.Faces.FindSimilaritiesAsync(App.Core.Faces.FacesForComparison, _progress, _workTask.Token));
     }
 
     private static int GetTopRowIndex(VirtualizingWrapPanel panel) {
@@ -139,40 +134,39 @@ namespace PictureManager.UserControls {
 
     private async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
-      Reload(faces, confirmedFaces);
+      await Reload(faces, confirmedFaces);
     }
 
     private static async Task Sort(bool faces, bool confirmedFaces) {
-      if (faces) await App.Core.Faces.ReloadLoadedInGroupsAsync();
-      if (confirmedFaces) App.Core.Faces.ReloadConfirmedFaces();
+      if (faces) await App.Core.Faces.ReloadLoadedGroupedByPersonAsync();
+      if (confirmedFaces) await App.Core.Faces.ReloadConfirmedFaces();
     }
 
-    private void Reload(bool faces, bool confirmedFaces) {
-      if (faces) _ = ReloadFaces();
+    private async Task Reload(bool faces, bool confirmedFaces) {
+      if (faces) await ReloadLoadedFaces();
       if (confirmedFaces) ReloadConfirmedFaces();
     }
 
-    private async Task ReloadFaces() {
+    private async Task ReloadLoadedFaces() {
       if (_loading) return;
       var rowIndex = GetTopRowIndex(FacesGrid);
       FacesGrid.ClearRows();
       FacesGrid.UpdateMaxRowWidth();
 
       if (App.Core.Faces.GroupFaces) {
-        if (App.Core.Faces.LoadedInGroups.Count == 0)
-          await App.Core.Faces.ReloadLoadedInGroupsAsync();
+        if (App.Core.Faces.LoadedGroupedByPerson.Count == 0)
+          await App.Core.Faces.ReloadLoadedGroupedByPersonAsync();
 
-        foreach (var group in App.Core.Faces.LoadedInGroups) {
+        foreach (var group in App.Core.Faces.LoadedGroupedByPerson) {
           var groupTitle = group[0].Person != null ? group[0].Person.Title : group[0].PersonId.ToString();
-          FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] {
-            new() { Icon = IconName.People, Title = groupTitle } });
+          FacesGrid.AddGroup(IconName.People, groupTitle);
 
           foreach (var face in group)
             FacesGrid.AddItem(face, _faceGridWidth);
         }
       }
       else {
-        FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
+        FacesGrid.AddGroup(IconName.People, "?");
         foreach (var face in App.Core.Faces.Loaded)
           FacesGrid.AddItem(face, _faceGridWidth);
       }
@@ -190,10 +184,9 @@ namespace PictureManager.UserControls {
       if (App.Core.Faces.GroupConfirmedFaces) {
         foreach (var (personId, face, similar) in App.Core.Faces.ConfirmedFaces) {
           var groupTitle = face.Person != null ? face.Person.Title : personId.ToString();
-          ConfirmedFacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] {
-            new() { Icon = IconName.People, Title = groupTitle } });
-
+          ConfirmedFacesGrid.AddGroup(IconName.People, groupTitle);
           ConfirmedFacesGrid.AddItem(face, _faceGridWidth);
+
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
             ConfirmedFacesGrid.AddItem(simGroup.face, _faceGridWidth);
         }
@@ -242,9 +235,9 @@ namespace PictureManager.UserControls {
       ControlButtons.RenderTransform = new TranslateTransform(mouseLoc.X, mouseLoc.Y);
     }
 
-    private void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
+    private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
       if (_loading) return;
-      Reload(true, true);
+      await Reload(true, true);
       UpdateLayout();
       ConfirmedFacesGrid.ScrollToTop();
     }

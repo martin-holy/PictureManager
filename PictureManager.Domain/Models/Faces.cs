@@ -24,7 +24,8 @@ namespace PictureManager.Domain.Models {
     private bool _groupConfirmedFaces;
 
     public List<Face> Loaded { get; } = new();
-    public List<List<Face>> LoadedInGroups { get; } = new();
+    public IEnumerable<Face> FacesForComparison { get; set; }
+    public List<List<Face>> LoadedGroupedByPerson { get; } = new();
     public List<Face> Selected { get; } = new();
     public List<MediaItem> WithoutFaces { get; } = new();
     public List<(int personId, Face face, List<(int personId, Face face, double sim)> similar)> ConfirmedFaces { get; } = new();
@@ -83,7 +84,7 @@ namespace PictureManager.Domain.Models {
 
       // in case MediaItem was deleted
       foreach (var face in withoutMediaItem)
-        All.Remove(face);
+        _ = All.Remove(face);
 
       // Table Properties
       WithoutFaces.Clear();
@@ -163,23 +164,23 @@ namespace PictureManager.Domain.Models {
       if (face.IsSelected == value) return;
       face.IsSelected = value;
       if (value) Selected.Add(face);
-      else Selected.Remove(face);
+      else _ = Selected.Remove(face);
       OnPropertyChanged(nameof(SelectedCount));
     }
 
     private void ResetBeforeNewLoad() {
       DeselectAll();
       Loaded.Clear();
-      LoadedInGroups.ForEach(x => x.Clear());
-      LoadedInGroups.Clear();
+      LoadedGroupedByPerson.ForEach(x => x.Clear());
+      LoadedGroupedByPerson.Clear();
     }
 
-    public void ReloadFaceGroups(int personId, double similarity) =>
-      ReloadFaceGroups(All.Cast<Face>().Where(x => x.PersonId == personId), similarity);
 
-    public async void ReloadFaceGroups(IEnumerable<Face> faces, double similarity) {
-      //var notInGroup = faces.Where(x => x.GroupId == 0);
-      //var groups = faces.Where(x => x.GroupId != 0).GroupBy(x => x.GroupId).Select(x => x.ToList()).ToList();
+    // this is test for creating groups of similar faces for each person
+    public async Task ReloadFaceGroups(int personId, double similarity) =>
+      await ReloadFaceGroups(All.Cast<Face>().Where(x => x.PersonId == personId), similarity);
+
+    public async Task ReloadFaceGroups(IEnumerable<Face> faces, double similarity) {
       var groups = new List<List<Face>>();
       var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
 
@@ -214,51 +215,19 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SetModified<Faces>();
     }
 
-    private static IEnumerable<Face> GetSomeFacesForEachPerson(IEnumerable<Face> faces, int count) {
-      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-      var facesA = faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(
-        x => x.First().Person?.Faces != null ? x.First().Person.Faces : x.OrderBy(y => random.Next()).Take(count));
-      var facesB = facesA.Any() ? facesA.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
-      return facesB;
-    }
-
     public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, bool detectNewFaces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
 
       var detectedFaces = All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
       var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem);
-      var mediaItemsToDetect = Array.Empty<MediaItem>();
-
-      if (detectNewFaces)
-        mediaItemsToDetect = mediaItems.Except(detectedFaces.Select(x => x.MediaItem).Distinct()).Except(WithoutFaces).ToArray();
-
+      var mediaItemsToDetect = detectNewFaces
+        ? mediaItems.Except(misWithDetectedFaces.Select(x => x.Key)).Except(WithoutFaces).ToArray()
+        : Array.Empty<MediaItem>();
       var done = mediaItems.Count - misWithDetectedFaces.Count() - mediaItemsToDetect.Length;
 
       progress.Report(done);
 
-      // load max {MaxFacesInGroup} faces from each PersonId
-      var knownFaces = GetSomeFacesForEachPerson(detectedFaces, MaxFacesInGroup);
-      var faces = knownFaces.Concat(detectedFaces.Where(x => x.PersonId == 0)).OrderBy(x => x.MediaItem.FileName).ToArray();
-      var doneFaces = 0.0;
-      var doneFacesVsMediaItems = (double)misWithDetectedFaces.Count() / faces.Length;
-
-      foreach (var face in faces) {
-        if (token.IsCancellationRequested) yield break;
-
-        await face.SetPictureAsync(FaceSize);
-        face.MediaItem.SetThumbSize();
-        Loaded.Add(face);
-
-        yield return face;
-
-        doneFaces += doneFacesVsMediaItems;
-        progress.Report(done + (int)doneFaces);
-      }
-
-      done += (int)doneFaces;
-
-      // load all
-      /*foreach (var miGroup in misWithDetectedFaces) {
+      foreach (var miGroup in misWithDetectedFaces) {
         foreach (var face in miGroup) {
           if (token.IsCancellationRequested) yield break;
 
@@ -269,7 +238,7 @@ namespace PictureManager.Domain.Models {
         }
 
         progress.Report(++done);
-      }*/
+      }
 
       if (!detectNewFaces) yield break;
 
@@ -307,11 +276,29 @@ namespace PictureManager.Domain.Models {
 
         progress.Report(++done);
       }
+
+      if (Helper.AreTablePropsModified)
+        Helper.SaveTablePropsToFile();
     }
 
-    public Task FindSimilaritiesAsync(IProgress<int> progress, CancellationToken token) {
+    public async Task SetFacesForComparison() {
+      if (FacesForComparison != null) return;
+
+      var peopleFaces = GetSomeFacesForEachPerson(Loaded, MaxFacesInGroup);
+      var faces = peopleFaces.Any() ? peopleFaces.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
+      FacesForComparison = Loaded.Where(x => x.PersonId == 0).Concat(faces);
+
+      foreach (var face in FacesForComparison.Except(Loaded).ToArray()) {
+        await face.SetPictureAsync(FaceSize);
+        face.MediaItem.SetThumbSize();
+        Loaded.Add(face);
+      }
+    }
+
+    public Task FindSimilaritiesAsync(IEnumerable<Face> faces, IProgress<int> progress, CancellationToken token) {
       return Task.Run(async () => {
         // clear previous loaded similar
+        // clear needs to be for Loaded!
         foreach (var face in Loaded) {
           face.Similar?.Clear();
           face.SimMax = 0;
@@ -320,16 +307,17 @@ namespace PictureManager.Domain.Models {
         var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
         var done = 0;
 
-        foreach (var faceA in Loaded) {
+        foreach (var faceA in faces) {
           if (token.IsCancellationRequested) break;
           await faceA.SetPictureAsync(FaceSize);
           await faceA.SetComparePictureAsync(CompareFaceSize);
           if (faceA.ComparePicture == null) continue;
 
           faceA.Similar ??= new();
-          foreach (var faceB in Loaded) {
+          foreach (var faceB in faces) {
             if (token.IsCancellationRequested) break;
-            if (faceA.Id == faceB.Id || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
+            // do not compare face with it self or with face that have same person
+            if (faceA == faceB || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
 
             await faceA.SetPictureAsync(FaceSize);
             await faceB.SetComparePictureAsync(CompareFaceSize);
@@ -353,19 +341,26 @@ namespace PictureManager.Domain.Models {
       }, token);
     }
 
+    private static IEnumerable<IEnumerable<Face>> GetSomeFacesForEachPerson(IEnumerable<Face> faces, int count) {
+      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+      return faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(
+        x => x.First().Person?.Faces != null ? x.First().Person.Faces : x.OrderBy(y => random.Next()).Take(count));
+    }
+
     public async IAsyncEnumerable<Face> GetAllFacesAsync(IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
       var done = 0;
 
-      foreach (var face in GetSomeFacesForEachPerson(All.Cast<Face>(), MaxFacesInGroup)) {
-        if (token.IsCancellationRequested) yield break;
+      foreach (var personFaces in GetSomeFacesForEachPerson(All.Cast<Face>(), MaxFacesInGroup)) {
+        foreach (var face in personFaces) {
+          if (token.IsCancellationRequested) yield break;
 
-        await face.SetPictureAsync(FaceSize);
-        face.MediaItem.SetThumbSize();
-        Loaded.Add(face);
+          await face.SetPictureAsync(FaceSize);
+          face.MediaItem.SetThumbSize();
+          Loaded.Add(face);
 
-        yield return face;
-
+          yield return face;
+        }
         progress.Report(++done);
       }
     }
@@ -374,20 +369,26 @@ namespace PictureManager.Domain.Models {
     /// Compares faces with same person id to other faces with same person id 
     /// and select random face from each group for display
     /// </summary>
-    public void ReloadConfirmedFaces() {
+    public async Task ReloadConfirmedFaces() {
       var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
       var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
       var groups = groupsA.Concat(groupsB);
-      var similarity = new List<(IGrouping<int, Face> gA, double sim, IGrouping<int, Face> gB)>();
-      var set = new HashSet<int>();
       var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+
+      async Task<Face> GetRandomFace(IEnumerable<Face> faces) {
+        var _faces = faces.First().Person?.Faces ?? faces;
+        var face = _faces.ToArray()[random.Next(_faces.Count() - 1)];
+        await face.SetPictureAsync(FaceSize);
+        face.MediaItem.SetThumbSize();
+        return face;
+      }
 
       ConfirmedFaces.Clear();
 
       foreach (var gA in groups) {
         (int personId, Face face, List<(int personId, Face face, double sim)> similar) confirmedFace = new() {
           personId = gA.Key,
-          face = gA.ToArray()[random.Next(gA.Count() - 1)],
+          face = await GetRandomFace(gA),
           similar = new()
         };
 
@@ -404,29 +405,29 @@ namespace PictureManager.Domain.Models {
           if (sims.Count == 0) continue;
 
           var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
-          confirmedFace.similar.Add(new(gB.Key, gB.ToArray()[random.Next(gB.Count() - 1)], simMedian));
+          confirmedFace.similar.Add(new(gB.Key, await GetRandomFace(gB), simMedian));
         }
 
         ConfirmedFaces.Add(confirmedFace);
       }
     }
 
-    public Task ReloadLoadedInGroupsAsync() {
+    public Task ReloadLoadedGroupedByPersonAsync() {
       return Task.Run(() => {
         // clear
-        foreach (var group in LoadedInGroups)
+        foreach (var group in LoadedGroupedByPerson)
           group.Clear();
-        LoadedInGroups.Clear();
+        LoadedGroupedByPerson.Clear();
 
         List<Face> facesGroup;
 
-        // add faces with PersonId != 0 with all similar with PersonId == 0
+        // add faces with PersonId != 0 with all similar faces with PersonId == 0
         var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
         var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
         var samePerson = groupsA.Concat(groupsB);
         foreach (var faces in samePerson) {
           var sims = new List<(Face face, double sim)>();
-          facesGroup = new List<Face>();
+          facesGroup = new();
 
           foreach (var face in faces) {
             facesGroup.Add(face);
@@ -441,15 +442,14 @@ namespace PictureManager.Domain.Models {
           }
 
           if (facesGroup.Count != 0)
-            LoadedInGroups.Add(facesGroup);
+            LoadedGroupedByPerson.Add(facesGroup);
         }
 
         // add faces with PersonId == 0 ordered by similar
         var unknown = Loaded.Where(x => x.PersonId == 0);
         var withSimilar = unknown.Where(x => x.Similar != null).OrderByDescending(x => x.SimMax);
-        var withoutSimilar = unknown.Except(withSimilar);
         var set = new HashSet<int>();
-        facesGroup = new List<Face>();
+        facesGroup = new();
 
         foreach (var face in withSimilar) {
           var simFaces = face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).OrderByDescending(x => x.Value);
@@ -464,7 +464,7 @@ namespace PictureManager.Domain.Models {
           facesGroup.Add(face);
 
         if (facesGroup.Count != 0)
-          LoadedInGroups.Add(facesGroup);
+          LoadedGroupedByPerson.Add(facesGroup);
       });
     }
 
@@ -507,8 +507,6 @@ namespace PictureManager.Domain.Models {
         face.Person = person;
         Core.Instance.Sdb.SetModified<Faces>();
       }
-
-      return;
     }
 
     public void SetSelectedAsAnotherPerson() {
@@ -540,7 +538,7 @@ namespace PictureManager.Domain.Models {
         face.Person = null;
       }
 
-      face.MediaItem.Faces.Remove(face);
+      _ = face.MediaItem.Faces.Remove(face);
       if (!face.MediaItem.Faces.Any())
         face.MediaItem.Faces = null;
 
@@ -548,11 +546,11 @@ namespace PictureManager.Domain.Models {
       face.Picture = null;
       face.ComparePicture = null;
 
-      All.Remove(face);
-      Loaded.Remove(face);
+      _ = All.Remove(face);
+      _ = Loaded.Remove(face);
 
       foreach (var simFace in Loaded)
-        simFace.Similar?.Remove(face);
+        _ = simFace.Similar?.Remove(face);
 
       Core.Instance.Sdb.SetModified<Faces>();
 
