@@ -24,8 +24,7 @@
             <ItemsControl.Resources>
               <!-- Row -->
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelRow}">
-                <ItemsControl DataContext="{Binding}" ItemsSource="{Binding Items}" 
-                              ItemTemplate="{Binding ItemDataTemplate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}">
+                <ItemsControl ItemsSource="{Binding Items}" ItemTemplate="{Binding ItemDataTemplate}">
                   <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                       <StackPanel Orientation="Horizontal" />
@@ -36,7 +35,7 @@
 
               <!-- GroupItem -->
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelGroupItem}" x:Key="GroupItemDataTemplate">
-                <StackPanel DataContext="{Binding}" Orientation="Horizontal" ToolTip="{Binding ToolTip}">
+                <StackPanel Orientation="Horizontal" ToolTip="{Binding ToolTip}">
                   <cc:IconRect IconName="{Binding Icon}" Margin="8,8,0,8" />
                   <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
                 </StackPanel>
