@@ -27,9 +27,9 @@ namespace PictureManager.UserControls {
     private string _title;
     private bool _loading;
     private readonly int _faceGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
+    private List<MediaItem> _mediaItems;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public List<MediaItem> MediaItems { get; set; }
 
     public FaceRecognitionControl() {
       InitializeComponent();
@@ -66,7 +66,6 @@ namespace PictureManager.UserControls {
       BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
 
       BtnGroupFaces.Click += (o, e) => {
-        // TODO je potreba ScrollToTop pred reload?
         FacesGrid.ScrollToTop();
         UpdateLayout();
         _ = Reload(true, false);
@@ -95,7 +94,7 @@ namespace PictureManager.UserControls {
       App.Core.Faces.GroupFaces = false;
       App.Ui.AppInfo.ResetProgressBars(withPersonOnly
         ? App.Core.Faces.All.Cast<Face>().Select(x => x.PersonId).Distinct().Count() - 1
-        : MediaItems.Count);
+        : _mediaItems.Count);
 
       await _workTask.Start(Task.Run(async () => {
         if (withPersonOnly) {
@@ -103,13 +102,18 @@ namespace PictureManager.UserControls {
             await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
         }
         else {
-          await foreach (var face in App.Core.Faces.GetFacesAsync(MediaItems, detectNewFaces, _progress, _workTask.Token))
+          await foreach (var face in App.Core.Faces.GetFacesAsync(_mediaItems, detectNewFaces, _progress, _workTask.Token))
             await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
         }
       }));
 
       _loading = false;
       _ = SortAndReload(App.Core.Faces.GroupFaces, true);
+    }
+
+    public void SetMediaItems(List<MediaItem> mediaItems) {
+      _mediaItems = mediaItems;
+      App.Core.Faces.FacesForComparison = null;
     }
 
     public async Task CompareAsync() {
