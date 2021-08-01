@@ -143,7 +143,7 @@ namespace PictureManager.CustomControls {
 
     public void AddItem(object item, int itemWidth) {
       if (_lastRow == null || (_lastRow.Items.Count > 0 && itemWidth > _lastRow.SpaceLeft)) {
-        _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth, _lastGroup);
+        _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth, _lastGroup, ItemDataTemplate);
         Rows.Add(_lastRow);
       }
 
@@ -169,12 +169,15 @@ namespace PictureManager.CustomControls {
   }
 
   public class VirtualizingWrapPanelRow {
+    public DataTemplate ItemDataTemplate { get; }
     public VirtualizingWrapPanelGroup Group { get; }
     public ObservableCollection<object> Items { get; } = new();
     public double SpaceLeft { get; set; }
-    public VirtualizingWrapPanelRow(double maxWidth, VirtualizingWrapPanelGroup group) {
+
+    public VirtualizingWrapPanelRow(double maxWidth, VirtualizingWrapPanelGroup group, DataTemplate itemDataTemplate) {
       Group = group;
       SpaceLeft = maxWidth;
+      ItemDataTemplate = itemDataTemplate;
     }
   }
 
