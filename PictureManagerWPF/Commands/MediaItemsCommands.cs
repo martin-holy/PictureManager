@@ -271,7 +271,7 @@ namespace PictureManager.Commands {
         tab.IsSelected = true;
       }
 
-      control.MediaItems = mediaItems;
+      control.SetMediaItems(mediaItems);
       _ = control.LoadFacesAsync(false, mediaItems == null);
     }
 
