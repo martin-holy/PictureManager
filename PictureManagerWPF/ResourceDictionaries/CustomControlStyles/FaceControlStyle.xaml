@@ -14,12 +14,12 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type cc:FaceControl}">
-          <Border BorderThickness="2" Margin="1" x:Name="PART_Border" DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:FaceControl}}}">
+          <Border BorderThickness="2" Margin="1" x:Name="PART_Border">
             <Border.Style>
               <Style TargetType="{x:Type Border}">
                 <Setter Property="BorderBrush" Value="Black" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
+                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -31,10 +31,10 @@
                 <DockPanel>
                   <Grid DockPanel.Dock="Top" >
                     <!-- Thumbnail -->
-                    <cc:MediaItemThumbnail DataContext="{Binding Face.MediaItem}" />
+                    <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
                     
                     <!-- Faces Rects -->
-                    <ItemsControl ItemsSource="{Binding MediaItemFaceRects}">
+                    <ItemsControl ItemsSource="{Binding MediaItemFaceRects, RelativeSource={RelativeSource TemplatedParent}}">
                       <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                           <Canvas />
@@ -69,11 +69,11 @@
                   <!-- Name and FileName -->
                   <StackPanel Orientation="Vertical" Margin="1">
                     <Border BorderThickness="1" BorderBrush="Black" Background="#88000000"
-                            Visibility="{Binding Face.Person, Converter={StaticResource AllToVisibilityConverter}}">
-                      <TextBlock Text="{Binding Face.Person.Title}" FontSize="18" Margin="5,2" />
+                            Visibility="{Binding Person, Converter={StaticResource AllToVisibilityConverter}}">
+                      <TextBlock Text="{Binding Person.Title}" FontSize="18" Margin="5,2" />
                     </Border>
 
-                    <TextBlock Text="{Binding Face.MediaItem.FileName}" TextWrapping="Wrap" MaxWidth="{Binding Face.MediaItem.ThumbWidth}" />
+                    <TextBlock Text="{Binding MediaItem.FileName}" TextWrapping="Wrap" MaxWidth="{Binding MediaItem.ThumbWidth}" />
                   </StackPanel>
                   
                 </DockPanel>
@@ -81,12 +81,12 @@
             </Border.ToolTip>
           
             <Grid>
-              <Image Source="{Binding Face.Picture}" Stretch="Fill"
+              <Image Source="{Binding Picture}" Stretch="Fill"
                      Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
                      Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
               <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
                            Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}"
-                           IsIconVisible="{Binding IsCheckmarkVisible}" />
+                           IsIconVisible="{TemplateBinding IsCheckmarkVisible}" />
             </Grid>
           </Border>
         </ControlTemplate>
