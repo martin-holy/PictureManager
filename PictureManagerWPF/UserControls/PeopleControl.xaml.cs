@@ -79,7 +79,7 @@ namespace PictureManager.UserControls {
 
     private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       if (sender is FaceControl fc)
-        await PersonFacesEditor.ReloadPersonFacesAsync(fc.Face.Person);
+        await PersonFacesEditor.ReloadPersonFacesAsync(((Face)fc.DataContext).Person);
     }
   }
 }
