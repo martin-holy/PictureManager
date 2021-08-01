@@ -8,13 +8,7 @@ using System.Windows.Input;
 
 namespace PictureManager.CustomControls {
   public class FaceControl : Control {
-    public static readonly DependencyProperty FaceProperty = DependencyProperty.Register(nameof(Face), typeof(Face), typeof(FaceControl));
     public static readonly DependencyProperty IsCheckmarkVisibleProperty = DependencyProperty.Register(nameof(IsCheckmarkVisible), typeof(bool), typeof(FaceControl), new PropertyMetadata(false));
-
-    public Face Face {
-      get => (Face)GetValue(FaceProperty);
-      set => SetValue(FaceProperty, value);
-    }
 
     public bool IsCheckmarkVisible {
       get => (bool)GetValue(IsCheckmarkVisibleProperty);
@@ -32,7 +26,7 @@ namespace PictureManager.CustomControls {
 
       PreviewMouseDoubleClick += (o, e) => {
         if (e.LeftButton != MouseButtonState.Pressed) return;
-        MediaItemsCommands.ViewMediaItemsWithFaceCommand.Execute(Face, this);
+        MediaItemsCommands.ViewMediaItemsWithFaceCommand.Execute(DataContext, this);
       };
 
       if (Template.FindName("PART_Border", this) is Border b)
@@ -40,15 +34,16 @@ namespace PictureManager.CustomControls {
     }
 
     public void ReloadMediaItemFaceRects() {
-      if (Face == null || Face.MediaItem.Faces == null) return;
+      var face = DataContext as Face;
+      if (face == null || face.MediaItem.Faces == null) return;
 
-      var scale = Face.MediaItem.Width / (double)Face.MediaItem.ThumbWidth;
+      var scale = face.MediaItem.Width / (double)face.MediaItem.ThumbWidth;
       MediaItemFaceRects.Clear();
 
-      foreach (var f in Face.MediaItem.Faces) {
+      foreach (var f in face.MediaItem.Faces) {
         var fb = f.FaceBox;
         var rect = new Int32Rect((int)(fb.X / scale), (int)(fb.Y / scale), (int)(fb.Width / scale), (int)(fb.Height / scale));
-        MediaItemFaceRects.Add(new Tuple<Int32Rect, bool>(rect, f == Face));
+        MediaItemFaceRects.Add(new Tuple<Int32Rect, bool>(rect, f == face));
       }
     }
   }
