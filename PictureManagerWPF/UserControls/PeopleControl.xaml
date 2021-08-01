@@ -10,12 +10,12 @@
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:FaceControl Face="{Binding Face}" MouseLeftButtonUp="Face_MouseLeftButtonUp">
+          <cc:FaceControl DataContext="{Binding Face}" MouseLeftButtonUp="Face_MouseLeftButtonUp">
             <cc:FaceControl.Style>
               <Style TargetType="{x:Type cc:FaceControl}">
                 <Setter Property="IsCheckmarkVisible" Value="False" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding Face.Person.Faces, Converter={StaticResource AllToBoolConverter}}" Value="True">
+                  <DataTrigger Binding="{Binding Person.Faces, Converter={StaticResource AllToBoolConverter}}" Value="True">
                     <Setter Property="IsCheckmarkVisible" Value="True" />
                   </DataTrigger>
                 </Style.Triggers>
