@@ -61,12 +61,10 @@ namespace PictureManager.CustomControls {
       }
 
       if (Template.FindName("PART_GridSplitterLeft", this) is GridSplitter gsLeft) {
-        gsLeft.DragDelta += delegate { UpdateContentLeftWidth(); };
         gsLeft.DragCompleted += delegate { UpdateContentLeftWidth(); };
       }
 
       if (Template.FindName("PART_GridSplitterRight", this) is GridSplitter gsRight) {
-        gsRight.DragDelta += delegate { UpdateContentRightWidth(); };
         gsRight.DragCompleted += delegate { UpdateContentRightWidth(); };
       }
 
@@ -93,6 +91,7 @@ namespace PictureManager.CustomControls {
 
     private void UpdateContentLeftWidth() {
       if (ContentLeft == null) return;
+      _mainGrid.UpdateLayout();
       ContentLeft.Width = _mainGrid.ColumnDefinitions[0].ActualWidth;
       ContentLeft.UpdateAnimation();
       OnContentLeftWidthChanged?.Invoke();
@@ -100,6 +99,7 @@ namespace PictureManager.CustomControls {
 
     private void UpdateContentRightWidth() {
       if (ContentRight == null) return;
+      _mainGrid.UpdateLayout();
       ContentRight.Width = _mainGrid.ColumnDefinitions[4].ActualWidth;
       ContentRight.UpdateAnimation();
       OnContentRightWidthChanged?.Invoke();
