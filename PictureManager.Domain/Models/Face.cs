@@ -84,7 +84,12 @@ namespace PictureManager.Domain.Models {
 
     public async Task SetComparePictureAsync(int size) {
       ComparePicture ??= await Task.Run(() => {
-        return Picture?.ToGray().Resize(size).ToBitmap();
+        try {
+          return Picture?.ToGray().Resize(size).ToBitmap();
+        }
+        catch (Exception) {
+          return null;
+        }
       });
     }
   }
