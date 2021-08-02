@@ -311,7 +311,11 @@ namespace PictureManager.Domain.Models {
           if (token.IsCancellationRequested) break;
           await faceA.SetPictureAsync(FaceSize);
           await faceA.SetComparePictureAsync(CompareFaceSize);
-          if (faceA.ComparePicture == null) continue;
+          if (faceA.ComparePicture == null) {
+            progress.Report(++done);
+            Core.Instance.Logger.LogError(new Exception($"Picture with unsupported pixel format.\n{faceA.MediaItem.FilePath}"));
+            continue;
+          }
 
           faceA.Similar ??= new();
           foreach (var faceB in faces) {
