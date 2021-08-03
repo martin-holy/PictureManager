@@ -73,6 +73,7 @@ namespace PictureManager.UserControls {
         foreach (var face in App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == person.Id)) {
           await face.SetPictureAsync(App.Core.Faces.FaceSize);
           face.MediaItem.SetThumbSize();
+          face.MediaItem.SetInfoBox();
           await App.Core.RunOnUiThread(() => AllPersonFaces.Add(face));
         }
       });
