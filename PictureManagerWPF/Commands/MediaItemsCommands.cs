@@ -53,7 +53,7 @@ namespace PictureManager.Commands {
 
     private static void SelectAll() {
       ThumbsGrid.SelectAll();
-      App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FileSize));
+      App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FileSize));
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -250,8 +250,8 @@ namespace PictureManager.Commands {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
         ThumbsGrid.FilteredItemsSetInPlace(current);
         App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
-        App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.FilePath));
-        App.Ui.AppInfo.OnPropertyChanged(nameof(App.Ui.AppInfo.DateAndTime));
+        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
+        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
       }
       catch (Exception ex) {
         App.Ui.LogError(ex);
