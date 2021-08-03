@@ -27,7 +27,6 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<MediaItem> FilteredItems { get; } = new();
     public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
@@ -43,14 +42,17 @@ namespace PictureManager.Domain.Models {
         if (_current != null) SetSelected(_current, true);
         _indexOfCurrent = value == null ? null : FilteredItems.IndexOf(value);
 
-        // temporary
+        // TODO temporary
         if (Core.Instance.MediaItems.Current != value)
           Core.Instance.MediaItems.Current = value;
 
         OnPropertyChanged();
-        OnPropertyChanged(nameof(PositionSlashCount));
+        UpdatePositionSlashCount();
       }
     }
+
+    private void UpdatePositionSlashCount() =>
+      Core.Instance.MediaItems.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
 
     public void ClearItBeforeLoad() {
       Current = null;
@@ -229,7 +231,7 @@ namespace PictureManager.Domain.Models {
       if (FilteredItems.IndexOf(Current) < 0)
         Core.Instance.RunOnUiThread(() => { Current = null; });
 
-      OnPropertyChanged(nameof(PositionSlashCount));
+      UpdatePositionSlashCount();
     }
   }
 }
