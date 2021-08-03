@@ -10,6 +10,7 @@ namespace PictureManager.Domain.Models {
     public string ToponymName { get; set; }
     public string Fcode { get; set; }
     public List<MediaItem> MediaItems { get; } = new();
+    public string FullGeoName => CatTreeViewUtils.GetFullPath(this, "\n");
 
     public GeoName(int id, string name, string toponymName, string fCode, ICatTreeViewItem parent) {
       Id = id;
