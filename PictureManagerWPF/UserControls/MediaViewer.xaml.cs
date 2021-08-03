@@ -22,12 +22,13 @@ namespace PictureManager.UserControls {
       get => _current;
       set {
         _current = value;
-        if (App.Core.MediaItems.ThumbsGrid != null)
-          App.Core.MediaItems.ThumbsGrid.Current = value;
+        if (App.Core.MediaItems.Current != value)
+          App.Core.MediaItems.Current = value;
         OnPropertyChanged();
+        UpdatePositionSlashCount();
       }
     }
-    public List<MediaItem> MediaItems { get; set; }
+    public List<MediaItem> MediaItems { get; private set; }
 
     // commands
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
@@ -99,10 +100,15 @@ namespace PictureManager.UserControls {
         Current = null;
       }
       else {
+        foreach (var mi in mediaItems)
+          mi.SetInfoBox();
+
         MediaItems = mediaItems;
         Current = mediaItems[0];
         _indexOfCurrent = 0;
       }
+
+      UpdatePositionSlashCount();
     }
 
     public void SetMediaItemSource(MediaItem mediaItem, bool decoded = false) {
@@ -125,6 +131,9 @@ namespace PictureManager.UserControls {
         }
       }
     }
+
+    private void UpdatePositionSlashCount() =>
+      App.Core.MediaItems.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
 
     #region Commands
 
