@@ -46,7 +46,6 @@ namespace PictureManager.ViewModels {
 
         (tab.Content as VirtualizingWrapPanel)?.ClearRows();
         grid.ClearItBeforeLoad();
-        grid.PropertyChanged -= OnCurrentMediaItemChange;
         _model.ThumbnailsGrids.Remove(grid);
       };
 
@@ -58,25 +57,16 @@ namespace PictureManager.ViewModels {
 
         _model.ThumbsGrid = grid;
         grid?.UpdateSelected();
-        App.Ui.AppInfo.CurrentMediaItem = grid?.Current;
         App.Core.MarkUsedKeywordsAndPeople();
       };
     }
 
     private ThumbnailsGrid AddThumbnailsGridModel() {
       var grid = new ThumbnailsGrid();
-      grid.PropertyChanged += OnCurrentMediaItemChange;
-
       _model.ThumbnailsGrids.Add(grid);
       _model.ThumbsGrid = grid;
 
       return grid;
-    }
-
-    private void OnCurrentMediaItemChange(object sender, PropertyChangedEventArgs e) {
-      var grid = (ThumbnailsGrid)sender;
-      if (e.PropertyName.Equals(nameof(grid.Current)))
-        App.Ui.AppInfo.CurrentMediaItem = grid.Current;
     }
 
     public void SetTabContent() {
@@ -105,7 +95,7 @@ namespace PictureManager.ViewModels {
       App.Core.MediaItems.SetMetadata(item);
 
       App.Core.MarkUsedKeywordsAndPeople();
-      App.Ui.AppInfo.UpdateRating();
+      App.WMain.StatusPanel.UpdateRating();
     }
 
     public async void LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
