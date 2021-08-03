@@ -138,7 +138,7 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Ui.AppInfo.FullGeoName = CatTreeViewUtils.GetFullPath(App.Ui.AppInfo.CurrentMediaItem?.GeoName, "\n");
+          App.Core.MediaItems.Current?.GeoName?.OnPropertyChanged(nameof(App.Core.MediaItems.Current.GeoName.FullGeoName));
         });
 
       progress.StartDialog();
