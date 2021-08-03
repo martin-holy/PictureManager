@@ -513,10 +513,22 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void SetSelectedAsAnotherPerson() {
-      foreach (var face in Selected)
+    public void SetSelectedAsUnknown() {
+      foreach (var face in Selected) {
+        // remove face from person
+        if (face.Person != null) {
+          face.Person.Face = null;
+          if (face.Person.Faces.Remove(face)) {
+            if (!face.Person.Faces.Any())
+              face.Person.Faces = null;
+            Core.Instance.Sdb.SetModified<People>();
+          }
+        }
+
+        face.Person = null;
         face.PersonId = 0;
-      SetSelectedAsSamePerson();
+        Core.Instance.Sdb.SetModified<Faces>();
+      }
     }
 
     public void ChangePerson(int personId, Person person) {

@@ -111,7 +111,7 @@
       <Button x:Name="BtnSamePerson" ToolTip="Same Person">
         <cc:IconRect IconName="People" IconFill="LimeGreen" Size="17" />
       </Button>
-      <Button x:Name="BtnAnotherPerson" ToolTip="Another Person">
+      <Button x:Name="BtnUnknown" ToolTip="Unknown">
         <cc:IconRect IconName="People" IconFill="Orange" Size="17" />
       </Button>
       <Button x:Name="BtnNotAFace" ToolTip="Not a face">

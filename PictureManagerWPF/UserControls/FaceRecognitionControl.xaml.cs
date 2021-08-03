@@ -51,8 +51,8 @@ namespace PictureManager.UserControls {
         _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
 
-      BtnAnotherPerson.Click += (o, e) => {
-        App.Core.Faces.SetSelectedAsAnotherPerson();
+      BtnUnknown.Click += (o, e) => {
+        App.Core.Faces.SetSelectedAsUnknown();
         App.Core.Faces.DeselectAll();
         _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
       };
