@@ -17,6 +17,7 @@ namespace PictureManager.Domain.Models {
 
     private bool _isEditModeOn;
     private int _mediaItemsCount;
+    private string _positionSlashCount;
     private MediaItem _current;
     private ThumbnailsGrid _currentThumbsGrid;
 
@@ -35,6 +36,7 @@ namespace PictureManager.Domain.Models {
     }
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
+    public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
     public int ModifiedCount => ModifiedItems.Count;
     public List<MediaItem> ModifiedItems { get; } = new();
     public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new();
