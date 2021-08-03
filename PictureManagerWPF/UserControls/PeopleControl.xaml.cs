@@ -31,7 +31,7 @@ namespace PictureManager.UserControls {
       Title = "People";
     }
 
-    public async void Reload() {
+    public async Task Reload() {
       async Task AddPeopleAsync(IEnumerable<Person> people, CancellationToken token) {
         foreach (var person in people) {
           if (token.IsCancellationRequested) break;
@@ -71,9 +71,9 @@ namespace PictureManager.UserControls {
       PersonFacesEditor.ChangePerson(person);
     }
 
-    private void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
+    private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
       if (_loading) return;
-      Reload();
+      await Reload();
       PeopleGrid.ScrollToTop();
     }
 
