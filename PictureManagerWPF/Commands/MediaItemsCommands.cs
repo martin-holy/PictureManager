@@ -76,6 +76,7 @@ namespace PictureManager.Commands {
       App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
+        App.WMain.MediaViewer.MediaItems.Remove(items[0]);
         if (ThumbsGrid.Current != null)
           App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
         else
