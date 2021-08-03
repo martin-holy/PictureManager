@@ -59,7 +59,7 @@ namespace PictureManager {
         }
         else {
           tab.IsSelected = true;
-          control.Reload();
+          _ = control.Reload();
         }
       }
 
