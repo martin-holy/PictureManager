@@ -555,8 +555,10 @@ namespace PictureManager.Domain.Models {
       }
 
       _ = face.MediaItem.Faces.Remove(face);
-      if (!face.MediaItem.Faces.Any())
+      if (!face.MediaItem.Faces.Any()) {
         face.MediaItem.Faces = null;
+        WithoutFaces.Add(face.MediaItem);
+      }
 
       face.Similar?.Clear();
       face.Picture = null;
