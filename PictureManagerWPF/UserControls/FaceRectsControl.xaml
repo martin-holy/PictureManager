@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="PictureManager.UserControls.FaceRectsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:uc="clr-namespace:PictureManager.UserControls">
+  
+  <UserControl.Resources>
+    <!-- Rectangle DataTemplate -->
+    <DataTemplate x:Key="_rect">
+      <Rectangle Width="{Binding Width}" Height="{Binding Height}" Effect="{StaticResource Res_ShadowEffect}"
+                 Fill="Transparent" ToolTip="{Binding Face.Person.Title}" ToolTipService.InitialShowDelay="0"
+                 PreviewMouseDown="Rectangle_PreviewMouseDown">
+        
+        <Rectangle.Style>
+          <Style TargetType="{x:Type Rectangle}">
+            <Setter Property="Stroke" Value="White" />
+            <Setter Property="StrokeThickness" Value="1" />
+            <Setter Property="Cursor" Value="Arrow" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
+                <Setter Property="Stroke" Value="{DynamicResource AccentColorBrush}" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="StrokeThickness" Value="2" />
+                <Setter Property="Cursor" Value="SizeAll" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Rectangle.Style>
+        
+      </Rectangle>
+    </DataTemplate>
+  </UserControl.Resources>
+  
+  <Grid>
+    <ItemsControl ItemsSource="{Binding MediaItemFaceRects, 
+                                RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
+                  ItemTemplate="{StaticResource _rect}">
+      
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Canvas />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      
+      <ItemsControl.ItemContainerStyle>
+        <Style TargetType="{x:Type ContentPresenter}">
+          <Setter Property="Canvas.Top" Value="{Binding Y}" />
+          <Setter Property="Canvas.Left" Value="{Binding X}" />
+        </Style>
+      </ItemsControl.ItemContainerStyle>
+      
+    </ItemsControl>
+
+   </Grid>
+</UserControl>
