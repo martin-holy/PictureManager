@@ -64,21 +64,33 @@ namespace PictureManager.Commands {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanDelete() => ThumbsGrid?.Selected > 0;
+    private static bool CanDelete() => ThumbsGrid?.Selected > 0 || App.Core.MediaItems.Current != null;
 
     private static void Delete() {
-      var items = ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
+      var items = ThumbsGrid != null
+        ? ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList()
+        : new List<MediaItem>() { App.Core.MediaItems.Current };
       var count = items.Count;
+
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      ThumbsGrid.Remove(items, true, AppCore.FileOperationDelete);
+      var newCurrent = MediaItems.GetNewCurrent(ThumbsGrid != null
+        ? ThumbsGrid.LoadedItems
+        : App.WMain.MediaViewer.MediaItems,
+        items);
+
+      App.Core.MediaItems.Delete(items, AppCore.FileOperationDelete);
+      App.Core.MediaItems.Current = newCurrent;
       App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
+      if (App.WMain.MainTabs.GetSelectedContent() is FaceRecognitionControl frc)
+        _ = frc.SortAndReload(frc.ChbAutoSort.IsChecked == true, frc.ChbAutoSort.IsChecked == true);
+
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
-        App.WMain.MediaViewer.MediaItems.Remove(items[0]);
-        if (ThumbsGrid.Current != null)
-          App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
+        _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
+        if (App.Core.MediaItems.Current != null)
+          App.WMain.MediaViewer.SetMediaItemSource(App.Core.MediaItems.Current);
         else
           WindowCommands.SwitchToBrowser();
       }
@@ -280,9 +292,22 @@ namespace PictureManager.Commands {
       if (parameter is not Face face) return;
       App.Core.MediaItems.Current = face.MediaItem;
       WindowCommands.SwitchToFullScreen();
-      var items = face.PersonId == 0
-        ? new List<MediaItem> { face.MediaItem }
-        : App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
+
+      List<MediaItem> items = null;
+
+      if (face.PersonId == 0) {
+        if (App.WMain.MainTabs.GetSelectedContent() is FaceRecognitionControl
+          && App.Core.Faces.LoadedGroupedByPerson.Any()
+          && App.Core.Faces.LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
+            items = App.Core.Faces.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
+        }
+        else
+          items = new List<MediaItem> { face.MediaItem };
+      }
+      else {
+        items = App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
+      }
+
       App.WMain.MediaViewer.SetMediaItems(items);
       App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
     }
