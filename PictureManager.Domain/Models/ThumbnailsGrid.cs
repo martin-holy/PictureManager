@@ -32,7 +32,7 @@ namespace PictureManager.Domain.Models {
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
     public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
     public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
-    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
+    public bool NeedReload { get; set; }
 
     public MediaItem Current {
       get => _current;
@@ -137,40 +137,23 @@ namespace PictureManager.Domain.Models {
         SetSelected(mi, true);
     }
 
-    public void Remove(List<MediaItem> items, bool delete, FileOperationDelete fileOperationDelete) {
-      if (items.Count == 0) return;
+    public void Remove(List<MediaItem> items) {
+      Current = MediaItems.GetNewCurrent(FilteredItems.ToList(), items);
 
-      // set Current to next MediaItem after last selected or one before first selected or null
-      var indexOfNewCurrent = FilteredItems.IndexOf(items[^1]) + 1;
-      if (indexOfNewCurrent == FilteredItems.Count)
-        indexOfNewCurrent = FilteredItems.IndexOf(items[0]) - 1;
-      Current = indexOfNewCurrent >= 0 ? FilteredItems[indexOfNewCurrent] : null;
-
-      var files = new List<string>();
-      var cache = new List<string>();
-
-      foreach (var mi in items) {
-        LoadedItems.Remove(mi);
-        FilteredItems.Remove(mi);
-        if (delete) {
-          files.Add(mi.FilePath);
-          cache.Add(mi.FilePathCache);
-          Core.Instance.MediaItems.Delete(mi);
-        }
-        else SetSelected(mi, false);
-      }
-
-      // update Current after the FilteredItems were changed
-      OnPropertyChanged(nameof(Current));
-
-      if (delete) {
-        fileOperationDelete.Invoke(files, true, false);
-        cache.ForEach(File.Delete);
-      }
+      foreach (var mi in items)
+        Remove(mi);
     }
 
-    public void RemoveSelected(bool delete, FileOperationDelete fileOperationDelete) =>
-      Remove(FilteredItems.Where(x => x.IsSelected).ToList(), delete, fileOperationDelete);
+    public void Remove(MediaItem item) {
+      if (item == Current)
+        Current = null;
+      SetSelected(item, false);
+      _ = LoadedItems.Remove(item);
+      if (FilteredItems.Remove(item))
+        NeedReload = true;
+    }
+
+    public void RemoveSelected() => Remove(FilteredItems.Where(x => x.IsSelected).ToList());
 
     public void ResetThumbsSize() {
       foreach (var item in LoadedItems)
