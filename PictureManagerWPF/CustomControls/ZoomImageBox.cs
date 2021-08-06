@@ -30,6 +30,7 @@ namespace PictureManager.CustomControls {
 
     public Image Image { get; set; }
     public bool IsAnimationOn { get; set; }
+    public double Scale => _scaleTransform.ScaleX;
 
     public double ZoomActual {
       get => _zoomActual;
@@ -121,6 +122,7 @@ namespace PictureManager.CustomControls {
       _translateTransform.X = absoluteX - (relative.X * _scaleTransform.ScaleX);
       _translateTransform.Y = absoluteY - (relative.Y * _scaleTransform.ScaleY);
 
+      OnPropertyChanged(nameof(Scale));
       ZoomActual = Image.ActualWidth * zoom / ((BitmapImage)Image.Source).PixelWidth * 100;
     }
 
@@ -188,6 +190,8 @@ namespace PictureManager.CustomControls {
       // reset pan
       _translateTransform.X = 0.0;
       _translateTransform.Y = 0.0;
+
+      OnPropertyChanged(nameof(Scale));
     }
 
     public void Play(int minDuration, Action callback) {
