@@ -547,6 +547,14 @@ namespace PictureManager.Domain.Models {
     public void Delete(Face face) {
       SetSelected(face, false);
 
+      // break group with only one face
+      if (face.PersonId < 0) {
+        var faces = All.Cast<Face>().Where(x => x.PersonId == face.PersonId && x != face).ToArray();
+        if (faces.Length == 1)
+          faces[0].PersonId = 0;
+      }
+
+      // remove Face from Person
       if (face.Person != null) {
         if (face.Person.Faces.Remove(face))
           Core.Instance.Sdb.SetModified<People>();
@@ -554,10 +562,13 @@ namespace PictureManager.Domain.Models {
         face.Person = null;
       }
 
-      _ = face.MediaItem.Faces.Remove(face);
-      if (!face.MediaItem.Faces.Any()) {
-        face.MediaItem.Faces = null;
-        WithoutFaces.Add(face.MediaItem);
+      // remove Face from MediaItem
+      if (face.MediaItem.Faces.Remove(face)) {
+        if (!face.MediaItem.Faces.Any()) {
+          face.MediaItem.Faces = null;
+          WithoutFaces.Add(face.MediaItem);
+        }
+        Core.Instance.Sdb.SetModified<MediaItems>();
       }
 
       face.Similar?.Clear();
