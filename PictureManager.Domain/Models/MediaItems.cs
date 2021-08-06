@@ -14,6 +14,7 @@ namespace PictureManager.Domain.Models {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, MediaItem> AllDic { get; set; }
+    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
 
     private bool _isEditModeOn;
     private int _mediaItemsCount;
@@ -105,8 +106,50 @@ namespace PictureManager.Domain.Models {
       MediaItemsCount = All.Count;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="all"></param>
+    /// <param name="selected"></param>
+    /// <returns>Returns next MediaItem from all after last in the selected or one before first or null</returns>
+    public static MediaItem GetNewCurrent(List<MediaItem> all, List<MediaItem> selected) {
+      if (all == null || selected?.Count == 0) return null;
+
+      var index = all.IndexOf(selected[^1]) + 1;
+      if (index == all.Count)
+        index = all.IndexOf(selected[0]) - 1;
+      return index >= 0 ? all[index] : null;
+    }
+
+    public void Delete(List<MediaItem> items, FileOperationDelete fileOperationDelete) {
+      if (items.Count == 0) return;
+
+      var files = new List<string>();
+      var cache = new List<string>();
+
+      foreach (var mi in items) {
+        files.Add(mi.FilePath);
+        cache.Add(mi.FilePathCache);
+        Delete(mi);
+      }
+
+      _ = fileOperationDelete.Invoke(files, true, false);
+      cache.ForEach(File.Delete);
+    }
+
     public void Delete(MediaItem item) {
       if (item == null) return;
+
+      // remove Faces
+      if (item.Faces != null) {
+        foreach (var face in item.Faces.ToArray()) {
+          // removig face here prevents removing face from Faces.Delete
+          // and setting DB table as modifed multiple times
+          _ = item.Faces.Remove(face);
+          Core.Instance.Faces.Delete(face);
+        }
+        item.Faces = null;
+      }
 
       // remove People
       if (item.People != null) {
@@ -130,19 +173,9 @@ namespace PictureManager.Domain.Models {
       item.GeoName?.MediaItems.Remove(item);
       item.GeoName = null;
 
-      // remove Faces
-      if (item.Faces != null) {
-        foreach (var face in item.Faces)
-          Core.Instance.Faces.Delete(face);
-        item.Faces = null;
-      }
-
       // remove from ThumbnailsGrids
-      foreach (var thumbnailsGrid in ThumbnailsGrids) {
-        thumbnailsGrid.FilteredItems.Remove(item);
-        thumbnailsGrid.LoadedItems.Remove(item);
-        thumbnailsGrid.SelectedItems.Remove(item);
-      }
+      foreach (var thumbnailsGrid in ThumbnailsGrids)
+        thumbnailsGrid.Remove(item);
 
       // remove from DB
       All.Remove(item);
