@@ -10,7 +10,6 @@ using PictureManager.UserControls;
 using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -57,6 +56,8 @@ namespace PictureManager.ViewModels {
 
         _model.ThumbsGrid = grid;
         grid?.UpdateSelected();
+        if (grid?.NeedReload == true)
+          ThumbsGridReloadItems();
         App.Core.MarkUsedKeywordsAndPeople();
       };
     }
@@ -315,6 +316,7 @@ namespace PictureManager.ViewModels {
 
       await _loadTask;
 
+      _model.ThumbsGrid.NeedReload = false;
       ScrollToCurrent();
     }
 
@@ -406,7 +408,7 @@ namespace PictureManager.ViewModels {
       fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {
-        _model.ThumbsGrid.RemoveSelected(false, null);
+        _model.ThumbsGrid.RemoveSelected();
         ThumbsGridReloadItems();
       }
     }
