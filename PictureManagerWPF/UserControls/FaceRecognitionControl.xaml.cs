@@ -136,7 +136,7 @@ namespace PictureManager.UserControls {
       return rowIndex;
     }
 
-    private async Task SortAndReload(bool faces, bool confirmedFaces) {
+    public async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
       await Reload(faces, confirmedFaces);
     }
