@@ -26,5 +26,14 @@
       Converter={StaticResource AllToVisibilityConverter}, 
       ConverterParameter={x:Static pmd:MediaType.Video}}" />
     
+    <!-- Face Rects -->
+    <uc:FaceRectsControl x:Name="FaceRects"
+                         MediaItem="{Binding Current}"
+                         Zoom="{Binding ZoomActual, ElementName=FullImage}"
+                         Scale="{Binding Scale, ElementName=FullImage}"
+                         Width="{Binding Image.ActualWidth, ElementName=FullImage}"
+                         Height="{Binding Image.ActualHeight, ElementName=FullImage}"
+                         RenderTransform="{Binding Image.RenderTransform, ElementName=FullImage}" />
+
   </Grid>
 </UserControl>

@@ -77,6 +77,10 @@ namespace PictureManager.UserControls {
       };
 
       Loaded += (o, e) => SetUpCommands(App.WMain.CommandBindings);
+
+      PreviewMouseMove += FaceRects.FaceRectsControl_PreviewMouseMove;
+      PreviewMouseDown += FaceRects.FaceRectsControl_PreviewMouseDown;
+      PreviewMouseUp += FaceRects.FaceRectsControl_PreviewMouseUp;
     }
 
     private void SetUpCommands(CommandBindingCollection cbc) {
