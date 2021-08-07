@@ -434,7 +434,7 @@ namespace PictureManager.ViewModels {
         throw new Exception("Error writing metadata");
       }
       catch (Exception ex) {
-        App.Ui.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
+        App.Core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
         // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
         mediaItem.IsOnlyInDb = true;
         return false;
@@ -537,7 +537,7 @@ namespace PictureManager.ViewModels {
 
         // don't log error if hResult is -2146233033
         if (hResult != -2146233033)
-          App.Ui.LogError(ex, mi.FilePath);
+          App.Core.LogError(ex, mi.FilePath);
       }
 
       // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
@@ -575,7 +575,7 @@ namespace PictureManager.ViewModels {
               App.Db.SetModified<MediaItems>();
             }
             catch (Exception ex) {
-              App.Ui.LogError(ex, mi.FilePath);
+              App.Core.LogError(ex, mi.FilePath);
             }
           });
         }
@@ -664,7 +664,7 @@ namespace PictureManager.ViewModels {
         }
       }
       catch (Exception ex) {
-        App.Ui.LogError(ex, mi.FilePath);
+        App.Core.LogError(ex, mi.FilePath);
 
         // No imaging component suitable to complete this operation was found.
         if ((ex.InnerException as COMException)?.HResult == -2003292336)

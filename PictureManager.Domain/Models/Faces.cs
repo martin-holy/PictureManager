@@ -252,7 +252,7 @@ namespace PictureManager.Domain.Models {
           faceRects = await Imaging.DetectFaces(filePath, FaceBoxExpand);
         }
         catch (Exception ex) {
-          Core.Instance.Logger.LogError(ex, filePath);
+          Core.Instance.LogError(ex, filePath);
         }
 
         if (faceRects.Count == 0) {
@@ -313,7 +313,7 @@ namespace PictureManager.Domain.Models {
           await faceA.SetComparePictureAsync(CompareFaceSize);
           if (faceA.ComparePicture == null) {
             progress.Report(++done);
-            Core.Instance.Logger.LogError(new Exception($"Picture with unsupported pixel format.\n{faceA.MediaItem.FilePath}"));
+            Core.Instance.LogError(new Exception($"Picture with unsupported pixel format.\n{faceA.MediaItem.FilePath}"));
             continue;
           }
 
@@ -587,7 +587,7 @@ namespace PictureManager.Domain.Models {
         File.Delete(face.CacheFilePath);
       }
       catch (Exception ex) {
-        Core.Instance.Logger.LogError(ex);
+        Core.Instance.LogError(ex);
       }
     }
 

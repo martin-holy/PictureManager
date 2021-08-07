@@ -8,10 +8,11 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
-  public class Core {
+  public class Core : ILogger {
     public string CachePath { get; set; }
     public int ThumbnailSize { get; set; }
     public double WindowsDisplayScale { get; set; }
+    public ObservableCollection<LogItem> Log { get; set; } = new();
     public ILogger Logger { get; set; }
 
     #region TreeView Roots and Categories
@@ -65,7 +66,7 @@ namespace PictureManager.Domain {
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
-        Sdb = new(Logger);
+        Sdb = new(this);
 
         Sdb.AddTable(CategoryGroups);
         Sdb.AddTable(Folders); // needs to be before Viewers
@@ -208,6 +209,12 @@ namespace PictureManager.Domain {
 
       return 0;
     }
+
+    public void LogError(Exception ex) => LogError(ex, string.Empty);
+
+    public void LogError(Exception ex, string msg) =>
+      RunOnUiThread(() =>
+        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
 
     private static Core _instance;
     private static readonly object Lock = new();

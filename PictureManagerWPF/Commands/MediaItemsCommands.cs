@@ -202,7 +202,7 @@ namespace PictureManager.Commands {
             return true;
           }
           catch (Exception ex) {
-            App.Ui.LogError(ex, destination);
+            App.Core.LogError(ex, destination);
             return false;
           }
         },
@@ -216,7 +216,7 @@ namespace PictureManager.Commands {
             Imaging.ResizeJpg(src, dest, px, withMetadata, withThumbnail, Settings.Default.JpegQualityLevel);
           }
           catch (Exception ex) {
-            App.Ui.LogError(ex, mi.FilePath);
+            App.Core.LogError(ex, mi.FilePath);
           }
         },
         // customMessage
@@ -267,7 +267,7 @@ namespace PictureManager.Commands {
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
       }
       catch (Exception ex) {
-        App.Ui.LogError(ex);
+        App.Core.LogError(ex);
       }
     }
 

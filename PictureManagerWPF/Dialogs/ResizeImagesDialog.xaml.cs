@@ -82,7 +82,7 @@ namespace PictureManager.Dialogs {
               Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Settings.Default.JpegQualityLevel);
             }
             catch (Exception ex) {
-              App.Ui.LogError(ex, mi.FilePath);
+              App.Core.LogError(ex, mi.FilePath);
             }
           });
         }
@@ -109,7 +109,7 @@ namespace PictureManager.Dialogs {
           Directory.CreateDirectory(destination);
         }
         catch (Exception ex) {
-          App.Ui.LogError(ex);
+          App.Core.LogError(ex);
           Error = true;
           return;
         }

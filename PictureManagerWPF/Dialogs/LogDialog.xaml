@@ -13,7 +13,7 @@
   ShowInTaskbar="False" FontSize="13.333"
   WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal"  
   ShowMinButton="False" ShowMaxRestoreButton="False"
-  DataContext="{x:Static pm:App.Ui}">
+  DataContext="{x:Static pm:App.Core}">
 
   <DockPanel>
     <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">

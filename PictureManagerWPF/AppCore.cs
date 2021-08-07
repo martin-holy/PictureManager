@@ -2,30 +2,24 @@
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
-using PictureManager.Models;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.UserControls;
 using PictureManager.ViewModels;
-using SimpleDB;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace PictureManager {
-  public class AppCore : ILogger {
+  public class AppCore {
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
-    public ObservableCollection<LogItem> Log { get; set; } = new();
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-      App.Core.Logger = this;
 
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
@@ -163,11 +157,5 @@ namespace PictureManager {
 
       return fops.FileOperationResult;
     }
-
-    public void LogError(Exception ex) => LogError(ex, string.Empty);
-
-    public void LogError(Exception ex, string msg) =>
-      App.Core.RunOnUiThread(() =>
-        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
   }
 }
