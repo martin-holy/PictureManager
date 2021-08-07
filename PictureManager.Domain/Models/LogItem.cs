@@ -1,4 +1,4 @@
-﻿namespace PictureManager.Models {
+﻿namespace PictureManager.Domain.Models {
   public class LogItem {
     public string Title { get; set; }
     public string Detail { get; set; }

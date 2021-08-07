@@ -53,7 +53,7 @@ namespace PictureManager.Dialogs {
         return true;
       }
       catch (Exception ex) {
-        App.Ui.LogError(ex);
+        App.Core.LogError(ex);
         return false;
       }
     }
@@ -64,7 +64,7 @@ namespace PictureManager.Dialogs {
           File.Delete(path);
       }
       catch (Exception ex) {
-        App.Ui.LogError(ex);
+        App.Core.LogError(ex);
       }
     }
 

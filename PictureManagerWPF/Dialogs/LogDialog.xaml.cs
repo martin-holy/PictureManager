@@ -7,7 +7,7 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnClear_OnClick(object sender, RoutedEventArgs e) {
-      App.Ui.Log.Clear();
+      App.Core.Log.Clear();
       Close();
     }
   }

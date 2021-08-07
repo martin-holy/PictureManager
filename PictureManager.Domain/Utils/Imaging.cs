@@ -159,7 +159,7 @@ namespace PictureManager.Domain.Utils {
       }
       catch (Exception ex) {
         if (newFile.Exists) newFile.Delete();
-        Core.Instance.Logger.LogError(ex, filePath);
+        Core.Instance.LogError(ex, filePath);
       }
     }
 

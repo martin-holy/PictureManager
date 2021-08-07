@@ -76,7 +76,7 @@ namespace PictureManager.Domain.Models {
           }
         }
         catch (Exception ex) {
-          Core.Instance.Logger.LogError(ex, filePath);
+          Core.Instance.LogError(ex, filePath);
           return null;
         }
       });
