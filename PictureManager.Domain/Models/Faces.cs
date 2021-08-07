@@ -563,12 +563,9 @@ namespace PictureManager.Domain.Models {
       }
 
       // remove Face from MediaItem
-      if (face.MediaItem.Faces.Remove(face)) {
-        if (!face.MediaItem.Faces.Any()) {
-          face.MediaItem.Faces = null;
-          WithoutFaces.Add(face.MediaItem);
-        }
-        Core.Instance.Sdb.SetModified<MediaItems>();
+      if (face.MediaItem.Faces.Remove(face) && !face.MediaItem.Faces.Any()) {
+        face.MediaItem.Faces = null;
+        WithoutFaces.Add(face.MediaItem);
       }
 
       face.Similar?.Clear();
