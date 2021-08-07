@@ -68,6 +68,9 @@ namespace PictureManager.Domain {
       return Task.Run(() => {
         Sdb = new(this);
 
+        progress.Report("Backing up database");
+        Sdb.BackUp();
+
         Sdb.AddTable(CategoryGroups);
         Sdb.AddTable(Folders); // needs to be before Viewers
         Sdb.AddTable(Viewers);
