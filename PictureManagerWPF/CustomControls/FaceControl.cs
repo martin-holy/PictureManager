@@ -41,8 +41,8 @@ namespace PictureManager.CustomControls {
       MediaItemFaceRects.Clear();
 
       foreach (var f in face.MediaItem.Faces) {
-        var fb = f.FaceBox;
-        var rect = new Int32Rect((int)(fb.X / scale), (int)(fb.Y / scale), (int)(fb.Width / scale), (int)(fb.Height / scale));
+        var fRect = f.ToRect();
+        var rect = new Int32Rect((int)(fRect.X / scale), (int)(fRect.Y / scale), (int)(fRect.Width / scale), (int)(fRect.Height / scale));
         MediaItemFaceRects.Add(new Tuple<Int32Rect, bool>(rect, f == face));
       }
     }
