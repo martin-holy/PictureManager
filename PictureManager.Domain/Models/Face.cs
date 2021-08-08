@@ -16,6 +16,9 @@ namespace PictureManager.Domain.Models {
     #region DB Properties
     private Person _person;
     private int _personId;
+    private int _x;
+    private int _y;
+    private int _size;
 
     public string[] Csv { get; set; }
     public int Id { get; }
@@ -29,8 +32,10 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged(nameof(IsNotUnknown));
       }
     }
+    public int X { get => _x; set { _x = value; OnPropertyChanged(); } }
+    public int Y { get => _y; set { _y = value; OnPropertyChanged(); } }
+    public int Size { get => _size; set { _size = value; OnPropertyChanged(); } }
     public int GroupId { get; set; } // 0 = not in the group of similar
-    public Int32Rect FaceBox { get; set; }
     #endregion
 
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
@@ -41,10 +46,12 @@ namespace PictureManager.Domain.Models {
     public double SimMax { get; set; }
     public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"face_{Id}.jpg");
 
-    public Face(int id, int personId, Int32Rect faceBox) {
+    public Face(int id, int personId, int x, int y, int size) {
       Id = id;
       PersonId = personId;
-      FaceBox = faceBox;
+      X = x;
+      Y = y;
+      Size = size;
     }
 
     #region IEquatable implementation
@@ -56,10 +63,8 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     // ID|MediaItemId|PersonId|GroupId|FaceBox
-    public string ToCsv() {
-      var faceBox = string.Join(",", FaceBox.X, FaceBox.Y, FaceBox.Width, FaceBox.Height);
-      return string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), faceBox);
-    }
+    public string ToCsv() =>
+      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), string.Join(",", X, Y, Size));
 
     public async Task SetPictureAsync(int size) {
       Picture ??= await Task.Run(() => {
@@ -70,7 +75,7 @@ namespace PictureManager.Domain.Models {
             return Imaging.GetBitmapSource(cacheFilePath);
           }
           else {
-            var src = Imaging.GetCroppedBitmapSource(filePath, FaceBox, size);
+            var src = Imaging.GetCroppedBitmapSource(filePath, ToRect(), size);
             src.SaveAsJpg(80, cacheFilePath);
             return src;
           }
@@ -91,6 +96,11 @@ namespace PictureManager.Domain.Models {
           return null;
         }
       });
+    }
+
+    public Int32Rect ToRect() {
+      var half = Size / 2;
+      return new Int32Rect(X - half, Y - half, Size, Size);
     }
   }
 }
