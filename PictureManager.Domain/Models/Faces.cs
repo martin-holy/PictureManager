@@ -51,8 +51,10 @@ namespace PictureManager.Domain.Models {
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[4].Split(',');
-      var rect2 = new Int32Rect(int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]), int.Parse(rect[3]));
-      var face = new Face(int.Parse(props[0]), int.Parse(props[2]), rect2) { Csv = props, GroupId = int.Parse(props[3]) };
+      var face = new Face(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
+        Csv = props,
+        GroupId = int.Parse(props[3])
+      };
 
       All.Add(face);
       AllDic.Add(face.Id, face);
@@ -263,7 +265,8 @@ namespace PictureManager.Domain.Models {
         }
 
         foreach (var faceRect in faceRects) {
-          var newFace = new Face(Helper.GetNextId(), 0, faceRect) { MediaItem = mi };
+          var half = faceRect.Width / 2;
+          var newFace = new Face(Helper.GetNextId(), 0, faceRect.X + half, faceRect.Y + half, half * 2) { MediaItem = mi };
 
           await newFace.SetPictureAsync(FaceSize);
           mi.Faces ??= new();
