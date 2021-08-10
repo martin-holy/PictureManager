@@ -518,20 +518,22 @@ namespace PictureManager.Domain.Models {
 
     public void SetSelectedAsUnknown() {
       foreach (var face in Selected) {
-        // remove face from person
-        if (face.Person != null) {
-          face.Person.Face = null;
-          if (face.Person.Faces.Remove(face)) {
-            if (!face.Person.Faces.Any())
-              face.Person.Faces = null;
-            Core.Instance.Sdb.SetModified<People>();
-          }
-        }
-
-        face.Person = null;
+        RemovePersonFromFace(face);
         face.PersonId = 0;
         Core.Instance.Sdb.SetModified<Faces>();
       }
+    }
+
+    private static void RemovePersonFromFace(Face face) {
+      if (face?.Person == null) return;
+      if (face.Person.Face == face)
+        face.Person.Face = null;
+      if (face.Person.Faces != null && face.Person.Faces.Remove(face)) {
+        if (!face.Person.Faces.Any())
+          face.Person.Faces = null;
+        Core.Instance.Sdb.SetModified<People>();
+      }
+      face.Person = null;
     }
 
     public void ChangePerson(int personId, Person person) {
@@ -557,13 +559,7 @@ namespace PictureManager.Domain.Models {
           faces[0].PersonId = 0;
       }
 
-      // remove Face from Person
-      if (face.Person != null) {
-        if (face.Person.Faces.Remove(face))
-          Core.Instance.Sdb.SetModified<People>();
-        face.Person.Face = null;
-        face.Person = null;
-      }
+      RemovePersonFromFace(face);
 
       // remove Face from MediaItem
       if (face.MediaItem.Faces.Remove(face) && !face.MediaItem.Faces.Any()) {
