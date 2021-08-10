@@ -475,6 +475,20 @@ namespace PictureManager.Domain.Models {
       });
     }
 
+    /// <summary>
+    /// Sets new Person to all Faces that are selected or that have the same PersonId (< 0) as some of the selected.
+    /// </summary>
+    /// <param name="person"></param>
+    public void SetSelectedAsPerson(Person person) {
+      var unknownPeople = Selected.Select(x => x.PersonId).Distinct().Where(x => x < 0).ToDictionary(x => x);
+      var faces = Selected.Where(x => x.PersonId >= 0).Concat(All.Cast<Face>().Where(x => unknownPeople.ContainsKey(x.PersonId)));
+
+      foreach (var face in faces)
+        ChangePerson(face, person);
+
+      DeselectAll();
+    }
+
     // TODO refactor this
     /// <summary>
     /// Sets new PersonId to all Faces that are selected or that have the same PersonId (not 0) as some of the selected.
