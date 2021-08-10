@@ -475,6 +475,7 @@ namespace PictureManager.Domain.Models {
       });
     }
 
+    // TODO refactor this
     /// <summary>
     /// Sets new PersonId to all Faces that are selected or that have the same PersonId (not 0) as some of the selected.
     /// The new PersonId is the highest PersonId from the selected or highest unused negative id if PersonsIds are 0.
@@ -512,6 +513,7 @@ namespace PictureManager.Domain.Models {
       foreach (var face in toUpdate) {
         face.PersonId = newId;
         face.Person = person;
+        face.MediaItem.SetInfoBox();
         Core.Instance.Sdb.SetModified<Faces>();
       }
     }
@@ -520,6 +522,7 @@ namespace PictureManager.Domain.Models {
       foreach (var face in Selected) {
         RemovePersonFromFace(face);
         face.PersonId = 0;
+        face.MediaItem.SetInfoBox();
         Core.Instance.Sdb.SetModified<Faces>();
       }
     }
@@ -542,9 +545,11 @@ namespace PictureManager.Domain.Models {
     }
 
     public static void ChangePerson(Face face, Person person) {
+      RemovePersonFromFace(face);
       face.PersonId = person.Id;
       face.Person = person;
       person.Face ??= face;
+      face.MediaItem.SetInfoBox();
 
       Core.Instance.Sdb.SetModified<Faces>();
     }
