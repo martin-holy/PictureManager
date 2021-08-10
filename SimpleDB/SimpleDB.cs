@@ -17,6 +17,7 @@ namespace SimpleDB {
 
     public Dictionary<Type, TableHelper> Tables { get; } = new();
     public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
+    public bool NeedBackUp { get; set; }
 
     private readonly Dictionary<string, int> _idSequences = new();
     private readonly ILogger _logger;
@@ -110,22 +111,14 @@ namespace SimpleDB {
       if (!Tables.ContainsKey(typeof(T))) return;
       Tables[typeof(T)].IsModified = true;
       Changes++;
+      NeedBackUp = true;
     }
 
     public void BackUp() {
       try {
-        var backUps = Directory.GetFiles("db", "*.zip");
-        var lastBackUp = backUps.Length == 0
-          ? DateTime.MinValue
-          : DateTime.ParseExact(backUps[^1][3..18], "yyyyMMdd_HHmmss", CultureInfo.InvariantCulture);
-        var files = Directory.GetFiles("db", "*.csv");
-        if (!files.Any(x => {
-          var f = new FileInfo(x);
-          return f.LastWriteTime > lastBackUp;
-        })) return;
-        using ZipArchive zip = ZipFile.Open(Path.Combine("db", DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
-        foreach (var file in files)
-          zip.CreateEntryFromFile(file, file);
+        using var zip = ZipFile.Open(Path.Combine("db", DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
+        foreach (var file in Directory.EnumerateFiles("db", "*.csv"))
+          _ = zip.CreateEntryFromFile(file, file);
       }
       catch (Exception ex) {
         _logger.LogError(ex, "Error while backing up database.");
