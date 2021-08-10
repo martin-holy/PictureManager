@@ -60,6 +60,9 @@ namespace PictureManager {
           MessageDialog.Show("Database changes", "There are some changes in database, do you want to save them?", true)) {
         App.Db.SaveAllTables();
       }
+
+      if (App.Db.NeedBackUp)
+        App.Db.BackUp();
     }
 
     private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
