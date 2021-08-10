@@ -551,14 +551,6 @@ namespace PictureManager.Domain.Models {
 
     public void Delete(Face face) {
       SetSelected(face, false);
-
-      // break group with only one face
-      if (face.PersonId < 0) {
-        var faces = All.Cast<Face>().Where(x => x.PersonId == face.PersonId && x != face).ToArray();
-        if (faces.Length == 1)
-          faces[0].PersonId = 0;
-      }
-
       RemovePersonFromFace(face);
 
       // remove Face from MediaItem
