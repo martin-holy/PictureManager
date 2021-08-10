@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
-    public ObservableCollection<Face> Faces { get; set; }
+    public ObservableCollection<Face> Faces { get; set; } // Top Faces only
     public Face Face { get => _face; set { _face = value; OnPropertyChanged(); } }
 
     public Person(int id, string name) {
