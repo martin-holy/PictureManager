@@ -266,13 +266,8 @@ namespace PictureManager.Domain.Models {
 
         foreach (var faceRect in faceRects) {
           var half = faceRect.Width / 2;
-          var newFace = new Face(Helper.GetNextId(), 0, faceRect.X + half, faceRect.Y + half, half * 2) { MediaItem = mi };
-
-          await newFace.SetPictureAsync(FaceSize);
-          mi.Faces ??= new();
-          mi.Faces.Add(newFace);
+          var newFace = await AddNewFace(faceRect.X + half, faceRect.Y + half, half * 2, mi);
           Loaded.Add(newFace);
-          All.Add(newFace);
 
           yield return newFace;
         }
@@ -282,6 +277,16 @@ namespace PictureManager.Domain.Models {
 
       if (Helper.AreTablePropsModified)
         Helper.SaveTablePropsToFile();
+    }
+
+    public async Task<Face> AddNewFace(int x, int y, int size, MediaItem mediaItem) {
+      var newFace = new Face(Helper.GetNextId(), 0, x, y, size) { MediaItem = mediaItem };
+      await newFace.SetPictureAsync(FaceSize);
+      mediaItem.Faces ??= new();
+      mediaItem.Faces.Add(newFace);
+      All.Add(newFace);
+
+      return newFace;
     }
 
     public async Task SetFacesForComparison() {
