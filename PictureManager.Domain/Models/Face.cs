@@ -24,6 +24,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
     public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
+
     public int PersonId { // < 0 for unknown people, 0 for unknown, > 0 for known people
       get => _personId;
       set {
@@ -32,9 +33,56 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged(nameof(IsNotUnknown));
       }
     }
-    public int X { get => _x; set { _x = value; OnPropertyChanged(); } }
-    public int Y { get => _y; set { _y = value; OnPropertyChanged(); } }
-    public int Size { get => _size; set { _size = value; OnPropertyChanged(); } }
+
+    public int X {
+      get => _x;
+      set {
+        _x = value;
+
+        // bounds check
+        if (MediaItem != null) {
+          var half = Size / 2;
+          if (value < half) _x = half;
+          if (value > MediaItem.Width - half) _x = MediaItem.Width - half;
+        }
+
+        OnPropertyChanged();
+      }
+    }
+
+    public int Y {
+      get => _y;
+      set {
+        _y = value;
+
+        // bounds check
+        if (MediaItem != null) {
+          var half = Size / 2;
+          if (value < half) _y = half;
+          if (value > MediaItem.Height - half) _y = MediaItem.Height - half;
+        }
+
+        OnPropertyChanged();
+      }
+    }
+
+    public int Size {
+      get => _size;
+      set {
+        _size = value;
+
+        // bounds check
+        if (MediaItem != null) {
+          var min = Math.Min(MediaItem.Width, MediaItem.Height);
+          _size = value > min ? min : value;
+          X = X;
+          Y = Y;
+        }
+
+        OnPropertyChanged();
+      }
+    }
+
     public int GroupId { get; set; } // 0 = not in the group of similar
     #endregion
 
@@ -66,12 +114,17 @@ namespace PictureManager.Domain.Models {
     public string ToCsv() =>
       string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), string.Join(",", X, Y, Size));
 
-    public async Task SetPictureAsync(int size) {
+    public async Task SetPictureAsync(int size, bool reload = false) {
+      if (reload) {
+        Picture = null;
+        ComparePicture = null;
+      }
+
       Picture ??= await Task.Run(() => {
         var filePath = MediaItem.MediaType == MediaType.Image ? MediaItem.FilePath : MediaItem.FilePathCache;
         try {
           var cacheFilePath = CacheFilePath;
-          if (File.Exists(cacheFilePath)) {
+          if (!reload && File.Exists(cacheFilePath)) {
             return Imaging.GetBitmapSource(cacheFilePath);
           }
           else {
