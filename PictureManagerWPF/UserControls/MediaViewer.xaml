@@ -30,10 +30,13 @@
     <uc:FaceRectsControl x:Name="FaceRects"
                          MediaItem="{Binding Current}"
                          Zoom="{Binding ZoomActual, ElementName=FullImage}"
-                         Scale="{Binding Scale, ElementName=FullImage}"
                          Width="{Binding Image.ActualWidth, ElementName=FullImage}"
-                         Height="{Binding Image.ActualHeight, ElementName=FullImage}"
-                         RenderTransform="{Binding Image.RenderTransform, ElementName=FullImage}" />
+                         Height="{Binding Image.ActualHeight, ElementName=FullImage}">
+      <uc:FaceRectsControl.RenderTransform>
+        <TranslateTransform X="{Binding TranslateTransform.X, ElementName=FullImage}"
+                            Y="{Binding TranslateTransform.Y, ElementName=FullImage}" />
+      </uc:FaceRectsControl.RenderTransform>
+    </uc:FaceRectsControl>
 
   </Grid>
 </UserControl>
