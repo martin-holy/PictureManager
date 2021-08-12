@@ -25,12 +25,11 @@ namespace PictureManager.CustomControls {
     private double _zoomScale;
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
-    private readonly TranslateTransform _translateTransform;
+    public TranslateTransform TranslateTransform { get; }
     private MediaItem _currentMediaItem;
 
     public Image Image { get; set; }
     public bool IsAnimationOn { get; set; }
-    public double Scale => _scaleTransform.ScaleX;
 
     public double ZoomActual {
       get => _zoomActual;
@@ -47,11 +46,11 @@ namespace PictureManager.CustomControls {
 
     public ZoomImageBox() {
       _scaleTransform = new();
-      _translateTransform = new();
+      TranslateTransform = new();
 
       var renderGroup = new TransformGroup();
       renderGroup.Children.Add(_scaleTransform);
-      renderGroup.Children.Add(_translateTransform);
+      renderGroup.Children.Add(TranslateTransform);
 
       var layoutGroup = new TransformGroup();
 
@@ -67,8 +66,8 @@ namespace PictureManager.CustomControls {
       MouseMove += (o, e) => {
         if (!Image.IsMouseCaptured) return;
         var v = _start - e.GetPosition(this);
-        _translateTransform.X = _origin.X - v.X;
-        _translateTransform.Y = _origin.Y - v.Y;
+        TranslateTransform.X = _origin.X - v.X;
+        TranslateTransform.Y = _origin.Y - v.Y;
       };
 
       //Event MouseWheel
@@ -99,7 +98,7 @@ namespace PictureManager.CustomControls {
         if (!_isZoomed) SetScale(_zoomScale100, e.GetPosition(Image));
 
         _start = e.GetPosition(this);
-        _origin = new(_translateTransform.X, _translateTransform.Y);
+        _origin = new(TranslateTransform.X, TranslateTransform.Y);
         Cursor = Cursors.Hand;
         Image.CaptureMouse();
       };
@@ -113,16 +112,15 @@ namespace PictureManager.CustomControls {
     }
 
     private void SetScale(double zoom, Point relative) {
-      var absoluteX = (relative.X * _scaleTransform.ScaleX) + _translateTransform.X;
-      var absoluteY = (relative.Y * _scaleTransform.ScaleY) + _translateTransform.Y;
+      var absoluteX = (relative.X * _scaleTransform.ScaleX) + TranslateTransform.X;
+      var absoluteY = (relative.Y * _scaleTransform.ScaleY) + TranslateTransform.Y;
 
       _scaleTransform.ScaleX = zoom;
       _scaleTransform.ScaleY = zoom;
 
-      _translateTransform.X = absoluteX - (relative.X * _scaleTransform.ScaleX);
-      _translateTransform.Y = absoluteY - (relative.Y * _scaleTransform.ScaleY);
+      TranslateTransform.X = absoluteX - (relative.X * _scaleTransform.ScaleX);
+      TranslateTransform.Y = absoluteY - (relative.Y * _scaleTransform.ScaleY);
 
-      OnPropertyChanged(nameof(Scale));
       ZoomActual = Image.ActualWidth * zoom / ((BitmapImage)Image.Source).PixelWidth * 100;
     }
 
@@ -188,10 +186,8 @@ namespace PictureManager.CustomControls {
       _scaleTransform.ScaleX = 1.0;
       _scaleTransform.ScaleY = 1.0;
       // reset pan
-      _translateTransform.X = 0.0;
-      _translateTransform.Y = 0.0;
-
-      OnPropertyChanged(nameof(Scale));
+      TranslateTransform.X = 0.0;
+      TranslateTransform.Y = 0.0;
     }
 
     public void Play(int minDuration, Action callback) {
@@ -212,19 +208,19 @@ namespace PictureManager.CustomControls {
       animation.Completed += (o, e) => {
         if (!IsAnimationOn) return;
         if (pano)
-          _translateTransform.X = toValue;
+          TranslateTransform.X = toValue;
         else
-          _translateTransform.Y = toValue;
+          TranslateTransform.Y = toValue;
         IsAnimationOn = false;
         callback();
       };
 
       IsAnimationOn = true;
-      _translateTransform.BeginAnimation(pano ? TranslateTransform.XProperty : TranslateTransform.YProperty, animation);
+      TranslateTransform.BeginAnimation(pano ? TranslateTransform.XProperty : TranslateTransform.YProperty, animation);
     }
 
     public void Stop() {
-      _translateTransform.BeginAnimation(TranslateTransform.XProperty, null);
+      TranslateTransform.BeginAnimation(TranslateTransform.XProperty, null);
       IsAnimationOn = false;
       Reset();
     }
