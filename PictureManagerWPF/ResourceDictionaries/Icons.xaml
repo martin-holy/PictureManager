@@ -128,12 +128,18 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M 0,5.1 L 1.7,5.2 L 3.4,7.1 L 8,0.4 L 9.2,0 L 3.3,10.8 Z"/>
   </Canvas>
   <Canvas x:Key="appbar_x_cross">
-    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M64 320L128 256 64 192 96 160 160 224 224 160 256 192 192 256 256 320 224 352 160 288 96 352 64 320Z"/>
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z"/>
   </Canvas>
   <Canvas x:Key="appbar_sort">
     <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M3,13H15V11H3M3,6V8H21V6M3,18H9V16H3V18Z"/>
   </Canvas>
   <Canvas x:Key="appbar_compare">
     <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M256.427 874.667c-82.347 0-149.333-66.987-149.333-149.333 0-67.413 45.227-123.861 106.667-142.379v-305.493c-0.043-7.637 1.152-75.989 50.091-125.056 30.208-30.379 70.656-45.739 120.149-45.739v-85.333l170.667 128-170.667 128v-85.333c-77.781 0-84.651 65.451-84.907 85.333v305.621c61.44 18.517 106.667 74.965 106.667 142.379 0 82.347-67.029 149.333-149.333 149.333zM256.427 661.333c-35.285 0-64 28.715-64 64s28.715 64 64 64 64-28.715 64-64-28.715-64-64-64zM811.093 313.045v305.749c-0.213 68.523-45.952 170.539-171.093 170.539v85.333l-170.667-128 170.667-128v85.333c78.037 0 85.376-65.664 85.76-85.333v-305.621c-61.44-18.517-106.667-74.965-106.667-142.379 0-82.347 66.987-149.333 149.333-149.333s149.333 66.987 149.333 149.333c0 67.413-45.227 123.861-106.667 142.379zM768.427 106.667c-35.285 0-64 28.715-64 64s28.715 64 64 64 64-28.715 64-64-28.715-64-64-64z"/>
+  </Canvas>
+  <Canvas x:Key="appbar_square">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M3,3H21V21H3V3M5,5V19H19V5H5Z"/>
+  </Canvas>
+  <Canvas x:Key="appbar_circle">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M12,2A10,10,0,1,0,22,12,10,10,0,0,0,12,2Zm0,18a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"/>
   </Canvas>
 </ResourceDictionary>
