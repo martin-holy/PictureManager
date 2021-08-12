@@ -206,28 +206,10 @@ namespace PictureManager.UserControls {
 
     public void ChangePerson(Person person) {
       var faceCount = App.Core.Faces.SelectedCount > 1 ? $"'s ({App.Core.Faces.SelectedCount})" : string.Empty;
-      if (!MessageDialog.Show("Change Person", $"Do you wan't to set ({person.Title}) to selected face{faceCount}?", true))
+      if (!MessageDialog.Show("Change Person", $"Do you want to set ({person.Title}) to selected face{faceCount}?", true))
         return;
 
       App.Core.Faces.SetSelectedAsPerson(person);
-      _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
-    }
-
-    public void ChangePersonOld(Person person) {
-      var facesA = App.Core.Faces.Selected.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId);
-      var facesB = App.Core.Faces.Selected.Where(x => x.PersonId == 0);
-      var groupsIds = facesA.Select(x => x.Key).OrderByDescending(x => x);
-
-      if (groupsIds.Any() && !MessageDialog.Show("Change Person", $"Set Person ({person.Title}) to Faces with ID ({string.Join(", ", groupsIds.ToArray())})?", true))
-        return;
-
-      foreach (var group in facesA)
-        App.Core.Faces.ChangePerson(group.Key, person);
-
-      foreach (var face in facesB)
-        Faces.ChangePerson(face, person);
-
-      App.Core.Faces.DeselectAll();
       _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
     }
 
