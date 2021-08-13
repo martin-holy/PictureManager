@@ -2,6 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}"
              Foreground="White" Focusable="True">
   <Grid Height="40" VerticalAlignment="Top" Background="#88000000">
@@ -87,6 +89,13 @@
       <!-- Play Panoramic Images -->
       <TextBlock>Play Panoramic Images</TextBlock>
       <CheckBox IsChecked="{Binding PlayPanoramicImages}" />
+      
+      
+      <ToggleButton x:Name="BtnFaceDetectionEdit" ToolTip="Face detection edit" Margin="4,0"
+                    IsThreeState="False" IsChecked="False"
+                    Style="{StaticResource StyleToggleButtonIconFlat}">
+        <cc:IconRect IconName="{x:Static pmd:IconName.People}" IconFill="White" />
+      </ToggleButton>
     </StackPanel>
   </Grid>
 </UserControl>

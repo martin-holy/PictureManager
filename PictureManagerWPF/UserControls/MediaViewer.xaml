@@ -31,7 +31,9 @@
                          MediaItem="{Binding Current}"
                          Zoom="{Binding ZoomActual, ElementName=FullImage}"
                          Width="{Binding Image.ActualWidth, ElementName=FullImage}"
-                         Height="{Binding Image.ActualHeight, ElementName=FullImage}">
+                         Height="{Binding Image.ActualHeight, ElementName=FullImage}"
+                         Visibility="{Binding FaceDetectionEditButton.IsChecked, ElementName=PresentationPanel,
+                                      Converter={StaticResource AllToVisibilityConverter}}">
       <uc:FaceRectsControl.RenderTransform>
         <TranslateTransform X="{Binding TranslateTransform.X, ElementName=FullImage}"
                             Y="{Binding TranslateTransform.Y, ElementName=FullImage}" />
