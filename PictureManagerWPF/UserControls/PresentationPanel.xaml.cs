@@ -3,6 +3,7 @@ using PictureManager.Domain;
 using System;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace PictureManager.UserControls {
   public partial class PresentationPanel {
@@ -30,6 +31,8 @@ namespace PictureManager.UserControls {
       get => (bool)GetValue(PlayPanoramicImagesProperty);
       set => SetValue(PlayPanoramicImagesProperty, value);
     }
+
+    public ToggleButton FaceDetectionEditButton => BtnFaceDetectionEdit;
 
     public PresentationPanel() {
       _timer = new Timer();
