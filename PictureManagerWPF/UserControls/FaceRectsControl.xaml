@@ -1,55 +1,120 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.FaceRectsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls">
   
   <UserControl.Resources>
-    <!-- Rectangle DataTemplate -->
-    <DataTemplate x:Key="_rect">
-      <Rectangle Width="{Binding Width}" Height="{Binding Height}" Effect="{StaticResource Res_ShadowEffect}"
-                 Fill="Transparent" ToolTip="{Binding Face.Person.Title}" ToolTipService.InitialShowDelay="0"
-                 PreviewMouseDown="Rectangle_PreviewMouseDown">
+    <!-- FaceRect DataTemplate -->
+    <DataTemplate x:Key="_faceRect">
+      
+      <Border MinWidth="{Binding BorderSize}" MinHeight="{Binding BorderSize}" Background="Transparent"
+              ToolTip="{Binding Face.Person.Title}" ToolTipService.InitialShowDelay="0"
+              HorizontalAlignment="Left" VerticalAlignment="Top"
+              PreviewMouseDown="FaceRect_PreviewMouseDown">
         
-        <Rectangle.Style>
-          <Style TargetType="{x:Type Rectangle}">
-            <Setter Property="Stroke" Value="White" />
-            <Setter Property="StrokeThickness" Value="1" />
-            <Setter Property="Cursor" Value="Arrow" />
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
-                <Setter Property="Stroke" Value="{DynamicResource AccentColorBrush}" />
-              </DataTrigger>
-              <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
-                <Setter Property="StrokeThickness" Value="2" />
-                <Setter Property="Cursor" Value="SizeAll" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </Rectangle.Style>
+        <Border.Style>
+          <Style TargetType="{x:Type Border}">
+            <Setter Property="RenderTransform">
+              <Setter.Value>
+                <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+              </Setter.Value>
+            </Setter>
+           </Style>
+         </Border.Style>
         
-      </Rectangle>
+        <Grid>
+          <!-- Rect -->
+          <Border Width="{Binding Size}" Height="{Binding Size}" Effect="{StaticResource Res_ShadowEffect}"
+                  Background="Transparent"
+                  Visibility="{Binding IsSquare, Converter={StaticResource AllToVisibilityConverter}}">
+            <Border.Style>
+              <Style TargetType="{x:Type Border}">
+                <Setter Property="BorderBrush" Value="White" />
+                <Setter Property="BorderThickness" Value="1" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
+                    <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                  </DataTrigger>
+                  <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
+                    <Setter Property="BorderThickness" Value="2" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Border.Style>
+          </Border>
+          
+          <!-- Point -->
+          <Ellipse x:Name="MoveEllipse" Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Cursor="SizeAll" Effect="{StaticResource Res_ShadowEffect}">
+            <Ellipse.Style>
+              <Style TargetType="{x:Type Ellipse}">
+                <Setter Property="Fill" Value="White" />
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding IsSquare}" Value="True">
+                    <Setter Property="Fill" Value="Transparent" />
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </Ellipse.Style>
+          </Ellipse>
+          
+          <!-- Resize Border -->
+          <Border x:Name="ResizeBorder" BorderThickness="5" BorderBrush="Transparent" Cursor="SizeAll"
+                  Visibility="{Binding IsSquare, Converter={StaticResource AllToVisibilityConverter}}" />
+          
+          <!-- Buttons -->
+          <Grid Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}},
+                              Converter={StaticResource AllToVisibilityConverter}}"
+                Margin="0,2,0,0">
+            
+            <Grid.Resources>
+              <Style TargetType="{x:Type Button}" x:Key="_IconButton" BasedOn="{StaticResource StyleButtonIcon}">
+                <Setter Property="Height" Value="26" />
+                <Setter Property="Width" Value="26" />
+                <Setter Property="Margin" Value="2,0" />
+                <Setter Property="Effect" Value="{StaticResource Res_ShadowEffect}" />
+              </Style>
+            </Grid.Resources>
+            
+            <!-- Change Shape -->
+            <Button x:Name="BtnShape" ToolTip="Change Shape" Style="{StaticResource _IconButton}"
+                    VerticalAlignment="Top" Click="BtnShape_Click">
+              <cc:IconRect>
+                <cc:IconRect.Style>
+                  <Style TargetType="{x:Type cc:IconRect}">
+                    <Setter Property="IconName" Value="Square" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding IsSquare}" Value="True">
+                        <Setter Property="IconName" Value="Circle" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </cc:IconRect.Style>
+              </cc:IconRect>
+            </Button>
+      
+            <!-- Delete Face -->
+            <Button x:Name="BtnDelete" ToolTip="Delete" Style="{StaticResource _IconButton}"
+                    VerticalAlignment="Top" HorizontalAlignment="Right" Width="20" Height="20" Click="BtnDelete_Click">
+              <cc:IconRect IconName="XCross" Size="10" />
+            </Button>
+          </Grid>
+        </Grid>
+        
+      </Border>
+      
     </DataTemplate>
+
   </UserControl.Resources>
   
-  <Grid>
-    <ItemsControl ItemsSource="{Binding MediaItemFaceRects, 
-                                RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
-                  ItemTemplate="{StaticResource _rect}">
-      
-      <ItemsControl.ItemsPanel>
-        <ItemsPanelTemplate>
-          <Canvas />
-        </ItemsPanelTemplate>
-      </ItemsControl.ItemsPanel>
-      
-      <ItemsControl.ItemContainerStyle>
-        <Style TargetType="{x:Type ContentPresenter}">
-          <Setter Property="Canvas.Top" Value="{Binding Y}" />
-          <Setter Property="Canvas.Left" Value="{Binding X}" />
-        </Style>
-      </ItemsControl.ItemContainerStyle>
-      
-    </ItemsControl>
-
-   </Grid>
+  <ItemsControl ItemsSource="{Binding MediaItemFaceRects, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
+                ItemTemplate="{StaticResource _faceRect}">
+    <ItemsControl.ItemsPanel>
+      <ItemsPanelTemplate>
+        <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
+              Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"/>
+      </ItemsPanelTemplate>
+    </ItemsControl.ItemsPanel>
+  </ItemsControl>
 </UserControl>

@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.Models;
+﻿using PictureManager.Dialogs;
+using PictureManager.Domain.Models;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,14 +14,13 @@ namespace PictureManager.UserControls {
       nameof(MediaItem), typeof(MediaItem), typeof(FaceRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnMediaItemChanged)));
     public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
       nameof(Zoom), typeof(double), typeof(FaceRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnZoomChanged)));
-    public static readonly DependencyProperty ScaleProperty = DependencyProperty.Register(
-      nameof(Scale), typeof(double), typeof(FaceRectsControl));
 
     public MediaItem MediaItem { get => (MediaItem)GetValue(MediaItemProperty); set => SetValue(MediaItemProperty, value); }
     public double Zoom { get => (double)GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }
-    public double Scale { get => (double)GetValue(ScaleProperty); set => SetValue(ScaleProperty, value); }
 
     private FaceRect _current;
+    private double _scale;
+    private bool _isEditModeMove;
 
     public ObservableCollection<FaceRect> MediaItemFaceRects { get; } = new();
 
@@ -38,29 +38,42 @@ namespace PictureManager.UserControls {
       _current = null;
       MediaItemFaceRects.Clear();
       if (MediaItem?.Faces == null) return;
-
-      var scale = Zoom / Scale / 100;
+      _scale = Zoom / 100;
 
       foreach (var face in MediaItem.Faces)
-        MediaItemFaceRects.Add(new FaceRect(face, scale));
+        MediaItemFaceRects.Add(new FaceRect(face, _scale));
     }
 
     public void UpdateScale() {
+      _scale = Zoom / 100;
       foreach (var fr in MediaItemFaceRects)
-        fr.Scale = Zoom / Scale / 100;
+        fr.Scale = _scale;
     }
 
-    private void Rectangle_PreviewMouseDown(object sender, MouseButtonEventArgs e) =>
-      _current = (FaceRect)((FrameworkElement)sender).DataContext;
+    private void FaceRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+      if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
+        _isEditModeMove = fe.Name.Equals("MoveEllipse");
+        _current = (FaceRect)fe.DataContext;
+      }
+    }
 
-    public void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) => _current = null;
+    public async void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      if (_current == null) return;
 
-    public void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+      if (_current.Size == 1)
+        _current.IsSquare = false;
+
+      App.Db.SetModified<Faces>();
+      await _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
+      _current = null;
+    }
+
+    public async void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) {
         var mpos = e.GetPosition(this);
-        var scale = Zoom / Scale / 100;
-        var face = new Face(0, 0, new Int32Rect((int)(mpos.X / scale), (int)(mpos.Y / scale), 0, 0));
-        _current = new FaceRect(face, scale);
+        var face = await App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 1, MediaItem);
+        _isEditModeMove = false;
+        _current = new FaceRect(face, _scale);
         MediaItemFaceRects.Add(_current);
       }
     }
@@ -70,23 +83,31 @@ namespace PictureManager.UserControls {
       e.Handled = true;
 
       var mpos = e.GetPosition(this);
-      var half = _current.Width / 2.0;
-      var rpos = new Point(_current.X + half, _current.Y + half);
-      var diff = Math.Max(Math.Abs(rpos.X - mpos.X), Math.Abs(rpos.Y - mpos.Y));
+      var half = _current.Size / 2.0;
+      var x = _current.Size == 0 ? _current.X : _current.X + half;
+      var y = _current.Size == 0 ? _current.Y : _current.Y + half;
+      var diff = Math.Max(Math.Abs(x - mpos.X), Math.Abs(y - mpos.Y));
 
-      if (diff > half - 5) { // resize
-        var size = (int)(diff * 2);
-        var offset = (_current.Width - size) / 2;
+      if (_isEditModeMove) {
+        _current.X = (int)mpos.X;
+        _current.Y = (int)mpos.Y;
+      }
+      else {
+        _current.Size = (int)diff * 2;
+      }
+    }
 
-        _current.X += offset;
-        _current.Y += offset;
-        _current.Width = size;
-        _current.Height = size;
-      }
-      else { // move
-        _current.X += (int)(mpos.X - rpos.X);
-        _current.Y += (int)(mpos.Y - rpos.Y);
-      }
+    private void BtnShape_Click(object sender, RoutedEventArgs e) {
+      if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
+      faceRect.IsSquare = !faceRect.IsSquare;
+      App.Db.SetModified<Faces>();
+    }
+
+    private void BtnDelete_Click(object sender, RoutedEventArgs e) {
+      if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
+      if (!MessageDialog.Show("Delete Face", $"Do you realy want to delete this face?", true)) return;
+      App.Core.Faces.Delete(faceRect.Face);
+      _ = MediaItemFaceRects.Remove(faceRect);
     }
   }
 
@@ -95,30 +116,66 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private int _x;
-    private int _y;
-    private int _width;
-    private int _height;
+    private const int _minSquareSize = 100;
     private double _scale;
 
-    public int X { get => _x; set { _x = value; OnPropertyChanged(); } }
-    public int Y { get => _y; set { _y = value; OnPropertyChanged(); } }
-    public int Width { get => _width; set { _width = value; OnPropertyChanged(); } }
-    public int Height { get => _height; set { _height = value; OnPropertyChanged(); } }
+    public bool IsSquare {
+      get => Face.Size != 0;
+      set {
+        Size = value ? _minSquareSize : 0;
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(X));
+        OnPropertyChanged(nameof(Y));
+        OnPropertyChanged(nameof(Size));
+        OnPropertyChanged(nameof(BorderSize));
+      }
+    }
+
+    public int X {
+      get => (int)((Face.X - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      set {
+        Face.X = (int)(value / Scale);
+        OnPropertyChanged();
+      }
+    }
+
+    public int Y {
+      get => (int)((Face.Y - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      set {
+        Face.Y = (int)(value / Scale);
+        OnPropertyChanged();
+      }
+    }
+
+    public int BorderSize => Size == 0 ? _minSquareSize : Size;
+
+    public int Size {
+      get => (int)(Face.Size * Scale);
+      set {
+        Face.Size = (int)(value / Scale);
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(X));
+        OnPropertyChanged(nameof(Y));
+        OnPropertyChanged(nameof(BorderSize));
+      }
+    }
+
+    public double Scale {
+      get => _scale;
+      set {
+        _scale = value;
+        OnPropertyChanged(nameof(X));
+        OnPropertyChanged(nameof(Y));
+        OnPropertyChanged(nameof(Size));
+        OnPropertyChanged(nameof(BorderSize));
+      }
+    }
+
     public Face Face { get; set; }
-    public double Scale { get => _scale; set { _scale = value; UpdateRect(); } }
 
     public FaceRect(Face face, double scale) {
       Face = face;
       Scale = scale;
-    }
-
-    private void UpdateRect() {
-      var fb = Face.FaceBox;
-      X = (int)(fb.X * Scale);
-      Y = (int)(fb.Y * Scale);
-      Width = (int)(fb.Width * Scale);
-      Height = (int)(fb.Height * Scale);
     }
   }
 }
