@@ -285,6 +285,7 @@ namespace PictureManager.Domain.Models {
       mediaItem.Faces ??= new();
       mediaItem.Faces.Add(newFace);
       All.Add(newFace);
+      _ = WithoutFaces.Remove(mediaItem);
 
       return newFace;
     }
