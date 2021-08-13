@@ -75,8 +75,8 @@ namespace PictureManager.Domain.Models {
         if (MediaItem != null) {
           var min = Math.Min(MediaItem.Width, MediaItem.Height);
           _size = value > min ? min : value;
-          X = X;
-          Y = Y;
+          X = _x;
+          Y = _y;
         }
 
         OnPropertyChanged();
