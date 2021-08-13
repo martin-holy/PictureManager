@@ -267,7 +267,6 @@ namespace PictureManager.Domain.Models {
         foreach (var faceRect in faceRects) {
           var half = faceRect.Width / 2;
           var newFace = await AddNewFace(faceRect.X + half, faceRect.Y + half, half * 2, mi);
-          Loaded.Add(newFace);
 
           yield return newFace;
         }
@@ -285,6 +284,7 @@ namespace PictureManager.Domain.Models {
       mediaItem.Faces ??= new();
       mediaItem.Faces.Add(newFace);
       All.Add(newFace);
+      Loaded.Add(newFace);
       _ = WithoutFaces.Remove(mediaItem);
 
       return newFace;
