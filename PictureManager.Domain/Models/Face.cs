@@ -152,6 +152,17 @@ namespace PictureManager.Domain.Models {
     }
 
     public Int32Rect ToRect() {
+      // if face is point
+      if (Size == 0) {
+        var x = X;
+        var y = Y;
+        if (x - 50 < 0) x = 50;
+        if (y - 50 < 0) y = 50;
+        if (x + 50 > MediaItem.Width) x = MediaItem.Width - 50;
+        if (y + 50 > MediaItem.Height) y = MediaItem.Height - 50;
+        return new Int32Rect(x - 50, y - 50, 100, 100);
+      }
+
       var half = Size / 2;
       return new Int32Rect(X - half, Y - half, Size, Size);
     }
