@@ -14,7 +14,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type cc:FaceControl}">
-          <Border BorderThickness="2" Margin="1" x:Name="PART_Border">
+          <Border BorderThickness="2" Margin="1" x:Name="PART_Border" Background="Transparent">
             <Border.Style>
               <Style TargetType="{x:Type Border}">
                 <Setter Property="BorderBrush" Value="Black" />
