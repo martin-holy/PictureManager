@@ -145,9 +145,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Remove(MediaItem item) {
+      SetSelected(item, false);
       if (item == Current)
         Current = null;
-      SetSelected(item, false);
       _ = LoadedItems.Remove(item);
       if (FilteredItems.Remove(item))
         NeedReload = true;
