@@ -54,6 +54,9 @@
                   <DataTrigger Binding="{Binding IsSquare}" Value="True">
                     <Setter Property="Fill" Value="Transparent" />
                   </DataTrigger>
+                  <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}}}" Value="True">
+                    <Setter Property="Fill" Value="White" />
+                  </DataTrigger>
                 </Style.Triggers>
               </Style>
             </Ellipse.Style>
