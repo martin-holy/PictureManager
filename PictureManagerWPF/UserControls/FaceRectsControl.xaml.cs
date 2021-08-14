@@ -21,6 +21,7 @@ namespace PictureManager.UserControls {
     private FaceRect _current;
     private double _scale;
     private bool _isEditModeMove;
+    private bool _isCurrentModified;
 
     public ObservableCollection<FaceRect> MediaItemFaceRects { get; } = new();
 
@@ -54,17 +55,24 @@ namespace PictureManager.UserControls {
       if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
         _isEditModeMove = fe.Name.Equals("MoveEllipse");
         _current = (FaceRect)fe.DataContext;
+        App.Core.Faces.DeselectAll();
+        App.Core.Faces.SetSelected(_current.Face, true);
       }
     }
 
     public async void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       if (_current == null) return;
+      if (!_isCurrentModified) {
+        _current = null;
+        return;
+      }
 
       if (_current.Size == 1)
         _current.IsSquare = false;
 
       App.Db.SetModified<Faces>();
       await _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
+      _isCurrentModified = false;
       _current = null;
     }
 
@@ -73,6 +81,7 @@ namespace PictureManager.UserControls {
         var mpos = e.GetPosition(this);
         var face = await App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 1, MediaItem);
         _isEditModeMove = false;
+        _isCurrentModified = true;
         _current = new FaceRect(face, _scale);
         MediaItemFaceRects.Add(_current);
       }
@@ -81,6 +90,7 @@ namespace PictureManager.UserControls {
     public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
       if (e.LeftButton != MouseButtonState.Pressed || _current == null) return;
       e.Handled = true;
+      _isCurrentModified = true;
 
       var mpos = e.GetPosition(this);
       var half = _current.Size / 2.0;
