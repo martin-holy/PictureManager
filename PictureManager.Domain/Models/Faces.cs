@@ -221,7 +221,7 @@ namespace PictureManager.Domain.Models {
       ResetBeforeNewLoad();
 
       var detectedFaces = All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
-      var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem);
+      var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem).OrderBy(x => x.Key.FileName);
       var mediaItemsToDetect = detectNewFaces
         ? mediaItems.Except(misWithDetectedFaces.Select(x => x.Key)).Except(WithoutFaces).ToArray()
         : Array.Empty<MediaItem>();
