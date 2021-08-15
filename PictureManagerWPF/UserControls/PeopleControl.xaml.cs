@@ -74,7 +74,6 @@ namespace PictureManager.UserControls {
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
       if (_loading) return;
       await Reload();
-      PeopleGrid.ScrollToTop();
     }
 
     private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
