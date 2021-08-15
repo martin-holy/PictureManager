@@ -442,7 +442,7 @@ namespace PictureManager.Domain.Models {
           var sims = new List<(Face face, double sim)>();
           facesGroup = new();
 
-          foreach (var face in faces) {
+          foreach (var face in faces.OrderBy(x => x.MediaItem.FileName)) {
             facesGroup.Add(face);
             if (face.Similar == null) continue;
             sims.AddRange(face.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).Select(x => (x.Key, x.Value)));
