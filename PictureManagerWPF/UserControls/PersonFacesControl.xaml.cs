@@ -57,7 +57,7 @@ namespace PictureManager.UserControls {
         _ = AllPersonFaces.Remove(face);
         if (Person.Face == face)
           Person.Face = null;
-        if (Person.Faces.Remove(face))
+        if (Person.Faces != null && Person.Faces.Remove(face))
           App.Db.SetModified<People>();
       }
 
