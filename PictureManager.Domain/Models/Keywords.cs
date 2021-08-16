@@ -114,6 +114,16 @@ namespace PictureManager.Domain.Models {
       var keywords = new List<ICatTreeViewItem>();
       CatTreeViewUtils.GetThisAndItemsRecursive(keyword, ref keywords);
 
+      // remove Keywords from People
+      foreach (var person in Core.Instance.People.All.Cast<Person>().Where(p => p.Keywords != null && p.Keywords.Any(k => keywords.Contains(k))))
+        foreach (var k in keywords.Cast<Keyword>())
+          if (person.Keywords.Remove(k)) {
+            if (!person.Keywords.Any())
+              person.Keywords = null;
+            person.UpdateDisplayKeywords();
+            Core.Instance.Sdb.SetModified<People>();
+          }
+
       foreach (var k in keywords.Cast<Keyword>()) {
         // remove Keyword from MediaItems
         if (k.MediaItems.Count > 0) {
