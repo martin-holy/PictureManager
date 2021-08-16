@@ -29,17 +29,37 @@ namespace PictureManager.UserControls {
       InitializeComponent();
 
       Title = "People";
+
+      foreach (var person in App.Core.People.All.Cast<Person>())
+        person.UpdateDisplayKeywords();
     }
 
     public async Task Reload() {
-      async Task AddPeopleAsync(IEnumerable<Person> people, CancellationToken token) {
-        foreach (var person in people) {
-          if (token.IsCancellationRequested) break;
-          if (person.Face != null) {
-            await person.Face.SetPictureAsync(App.Core.Faces.FaceSize);
-            person.Face.MediaItem.SetThumbSize();
+      async Task AddPeopleAsync(string groupTitle, IEnumerable<Person> people, CancellationToken token) {
+        // group people by keywords
+        foreach (var group in people
+          .GroupBy(p => p.DisplayKeywords == null
+            ? string.Empty
+            : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Title)))
+          .OrderBy(g => g.Key)) {
+
+          // add group
+          if (!group.Key.Equals(string.Empty)) {
+            var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = IconName.Tag, Title = group.Key } };
+            if (!string.IsNullOrEmpty(groupTitle))
+              groupItems.Insert(0, new() { Icon = IconName.People, Title = groupTitle });
+            await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(groupItems.ToArray()));
           }
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _faceGridWidth));
+
+          // add people
+          foreach (var person in group.OrderBy(p => p.Title)) {
+            if (token.IsCancellationRequested) break;
+            if (person.Face != null) {
+              await person.Face.SetPictureAsync(App.Core.Faces.FaceSize);
+              person.Face.MediaItem.SetThumbSize();
+            }
+            await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _faceGridWidth));
+          }
         }
       }
 
@@ -53,13 +73,13 @@ namespace PictureManager.UserControls {
         foreach (var group in App.Core.People.Items.OfType<ICatTreeViewGroup>()) {
           if (_workTask.Token.IsCancellationRequested) break;
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.Title));
-          await AddPeopleAsync(group.Items.Cast<Person>(), _workTask.Token);
+          await AddPeopleAsync(group.Title, group.Items.Cast<Person>(), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Core.People.Items.OfType<Person>().ToArray();
         if (peopleWithoutGroup.Length > 0) {
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, string.Empty));
-          await AddPeopleAsync(peopleWithoutGroup, _workTask.Token);
+          await AddPeopleAsync(string.Empty, peopleWithoutGroup, _workTask.Token);
         }
       }));
 
@@ -71,13 +91,18 @@ namespace PictureManager.UserControls {
       PersonFacesEditor.ChangePerson(person);
     }
 
+    public void ToggleKeyword(Keyword keyword) {
+      if (PersonFacesEditor.Visibility != Visibility.Visible) return;
+      PersonFacesEditor.Person.ToggleKeyword(keyword);
+    }
+
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
       if (_loading) return;
       await Reload();
     }
 
     private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      if (sender is FaceControl fc)
+      if (sender is FaceControl fc && fc.DataContext != null)
         await PersonFacesEditor.ReloadPersonFacesAsync(((Face)fc.DataContext).Person);
     }
   }
