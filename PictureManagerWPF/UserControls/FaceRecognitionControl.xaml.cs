@@ -42,6 +42,9 @@ namespace PictureManager.UserControls {
       });
 
       AttachEvents();
+
+      foreach (var person in App.Core.People.All.Cast<Person>())
+        person.UpdateDisplayKeywords();
     }
 
     private void AttachEvents() {
@@ -196,8 +199,24 @@ namespace PictureManager.UserControls {
         }
       }
       else {
-        foreach (var (_, face, _) in App.Core.Faces.ConfirmedFaces)
-          ConfirmedFacesGrid.AddItem(face, _faceGridWidth);
+        foreach (var group in App.Core.Faces.ConfirmedFaces
+          .GroupBy(x => {
+            if (x.face.Person == null) return "Unknown";
+            if (x.face.Person.DisplayKeywords == null) return string.Empty;
+            return string.Join(", ", x.face.Person.DisplayKeywords.Select(k => k.Title));
+          })
+          .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
+
+          // add group
+          if (!string.IsNullOrEmpty(group.Key) && !group.Key.Equals("Unknown"))
+            ConfirmedFacesGrid.AddGroup(IconName.Tag, group.Key);
+          if (group.Key.Equals("Unknown"))
+            ConfirmedFacesGrid.AddGroup(IconName.People, group.Key);
+
+          // add people
+          foreach (var (_, face, _) in group)
+            ConfirmedFacesGrid.AddItem(face, _faceGridWidth);
+        }
       }
 
       if (rowIndex != 0)
