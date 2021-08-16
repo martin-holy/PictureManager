@@ -27,9 +27,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|Faces
+      // ID|Name|Faces|Keywords
       var props = csv.Split('|');
-      if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
+      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
       var person = new Person(int.Parse(props[0]), props[1]) { Csv = props };
       All.Add(person);
       AllDic.Add(person.Id, person);
@@ -42,12 +42,21 @@ namespace PictureManager.Domain.Models {
       LoadGroupsAndItems(All);
 
       foreach (var person in All.Cast<Person>()) {
+        // Persons top faces
         if (!string.IsNullOrEmpty(person.Csv[2])) {
           var ids = person.Csv[2].Split(',');
           person.Faces = new();
           foreach (var faceId in ids)
             person.Faces.Add(Core.Instance.Faces.AllDic[int.Parse(faceId)]);
           person.Face = person.Faces[0];
+        }
+
+        // reference to Keywords
+        if (!string.IsNullOrEmpty(person.Csv[3])) {
+          var ids = person.Csv[3].Split(',');
+          person.Keywords = new(ids.Length);
+          foreach (var keywordId in ids)
+            person.Keywords.Add(Core.Instance.Keywords.AllDic[int.Parse(keywordId)]);
         }
 
         // csv array is not needed any more
@@ -104,6 +113,8 @@ namespace PictureManager.Domain.Models {
         }
         person.Faces = null;
       }
+
+      person.Keywords?.Clear();
 
       // remove Person from DB
       All.Remove(person);
