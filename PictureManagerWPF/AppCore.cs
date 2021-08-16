@@ -66,6 +66,8 @@ namespace PictureManager {
         case PeopleControl pc:
         if (item is Person pcp)
           pc.ChangePerson(pcp);
+        if (item is Keyword pck)
+          pc.ToggleKeyword(pck);
         break;
 
         case null:
