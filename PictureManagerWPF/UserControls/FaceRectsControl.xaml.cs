@@ -77,7 +77,7 @@ namespace PictureManager.UserControls {
     }
 
     public async void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) {
+      if ((Keyboard.Modifiers & ModifierKeys.Control) > 0 || e.RightButton == MouseButtonState.Pressed) {
         var mpos = e.GetPosition(this);
         var face = await App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 1, MediaItem);
         _isEditModeMove = false;
@@ -88,7 +88,7 @@ namespace PictureManager.UserControls {
     }
 
     public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed || _current == null) return;
+      if (_current == null) return;
       e.Handled = true;
       _isCurrentModified = true;
 
