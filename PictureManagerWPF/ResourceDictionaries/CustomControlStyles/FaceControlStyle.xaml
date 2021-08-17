@@ -94,6 +94,20 @@
               <Image Source="{Binding Picture}" Stretch="Fill"
                      Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}"
                      Height="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
+              
+              <cc:IconRect IconName="People" IconFill="Gray" Size="50">
+                <cc:IconRect.Style>
+                  <Style TargetType="{x:Type cc:IconRect}">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                      <DataTrigger Binding="{Binding DataContext, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Visible" />
+                      </DataTrigger>
+                    </Style.Triggers>
+                  </Style>
+                </cc:IconRect.Style>
+              </cc:IconRect>
+              
               <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
                            Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}"
                            IsIconVisible="{TemplateBinding IsCheckmarkVisible}" />
