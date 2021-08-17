@@ -27,7 +27,7 @@
             </Border.Style>
     
             <Border.ToolTip>
-              <ToolTip Padding="0">
+              <ToolTip Padding="0" Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource AllToVisibilityConverter}}">
                 <DockPanel>
                   <Grid DockPanel.Dock="Top" >
                     <!-- Thumbnail -->
