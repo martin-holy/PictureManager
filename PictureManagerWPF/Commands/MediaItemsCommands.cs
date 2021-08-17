@@ -227,10 +227,10 @@ namespace PictureManager.Commands {
       progress.Start();
     }
 
-    private static bool CanRename() => ThumbsGrid?.Current != null;
+    private static bool CanRename() => App.Core.MediaItems.Current != null;
 
     private static void Rename() {
-      var current = ThumbsGrid.Current;
+      var current = App.Core.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -261,7 +261,7 @@ namespace PictureManager.Commands {
 
       try {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
-        ThumbsGrid.FilteredItemsSetInPlace(current);
+        ThumbsGrid?.FilteredItemsSetInPlace(current);
         App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
