@@ -178,7 +178,8 @@ namespace PictureManager.UserControls {
           FacesGrid.AddItem(face, _faceGridWidth);
       }
 
-      FacesGrid.ScrollTo(itemToScrollTo);
+      if (GetTopRowIndex(FacesGrid) > 0)
+        FacesGrid.ScrollTo(itemToScrollTo);
     }
 
     private void ReloadConfirmedFaces() {
