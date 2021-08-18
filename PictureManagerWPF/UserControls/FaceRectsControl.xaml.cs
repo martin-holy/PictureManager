@@ -142,17 +142,17 @@ namespace PictureManager.UserControls {
     }
 
     public int X {
-      get => (int)((Face.X - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      get => (int)((Face.RotateTransformGetX(Face.X) - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
       set {
-        Face.X = (int)(value / Scale);
+        Face.RotateTransformSetX((int)(value / Scale));
         OnPropertyChanged();
       }
     }
 
     public int Y {
-      get => (int)((Face.Y - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      get => (int)((Face.RotateTransformGetY(Face.Y) - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
       set {
-        Face.Y = (int)(value / Scale);
+        Face.RotateTransformSetY((int)(value / Scale));
         OnPropertyChanged();
       }
     }
