@@ -41,6 +41,8 @@ namespace PictureManager.UserControls {
       if (MediaItem?.Faces == null) return;
       _scale = Zoom / 100;
 
+      App.Core.Faces.DeselectAll();
+
       foreach (var face in MediaItem.Faces)
         MediaItemFaceRects.Add(new FaceRect(face, _scale));
     }
