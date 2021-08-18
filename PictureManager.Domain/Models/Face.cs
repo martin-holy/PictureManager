@@ -166,5 +166,41 @@ namespace PictureManager.Domain.Models {
       var half = Size / 2;
       return new Int32Rect(X - half, Y - half, Size, Size);
     }
+
+    #region RotateTransform X, Y
+    public int RotateTransformGetX(int x) =>
+      MediaItem.Orientation switch {
+        (int)MediaOrientation.Rotate90 => Y,
+        (int)MediaOrientation.Rotate180 => MediaItem.Width - x,
+        (int)MediaOrientation.Rotate270 => MediaItem.Height - Y,
+        _ => x
+      };
+
+    public void RotateTransformSetX(int x) {
+      switch (MediaItem.Orientation) {
+        case (int)MediaOrientation.Rotate90: Y = x; break;
+        case (int)MediaOrientation.Rotate180: X = MediaItem.Width - x; break;
+        case (int)MediaOrientation.Rotate270: Y = MediaItem.Height - x; break;
+        default: X = x; break;
+      }
+    }
+
+    public int RotateTransformGetY(int y) =>
+      MediaItem.Orientation switch {
+        (int)MediaOrientation.Rotate90 => MediaItem.Width - X,
+        (int)MediaOrientation.Rotate180 => MediaItem.Height - y,
+        (int)MediaOrientation.Rotate270 => X,
+        _ => y
+      };
+
+    public void RotateTransformSetY(int y) {
+      switch (MediaItem.Orientation) {
+        case (int)MediaOrientation.Rotate90: X = MediaItem.Width - y; break;
+        case (int)MediaOrientation.Rotate180: Y = MediaItem.Height - y; break;
+        case (int)MediaOrientation.Rotate270: X = y; break;
+        default: Y = y; break;
+      }
+    }
+    #endregion RotateTransform X, Y
   }
 }
