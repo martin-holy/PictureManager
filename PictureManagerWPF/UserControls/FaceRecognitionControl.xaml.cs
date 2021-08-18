@@ -137,7 +137,7 @@ namespace PictureManager.UserControls {
       }, new PointHitTestParameters(new Point(10, 40)));
 
       return rowIndex;
-    }
+    }    
 
     public async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
@@ -156,7 +156,7 @@ namespace PictureManager.UserControls {
 
     private async Task ReloadLoadedFaces() {
       if (_loading) return;
-      var rowIndex = GetTopRowIndex(FacesGrid);
+      var itemToScrollTo = FacesGrid.GetFirstItemFromRow(GetTopRowIndex(FacesGrid));
       FacesGrid.ClearRows();
       FacesGrid.UpdateMaxRowWidth();
 
@@ -178,13 +178,12 @@ namespace PictureManager.UserControls {
           FacesGrid.AddItem(face, _faceGridWidth);
       }
 
-      if (rowIndex != 0)
-        FacesGrid.ScrollTo(rowIndex);
+      FacesGrid.ScrollTo(itemToScrollTo);
     }
 
     private void ReloadConfirmedFaces() {
       if (_loading) return;
-      var rowIndex = GetTopRowIndex(ConfirmedFacesGrid);
+      var itemToScrollTo = ConfirmedFacesGrid.GetFirstItemFromRow(GetTopRowIndex(ConfirmedFacesGrid));
       ConfirmedFacesGrid.ClearRows();
       ConfirmedFacesGrid.UpdateMaxRowWidth();
 
@@ -219,8 +218,7 @@ namespace PictureManager.UserControls {
         }
       }
 
-      if (rowIndex != 0)
-        ConfirmedFacesGrid.ScrollTo(rowIndex);
+      ConfirmedFacesGrid.ScrollTo(itemToScrollTo);
     }
 
     public void ChangePerson(Person person) {
