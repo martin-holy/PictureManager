@@ -68,10 +68,10 @@ namespace PictureManager.UserControls {
 
       BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
 
-      BtnGroupFaces.Click += (o, e) => {
-        FacesGrid.ScrollToTop();
+      BtnGroupFaces.Click += async (o, e) => {
+        await Reload(true, false);
         UpdateLayout();
-        _ = Reload(true, false);
+        FacesGrid.ScrollToTop();
       };
 
       BtnDetectNew.Click += (o, e) => _ = LoadFacesAsync(true, false);
