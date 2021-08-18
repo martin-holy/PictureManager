@@ -102,8 +102,11 @@ namespace PictureManager.UserControls {
     }
 
     private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      if (sender is FaceControl fc && fc.DataContext != null)
-        await PersonFacesEditor.ReloadPersonFacesAsync(((Face)fc.DataContext).Person);
+      if (sender is FaceControl fc && fc.DataContext != null) {
+        var face = (Face)fc.DataContext;
+        App.Core.Faces.Select(false, false, null, face);
+        await PersonFacesEditor.ReloadPersonFacesAsync(face.Person);
+      }
     }
   }
 }
