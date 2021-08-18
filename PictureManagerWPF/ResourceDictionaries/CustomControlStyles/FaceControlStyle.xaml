@@ -29,7 +29,7 @@
             <Border.ToolTip>
               <ToolTip Padding="0" Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, Converter={StaticResource AllToVisibilityConverter}}">
                 <DockPanel>
-                  <Grid DockPanel.Dock="Top" >
+                  <Grid DockPanel.Dock="Top">
                     <!-- Thumbnail -->
                     <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
                     
@@ -100,7 +100,7 @@
                   <Style TargetType="{x:Type cc:IconRect}">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
-                      <DataTrigger Binding="{Binding DataContext, RelativeSource={RelativeSource Self}}" Value="{x:Null}">
+                      <DataTrigger Binding="{Binding Picture}" Value="{x:Null}">
                         <Setter Property="Visibility" Value="Visible" />
                       </DataTrigger>
                     </Style.Triggers>
