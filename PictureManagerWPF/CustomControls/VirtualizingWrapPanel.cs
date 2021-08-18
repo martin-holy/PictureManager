@@ -100,6 +100,13 @@ namespace PictureManager.CustomControls {
       return 0;
     }
 
+    public object GetFirstItemFromRow(int rowIndex) {
+      if (rowIndex >= Rows.Count) return null;
+      return Rows[rowIndex] is VirtualizingWrapPanelRow row
+        ? row.Items[0]
+        : GetFirstItemFromRow(rowIndex + 1);
+    }
+
     public void ScrollToTop() => _rowsScrollViewer?.ScrollToTop();
 
     public void UpdateMaxRowWidth() => _maxRowWidth = ActualWidth;
