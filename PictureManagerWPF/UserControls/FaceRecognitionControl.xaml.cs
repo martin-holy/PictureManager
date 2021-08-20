@@ -156,7 +156,8 @@ namespace PictureManager.UserControls {
 
     private async Task ReloadLoadedFaces() {
       if (_loading) return;
-      var itemToScrollTo = FacesGrid.GetFirstItemFromRow(GetTopRowIndex(FacesGrid));
+      var rowIndex = GetTopRowIndex(FacesGrid);
+      var itemToScrollTo = FacesGrid.GetFirstItemFromRow(rowIndex);
       FacesGrid.ClearRows();
       FacesGrid.UpdateMaxRowWidth();
 
@@ -178,7 +179,7 @@ namespace PictureManager.UserControls {
           FacesGrid.AddItem(face, _faceGridWidth);
       }
 
-      if (GetTopRowIndex(FacesGrid) > 0)
+      if (rowIndex > 0)
         FacesGrid.ScrollTo(itemToScrollTo);
     }
 
