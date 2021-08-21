@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public class VideoClipsGroups : ITable {
+  public sealed class VideoClipsGroups : ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
 

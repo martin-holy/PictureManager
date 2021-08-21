@@ -2,7 +2,7 @@
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class FavoriteFolder : CatTreeViewItem, IRecord {
+  public sealed class FavoriteFolder : CatTreeViewItem, IRecord {
     public string[] Csv { get; set; }
     public int Id { get; }
     public Folder Folder { get; set; }

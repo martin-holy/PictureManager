@@ -2,7 +2,7 @@
 using System;
 
 namespace PictureManager.Domain.Models {
-  public class MediaItemSize : CatTreeViewItem {
+  public sealed class MediaItemSize : CatTreeViewItem {
     private double _pixelMin;
     private double _pixelMax;
     private double _min;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace PictureManager.Domain.Models {
-  public class Faces : ObservableObject, ITable {
+  public sealed class Faces : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Face> AllDic { get; set; }
