@@ -95,13 +95,19 @@ namespace PictureManager.UserControls {
       FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
       ConfirmedFacesGrid.ClearRows();
       App.Core.Faces.GroupFaces = false;
-      App.Ui.AppInfo.ResetProgressBars(withPersonOnly
-        ? App.Core.Faces.All.Cast<Face>().Select(x => x.PersonId).Distinct().Count() - 1
-        : _mediaItems.Count);
+      HashSet<int> people = null;
+
+      if (withPersonOnly) {
+        people = _mediaItems.Where(mi => mi.Faces != null).Select(mi => mi.Faces.Select(f => f.PersonId))
+                            .Aggregate((all, next) => all.Concat(next)).Distinct().ToHashSet();
+        people.Remove(0);
+      }
+
+      App.Ui.AppInfo.ResetProgressBars(withPersonOnly ? people.Count : _mediaItems.Count);
 
       await _workTask.Start(Task.Run(async () => {
         if (withPersonOnly) {
-          await foreach (var face in App.Core.Faces.GetAllFacesAsync(_progress, _workTask.Token))
+          await foreach (var face in App.Core.Faces.GetAllFacesAsync(people, _progress, _workTask.Token))
             await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
         }
         else {
@@ -114,16 +120,13 @@ namespace PictureManager.UserControls {
       _ = SortAndReload(App.Core.Faces.GroupFaces, true);
     }
 
-    public void SetMediaItems(List<MediaItem> mediaItems) {
-      _mediaItems = mediaItems;
-      App.Core.Faces.FacesForComparison = null;
-    }
+    public void SetMediaItems(List<MediaItem> mediaItems) => _mediaItems = mediaItems;
 
     public async Task CompareAsync() {
       await _workTask.Cancel();
-      await App.Core.Faces.SetFacesForComparison();
-      App.Ui.AppInfo.ResetProgressBars(App.Core.Faces.FacesForComparison.Count());
-      await _workTask.Start(App.Core.Faces.FindSimilaritiesAsync(App.Core.Faces.FacesForComparison, _progress, _workTask.Token));
+      await App.Core.Faces.AddFacesForComparison();
+      App.Ui.AppInfo.ResetProgressBars(App.Core.Faces.Loaded.Count);
+      await _workTask.Start(App.Core.Faces.FindSimilaritiesAsync(App.Core.Faces.Loaded, _progress, _workTask.Token));
     }
 
     private static int GetTopRowIndex(VirtualizingWrapPanel panel) {
@@ -137,7 +140,7 @@ namespace PictureManager.UserControls {
       }, new PointHitTestParameters(new Point(10, 40)));
 
       return rowIndex;
-    }    
+    }
 
     public async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
