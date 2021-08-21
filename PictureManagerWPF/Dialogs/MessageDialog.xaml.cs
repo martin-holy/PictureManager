@@ -18,7 +18,7 @@ namespace PictureManager.Dialogs {
     public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
     public bool CanCancel { get => _canCancel; set { _canCancel = value; OnPropertyChanged(); } }
 
-    public MessageDialog(string title, string message, bool canCancel) {
+    public MessageDialog(string title, string message, bool canCancel, string[] buttons = null) {
       InitializeComponent();
 
       TitleText = title;
@@ -26,12 +26,17 @@ namespace PictureManager.Dialogs {
       IconName = canCancel ? IconName.Question : IconName.Information;
       CanCancel = canCancel;
       Owner = App.WMain;
-      BtnOk.Content = canCancel ? "YES" : "OK";
+      if (buttons == null)
+        BtnOk.Content = canCancel ? "YES" : "OK";
+      else {
+        BtnOk.Content = buttons[0];
+        BtnNo.Content = buttons[1];
+      }
     }
 
-    public static bool Show(string title, string message, bool canCancel) {
+    public static bool Show(string title, string message, bool canCancel, string[] buttons = null) {
       var result = false;
-      var md = new MessageDialog(title, message, canCancel);
+      var md = new MessageDialog(title, message, canCancel, buttons);
 
       md.BtnOk.Click += delegate {
         md.Close();
@@ -43,7 +48,7 @@ namespace PictureManager.Dialogs {
         result = false;
       };
 
-      md.ShowDialog();
+      _ = md.ShowDialog();
 
       return result;
     }
