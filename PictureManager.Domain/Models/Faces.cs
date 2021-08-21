@@ -19,12 +19,10 @@ namespace PictureManager.Domain.Models {
     private int _compareFaceSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
-    private int _maxFacesInGroup = 3;
     private bool _groupFaces;
     private bool _groupConfirmedFaces;
 
     public List<Face> Loaded { get; } = new();
-    public IEnumerable<Face> FacesForComparison { get; set; }
     public List<List<Face>> LoadedGroupedByPerson { get; } = new();
     public List<Face> Selected { get; } = new();
     public List<MediaItem> WithoutFaces { get; } = new();
@@ -34,7 +32,6 @@ namespace PictureManager.Domain.Models {
     public int FaceBoxExpand { get; set; } = 40;
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
-    public int MaxFacesInGroup { get => _maxFacesInGroup; set { _maxFacesInGroup = value; OnPropertyChanged(); } }
     public int SelectedCount => Selected.Count;
     public bool GroupFaces { get => _groupFaces; set { _groupFaces = value; OnPropertyChanged(); } }
     public bool GroupConfirmedFaces { get => _groupConfirmedFaces; set { _groupConfirmedFaces = value; OnPropertyChanged(); } }
@@ -105,8 +102,6 @@ namespace PictureManager.Domain.Models {
         SimilarityLimit = int.Parse(similarityLimit);
       if (Helper.TableProps.TryGetValue(nameof(SimilarityLimitMin), out var similarityLimitMin))
         SimilarityLimitMin = int.Parse(similarityLimitMin);
-      if (Helper.TableProps.TryGetValue(nameof(MaxFacesInGroup), out var maxFacesInGroup))
-        MaxFacesInGroup = int.Parse(maxFacesInGroup);
 
       // table props are not needed any more
       Helper.TableProps.Clear();
@@ -122,7 +117,6 @@ namespace PictureManager.Domain.Models {
       Helper.TableProps.Add(nameof(FaceBoxExpand), FaceBoxExpand.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimit), SimilarityLimit.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimitMin), SimilarityLimitMin.ToString());
-      Helper.TableProps.Add(nameof(MaxFacesInGroup), MaxFacesInGroup.ToString());
     }
     #endregion
 
@@ -220,6 +214,7 @@ namespace PictureManager.Domain.Models {
     public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, bool detectNewFaces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
 
+      // TODO MediaItem has Faces, no need to look for them in All!
       var detectedFaces = All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
       var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem).OrderBy(x => x.Key.FileName);
       var mediaItemsToDetect = detectNewFaces
@@ -290,14 +285,12 @@ namespace PictureManager.Domain.Models {
       return newFace;
     }
 
-    public async Task SetFacesForComparison() {
-      if (FacesForComparison != null) return;
-
-      var peopleFaces = GetSomeFacesForEachPerson(Loaded, MaxFacesInGroup);
-      var faces = peopleFaces.Any() ? peopleFaces.Aggregate((all, next) => all.Concat(next)) : Enumerable.Empty<Face>();
-      FacesForComparison = Loaded.Where(x => x.PersonId == 0).Concat(faces);
-
-      foreach (var face in FacesForComparison.Except(Loaded).ToArray()) {
+    public async Task AddFacesForComparison() {
+      var people = Loaded.Select(f => f.PersonId).Distinct().ToHashSet();
+      people.Remove(0);
+      var newFaces = All.Cast<Face>().Where(f => people.Contains(f.PersonId)).Except(Loaded);
+      
+      foreach (var face in newFaces) {
         await face.SetPictureAsync(FaceSize);
         face.MediaItem.SetThumbSize();
         Loaded.Add(face);
@@ -331,6 +324,8 @@ namespace PictureManager.Domain.Models {
             if (token.IsCancellationRequested) break;
             // do not compare face with it self or with face that have same person
             if (faceA == faceB || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
+            // do not comapre face with PersonId > 0 with face with also PersonId > 0
+            if (faceA.PersonId > 0 && faceB.PersonId > 0) continue;
 
             await faceA.SetPictureAsync(FaceSize);
             await faceB.SetComparePictureAsync(CompareFaceSize);
@@ -354,17 +349,11 @@ namespace PictureManager.Domain.Models {
       }, token);
     }
 
-    private static IEnumerable<IEnumerable<Face>> GetSomeFacesForEachPerson(IEnumerable<Face> faces, int count) {
-      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-      return faces.Where(x => x.PersonId != 0).GroupBy(x => x.PersonId).Select(
-        x => x.First().Person?.Faces != null ? x.First().Person.Faces : x.OrderBy(y => random.Next()).Take(count));
-    }
-
-    public async IAsyncEnumerable<Face> GetAllFacesAsync(IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
+    public async IAsyncEnumerable<Face> GetAllFacesAsync(HashSet<int> people, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
       var done = 0;
 
-      foreach (var personFaces in GetSomeFacesForEachPerson(All.Cast<Face>(), MaxFacesInGroup)) {
+      foreach (var personFaces in All.Cast<Face>().Where(f => people.Contains(f.PersonId)).GroupBy(f => f.PersonId)) {
         foreach (var face in personFaces) {
           if (token.IsCancellationRequested) yield break;
 
@@ -405,6 +394,9 @@ namespace PictureManager.Domain.Models {
           similar = new()
         };
 
+        ConfirmedFaces.Add(confirmedFace);
+        if (!gA.Any(x => x.Similar != null)) continue;
+
         foreach (var gB in groups) {
           if (gA.Key == gB.Key) continue;
 
@@ -420,8 +412,6 @@ namespace PictureManager.Domain.Models {
           var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
           confirmedFace.similar.Add(new(gB.Key, await GetRandomFace(gB), simMedian));
         }
-
-        ConfirmedFaces.Add(confirmedFace);
       }
     }
 
