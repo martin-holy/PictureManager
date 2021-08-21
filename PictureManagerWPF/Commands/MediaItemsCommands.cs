@@ -45,7 +45,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
-      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition);
+      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
       CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithFaceCommand, ViewMediaItemsWithFace);
     }
 
@@ -271,8 +271,10 @@ namespace PictureManager.Commands {
       }
     }
 
+    private static bool CanFaceRecognition() => ThumbsGrid?.FilteredItems.Count > 0;
+
     private static void FaceRecognition() {
-      var mediaItems = ThumbsGrid?.GetSelectedOrAll();
+      var mediaItems = ThumbsGrid.GetSelectedOrAll();
       var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
 
       if (tab?.Content is not FaceRecognitionControl control) {
@@ -284,8 +286,11 @@ namespace PictureManager.Commands {
         tab.IsSelected = true;
       }
 
+      var all = MessageDialog.Show("Face Recognition", "Do you want to load all faces or just faces with person?",
+        true, new string[] { "All faces", "Faces with person" });
+
       control.SetMediaItems(mediaItems);
-      _ = control.LoadFacesAsync(false, mediaItems == null);
+      _ = control.LoadFacesAsync(false, !all);
     }
 
     private static void ViewMediaItemsWithFace(object parameter) {
