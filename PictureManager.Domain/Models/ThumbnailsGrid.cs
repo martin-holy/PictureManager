@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Models {
 
   // filter by mel bejt taky asi na tab
 
-  public class ThumbnailsGrid : ObservableObject {
+  public sealed class ThumbnailsGrid : ObservableObject {
     private MediaItem _current;
     private int? _indexOfCurrent;
     private int _selected;

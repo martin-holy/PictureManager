@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Controls;
 
 namespace PictureManager {
-  public class AppCore {
+  public sealed class AppCore {
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();

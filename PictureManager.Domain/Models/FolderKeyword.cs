@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
-  public class FolderKeyword : CatTreeViewItem, ICatTreeViewTagItem {
+  public sealed class FolderKeyword : CatTreeViewItem, ICatTreeViewTagItem {
     public List<Folder> Folders { get; } = new();
 
     public override bool IsExpanded {

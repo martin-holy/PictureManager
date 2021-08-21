@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.Domain.Models {
-  public class MediaItems : ObservableObject, ITable {
+  public sealed class MediaItems : ObservableObject, ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, MediaItem> AllDic { get; set; }

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
-  public class CategoryGroups : ITable {
+  public sealed class CategoryGroups : ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new List<IRecord>();
 

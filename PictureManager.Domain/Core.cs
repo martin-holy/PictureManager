@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
-  public class Core : ILogger {
+  public sealed class Core : ILogger {
     public string CachePath { get; set; }
     public int ThumbnailSize { get; set; }
     public double WindowsDisplayScale { get; set; }

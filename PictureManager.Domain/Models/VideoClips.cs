@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public class VideoClips : ITable {
+  public sealed class VideoClips : ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, VideoClip> AllDic { get; set; }
