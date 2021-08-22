@@ -90,7 +90,7 @@ namespace PictureManager.UserControls {
     }
 
     public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
-      if (_current == null) return;
+      if (_current == null || !(e.RightButton == MouseButtonState.Pressed || e.LeftButton == MouseButtonState.Pressed)) return;
       e.Handled = true;
       _isCurrentModified = true;
 
