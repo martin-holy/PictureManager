@@ -8,8 +8,8 @@
         <ControlTemplate TargetType="cc:ImageComparer">
           <StackPanel DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:ImageComparer}}}"
                       Orientation="Horizontal">
-            <RadioButton x:Name="PART_RbAvgHash" IsChecked="{Binding Path=ModeArray[0], Mode=TwoWay}" Content="AVG Hash" Margin="8,0" />
-            <RadioButton x:Name="PART_RbPHash" IsChecked="{Binding Path=ModeArray[1], Mode=TwoWay}" Content="p Hash" Margin="8,0" />
+            <RadioButton x:Name="PART_RbAvgHash" IsChecked="{Binding Path=ModeArray[0], Mode=TwoWay}" Content="AVG Hash" Margin="8,0" Background="Transparent" />
+            <RadioButton x:Name="PART_RbPHash" IsChecked="{Binding Path=ModeArray[1], Mode=TwoWay}" Content="p Hash" Margin="8,0" Background="Transparent" />
             <Slider x:Name="PART_SliderDiff" Value="{Binding Diff}" Minimum="0" Maximum="25" Width="80" AutoToolTipPlacement="BottomRight" Margin="8,0" />
             <Button x:Name="PART_BtnClose" Content="X" />
           </StackPanel>
