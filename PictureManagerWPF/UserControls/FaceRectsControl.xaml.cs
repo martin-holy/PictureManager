@@ -117,7 +117,7 @@ namespace PictureManager.UserControls {
 
     private void BtnDelete_Click(object sender, RoutedEventArgs e) {
       if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
-      if (!MessageDialog.Show("Delete Face", $"Do you realy want to delete this face?", true)) return;
+      if (!MessageDialog.Show("Delete Face", $"Do you really want to delete this face?", true)) return;
       App.Core.Faces.Delete(faceRect.Face);
       _ = MediaItemFaceRects.Remove(faceRect);
     }
