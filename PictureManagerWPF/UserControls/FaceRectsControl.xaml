@@ -7,9 +7,9 @@
   <UserControl.Resources>
     <!-- FaceRect DataTemplate -->
     <DataTemplate x:Key="_faceRect">
-      
-      <Border MinWidth="{Binding BorderSize}" MinHeight="{Binding BorderSize}" Background="Transparent"
+      <Border MinWidth="{Binding Size}" MinHeight="{Binding Size}" Background="Transparent"
               ToolTip="{Binding Face.Person.Title}" ToolTipService.InitialShowDelay="0"
+              Effect="{StaticResource Res_ShadowEffect}"
               HorizontalAlignment="Left" VerticalAlignment="Top"
               PreviewMouseDown="FaceRect_PreviewMouseDown">
         
@@ -20,95 +20,54 @@
                 <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
               </Setter.Value>
             </Setter>
+            <Setter Property="BorderBrush" Value="White" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
+                <Setter Property="BorderThickness" Value="2" />
+              </DataTrigger>
+            </Style.Triggers>
            </Style>
          </Border.Style>
         
         <Grid>
-          <!-- Rect -->
-          <Border Width="{Binding Size}" Height="{Binding Size}" Effect="{StaticResource Res_ShadowEffect}"
-                  Background="Transparent"
-                  Visibility="{Binding IsSquare, Converter={StaticResource AllToVisibilityConverter}}">
-            <Border.Style>
-              <Style TargetType="{x:Type Border}">
-                <Setter Property="BorderBrush" Value="White" />
-                <Setter Property="BorderThickness" Value="1" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
-                    <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
-                    <Setter Property="BorderThickness" Value="2" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Border.Style>
-          </Border>
-          
-          <!-- Point -->
-          <Ellipse x:Name="MoveEllipse" Width="16" Height="16" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   Cursor="SizeAll" Effect="{StaticResource Res_ShadowEffect}">
-            <Ellipse.Style>
-              <Style TargetType="{x:Type Ellipse}">
-                <Setter Property="Fill" Value="White" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsSquare}" Value="True">
-                    <Setter Property="Fill" Value="Transparent" />
-                  </DataTrigger>
-                  <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}}}" Value="True">
-                    <Setter Property="Fill" Value="White" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </Ellipse.Style>
-          </Ellipse>
-          
           <!-- Resize Border -->
-          <Border x:Name="ResizeBorder" BorderThickness="5" BorderBrush="Transparent" Cursor="SizeAll"
-                  Visibility="{Binding IsSquare, Converter={StaticResource AllToVisibilityConverter}}" />
+          <Border x:Name="ResizeBorder" BorderThickness="5" BorderBrush="Transparent" Cursor="SizeAll" />
           
-          <!-- Buttons -->
-          <Grid Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}},
-                              Converter={StaticResource AllToVisibilityConverter}}"
-                Margin="0,2,0,0">
-            
-            <Grid.Resources>
-              <Style TargetType="{x:Type Button}" x:Key="_IconButton" BasedOn="{StaticResource StyleButtonIcon}">
-                <Setter Property="Height" Value="26" />
-                <Setter Property="Width" Value="26" />
-                <Setter Property="Margin" Value="2,0" />
-                <Setter Property="Effect" Value="{StaticResource Res_ShadowEffect}" />
+          <!-- Move Point and Delete -->
+          <Grid Margin="0,2,0,0">
+            <Grid.Style>
+              <Style TargetType="{x:Type Grid}">
+                <Setter Property="Visibility" Value="Collapsed" />
+                <Style.Triggers>
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition Binding="{Binding IsEditOn, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}" Value="False" />
+                      <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}}}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible" />
+                  </MultiDataTrigger>
+                </Style.Triggers>
               </Style>
-            </Grid.Resources>
+            </Grid.Style>
             
-            <!-- Change Shape -->
-            <Button x:Name="BtnShape" ToolTip="Change Shape" Style="{StaticResource _IconButton}"
-                    VerticalAlignment="Top" Click="BtnShape_Click">
-              <cc:IconRect>
-                <cc:IconRect.Style>
-                  <Style TargetType="{x:Type cc:IconRect}">
-                    <Setter Property="IconName" Value="Square" />
-                    <Style.Triggers>
-                      <DataTrigger Binding="{Binding IsSquare}" Value="True">
-                        <Setter Property="IconName" Value="Circle" />
-                      </DataTrigger>
-                    </Style.Triggers>
-                  </Style>
-                </cc:IconRect.Style>
-              </cc:IconRect>
-            </Button>
-      
+            <!-- Move Point -->
+            <Ellipse x:Name="MoveEllipse" Width="12" Height="12" VerticalAlignment="Center" HorizontalAlignment="Center"
+                     Effect="{StaticResource Res_ShadowEffect}" Cursor="SizeAll" Fill="White" />
+
             <!-- Delete Face -->
-            <Button x:Name="BtnDelete" ToolTip="Delete" Style="{StaticResource _IconButton}"
-                    VerticalAlignment="Top" HorizontalAlignment="Right" Width="20" Height="20" Click="BtnDelete_Click">
+            <Button x:Name="BtnDelete" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right"
+                    Effect="{StaticResource Res_ShadowEffect}" Style="{StaticResource StyleButtonIcon}"
+                    ToolTip="Delete"  Margin="2,0" Click="BtnDelete_Click">
               <cc:IconRect IconName="XCross" Size="10" />
             </Button>
           </Grid>
         </Grid>
-        
-      </Border>
-      
+      </Border> 
     </DataTemplate>
-
   </UserControl.Resources>
   
   <ItemsControl ItemsSource="{Binding MediaItemFaceRects, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
