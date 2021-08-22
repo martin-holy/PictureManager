@@ -45,7 +45,7 @@ namespace PictureManager.ViewModels {
 
         (tab.Content as VirtualizingWrapPanel)?.ClearRows();
         grid.ClearItBeforeLoad();
-        _model.ThumbnailsGrids.Remove(grid);
+        _ = _model.ThumbnailsGrids.Remove(grid);
       };
 
       App.WMain.MainTabs.Tabs.SelectionChanged += (o, e) => {
@@ -89,7 +89,7 @@ namespace PictureManager.ViewModels {
         App.Core.MarkedTags.Add(bti);
       }
       else {
-        App.Core.MarkedTags.Remove(bti);
+        _ = App.Core.MarkedTags.Remove(bti);
         bti.PicCount = 0;
       }
 
@@ -205,9 +205,7 @@ namespace PictureManager.ViewModels {
         await Task.WhenAll(metadata, thumbs);
 
         if (token.IsCancellationRequested)
-          await App.Core.RunOnUiThread(() => {
-            Delete(_model.All.Cast<MediaItem>().Where(x => x.IsNew).ToArray());
-          });
+          await App.Core.RunOnUiThread(() => Delete(_model.All.Cast<MediaItem>().Where(x => x.IsNew).ToArray()));
       }, token);
 
       // TODO: is this necessary?
@@ -223,11 +221,9 @@ namespace PictureManager.ViewModels {
     }
 
     private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
-      App.Core.RunOnUiThread(() => {
-        CurrentThumbsGrid.ClearRows();
-      });
+      App.Core.RunOnUiThread(() => CurrentThumbsGrid.ClearRows());
 
-      return Task.Run(() => {
+      return Task.Run(async () => {
         var mediaItemsModified = false;
         var count = items.Count;
         var workingOn = 0;
@@ -241,11 +237,12 @@ namespace PictureManager.ViewModels {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            App.Core.RunOnUiThread(() => { _model.MediaItemsCount++; });
+            _ = await App.Core.RunOnUiThread(() => _model.MediaItemsCount++);
 
-            if (!ReadMetadata(mi)) {
+            var success = await ReadMetadata(mi);
+            if (!success) {
               // delete corrupted MediaItems
-              App.Core.RunOnUiThread(() => {
+              await App.Core.RunOnUiThread(() => {
                 _model.ThumbsGrid.LoadedItems.Remove(mi);
                 _model.ThumbsGrid.FilteredItems.Remove(mi);
                 _model.Delete(mi);
@@ -260,7 +257,7 @@ namespace PictureManager.ViewModels {
 
           AddMediaItemToGrid(mi);
 
-          App.Core.RunOnUiThread(() => {
+          await App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             App.Ui.AppInfo.ProgressBarValueA = percent;
           });
@@ -296,7 +293,7 @@ namespace PictureManager.ViewModels {
       });
     }
 
-    public async void ThumbsGridReloadItems() {
+    public async Task ThumbsGridReloadItems() {
       CurrentThumbsGrid?.ClearRows();
       if (_model.ThumbsGrid == null || _model.ThumbsGrid.FilteredItems.Count == 0) return;
 
@@ -305,9 +302,6 @@ namespace PictureManager.ViewModels {
         _loadCts.Cancel();
         await _loadTask;
       }
-
-      //ScrollToTop();
-      //App.WMain.UpdateLayout();
 
       _loadTask = Task.Run(async () => {
         _loadCts?.Dispose();
@@ -342,7 +336,7 @@ namespace PictureManager.ViewModels {
         mediaItems,
         null,
         // action
-        async delegate (MediaItem mi) {
+        async (MediaItem mi) => {
           var newOrientation = mi.RotationAngle;
 
           if (mi.MediaType == MediaType.Image) {
@@ -351,8 +345,9 @@ namespace PictureManager.ViewModels {
               case Rotation.Rotate180: newOrientation += 180; break;
               case Rotation.Rotate270: newOrientation += 270; break;
             }
-          } else if (mi.MediaType == MediaType.Video) {
-            // images have switched 90 and 270 angles and all app is made with this in mind
+          }
+          else if (mi.MediaType == MediaType.Video) {
+            // images have switched 90 and 270 angles and all application is made with this in mind
             // so I switched orientation just for video
             switch (rotation) {
               case Rotation.Rotate90: newOrientation += 270; break;
@@ -378,9 +373,7 @@ namespace PictureManager.ViewModels {
         },
         mi => mi.FilePath,
         // onCompleted
-        delegate {
-          ThumbsGridReloadItems();
-        });
+        (o, e) => _ = ThumbsGridReloadItems());
 
       progress.StartDialog();
     }
@@ -405,13 +398,13 @@ namespace PictureManager.ViewModels {
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(task => App.Core.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(_ => App.Core.RunOnUiThread(() => fop.Close()));
 
-      fop.ShowDialog();
+      _ = fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {
         _model.ThumbsGrid.RemoveSelected();
-        ThumbsGridReloadItems();
+        _ = ThumbsGridReloadItems();
       }
     }
 
@@ -422,18 +415,16 @@ namespace PictureManager.ViewModels {
       progress.StartDialog();
     }
 
-    public void ReapplyFilter() {
+    public async Task ReapplyFilter() {
       _model.ThumbsGrid?.ReloadFilteredItems();
       App.Core.MarkUsedKeywordsAndPeople();
-      ThumbsGridReloadItems();
+      await ThumbsGridReloadItems();
     }
 
     public static bool TryWriteMetadata(MediaItem mediaItem) {
       if (mediaItem.IsOnlyInDb) return true;
       try {
-        var bSuccess = WriteMetadata(mediaItem);
-        if (bSuccess) return true;
-        throw new Exception("Error writing metadata");
+        return WriteMetadata(mediaItem) ? true : throw new Exception("Error writing metadata");
       }
       catch (Exception ex) {
         App.Core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
@@ -452,18 +443,17 @@ namespace PictureManager.ViewModels {
 
       using (Stream originalFileStream = File.Open(original.FullName, FileMode.Open, FileAccess.Read)) {
         var decoder = BitmapDecoder.Create(originalFileStream, createOptions, BitmapCacheOption.None);
-        if (decoder.CodecInfo != null && decoder.CodecInfo.FileExtensions.Contains("jpg") && decoder.Frames[0] != null) {
+        if (decoder.CodecInfo?.FileExtensions.Contains("jpg") == true && decoder.Frames[0] != null) {
           var metadata = decoder.Frames[0].Metadata == null
             ? new BitmapMetadata("jpg")
             : decoder.Frames[0].Metadata.Clone() as BitmapMetadata;
 
           if (metadata != null) {
-
             //People
             if (mi.People != null) {
-              const string microsoftRegionInfo = @"/xmp/MP:RegionInfo";
-              const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-              const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+              const string microsoftRegionInfo = "/xmp/MP:RegionInfo";
+              const string microsoftRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
+              const string microsoftPersonDisplayName = "/MPReg:PersonDisplayName";
               var peopleIdx = -1;
               var addedPeople = new List<string>();
               //New metadata just for People
@@ -503,9 +493,9 @@ namespace PictureManager.ViewModels {
 
             //GeoNameId
             if (mi.GeoName == null)
-              metadata.RemoveQuery(@"/xmp/GeoNames:GeoNameId");
+              metadata.RemoveQuery("/xmp/GeoNames:GeoNameId");
             else
-              metadata.SetQuery(@"/xmp/GeoNames:GeoNameId", mi.GeoName.Id.ToString());
+              metadata.SetQuery("/xmp/GeoNames:GeoNameId", mi.GeoName.Id.ToString());
 
             bSuccess = WriteMetadataToFile(mi, newFile, decoder, metadata, true);
           }
@@ -558,28 +548,30 @@ namespace PictureManager.ViewModels {
       return bSuccess;
     }
 
-    public static bool ReadMetadata(MediaItem mi, bool gpsOnly = false) {
+    private static void ReadVideoMetadata(MediaItem mi) {
+      try {
+        var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
+        mi.Height = (int)size[0];
+        mi.Width = (int)size[1];
+        mi.Orientation = (int)size[2] switch {
+          90 => (int)MediaOrientation.Rotate90,
+          180 => (int)MediaOrientation.Rotate180,
+          270 => (int)MediaOrientation.Rotate270,
+          _ => (int)MediaOrientation.Normal,
+        };
+        mi.SetThumbSize(true);
+
+        App.Db.SetModified<MediaItems>();
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex, mi.FilePath);
+      }
+    }
+
+    public static async Task<bool> ReadMetadata(MediaItem mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
-          App.Core.RunOnUiThread(() => {
-            try {
-              var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
-              mi.Height = (int)size[0];
-              mi.Width = (int)size[1];
-              mi.Orientation = (int)size[2] switch {
-                90 => (int)MediaOrientation.Rotate90,
-                180 => (int)MediaOrientation.Rotate180,
-                270 => (int)MediaOrientation.Rotate270,
-                _ => (int)MediaOrientation.Normal,
-              };
-              mi.SetThumbSize(true);
-
-              App.Db.SetModified<MediaItems>();
-            }
-            catch (Exception ex) {
-              App.Core.LogError(ex, mi.FilePath);
-            }
-          });
+          await App.Core.RunOnUiThread(() => ReadVideoMetadata(mi));
         }
         else {
           using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -613,8 +605,8 @@ namespace PictureManager.ViewModels {
 
           // People
           mi.People = null;
-          const string microsoftRegions = @"/xmp/MP:RegionInfo/MPRI:Regions";
-          const string microsoftPersonDisplayName = @"/MPReg:PersonDisplayName";
+          const string microsoftRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
+          const string microsoftPersonDisplayName = "/MPReg:PersonDisplayName";
 
           if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
             var count = regions.Count();
@@ -656,9 +648,9 @@ namespace PictureManager.ViewModels {
           }
 
           // GeoNameId
-          var tmpGId = bm.GetQuery(@"/xmp/GeoNames:GeoNameId");
+          var tmpGId = bm.GetQuery("/xmp/GeoNames:GeoNameId");
           if (!string.IsNullOrEmpty(tmpGId as string)) {
-            // TODO dohledani/vytvoreni geoname
+            // TODO find/create GeoName
             mi.GeoName = App.Core.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
           }
 
