@@ -272,8 +272,8 @@ namespace PictureManager.Domain.Models {
         Helper.SaveTablePropsToFile();
     }
 
-    public async Task<Face> AddNewFace(int x, int y, int size, MediaItem mediaItem) {
-      var newFace = new Face(Helper.GetNextId(), 0, x, y, size) { MediaItem = mediaItem };
+    public async Task<Face> AddNewFace(int x, int y, int radius, MediaItem mediaItem) {
+      var newFace = new Face(Helper.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
       await newFace.SetPictureAsync(FaceSize);
       mediaItem.Faces ??= new();
       mediaItem.Faces.Add(newFace);
