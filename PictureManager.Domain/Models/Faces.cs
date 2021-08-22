@@ -77,7 +77,7 @@ namespace PictureManager.Domain.Models {
           withoutMediaItem.Add(face);
         }
 
-        // csv array is not needed any more
+        // CSV array is not needed any more
         face.Csv = null;
       }
 
@@ -170,7 +170,6 @@ namespace PictureManager.Domain.Models {
       LoadedGroupedByPerson.ForEach(x => x.Clear());
       LoadedGroupedByPerson.Clear();
     }
-
 
     // this is test for creating groups of similar faces for each person
     public async Task ReloadFaceGroups(int personId, double similarity) =>
@@ -289,7 +288,7 @@ namespace PictureManager.Domain.Models {
       var people = Loaded.Select(f => f.PersonId).Distinct().ToHashSet();
       people.Remove(0);
       var newFaces = All.Cast<Face>().Where(f => people.Contains(f.PersonId)).Except(Loaded);
-      
+
       foreach (var face in newFaces) {
         await face.SetPictureAsync(FaceSize);
         face.MediaItem.SetThumbSize();
@@ -324,7 +323,7 @@ namespace PictureManager.Domain.Models {
             if (token.IsCancellationRequested) break;
             // do not compare face with it self or with face that have same person
             if (faceA == faceB || (faceA.PersonId != 0 && faceA.PersonId == faceB.PersonId)) continue;
-            // do not comapre face with PersonId > 0 with face with also PersonId > 0
+            // do not compare face with PersonId > 0 with face with also PersonId > 0
             if (faceA.PersonId > 0 && faceB.PersonId > 0) continue;
 
             await faceA.SetPictureAsync(FaceSize);
@@ -368,7 +367,7 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    /// Compares faces with same person id to other faces with same person id 
+    /// Compares faces with same person id to other faces with same person id
     /// and select random face from each group for display
     /// </summary>
     public async Task ReloadConfirmedFaces() {
@@ -485,7 +484,7 @@ namespace PictureManager.Domain.Models {
       DeselectAll();
     }
 
-    // TODO refactor this
+    // TODO refactoring
     /// <summary>
     /// Sets new PersonId to all Faces that are selected or that have the same PersonId (not 0) as some of the selected.
     /// The new PersonId is the highest PersonId from the selected or highest unused negative id if PersonsIds are 0.
@@ -518,7 +517,7 @@ namespace PictureManager.Domain.Models {
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
-      var person = newId < 1 ? null : Core.Instance.People.All.FirstOrDefault(x => x.Id == newId) as Person;
+      var person = newId < 1 ? null : Core.Instance.People.All.Find(x => x.Id == newId) as Person;
 
       foreach (var face in toUpdate) {
         face.PersonId = newId;
@@ -541,7 +540,7 @@ namespace PictureManager.Domain.Models {
       if (face?.Person == null) return;
       if (face.Person.Face == face)
         face.Person.Face = null;
-      if (face.Person.Faces != null && face.Person.Faces.Remove(face)) {
+      if (face.Person.Faces?.Remove(face) == true) {
         if (!face.Person.Faces.Any())
           face.Person.Faces = null;
         Core.Instance.Sdb.SetModified<People>();
