@@ -18,7 +18,7 @@ namespace PictureManager.Domain.Models {
     private int _personId;
     private int _x;
     private int _y;
-    private int _size;
+    private int _radius;
 
     public string[] Csv { get; set; }
     public int Id { get; }
@@ -41,9 +41,8 @@ namespace PictureManager.Domain.Models {
 
         // bounds check
         if (MediaItem != null) {
-          var half = Size / 2;
-          if (value < half) _x = half;
-          if (value > MediaItem.Width - half) _x = MediaItem.Width - half;
+          if (value < Radius) _x = Radius;
+          if (value > MediaItem.Width - Radius) _x = MediaItem.Width - Radius;
         }
 
         OnPropertyChanged();
@@ -57,24 +56,23 @@ namespace PictureManager.Domain.Models {
 
         // bounds check
         if (MediaItem != null) {
-          var half = Size / 2;
-          if (value < half) _y = half;
-          if (value > MediaItem.Height - half) _y = MediaItem.Height - half;
+          if (value < Radius) _y = Radius;
+          if (value > MediaItem.Height - Radius) _y = MediaItem.Height - Radius;
         }
 
         OnPropertyChanged();
       }
     }
 
-    public int Size {
-      get => _size;
+    public int Radius {
+      get => _radius;
       set {
-        _size = value;
+        _radius = value;
 
         // bounds check
         if (MediaItem != null) {
-          var min = Math.Min(MediaItem.Width, MediaItem.Height);
-          _size = value > min ? min : value;
+          var min = Math.Min(MediaItem.Width, MediaItem.Height) / 2;
+          _radius = value > min ? min : value;
           X = _x;
           Y = _y;
         }
@@ -84,7 +82,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public int GroupId { get; set; } // 0 = not in the group of similar
-    #endregion
+    #endregion DB Properties
 
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
     public Bitmap ComparePicture { get; set; }
@@ -94,12 +92,12 @@ namespace PictureManager.Domain.Models {
     public double SimMax { get; set; }
     public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"face_{Id}.jpg");
 
-    public Face(int id, int personId, int x, int y, int size) {
+    public Face(int id, int personId, int x, int y, int radius) {
       Id = id;
       PersonId = personId;
       X = x;
       Y = y;
-      Size = size;
+      Radius = radius;
     }
 
     #region IEquatable implementation
@@ -108,11 +106,11 @@ namespace PictureManager.Domain.Models {
     public override int GetHashCode() => Id;
     public static bool operator ==(Face a, Face b) => a?.Equals(b) ?? b is null;
     public static bool operator !=(Face a, Face b) => !(a == b);
-    #endregion
+    #endregion IEquatable implementation
 
     // ID|MediaItemId|PersonId|GroupId|FaceBox
     public string ToCsv() =>
-      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), string.Join(",", X, Y, Size));
+      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), string.Join(",", X, Y, Radius));
 
     public async Task SetPictureAsync(int size, bool reload = false) {
       if (reload) {
@@ -124,14 +122,13 @@ namespace PictureManager.Domain.Models {
         var filePath = MediaItem.MediaType == MediaType.Image ? MediaItem.FilePath : MediaItem.FilePathCache;
         try {
           var cacheFilePath = CacheFilePath;
-          if (!reload && File.Exists(cacheFilePath)) {
+          if (!reload && File.Exists(cacheFilePath))
             return Imaging.GetBitmapSource(cacheFilePath);
-          }
-          else {
-            var src = Imaging.GetCroppedBitmapSource(filePath, ToRect(), size);
-            src.SaveAsJpg(80, cacheFilePath);
-            return src;
-          }
+
+          var src = Imaging.GetCroppedBitmapSource(filePath, ToRect(), size);
+          src.SaveAsJpg(80, cacheFilePath);
+
+          return src;
         }
         catch (Exception ex) {
           Core.Instance.LogError(ex, filePath);
@@ -153,7 +150,7 @@ namespace PictureManager.Domain.Models {
 
     public Int32Rect ToRect() {
       // if face is point
-      if (Size == 0) {
+      if (Radius == 0) {
         var x = X;
         var y = Y;
         if (x - 50 < 0) x = 50;
@@ -163,8 +160,7 @@ namespace PictureManager.Domain.Models {
         return new Int32Rect(x - 50, y - 50, 100, 100);
       }
 
-      var half = Size / 2;
-      return new Int32Rect(X - half, Y - half, Size, Size);
+      return new Int32Rect(X - Radius, Y - Radius, Radius * 2, Radius * 2);
     }
 
     #region RotateTransform X, Y
