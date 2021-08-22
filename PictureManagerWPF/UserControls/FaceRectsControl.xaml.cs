@@ -69,7 +69,7 @@ namespace PictureManager.UserControls {
         return;
       }
 
-      if (_current.Size == 1)
+      if (_current.Radius == 1)
         _current.IsSquare = false;
 
       App.Db.SetModified<Faces>();
@@ -95,18 +95,16 @@ namespace PictureManager.UserControls {
       _isCurrentModified = true;
 
       var mpos = e.GetPosition(this);
-      var half = _current.Size / 2.0;
-      var x = _current.Size == 0 ? _current.X : _current.X + half;
-      var y = _current.Size == 0 ? _current.Y : _current.Y + half;
-      var diff = Math.Max(Math.Abs(x - mpos.X), Math.Abs(y - mpos.Y));
+      var x = _current.Radius == 0 ? _current.X : _current.X + _current.Radius;
+      var y = _current.Radius == 0 ? _current.Y : _current.Y + _current.Radius;
+      var diff = (int)Math.Max(Math.Abs(x - mpos.X), Math.Abs(y - mpos.Y));
 
       if (_isEditModeMove) {
         _current.X = (int)mpos.X;
         _current.Y = (int)mpos.Y;
       }
-      else {
-        _current.Size = (int)diff * 2;
-      }
+      else
+        _current.Radius = diff;
     }
 
     private void BtnShape_Click(object sender, RoutedEventArgs e) {
@@ -117,7 +115,7 @@ namespace PictureManager.UserControls {
 
     private void BtnDelete_Click(object sender, RoutedEventArgs e) {
       if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
-      if (!MessageDialog.Show("Delete Face", $"Do you really want to delete this face?", true)) return;
+      if (!MessageDialog.Show("Delete Face", "Do you really want to delete this face?", true)) return;
       App.Core.Faces.Delete(faceRect.Face);
       _ = MediaItemFaceRects.Remove(faceRect);
     }
@@ -128,23 +126,23 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private const int _minSquareSize = 100;
+    private const int _minSquareRadius = 50;
     private double _scale;
 
     public bool IsSquare {
-      get => Face.Size != 0;
+      get => Face.Radius != 0;
       set {
-        Size = value ? _minSquareSize : 0;
+        Radius = value ? _minSquareRadius : 0;
         OnPropertyChanged();
         OnPropertyChanged(nameof(X));
         OnPropertyChanged(nameof(Y));
-        OnPropertyChanged(nameof(Size));
+        OnPropertyChanged(nameof(Radius));
         OnPropertyChanged(nameof(BorderSize));
       }
     }
 
     public int X {
-      get => (int)((Face.RotateTransformGetX(Face.X) - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      get => (int)((Face.RotateTransformGetX(Face.X) - Face.Radius) * Scale) - (IsSquare ? 0 : _minSquareRadius);
       set {
         Face.RotateTransformSetX((int)(value / Scale));
         OnPropertyChanged();
@@ -152,19 +150,19 @@ namespace PictureManager.UserControls {
     }
 
     public int Y {
-      get => (int)((Face.RotateTransformGetY(Face.Y) - (Face.Size / 2.0)) * Scale) - (IsSquare ? 0 : _minSquareSize / 2);
+      get => (int)((Face.RotateTransformGetY(Face.Y) - Face.Radius) * Scale) - (IsSquare ? 0 : _minSquareRadius);
       set {
         Face.RotateTransformSetY((int)(value / Scale));
         OnPropertyChanged();
       }
     }
 
-    public int BorderSize => Size == 0 ? _minSquareSize : Size;
+    public int BorderSize => Radius == 0 ? _minSquareRadius * 2 : Radius * 2;
 
-    public int Size {
-      get => (int)(Face.Size * Scale);
+    public int Radius {
+      get => (int)(Face.Radius * Scale);
       set {
-        Face.Size = (int)(value / Scale);
+        Face.Radius = (int)(value / Scale);
         OnPropertyChanged();
         OnPropertyChanged(nameof(X));
         OnPropertyChanged(nameof(Y));
@@ -178,7 +176,7 @@ namespace PictureManager.UserControls {
         _scale = value;
         OnPropertyChanged(nameof(X));
         OnPropertyChanged(nameof(Y));
-        OnPropertyChanged(nameof(Size));
+        OnPropertyChanged(nameof(Radius));
         OnPropertyChanged(nameof(BorderSize));
       }
     }
