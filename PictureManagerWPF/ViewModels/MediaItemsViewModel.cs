@@ -99,15 +99,7 @@ namespace PictureManager.ViewModels {
       App.WMain.StatusPanel.UpdateRating();
     }
 
-    public async void LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      List<MediaItem> items = item switch {
-        Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
-        Person person => person.GetMediaItems().ToList(),
-        Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
-        GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
-        _ => new()
-      };
-
+    private async Task LoadMediaItems(List<MediaItem> items, bool and, bool hide, string tabTitle) {
       // if CTRL is pressed, add new items to already loaded items
       if (and)
         items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Union(items).ToList();
@@ -116,11 +108,23 @@ namespace PictureManager.ViewModels {
       if (hide)
         items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
 
-      await LoadAsync(items, null, item.Title);
+      await LoadAsync(items, null, tabTitle);
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    public async void LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
+    public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
+      var items = item switch {
+        Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
+        Person person => person.GetMediaItems().ToList(),
+        Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
+        GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
+        _ => new()
+      };
+
+      await LoadMediaItems(items, and, hide, and || hide ? _model.ThumbsGrid.Title : item.Title);
+    }
+
+    public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
       if (item is Folder folder && !folder.IsAccessible) return;
 
       item.IsSelected = true;
@@ -131,13 +135,11 @@ namespace PictureManager.ViewModels {
       var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
       var folders = Folder.GetFolders(roots, recursive);
 
-      // if CTRL is pressed, add items from new folders to already loaded items
-      if (and)
-        folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Union(folders).ToList();
-
-      // if ALT is pressed, remove items from new folders from already loaded items
-      if (hide)
-        folders = App.Core.MediaItems.ThumbsGrid.LoadedItems.Select(x => x.Folder).Distinct().Except(folders).ToList();
+      if (and || hide) {
+        var items = folders.SelectMany(x => x.MediaItems).ToList();
+        await LoadMediaItems(items, and, hide, _model.ThumbsGrid.Title);
+        return;
+      }
 
       await LoadAsync(null, folders, folders[0].Title);
       App.Core.MarkUsedKeywordsAndPeople();
