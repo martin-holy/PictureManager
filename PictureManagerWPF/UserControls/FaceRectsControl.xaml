@@ -24,7 +24,7 @@
             <Setter Property="BorderThickness" Value="1" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                <Setter Property="BorderBrush" Value="LimeGreen" />
               </DataTrigger>
               <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
                 <Setter Property="BorderThickness" Value="2" />
