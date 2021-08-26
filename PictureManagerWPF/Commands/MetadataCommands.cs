@@ -37,16 +37,13 @@ namespace PictureManager.Commands {
         App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
-        delegate (MediaItem mi) {
+        async (MediaItem mi) => {
           MediaItemsViewModel.TryWriteMetadata(mi);
-
-          App.Core.RunOnUiThread(() => {
-            App.Core.MediaItems.SetModified(mi, false);
-          });
+          await App.Core.RunOnUiThread(() => App.Core.MediaItems.SetModified(mi, false));
         },
         mi => mi.FilePath,
         // onCompleted
-        delegate (object sender, RunWorkerCompletedEventArgs e) {
+        (o, e) => {
           if (e.Cancelled)
             Cancel();
           else
@@ -76,7 +73,7 @@ namespace PictureManager.Commands {
         },
         mi => mi.FilePath,
         // onCompleted
-        delegate {
+        (o, e) => {
           App.Core.MarkUsedKeywordsAndPeople();
           App.Core.MediaItems.IsEditModeOn = false;
         });
@@ -138,9 +135,7 @@ namespace PictureManager.Commands {
         },
         mi => mi.FilePath,
         // onCompleted
-        delegate {
-          App.Core.MarkUsedKeywordsAndPeople();
-        });
+        (o, e) => App.Core.MarkUsedKeywordsAndPeople());
 
       progress.Start();
     }
