@@ -66,7 +66,7 @@ namespace PictureManager.Commands {
 
     private static bool CanDelete() => ThumbsGrid?.Selected > 0 || App.Core.MediaItems.Current != null;
 
-    private static void Delete() {
+    private async static void Delete() {
       var items = ThumbsGrid != null
         ? ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList()
         : new List<MediaItem>() { App.Core.MediaItems.Current };
@@ -82,7 +82,7 @@ namespace PictureManager.Commands {
 
       App.Core.MediaItems.Delete(items, AppCore.FileOperationDelete);
       App.Core.MediaItems.Current = newCurrent;
-      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       if (App.WMain.MainTabs.GetSelectedContent() is FaceRecognitionControl frc)
         _ = frc.SortAndReload(frc.ChbAutoSort.IsChecked == true, frc.ChbAutoSort.IsChecked == true);
@@ -102,7 +102,7 @@ namespace PictureManager.Commands {
       ThumbsGrid.FilteredItems.Shuffle();
       ThumbsGrid.GroupByFolders = false;
       ThumbsGrid.GroupByDate = false;
-      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      _ = App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private static bool CanResizeImages() => ThumbsGrid?.FilteredItems.Count > 0;
@@ -114,21 +114,21 @@ namespace PictureManager.Commands {
     private static void ImagesToVideo() {
       ImagesToVideoDialog.ShowDialog(App.WMain,
         ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
-        async delegate (Folder folder, string fileName) {
+        async (Folder folder, string fileName) => {
           var mmi = App.Core.MediaItems;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = new MediaItem(mmi.Helper.GetNextId(), folder, fileName);
           mmi.All.Add(mi);
           folder.MediaItems.Add(mi);
-          MediaItemsViewModel.ReadMetadata(mi);
+          await MediaItemsViewModel.ReadMetadata(mi);
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
 
           // reload grid
           mmi.ThumbsGrid.LoadedItems.AddInOrder(mi,
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          App.Ui.MediaItemsViewModel.ReapplyFilter();
+          await App.Ui.MediaItemsViewModel.ReapplyFilter();
           App.Ui.MediaItemsViewModel.ScrollTo(mi);
         }
       );
@@ -145,7 +145,7 @@ namespace PictureManager.Commands {
       App.WMain.ImageComparerTool.Visibility = Visibility.Visible;
       App.WMain.UpdateLayout();
       App.WMain.ImageComparerTool.SelectDefaultMethod();
-      App.WMain.ImageComparerTool.Compare();
+      _ = App.WMain.ImageComparerTool.Compare();
     }
 
     private static bool CanCompress() => ThumbsGrid?.FilteredItems.Count > 0;
@@ -177,14 +177,14 @@ namespace PictureManager.Commands {
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
-        async delegate (MediaItem mi) {
+        async (MediaItem mi) => {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
         delegate {
-          App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+          _ = App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
         });
 
       progress.Start();
@@ -229,7 +229,7 @@ namespace PictureManager.Commands {
 
     private static bool CanRename() => App.Core.MediaItems.Current != null;
 
-    private static void Rename() {
+    private async static void Rename() {
       var current = App.Core.MediaItems.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
@@ -262,7 +262,7 @@ namespace PictureManager.Commands {
       try {
         current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
         ThumbsGrid?.FilteredItemsSetInPlace(current);
-        App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+        await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
       }

@@ -163,7 +163,7 @@ namespace PictureManager.Domain.Utils {
       }
     }
 
-    public static Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token, int size, int quality, IProgress<int> progress) {
+    public static Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItem> items, int size, int quality, IProgress<int> progress, CancellationToken token) {
       return Task.Run(async () => {
         var count = items.Count;
         var workingOn = 0;
@@ -178,9 +178,7 @@ namespace PictureManager.Domain.Utils {
                 workingOn++;
                 var workingOnInt = workingOn;
 
-                await Core.Instance.RunOnUiThread(() => {
-                  progress.Report(Convert.ToInt32((double)workingOnInt / count * 100));
-                });
+                await Core.Instance.RunOnUiThread(() => progress.Report(Convert.ToInt32((double)workingOnInt / count * 100)));
 
                 var mi = partition.Current;
                 // Folder can by null if the mediaItem is corrupted and is deleted in loading metadata process
@@ -200,6 +198,27 @@ namespace PictureManager.Domain.Utils {
         ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size, quality))
         : CreateThumbnailAsync(srcPath, destPath, size, rotationAngle, quality);
 
+    public static Task CreateThumbnailAsync(string srcPath, string destPath, int size, int rotationAngle, int quality) {
+      var tcs = new TaskCompletionSource<bool>();
+      var process = new Process {
+        EnableRaisingEvents = true,
+        StartInfo = new() {
+          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{quality}\" size|\"{size}\" rotationAngle|\"{rotationAngle}\"",
+          FileName = "ThumbnailCreator.exe",
+          UseShellExecute = false,
+          CreateNoWindow = true
+        }
+      };
+
+      process.Exited += (s, e) => {
+        tcs.TrySetResult(true);
+        process.Dispose();
+      };
+
+      process.Start();
+      return tcs.Task;
+    }
+
     public static bool CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) {
       try {
         var dir = Path.GetDirectoryName(destPath);
@@ -208,8 +227,7 @@ namespace PictureManager.Domain.Utils {
 
         using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
           var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-          if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") ||
-              decoder.Frames[0] == null) return false;
+          if (decoder.CodecInfo?.FileExtensions.Contains("jpg") != true || decoder.Frames[0] == null) return false;
 
           var frame = decoder.Frames[0];
           var orientation = (MediaOrientation)((ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1);
@@ -238,27 +256,6 @@ namespace PictureManager.Domain.Utils {
       catch (Exception) {
         return false;
       }
-    }
-
-    public static Task CreateThumbnailAsync(string srcPath, string destPath, int size, int rotationAngle, int quality) {
-      var tcs = new TaskCompletionSource<bool>();
-      var process = new Process {
-        EnableRaisingEvents = true,
-        StartInfo = new() {
-          Arguments = $"src|\"{srcPath}\" dest|\"{destPath}\" quality|\"{quality}\" size|\"{size}\" rotationAngle|\"{rotationAngle}\"",
-          FileName = "ThumbnailCreator.exe",
-          UseShellExecute = false,
-          CreateNoWindow = true
-        }
-      };
-
-      process.Exited += (s, e) => {
-        tcs.TrySetResult(true);
-        process.Dispose();
-      };
-
-      process.Start();
-      return tcs.Task;
     }
 
     public static Task<int[]> GetImageDimensionsAsync(string filePath) {

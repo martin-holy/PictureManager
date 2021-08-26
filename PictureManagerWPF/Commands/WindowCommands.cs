@@ -4,6 +4,7 @@ using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -78,7 +79,7 @@ namespace PictureManager.Commands {
       about.ShowDialog();
     }
 
-    private static void ShowHideTabMain(object parameter) {
+    private async static void ShowHideTabMain(object parameter) {
       var show = false;
       var reload = false;
       if (parameter != null)
@@ -103,7 +104,7 @@ namespace PictureManager.Commands {
       App.WMain.SlidePanelMainTreeView.IsOpen = show;
 
       if (reload)
-        App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+        await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
     private static void OpenFolderKeywordsList() {
@@ -121,8 +122,8 @@ namespace PictureManager.Commands {
         App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
-        delegate (MediaItem mi) {
-          if (mi.Lat == null || mi.Lng == null) MediaItemsViewModel.ReadMetadata(mi, true);
+        async (MediaItem mi) => {
+          if (mi.Lat == null || mi.Lng == null) _ = await MediaItemsViewModel.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
@@ -130,7 +131,7 @@ namespace PictureManager.Commands {
 
           mi.GeoName = lastGeoName;
           MediaItemsViewModel.TryWriteMetadata(mi);
-          App.Core.RunOnUiThread(() => {
+          await App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             App.Db.SetModified<MediaItems>();
           });

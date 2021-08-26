@@ -4,6 +4,7 @@ using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -31,15 +32,15 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       if (Template.FindName("PART_RbAvgHash", this) is RadioButton rbAvgHash) {
-        rbAvgHash.Checked += delegate { Compare(); };
+        rbAvgHash.Checked += async (o, e) => await Compare();
         _rbAvgHash = rbAvgHash;
       }
 
       if (Template.FindName("PART_RbPHash", this) is RadioButton rbpHash)
-        rbpHash.Checked += delegate { Compare(); };
+        rbpHash.Checked += async (o, e) => await Compare();
 
       if (Template.FindName("PART_SliderDiff", this) is Slider sliderDiff)
-        sliderDiff.ValueChanged += delegate { Compare(); };
+        sliderDiff.ValueChanged += async (o, e) => await Compare();
 
       if (Template.FindName("PART_BtnClose", this) is Button btnClose)
         btnClose.Click += delegate { Close(); };
@@ -58,7 +59,7 @@ namespace PictureManager.CustomControls {
         _rbAvgHash.IsChecked = true;
     }
 
-    public void Compare() {
+    public async Task Compare() {
       var thumbsGrid = App.Core.MediaItems.ThumbsGrid;
       var items = MediaItems.Filter(thumbsGrid.LoadedItems);
       List<object> similar = null;
@@ -85,7 +86,7 @@ namespace PictureManager.CustomControls {
           thumbsGrid.FilteredItems.Add(mi);
 
       thumbsGrid.Current = null;
-      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
@@ -104,7 +105,7 @@ namespace PictureManager.CustomControls {
         items,
         null,
         // action
-        delegate (MediaItem mi) {
+        (MediaItem mi) => {
           if (!hashes.ContainsKey(mi))
             hashes.Add(mi, hashMethod(mi.FilePathCache, Int32Rect.Empty));
         },

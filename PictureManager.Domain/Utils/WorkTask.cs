@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Utils {
-  public class WorkTask : IDisposable {
+  public sealed class WorkTask : IDisposable {
     private CancellationTokenSource _cts;
     private Task _task;
 

@@ -31,7 +31,7 @@ namespace PictureManager {
         ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
 
-      MainSlidePanelsGrid.OnContentLeftWidthChanged += delegate { App.Ui.MediaItemsViewModel.ThumbsGridReloadItems(); };
+      MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
@@ -65,17 +65,17 @@ namespace PictureManager {
         App.Db.BackUp();
     }
 
-    private void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
+    private async void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) return;
-      App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
-    private void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
-      App.Ui.ClearFilters();
+    private async void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
+      await App.Ui.ClearFilters();
     }
 
-    private void OnMediaTypesChanged(object sender, RoutedEventArgs e) {
-      App.Ui.MediaItemsViewModel.ReapplyFilter();
+    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) {
+      await App.Ui.MediaItemsViewModel.ReapplyFilter();
     }
   }
 }

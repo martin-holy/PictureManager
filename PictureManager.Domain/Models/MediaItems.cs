@@ -409,7 +409,7 @@ namespace PictureManager.Domain.Models {
       var output = new List<MediaItem>();
 
       await Task.Run(() => {
-        foreach (var folder in folders.Where(x => x.IsHidden == false)) {
+        foreach (var folder in folders.Where(x => !x.IsHidden)) {
           if (token.IsCancellationRequested) break;
           if (!Directory.Exists(folder.FullPath)) continue;
           var folderMediaItems = new List<MediaItem>();
@@ -419,7 +419,7 @@ namespace PictureManager.Domain.Models {
 
           foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
             if (token.IsCancellationRequested) break;
-            if (Imaging.IsSupportedFileType(file) == false) continue;
+            if (!Imaging.IsSupportedFileType(file)) continue;
 
             // check if the MediaItem is already in DB, if not put it there
             var fileName = Path.GetFileName(file) ?? string.Empty;
@@ -451,20 +451,20 @@ namespace PictureManager.Domain.Models {
       var output = new List<MediaItem>();
 
       await Task.Run(() => {
-        var folders = (from mi in items select mi.Folder).Distinct();
+        var folders = items.Select(x => x.Folder).Distinct();
         var foldersSet = new HashSet<int>();
 
         foreach (var folder in folders) {
           if (token.IsCancellationRequested) break;
-          if (Core.Instance.CanViewerSeeContentOfThisFolder(folder) == false) continue;
-          if (Directory.Exists(folder.FullPath) == false) continue;
+          if (!Core.Instance.CanViewerSeeContentOfThisFolder(folder)) continue;
+          if (!Directory.Exists(folder.FullPath)) continue;
           foldersSet.Add(folder.Id);
         }
 
         foreach (var mi in items) {
           if (token.IsCancellationRequested) break;
-          if (foldersSet.Contains(mi.Folder.Id) == false) continue;
-          if (File.Exists(mi.FilePath) == false) continue;
+          if (!foldersSet.Contains(mi.Folder.Id)) continue;
+          if (!File.Exists(mi.FilePath)) continue;
           output.Add(mi);
         }
       }, token);

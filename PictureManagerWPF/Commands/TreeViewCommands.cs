@@ -82,14 +82,14 @@ namespace PictureManager.Commands {
       ((GeoNames)parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
-    private static void ActivateFilterAnd(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
+    private async static void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
 
-    private static void ActivateFilterOr(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
+    private async static void ActivateFilterOr(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
 
-    private static void ActivateFilterNot(object parameter) => App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
+    private async static void ActivateFilterNot(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
 
     private static void LoadByTag(object parameter) =>
-      App.Ui.TreeView_Select((ICatTreeViewItem)parameter,
+      _ = App.Ui.TreeView_Select((ICatTreeViewItem)parameter,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0, true);
