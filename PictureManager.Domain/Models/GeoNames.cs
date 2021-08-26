@@ -80,5 +80,16 @@ namespace PictureManager.Domain.Models {
 
       InsertGeoNameHierarchy(lat, lng, userName);
     }
+
+    /// <summary>
+    /// Toggle GeoName on Media Item
+    /// </summary>
+    /// <param name="g">GeoName</param>
+    /// <param name="mi">MediaItem</param>
+    public static void Toggle(GeoName g, MediaItem mi) {
+      mi.GeoName?.MediaItems.Remove(mi);
+      mi.GeoName = g;
+      g.MediaItems.Add(mi);
+    }
   }
 }
