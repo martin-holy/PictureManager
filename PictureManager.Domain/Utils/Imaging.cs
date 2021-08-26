@@ -27,12 +27,10 @@ namespace PictureManager.Domain.Utils {
     public static bool IsSupportedFileType(string filePath) =>
       SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 
-    public static MediaType GetMediaType(string filePath) {
-      return SupportedImageExts.Any(
-        x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
+    public static MediaType GetMediaType(string filePath) =>
+      SupportedImageExts.Any(x => filePath.EndsWith(x, StringComparison.InvariantCultureIgnoreCase))
         ? MediaType.Image
         : MediaType.Video;
-    }
 
     public static void GetThumbSize(double width, double height, int desiredSize, out int outWidth, out int outHeight) {
       if (width > height) {
@@ -81,7 +79,7 @@ namespace PictureManager.Domain.Utils {
 
       using Stream srcFileStream = File.Open(srcFile.FullName, FileMode.Open, FileAccess.Read);
       var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-      if (decoder.CodecInfo == null || !decoder.CodecInfo.FileExtensions.Contains("jpg") || decoder.Frames[0] == null) return;
+      if (decoder.CodecInfo?.FileExtensions.Contains("jpg") != true || decoder.Frames[0] == null) return;
 
       var firstFrame = decoder.Frames[0];
 
@@ -112,12 +110,9 @@ namespace PictureManager.Domain.Utils {
       SetIfContainsQuery(metadata, "/app1/ifd/exif/{ushort=40963}", resized.PixelHeight);
 
       var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-
       encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
-
-      using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite)) {
-        encoder.Save(destFileStream);
-      }
+      using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite))
+      encoder.Save(destFileStream);
 
       // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
       var date = DateTime.MinValue;
@@ -375,7 +370,7 @@ namespace PictureManager.Domain.Utils {
           continue;
         }
 
-        // calc percentage expand
+        // calculate percentage expand
         var exp = (int)(fBox.FaceBox.Width / 100.0 * faceBoxExpand);
         if (exp % 2 != 0) exp++;
         var halfExp = exp / 2;
@@ -509,10 +504,9 @@ namespace PictureManager.Domain.Utils {
       };
     }
 
+    public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).GetAwaiter().GetResult();
 
-    public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).Result;
-
-    public static long GetPerceptualHash(string filePath, Int32Rect rect) => GetPerceptualHashAsync(filePath, rect).Result;
+    public static long GetPerceptualHash(string filePath, Int32Rect rect) => GetPerceptualHashAsync(filePath, rect).GetAwaiter().GetResult();
 
     /// <summary>
     /// Compute AVG hash from image
