@@ -94,7 +94,7 @@ namespace PictureManager.Domain.Models {
           mi.GeoName.MediaItems.Add(mi);
         }
 
-        // csv array is not needed any more
+        // CSV array is not needed any more
         mi.Csv = null;
       }
     }
@@ -113,7 +113,7 @@ namespace PictureManager.Domain.Models {
     /// <param name="selected"></param>
     /// <returns>Returns next MediaItem from all after last in the selected or one before first or null</returns>
     public static MediaItem GetNewCurrent(List<MediaItem> all, List<MediaItem> selected) {
-      if (all == null || selected?.Count == 0) return null;
+      if (all == null || selected == null || selected.Count == 0) return null;
 
       var index = all.IndexOf(selected[^1]) + 1;
       if (index == all.Count)
@@ -133,7 +133,7 @@ namespace PictureManager.Domain.Models {
         Delete(mi);
       }
 
-      _ = fileOperationDelete.Invoke(files, true, false);
+      fileOperationDelete.Invoke(files, true, false);
       cache.ForEach(File.Delete);
     }
 
@@ -143,9 +143,9 @@ namespace PictureManager.Domain.Models {
       // remove Faces
       if (item.Faces != null) {
         foreach (var face in item.Faces.ToArray()) {
-          // removig face here prevents removing face from Faces.Delete
-          // and setting DB table as modifed multiple times
-          _ = item.Faces.Remove(face);
+          // removing face here prevents removing face from Faces.Delete
+          // and setting DB table as modified multiple times
+          item.Faces.Remove(face);
           Core.Instance.Faces.Delete(face);
         }
         item.Faces = null;
@@ -206,73 +206,21 @@ namespace PictureManager.Domain.Models {
         SetModified(mi, true);
 
         switch (tag) {
-          case Person p: {
-            if (p.IsMarked) {
-              mi.People ??= new();
-              mi.People.Add(p);
-              p.MediaItems.Add(mi);
-            }
-            else {
-              mi.People?.Remove(p);
-              p.MediaItems.Remove(mi);
-              if (mi.People?.Count == 0)
-                mi.People = null;
-            }
-            break;
-          }
-          case Keyword k: {
-            if (!k.IsMarked && mi.Keywords != null) {
-              mi.Keywords?.Remove(k);
-              k.MediaItems.Remove(mi);
-              if (mi.Keywords?.Count == 0)
-                mi.Keywords = null;
-              break;
-            }
+          case Person p:
+          People.Toggle(p, mi);
+          break;
 
-            if (mi.Keywords != null) {
-              // skip if any Parent of MediaItem Keywords is marked Keyword
-              var skip = false;
-              foreach (var miKeyword in mi.Keywords) {
-                var tmpMik = miKeyword;
-                while (tmpMik.Parent is Keyword parent) {
-                  tmpMik = parent;
-                  if (!parent.Id.Equals(k.Id)) continue;
-                  skip = true;
-                  break;
-                }
-              }
+          case Keyword k:
+          Keywords.Toggle(k, mi);
+          break;
 
-              if (skip) break;
+          case Rating r:
+          mi.Rating = r.Value;
+          break;
 
-              // remove possible redundant keywords 
-              // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
-              foreach (var miKeyword in mi.Keywords.ToArray()) {
-                var tmpMarkedK = k;
-                while (tmpMarkedK.Parent is Keyword parent) {
-                  tmpMarkedK = parent;
-                  if (!parent.Id.Equals(miKeyword.Id)) continue;
-                  mi.Keywords.Remove(miKeyword);
-                  miKeyword.MediaItems.Remove(mi);
-                }
-              }
-            }
-
-            mi.Keywords ??= new();
-            mi.Keywords.Add(k);
-            k.MediaItems.Add(mi);
-
-            break;
-          }
-          case Rating r: {
-            mi.Rating = r.Value;
-            break;
-          }
-          case GeoName g: {
-            mi.GeoName?.MediaItems.Remove(mi);
-            mi.GeoName = g;
-            g.MediaItems.Add(mi);
-            break;
-          }
+          case GeoName g:
+          GeoNames.Toggle(g, mi);
+          break;
         }
 
         mi.SetInfoBox();
@@ -306,34 +254,33 @@ namespace PictureManager.Domain.Models {
         }
 
         switch (mode) {
-          case FileOperationMode.Copy: {
-            // create object copy
-            var miCopy = mi.CopyTo(destFolder, miNewFileName);
-            // copy MediaItem and cache on file system
-            Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
-            File.Copy(mi.FilePath, miCopy.FilePath, true);
-            File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
-            break;
-          }
-          case FileOperationMode.Move: {
-            var srcFilePath = mi.FilePath;
-            var srcFilePathCache = mi.FilePathCache;
+          case FileOperationMode.Copy:
+          // create object copy
+          var miCopy = mi.CopyTo(destFolder, miNewFileName);
+          // copy MediaItem and cache on file system
+          Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
+          File.Copy(mi.FilePath, miCopy.FilePath, true);
+          File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+          break;
 
-            // DB
-            mi.MoveTo(destFolder, miNewFileName);
+          case FileOperationMode.Move:
+          var srcFilePath = mi.FilePath;
+          var srcFilePathCache = mi.FilePathCache;
 
-            // File System
-            if (File.Exists(mi.FilePath))
-              File.Delete(mi.FilePath);
-            File.Move(srcFilePath, mi.FilePath);
+          // DB
+          mi.MoveTo(destFolder, miNewFileName);
 
-            // Cache
-            if (File.Exists(mi.FilePathCache))
-              File.Delete(mi.FilePathCache);
-            Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
-            File.Move(srcFilePathCache, mi.FilePathCache);
-            break;
-          }
+          // File System
+          if (File.Exists(mi.FilePath))
+            File.Delete(mi.FilePath);
+          File.Move(srcFilePath, mi.FilePath);
+
+          // Cache
+          if (File.Exists(mi.FilePathCache))
+            File.Delete(mi.FilePathCache);
+          Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
+          File.Move(srcFilePathCache, mi.FilePathCache);
+          break;
         }
 
         done++;
@@ -350,7 +297,7 @@ namespace PictureManager.Domain.Models {
 
       //Ratings
       var chosenRatings = Core.Instance.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
-      if (chosenRatings.Any())
+      if (chosenRatings.Length > 0)
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 
       // MediaItemSizes
@@ -361,9 +308,9 @@ namespace PictureManager.Domain.Models {
       var orPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
       var andPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
       var notPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andPeopleAny = andPeople.Any();
-      var orPeopleAny = orPeople.Any();
-      if (orPeopleAny || andPeopleAny || notPeople.Any()) {
+      var andPeopleAny = andPeople.Length > 0;
+      var orPeopleAny = orPeople.Length > 0;
+      if (orPeopleAny || andPeopleAny || notPeople.Length > 0) {
         mediaItems = mediaItems.Where(mi => {
           if (mi.IsNew)
             return true;
@@ -384,9 +331,9 @@ namespace PictureManager.Domain.Models {
       var orKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
       var andKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
       var notKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andKeywordsAny = andKeywords.Any();
-      var orKeywordsAny = orKeywords.Any();
-      if (orKeywordsAny || andKeywordsAny || notKeywords.Any()) {
+      var andKeywordsAny = andKeywords.Length > 0;
+      var orKeywordsAny = orKeywords.Length > 0;
+      if (orKeywordsAny || andKeywordsAny || notKeywords.Length > 0) {
         mediaItems = mediaItems.Where(mi => {
           if (mi.IsNew)
             return true;
