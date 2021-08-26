@@ -121,5 +121,24 @@ namespace PictureManager.Domain.Models {
 
       Core.Instance.Sdb.SetModified<People>();
     }
+
+    /// <summary>
+    /// Toggle Person on Media Item
+    /// </summary>
+    /// <param name="p">Person</param>
+    /// <param name="mi">Media Item</param>
+    public static void Toggle(Person p, MediaItem mi) {
+      if (p.IsMarked) {
+        mi.People ??= new();
+        mi.People.Add(p);
+        p.MediaItems.Add(mi);
+      }
+      else {
+        mi.People?.Remove(p);
+        p.MediaItems.Remove(mi);
+        if (mi.People?.Count == 0)
+          mi.People = null;
+      }
+    }
   }
 }
