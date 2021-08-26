@@ -21,8 +21,7 @@ using System.Windows.Media.Imaging;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsViewModel {
-    private CancellationTokenSource _loadCts;
-    private Task _loadTask;
+    private readonly WorkTask _workTask = new();
     private readonly MediaItems _model;
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
@@ -30,13 +29,6 @@ namespace PictureManager.ViewModels {
 
     public MediaItemsViewModel(Core core) {
       _model = core.MediaItems;
-    }
-
-    ~MediaItemsViewModel() {
-      if (_loadCts != null) {
-        _loadCts.Dispose();
-        _loadCts = null;
-      }
     }
 
     public void RegisterEvents() {
@@ -48,7 +40,7 @@ namespace PictureManager.ViewModels {
         _ = _model.ThumbnailsGrids.Remove(grid);
       };
 
-      App.WMain.MainTabs.Tabs.SelectionChanged += (o, e) => {
+      App.WMain.MainTabs.Tabs.SelectionChanged += async (o, e) => {
         var tabItem = ((TabControl)o).SelectedItem as TabItem;
         var grid = tabItem?.DataContext as ThumbnailsGrid;
 
@@ -57,7 +49,7 @@ namespace PictureManager.ViewModels {
         _model.ThumbsGrid = grid;
         grid?.UpdateSelected();
         if (grid?.NeedReload == true)
-          ThumbsGridReloadItems();
+          await ThumbsGridReloadItems();
         App.Core.MarkUsedKeywordsAndPeople();
       };
     }
@@ -146,11 +138,7 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
-      // cancel previous work
-      if (_loadCts != null) {
-        _loadCts.Cancel();
-        await _loadTask;
-      }
+      await _workTask.Cancel();
 
       ScrollToTop();
 
@@ -163,18 +151,15 @@ namespace PictureManager.ViewModels {
 
       App.Ui.AppInfo.ProgressBarIsIndeterminate = true;
 
-      _loadTask = Task.Run(async () => {
-        _loadCts?.Dispose();
-        _loadCts = new();
-        var token = _loadCts.Token;
+      await _workTask.Start(Task.Run(async () => {
         var items = new List<MediaItem>();
 
         if (mediaItems != null)
           // filter out items if directory or file not exists or Viewer can not see items
-          items = await MediaItems.VerifyAccessibilityOfMediaItemsAsync(mediaItems, token);
+          items = await MediaItems.VerifyAccessibilityOfMediaItemsAsync(mediaItems, _workTask.Token);
 
         if (folders != null)
-          items = await _model.GetMediaItemsFromFoldersAsync(folders, token);
+          items = await _model.GetMediaItemsFromFoldersAsync(folders, _workTask.Token);
 
         // set thumb size and add Media Items to LoadedItems
         foreach (var mi in items) {
@@ -182,13 +167,11 @@ namespace PictureManager.ViewModels {
           currentGrid.LoadedItems.Add(mi);
         }
 
-        currentGrid.ReloadFilteredItems();
+        await currentGrid.ReloadFilteredItems();
 
-        await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), token);
+        await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), _workTask.Token);
         App.Core.SetMediaItemSizesLoadedRange();
-      });
-
-      await _loadTask;
+      }));
     }
 
     private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
@@ -200,7 +183,7 @@ namespace PictureManager.ViewModels {
         var metadata = ReadMetadataAndListThumbsAsync(items, token);
         // create thumbnails
         var progress = new Progress<int>(x => App.Ui.AppInfo.ProgressBarValueB = x);
-        var thumbs = Imaging.CreateThumbnailsAsync(items, token, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress);
+        var thumbs = Imaging.CreateThumbnailsAsync(items, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress, token);
 
         await Task.WhenAll(metadata, thumbs);
 
@@ -220,11 +203,10 @@ namespace PictureManager.ViewModels {
       GC.Collect();
     }
 
-    private Task<bool> ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
-      App.Core.RunOnUiThread(() => CurrentThumbsGrid.ClearRows());
+    private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
+      await App.Core.RunOnUiThread(() => CurrentThumbsGrid.ClearRows());
 
-      return Task.Run(async () => {
-        var mediaItemsModified = false;
+      await Task.Run(async () => {
         var count = items.Count;
         var workingOn = 0;
 
@@ -237,7 +219,7 @@ namespace PictureManager.ViewModels {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            _ = await App.Core.RunOnUiThread(() => _model.MediaItemsCount++);
+            await App.Core.RunOnUiThread(() => _model.MediaItemsCount++);
 
             var success = await ReadMetadata(mi);
             if (!success) {
@@ -251,23 +233,19 @@ namespace PictureManager.ViewModels {
 
               continue;
             }
-
-            mediaItemsModified = true;
           }
 
-          AddMediaItemToGrid(mi);
+          await AddMediaItemToGrid(mi);
 
           await App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             App.Ui.AppInfo.ProgressBarValueA = percent;
           });
         }
-
-        return mediaItemsModified;
-      });
+      }, token);
     }
 
-    private void AddMediaItemToGrid(MediaItem mi) {
+    private async Task AddMediaItemToGrid(MediaItem mi) {
       const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
       var groupItems = new List<VirtualizingWrapPanelGroupItem>();
 
@@ -287,30 +265,21 @@ namespace PictureManager.ViewModels {
           groupItems.Add(new() { Icon = IconName.Calendar, Title = title });
       }
 
-      App.Core.RunOnUiThread(() => {
+      await App.Core.RunOnUiThread(() => {
         CurrentThumbsGrid.AddGroupIfNew(groupItems.ToArray());
         CurrentThumbsGrid.AddItem(mi, mi.ThumbWidth + itemOffset);
       });
     }
 
     public async Task ThumbsGridReloadItems() {
+      ScrollToTop();
       CurrentThumbsGrid?.ClearRows();
+
       if (_model.ThumbsGrid == null || _model.ThumbsGrid.FilteredItems.Count == 0) return;
 
-      // cancel previous work
-      if (_loadCts != null) {
-        _loadCts.Cancel();
-        await _loadTask;
-      }
-
-      _loadTask = Task.Run(async () => {
-        _loadCts?.Dispose();
-        _loadCts = new();
-        var token = _loadCts.Token;
-        await LoadThumbnailsAsync(_model.ThumbsGrid.FilteredItems.ToArray(), token);
-      });
-
-      await _loadTask;
+      await _workTask.Cancel();
+      await _workTask.Start(Task.Run(async () =>
+        await LoadThumbnailsAsync(_model.ThumbsGrid.FilteredItems.ToArray(), _workTask.Token)));
 
       _model.ThumbsGrid.NeedReload = false;
       ScrollToCurrent();
@@ -416,7 +385,7 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task ReapplyFilter() {
-      _model.ThumbsGrid?.ReloadFilteredItems();
+      await _model.ThumbsGrid?.ReloadFilteredItems();
       App.Core.MarkUsedKeywordsAndPeople();
       await ThumbsGridReloadItems();
     }
@@ -568,6 +537,71 @@ namespace PictureManager.ViewModels {
       }
     }
 
+    private static void ReadImageMetadata(MediaItem mi, BitmapMetadata bm, bool gpsOnly) {
+      // Lat Lng
+      var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
+      if (tmpLat != null) {
+        var vals = tmpLat[0..^1].Split(',');
+        mi.Lat = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLat.EndsWith("S") ? -1 : 1);
+      }
+
+      var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
+      if (tmpLng != null) {
+        var vals = tmpLng[0..^1].Split(',');
+        mi.Lng = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLng.EndsWith("W") ? -1 : 1);
+      }
+
+      if (gpsOnly) return;
+
+      // People
+      mi.People = null;
+      const string microsoftRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
+      const string microsoftPersonDisplayName = "/MPReg:PersonDisplayName";
+
+      if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions && regions.Any()) {
+        mi.People = new(regions.Count());
+        foreach (var region in regions) {
+          var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
+          if (personDisplayName != null) {
+            var person = App.Core.People.GetPerson(personDisplayName.ToString(), true);
+            person.MediaItems.Add(mi);
+            mi.People.Add(person);
+          }
+        }
+      }
+
+      // Rating
+      mi.Rating = bm.Rating;
+
+      // Comment
+      mi.Comment = StringUtils.NormalizeComment(bm.Comment);
+
+      // Orientation 1: 0, 3: 180, 6: 270, 8: 90
+      mi.Orientation = (ushort?)bm.GetQuery("System.Photo.Orientation") ?? 1;
+
+      // Keywords
+      mi.Keywords = null;
+      if (bm.Keywords != null) {
+        mi.Keywords = new();
+        // Filter out duplicities
+        foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
+          if (mi.Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
+          var keyword = App.Core.Keywords.GetByFullPath(k);
+          if (keyword != null) {
+            keyword.MediaItems.Add(mi);
+            mi.Keywords.Add(keyword);
+          }
+        }
+      }
+
+      // GeoNameId
+      var tmpGId = bm.GetQuery("/xmp/GeoNames:GeoNameId");
+      if (!string.IsNullOrEmpty(tmpGId as string)) {
+        // TODO find/create GeoName
+        mi.GeoName = App.Core.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
+      }
+    }
+
     public static async Task<bool> ReadMetadata(MediaItem mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
@@ -586,73 +620,7 @@ namespace PictureManager.ViewModels {
           // true because only media item dimensions are required
           if (frame.Metadata is not BitmapMetadata bm) return true;
 
-          // Lat Lng
-          var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
-          if (tmpLat != null) {
-            var vals = tmpLat[0..^1].Split(',');
-            mi.Lat = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) *
-                  (tmpLat.EndsWith("S") ? -1 : 1);
-          }
-
-          var tmpLng = bm.GetQuery("System.GPS.Longitude.Proxy")?.ToString();
-          if (tmpLng != null) {
-            var vals = tmpLng[0..^1].Split(',');
-            mi.Lng = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) *
-                  (tmpLng.EndsWith("W") ? -1 : 1);
-          }
-
-          if (gpsOnly) return true;
-
-          // People
-          mi.People = null;
-          const string microsoftRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
-          const string microsoftPersonDisplayName = "/MPReg:PersonDisplayName";
-
-          if (bm.GetQuery(microsoftRegions) is BitmapMetadata regions) {
-            var count = regions.Count();
-            if (count > 0) {
-              mi.People = new(count);
-              foreach (var region in regions) {
-                var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-                if (personDisplayName != null) {
-                  var person = App.Core.People.GetPerson(personDisplayName.ToString(), true);
-                  person.MediaItems.Add(mi);
-                  mi.People.Add(person);
-                }
-              }
-            }
-          }
-
-          // Rating
-          mi.Rating = bm.Rating;
-
-          // Comment
-          mi.Comment = StringUtils.NormalizeComment(bm.Comment);
-
-          // Orientation 1: 0, 3: 180, 6: 270, 8: 90
-          mi.Orientation = (ushort?)bm.GetQuery("System.Photo.Orientation") ?? 1;
-
-          // Keywords
-          mi.Keywords = null;
-          if (bm.Keywords != null) {
-            mi.Keywords = new();
-            // Filter out duplicities
-            foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-              if (mi.Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-              var keyword = App.Core.Keywords.GetByFullPath(k);
-              if (keyword != null) {
-                keyword.MediaItems.Add(mi);
-                mi.Keywords.Add(keyword);
-              }
-            }
-          }
-
-          // GeoNameId
-          var tmpGId = bm.GetQuery("/xmp/GeoNames:GeoNameId");
-          if (!string.IsNullOrEmpty(tmpGId as string)) {
-            // TODO find/create GeoName
-            mi.GeoName = App.Core.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
-          }
+          ReadImageMetadata(mi, bm, gpsOnly);
 
           mi.SetThumbSize(true);
         }

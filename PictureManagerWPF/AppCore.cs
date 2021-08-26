@@ -8,6 +8,7 @@ using PictureManager.UserControls;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -40,7 +41,7 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public void TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
+    public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
       if (item is ICatTreeViewCategory cat && cat is People) {
@@ -87,12 +88,12 @@ namespace PictureManager {
           if (App.Core.MediaItems.IsEditModeOn && !loadByTag)
             MediaItemsViewModel.SetMetadata(item);
           else
-            MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
+            await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
           break;
 
           case Folder:
           case FolderKeyword:
-          MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
+          await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
           break;
         }
         break;
@@ -105,19 +106,19 @@ namespace PictureManager {
         item.IsSelected = false;
     }
 
-    public void ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
+    public async Task ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
       SetBackgroundBrush(item, item.BackgroundBrush != BackgroundBrush.Default ? BackgroundBrush.Default : mode);
 
       // reload with new filter
-      MediaItemsViewModel.ReapplyFilter();
+      await MediaItemsViewModel.ReapplyFilter();
     }
 
-    public void ClearFilters() {
+    public async Task ClearFilters() {
       foreach (var item in App.Core.ActiveFilterItems.ToArray())
         SetBackgroundBrush(item, BackgroundBrush.Default);
 
       // reload with new filter
-      MediaItemsViewModel.ReapplyFilter();
+      await MediaItemsViewModel.ReapplyFilter();
     }
 
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {

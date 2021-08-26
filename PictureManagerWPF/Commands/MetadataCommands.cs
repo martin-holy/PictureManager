@@ -66,10 +66,10 @@ namespace PictureManager.Commands {
         App.Core.MediaItems.ModifiedItems.ToArray(),
         null,
         // action
-        delegate (MediaItem mi) {
-          MediaItemsViewModel.ReadMetadata(mi);
+        async (MediaItem mi) => {
+          await MediaItemsViewModel.ReadMetadata(mi);
 
-          App.Core.RunOnUiThread(() => {
+          await App.Core.RunOnUiThread(() => {
             App.Core.MediaItems.SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -129,12 +129,12 @@ namespace PictureManager.Commands {
         mediaItems.ToArray(),
         null,
         // action
-        delegate (MediaItem mi) {
-          MediaItemsViewModel.ReadMetadata(mi);
+        async (MediaItem mi) => {
+          await MediaItemsViewModel.ReadMetadata(mi);
 
           // set info box just for loaded media items
           if (folder == null)
-            App.Core.RunOnUiThread(mi.SetInfoBox);
+            await App.Core.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

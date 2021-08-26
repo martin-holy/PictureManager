@@ -21,56 +21,51 @@ namespace PictureManager.UserControls {
     }
 
     private static void TreeViewItemsEvents() {
-      CatTreeViewUtils.OnAfterItemRename += (o, e) => {
-        if (o is Folder folder) {
+      CatTreeViewUtils.OnAfterItemRename += async (o, e) => {
+        if (o is Folder folder && folder.IsSelected) {
           // reload if the folder was selected before
-          if (folder.IsSelected)
-            App.Ui.TreeView_Select(folder, false, false, false);
+          await App.Ui.TreeView_Select(folder, false, false, false);
         }
       };
 
       CatTreeViewUtils.OnAfterItemDelete += (o, e) => {
-        if (o is Folder folder) {
-          // delete folder, subfolders and mediaItems from file system
-          if (Directory.Exists(folder.FullPath))
-            AppCore.FileOperationDelete(new List<string> { folder.FullPath }, true, false);
+        if (o is Folder folder && Directory.Exists(folder.FullPath)) {
+          // delete folder, sub folders and mediaItems from file system
+          AppCore.FileOperationDelete(new List<string> { folder.FullPath }, true, false);
         }
       };
 
-      CatTreeViewUtils.OnAfterOnDrop += (o, e) => {
+      CatTreeViewUtils.OnAfterOnDrop += async (o, e) => {
         var data = (object[])o;
         var src = data[0];
         var dest = data[1] as ICatTreeViewItem;
         //var aboveDest = (bool) data[2];
         var copy = (bool)data[3];
+        var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
         switch (src) {
-          case Folder srcData: { // Folder
-            var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
+          case Folder srcData:  // Folder
+          FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
+          App.Db.SetModified<MediaItems>();
+          App.Db.SetModified<Folders>();
+          App.Core.FolderKeywords.Load();
 
-            FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
-            App.Db.SetModified<MediaItems>();
-            App.Db.SetModified<Folders>();
-            App.Core.FolderKeywords.Load();
-
-            // reload last selected source if was moved
-            if (foMode == FileOperationMode.Move && srcData.IsSelected) {
-              var folder = ((Folder)dest)?.GetByPath(srcData.Title);
-              if (folder == null) return;
-              CatTreeViewUtils.ExpandTo(folder);
-              App.Ui.TreeView_Select(folder, false, false, false);
-            }
-
-            break;
+          // reload last selected source if was moved
+          if (foMode == FileOperationMode.Move && srcData.IsSelected) {
+            var folder = ((Folder)dest)?.GetByPath(srcData.Title);
+            if (folder == null) return;
+            CatTreeViewUtils.ExpandTo(folder);
+            await App.Ui.TreeView_Select(folder, false, false, false);
           }
-          case string[] _: { // MediaItems
-            var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
-            App.Ui.MediaItemsViewModel.CopyMove(
-              foMode, App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
-            App.Db.SetModified<MediaItems>();
 
-            break;
-          }
+          break;
+
+          case string[]:  // MediaItems
+          App.Ui.MediaItemsViewModel.CopyMove(foMode,
+            App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
+          App.Db.SetModified<MediaItems>();
+
+          break;
         }
 
         App.Core.MarkUsedKeywordsAndPeople();
@@ -191,15 +186,15 @@ namespace PictureManager.UserControls {
        */
       e.Handled = true;
       if (e.OriginalSource is ToggleButton) return;
-      App.Ui.TreeView_Select(((TreeViewItem)sender).DataContext as ICatTreeViewItem,
+      _ = App.Ui.TreeView_Select(((TreeViewItem)sender).DataContext as ICatTreeViewItem,
         (Keyboard.Modifiers & ModifierKeys.Control) > 0,
         (Keyboard.Modifiers & ModifierKeys.Alt) > 0,
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
-    private void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
+    private async void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
       App.Core.MediaItemSizes.Size.SliderChanged = true;
-      App.Ui.MediaItemsViewModel.ReapplyFilter();
+      await App.Ui.MediaItemsViewModel.ReapplyFilter();
     }
 
     private void ShowSearch(object sender, RoutedEventArgs e) {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   // On Tab Activate
@@ -189,7 +190,7 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Move(oldIndex, newIndex);
     }
 
-    public void ReloadFilteredItems() {
+    public async Task ReloadFilteredItems() {
       FilteredItems.Clear();
 
       var filtered = MediaItems.Filter(LoadedItems);
@@ -212,7 +213,7 @@ namespace PictureManager.Domain.Models {
         FilteredItems.Add(mi);
 
       if (FilteredItems.IndexOf(Current) < 0)
-        Core.Instance.RunOnUiThread(() => { Current = null; });
+        await Core.Instance.RunOnUiThread(() => Current = null);
 
       UpdatePositionSlashCount();
     }
