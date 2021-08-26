@@ -6,12 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
-  // On Tab Activate
-  // poresit ThumbSize, pokud bude rozdilna v tabech
-
-
-  // filter by mel bejt taky asi na tab
-
   public sealed class ThumbnailsGrid : ObservableObject {
     private MediaItem _current;
     private int? _indexOfCurrent;
@@ -114,7 +108,6 @@ namespace PictureManager.Domain.Models {
         }
       }
 
-      // 
       if (Selected == 0)
         Current = null;
       else if (Selected > 1) {
@@ -149,7 +142,7 @@ namespace PictureManager.Domain.Models {
       SetSelected(item, false);
       if (item == Current)
         Current = null;
-      _ = LoadedItems.Remove(item);
+      LoadedItems.Remove(item);
       if (FilteredItems.Remove(item))
         NeedReload = true;
     }
@@ -164,25 +157,17 @@ namespace PictureManager.Domain.Models {
     public List<MediaItem> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems.ToList() : SelectedItems;
 
     public void SelectNotModified() {
+      foreach (var mi in FilteredItems)
+        SetSelected(mi, !mi.IsModified);
+
       Current = null;
-      foreach (var mi in FilteredItems) {
-        SetSelected(mi, false);
-        if (!mi.IsModified)
-          SetSelected(mi, true);
-      }
+      OnPropertyChanged(nameof(Selected));
     }
 
-    public MediaItem GetNext() {
-      if (Current == null || _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1) return null;
+    public MediaItem GetNext() =>
+      _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1 ? null : FilteredItems[(int)_indexOfCurrent + 1];
 
-      return FilteredItems[(int)_indexOfCurrent + 1];
-    }
-
-    public MediaItem GetPrevious() {
-      if (Current == null || _indexOfCurrent == null || _indexOfCurrent < 1) return null;
-
-      return FilteredItems[(int)_indexOfCurrent - 1];
-    }
+    public MediaItem GetPrevious() => _indexOfCurrent is null or < 1 ? null : FilteredItems[(int)_indexOfCurrent - 1];
 
     public void FilteredItemsSetInPlace(MediaItem mi) {
       var oldIndex = FilteredItems.IndexOf(mi);
