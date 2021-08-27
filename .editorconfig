@@ -14,17 +14,23 @@ csharp_indent_case_contents_when_block=false
 # CA1305: Specify IFormatProvider
 dotnet_diagnostic.CA1305.severity = none
 
-# RCS1090: Add call to 'ConfigureAwait' (or vice versa).
-dotnet_diagnostic.RCS1090.severity = none
-
 # RCS1001: Add braces (when expression spans over multiple lines).
 dotnet_diagnostic.RCS1001.severity = none
 
 # RCS1003: Add braces to if-else (when expression spans over multiple lines).
 dotnet_diagnostic.RCS1003.severity = none
 
+# RCS1090: Add call to 'ConfigureAwait' (or vice versa).
+dotnet_diagnostic.RCS1090.severity = none
+
 # CA1707: Identifiers should not contain underscores
 dotnet_diagnostic.CA1707.severity = none
+
+# IDE0010: Add missing cases
+dotnet_diagnostic.IDE0010.severity = none
+
+# IDE0058: Expression value is never used
+dotnet_diagnostic.IDE0058.severity = none
 
 [*.{cs,vb}]
 dotnet_style_parentheses_in_other_operators=always_for_clarity:silent
