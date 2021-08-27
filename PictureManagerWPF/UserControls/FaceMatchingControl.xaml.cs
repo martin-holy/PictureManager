@@ -17,7 +17,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 namespace PictureManager.UserControls {
-  public partial class FaceRecognitionControl : INotifyPropertyChanged {
+  public partial class FaceMatchingControl : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -31,10 +31,10 @@ namespace PictureManager.UserControls {
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
-    public FaceRecognitionControl() {
+    public FaceMatchingControl() {
       InitializeComponent();
 
-      Title = "Face Recognition";
+      Title = "Face Matching";
 
       _progress = new Progress<int>(x => {
         App.Ui.AppInfo.ProgressBarValueA = x;
@@ -74,20 +74,18 @@ namespace PictureManager.UserControls {
         FacesGrid.ScrollToTop();
       };
 
-      BtnDetectNew.Click += (o, e) => _ = LoadFacesAsync(true, false);
-
       BtnCompare.Click += async (o, e) => {
         if (_loading) return;
         await CompareAsync();
         _ = SortAndReload(true, true);
       };
 
-      BtnCompareAllGroups.Click += (o, e) => _ = LoadFacesAsync(false, true);
+      BtnCompareAllGroups.Click += (o, e) => _ = LoadFacesAsync(true);
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
     }
 
-    public async Task LoadFacesAsync(bool detectNewFaces, bool withPersonOnly) {
+    public async Task LoadFacesAsync(bool withPersonOnly) {
       _loading = true;
       await _workTask.Cancel();
 
@@ -95,25 +93,13 @@ namespace PictureManager.UserControls {
       FacesGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
       ConfirmedFacesGrid.ClearRows();
       App.Core.Faces.GroupFaces = false;
-      HashSet<int> people = null;
+      var faces = App.Core.Faces.GetFaces(_mediaItems, withPersonOnly);
 
-      if (withPersonOnly) {
-        people = _mediaItems.Where(mi => mi.Faces != null).Select(mi => mi.Faces.Select(f => f.PersonId))
-                            .Aggregate((all, next) => all.Concat(next)).Distinct().ToHashSet();
-        people.Remove(0);
-      }
-
-      App.Ui.AppInfo.ResetProgressBars(withPersonOnly ? people.Count : _mediaItems.Count);
+      App.Ui.AppInfo.ResetProgressBars(faces.Length);
 
       await _workTask.Start(Task.Run(async () => {
-        if (withPersonOnly) {
-          await foreach (var face in App.Core.Faces.GetAllFacesAsync(people, _progress, _workTask.Token))
-            await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
-        }
-        else {
-          await foreach (var face in App.Core.Faces.GetFacesAsync(_mediaItems, detectNewFaces, _progress, _workTask.Token))
-            await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
-        }
+        await foreach (var face in App.Core.Faces.LoadFacesAsync(faces, _progress, _workTask.Token))
+          await App.Core.RunOnUiThread(() => FacesGrid.AddItem(face, _faceGridWidth));
       }));
 
       _loading = false;
@@ -210,7 +196,7 @@ namespace PictureManager.UserControls {
             return string.Join(", ", x.face.Person.DisplayKeywords.Select(k => k.Title));
           })
           .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
-
+          
           // add group
           if (!string.IsNullOrEmpty(group.Key) && !group.Key.Equals("Unknown"))
             ConfirmedFacesGrid.AddGroup(IconName.Tag, group.Key);

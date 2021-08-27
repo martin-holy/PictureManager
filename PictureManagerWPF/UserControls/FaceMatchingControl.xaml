@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PictureManager.UserControls.FaceRecognitionControl"
+﻿<UserControl x:Class="PictureManager.UserControls.FaceMatchingControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
@@ -72,10 +72,6 @@
       
       <Button x:Name="BtnCompareAllGroups" ToolTip="Compare all groups of faces" Style="{StaticResource _IconButton}">
         <cc:IconRect IconName="Star" />
-      </Button>
-      
-      <Button x:Name="BtnDetectNew" ToolTip="Detect new" Style="{StaticResource _IconButton}">
-        <cc:IconRect IconName="Magnify" />
       </Button>
 
       <Button x:Name="BtnCompare" ToolTip="Compare" Style="{StaticResource _IconButton}">

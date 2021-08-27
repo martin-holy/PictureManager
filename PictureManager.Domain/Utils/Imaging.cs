@@ -14,10 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Windows.Storage;
 using Point = System.Windows.Point;
-using WGI = Windows.Graphics.Imaging;
-using WMFA = Windows.Media.FaceAnalysis;
 
 namespace PictureManager.Domain.Utils {
   public static class Imaging {
@@ -112,7 +109,7 @@ namespace PictureManager.Domain.Utils {
       var encoder = new JpegBitmapEncoder { QualityLevel = quality };
       encoder.Frames.Add(BitmapFrame.Create(resized, thumbnail, metadata, firstFrame.ColorContexts));
       using (Stream destFileStream = File.Open(destFile.FullName, FileMode.Create, FileAccess.ReadWrite))
-      encoder.Save(destFileStream);
+        encoder.Save(destFileStream);
 
       // set LastWriteTime to destination file as DateTaken so it can be correctly sorted in mobile apps
       var date = DateTime.MinValue;
@@ -331,72 +328,6 @@ namespace PictureManager.Domain.Utils {
       catch (Exception) {
         return false;
       }
-    }
-
-    /// <summary>
-    /// Detect faces in an image
-    /// </summary>
-    /// <param name="filePath">File path to an image</param>
-    /// <param name="faceBoxExpand">The extension of face box in percentage</param>
-    /// <returns>The list of box coordinates around face expanded by faceBoxExpand percentage</returns>
-    public static async Task<IList<Int32Rect>> DetectFaces(string filePath, int faceBoxExpand) {
-      var file = await StorageFile.GetFileFromPathAsync(filePath);
-      using var stream = await file.OpenAsync(FileAccessMode.Read, StorageOpenOptions.AllowOnlyReaders);
-      var decoder = await WGI.BitmapDecoder.CreateAsync(stream);
-      using var bitmap = await decoder.GetSoftwareBitmapAsync();
-
-      // TODO try all BitmapPixelFormats
-      using var bmp = WMFA.FaceDetector.IsBitmapPixelFormatSupported(bitmap.BitmapPixelFormat)
-      ? bitmap : WGI.SoftwareBitmap.Convert(bitmap, WGI.BitmapPixelFormat.Gray8);
-      var faceDetector = await WMFA.FaceDetector.CreateAsync();
-      var detectedFaces = await faceDetector.DetectFacesAsync(bmp);
-
-      // convert detected faces to List<Int32Rect> and expand rects
-      return ExpandRects(detectedFaces, faceBoxExpand, bmp.PixelWidth, bmp.PixelHeight);
-    }
-
-    private static IList<Int32Rect> ExpandRects(IList<WMFA.DetectedFace> faces, int faceBoxExpand, int bmpWidth, int bmpHeight) {
-      var faceBoxes = new List<Int32Rect>();
-
-      foreach (var fBox in faces) {
-        var rect = new Int32Rect(
-          (int)fBox.FaceBox.X,
-          (int)fBox.FaceBox.Y,
-          (int)fBox.FaceBox.Width,
-          (int)fBox.FaceBox.Height);
-
-        if (faceBoxExpand == 0) {
-          faceBoxes.Add(rect);
-          continue;
-        }
-
-        // calculate percentage expand
-        var exp = (int)(fBox.FaceBox.Width / 100.0 * faceBoxExpand);
-        if (exp % 2 != 0) exp++;
-        var halfExp = exp / 2;
-
-        // expand rect in a way that doesn't overflow image
-        rect.X = rect.X > halfExp ? rect.X - halfExp : 0;
-        rect.Y = rect.Y > halfExp ? rect.Y - halfExp : 0;
-        rect.Width = rect.X + rect.Width + exp < bmpWidth ? rect.Width + exp : bmpWidth - rect.X;
-        rect.Height = rect.Y + rect.Height + exp < bmpHeight ? rect.Height + exp : bmpHeight - rect.Y;
-
-        // make it square
-        if (rect.Height > rect.Width) {
-          var diff = rect.Height - rect.Width;
-          rect.Height -= diff;
-          rect.Y += diff / 2;
-        }
-        else {
-          var diff = rect.Width - rect.Height;
-          rect.Width -= diff;
-          rect.X += diff / 2;
-        }
-
-        faceBoxes.Add(rect);
-      }
-
-      return faceBoxes;
     }
 
     public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
