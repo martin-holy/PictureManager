@@ -59,9 +59,9 @@ namespace PictureManager {
       }
 
       switch (((TabItem)App.WMain.MainTabs.Tabs.SelectedItem).Content) {
-        case FaceRecognitionControl frc:
+        case FaceMatchingControl fmc:
         if (item is Person frcp)
-          frc.ChangePerson(frcp);
+          fmc.ChangePerson(frcp);
         break;
 
         case PeopleControl pc:

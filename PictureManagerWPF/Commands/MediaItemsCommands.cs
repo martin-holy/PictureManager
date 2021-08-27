@@ -27,7 +27,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand CompareCommand { get; } = new() { Text = "Compare" };
     public static RoutedUICommand ImagesToVideoCommand { get; } = new() { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
-    public static RoutedUICommand FaceRecognitionCommand { get; } = new() { Text = "Face Recognition" };
+    public static RoutedUICommand FaceMatchingCommand { get; } = new() { Text = "Face Matching" };
     public static RoutedUICommand ViewMediaItemsWithFaceCommand { get; } = new();
 
     private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
@@ -45,7 +45,7 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
-      CommandsController.AddCommandBinding(cbc, FaceRecognitionCommand, FaceRecognition, CanFaceRecognition);
+      CommandsController.AddCommandBinding(cbc, FaceMatchingCommand, FaceMatching, CanFaceMatching);
       CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithFaceCommand, ViewMediaItemsWithFace);
     }
 
@@ -84,8 +84,8 @@ namespace PictureManager.Commands {
       App.Core.MediaItems.Current = newCurrent;
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
-      if (App.WMain.MainTabs.GetSelectedContent() is FaceRecognitionControl frc)
-        _ = frc.SortAndReload(frc.ChbAutoSort.IsChecked == true, frc.ChbAutoSort.IsChecked == true);
+      if (App.WMain.MainTabs.GetSelectedContent() is FaceMatchingControl fmc)
+        _ = fmc.SortAndReload(fmc.ChbAutoSort.IsChecked == true, fmc.ChbAutoSort.IsChecked == true);
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
         _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
@@ -271,14 +271,14 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static bool CanFaceRecognition() => ThumbsGrid?.FilteredItems.Count > 0;
+    private static bool CanFaceMatching() => ThumbsGrid?.FilteredItems.Count > 0;
 
-    private static void FaceRecognition() {
+    private static void FaceMatching() {
       var mediaItems = ThumbsGrid.GetSelectedOrAll();
-      var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceRecognitionControl));
+      var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceMatchingControl));
 
-      if (tab?.Content is not FaceRecognitionControl control) {
-        control = new FaceRecognitionControl();
+      if (tab?.Content is not FaceMatchingControl control) {
+        control = new FaceMatchingControl();
         App.WMain.MainTabs.AddTab();
         App.WMain.MainTabs.SetTab(control, control, null);
       }
@@ -286,11 +286,11 @@ namespace PictureManager.Commands {
         tab.IsSelected = true;
       }
 
-      var all = MessageDialog.Show("Face Recognition", "Do you want to load all faces or just faces with person?",
+      var all = MessageDialog.Show("Face Matching", "Do you want to load all faces or just faces with person?",
         true, new string[] { "All faces", "Faces with person" });
 
       control.SetMediaItems(mediaItems);
-      _ = control.LoadFacesAsync(false, !all);
+      _ = control.LoadFacesAsync(!all);
     }
 
     private static void ViewMediaItemsWithFace(object parameter) {
@@ -301,10 +301,10 @@ namespace PictureManager.Commands {
       List<MediaItem> items = null;
 
       if (face.PersonId == 0) {
-        if (App.WMain.MainTabs.GetSelectedContent() is FaceRecognitionControl
-          && App.Core.Faces.LoadedGroupedByPerson.Any()
+        if (App.WMain.MainTabs.GetSelectedContent() is FaceMatchingControl
+          && App.Core.Faces.LoadedGroupedByPerson.Count > 0
           && App.Core.Faces.LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
-            items = App.Core.Faces.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
+          items = App.Core.Faces.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
         }
         else
           items = new List<MediaItem> { face.MediaItem };

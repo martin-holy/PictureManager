@@ -1,5 +1,4 @@
-﻿using PictureManager.Domain.Utils;
-using SimpleDB;
+﻿using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace PictureManager.Domain.Models {
   public sealed class Faces : ObservableObject, ITable {
@@ -25,11 +23,9 @@ namespace PictureManager.Domain.Models {
     public List<Face> Loaded { get; } = new();
     public List<List<Face>> LoadedGroupedByPerson { get; } = new();
     public List<Face> Selected { get; } = new();
-    public List<MediaItem> WithoutFaces { get; } = new();
     public List<(int personId, Face face, List<(int personId, Face face, double sim)> similar)> ConfirmedFaces { get; } = new();
     public int FaceSize { get => _faceSize; set { _faceSize = value; OnPropertyChanged(); } }
     public int CompareFaceSize { get => _compareFaceSize; set { _compareFaceSize = value; OnPropertyChanged(); } }
-    public int FaceBoxExpand { get; set; } = 40;
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
     public int SelectedCount => Selected.Count;
@@ -86,18 +82,11 @@ namespace PictureManager.Domain.Models {
         _ = All.Remove(face);
 
       // Table Properties
-      WithoutFaces.Clear();
       if (Helper.TableProps == null) return;
-      if (Helper.TableProps.TryGetValue(nameof(WithoutFaces), out var withoutFaces))
-        foreach (var miId in withoutFaces.Split(','))
-          if (mediaItems.TryGetValue(int.Parse(miId), out var mi))
-            WithoutFaces.Add(mi);
       if (Helper.TableProps.TryGetValue(nameof(FaceSize), out var faceSize))
         FaceSize = int.Parse(faceSize);
       if (Helper.TableProps.TryGetValue(nameof(CompareFaceSize), out var fompareFaceSize))
         CompareFaceSize = int.Parse(fompareFaceSize);
-      if (Helper.TableProps.TryGetValue(nameof(FaceBoxExpand), out var faceBoxExpand))
-        FaceBoxExpand = int.Parse(faceBoxExpand);
       if (Helper.TableProps.TryGetValue(nameof(SimilarityLimit), out var similarityLimit))
         SimilarityLimit = int.Parse(similarityLimit);
       if (Helper.TableProps.TryGetValue(nameof(SimilarityLimitMin), out var similarityLimitMin))
@@ -109,12 +98,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void TablePropsToCsv() {
-      if (WithoutFaces.Count == 0) return;
       Helper.TableProps = new();
-      Helper.TableProps.Add(nameof(WithoutFaces), string.Join(",", WithoutFaces.Select(x => x.Id)));
       Helper.TableProps.Add(nameof(FaceSize), FaceSize.ToString());
       Helper.TableProps.Add(nameof(CompareFaceSize), CompareFaceSize.ToString());
-      Helper.TableProps.Add(nameof(FaceBoxExpand), FaceBoxExpand.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimit), SimilarityLimit.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimitMin), SimilarityLimitMin.ToString());
     }
@@ -210,66 +196,31 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SetModified<Faces>();
     }
 
-    public async IAsyncEnumerable<Face> GetFacesAsync(List<MediaItem> mediaItems, bool detectNewFaces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
-      ResetBeforeNewLoad();
-
-      // TODO MediaItem has Faces, no need to look for them in All!
-      var detectedFaces = All.Cast<Face>().Where(x => mediaItems.Contains(x.MediaItem)).ToArray();
-      var misWithDetectedFaces = detectedFaces.GroupBy(x => x.MediaItem).OrderBy(x => x.Key.FileName);
-      var mediaItemsToDetect = detectNewFaces
-        ? mediaItems.Except(misWithDetectedFaces.Select(x => x.Key)).Except(WithoutFaces).ToArray()
-        : Array.Empty<MediaItem>();
-      var done = mediaItems.Count - misWithDetectedFaces.Count() - mediaItemsToDetect.Length;
-
-      progress.Report(done);
-
-      foreach (var miGroup in misWithDetectedFaces) {
-        foreach (var face in miGroup) {
-          if (token.IsCancellationRequested) yield break;
-
-          await face.SetPictureAsync(FaceSize);
-          Loaded.Add(face);
-
-          yield return face;
-        }
-
-        progress.Report(++done);
+    public Face[] GetFaces(List<MediaItem> mediaItems, bool withPersonOnly) {
+      if (withPersonOnly) {
+        var people = mediaItems.Where(mi => mi.Faces != null).SelectMany(mi => mi.Faces.Select(f => f.PersonId)).Distinct().ToHashSet();
+        people.Remove(0);
+        return All.Cast<Face>().Where(f => people.Contains(f.PersonId)).OrderBy(f => f.MediaItem.FileName).ToArray();
       }
+      else {
+        return mediaItems.Where(x => x.Faces != null).SelectMany(x => x.Faces).ToArray();
+      }
+    }
 
-      if (!detectNewFaces) yield break;
+    public async IAsyncEnumerable<Face> LoadFacesAsync(Face[] faces, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
+      ResetBeforeNewLoad();
+      var done = 0;
 
-      foreach (var mi in mediaItemsToDetect) {
+      foreach (var face in faces) {
         if (token.IsCancellationRequested) yield break;
 
-        var filePath = mi.MediaType == MediaType.Image ? mi.FilePath : mi.FilePathCache;
-        IList<Int32Rect> faceRects = null;
-
-        try {
-          faceRects = await Imaging.DetectFaces(filePath, FaceBoxExpand);
-        }
-        catch (Exception ex) {
-          Core.Instance.LogError(ex, filePath);
-        }
-
-        if (faceRects.Count == 0) {
-          WithoutFaces.Add(mi);
-          Helper.AreTablePropsModified = true;
-          progress.Report(++done);
-          continue;
-        }
-
-        foreach (var faceRect in faceRects) {
-          var half = faceRect.Width / 2;
-          var newFace = await AddNewFace(faceRect.X + half, faceRect.Y + half, half * 2, mi);
-
-          yield return newFace;
-        }
-
+        await face.SetPictureAsync(FaceSize);
+        face.MediaItem.SetThumbSize();
+        Loaded.Add(face);
         progress.Report(++done);
-      }
 
-      if (Helper.AreTablePropsModified)
-        Helper.SaveTablePropsToFile();
+        yield return face;
+      }
     }
 
     public async Task<Face> AddNewFace(int x, int y, int radius, MediaItem mediaItem) {
@@ -279,7 +230,6 @@ namespace PictureManager.Domain.Models {
       mediaItem.Faces.Add(newFace);
       All.Add(newFace);
       Loaded.Add(newFace);
-      _ = WithoutFaces.Remove(mediaItem);
 
       return newFace;
     }
@@ -346,24 +296,6 @@ namespace PictureManager.Domain.Models {
           progress.Report(++done);
         }
       }, token);
-    }
-
-    public async IAsyncEnumerable<Face> GetAllFacesAsync(HashSet<int> people, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
-      ResetBeforeNewLoad();
-      var done = 0;
-
-      foreach (var personFaces in All.Cast<Face>().Where(f => people.Contains(f.PersonId)).GroupBy(f => f.PersonId)) {
-        foreach (var face in personFaces) {
-          if (token.IsCancellationRequested) yield break;
-
-          await face.SetPictureAsync(FaceSize);
-          face.MediaItem.SetThumbSize();
-          Loaded.Add(face);
-
-          yield return face;
-        }
-        progress.Report(++done);
-      }
     }
 
     /// <summary>
@@ -568,10 +500,8 @@ namespace PictureManager.Domain.Models {
       RemovePersonFromFace(face);
 
       // remove Face from MediaItem
-      if (face.MediaItem.Faces.Remove(face) && !face.MediaItem.Faces.Any()) {
+      if (face.MediaItem.Faces.Remove(face) && !face.MediaItem.Faces.Any())
         face.MediaItem.Faces = null;
-        WithoutFaces.Add(face.MediaItem);
-      }
 
       face.Similar?.Clear();
       face.Picture = null;
