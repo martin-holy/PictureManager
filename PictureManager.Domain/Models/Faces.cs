@@ -223,9 +223,9 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public async Task<Face> AddNewFace(int x, int y, int radius, MediaItem mediaItem) {
+    public Face AddNewFace(int x, int y, int radius, MediaItem mediaItem) {
       var newFace = new Face(Helper.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
-      await newFace.SetPictureAsync(FaceSize);
+      _ = newFace.SetPictureAsync(FaceSize);
       mediaItem.Faces ??= new();
       mediaItem.Faces.Add(newFace);
       All.Add(newFace);
