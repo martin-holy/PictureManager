@@ -8,7 +8,7 @@
     <!-- FaceRect DataTemplate -->
     <DataTemplate x:Key="_faceRect">
       <Border MinWidth="{Binding Size}" MinHeight="{Binding Size}" Background="Transparent"
-              ToolTip="{Binding Face.Person.Title}" ToolTipService.InitialShowDelay="0"
+              ToolTipService.InitialShowDelay="0"
               Effect="{StaticResource Res_ShadowEffect}"
               HorizontalAlignment="Left" VerticalAlignment="Top"
               PreviewMouseDown="FaceRect_PreviewMouseDown">
@@ -22,12 +22,16 @@
             </Setter>
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="ToolTip" Value="{Binding Face.Person.Title}" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
                 <Setter Property="BorderBrush" Value="LimeGreen" />
               </DataTrigger>
               <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
                 <Setter Property="BorderThickness" Value="2" />
+              </DataTrigger>
+              <DataTrigger Binding="{Binding Face.Person}" Value="{x:Null}">
+                <Setter Property="ToolTip" Value="{Binding Face.PersonId}" />
               </DataTrigger>
             </Style.Triggers>
            </Style>
