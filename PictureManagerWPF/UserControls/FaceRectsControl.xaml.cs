@@ -56,33 +56,17 @@ namespace PictureManager.UserControls {
         fr.Scale = _scale;
     }
 
-    private void FaceRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
-        _isEditModeMove = fe.Name.Equals("MoveEllipse");
-        _current = (FaceRect)fe.DataContext;
-        App.Core.Faces.DeselectAll();
-        App.Core.Faces.SetSelected(_current.Face, true);
-      }
+    private void CreateNew(Point mpos) {
+      var face = App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
+      _isEditModeMove = false;
+      _isCurrentModified = true;
+      _current = new FaceRect(face, _scale);
+      MediaItemFaceRects.Add(_current);
     }
 
-    public async void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      if ((Keyboard.Modifiers & ModifierKeys.Control) > 0 || e.RightButton == MouseButtonState.Pressed) {
-        var mpos = e.GetPosition(this);
-        var face = await App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
-        _isEditModeMove = false;
-        _isCurrentModified = true;
-        _current = new FaceRect(face, _scale);
-        MediaItemFaceRects.Add(_current);
-      }
-    }
-
-    public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
-      if (_current == null || !(e.RightButton == MouseButtonState.Pressed || e.LeftButton == MouseButtonState.Pressed)) return;
-      e.Handled = true;
+    private void StartEdit(Point mpos) {
       _isCurrentModified = true;
       IsEditOn = true;
-
-      var mpos = e.GetPosition(this);
 
       if (_isEditModeMove) {
         _current.X = (int)mpos.X;
@@ -95,19 +79,45 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public async void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+    private void EndEdit() {
+      if (_current != null && _isCurrentModified) {
+        App.Db.SetModified<Faces>();
+        _ = _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
+        _isCurrentModified = false;
+      }
+
       IsEditOn = false;
-      if (_current == null) return;
-      if (!_isCurrentModified) {
-        _current = null;
+      _current = null;
+    }
+
+    private void FaceRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+      if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
+        _isEditModeMove = fe.Name.Equals("MoveEllipse");
+        _current = (FaceRect)fe.DataContext;
+        App.Core.Faces.DeselectAll();
+        App.Core.Faces.SetSelected(_current.Face, true);
+      }
+    }
+
+    public void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+      if ((Keyboard.Modifiers & ModifierKeys.Control) > 0 || e.RightButton == MouseButtonState.Pressed)
+        CreateNew(e.GetPosition(this));
+    }
+
+    public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
+      if (e.RightButton != MouseButtonState.Pressed && e.LeftButton != MouseButtonState.Pressed) {
+        if (_current != null)
+          EndEdit();
         return;
       }
 
-      App.Db.SetModified<Faces>();
-      await _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
-      _isCurrentModified = false;
-      _current = null;
+      if (_current != null) {
+        e.Handled = true;
+        StartEdit(e.GetPosition(this));
+      }
     }
+
+    public void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) => EndEdit();
 
     private void BtnDelete_Click(object sender, RoutedEventArgs e) {
       if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
