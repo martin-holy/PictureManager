@@ -4,7 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Year>$([System.DateTime]::Now.ToString("yy"))</Year>
     <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
     <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
