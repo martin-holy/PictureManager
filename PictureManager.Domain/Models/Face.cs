@@ -80,8 +80,6 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged();
       }
     }
-
-    public int GroupId { get; set; } // 0 = not in the group of similar
     #endregion DB Properties
 
     public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
@@ -108,9 +106,9 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(Face a, Face b) => !(a == b);
     #endregion IEquatable implementation
 
-    // ID|MediaItemId|PersonId|GroupId|FaceBox
+    // ID|MediaItemId|PersonId|FaceBox
     public string ToCsv() =>
-      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), GroupId.ToString(), string.Join(",", X, Y, Radius));
+      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), string.Join(",", X, Y, Radius));
 
     public async Task SetPictureAsync(int size, bool reload = false) {
       if (reload) {

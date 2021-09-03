@@ -18,7 +18,6 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    //private readonly int _faceGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
     public ObservableCollection<Face> AllPersonFaces { get; } = new();
@@ -41,15 +40,10 @@ namespace PictureManager.UserControls {
       Drop += OnDrop;
 
       BtnClose.Click += (o, e) => Visibility = Visibility.Collapsed;
-      //BtnUpdateFaceGroups.Click += async (o, e) => {
-      //  App.Core.Faces.ReloadFaceGroups(Person.Id, App.Core.Faces.SimilarityLimit / 100.0);
-      //  await ReloadPersonFacesAsync(Person);
-      //  UpdateLayout();
-      //};
     }
 
     public void ChangePerson(Person person) {
-      if (!MessageDialog.Show("Change Person", $"Do you realy want to change selected ({App.Core.Faces.SelectedCount}) faces to person ({person.Title})?", true))
+      if (!MessageDialog.Show("Change Person", $"Do you really want to change selected ({App.Core.Faces.SelectedCount}) faces to person ({person.Title})?", true))
         return;
 
       foreach (var face in App.Core.Faces.Selected) {
@@ -83,32 +77,6 @@ namespace PictureManager.UserControls {
       IcTopFaces.FindChild<ScrollViewer>().ScrollToHome();
       IcAllFaces.FindChild<ScrollViewer>().ScrollToHome();
     }
-
-    // faces in groups version (current face comparer (template matching) is not sufficiente enough to find groups of similar faces)
-    //public async Task ReloadPersonFacesAsync(Person person) {
-    //  Person = person;
-    //  VwpAllFaces.ClearRows();
-    //  Visibility = Visibility.Visible;
-
-    //  await Task.Run(async () => {
-    //    foreach (var group in App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == person.Id).GroupBy(x => x.GroupId)) {
-    //      await App.Core.RunOnUiThread(() => {
-    //        VwpAllFaces.AddGroup(IconName.PeopleMultiple, group.Key.ToString());
-    //      });
-    //      foreach (var face in group) {
-    //        await face.SetPictureAsync(App.Core.Faces.FaceSize);
-    //        face.MediaItem.SetThumbSize();
-    //        await App.Core.RunOnUiThread(() => {
-    //          VwpAllFaces.AddItem(face, _faceGridWidth);
-    //        });
-    //      }
-    //    }
-    //  });
-
-    //  IcTopFaces.FindChild<ScrollViewer>().ScrollToHome();
-    //  IcAllFaces.FindChild<ScrollViewer>().ScrollToHome();
-    //  VwpAllFaces.ScrollToTop();
-    //}
 
     private void MouseWheelScroll(object sender, MouseWheelEventArgs e) {
       var sv = (ScrollViewer)sender;
