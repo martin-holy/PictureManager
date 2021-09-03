@@ -211,7 +211,9 @@ namespace PictureManager.Domain.Models {
           break;
 
           case Keyword k:
-          Keywords.Toggle(k, mi);
+          var currentKeywords = mi.Keywords;
+          Keywords.Toggle(k, ref currentKeywords, () => k.MediaItems.Add(mi), (rmK) => rmK.MediaItems.Remove(mi));
+          mi.Keywords = currentKeywords;
           break;
 
           case Rating r:
