@@ -40,9 +40,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|MediaItemId|PersonId|FaceBox
+      // ID|MediaItemId|PersonId|FaceBox|Keywords
       var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
+      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[3].Split(',');
       var face = new Face(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
         Csv = props
@@ -70,6 +70,16 @@ namespace PictureManager.Domain.Models {
         }
         else {
           withoutMediaItem.Add(face);
+        }
+
+        // reference to Keywords
+        if (!string.IsNullOrEmpty(face.Csv[4])) {
+          var ids = face.Csv[4].Split(',');
+          face.Keywords = new(ids.Length);
+          foreach (var keywordId in ids) {
+            var k = Core.Instance.Keywords.AllDic[int.Parse(keywordId)];
+            face.Keywords.Add(k);
+          }
         }
 
         // CSV array is not needed any more
@@ -426,6 +436,20 @@ namespace PictureManager.Domain.Models {
         face.MediaItem.SetInfoBox();
         Core.Instance.Sdb.SetModified<Faces>();
       }
+    }
+
+    public void ToggleKeywordOnSelected(Keyword keyword) {
+      foreach (var face in Selected)
+        ToggleKeyword(face, keyword);
+
+      DeselectAll();
+    }
+
+    public static void ToggleKeyword(Face face, Keyword keyword) {
+      var currentKeywords = face.Keywords;
+      Keywords.Toggle(keyword, ref currentKeywords, null, null);
+      face.Keywords = currentKeywords;
+      Core.Instance.Sdb.SetModified<Faces>();
     }
 
     private static void RemovePersonFromFace(Face face) {

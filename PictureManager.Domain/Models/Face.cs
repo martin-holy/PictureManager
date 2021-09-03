@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -24,6 +25,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
     public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
+    public List<Keyword> Keywords { get; set; }
 
     public int PersonId { // < 0 for unknown people, 0 for unknown, > 0 for known people
       get => _personId;
@@ -106,9 +108,10 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(Face a, Face b) => !(a == b);
     #endregion IEquatable implementation
 
-    // ID|MediaItemId|PersonId|FaceBox
+    // ID|MediaItemId|PersonId|FaceBox|Keywords
     public string ToCsv() =>
-      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), string.Join(",", X, Y, Radius));
+      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), string.Join(",", X, Y, Radius),
+        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
 
     public async Task SetPictureAsync(int size, bool reload = false) {
       if (reload) {
