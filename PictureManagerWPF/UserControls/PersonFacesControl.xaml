@@ -2,8 +2,6 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:uc="clr-namespace:PictureManager.UserControls"
-             xmlns:pm="clr-namespace:PictureManager"
              xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   
@@ -52,13 +50,7 @@
       <StackPanel>
         <Grid Background="#88000000" Height="30" Margin="0,0,0,5">
           <TextBlock Text="{Binding Person.Title}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <!--<Slider Value="{Binding Faces.SimilarityLimit, Source={x:Static pm:App.Core}}" 
-              Minimum="{Binding Faces.SimilarityLimitMin, Source={x:Static pm:App.Core}}" 
-              Maximum="100" Width="100" AutoToolTipPlacement="BottomRight" Margin="8,0" />
-            <Button x:Name="BtnUpdateFaceGroups" Content="↺" ToolTip="Update Face Groups" Style="{StaticResource StyleButtonFontSymbol}" />-->
-            <Button x:Name="BtnClose" Content="✖" Margin="0,0,3,0" Style="{StaticResource StyleButtonFontSymbol}" />
-          </StackPanel>
+          <Button x:Name="BtnClose" Content="✖" Margin="0,0,3,0" HorizontalAlignment="Right" Style="{StaticResource StyleButtonFontSymbol}" />
         </Grid>
         
         <!-- Keywords -->
@@ -92,15 +84,6 @@
         <TextBlock Text="{Binding AllPersonFaces.Count, StringFormat='All Faces ({0}):'}" Margin="5" />
         <ItemsControl ItemsSource="{Binding AllPersonFaces}" x:Name="IcAllFaces" Style="{StaticResource _itemsControl}" />
 
-
-        <!--<cc:VirtualizingWrapPanel x:Name="VwpAllFaces" ScrollViewerSpeedFactor="1"
-          ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" Height="300">
-          <cc:VirtualizingWrapPanel.ItemDataTemplate>
-            <DataTemplate>
-              <cc:FaceControl Face="{Binding}" IsCheckmarkVisible="False" />
-            </DataTemplate>
-          </cc:VirtualizingWrapPanel.ItemDataTemplate>
-        </cc:VirtualizingWrapPanel>-->
       </StackPanel>
     </Border>
   </Grid>

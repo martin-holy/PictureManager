@@ -40,13 +40,12 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|MediaItemId|PersonId|GroupId|FaceBox
+      // ID|MediaItemId|PersonId|FaceBox
       var props = csv.Split('|');
-      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var rect = props[4].Split(',');
+      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
+      var rect = props[3].Split(',');
       var face = new Face(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
-        Csv = props,
-        GroupId = int.Parse(props[3])
+        Csv = props
       };
 
       All.Add(face);
@@ -155,45 +154,6 @@ namespace PictureManager.Domain.Models {
       Loaded.Clear();
       LoadedGroupedByPerson.ForEach(x => x.Clear());
       LoadedGroupedByPerson.Clear();
-    }
-
-    // this is test for creating groups of similar faces for each person
-    public async Task ReloadFaceGroups(int personId, double similarity) =>
-      await ReloadFaceGroups(All.Cast<Face>().Where(x => x.PersonId == personId), similarity);
-
-    public async Task ReloadFaceGroups(IEnumerable<Face> faces, double similarity) {
-      var groups = new List<List<Face>>();
-      var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
-
-      foreach (var face0 in faces) {
-        await face0.SetPictureAsync(FaceSize);
-        await face0.SetComparePictureAsync(CompareFaceSize);
-        if (face0.ComparePicture == null) continue;
-
-        var res = new List<(List<Face> group, Face face, double sim)>();
-        foreach (var group in groups) {
-          foreach (var face in group) {
-            await face.SetPictureAsync(FaceSize);
-            await face.SetComparePictureAsync(CompareFaceSize);
-
-            var matchings = tm.ProcessImage(face0.ComparePicture, face.ComparePicture);
-            var sim = matchings.Max(x => x.Similarity);
-            if (sim < similarity) continue;
-            res.Add(new(group, face, sim));
-          }
-        }
-
-        if (res.Count == 0)
-          groups.Add(new List<Face>() { face0 });
-        else
-          res.OrderByDescending(x => x.sim).First().group.Add(face0);
-      }
-
-      for (var i = 0; i < groups.Count; i++)
-        foreach (var face in groups[i])
-          face.GroupId = i + 1;
-
-      Core.Instance.Sdb.SetModified<Faces>();
     }
 
     public Face[] GetFaces(List<MediaItem> mediaItems, bool withPersonOnly) {
