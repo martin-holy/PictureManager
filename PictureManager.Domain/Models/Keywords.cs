@@ -144,50 +144,38 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    /// Toggle Keyword on Media Item
+    /// Toggle Keyword in the List
     /// </summary>
     /// <param name="k">Keyword</param>
-    /// <param name="mi">Media Item</param>
-    public static void Toggle(Keyword k, MediaItem mi) {
-      if (!k.IsMarked && mi.Keywords != null) {
-        mi.Keywords?.Remove(k);
-        k.MediaItems.Remove(mi);
-        if (mi.Keywords?.Count == 0)
-          mi.Keywords = null;
-        return;
-      }
+    /// <param name="list">List</param>
+    /// <param name="onAdd">Action on Add</param>
+    /// <param name="onRemove">Action on Remove</param>
+    public static void Toggle(Keyword k, ref List<Keyword> list, Action onAdd, Action<Keyword> onRemove) {
+      if (k.IsMarked) {
+        list ??= new();
 
-      if (mi.Keywords != null) {
-        // skip if any Parent of MediaItem Keywords is marked Keyword
-        var skip = false;
-        foreach (var miKeyword in mi.Keywords) {
-          var tmpMik = miKeyword;
-          while (tmpMik.Parent is Keyword parent) {
-            tmpMik = parent;
-            if (!parent.Id.Equals(k.Id)) continue;
-            skip = true;
-            break;
-          }
-        }
+        var allKeywords = new List<ICatTreeViewItem>();
+        foreach (var keyword in list)
+          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
 
-        if (skip) return;
+        if (!allKeywords.OfType<Keyword>().Any(x => x.Id.Equals(k.Id))) {
+          var newKeywords = new List<ICatTreeViewItem>();
+          CatTreeViewUtils.GetThisAndParentRecursive(k, ref newKeywords);
 
-        // remove possible redundant keywords 
-        // example: if marked keyword is "Weather/Sunny" keyword "Weather" is redundant
-        foreach (var miKeyword in mi.Keywords.ToArray()) {
-          var tmpMarkedK = k;
-          while (tmpMarkedK.Parent is Keyword parent) {
-            tmpMarkedK = parent;
-            if (!parent.Id.Equals(miKeyword.Id)) continue;
-            mi.Keywords.Remove(miKeyword);
-            miKeyword.MediaItems.Remove(mi);
-          }
+          foreach (var newKeyword in newKeywords.OfType<Keyword>())
+            if (list.Remove(newKeyword))
+              onRemove?.Invoke(newKeyword);
+
+          list.Add(k);
+          onAdd?.Invoke();
         }
       }
-
-      mi.Keywords ??= new();
-      mi.Keywords.Add(k);
-      k.MediaItems.Add(mi);
+      else {
+        if (list?.Remove(k) == true)
+          onRemove?.Invoke(k);
+        if (list?.Count == 0)
+          list = null;
+      }
     }
   }
 }
