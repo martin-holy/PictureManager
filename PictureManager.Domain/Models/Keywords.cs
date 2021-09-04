@@ -151,30 +151,29 @@ namespace PictureManager.Domain.Models {
     /// <param name="onAdd">Action on Add</param>
     /// <param name="onRemove">Action on Remove</param>
     public static void Toggle(Keyword k, ref List<Keyword> list, Action onAdd, Action<Keyword> onRemove) {
-      if (k.IsMarked) {
-        list ??= new();
+      list ??= new();
 
-        var allKeywords = new List<ICatTreeViewItem>();
-        foreach (var keyword in list)
-          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
+      var allKeywords = new List<ICatTreeViewItem>();
+      foreach (var keyword in list)
+        CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
 
-        if (!allKeywords.OfType<Keyword>().Any(x => x.Id.Equals(k.Id))) {
-          var newKeywords = new List<ICatTreeViewItem>();
-          CatTreeViewUtils.GetThisAndParentRecursive(k, ref newKeywords);
-
-          foreach (var newKeyword in newKeywords.OfType<Keyword>())
-            if (list.Remove(newKeyword))
-              onRemove?.Invoke(newKeyword);
-
-          list.Add(k);
-          onAdd?.Invoke();
-        }
+      if (allKeywords.OfType<Keyword>().Any(x => x.Id.Equals(k.Id))) {
+        if (list.Remove(k))
+          onRemove?.Invoke(k);
+        if (list.Count == 0)
+          list = null;
       }
       else {
-        if (list?.Remove(k) == true)
-          onRemove?.Invoke(k);
-        if (list?.Count == 0)
-          list = null;
+        // remove possible redundant keywords 
+        // example: if new keyword is "Weather/Sunny" keyword "Weather" is redundant
+        var newKeywords = new List<ICatTreeViewItem>();
+        CatTreeViewUtils.GetThisAndParentRecursive(k, ref newKeywords);
+        foreach (var newKeyword in newKeywords.OfType<Keyword>())
+          if (list.Remove(newKeyword))
+            onRemove?.Invoke(newKeyword);
+
+        list.Add(k);
+        onAdd?.Invoke();
       }
     }
   }
