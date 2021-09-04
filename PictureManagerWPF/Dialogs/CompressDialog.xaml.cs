@@ -86,7 +86,8 @@ namespace PictureManager.Dialogs {
 
     private async void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
       _cts?.Cancel();
-      await _workTask;
+      if (_workTask != null)
+        await _workTask;
       Close();
     }
 
