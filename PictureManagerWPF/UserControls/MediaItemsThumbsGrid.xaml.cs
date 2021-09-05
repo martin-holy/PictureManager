@@ -17,7 +17,8 @@ namespace PictureManager.UserControls {
     }
 
     private async void Refresh(object sender, RoutedEventArgs e) {
-      await App.Core.MediaItems.ThumbsGrid?.ReloadFilteredItems();
+      if (App.Core.MediaItems.ThumbsGrid != null)
+        await App.Core.MediaItems.ThumbsGrid.ReloadFilteredItems();
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }
