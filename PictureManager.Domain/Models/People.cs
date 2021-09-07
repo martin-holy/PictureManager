@@ -140,5 +140,12 @@ namespace PictureManager.Domain.Models {
           mi.People = null;
       }
     }
+
+    public static void ToggleKeyword(Person person, Keyword keyword) {
+      var currentKeywords = person.Keywords;
+      Keywords.Toggle(keyword, ref currentKeywords, null, null);
+      person.Keywords = currentKeywords;
+      Core.Instance.Sdb.SetModified<People>();
+    }
   }
 }
