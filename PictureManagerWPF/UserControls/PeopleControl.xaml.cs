@@ -1,4 +1,5 @@
 ﻿using PictureManager.CustomControls;
+using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
@@ -84,16 +85,6 @@ namespace PictureManager.UserControls {
       }));
 
       _loading = false;
-    }
-
-    public void ChangePerson(Person person) {
-      if (PersonFacesEditor.Visibility != Visibility.Visible) return;
-      PersonFacesEditor.ChangePerson(person);
-    }
-
-    public void ToggleKeyword(Keyword keyword) {
-      if (PersonFacesEditor.Visibility != Visibility.Visible) return;
-      PersonFacesEditor.Person.ToggleKeyword(keyword);
     }
 
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
