@@ -1,8 +1,10 @@
 ﻿using MahApps.Metro.Controls;
 using PictureManager.Dialogs;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -18,8 +20,10 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+    private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
+    public List<Face> AllSegments { get; } = new();
     public ObservableCollection<Face> AllPersonFaces { get; } = new();
     public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
 
@@ -39,16 +43,20 @@ namespace PictureManager.UserControls {
       DragOver += AllowDropCheck;
       Drop += OnDrop;
 
+      BtnReload.Click += (o, e) => _ = ReloadPersonFacesAsync(Person);
       BtnClose.Click += (o, e) => Visibility = Visibility.Collapsed;
     }
 
-    public void ChangePerson(Person person) {
-      if (!MessageDialog.Show("Change Person", $"Do you really want to change selected ({App.Core.Faces.SelectedCount}) faces to person ({person.Title})?", true))
+    public void SetPerson(Person person) {
+      if (Visibility != Visibility.Visible) return;
+
+      var sCount = App.Core.Faces.Selected.Count > 1 ? $"s ({App.Core.Faces.Selected.Count})" : string.Empty;
+      if (!MessageDialog.Show("Set Person", $"Do you really want to set person ({person.Title}) to selected segment{sCount}?", true))
         return;
 
       foreach (var face in App.Core.Faces.Selected) {
         Faces.ChangePerson(face, person);
-        _ = AllPersonFaces.Remove(face);
+        AllPersonFaces.Remove(face);
         if (Person.Face == face)
           Person.Face = null;
         if (Person.Faces != null && Person.Faces.Remove(face))
@@ -58,30 +66,82 @@ namespace PictureManager.UserControls {
       App.Core.Faces.DeselectAll();
     }
 
+    public void ToggleKeyword(Keyword keyword) {
+      if (Visibility != Visibility.Visible) return;
+
+      var sCount = App.Core.Faces.Selected.Count > 1 ? $"s ({App.Core.Faces.Selected.Count})" : string.Empty;
+      if (MessageDialog.Show("Toggle Keyword", $"Do you want to toggle #{keyword.FullPath} on Person or selected segment{sCount}?",
+          true, new string[] { "Person", $"Segment{sCount}" })) {
+        People.ToggleKeyword(Person, keyword);
+        Person.UpdateDisplayKeywords();
+      }
+      else {
+        App.Core.Faces.ToggleKeywordOnSelected(keyword);
+        _ = ReloadPersonFacesAsync(Person);
+      }
+    }
+
+    private void ReloadTopSegments() {
+      TopSegmentsGrid.ClearRows();
+      if (Person.Faces == null) return;
+      UpdateLayout();
+      TopSegmentsGrid.UpdateMaxRowWidth();
+
+      foreach (var face in Person.Faces)
+        TopSegmentsGrid.AddItem(face, _segmentGridWidth);
+
+      TopSegmentsGrid.ScrollToTop();
+    }
+
     public async Task ReloadPersonFacesAsync(Person person) {
-      Person = person;
-      AllPersonFaces.Clear();
       Visibility = Visibility.Visible;
+      Person = person;
+      AllSegments.Clear();
+      AllSegmentsGrid.ClearRows();
+      UpdateLayout();
+      AllSegmentsGrid.UpdateMaxRowWidth();
+
+      ReloadTopSegments();
 
       await Task.Run(async () => {
-        foreach (var face in App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == person.Id)) {
-          await face.SetPictureAsync(App.Core.Faces.FaceSize);
-          face.MediaItem.SetThumbSize();
-          await App.Core.RunOnUiThread(() => {
-            face.MediaItem.SetInfoBox();
-            AllPersonFaces.Add(face);
-          });
+        foreach (var group in App.Core.Faces.All.Cast<Face>()
+          .Where(x => x.PersonId == person.Id)
+          .GroupBy(x => x.Keywords == null
+            ? string.Empty
+            : string.Join(", ", Keywords.GetAllKeywords(x.Keywords).Select(k => k.Title)))
+          .OrderBy(x => x.Key)) {
+
+          // add group
+          if (!string.IsNullOrEmpty(group.Key))
+            await App.Core.RunOnUiThread(() => AllSegmentsGrid.AddGroup(IconName.Tag, group.Key));
+
+          // add segments
+          foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
+            await segment.SetPictureAsync(App.Core.Faces.FaceSize);
+            segment.MediaItem.SetThumbSize();
+            await App.Core.RunOnUiThread(() => {
+              segment.MediaItem.SetInfoBox();
+              AllSegments.Add(segment);
+              AllSegmentsGrid.AddItem(segment, _segmentGridWidth);
+              OnPropertyChanged(nameof(AllSegments));
+            });
+          }
         }
       });
 
-      IcTopFaces.FindChild<ScrollViewer>().ScrollToHome();
-      IcAllFaces.FindChild<ScrollViewer>().ScrollToHome();
+      AllSegmentsGrid.ScrollToTop();
     }
 
     private void MouseWheelScroll(object sender, MouseWheelEventArgs e) {
       var sv = (ScrollViewer)sender;
       sv.ScrollToHorizontalOffset(sv.ContentHorizontalOffset + (e.Delta * -1));
       e.Handled = true;
+    }
+
+    private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
+      var face = (Face)((FrameworkElement)sender).DataContext;
+      App.Core.Faces.Select(isCtrlOn, isShiftOn, AllSegments, face);
     }
 
     #region Drag & Drop
@@ -118,8 +178,8 @@ namespace PictureManager.UserControls {
 
     private void AllowDropCheck(object sender, DragEventArgs e) {
       var dest = (FrameworkElement)e.OriginalSource;
-      var isFromTop = _dragDropSource.IsDescendantOf(IcTopFaces);
-      var isInTop = dest.IsDescendantOf(IcTopFaces);
+      var isFromTop = _dragDropSource.IsDescendantOf(TopSegmentsGrid);
+      var isInTop = dest.IsDescendantOf(TopSegmentsGrid);
       var face = e.Data.GetData(typeof(Face)) as Face;
 
       if (face != null
@@ -134,7 +194,7 @@ namespace PictureManager.UserControls {
     private void OnDrop(object sender, DragEventArgs e) {
       var dest = (FrameworkElement)e.OriginalSource;
       var face = e.Data.GetData(typeof(Face)) as Face;
-      var dropInTop = dest.IsDescendantOf(IcTopFaces);
+      var dropInTop = dest.IsDescendantOf(TopSegmentsGrid);
 
       if (face == null) return;
 
@@ -155,14 +215,9 @@ namespace PictureManager.UserControls {
         Person.Face = Person.Faces[0];
 
       App.Db.SetModified<People>();
+      ReloadTopSegments();
     }
 
     #endregion Drag & Drop
-
-    private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
-      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-      var face = (Face)((FrameworkElement)sender).DataContext;
-      App.Core.Faces.Select(isCtrlOn, isShiftOn, AllPersonFaces.ToList(), face);
-    }
   }
 }
