@@ -176,5 +176,19 @@ namespace PictureManager.Domain.Models {
         onAdd?.Invoke();
       }
     }
+
+    public static List<Keyword> GetAllKeywords(List<Keyword> keywords) {
+      var outKeywords = new List<Keyword>();
+      if (keywords == null) return outKeywords;
+      var allKeywords = new List<ICatTreeViewItem>();
+
+      foreach (var keyword in keywords)
+        CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
+
+      foreach (var keyword in allKeywords.OfType<Keyword>().Distinct().OrderBy(x => x.FullPath))
+        outKeywords.Add(keyword);
+
+      return outKeywords;
+    }
   }
 }
