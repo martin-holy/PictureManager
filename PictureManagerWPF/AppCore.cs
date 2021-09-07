@@ -68,9 +68,9 @@ namespace PictureManager {
 
         case PeopleControl pc:
         if (item is Person pcp)
-          pc.ChangePerson(pcp);
+          pc.PersonFacesEditor.SetPerson(pcp);
         if (item is Keyword pck)
-          pc.ToggleKeyword(pck);
+          pc.PersonFacesEditor.ToggleKeyword(pck);
         break;
 
         case null:
