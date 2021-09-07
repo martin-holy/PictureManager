@@ -310,7 +310,7 @@ namespace PictureManager.Commands {
           items = new List<MediaItem> { face.MediaItem };
       }
       else {
-        items = App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().ToList();
+        items = App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().OrderBy(x => x.FileName).ToList();
       }
 
       App.WMain.MediaViewer.SetMediaItems(items);
