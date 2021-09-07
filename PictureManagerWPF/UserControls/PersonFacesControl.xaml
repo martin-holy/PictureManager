@@ -7,37 +7,9 @@
   
   <Grid>
     <Grid.Resources>
-      <Style TargetType="{x:Type ItemsControl}" x:Key="_itemsControl">
-        <Setter Property="Margin" Value="5" />
-        <Setter Property="MinHeight" Value="{Binding ActualHeight, ElementName=IcAllFaces}" />
-        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True" />
-        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
-        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-        <Setter Property="ItemsPanel">
-          <Setter.Value>
-            <ItemsPanelTemplate>
-              <VirtualizingStackPanel Orientation="Horizontal" VerticalAlignment="Top" CacheLengthUnit="Page" CacheLength="2" />
-            </ItemsPanelTemplate>
-          </Setter.Value>
-        </Setter>
-        <Setter Property="ItemTemplate">
-          <Setter.Value>
-            <DataTemplate>
-              <cc:FaceControl DataContext="{Binding}" IsCheckmarkVisible="False" PreviewMouseUp="Face_PreviewMouseUp" />
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
-        <Setter Property="Template">
-          <Setter.Value>
-            <ControlTemplate>
-              <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Hidden" PreviewMouseWheel="MouseWheelScroll">
-                <ItemsPresenter />
-              </ScrollViewer>
-            </ControlTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
+      <DataTemplate x:Key="_segmentTemplate">
+        <cc:FaceControl DataContext="{Binding}" PreviewMouseUp="Face_PreviewMouseUp" />
+      </DataTemplate>
     </Grid.Resources>
       
     <Grid.RowDefinitions>
@@ -50,7 +22,14 @@
       <StackPanel>
         <Grid Background="#88000000" Height="30" Margin="0,0,0,5">
           <TextBlock Text="{Binding Person.Title}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-          <Button x:Name="BtnClose" Content="✖" Margin="0,0,3,0" HorizontalAlignment="Right" Style="{StaticResource StyleButtonFontSymbol}" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="BtnReload" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}">
+              <cc:IconRect IconName="Refresh" Size="10" />
+            </Button>
+            <Button x:Name="BtnClose" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}">
+              <cc:IconRect IconName="XCross" Size="10" />
+            </Button>
+          </StackPanel>
         </Grid>
         
         <!-- Keywords -->
@@ -77,12 +56,14 @@
         </Border>
         
         <!-- Top Faces -->
-        <TextBlock Text="Faces for comparison:" Margin="5" />
-        <ItemsControl ItemsSource="{Binding Person.Faces}" x:Name="IcTopFaces" Style="{StaticResource _itemsControl}" />
+        <TextBlock Text="Top Segments:" Margin="5" />
+        <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
+                                  ScrollViewerSpeedFactor="1" Height="106" />
         
-        <!-- All Faces -->
-        <TextBlock Text="{Binding AllPersonFaces.Count, StringFormat='All Faces ({0}):'}" Margin="5" />
-        <ItemsControl ItemsSource="{Binding AllPersonFaces}" x:Name="IcAllFaces" Style="{StaticResource _itemsControl}" />
+        <!-- All Segments -->
+        <TextBlock Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}" Margin="5" />
+        <cc:VirtualizingWrapPanel x:Name="AllSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
+                                  ScrollViewerSpeedFactor="1" MaxHeight="212" />
 
       </StackPanel>
     </Border>
