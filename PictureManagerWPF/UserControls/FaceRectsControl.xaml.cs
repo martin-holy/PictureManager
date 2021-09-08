@@ -80,13 +80,18 @@ namespace PictureManager.UserControls {
     }
 
     private void EndEdit() {
-      if (_current != null && _isCurrentModified) {
+      if (_current == null) {
+        App.Core.Faces.DeselectAll();
+        return;
+      }
+
+      if (_isCurrentModified) {
         App.Db.SetModified<Faces>();
         _ = _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
         _isCurrentModified = false;
+        IsEditOn = false;
       }
 
-      IsEditOn = false;
       _current = null;
     }
 
