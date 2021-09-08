@@ -64,7 +64,7 @@ namespace PictureManager.Commands {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanDelete() => ThumbsGrid?.Selected > 0 || App.Core.MediaItems.Current != null;
+    private static bool CanDelete() => ThumbsGrid?.SelectedItems.Count > 0 || App.Core.MediaItems.Current != null;
 
     private async static void Delete() {
       var items = ThumbsGrid != null
