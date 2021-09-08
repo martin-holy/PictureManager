@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
 using System.Collections.Generic;
@@ -6,9 +7,12 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class People : BaseCatTreeViewCategory, ITable {
+    private List<Person> _selected = new();
+
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Person> AllDic { get; set; }
+    public List<Person> Selected => _selected;
 
     public People() : base(Category.People) {
       Title = "People";
@@ -59,7 +63,7 @@ namespace PictureManager.Domain.Models {
             person.Keywords.Add(Core.Instance.Keywords.AllDic[int.Parse(keywordId)]);
         }
 
-        // csv array is not needed any more
+        // CSV array is not needed any more
         person.Csv = null;
       }
     }
@@ -122,6 +126,13 @@ namespace PictureManager.Domain.Models {
       Core.Instance.Sdb.SetModified<People>();
     }
 
+    public void Select(List<Person> list, Person p, bool isCtrlOn, bool isShiftOn) =>
+      Selecting.Select<Person>(ref _selected, list, p, isCtrlOn, isShiftOn, null);
+
+    public void DeselectAll() => Selecting.DeselectAll<Person>(ref _selected, null);
+
+    public void SetSelected(Person p, bool value) => Selecting.SetSelected<Person>(ref _selected, p, value, null);
+
     /// <summary>
     /// Toggle Person on Media Item
     /// </summary>
@@ -138,6 +149,13 @@ namespace PictureManager.Domain.Models {
         p.MediaItems.Remove(mi);
         if (mi.People?.Count == 0)
           mi.People = null;
+      }
+    }
+
+    public void ToggleKeywordOnSelected(Keyword keyword) {
+      foreach (var person in Selected) {
+        ToggleKeyword(person, keyword);
+        person.UpdateDisplayKeywords();
       }
     }
 

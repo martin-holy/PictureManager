@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Utils;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -9,7 +10,7 @@ namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGrid : ObservableObject {
     private MediaItem _current;
     private int? _indexOfCurrent;
-    private int _selected;
+    private List<MediaItem> _selectedItems = new();
     private string _title;
     private bool _showImages = true;
     private bool _showVideos = true;
@@ -17,10 +18,10 @@ namespace PictureManager.Domain.Models {
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
 
-    public List<MediaItem> SelectedItems { get; } = new();
+    public List<MediaItem> SelectedItems => _selectedItems;
     public List<MediaItem> LoadedItems { get; } = new();
-    public ObservableCollection<MediaItem> FilteredItems { get; } = new();
-    public int Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
+    public List<MediaItem> FilteredItems { get; } = new();
+    public int SelectedCount => SelectedItems.Count;
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
@@ -63,13 +64,8 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Clear();
     }
 
-    public void SetSelected(MediaItem mi, bool value) {
-      if (mi.IsSelected == value) return;
-      mi.IsSelected = value;
-      if (value) SelectedItems.Add(mi);
-      else SelectedItems.Remove(mi);
-      Selected = SelectedItems.Count;
-    }
+    public void SetSelected(MediaItem mi, bool value) =>
+      Selecting.SetSelected<MediaItem>(ref _selectedItems, mi, value, () => OnPropertyChanged(nameof(SelectedCount)));
 
     public void UpdateSelected() {
       foreach (var mi in SelectedItems)
@@ -78,39 +74,17 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems.Except(SelectedItems))
         mi.IsSelected = false;
 
-      Selected = SelectedItems.Count;
+      if (SelectedItems.Count == 1)
+        Current = SelectedItems[0];
+
+      OnPropertyChanged(nameof(SelectedCount));
     }
 
-    public void Select(bool isCtrlOn, bool isShiftOn, MediaItem mi) {
-      // single select
-      if (!isCtrlOn && !isShiftOn) {
-        DeselectAll();
-        Current = mi;
-        return;
-      }
-
-      // single invert select
-      if (isCtrlOn)
-        SetSelected(mi, !mi.IsSelected);
-
-      // multi select
-      if (isShiftOn && Current != null && _indexOfCurrent != null) {
-        var from = (int)_indexOfCurrent;
-        var indexOfMi = FilteredItems.IndexOf(mi);
-        var to = indexOfMi;
-        if (from > to) {
-          to = from;
-          from = indexOfMi;
-        }
-
-        for (var i = from; i < to + 1; i++) {
-          SetSelected(FilteredItems[i], true);
-        }
-      }
-
-      if (Selected == 0)
-        Current = null;
-      else if (Selected > 1) {
+    public void Select(MediaItem mi, bool isCtrlOn, bool isShiftOn) {
+      Selecting.Select<MediaItem>(ref _selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
+      if (SelectedItems.Count == 1)
+        Current = SelectedItems[0];
+      else {
         var isCurrentSelected = Current?.IsSelected ?? false;
         var current = Current;
         Current = null;
@@ -121,7 +95,7 @@ namespace PictureManager.Domain.Models {
 
     public void DeselectAll() {
       Current = null;
-      foreach (var mi in LoadedItems)
+      foreach (var mi in SelectedItems)
         SetSelected(mi, false);
     }
 
@@ -132,7 +106,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Remove(List<MediaItem> items) {
-      Current = MediaItems.GetNewCurrent(FilteredItems.ToList(), items);
+      Current = MediaItems.GetNewCurrent(FilteredItems, items);
 
       foreach (var mi in items)
         Remove(mi);
@@ -154,14 +128,14 @@ namespace PictureManager.Domain.Models {
         item.SetThumbSize(true);
     }
 
-    public List<MediaItem> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems.ToList() : SelectedItems;
+    public List<MediaItem> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
 
     public void SelectNotModified() {
       foreach (var mi in FilteredItems)
         SetSelected(mi, !mi.IsModified);
 
       Current = null;
-      OnPropertyChanged(nameof(Selected));
+      OnPropertyChanged(nameof(SelectedCount));
     }
 
     public MediaItem GetNext() =>
@@ -172,7 +146,8 @@ namespace PictureManager.Domain.Models {
     public void FilteredItemsSetInPlace(MediaItem mi) {
       var oldIndex = FilteredItems.IndexOf(mi);
       var newIndex = FilteredItems.OrderBy(x => x.FileName).ToList().IndexOf(mi);
-      FilteredItems.Move(oldIndex, newIndex);
+      FilteredItems.RemoveAt(oldIndex);
+      FilteredItems.Insert(newIndex, mi);
     }
 
     public async Task ReloadFilteredItems() {
