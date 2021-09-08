@@ -69,7 +69,7 @@
                   Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
                                Converter={StaticResource AllToVisibilityConverter}, 
                                ConverterParameter={x:Static pm:AppMode.Browser}}">
-            <TextBlock Text="{Binding MediaItems.ThumbsGrid.Selected}" />
+            <TextBlock Text="{Binding MediaItems.ThumbsGrid.SelectedCount}" />
           </Border>
 
           <!-- Modified -->
