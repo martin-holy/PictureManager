@@ -24,7 +24,6 @@ namespace PictureManager.UserControls {
     private Person _person;
 
     public List<Face> AllSegments { get; } = new();
-    public ObservableCollection<Face> AllPersonFaces { get; } = new();
     public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
 
     public PersonFacesControl() {
@@ -44,7 +43,10 @@ namespace PictureManager.UserControls {
       Drop += OnDrop;
 
       BtnReload.Click += (o, e) => _ = ReloadPersonFacesAsync(Person);
-      BtnClose.Click += (o, e) => Visibility = Visibility.Collapsed;
+      BtnClose.Click += (o, e) => {
+        Visibility = Visibility.Collapsed;
+        App.Core.People.DeselectAll();
+      };
     }
 
     public void SetPerson(Person person) {
@@ -56,29 +58,13 @@ namespace PictureManager.UserControls {
 
       foreach (var face in App.Core.Faces.Selected) {
         Faces.ChangePerson(face, person);
-        AllPersonFaces.Remove(face);
         if (Person.Face == face)
           Person.Face = null;
-        if (Person.Faces != null && Person.Faces.Remove(face))
+        if (Person.Faces?.Remove(face) == true)
           App.Db.SetModified<People>();
       }
 
       App.Core.Faces.DeselectAll();
-    }
-
-    public void ToggleKeyword(Keyword keyword) {
-      if (Visibility != Visibility.Visible) return;
-
-      var sCount = App.Core.Faces.Selected.Count > 1 ? $"s ({App.Core.Faces.Selected.Count})" : string.Empty;
-      if (MessageDialog.Show("Toggle Keyword", $"Do you want to toggle #{keyword.FullPath} on Person or selected segment{sCount}?",
-          true, new string[] { "Person", $"Segment{sCount}" })) {
-        People.ToggleKeyword(Person, keyword);
-        Person.UpdateDisplayKeywords();
-      }
-      else {
-        App.Core.Faces.ToggleKeywordOnSelected(keyword);
-        _ = ReloadPersonFacesAsync(Person);
-      }
     }
 
     private void ReloadTopSegments() {
@@ -132,16 +118,10 @@ namespace PictureManager.UserControls {
       AllSegmentsGrid.ScrollToTop();
     }
 
-    private void MouseWheelScroll(object sender, MouseWheelEventArgs e) {
-      var sv = (ScrollViewer)sender;
-      sv.ScrollToHorizontalOffset(sv.ContentHorizontalOffset + (e.Delta * -1));
-      e.Handled = true;
-    }
-
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var face = (Face)((FrameworkElement)sender).DataContext;
-      App.Core.Faces.Select(isCtrlOn, isShiftOn, AllSegments, face);
+      App.Core.Faces.Select(AllSegments, face, isCtrlOn, isShiftOn);
     }
 
     #region Drag & Drop

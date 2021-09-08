@@ -41,8 +41,52 @@ namespace PictureManager {
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
+    public static void ToggleKeyword(Keyword keyword) {
+      var sCount = App.Core.Faces.Selected.Count;
+      var pCount = App.Core.People.Selected.Count;
+
+      if (sCount > 0 || pCount > 0) {
+        var msgCount = sCount > 1 || (sCount == 0 && pCount > 1) ? $"'s ({(sCount > 0 ? sCount : pCount)})" : string.Empty;
+        var msg = $"Do you want to toggle #{keyword.FullPath} on selected {(sCount > 0 ? "segment" : "person")}{msgCount}?";
+
+        if (MessageDialog.Show("Toggle Keyword", msg, true)) {
+          if (sCount > 0) {
+            App.Core.Faces.ToggleKeywordOnSelected(keyword);
+
+            // TODO find another way to reload
+            switch (((TabItem)App.WMain.MainTabs.Tabs.SelectedItem).Content) {
+              case FaceMatchingControl fmc:
+              _ = fmc.SortAndReload(fmc.ChbAutoSort.IsChecked == true, fmc.ChbAutoSort.IsChecked == true);
+              break;
+
+              case PeopleControl pc:
+              if (pc.PersonFacesEditor.Visibility == Visibility.Visible)
+                _ = pc.PersonFacesEditor.ReloadPersonFacesAsync(pc.PersonFacesEditor.Person);
+              break;
+            }
+          }
+          else {
+            App.Core.People.ToggleKeywordOnSelected(keyword);
+          }
+        }
+      }
+      else if (App.Core.MediaItems.IsEditModeOn)
+        MediaItemsViewModel.SetMetadata(keyword);
+    }
+
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
+
+      if (loadByTag && (item is Rating or Person or Keyword or GeoName)) {
+        MediaItemsViewModel.SetTabContent();
+        await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
+        return;
+      }
+
+      if (item is Keyword keyword) {
+        ToggleKeyword(keyword);
+        return;
+      }
 
       if (item is ICatTreeViewCategory cat && cat is People) {
         var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(PeopleControl));
@@ -62,15 +106,15 @@ namespace PictureManager {
         case FaceMatchingControl fmc:
         if (item is Person fmcp)
           fmc.ChangePerson(fmcp);
-        if (item is Keyword fmck)
-          fmc.ToggleKeyword(fmck);
+        /*if (item is Keyword fmck)
+          fmc.ToggleKeyword(fmck);*/
         break;
 
         case PeopleControl pc:
         if (item is Person pcp)
           pc.PersonFacesEditor.SetPerson(pcp);
-        if (item is Keyword pck)
-          pc.PersonFacesEditor.ToggleKeyword(pck);
+        /*if (item is Keyword pck)
+          pc.PersonFacesEditor.ToggleKeyword(pck);*/
         break;
 
         case null:
