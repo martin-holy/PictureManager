@@ -1,11 +1,12 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Utils;
 using SimpleDB;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Person : CatTreeViewItem, IRecord, ICatTreeViewTagItem {
+  public sealed class Person : CatTreeViewItem, IRecord, ICatTreeViewTagItem, ISelectable {
     private Face _face;
 
     public string[] Csv { get; set; }

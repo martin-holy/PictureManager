@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Face : ObservableObject, IRecord, IEquatable<Face> {
+  public sealed class Face : ObservableObject, IRecord, IEquatable<Face>, ISelectable {
     private BitmapSource _picture;
     private bool _isSelected;
 

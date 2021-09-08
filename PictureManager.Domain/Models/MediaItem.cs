@@ -11,7 +11,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace PictureManager.Domain.Models {
-  public sealed class MediaItem : INotifyPropertyChanged, IRecord, IEquatable<MediaItem> {
+  public sealed class MediaItem : INotifyPropertyChanged, IRecord, IEquatable<MediaItem>, ISelectable {
     public string[] Csv { get; set; }
 
     // DB Fields
