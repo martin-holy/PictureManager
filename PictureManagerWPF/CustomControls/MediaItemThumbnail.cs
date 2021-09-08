@@ -35,7 +35,7 @@ namespace PictureManager.CustomControls {
     private static void Thumb_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var mi = (MediaItem)((FrameworkElement)sender).DataContext;
-      App.Core.MediaItems.ThumbsGrid.Select(isCtrlOn, isShiftOn, mi);
+      App.Core.MediaItems.ThumbsGrid.Select(mi, isCtrlOn, isShiftOn);
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
