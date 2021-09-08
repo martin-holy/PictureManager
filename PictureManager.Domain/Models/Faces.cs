@@ -1,4 +1,5 @@
-﻿using SimpleDB;
+﻿using PictureManager.Domain.Utils;
+using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,10 +20,11 @@ namespace PictureManager.Domain.Models {
     private int _similarityLimitMin = 80;
     private bool _groupFaces;
     private bool _groupConfirmedFaces;
+    private List<Face> _selected = new();
 
     public List<Face> Loaded { get; } = new();
     public List<List<Face>> LoadedGroupedByPerson { get; } = new();
-    public List<Face> Selected { get; } = new();
+    public List<Face> Selected => _selected;
     public List<(int personId, Face face, List<(int personId, Face face, double sim)> similar)> ConfirmedFaces { get; } = new();
     public int FaceSize { get => _faceSize; set { _faceSize = value; OnPropertyChanged(); } }
     public int CompareFaceSize { get => _compareFaceSize; set { _compareFaceSize = value; OnPropertyChanged(); } }
@@ -115,49 +117,12 @@ namespace PictureManager.Domain.Models {
     }
     #endregion
 
-    public void Select(bool isCtrlOn, bool isShiftOn, List<Face> list, Face face) {
-      // single select
-      if (!isCtrlOn && !isShiftOn) {
-        DeselectAll();
-        SetSelected(face, true);
-        return;
-      }
+    public void Select(List<Face> list, Face face, bool isCtrlOn, bool isShiftOn) =>
+      Selecting.Select<Face>(ref _selected, list, (ISelectable)face, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
 
-      // single invert select
-      if (isCtrlOn) {
-        SetSelected(face, !face.IsSelected);
-        return;
-      }
+    public void DeselectAll() => Selecting.DeselectAll<Face>(ref _selected, () => OnPropertyChanged(nameof(SelectedCount)));
 
-      // multi select
-      if (isShiftOn) {
-        var indexOfFace = list.IndexOf(face);
-        var fromFace = list.Find(x => x.IsSelected && x != face);
-        var from = fromFace == null ? 0 : list.IndexOf(fromFace);
-        var to = indexOfFace;
-
-        if (from > to) {
-          to = from;
-          from = indexOfFace;
-        }
-
-        for (var i = from; i < to + 1; i++)
-          SetSelected(list[i], true);
-      }
-    }
-
-    public void DeselectAll() {
-      foreach (var face in Selected.ToArray())
-        SetSelected(face, false);
-    }
-
-    public void SetSelected(Face face, bool value) {
-      if (face.IsSelected == value) return;
-      face.IsSelected = value;
-      if (value) Selected.Add(face);
-      else _ = Selected.Remove(face);
-      OnPropertyChanged(nameof(SelectedCount));
-    }
+    public void SetSelected(Face face, bool value) => Selecting.SetSelected<Face>(ref _selected, face, value, () => OnPropertyChanged(nameof(SelectedCount)));
 
     private void ResetBeforeNewLoad() {
       DeselectAll();
@@ -441,8 +406,6 @@ namespace PictureManager.Domain.Models {
     public void ToggleKeywordOnSelected(Keyword keyword) {
       foreach (var face in Selected)
         ToggleKeyword(face, keyword);
-
-      DeselectAll();
     }
 
     public static void ToggleKeyword(Face face, Keyword keyword) {
