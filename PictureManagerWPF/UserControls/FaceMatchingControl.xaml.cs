@@ -196,7 +196,7 @@ namespace PictureManager.UserControls {
             return string.Join(", ", x.face.Person.DisplayKeywords.Select(k => k.Title));
           })
           .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
-          
+
           // add group
           if (!string.IsNullOrEmpty(group.Key) && !group.Key.Equals("Unknown"))
             ConfirmedFacesGrid.AddGroup(IconName.Tag, group.Key);
@@ -221,22 +221,13 @@ namespace PictureManager.UserControls {
       _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
     }
 
-    public void ToggleKeyword(Keyword keyword) {
-      var faceCount = App.Core.Faces.SelectedCount > 1 ? $"'s ({App.Core.Faces.SelectedCount})" : string.Empty;
-      if (!MessageDialog.Show("Toggle Keyword", $"Do you want to toggle ({keyword.Title}) on selected face{faceCount}?", true))
-        return;
-
-      App.Core.Faces.ToggleKeywordOnSelected(keyword);
-      _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
-    }
-
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var face = (Face)((FrameworkElement)sender).DataContext;
       var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row && row.Group != null
         ? row.Group.Items.Cast<Face>().ToList()
         : new List<Face>() { face };
-      App.Core.Faces.Select(isCtrlOn, isShiftOn, list, face);
+      App.Core.Faces.Select(list, face, isCtrlOn, isShiftOn);
       MoveControlButtons();
     }
 
