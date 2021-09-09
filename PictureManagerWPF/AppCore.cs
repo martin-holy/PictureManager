@@ -6,6 +6,7 @@ using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.UserControls;
 using PictureManager.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace PictureManager {
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
+    public static EventHandler OnToggleKeyword { get; set; }
+    public static EventHandler OnSetPerson { get; set; }
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
@@ -44,112 +47,79 @@ namespace PictureManager {
     public static void ToggleKeyword(Keyword keyword) {
       var sCount = App.Core.Faces.Selected.Count;
       var pCount = App.Core.People.Selected.Count;
+      if (sCount == 0 && pCount == 0) return;
 
-      if (sCount > 0 || pCount > 0) {
-        var msgCount = sCount > 1 || (sCount == 0 && pCount > 1) ? $"'s ({(sCount > 0 ? sCount : pCount)})" : string.Empty;
-        var msg = $"Do you want to toggle #{keyword.FullPath} on selected {(sCount > 0 ? "segment" : "person")}{msgCount}?";
+      var msgCount = sCount > 1 || (sCount == 0 && pCount > 1) ? $"'s ({(sCount > 0 ? sCount : pCount)})" : string.Empty;
+      var msg = $"Do you want to toggle #{keyword.FullPath} on selected {(sCount > 0 ? "segment" : "person")}{msgCount}?";
 
-        if (MessageDialog.Show("Toggle Keyword", msg, true)) {
-          if (sCount > 0) {
-            App.Core.Faces.ToggleKeywordOnSelected(keyword);
-
-            // TODO find another way to reload
-            switch (((TabItem)App.WMain.MainTabs.Tabs.SelectedItem).Content) {
-              case FaceMatchingControl fmc:
-              _ = fmc.SortAndReload(fmc.ChbAutoSort.IsChecked == true, fmc.ChbAutoSort.IsChecked == true);
-              break;
-
-              case PeopleControl pc:
-              if (pc.PersonFacesEditor.Visibility == Visibility.Visible)
-                _ = pc.PersonFacesEditor.ReloadPersonFacesAsync(pc.PersonFacesEditor.Person);
-              break;
-            }
-          }
-          else {
-            App.Core.People.ToggleKeywordOnSelected(keyword);
-          }
-        }
+      if (!MessageDialog.Show("Toggle Keyword", msg, true)) return;
+      if (sCount > 0) {
+        App.Core.Faces.ToggleKeywordOnSelected(keyword);
+        OnToggleKeyword?.Invoke(null, null);
       }
-      else if (App.Core.MediaItems.IsEditModeOn)
-        MediaItemsViewModel.SetMetadata(keyword);
+      else
+        App.Core.People.ToggleKeywordOnSelected(keyword);
+    }
+
+    public static void SetPerson(Person person) {
+      var sCount = App.Core.Faces.Selected.Count;
+      if (sCount == 0) return;
+
+      var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
+      var msg = $"Do you want to set ({person.Title}) to selected segment{msgCount}??";
+
+      if (!MessageDialog.Show("Set Person", msg, true)) return;
+      App.Core.Faces.SetSelectedAsPerson(person);
+      OnSetPerson?.Invoke(null, null);
     }
 
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
-      if (loadByTag && (item is Rating or Person or Keyword or GeoName)) {
+      if (item is Rating or Person or Keyword or GeoName) {
+        if (loadByTag) {
+          MediaItemsViewModel.SetTabContent();
+          await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
+          return;
+        }
+        else if (App.Core.MediaItems.IsEditModeOn) {
+          MediaItemsViewModel.SetMetadata(item);
+          return;
+        }
+      }
+
+      switch (item) {
+        case Keyword k:
+        ToggleKeyword(k);
+        break;
+
+        case Person p:
+        SetPerson(p);
+        break;
+
+        case FavoriteFolder ff:
+        if (ff.Folder.IsThisOrParentHidden()) break;
+        CatTreeViewUtils.ExpandTo(ff.Folder);
+        App.WMain.TreeViewCategories.TvCategories.ScrollTo(ff.Folder);
+        break;
+
+        case Folder:
+        case FolderKeyword:
         MediaItemsViewModel.SetTabContent();
-        await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
-        return;
-      }
-
-      if (item is Keyword keyword) {
-        ToggleKeyword(keyword);
-        return;
-      }
-
-      if (item is ICatTreeViewCategory cat && cat is People) {
-        var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(PeopleControl));
-
-        if (tab?.Content is not PeopleControl control) {
-          control = new PeopleControl();
-          App.WMain.MainTabs.AddTab();
-          App.WMain.MainTabs.SetTab(control, control, null);
-        }
-        else {
-          tab.IsSelected = true;
-          _ = control.Reload();
-        }
-      }
-
-      switch (((TabItem)App.WMain.MainTabs.Tabs.SelectedItem).Content) {
-        case FaceMatchingControl fmc:
-        if (item is Person fmcp)
-          fmc.ChangePerson(fmcp);
-        /*if (item is Keyword fmck)
-          fmc.ToggleKeyword(fmck);*/
+        await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
         break;
 
-        case PeopleControl pc:
-        if (item is Person pcp)
-          pc.PersonFacesEditor.SetPerson(pcp);
-        /*if (item is Keyword pck)
-          pc.PersonFacesEditor.ToggleKeyword(pck);*/
-        break;
+        case ICatTreeViewCategory cat:
+        if (cat is People)
+          _ = App.WMain.MainTabs.GetContentOfType<PeopleControl>()?.Reload();
 
-        case null:
-        case MediaItemsThumbsGrid:
-        MediaItemsViewModel.SetTabContent();
-        switch (item) {
-          case FavoriteFolder favoriteFolder:
-          if (favoriteFolder.Folder.IsThisOrParentHidden()) return;
-          CatTreeViewUtils.ExpandTo(favoriteFolder.Folder);
-          App.WMain.TreeViewCategories.TvCategories.ScrollTo(favoriteFolder.Folder);
-          break;
+        // if category is going to collapse and sub item is selected, category gets selected
+        // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
+        // this will only prevent selecting category if selection was made with mouse click
+        cat.IsSelected = false;
 
-          case Rating:
-          case Person:
-          case Keyword:
-          case GeoName:
-          if (App.Core.MediaItems.IsEditModeOn && !loadByTag)
-            MediaItemsViewModel.SetMetadata(item);
-          else
-            await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
-          break;
-
-          case Folder:
-          case FolderKeyword:
-          await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
-          break;
-        }
         break;
       }
-
-      // if category is going to collapse and sub item is selected, category gets selected
-      // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
-      // this will only prevent selecting category if selection was made with mouse click
-      if (item is ICatTreeViewCategory)
-        item.IsSelected = false;
     }
 
     public async Task ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
