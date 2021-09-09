@@ -48,8 +48,11 @@ namespace PictureManager.UserControls {
         App.Core.People.DeselectAll();
       };
 
-      AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
-      AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
+      if (AppCore.OnToggleKeyword?.IsRegistered(this) != true)
+        AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
+
+      if (AppCore.OnSetPerson?.IsRegistered(this) != true)
+        AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
     }
 
     private void ReloadTopSegments() {

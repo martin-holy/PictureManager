@@ -84,8 +84,11 @@ namespace PictureManager.UserControls {
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
 
-      AppCore.OnToggleKeyword += (o, e) => _ = SortAndReload();
-      AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
+      if (AppCore.OnToggleKeyword?.IsRegistered(this) != true)
+        AppCore.OnToggleKeyword += (o, e) => _ = SortAndReload();
+
+      if (AppCore.OnSetPerson?.IsRegistered(this) != true)
+        AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
     }
 
     public async Task LoadSegmentsAsync(bool withPersonOnly) {
