@@ -147,5 +147,8 @@ namespace PictureManager.Domain {
 
       return index;
     }
+
+    public static bool IsRegistered(this EventHandler e, object target) =>
+      e.GetInvocationList().Any(x => x.Target.GetType() == target.GetType());
   }
 }
