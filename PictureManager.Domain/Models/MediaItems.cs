@@ -140,15 +140,15 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItem item) {
       if (item == null) return;
 
-      // remove Faces
-      if (item.Faces != null) {
-        foreach (var face in item.Faces.ToArray()) {
-          // removing face here prevents removing face from Faces.Delete
+      // remove Segments
+      if (item.Segments != null) {
+        foreach (var segment in item.Segments.ToArray()) {
+          // removing segment here prevents removing segment from Segments.Delete
           // and setting DB table as modified multiple times
-          item.Faces.Remove(face);
-          Core.Instance.Faces.Delete(face);
+          item.Segments.Remove(segment);
+          Core.Instance.Segments.Delete(segment);
         }
-        item.Faces = null;
+        item.Segments = null;
       }
 
       // remove People

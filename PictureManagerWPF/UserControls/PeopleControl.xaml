@@ -10,25 +10,25 @@
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:FaceControl DataContext="{Binding Face}" MouseLeftButtonUp="Face_MouseLeftButtonUp">
-            <cc:FaceControl.Style>
-              <Style TargetType="{x:Type cc:FaceControl}">
+          <cc:SegmentControl DataContext="{Binding Segment}" MouseLeftButtonUp="Segment_MouseLeftButtonUp">
+            <cc:SegmentControl.Style>
+              <Style TargetType="{x:Type cc:SegmentControl}">
                 <Setter Property="IsCheckmarkVisible" Value="False" />
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding Person.Faces, Converter={StaticResource AllToBoolConverter}}" Value="True">
+                  <DataTrigger Binding="{Binding Person.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
                     <Setter Property="IsCheckmarkVisible" Value="True" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
-            </cc:FaceControl.Style>
-          </cc:FaceControl>
+            </cc:SegmentControl.Style>
+          </cc:SegmentControl>
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
       
       <cc:VirtualizingWrapPanel.Style>
         <Style TargetType="{x:Type Control}">
           <Style.Triggers>
-            <DataTrigger Binding="{Binding Visibility, ElementName=PersonFacesEditor}" Value="Visible">
+            <DataTrigger Binding="{Binding Visibility, ElementName=PersonSegmentsEditor}" Value="Visible">
               <Setter Property="Effect">
                 <Setter.Value>
                   <BlurEffect Radius="4" KernelType="Gaussian" />
@@ -40,7 +40,7 @@
       </cc:VirtualizingWrapPanel.Style>
     </cc:VirtualizingWrapPanel>
     
-    <!-- Person Faces Editor -->
-    <uc:PersonFacesControl x:Name="PersonFacesEditor" Visibility="Collapsed" />
+    <!-- Person Segments Editor -->
+    <uc:PersonSegmentsControl x:Name="PersonSegmentsEditor" Visibility="Collapsed" />
   </Grid>
 </UserControl>

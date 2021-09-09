@@ -203,6 +203,6 @@ namespace PictureManager.UserControls {
     }
 
     private void ItemToolTip_ToolTipOpening(object sender, ToolTipEventArgs e) =>
-      (((FrameworkElement)sender).DataContext as Person)?.Face?.SetPictureAsync(App.Core.Faces.FaceSize);
+      (((FrameworkElement)sender).DataContext as Person)?.Segment?.SetPictureAsync(App.Core.Segments.SegmentSize);
   }
 }

@@ -10,7 +10,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Face : ObservableObject, IRecord, IEquatable<Face>, ISelectable {
+  public sealed class Segment : ObservableObject, IRecord, IEquatable<Segment>, ISelectable {
     private BitmapSource _picture;
     private bool _isSelected;
 
@@ -88,11 +88,11 @@ namespace PictureManager.Domain.Models {
     public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsNotUnknown => PersonId != 0;
-    public Dictionary<Face, double> Similar { get; set; }
+    public Dictionary<Segment, double> Similar { get; set; }
     public double SimMax { get; set; }
-    public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"face_{Id}.jpg");
+    public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
-    public Face(int id, int personId, int x, int y, int radius) {
+    public Segment(int id, int personId, int x, int y, int radius) {
       Id = id;
       PersonId = personId;
       X = x;
@@ -101,14 +101,14 @@ namespace PictureManager.Domain.Models {
     }
 
     #region IEquatable implementation
-    public bool Equals(Face other) => Id == other?.Id;
-    public override bool Equals(object obj) => Equals(obj as Face);
+    public bool Equals(Segment other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as Segment);
     public override int GetHashCode() => Id;
-    public static bool operator ==(Face a, Face b) => a?.Equals(b) ?? b is null;
-    public static bool operator !=(Face a, Face b) => !(a == b);
+    public static bool operator ==(Segment a, Segment b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(Segment a, Segment b) => !(a == b);
     #endregion IEquatable implementation
 
-    // ID|MediaItemId|PersonId|FaceBox|Keywords
+    // ID|MediaItemId|PersonId|SegmentBox|Keywords
     public string ToCsv() =>
       string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), string.Join(",", X, Y, Radius),
         Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
@@ -150,7 +150,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public Int32Rect ToRect() {
-      // if face is point
+      // if segment is point
       if (Radius == 0) {
         var x = X;
         var y = Y;

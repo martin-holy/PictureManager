@@ -32,7 +32,7 @@ namespace PictureManager.UserControls {
       set => SetValue(PlayPanoramicImagesProperty, value);
     }
 
-    public ToggleButton FaceDetectionEditButton => BtnFaceDetectionEdit;
+    public ToggleButton SegmentsEditButton => BtnSegmentsEdit;
 
     public PresentationPanel() {
       _timer = new Timer();

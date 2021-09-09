@@ -19,7 +19,7 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private readonly int _faceGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
+    private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private readonly WorkTask _workTask = new();
     private bool _loading;
     private string _title;
@@ -55,11 +55,11 @@ namespace PictureManager.UserControls {
           // add people
           foreach (var person in group.OrderBy(p => p.Title)) {
             if (token.IsCancellationRequested) break;
-            if (person.Face != null) {
-              await person.Face.SetPictureAsync(App.Core.Faces.FaceSize);
-              person.Face.MediaItem.SetThumbSize();
+            if (person.Segment != null) {
+              await person.Segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+              person.Segment.MediaItem.SetThumbSize();
             }
-            await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _faceGridWidth));
+            await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
           }
         }
       }
@@ -92,12 +92,12 @@ namespace PictureManager.UserControls {
       await Reload();
     }
 
-    private async void Face_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      if (sender is FaceControl fc && fc.DataContext != null) {
-        var face = (Face)fc.DataContext;
-        App.Core.Faces.DeselectAll();
-        App.Core.People.Select(null, face.Person, false, false);
-        await PersonFacesEditor.ReloadPersonFacesAsync(face.Person);
+    private async void Segment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+      if (sender is SegmentControl fc && fc.DataContext != null) {
+        var segment = (Segment)fc.DataContext;
+        App.Core.Segments.DeselectAll();
+        App.Core.People.Select(null, segment.Person, false, false);
+        await PersonSegmentsEditor.ReloadPersonSegmentsAsync(segment.Person);
       }
     }
   }

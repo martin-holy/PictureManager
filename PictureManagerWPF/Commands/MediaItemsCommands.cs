@@ -27,8 +27,8 @@ namespace PictureManager.Commands {
     public static RoutedUICommand CompareCommand { get; } = new() { Text = "Compare" };
     public static RoutedUICommand ImagesToVideoCommand { get; } = new() { Text = "Images to Video" };
     public static RoutedUICommand RenameCommand { get; } = CommandsController.CreateCommand("Rename", "Rename", new KeyGesture(Key.F2));
-    public static RoutedUICommand FaceMatchingCommand { get; } = new() { Text = "Face Matching" };
-    public static RoutedUICommand ViewMediaItemsWithFaceCommand { get; } = new();
+    public static RoutedUICommand SegmentMatchingCommand { get; } = new() { Text = "Segment Matching" };
+    public static RoutedUICommand ViewMediaItemsWithSegmentCommand { get; } = new();
 
     private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
 
@@ -45,8 +45,8 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, CopyPathsCommand, CopyPaths, CanCopyPaths);
       CommandsController.AddCommandBinding(cbc, CompareCommand, Compare, CanCompare);
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
-      CommandsController.AddCommandBinding(cbc, FaceMatchingCommand, FaceMatching, CanFaceMatching);
-      CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithFaceCommand, ViewMediaItemsWithFace);
+      CommandsController.AddCommandBinding(cbc, SegmentMatchingCommand, SegmentMatching, CanSegmentMatching);
+      CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithSegmentCommand, ViewMediaItemsWithSegment);
     }
 
     private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
@@ -84,8 +84,8 @@ namespace PictureManager.Commands {
       App.Core.MediaItems.Current = newCurrent;
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
-      if (App.WMain.MainTabs.GetSelectedContent() is FaceMatchingControl fmc)
-        _ = fmc.SortAndReload();
+      if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl smc)
+        _ = smc.SortAndReload();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
         _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
@@ -271,40 +271,40 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static bool CanFaceMatching() => ThumbsGrid?.FilteredItems.Count > 0;
+    private static bool CanSegmentMatching() => ThumbsGrid?.FilteredItems.Count > 0;
 
-    private static void FaceMatching() {
+    private static void SegmentMatching() {
       var mediaItems = ThumbsGrid.GetSelectedOrAll();
-      var control = App.WMain.MainTabs.GetContentOfType<FaceMatchingControl>();
-      var all = MessageDialog.Show("Face Matching", "Do you want to load all faces or just faces with person?",
-        true, new string[] { "All faces", "Faces with person" });
+      var control = App.WMain.MainTabs.GetContentOfType<SegmentMatchingControl>();
+      var all = MessageDialog.Show("Segment Matching", "Do you want to load all segments or just segments with person?",
+        true, new string[] { "All segments", "Segments with person" });
 
       control?.SetMediaItems(mediaItems);
-      _ = control?.LoadFacesAsync(!all);
+      _ = control?.LoadSegmentsAsync(!all);
     }
 
-    private static void ViewMediaItemsWithFace(object parameter) {
-      if (parameter is not Face face) return;
-      App.Core.MediaItems.Current = face.MediaItem;
+    private static void ViewMediaItemsWithSegment(object parameter) {
+      if (parameter is not Segment segment) return;
+      App.Core.MediaItems.Current = segment.MediaItem;
       WindowCommands.SwitchToFullScreen();
 
       List<MediaItem> items = null;
 
-      if (face.PersonId == 0) {
-        if (App.WMain.MainTabs.GetSelectedContent() is FaceMatchingControl
-          && App.Core.Faces.LoadedGroupedByPerson.Count > 0
-          && App.Core.Faces.LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
-          items = App.Core.Faces.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
+      if (segment.PersonId == 0) {
+        if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl
+          && App.Core.Segments.LoadedGroupedByPerson.Count > 0
+          && App.Core.Segments.LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
+          items = App.Core.Segments.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
         }
         else
-          items = new List<MediaItem> { face.MediaItem };
+          items = new List<MediaItem> { segment.MediaItem };
       }
       else {
-        items = App.Core.Faces.All.Cast<Face>().Where(x => x.PersonId == face.PersonId).Select(x => x.MediaItem).Distinct().OrderBy(x => x.FileName).ToList();
+        items = App.Core.Segments.All.Cast<Segment>().Where(x => x.PersonId == segment.PersonId).Select(x => x.MediaItem).Distinct().OrderBy(x => x.FileName).ToList();
       }
 
       App.WMain.MediaViewer.SetMediaItems(items);
-      App.WMain.MediaViewer.SetMediaItemSource(face.MediaItem);
+      App.WMain.MediaViewer.SetMediaItemSource(segment.MediaItem);
     }
   }
 }

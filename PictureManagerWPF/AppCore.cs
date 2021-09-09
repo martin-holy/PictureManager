@@ -45,7 +45,7 @@ namespace PictureManager {
     }
 
     public static void ToggleKeyword(Keyword keyword) {
-      var sCount = App.Core.Faces.Selected.Count;
+      var sCount = App.Core.Segments.Selected.Count;
       var pCount = App.Core.People.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
 
@@ -54,7 +54,7 @@ namespace PictureManager {
 
       if (!MessageDialog.Show("Toggle Keyword", msg, true)) return;
       if (sCount > 0) {
-        App.Core.Faces.ToggleKeywordOnSelected(keyword);
+        App.Core.Segments.ToggleKeywordOnSelected(keyword);
         OnToggleKeyword?.Invoke(null, null);
       }
       else
@@ -62,14 +62,14 @@ namespace PictureManager {
     }
 
     public static void SetPerson(Person person) {
-      var sCount = App.Core.Faces.Selected.Count;
+      var sCount = App.Core.Segments.Selected.Count;
       if (sCount == 0) return;
 
       var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
       var msg = $"Do you want to set ({person.Title}) to selected segment{msgCount}??";
 
       if (!MessageDialog.Show("Set Person", msg, true)) return;
-      App.Core.Faces.SetSelectedAsPerson(person);
+      App.Core.Segments.SetSelectedAsPerson(person);
       OnSetPerson?.Invoke(null, null);
     }
 

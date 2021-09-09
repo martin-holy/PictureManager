@@ -15,7 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PictureManager.UserControls {
-  public partial class PersonFacesControl : INotifyPropertyChanged {
+  public partial class PersonSegmentsControl : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -23,10 +23,10 @@ namespace PictureManager.UserControls {
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
-    public List<Face> AllSegments { get; } = new();
+    public List<Segment> AllSegments { get; } = new();
     public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
 
-    public PersonFacesControl() {
+    public PersonSegmentsControl() {
       InitializeComponent();
 
       AttachEvents();
@@ -42,29 +42,29 @@ namespace PictureManager.UserControls {
       DragOver += AllowDropCheck;
       Drop += OnDrop;
 
-      BtnReload.Click += (o, e) => _ = ReloadPersonFacesAsync(Person);
+      BtnReload.Click += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
       BtnClose.Click += (o, e) => {
         Visibility = Visibility.Collapsed;
         App.Core.People.DeselectAll();
       };
 
-      AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonFacesAsync(Person);
-      AppCore.OnSetPerson += (o, e) => _ = ReloadPersonFacesAsync(Person);
+      AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
+      AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
     }
 
     private void ReloadTopSegments() {
       TopSegmentsGrid.ClearRows();
-      if (Person.Faces == null) return;
+      if (Person.Segments == null) return;
       UpdateLayout();
       TopSegmentsGrid.UpdateMaxRowWidth();
 
-      foreach (var face in Person.Faces)
-        TopSegmentsGrid.AddItem(face, _segmentGridWidth);
+      foreach (var segment in Person.Segments)
+        TopSegmentsGrid.AddItem(segment, _segmentGridWidth);
 
       TopSegmentsGrid.ScrollToTop();
     }
 
-    public async Task ReloadPersonFacesAsync(Person person) {
+    public async Task ReloadPersonSegmentsAsync(Person person) {
       Visibility = Visibility.Visible;
       Person = person;
       AllSegments.Clear();
@@ -75,7 +75,7 @@ namespace PictureManager.UserControls {
       ReloadTopSegments();
 
       await Task.Run(async () => {
-        foreach (var group in App.Core.Faces.All.Cast<Face>()
+        foreach (var group in App.Core.Segments.All.Cast<Segment>()
           .Where(x => x.PersonId == person.Id)
           .GroupBy(x => x.Keywords == null
             ? string.Empty
@@ -88,7 +88,7 @@ namespace PictureManager.UserControls {
 
           // add segments
           foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
-            await segment.SetPictureAsync(App.Core.Faces.FaceSize);
+            await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
             segment.MediaItem.SetThumbSize();
             await App.Core.RunOnUiThread(() => {
               segment.MediaItem.SetInfoBox();
@@ -103,10 +103,10 @@ namespace PictureManager.UserControls {
       AllSegmentsGrid.ScrollToTop();
     }
 
-    private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+    private void Segment_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-      var face = (Face)((FrameworkElement)sender).DataContext;
-      App.Core.Faces.Select(AllSegments, face, isCtrlOn, isShiftOn);
+      var segment = (Segment)((FrameworkElement)sender).DataContext;
+      App.Core.Segments.Select(AllSegments, segment, isCtrlOn, isShiftOn);
     }
 
     #region Drag & Drop
@@ -120,7 +120,7 @@ namespace PictureManager.UserControls {
       _dragDropStartPosition = new Point(0, 0);
 
       var src = e.OriginalSource as FrameworkElement;
-      if (src?.DataContext is not Face) return;
+      if (src?.DataContext is not Segment) return;
 
       _dragDropSource = src;
       _dragDropEffects = DragDropEffects.Copy;
@@ -145,10 +145,10 @@ namespace PictureManager.UserControls {
       var dest = (FrameworkElement)e.OriginalSource;
       var isFromTop = _dragDropSource.IsDescendantOf(TopSegmentsGrid);
       var isInTop = dest.IsDescendantOf(TopSegmentsGrid);
-      var face = e.Data.GetData(typeof(Face)) as Face;
+      var segment = e.Data.GetData(typeof(Segment)) as Segment;
 
-      if (face != null
-        && ((isInTop && (Person.Faces?.Contains(face) != true))
+      if (segment != null
+        && ((isInTop && (Person.Segments?.Contains(segment) != true))
         || (isFromTop && !isInTop && _dragDropSource != dest))) return;
 
       // can't be dropped
@@ -158,26 +158,26 @@ namespace PictureManager.UserControls {
 
     private void OnDrop(object sender, DragEventArgs e) {
       var dest = (FrameworkElement)e.OriginalSource;
-      var face = e.Data.GetData(typeof(Face)) as Face;
+      var segment = e.Data.GetData(typeof(Segment)) as Segment;
       var dropInTop = dest.IsDescendantOf(TopSegmentsGrid);
 
-      if (face == null) return;
+      if (segment == null) return;
 
       if (dropInTop) {
-        if (Person.Faces == null) {
-          Person.Faces = new();
-          Person.OnPropertyChanged(nameof(Person.Faces));
+        if (Person.Segments == null) {
+          Person.Segments = new();
+          Person.OnPropertyChanged(nameof(Person.Segments));
         }
-        Person.Faces.Add(face);
+        Person.Segments.Add(segment);
       }
       else {
-        _ = Person.Faces.Remove(face);
-        if (Person.Faces.Count == 0)
-          Person.Faces = null;
+        _ = Person.Segments.Remove(segment);
+        if (Person.Segments.Count == 0)
+          Person.Segments = null;
       }
 
-      if (Person.Faces?.Count > 0)
-        Person.Face = Person.Faces[0];
+      if (Person.Segments?.Count > 0)
+        Person.Segment = Person.Segments[0];
 
       App.Db.SetModified<People>();
       ReloadTopSegments();
