@@ -47,24 +47,9 @@ namespace PictureManager.UserControls {
         Visibility = Visibility.Collapsed;
         App.Core.People.DeselectAll();
       };
-    }
 
-    public void SetPerson(Person person) {
-      if (Visibility != Visibility.Visible) return;
-
-      var sCount = App.Core.Faces.Selected.Count > 1 ? $"s ({App.Core.Faces.Selected.Count})" : string.Empty;
-      if (!MessageDialog.Show("Set Person", $"Do you really want to set person ({person.Title}) to selected segment{sCount}?", true))
-        return;
-
-      foreach (var face in App.Core.Faces.Selected) {
-        Faces.ChangePerson(face, person);
-        if (Person.Face == face)
-          Person.Face = null;
-        if (Person.Faces?.Remove(face) == true)
-          App.Db.SetModified<People>();
-      }
-
-      App.Core.Faces.DeselectAll();
+      AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonFacesAsync(Person);
+      AppCore.OnSetPerson += (o, e) => _ = ReloadPersonFacesAsync(Person);
     }
 
     private void ReloadTopSegments() {
