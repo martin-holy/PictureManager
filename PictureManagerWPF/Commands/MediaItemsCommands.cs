@@ -85,7 +85,7 @@ namespace PictureManager.Commands {
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       if (App.WMain.MainTabs.GetSelectedContent() is FaceMatchingControl fmc)
-        _ = fmc.SortAndReload(fmc.ChbAutoSort.IsChecked == true, fmc.ChbAutoSort.IsChecked == true);
+        _ = fmc.SortAndReload();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
         _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
@@ -275,22 +275,12 @@ namespace PictureManager.Commands {
 
     private static void FaceMatching() {
       var mediaItems = ThumbsGrid.GetSelectedOrAll();
-      var tab = App.WMain.MainTabs.GetTabWithContentTypeOf(typeof(FaceMatchingControl));
-
-      if (tab?.Content is not FaceMatchingControl control) {
-        control = new FaceMatchingControl();
-        App.WMain.MainTabs.AddTab();
-        App.WMain.MainTabs.SetTab(control, control, null);
-      }
-      else {
-        tab.IsSelected = true;
-      }
-
+      var control = App.WMain.MainTabs.GetContentOfType<FaceMatchingControl>();
       var all = MessageDialog.Show("Face Matching", "Do you want to load all faces or just faces with person?",
         true, new string[] { "All faces", "Faces with person" });
 
-      control.SetMediaItems(mediaItems);
-      _ = control.LoadFacesAsync(!all);
+      control?.SetMediaItems(mediaItems);
+      _ = control?.LoadFacesAsync(!all);
     }
 
     private static void ViewMediaItemsWithFace(object parameter) {
