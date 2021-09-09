@@ -51,19 +51,19 @@ namespace PictureManager.UserControls {
       BtnSamePerson.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsSamePerson();
         App.Core.Faces.DeselectAll();
-        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload();
       };
 
       BtnUnknown.Click += (o, e) => {
         App.Core.Faces.SetSelectedAsUnknown();
         App.Core.Faces.DeselectAll();
-        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload();
       };
 
       BtnNotAFace.Click += (o, e) => {
         if (!MessageDialog.Show("Delete Confirmation", "Do you really want to delete selected faces?", true)) return;
         App.Core.Faces.DeleteSelected();
-        _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
+        _ = SortAndReload();
       };
 
       BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
@@ -83,6 +83,9 @@ namespace PictureManager.UserControls {
       BtnCompareAllGroups.Click += (o, e) => _ = LoadFacesAsync(true);
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
+
+      AppCore.OnToggleKeyword += (o, e) => _ = SortAndReload();
+      AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
     }
 
     public async Task LoadFacesAsync(bool withPersonOnly) {
@@ -127,6 +130,8 @@ namespace PictureManager.UserControls {
 
       return rowIndex;
     }
+
+    public async Task SortAndReload() => await SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
 
     public async Task SortAndReload(bool faces, bool confirmedFaces) {
       await Sort(faces, confirmedFaces);
@@ -210,15 +215,6 @@ namespace PictureManager.UserControls {
       }
 
       ConfirmedFacesGrid.ScrollTo(itemToScrollTo);
-    }
-
-    public void ChangePerson(Person person) {
-      var faceCount = App.Core.Faces.SelectedCount > 1 ? $"'s ({App.Core.Faces.SelectedCount})" : string.Empty;
-      if (!MessageDialog.Show("Change Person", $"Do you want to set ({person.Title}) to selected face{faceCount}?", true))
-        return;
-
-      App.Core.Faces.SetSelectedAsPerson(person);
-      _ = SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
     }
 
     private void Face_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
