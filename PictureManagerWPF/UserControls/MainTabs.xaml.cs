@@ -21,6 +21,21 @@ namespace PictureManager.UserControls {
     public TabItem GetTabWithContentTypeOf(Type type) =>
       Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
 
+    public T GetContentOfType<T>() where T: new() {
+      var tab = GetTabWithContentTypeOf(typeof(T));
+
+      if (tab?.Content is not T control) {
+        control = new T();
+        AddTab();
+        SetTab(control, control, null);
+        return control;
+      }
+      else
+        tab.IsSelected = true;
+
+      return default(T);
+    }
+
     public void SetTab(object dataContext, object content, ContextMenu contextMenu) {
       if (Tabs.SelectedItem is TabItem tab) {
         OnTabItemClose?.Invoke(tab, null);
