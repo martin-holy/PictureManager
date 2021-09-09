@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="PictureManager.UserControls.PersonFacesControl"
+﻿<UserControl x:Class="PictureManager.UserControls.PersonSegmentsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
@@ -8,7 +8,7 @@
   <Grid>
     <Grid.Resources>
       <DataTemplate x:Key="_segmentTemplate">
-        <cc:FaceControl DataContext="{Binding}" PreviewMouseUp="Face_PreviewMouseUp" />
+        <cc:SegmentControl DataContext="{Binding}" PreviewMouseUp="Segment_PreviewMouseUp" />
       </DataTemplate>
     </Grid.Resources>
       
@@ -55,7 +55,7 @@
           </StackPanel>
         </Border>
         
-        <!-- Top Faces -->
+        <!-- Top Segments -->
         <TextBlock Text="Top Segments:" Margin="5" />
         <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
                                   ScrollViewerSpeedFactor="1" Height="106" />

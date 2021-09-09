@@ -68,7 +68,7 @@
           <MenuItem Command="cmd:MediaItemsCommands.CopyPathsCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.RenameCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.FaceMatchingCommand" />
+          <MenuItem Command="cmd:MediaItemsCommands.SegmentMatchingCommand" />
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource StyleMenuItemRoot}">
           <MenuItem Command="cmd:MetadataCommands.EditCommand">

@@ -1,17 +1,17 @@
-﻿<UserControl x:Class="PictureManager.UserControls.FaceRectsControl"
+﻿<UserControl x:Class="PictureManager.UserControls.SegmentRectsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls">
   
   <UserControl.Resources>
-    <!-- FaceRect DataTemplate -->
-    <DataTemplate x:Key="_faceRect">
+    <!-- SegmentRect DataTemplate -->
+    <DataTemplate x:Key="_segmentRect">
       <Border MinWidth="{Binding Size}" MinHeight="{Binding Size}" Background="Transparent"
               ToolTipService.InitialShowDelay="0"
               Effect="{StaticResource Res_ShadowEffect}"
               HorizontalAlignment="Left" VerticalAlignment="Top"
-              PreviewMouseDown="FaceRect_PreviewMouseDown">
+              PreviewMouseDown="SegmentRect_PreviewMouseDown">
         
         <Border.Style>
           <Style TargetType="{x:Type Border}">
@@ -22,16 +22,16 @@
             </Setter>
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="ToolTip" Value="{Binding Face.Person.Title}" />
+            <Setter Property="ToolTip" Value="{Binding Segment.Person.Title}" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding Face.IsSelected}" Value="True">
+              <DataTrigger Binding="{Binding Segment.IsSelected}" Value="True">
                 <Setter Property="BorderBrush" Value="LimeGreen" />
               </DataTrigger>
               <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
                 <Setter Property="BorderThickness" Value="2" />
               </DataTrigger>
-              <DataTrigger Binding="{Binding Face.Person}" Value="{x:Null}">
-                <Setter Property="ToolTip" Value="{Binding Face.PersonId}" />
+              <DataTrigger Binding="{Binding Segment.Person}" Value="{x:Null}">
+                <Setter Property="ToolTip" Value="{Binding Segment.PersonId}" />
               </DataTrigger>
             </Style.Triggers>
            </Style>
@@ -49,7 +49,7 @@
                 <Style.Triggers>
                   <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
-                      <Condition Binding="{Binding IsEditOn, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}" Value="False" />
+                      <Condition Binding="{Binding IsEditOn, RelativeSource={RelativeSource AncestorType={x:Type uc:SegmentRectsControl}}}" Value="False" />
                       <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Border}}}" Value="True" />
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Visibility" Value="Visible" />
@@ -62,7 +62,7 @@
             <Ellipse x:Name="MoveEllipse" Width="12" Height="12" VerticalAlignment="Center" HorizontalAlignment="Center"
                      Effect="{StaticResource Res_ShadowEffect}" Cursor="SizeAll" Fill="White" />
 
-            <!-- Delete Face -->
+            <!-- Delete Segment -->
             <Button x:Name="BtnDelete" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right"
                     Effect="{StaticResource Res_ShadowEffect}" Style="{StaticResource StyleButtonIcon}"
                     ToolTip="Delete"  Margin="2,0" Click="BtnDelete_Click">
@@ -74,12 +74,12 @@
     </DataTemplate>
   </UserControl.Resources>
   
-  <ItemsControl ItemsSource="{Binding MediaItemFaceRects, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
-                ItemTemplate="{StaticResource _faceRect}">
+  <ItemsControl ItemsSource="{Binding MediaItemSegmentsRects, RelativeSource={RelativeSource AncestorType={x:Type uc:SegmentRectsControl}}}"
+                ItemTemplate="{StaticResource _segmentRect}">
     <ItemsControl.ItemsPanel>
       <ItemsPanelTemplate>
-        <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"
-              Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type uc:FaceRectsControl}}}"/>
+        <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type uc:SegmentRectsControl}}}"
+              Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType={x:Type uc:SegmentRectsControl}}}"/>
       </ItemsPanelTemplate>
     </ItemsControl.ItemsPanel>
   </ItemsControl>

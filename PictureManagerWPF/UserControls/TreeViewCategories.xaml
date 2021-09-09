@@ -152,17 +152,17 @@
               <Setter Property="ToolTip" Value="{Binding ToolTip}" />
             </DataTrigger>
             
-            <!-- Persons Face -->
+            <!-- Persons Segment -->
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
                 <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type models:Person}" />
-                <Condition Binding="{Binding Face, Converter={StaticResource AllToBoolConverter}}" Value="True" />
+                <Condition Binding="{Binding Segment, Converter={StaticResource AllToBoolConverter}}" Value="True" />
               </MultiDataTrigger.Conditions>
               <Setter Property="ToolTip">
                 <Setter.Value>
                   <ToolTip BorderThickness="0" Padding="0">
                     <Border BorderThickness="1" BorderBrush="Black">
-                      <Image Source="{Binding Face.Picture}" Width="{Binding Faces.FaceSize, Source={x:Static pm:App.Core}}" />
+                      <Image Source="{Binding Segment.Picture}" Width="{Binding Segments.SegmentSize, Source={x:Static pm:App.Core}}" />
                     </Border>
                   </ToolTip>
                 </Setter.Value>

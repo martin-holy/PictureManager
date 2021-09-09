@@ -91,7 +91,7 @@
       <CheckBox IsChecked="{Binding PlayPanoramicImages}" />
       
       
-      <ToggleButton x:Name="BtnFaceDetectionEdit" ToolTip="Face detection edit" Margin="4,0"
+      <ToggleButton x:Name="BtnSegmentsEdit" ToolTip="Segments edit" Margin="4,0"
                     IsThreeState="False" IsChecked="False"
                     Style="{StaticResource StyleToggleButtonIconFlat}">
         <cc:IconRect IconName="{x:Static pmd:IconName.People}" IconFill="White" />

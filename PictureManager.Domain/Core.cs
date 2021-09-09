@@ -33,7 +33,7 @@ namespace PictureManager.Domain {
     public MediaItems MediaItems { get; }
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
-    public Faces Faces { get; }
+    public Segments Segments { get; }
     public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -61,7 +61,7 @@ namespace PictureManager.Domain {
       MediaItems = new();
       VideoClips = new();
       VideoClipsGroups = new();
-      Faces = new();
+      Segments = new();
     }
 
     public Task InitAsync(IProgress<string> progress) {
@@ -78,7 +78,7 @@ namespace PictureManager.Domain {
         Sdb.AddTable(VideoClipsGroups); // needs to be before VideoClips
         Sdb.AddTable(VideoClips);
         Sdb.AddTable(FavoriteFolders);
-        Sdb.AddTable(Faces);
+        Sdb.AddTable(Segments);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
@@ -104,8 +104,8 @@ namespace PictureManager.Domain {
         People.AllDic = null;
         VideoClips.AllDic.Clear();
         VideoClips.AllDic = null;
-        Faces.AllDic.Clear();
-        Faces.AllDic = null;
+        Segments.AllDic.Clear();
+        Segments.AllDic = null;
 
         Folders.IsExpanded = true;
       });

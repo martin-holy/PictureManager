@@ -41,7 +41,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
     public ObservableCollection<VideoClip> VideoClips { get; set; }
     public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
-    public ObservableCollection<Face> Faces { get; set; }
+    public ObservableCollection<Segment> Segments { get; set; }
     public string Dimensions => $"{Width}x{Height}";
     public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
@@ -134,13 +134,13 @@ namespace PictureManager.Domain.Models {
       if (GeoName != null)
         InfoBoxThumb.Add(GeoName.Title);
 
-      if (People != null || Faces != null) {
+      if (People != null || Segments != null) {
         var people = Enumerable.Empty<string>();
 
         if (People != null)
           people = People.Select(x => x.Title);
-        if (Faces != null)
-          people = people.Concat(Faces.Where(x => x.Person != null).Select(x => x.Person.Title));
+        if (Segments != null)
+          people = people.Concat(Segments.Where(x => x.Person != null).Select(x => x.Person.Title));
 
         if (people.Any()) {
           InfoBoxPeople = new ObservableCollection<string>();

@@ -26,19 +26,19 @@
       Converter={StaticResource AllToVisibilityConverter}, 
       ConverterParameter={x:Static pmd:MediaType.Video}}" />
     
-    <!-- Face Rects -->
-    <uc:FaceRectsControl x:Name="FaceRects"
+    <!-- Segment Rects -->
+    <uc:SegmentRectsControl x:Name="SegmentRects"
                          MediaItem="{Binding Current}"
                          Zoom="{Binding ZoomActual, ElementName=FullImage}"
                          Width="{Binding Image.ActualWidth, ElementName=FullImage}"
                          Height="{Binding Image.ActualHeight, ElementName=FullImage}"
-                         Visibility="{Binding FaceDetectionEditButton.IsChecked, ElementName=PresentationPanel,
+                         Visibility="{Binding SegmentsEditButton.IsChecked, ElementName=PresentationPanel,
                                       Converter={StaticResource AllToVisibilityConverter}}">
-      <uc:FaceRectsControl.RenderTransform>
+      <uc:SegmentRectsControl.RenderTransform>
         <TranslateTransform X="{Binding TranslateTransform.X, ElementName=FullImage}"
                             Y="{Binding TranslateTransform.Y, ElementName=FullImage}" />
-      </uc:FaceRectsControl.RenderTransform>
-    </uc:FaceRectsControl>
+      </uc:SegmentRectsControl.RenderTransform>
+    </uc:SegmentRectsControl>
 
   </Grid>
 </UserControl>

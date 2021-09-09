@@ -31,7 +31,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|Faces|Keywords
+      // ID|Name|Segments|Keywords
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
       var person = new Person(int.Parse(props[0]), props[1]) { Csv = props };
@@ -46,13 +46,13 @@ namespace PictureManager.Domain.Models {
       LoadGroupsAndItems(All);
 
       foreach (var person in All.Cast<Person>()) {
-        // Persons top faces
+        // Persons top segments
         if (!string.IsNullOrEmpty(person.Csv[2])) {
           var ids = person.Csv[2].Split(',');
-          person.Faces = new();
-          foreach (var faceId in ids)
-            person.Faces.Add(Core.Instance.Faces.AllDic[int.Parse(faceId)]);
-          person.Face = person.Faces[0];
+          person.Segments = new();
+          foreach (var segmentId in ids)
+            person.Segments.Add(Core.Instance.Segments.AllDic[int.Parse(segmentId)]);
+          person.Segment = person.Segments[0];
         }
 
         // reference to Keywords
@@ -108,14 +108,14 @@ namespace PictureManager.Domain.Models {
         Core.Instance.Sdb.SetModified<CategoryGroups>();
       item.Parent = null;
 
-      // set Person Faces to unknown
-      if (person.Faces != null) {
-        foreach (var face in person.Faces) {
-          face.PersonId = 0;
-          face.Person = null;
-          Core.Instance.Sdb.SetModified<Faces>();
+      // set Person Segments to unknown
+      if (person.Segments != null) {
+        foreach (var segment in person.Segments) {
+          segment.PersonId = 0;
+          segment.Person = null;
+          Core.Instance.Sdb.SetModified<Segments>();
         }
-        person.Faces = null;
+        person.Segments = null;
       }
 
       person.Keywords?.Clear();

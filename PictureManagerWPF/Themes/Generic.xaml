@@ -8,6 +8,6 @@
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/FaceControlStyle.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SegmentControlStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

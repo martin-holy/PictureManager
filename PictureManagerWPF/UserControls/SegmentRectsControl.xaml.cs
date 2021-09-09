@@ -9,59 +9,59 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PictureManager.UserControls {
-  public partial class FaceRectsControl : UserControl {
+  public partial class SegmentRectsControl : UserControl {
     public static readonly DependencyProperty MediaItemProperty = DependencyProperty.Register(
-      nameof(MediaItem), typeof(MediaItem), typeof(FaceRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnMediaItemChanged)));
+      nameof(MediaItem), typeof(MediaItem), typeof(SegmentRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnMediaItemChanged)));
     public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
-      nameof(Zoom), typeof(double), typeof(FaceRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnZoomChanged)));
+      nameof(Zoom), typeof(double), typeof(SegmentRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnZoomChanged)));
     public static readonly DependencyProperty IsEditOnProperty = DependencyProperty.Register(
-      nameof(IsEditOn), typeof(bool), typeof(FaceRectsControl));
+      nameof(IsEditOn), typeof(bool), typeof(SegmentRectsControl));
 
     public MediaItem MediaItem { get => (MediaItem)GetValue(MediaItemProperty); set => SetValue(MediaItemProperty, value); }
     public double Zoom { get => (double)GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }
     public bool IsEditOn { get => (bool)GetValue(IsEditOnProperty); set => SetValue(IsEditOnProperty, value); }
 
-    private FaceRect _current;
+    private SegmentRect _current;
     private double _scale;
     private bool _isEditModeMove;
     private bool _isCurrentModified;
 
-    public ObservableCollection<FaceRect> MediaItemFaceRects { get; } = new();
+    public ObservableCollection<SegmentRect> MediaItemSegmentsRects { get; } = new();
 
-    public FaceRectsControl() {
+    public SegmentRectsControl() {
       InitializeComponent();
     }
 
     private static void OnMediaItemChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) =>
-      ((FaceRectsControl)o).ReloadMediaItemFaceRects();
+      ((SegmentRectsControl)o).ReloadMediaItemSegmentRects();
 
     private static void OnZoomChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) =>
-      ((FaceRectsControl)o).UpdateScale();
+      ((SegmentRectsControl)o).UpdateScale();
 
-    public void ReloadMediaItemFaceRects() {
+    public void ReloadMediaItemSegmentRects() {
       _current = null;
-      MediaItemFaceRects.Clear();
-      if (MediaItem?.Faces == null) return;
+      MediaItemSegmentsRects.Clear();
+      if (MediaItem?.Segments == null) return;
       _scale = Zoom / 100;
 
-      App.Core.Faces.DeselectAll();
+      App.Core.Segments.DeselectAll();
 
-      foreach (var face in MediaItem.Faces)
-        MediaItemFaceRects.Add(new FaceRect(face, _scale));
+      foreach (var segment in MediaItem.Segments)
+        MediaItemSegmentsRects.Add(new SegmentRect(segment, _scale));
     }
 
     public void UpdateScale() {
       _scale = Zoom / 100;
-      foreach (var fr in MediaItemFaceRects)
-        fr.Scale = _scale;
+      foreach (var sr in MediaItemSegmentsRects)
+        sr.Scale = _scale;
     }
 
     private void CreateNew(Point mpos) {
-      var face = App.Core.Faces.AddNewFace((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
+      var segment = App.Core.Segments.AddNewSegment((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
       _isEditModeMove = false;
       _isCurrentModified = true;
-      _current = new FaceRect(face, _scale);
-      MediaItemFaceRects.Add(_current);
+      _current = new SegmentRect(segment, _scale);
+      MediaItemSegmentsRects.Add(_current);
     }
 
     private void StartEdit(Point mpos) {
@@ -81,13 +81,13 @@ namespace PictureManager.UserControls {
 
     private void EndEdit() {
       if (_current == null) {
-        App.Core.Faces.DeselectAll();
+        App.Core.Segments.DeselectAll();
         return;
       }
 
       if (_isCurrentModified) {
-        App.Db.SetModified<Faces>();
-        _ = _current.Face.SetPictureAsync(App.Core.Faces.FaceSize, true);
+        App.Db.SetModified<Segments>();
+        _ = _current.Segment.SetPictureAsync(App.Core.Segments.SegmentSize, true);
         _isCurrentModified = false;
         IsEditOn = false;
       }
@@ -95,21 +95,21 @@ namespace PictureManager.UserControls {
       _current = null;
     }
 
-    private void FaceRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+    private void SegmentRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
       if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
         _isEditModeMove = fe.Name.Equals("MoveEllipse");
-        _current = (FaceRect)fe.DataContext;
-        App.Core.Faces.DeselectAll();
-        App.Core.Faces.SetSelected(_current.Face, true);
+        _current = (SegmentRect)fe.DataContext;
+        App.Core.Segments.DeselectAll();
+        App.Core.Segments.SetSelected(_current.Segment, true);
       }
     }
 
-    public void FaceRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
+    public void SegmentRectsControl_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
       if ((Keyboard.Modifiers & ModifierKeys.Control) > 0 || e.RightButton == MouseButtonState.Pressed)
         CreateNew(e.GetPosition(this));
     }
 
-    public void FaceRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
+    public void SegmentRectsControl_PreviewMouseMove(object sender, MouseEventArgs e) {
       if (e.RightButton != MouseButtonState.Pressed && e.LeftButton != MouseButtonState.Pressed) {
         if (_current != null)
           EndEdit();
@@ -122,17 +122,17 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public void FaceRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) => EndEdit();
+    public void SegmentRectsControl_PreviewMouseUp(object sender, MouseButtonEventArgs e) => EndEdit();
 
     private void BtnDelete_Click(object sender, RoutedEventArgs e) {
-      if (((FrameworkElement)sender).DataContext is not FaceRect faceRect) return;
-      if (!MessageDialog.Show("Delete Face", "Do you really want to delete this face?", true)) return;
-      App.Core.Faces.Delete(faceRect.Face);
-      _ = MediaItemFaceRects.Remove(faceRect);
+      if (((FrameworkElement)sender).DataContext is not SegmentRect segmentRect) return;
+      if (!MessageDialog.Show("Delete Segment", "Do you really want to delete this segment?", true)) return;
+      App.Core.Segments.Delete(segmentRect.Segment);
+      _ = MediaItemSegmentsRects.Remove(segmentRect);
     }
   }
 
-  public class FaceRect : INotifyPropertyChanged {
+  public class SegmentRect : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
@@ -140,27 +140,27 @@ namespace PictureManager.UserControls {
     private double _scale;
 
     public int X {
-      get => (int)((Face.RotateTransformGetX(Face.X) - Face.Radius) * Scale);
+      get => (int)((Segment.RotateTransformGetX(Segment.X) - Segment.Radius) * Scale);
       set {
-        Face.RotateTransformSetX((int)(value / Scale));
+        Segment.RotateTransformSetX((int)(value / Scale));
         OnPropertyChanged();
       }
     }
 
     public int Y {
-      get => (int)((Face.RotateTransformGetY(Face.Y) - Face.Radius) * Scale);
+      get => (int)((Segment.RotateTransformGetY(Segment.Y) - Segment.Radius) * Scale);
       set {
-        Face.RotateTransformSetY((int)(value / Scale));
+        Segment.RotateTransformSetY((int)(value / Scale));
         OnPropertyChanged();
       }
     }
 
-    public int Size => (int)(Face.Radius * 2 * Scale);
+    public int Size => (int)(Segment.Radius * 2 * Scale);
 
     public int Radius {
-      get => (int)(Face.Radius * Scale);
+      get => (int)(Segment.Radius * Scale);
       set {
-        Face.Radius = (int)(value / Scale);
+        Segment.Radius = (int)(value / Scale);
         OnPropertyChanged();
         OnPropertyChanged(nameof(X));
         OnPropertyChanged(nameof(Y));
@@ -179,10 +179,10 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public Face Face { get; set; }
+    public Segment Segment { get; set; }
 
-    public FaceRect(Face face, double scale) {
-      Face = face;
+    public SegmentRect(Segment segment, double scale) {
+      Segment = segment;
       Scale = scale;
     }
   }
