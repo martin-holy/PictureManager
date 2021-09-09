@@ -53,12 +53,12 @@ namespace PictureManager {
       var msg = $"Do you want to toggle #{keyword.FullPath} on selected {(sCount > 0 ? "segment" : "person")}{msgCount}?";
 
       if (!MessageDialog.Show("Toggle Keyword", msg, true)) return;
-      if (sCount > 0) {
+      if (sCount > 0)
         App.Core.Segments.ToggleKeywordOnSelected(keyword);
-        OnToggleKeyword?.Invoke(null, null);
-      }
       else
         App.Core.People.ToggleKeywordOnSelected(keyword);
+
+      OnToggleKeyword?.Invoke(null, null);
     }
 
     public static void SetPerson(Person person) {
