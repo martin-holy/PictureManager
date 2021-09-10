@@ -149,20 +149,7 @@ namespace PictureManager.Domain.Models {
       });
     }
 
-    public Int32Rect ToRect() {
-      // if segment is point
-      if (Radius == 0) {
-        var x = X;
-        var y = Y;
-        if (x - 50 < 0) x = 50;
-        if (y - 50 < 0) y = 50;
-        if (x + 50 > MediaItem.Width) x = MediaItem.Width - 50;
-        if (y + 50 > MediaItem.Height) y = MediaItem.Height - 50;
-        return new Int32Rect(x - 50, y - 50, 100, 100);
-      }
-
-      return new Int32Rect(X - Radius, Y - Radius, Radius * 2, Radius * 2);
-    }
+    public Int32Rect ToRect() => new Int32Rect(X - Radius, Y - Radius, Radius * 2, Radius * 2);
 
     #region RotateTransform X, Y
     public int RotateTransformGetX(int x) =>
