@@ -169,6 +169,13 @@ namespace PictureManager.Domain.Models {
       return newSegment;
     }
 
+    public Segment GetCopy(Segment s) =>
+      new Segment(Helper.GetNextId(), s.PersonId, s.X, s.Y, s.Radius) {
+        MediaItem = s.MediaItem,
+        Person = s.Person,
+        Keywords = s.Keywords?.ToList()
+      };
+
     public async Task AddSegmentsForComparison() {
       var people = Loaded.Select(s => s.PersonId).Distinct().ToHashSet();
       people.Remove(0);
