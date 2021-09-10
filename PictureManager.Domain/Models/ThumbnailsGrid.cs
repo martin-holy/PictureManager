@@ -33,9 +33,7 @@ namespace PictureManager.Domain.Models {
     public MediaItem Current {
       get => _current;
       set {
-        if (_current != null) SetSelected(_current, false);
         _current = value;
-        if (_current != null) SetSelected(_current, true);
         _indexOfCurrent = value == null ? null : FilteredItems.IndexOf(value);
 
         // TODO temporary
@@ -74,28 +72,18 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems.Except(SelectedItems))
         mi.IsSelected = false;
 
-      if (SelectedItems.Count == 1)
-        Current = SelectedItems[0];
-
+      Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
       OnPropertyChanged(nameof(SelectedCount));
     }
 
     public void Select(MediaItem mi, bool isCtrlOn, bool isShiftOn) {
       Selecting.Select<MediaItem>(ref _selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
-      if (SelectedItems.Count == 1)
-        Current = SelectedItems[0];
-      else {
-        var isCurrentSelected = Current?.IsSelected ?? false;
-        var current = Current;
-        Current = null;
-        if (isCurrentSelected)
-          SetSelected(current, true);
-      }
+      Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
     }
 
     public void DeselectAll() {
       Current = null;
-      foreach (var mi in SelectedItems)
+      foreach (var mi in SelectedItems.ToArray())
         SetSelected(mi, false);
     }
 
@@ -137,11 +125,6 @@ namespace PictureManager.Domain.Models {
       Current = null;
       OnPropertyChanged(nameof(SelectedCount));
     }
-
-    public MediaItem GetNext() =>
-      _indexOfCurrent == null || FilteredItems.Count <= _indexOfCurrent + 1 ? null : FilteredItems[(int)_indexOfCurrent + 1];
-
-    public MediaItem GetPrevious() => _indexOfCurrent is null or < 1 ? null : FilteredItems[(int)_indexOfCurrent - 1];
 
     public void FilteredItemsSetInPlace(MediaItem mi) {
       var oldIndex = FilteredItems.IndexOf(mi);
