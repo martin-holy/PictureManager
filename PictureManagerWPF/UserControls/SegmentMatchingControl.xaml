@@ -89,8 +89,8 @@
               Maximum="100" Width="100" AutoToolTipPlacement="BottomRight" Margin="8,0" />
     </StackPanel>
     
-    <!-- Semaphore Control Buttons -->
-    <StackPanel x:Name="ControlButtons" Orientation="Horizontal" Background="#88000000" Height="30" Width="108"
+    <!-- Float Control Buttons -->
+    <StackPanel x:Name="ControlButtons" Orientation="Horizontal" Background="#88000000" Height="30" Width="82"
                 HorizontalAlignment="Left" VerticalAlignment="Top"
                 Visibility="{Binding Segments.SelectedCount, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
       <StackPanel.Resources>
@@ -109,9 +109,6 @@
       </Button>
       <Button x:Name="BtnUnknown" ToolTip="Unknown">
         <cc:IconRect IconName="People" IconFill="Orange" Size="17" />
-      </Button>
-      <Button x:Name="BtnNotASegment" ToolTip="Not a segment">
-        <cc:IconRect IconName="People" IconFill="Red" Size="17" />
       </Button>
     </StackPanel>
   </Grid>

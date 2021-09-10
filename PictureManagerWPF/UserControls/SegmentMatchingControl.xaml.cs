@@ -60,12 +60,6 @@ namespace PictureManager.UserControls {
         _ = SortAndReload();
       };
 
-      BtnNotASegment.Click += (o, e) => {
-        if (!MessageDialog.Show("Delete Confirmation", "Do you really want to delete selected segments?", true)) return;
-        App.Core.Segments.DeleteSelected();
-        _ = SortAndReload();
-      };
-
       BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
 
       BtnGroupSegments.Click += async (o, e) => {

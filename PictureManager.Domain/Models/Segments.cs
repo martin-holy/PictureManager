@@ -469,10 +469,5 @@ namespace PictureManager.Domain.Models {
         Core.Instance.LogError(ex);
       }
     }
-
-    public void DeleteSelected() {
-      foreach (var segment in Selected.ToArray())
-        Delete(segment);
-    }
   }
 }
