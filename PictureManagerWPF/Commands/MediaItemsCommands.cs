@@ -64,12 +64,12 @@ namespace PictureManager.Commands {
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
-    private static bool CanDelete() => ThumbsGrid?.SelectedItems.Count > 0 || App.Core.MediaItems.Current != null;
+    private static bool CanDelete() => ThumbsGrid?.SelectedItems.Count > 0 || App.Ui.AppInfo.AppMode == AppMode.Viewer;
 
     private async static void Delete() {
-      var items = ThumbsGrid != null
-        ? ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList()
-        : new List<MediaItem>() { App.Core.MediaItems.Current };
+      var items = App.Ui.AppInfo.AppMode == AppMode.Viewer
+        ? new List<MediaItem>() { App.Core.MediaItems.Current }
+        : ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
 
       if (!MessageDialog.Show("Delete Confirmation",
