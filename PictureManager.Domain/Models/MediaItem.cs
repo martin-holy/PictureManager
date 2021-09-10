@@ -195,6 +195,15 @@ namespace PictureManager.Domain.Models {
         copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
       }
 
+      if (Segments != null) {
+        copy.Segments = new();
+        foreach (var segment in Segments) {
+          var sCopy = Core.Instance.Segments.GetCopy(segment);
+          sCopy.MediaItem = copy;
+          copy.Segments.Add(sCopy);
+        }
+      }
+
       copy.Folder.MediaItems.Add(copy);
       copy.GeoName?.MediaItems.Add(copy);
 

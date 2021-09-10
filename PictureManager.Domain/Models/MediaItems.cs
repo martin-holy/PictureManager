@@ -263,25 +263,34 @@ namespace PictureManager.Domain.Models {
           Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
           File.Copy(mi.FilePath, miCopy.FilePath, true);
           File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+
+          if (mi.Segments != null)
+            for (int i = 0; i < mi.Segments.Count; i++)
+              File.Copy(mi.Segments[i].CacheFilePath, miCopy.Segments[i].CacheFilePath, true);
           break;
 
           case FileOperationMode.Move:
           var srcFilePath = mi.FilePath;
           var srcFilePathCache = mi.FilePathCache;
+          var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
           // DB
           mi.MoveTo(destFolder, miNewFileName);
 
           // File System
-          if (File.Exists(mi.FilePath))
-            File.Delete(mi.FilePath);
+          File.Delete(mi.FilePath);
           File.Move(srcFilePath, mi.FilePath);
 
           // Cache
-          if (File.Exists(mi.FilePathCache))
-            File.Delete(mi.FilePathCache);
           Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
+          // Thumbnail
+          File.Delete(mi.FilePathCache);
           File.Move(srcFilePathCache, mi.FilePathCache);
+          // Segments
+          foreach (var segment in mi.Segments ?? Enumerable.Empty<Segment>()) {
+            File.Delete(segment.CacheFilePath);
+            File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.CacheFilePath);
+          }
           break;
         }
 
