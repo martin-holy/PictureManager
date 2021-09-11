@@ -69,8 +69,10 @@ namespace PictureManager.ViewModels {
       var content = new MediaItemsThumbsGrid { DataContext = dataContext };
       var contextMenu = (ContextMenu)content.FindResource("ThumbsGridContextMenu");
       contextMenu.DataContext = dataContext;
-      CurrentThumbsGrid = content.ThumbsGrid;
+      App.WMain.MainTabs.AddTab();
       App.WMain.MainTabs.SetTab(dataContext, content, contextMenu);
+      CurrentThumbsGrid = content.ThumbsGrid;
+      _model.ThumbsGrid = dataContext;
     }
 
     public static void SetMetadata(ICatTreeViewItem item) {
