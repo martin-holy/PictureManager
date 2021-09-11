@@ -22,11 +22,10 @@ namespace PictureManager.UserControls {
       Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
 
     public T GetContentOfType<T>() where T: new() {
-      var tab = GetTabWithContentTypeOf(typeof(T));
+      var tab = GetTabWithContentTypeOf(typeof(T)) ?? AddTab();
 
-      if (tab?.Content is not T control) {
+      if (tab.Content is not T control) {
         control = new T();
-        AddTab();
         SetTab(control, control, null);
         return control;
       }
@@ -52,10 +51,11 @@ namespace PictureManager.UserControls {
       UpdateTabMaxHeight();
     }
 
-    public void AddTab() {
-      Tabs.SelectedIndex = Tabs.Items.Add(new TabItem());
-
+    public TabItem AddTab() {
+      var emptyTab = Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content == null);
+      Tabs.SelectedIndex = emptyTab == null ? Tabs.Items.Add(new TabItem()) : Tabs.Items.IndexOf(emptyTab);
       SetAddTabButton();
+      return (TabItem)Tabs.SelectedItem;
     }
 
     private void BtnAddTab_Click(object sender, RoutedEventArgs e) => AddTab();
