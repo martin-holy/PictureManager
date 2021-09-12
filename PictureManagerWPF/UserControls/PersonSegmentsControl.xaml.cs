@@ -68,10 +68,12 @@ namespace PictureManager.UserControls {
     }
 
     public async Task ReloadPersonSegmentsAsync(Person person) {
-      Visibility = Visibility.Visible;
+      Visibility = person == null ? Visibility.Collapsed : Visibility.Visible;
       Person = person;
       AllSegments.Clear();
       AllSegmentsGrid.ClearRows();
+      if (person == null) return;
+      
       UpdateLayout();
       AllSegmentsGrid.UpdateMaxRowWidth();
 
