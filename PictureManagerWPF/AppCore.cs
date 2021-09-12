@@ -88,6 +88,12 @@ namespace PictureManager {
         }
       }
 
+      if (item.Parent?.Title.Equals("Category Groups") == true && item.Parent.Parent is Viewer viewer) {
+        viewer.ToggleCategoryGroup(item);
+        item.IsSelected = false;
+        return;
+      }
+
       switch (item) {
         case Keyword k:
         ToggleKeyword(k);
@@ -117,7 +123,6 @@ namespace PictureManager {
         // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
         // this will only prevent selecting category if selection was made with mouse click
         cat.IsSelected = false;
-
         break;
       }
     }
