@@ -8,6 +8,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public ObservableCollection<ICatTreeViewItem> Items { get; set; } = new();
     public object Tag { get; set; }
     public EventHandler OnExpand;
+    public EventHandler OnCollapse;
 
     private bool _isExpanded;
     private bool _isSelected;
@@ -20,12 +21,14 @@ namespace PictureManager.Domain.CatTreeViewModels {
     private BackgroundBrush _backgroundBrush;
     private ICatTreeViewItem _parent;
 
-    public virtual bool IsExpanded {
+    public bool IsExpanded {
       get => _isExpanded;
       set {
         _isExpanded = value;
         if (value)
           OnExpand?.Invoke(this, null);
+        else
+          OnCollapse?.Invoke(this, null);
         OnPropertyChanged();
       }
     }
