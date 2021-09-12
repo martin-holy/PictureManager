@@ -5,5 +5,5 @@ namespace PictureManager.Domain {
   public enum MediaOrientation { Normal = 1, FlipHorizontal = 2, Rotate180 = 3, FlipVertical = 4, Transpose = 5, Rotate270 = 6, Transverse = 7, Rotate90 = 8 }
   public enum CollisionResult { Rename, Replace, Skip }
   public enum FileOperationMode { Copy, Move, Delete }
-  public enum IconName { Folder, FolderStar, FolderLock, FolderOpen, FolderPuzzle, Star, People, PeopleMultiple, Tag, TagLabel, Filter, Eye, DatabaseSql, Bug, LocationCheckin, Notification, Cd, Drive, DriveError, Edit, Cancel, Save, Ruler, Settings, Question, Information, RotateClockwise, RotateLeft, RotateRight, Pin, Calendar, Magnify, Image, ImageMultiple, PageUpload, MovieClapper, SoundMute, Sound3, Clock, RunFast, Checkmark, XCross, Sort, Compare, Square, Circle, Refresh }
+  public enum IconName { Folder, FolderStar, FolderLock, FolderOpen, FolderPuzzle, Star, People, PeopleMultiple, Tag, TagLabel, Filter, Eye, DatabaseSql, Bug, LocationCheckin, Notification, Cd, Drive, DriveError, Edit, Cancel, Save, Ruler, Settings, Question, Information, RotateClockwise, RotateLeft, RotateRight, Pin, Calendar, Magnify, Image, ImageMultiple, PageUpload, MovieClapper, SoundMute, Sound3, Clock, RunFast, Checkmark, XCross, Sort, Compare, Refresh, Group }
 }
