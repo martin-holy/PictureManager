@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -6,6 +7,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
   public class CatTreeViewItem : INotifyPropertyChanged, ICatTreeViewItem {
     public ObservableCollection<ICatTreeViewItem> Items { get; set; } = new();
     public object Tag { get; set; }
+    public EventHandler OnExpand;
 
     private bool _isExpanded;
     private bool _isSelected;
@@ -18,7 +20,15 @@ namespace PictureManager.Domain.CatTreeViewModels {
     private BackgroundBrush _backgroundBrush;
     private ICatTreeViewItem _parent;
 
-    public virtual bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
+    public virtual bool IsExpanded {
+      get => _isExpanded;
+      set {
+        _isExpanded = value;
+        if (value)
+          OnExpand?.Invoke(this, null);
+        OnPropertyChanged();
+      }
+    }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
     public bool IsMarked { get => _isMarked; set { _isMarked = value; OnPropertyChanged(); } }
