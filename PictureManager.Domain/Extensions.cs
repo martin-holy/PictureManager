@@ -150,5 +150,16 @@ namespace PictureManager.Domain {
 
     public static bool IsRegistered(this EventHandler e, object target) =>
       e.GetInvocationList().Any(x => x.Target.GetType() == target.GetType());
+
+    public static bool Toggle<T>(this HashSet<T> hashSet, T item) {
+      if (hashSet.Contains(item)) {
+        hashSet.Remove(item);
+        return false;
+      }
+      else {
+        hashSet.Add(item);
+        return true;
+      }
+    }
   }
 }
