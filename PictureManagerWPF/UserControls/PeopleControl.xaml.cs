@@ -71,7 +71,7 @@ namespace PictureManager.UserControls {
       PeopleGrid.UpdateMaxRowWidth();
 
       await _workTask.Start(Task.Run(async () => {
-        foreach (var group in App.Core.People.Items.OfType<ICatTreeViewGroup>()) {
+        foreach (var group in App.Core.People.Items.OfType<ICatTreeViewGroup>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.Title));
           await AddPeopleAsync(group.Title, group.Items.Cast<Person>(), _workTask.Token);
