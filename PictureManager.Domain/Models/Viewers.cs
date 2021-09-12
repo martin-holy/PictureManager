@@ -23,16 +23,16 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
+      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|IsDefault
       var props = csv.Split('|');
-      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[4] == "1" };
+      if (props.Length != 6) throw new ArgumentException("Incorrect number of values.", csv);
+      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[5] == "1" };
       if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
       All.Add(viewer);
     }
 
     public void LinkReferences() {
-      // ID|Name|IncludedFolders|ExcludedFolders|IsDefault
+      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|IsDefault
 
       Items.Clear();
 
@@ -51,10 +51,18 @@ namespace PictureManager.Domain.Models {
             viewer.AddFolder(f, false);
           }
 
+        // ExcludedCategoryGroups
+        if (!string.IsNullOrEmpty(viewer.Csv[4]))
+          foreach (var groupId in viewer.Csv[4].Split(','))
+            viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
+
+        if (viewer.IsDefault)
+          viewer.UpdateCategoryGroupsVisibility();
+
         // adding Viewer to Viewers
         Items.Add(viewer);
 
-        // csv array is not needed any more
+        // CSV array is not needed any more
         viewer.Csv = null;
       }
     }
