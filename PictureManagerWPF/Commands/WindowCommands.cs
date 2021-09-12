@@ -157,6 +157,7 @@ namespace PictureManager.Commands {
       App.Core.CurrentViewer = viewer;
       App.Core.Folders.AddDrives();
       App.Core.FolderKeywords.Load();
+      viewer.UpdateCategoryGroupsVisibility();
     }
 
     private static void OpenLog() {
