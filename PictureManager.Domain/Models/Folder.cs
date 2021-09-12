@@ -26,21 +26,19 @@ namespace PictureManager.Domain.Models {
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
     public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
-    public override bool IsExpanded {
-      get => base.IsExpanded;
-      set {
-        base.IsExpanded = value;
-        if (value) LoadSubFolders(false);
-        if (Parent is Folder && !IsFolderKeyword) // not Drive Folder and not FolderKeyword
-          IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
-      }
-    }
 
     public Folder(int id, string name, ICatTreeViewItem parent) {
       Id = id;
       Title = name;
       Parent = parent;
       IconName = IconName.Folder;
+
+      OnExpand += (o, e) => {
+        LoadSubFolders(false);
+        UpdateIconName();
+      };
+
+      OnCollapse += (o, e) => UpdateIconName();
     }
 
     // ID|Name|Parent|IsFolderKeyword
@@ -318,6 +316,11 @@ namespace PictureManager.Domain.Models {
       }
 
       return output.Cast<Folder>().ToList();
+    }
+
+    private void UpdateIconName() {
+      if (Parent is Folder && !IsFolderKeyword) // not Drive Folder and not FolderKeyword
+        IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
     }
   }
 }

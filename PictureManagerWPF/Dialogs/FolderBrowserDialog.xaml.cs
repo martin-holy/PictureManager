@@ -56,14 +56,19 @@ namespace PictureManager.Dialogs {
 
   public class FolderTreeViewItem : CatTreeViewItem {
     public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
-    public override bool IsExpanded {
-      get => base.IsExpanded;
-      set {
-        base.IsExpanded = value;
-        if (value) LoadSubFolders();
-        if (Parent != null) // not Drive Folder
-          IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
-      }
+
+    public FolderTreeViewItem() {
+      OnExpand += (o, e) => {
+        LoadSubFolders();
+        UpdateIconName();
+      };
+
+      OnCollapse += (o, e) => UpdateIconName();
+    }
+
+    private void UpdateIconName() {
+      if (Parent != null) // not Drive Folder
+        IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
     }
 
     public void LoadSubFolders() {
