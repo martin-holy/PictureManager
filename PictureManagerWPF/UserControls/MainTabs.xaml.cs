@@ -52,10 +52,18 @@ namespace PictureManager.UserControls {
     }
 
     public TabItem AddTab() {
-      var emptyTab = Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content == null);
-      Tabs.SelectedIndex = emptyTab == null ? Tabs.Items.Add(new TabItem()) : Tabs.Items.IndexOf(emptyTab);
+      var tab = Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content == null);
+      
+      if (tab == null) {
+        tab = new TabItem();
+        Tabs.Items.Add(tab);
+        tab.UpdateLayout();
+      }
+
+      Tabs.SelectedItem = tab;
       SetAddTabButton();
-      return (TabItem)Tabs.SelectedItem;
+
+      return tab;
     }
 
     private void BtnAddTab_Click(object sender, RoutedEventArgs e) => AddTab();
