@@ -1,5 +1,4 @@
 ﻿using PictureManager.CustomControls;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
@@ -66,6 +65,7 @@ namespace PictureManager.UserControls {
 
       _loading = true;
       await _workTask.Cancel();
+      var itemToScrollTo = PeopleGrid.GetFirstItemFromRow(PeopleGrid.GetTopRowIndex());
       PeopleGrid.ClearRows();
       UpdateLayout();
       PeopleGrid.UpdateMaxRowWidth();
@@ -85,6 +85,7 @@ namespace PictureManager.UserControls {
       }));
 
       _loading = false;
+      PeopleGrid.ScrollTo(itemToScrollTo);
     }
 
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -92,12 +93,11 @@ namespace PictureManager.UserControls {
       await Reload();
     }
 
-    private async void Segment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
+    private void Segment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
       if (sender is SegmentControl fc && fc.DataContext != null) {
         var segment = (Segment)fc.DataContext;
         App.Core.Segments.DeselectAll();
         App.Core.People.Select(null, segment.Person, false, false);
-        await PersonSegmentsEditor.ReloadPersonSegmentsAsync(segment.Person);
       }
     }
   }
