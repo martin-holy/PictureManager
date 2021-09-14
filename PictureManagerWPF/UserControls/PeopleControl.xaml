@@ -1,9 +1,7 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.PeopleControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:uc="clr-namespace:PictureManager.UserControls"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             xmlns:cc="clr-namespace:PictureManager.CustomControls">
   <Grid>
     <cc:VirtualizingWrapPanel x:Name="PeopleGrid" ScrollViewerSpeedFactor="1"
       ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" SizeChanged="ControlSizeChanged">
@@ -24,23 +22,6 @@
           </cc:SegmentControl>
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
-      
-      <cc:VirtualizingWrapPanel.Style>
-        <Style TargetType="{x:Type Control}">
-          <Style.Triggers>
-            <DataTrigger Binding="{Binding Visibility, ElementName=PersonSegmentsEditor}" Value="Visible">
-              <Setter Property="Effect">
-                <Setter.Value>
-                  <BlurEffect Radius="4" KernelType="Gaussian" />
-                </Setter.Value>
-              </Setter>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </cc:VirtualizingWrapPanel.Style>
     </cc:VirtualizingWrapPanel>
-    
-    <!-- Person Segments Editor -->
-    <uc:PersonSegmentsControl x:Name="PersonSegmentsEditor" Visibility="Collapsed" />
   </Grid>
 </UserControl>
