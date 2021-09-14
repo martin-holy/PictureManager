@@ -1,6 +1,5 @@
 ﻿using MahApps.Metro.Controls;
 using PictureManager.CustomControls;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
@@ -51,13 +50,13 @@ namespace PictureManager.UserControls {
       BtnSamePerson.Click += (o, e) => {
         App.Core.Segments.SetSelectedAsSamePerson();
         App.Core.Segments.DeselectAll();
-        _ = SortAndReload();
+        AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
       };
 
       BtnUnknown.Click += (o, e) => {
         App.Core.Segments.SetSelectedAsUnknown();
         App.Core.Segments.DeselectAll();
-        _ = SortAndReload();
+        AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
       };
 
       BtnGroupConfirmed.Click += (o, e) => _ = Reload(false, true);
@@ -115,19 +114,6 @@ namespace PictureManager.UserControls {
       await _workTask.Start(App.Core.Segments.FindSimilaritiesAsync(App.Core.Segments.Loaded, _progress, _workTask.Token));
     }
 
-    private static int GetTopRowIndex(VirtualizingWrapPanel panel) {
-      var rowIndex = 0;
-      VisualTreeHelper.HitTest(panel, null, (e) => {
-        if (e.VisualHit is FrameworkElement elm) {
-          rowIndex = panel.GetRowIndex(elm);
-          return HitTestResultBehavior.Stop;
-        }
-        return HitTestResultBehavior.Continue;
-      }, new PointHitTestParameters(new Point(10, 40)));
-
-      return rowIndex;
-    }
-
     public async Task SortAndReload() => await SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
 
     public async Task SortAndReload(bool segments, bool confirmedSegments) {
@@ -147,7 +133,7 @@ namespace PictureManager.UserControls {
 
     private async Task ReloadLoadedSegments() {
       if (_loading) return;
-      var rowIndex = GetTopRowIndex(SegmentsGrid);
+      var rowIndex = SegmentsGrid.GetTopRowIndex();
       var itemToScrollTo = SegmentsGrid.GetFirstItemFromRow(rowIndex);
       SegmentsGrid.ClearRows();
       SegmentsGrid.UpdateMaxRowWidth();
@@ -176,7 +162,7 @@ namespace PictureManager.UserControls {
 
     private void ReloadConfirmedSegments() {
       if (_loading) return;
-      var itemToScrollTo = ConfirmedSegmentsGrid.GetFirstItemFromRow(GetTopRowIndex(ConfirmedSegmentsGrid));
+      var itemToScrollTo = ConfirmedSegmentsGrid.GetFirstItemFromRow(ConfirmedSegmentsGrid.GetTopRowIndex());
       ConfirmedSegmentsGrid.ClearRows();
       ConfirmedSegmentsGrid.UpdateMaxRowWidth();
 
