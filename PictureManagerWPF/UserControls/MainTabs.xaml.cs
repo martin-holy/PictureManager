@@ -21,23 +21,22 @@ namespace PictureManager.UserControls {
     public TabItem GetTabWithContentTypeOf(Type type) =>
       Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content?.GetType() == type);
 
-    public T GetContentOfType<T>() where T: new() {
+    public T GetContentOfType<T>() where T : new() {
       var tab = GetTabWithContentTypeOf(typeof(T)) ?? AddTab();
 
-      if (tab.Content is not T control) {
-        control = new T();
+      if (tab.Content is not T) {
+        var control = new T();
         SetTab(control, control, null);
         return control;
       }
-      else
-        tab.IsSelected = true;
 
-      return default(T);
+      tab.IsSelected = true;
+      return (T)tab.Content;
     }
 
     public void SetTab(object dataContext, object content, ContextMenu contextMenu) {
       if (Tabs.SelectedItem is TabItem tab) {
-        OnTabItemClose?.Invoke(tab, null);
+        OnTabItemClose?.Invoke(tab, EventArgs.Empty);
 
         tab.DataContext = dataContext;
         tab.Content = content;
@@ -53,7 +52,6 @@ namespace PictureManager.UserControls {
 
     public TabItem AddTab() {
       var tab = Tabs.Items.Cast<TabItem>().SingleOrDefault(x => x.Content == null);
-      
       if (tab == null) {
         tab = new TabItem();
         Tabs.Items.Add(tab);
@@ -71,7 +69,7 @@ namespace PictureManager.UserControls {
     private void BtnCloseTab_Click(object sender, RoutedEventArgs e) {
       if (sender is not FrameworkElement elm) return;
       var tab = elm.TryFindParent<TabItem>();
-      OnTabItemClose?.Invoke(tab, null);
+      OnTabItemClose?.Invoke(tab, EventArgs.Empty);
       Tabs.Items.Remove(tab);
       SetAddTabButton();
     }
