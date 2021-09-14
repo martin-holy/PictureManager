@@ -8,11 +8,13 @@ using System.Linq;
 namespace PictureManager.Domain.Models {
   public sealed class People : BaseCatTreeViewCategory, ITable {
     private List<Person> _selected = new();
+    private Person _current;
 
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Person> AllDic { get; set; }
     public List<Person> Selected => _selected;
+    public Person Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public People() : base(Category.People) {
       Title = "People";
@@ -127,11 +129,11 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Select(List<Person> list, Person p, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select<Person>(ref _selected, list, p, isCtrlOn, isShiftOn, null);
+      Selecting.Select(ref _selected, list, p, isCtrlOn, isShiftOn, null);
 
-    public void DeselectAll() => Selecting.DeselectAll<Person>(ref _selected, null);
+    public void DeselectAll() => Selecting.DeselectAll(ref _selected, null);
 
-    public void SetSelected(Person p, bool value) => Selecting.SetSelected<Person>(ref _selected, p, value, null);
+    public void SetSelected(Person p, bool value) => Selecting.SetSelected(ref _selected, p, value, null);
 
     /// <summary>
     /// Toggle Person on Media Item
