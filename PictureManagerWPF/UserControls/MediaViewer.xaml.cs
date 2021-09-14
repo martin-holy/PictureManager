@@ -38,9 +38,6 @@ namespace PictureManager.UserControls {
     public MediaViewer() {
       InitializeComponent();
       AttachEvents();
-
-      FullVideo.ApplyTemplate();
-      FullVideo.MediaItemClips.Add(App.Ui.MediaItemClipsCategory);
     }
 
     private void AttachEvents() {
