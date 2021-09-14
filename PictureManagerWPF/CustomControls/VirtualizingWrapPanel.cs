@@ -100,6 +100,19 @@ namespace PictureManager.CustomControls {
       return 0;
     }
 
+    public int GetTopRowIndex() {
+      var rowIndex = 0;
+      VisualTreeHelper.HitTest(this, null, (e) => {
+        if (e.VisualHit is FrameworkElement elm) {
+          rowIndex = GetRowIndex(elm);
+          return HitTestResultBehavior.Stop;
+        }
+        return HitTestResultBehavior.Continue;
+      }, new PointHitTestParameters(new Point(10, 40)));
+
+      return rowIndex;
+    }
+
     public object GetFirstItemFromRow(int rowIndex) {
       if (rowIndex >= Rows.Count) return null;
       return Rows[rowIndex] is VirtualizingWrapPanelRow row
