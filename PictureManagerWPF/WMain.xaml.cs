@@ -3,6 +3,7 @@ using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -32,13 +33,14 @@ namespace PictureManager {
       };
 
       MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      RightSlidePanel.CanOpen = () => ToolsTabs.Tabs.Items.Cast<TabItem>().Any(x => x.Visibility == Visibility.Visible);
+      ToolsTabs.VideoClips.VideoPlayer = MediaViewer.FullVideo;
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
 
       StatusPanel.SizeChanged += delegate {
         SlidePanelMainTreeView.BorderMargin = new(0, 0, 0, StatusPanel.ActualHeight);
-        MediaViewer.FullVideo.ClipsPanel.BorderMargin = new(0, 0, 0, StatusPanel.ActualHeight);
       };
     }
 
@@ -70,12 +72,8 @@ namespace PictureManager {
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
-    private async void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) {
-      await App.Ui.ClearFilters();
-    }
+    private async void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) => await App.Ui.ClearFilters();
 
-    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) {
-      await App.Ui.MediaItemsViewModel.ReapplyFilter();
-    }
+    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) => await App.Ui.MediaItemsViewModel.ReapplyFilter();
   }
 }
