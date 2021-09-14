@@ -1,17 +1,13 @@
-﻿using MahApps.Metro.Controls;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
+﻿using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PictureManager.UserControls {
@@ -43,10 +39,6 @@ namespace PictureManager.UserControls {
       Drop += OnDrop;
 
       BtnReload.Click += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
-      BtnClose.Click += (o, e) => {
-        Visibility = Visibility.Collapsed;
-        App.Core.People.DeselectAll();
-      };
 
       if (AppCore.OnToggleKeyword?.IsRegistered(this) != true)
         AppCore.OnToggleKeyword += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
@@ -68,12 +60,11 @@ namespace PictureManager.UserControls {
     }
 
     public async Task ReloadPersonSegmentsAsync(Person person) {
-      Visibility = person == null ? Visibility.Collapsed : Visibility.Visible;
       Person = person;
       AllSegments.Clear();
       AllSegmentsGrid.ClearRows();
       if (person == null) return;
-      
+
       UpdateLayout();
       AllSegmentsGrid.UpdateMaxRowWidth();
 
