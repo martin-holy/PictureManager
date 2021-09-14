@@ -31,6 +31,9 @@ namespace PictureManager.CustomControls {
 
       if (Template.FindName("PART_Border", this) is Border b)
         b.ToolTipOpening += (o, e) => ReloadMediaItemSegmentRects();
+
+      if (Template.FindName("PART_BtnDetail", this) is Button btnDetail)
+        btnDetail.Click += (o, e) => _ = App.Core.People.Current = (DataContext as Segment)?.Person;
     }
 
     public void ReloadMediaItemSegmentRects() {

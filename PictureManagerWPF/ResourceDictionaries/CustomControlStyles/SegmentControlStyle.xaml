@@ -6,6 +6,7 @@
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../Converters.xaml" />
     <ResourceDictionary Source="../MixedStyles.xaml" />
+    <ResourceDictionary Source="../NamedStyles/ButtonStyles.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
   <Style TargetType="{x:Type cc:SegmentControl}">
@@ -108,9 +109,25 @@
                 </cc:IconRect.Style>
               </cc:IconRect>
               
-              <cc:IconRect IconName="Checkmark" IconFill="LimeGreen" HorizontalAlignment="Right" VerticalAlignment="Top" 
-                           Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}"
-                           IsIconVisible="{TemplateBinding IsCheckmarkVisible}" />
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button x:Name="PART_BtnDetail" Width="20" Height="20" Margin="2,0" Effect="{StaticResource Res_ShadowEffect}">
+                  <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleButtonIcon}">
+                      <Setter Property="Visibility" Value="Collapsed" />
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource TemplatedParent}}" Value="True">
+                          <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </Button.Style>
+                  <cc:IconRect IconName="Information" Size="14" />
+                </Button>
+                
+                <cc:IconRect IconName="Checkmark" IconFill="LimeGreen"
+                             Margin="0,2,2,0" Effect="{StaticResource Res_ShadowEffect}"
+                             IsIconVisible="{TemplateBinding IsCheckmarkVisible}" />
+              </StackPanel>
             </Grid>
           </Border>
         </ControlTemplate>
