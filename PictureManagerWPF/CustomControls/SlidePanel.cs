@@ -13,10 +13,10 @@ namespace PictureManager.CustomControls {
 
     public static readonly DependencyProperty BorderMarginProperty = DependencyProperty.Register(nameof(BorderMargin), typeof(Thickness), typeof(SlidePanel));
     public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(FrameworkElement), typeof(SlidePanel));
-    public static readonly DependencyProperty IsOpenProperty = DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(SlidePanel), new PropertyMetadata(true));
     public static readonly DependencyProperty PositionProperty = DependencyProperty.Register(nameof(Position), typeof(Dock), typeof(SlidePanel));
 
-    private bool _isPinned = true;
+    private bool _isOpen;
+    private bool _isPinned;
     private ThicknessAnimation _openAnimation;
     private ThicknessAnimation _closeAnimation;
     private Storyboard _sbOpen;
@@ -33,13 +33,17 @@ namespace PictureManager.CustomControls {
     }
 
     public bool IsOpen {
-      get => (bool)GetValue(IsOpenProperty);
+      get => _isOpen;
       set {
-        SetValue(IsOpenProperty, value);
+        if (value && CanOpen?.Invoke() == false)
+          return;
+
+        _isOpen = value;
+        OnPropertyChanged();
         if (value)
-          _sbOpen.Begin(this);
+          _sbOpen?.Begin(this);
         else
-          _sbClose.Begin(this);
+          _sbClose?.Begin(this);
       }
     }
 
@@ -48,7 +52,7 @@ namespace PictureManager.CustomControls {
       set {
         _isPinned = value;
         OnPropertyChanged();
-        OnIsPinnedChanged?.Invoke();
+        OnIsPinnedChanged?.Invoke(this, EventArgs.Empty);
       }
     }
 
@@ -57,7 +61,8 @@ namespace PictureManager.CustomControls {
       set => SetValue(PositionProperty, value);
     }
 
-    public Action OnIsPinnedChanged { get; set; }
+    public EventHandler OnIsPinnedChanged { get; set; }
+    public Func<bool> CanOpen { get; set; }
 
     static SlidePanel() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(SlidePanel), new FrameworkPropertyMetadata(typeof(SlidePanel)));
@@ -80,7 +85,7 @@ namespace PictureManager.CustomControls {
       _sbClose = new();
       _sbClose.Children.Add(_closeAnimation);
 
-      OnIsPinnedChanged?.Invoke();
+      OnIsPinnedChanged?.Invoke(this, EventArgs.Empty);
     }
 
     // creates new or update existing animation if panel width changes
