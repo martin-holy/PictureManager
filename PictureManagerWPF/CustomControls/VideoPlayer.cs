@@ -1,18 +1,14 @@
 ﻿using PictureManager.Commands;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -35,15 +31,12 @@ namespace PictureManager.CustomControls {
 
     public MediaElement Player { get; set; }
     public Action RepeatEnded { get; set; }
-    public ObservableCollection<ICatTreeViewCategory> MediaItemClips { get; set; }
     public VideoClipViewModel CurrentVideoClip { get; set; }
-    public SlidePanel ClipsPanel { get; set; }
     public bool ShowRepeatSlider => PlayType is PlayType.Clips or PlayType.Group;
-    public CatTreeView CtvClips { get; private set; }
+    public Slider TimelineSlider { get; private set; }
+    public Slider SpeedSlider { get; private set; }
+    public Slider VolumeSlider { get; private set; }
 
-    private Slider _timelineSlider;
-    private Slider _speedSlider;
-    private Slider _volumeSlider;
     private DispatcherTimer _timelineTimer;
     private readonly DispatcherTimer _mouseHideTimer;
     private DispatcherTimer _clipTimer;
@@ -151,65 +144,56 @@ namespace PictureManager.CustomControls {
         Player.Source = null;
         IsPlaying = false;
       }
+
+      App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabClips, mediaItem != null);
     }
 
-    private void StartClipTimer() {
+    public void StartClipTimer() {
       _clipTimer.Stop();
 
       if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
       var vc = CurrentVideoClip.Clip;
-      var duration = (vc.TimeEnd - vc.TimeStart) / _speedSlider.Value;
+      var duration = (vc.TimeEnd - vc.TimeStart) / SpeedSlider.Value;
 
       if (duration <= 0) return;
 
       _repeatCount = PlayType is PlayType.Clips or PlayType.Group ? (int)Math.Round(RepeatForSeconds / (duration / 1000.0), 0) : 0;
-      _timelineSlider.Value = vc.TimeStart;
+      TimelineSlider.Value = vc.TimeStart;
       _clipTimer.Interval = TimeSpan.FromMilliseconds(duration);
       _clipTimer.Start();
     }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-      
-      MediaItemClips = new ObservableCollection<ICatTreeViewCategory>();
 
       if (Template.FindName("PART_SpeedSlider", this) is Slider speedSlider) {
-        _speedSlider = speedSlider;
-        _speedSlider.ValueChanged += (o, e) => {
-          Player.SpeedRatio = _speedSlider.Value;
+        SpeedSlider = speedSlider;
+        SpeedSlider.ValueChanged += (o, e) => {
+          Player.SpeedRatio = SpeedSlider.Value;
           StartClipTimer();
         };
       }
 
       if (Template.FindName("PART_VolumeSlider", this) is Slider volumeSlider) {
-        _volumeSlider = volumeSlider;
-        _volumeSlider.ValueChanged += (o, e) => { Player.Volume = _volumeSlider.Value; };
+        VolumeSlider = volumeSlider;
+        VolumeSlider.ValueChanged += (o, e) => Player.Volume = VolumeSlider.Value;
       }
 
       if (Template.FindName("PART_MediaElement", this) is MediaElement mediaElement) {
         Player = mediaElement;
-        Player.Volume = _volumeSlider.Value;
-        Player.SpeedRatio = _speedSlider.Value;
+        Player.Volume = VolumeSlider.Value;
+        Player.SpeedRatio = SpeedSlider.Value;
         Player.MediaOpened += MediaElement_OnMediaOpened;
         Player.MediaEnded += MediaElement_OnMediaEnded;
         Player.MouseLeftButtonUp += MediaElement_OnMouseLeftButtonUp;
       }
 
       if (Template.FindName("PART_TimelineSlider", this) is Slider timelineSlider) {
-        _timelineSlider = timelineSlider;
-        _timelineSlider.ValueChanged += TimelineSlider_OnValueChanged;
-        _timelineSlider.PreviewMouseLeftButtonUp += TimelineSlider_OnPreviewMouseLeftButtonUp;
-        _timelineSlider.PreviewMouseLeftButtonDown += TimelineSlider_OnPreviewMouseLeftButtonDown;
-      }
-
-      if (Template.FindName("PART_ClipsPanel", this) is SlidePanel spClipsPanel) {
-        if (Template.FindName("PART_BtnIsPinned", this) is ToggleButton btnIsPinned) {
-          BindingOperations.SetBinding(btnIsPinned, ToggleButton.IsCheckedProperty,
-            new Binding(nameof(SlidePanel.IsPinned)) { Source = spClipsPanel });
-        }
-
-        ClipsPanel = spClipsPanel;
+        TimelineSlider = timelineSlider;
+        TimelineSlider.ValueChanged += TimelineSlider_OnValueChanged;
+        TimelineSlider.PreviewMouseLeftButtonUp += TimelineSlider_OnPreviewMouseLeftButtonUp;
+        TimelineSlider.PreviewMouseLeftButtonDown += TimelineSlider_OnPreviewMouseLeftButtonDown;
       }
 
       if (Template.FindName("PART_BtnTimelineBeginning", this) is Button btnBeginning)
@@ -233,54 +217,10 @@ namespace PictureManager.CustomControls {
       if (Template.FindName("PART_BtnTimelineEnd", this) is Button btnEnd)
         btnEnd.Click += ShiftTimelineButton_OnClick;
 
-      if (Template.FindName("PART_BtnMarkerA", this) is Button btnMarkerA)
-        btnMarkerA.Click += (o, e) => SetMarker(CurrentVideoClip, true);
-
-      if (Template.FindName("PART_BtnMarkerB", this) is Button btnMarkerB)
-        btnMarkerB.Click += (o, e) => SetMarker(CurrentVideoClip, false);
-
-      if (Template.FindName("PART_SpPlayTypes", this) is StackPanel spPlayTypes)
-        spPlayTypes.PreviewMouseLeftButtonUp += (o, e) => {
-          if (e.OriginalSource is RadioButton rb) {
-            PlayType = (PlayType)rb.Tag;
-          }
-        };
-
-      if (Template.FindName("PART_CtvClips", this) is CatTreeView ctvClips) {
-        CtvClips = ctvClips;
-
-        CtvClips.SelectedItemChanged += (o, e) => {
-          CurrentVideoClip = CtvClips.SelectedItem as VideoClipViewModel;
-          if (CurrentVideoClip != null && PlayType != PlayType.Video) {
-            _volumeSlider.Value = CurrentVideoClip.Clip.Volume;
-            _speedSlider.Value = CurrentVideoClip.Clip.Speed;
-          }
-
-          if (IsPlaying) StartClipTimer();
-        };
-
-        CtvClips.PreviewMouseLeftButtonUp += (o, e) => {
-          if (e.OriginalSource is FrameworkElement fe && CtvClips.SelectedItem is VideoClipViewModel vc) {
-            switch (fe.Name) {
-              case "TbMarkerA": {
-                // Seek to start video position defined in Clip
-                _timelineSlider.Value = vc.Clip.TimeStart;
-                break;
-              }
-              case "TbMarkerB": {
-                // Seek to end video position defined in Clip
-                _timelineSlider.Value = vc.Clip.TimeEnd;
-                break;
-              }
-            };
-          }
-        };
-      }
-
       _timelineTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
       _timelineTimer.Tick += (o, e) => {
         _isTimelineTimerExecuting = true;
-        _timelineSlider.Value = Math.Round(Player.Position.TotalMilliseconds / SmallChange) * SmallChange;
+        TimelineSlider.Value = Math.Round(Player.Position.TotalMilliseconds / SmallChange) * SmallChange;
         _isTimelineTimerExecuting = false;
       };
 
@@ -291,21 +231,20 @@ namespace PictureManager.CustomControls {
         var vc = CurrentVideoClip.Clip;
         if (vc.TimeEnd > vc.TimeStart) {
           switch (PlayType) {
-            case PlayType.Clip: {
-              _timelineSlider.Value = vc.TimeStart;
-              break;
-            }
+            case PlayType.Clip:
+            TimelineSlider.Value = vc.TimeStart;
+            break;
+
             case PlayType.Clips:
-            case PlayType.Group: {
-              if (_repeatCount > 0) {
-                _repeatCount--;
-                _timelineSlider.Value = vc.TimeStart;
-              }
-              else {
-                App.Ui.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
-              }
-              break;
+            case PlayType.Group:
+            if (_repeatCount > 0) {
+              _repeatCount--;
+              TimelineSlider.Value = vc.TimeStart;
             }
+            else {
+              App.Ui.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
+            }
+            break;
           }
         }
       };
@@ -339,7 +278,7 @@ namespace PictureManager.CustomControls {
 
       var nd = Player.NaturalDuration;
       _repeatCount = (int)Math.Round(RepeatForSeconds / (nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds / 1000.0 : 1), 0);
-      _timelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000;
+      TimelineSlider.Maximum = nd.HasTimeSpan ? nd.TimeSpan.TotalMilliseconds : 1000;
       IsPlaying = true;
 
       if (PlayType != PlayType.Video)
@@ -380,13 +319,13 @@ namespace PictureManager.CustomControls {
       ShiftTimeline((TimelineShift)((Button)sender).Tag);
 
     private void ShiftTimeline(TimelineShift mode) {
-      _timelineSlider.Value = mode switch {
-        TimelineShift.Beginning => _timelineSlider.Minimum,
-        TimelineShift.LargeBack => _timelineSlider.Value - _timelineSlider.LargeChange,
-        TimelineShift.SmallBack => _timelineSlider.Value - _timelineSlider.SmallChange,
-        TimelineShift.SmallForward => _timelineSlider.Value + _timelineSlider.SmallChange,
-        TimelineShift.LargeForward => _timelineSlider.Value + _timelineSlider.LargeChange,
-        TimelineShift.End => _timelineSlider.Maximum,
+      TimelineSlider.Value = mode switch {
+        TimelineShift.Beginning => TimelineSlider.Minimum,
+        TimelineShift.LargeBack => TimelineSlider.Value - TimelineSlider.LargeChange,
+        TimelineShift.SmallBack => TimelineSlider.Value - TimelineSlider.SmallChange,
+        TimelineShift.SmallForward => TimelineSlider.Value + TimelineSlider.SmallChange,
+        TimelineShift.LargeForward => TimelineSlider.Value + TimelineSlider.LargeChange,
+        TimelineShift.End => TimelineSlider.Maximum,
         _ => throw new NotImplementedException()
       };
     }
@@ -396,7 +335,7 @@ namespace PictureManager.CustomControls {
     private void PlayPauseToggle(object sender, RoutedEventArgs e) => PlayPauseToggle();
 
     public void SetMarker(VideoClipViewModel vc, bool start) {
-      vc.SetMarker(start, (int)Math.Round(_timelineSlider.Value), _volumeSlider.Value, _speedSlider.Value);
+      vc.SetMarker(start, (int)Math.Round(TimelineSlider.Value), VolumeSlider.Value, SpeedSlider.Value);
       if (start) CreateThumbnail(vc, Player, true);
     }
 
@@ -411,7 +350,7 @@ namespace PictureManager.CustomControls {
     private bool VideoSourceIsNotNull() => Player.Source != null;
 
     private void VideoClipSplit() {
-      if (CurrentVideoClip != null && CurrentVideoClip.Clip.TimeEnd == 0)
+      if (CurrentVideoClip?.Clip.TimeEnd == 0)
         SetMarker(CurrentVideoClip, false);
       else
         App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
