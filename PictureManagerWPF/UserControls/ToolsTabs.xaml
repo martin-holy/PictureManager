@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="PictureManager.UserControls.ToolsTabs"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:uc="clr-namespace:PictureManager.UserControls">
+  
+  <Grid Background="{StaticResource ColorBrushBackground}">
+    <TabControl TabStripPlacement="Top" BorderThickness="0" x:Name="Tabs">
+      <TabItem Header="Person" x:Name="TabPerson" Visibility="Collapsed">
+        <uc:PersonSegmentsControl x:Name="PersonControl" />
+      </TabItem>
+      <TabItem Header="Clips" x:Name="TabClips" Visibility="Collapsed">
+        <cc:VideoClips x:Name="VideoClips" />
+      </TabItem>
+    </TabControl>
+    
+    <Button Width="24" Height="24" Margin="0,2,26,0" Style="{StaticResource StyleButtonIcon}"
+            HorizontalAlignment="Right" VerticalAlignment="Top" Click="BtnCloseTab_Click"
+            ToolTip="Close tab">
+      <cc:IconRect IconName="XCross" Size="10" />
+    </Button>
+              
+  </Grid>
+</UserControl>
