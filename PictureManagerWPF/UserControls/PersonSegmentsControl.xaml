@@ -5,68 +5,62 @@
              xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   
-  <Grid>
+  <Grid Background="{StaticResource ColorBrushBackground}">
     <Grid.Resources>
       <DataTemplate x:Key="_segmentTemplate">
         <cc:SegmentControl DataContext="{Binding}" PreviewMouseUp="Segment_PreviewMouseUp" />
       </DataTemplate>
     </Grid.Resources>
-      
+    
     <Grid.RowDefinitions>
-      <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
-      
-    <Border Grid.Row="1" BorderThickness="2" BorderBrush="Black" Width="500" Background="{StaticResource ColorBrushBackground}">
-      <StackPanel>
-        <Grid Background="#88000000" Height="30" Margin="0,0,0,5">
-          <TextBlock Text="{Binding Person.Title}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
-          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="BtnReload" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}">
-              <cc:IconRect IconName="Refresh" Size="10" />
-            </Button>
-            <Button x:Name="BtnClose" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}">
-              <cc:IconRect IconName="XCross" Size="10" />
-            </Button>
-          </StackPanel>
-        </Grid>
-        
-        <!-- Keywords -->
-        <Border Style="{StaticResource SBorderGroup}" Margin="4,0"
-                Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
-          <StackPanel Orientation="Horizontal">
-            <cc:IconRect IconName="{x:Static pmd:IconName.Tag}" />
-            
-            <ItemsControl ItemsSource="{Binding Person.DisplayKeywords}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <Border Style="{StaticResource SBorderText}">
-                    <TextBlock Text="{Binding Title}" Style="{StaticResource STextBlock}" />
-                  </Border>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </StackPanel>
-        </Border>
-        
-        <!-- Top Segments -->
-        <TextBlock Text="Top Segments:" Margin="5" />
-        <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
-                                  ScrollViewerSpeedFactor="1" Height="106" />
-        
-        <!-- All Segments -->
-        <TextBlock Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}" Margin="5" />
-        <cc:VirtualizingWrapPanel x:Name="AllSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
-                                  ScrollViewerSpeedFactor="1" MaxHeight="212" />
 
-      </StackPanel>
-    </Border>
+    <StackPanel Grid.Row="0">
+      <Grid Background="#88000000" Margin="0,0,0,5">
+        <TextBlock Text="{Binding Person.Title}" FontSize="20" Padding="8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <cc:IconRect IconName="People" HorizontalAlignment="Left" Margin="6,0" />
+        <Button x:Name="BtnReload" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}" HorizontalAlignment="Right">
+          <cc:IconRect IconName="Refresh" Size="10" />
+        </Button>
+      </Grid>
+        
+      <!-- Keywords -->
+      <Border Style="{StaticResource SBorderGroup}" Margin="4,0" Background="Transparent" BorderThickness="0"
+              Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
+        <StackPanel Orientation="Horizontal">
+          <cc:IconRect IconName="{x:Static pmd:IconName.Tag}" Margin="0,0,4,0" />
+            
+          <ItemsControl ItemsSource="{Binding Person.DisplayKeywords}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Style="{StaticResource SBorderText}">
+                  <TextBlock Text="{Binding Title}" Style="{StaticResource STextBlock}" />
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+        
+      <!-- Top Segments -->
+      <TextBlock Text="Top Segments:" Margin="5" />
+      <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
+                                ScrollViewerSpeedFactor="1" MinHeight="106" Margin="2,0,0,0" />
+      
+      <!-- All Segments -->
+      <TextBlock Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}" Margin="5" />
+    </StackPanel>
+    
+    <!-- All Segments -->
+    <cc:VirtualizingWrapPanel x:Name="AllSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
+                              ScrollViewerSpeedFactor="1" Grid.Row="1" Margin="2,0,0,0" />
   </Grid>
 
 </UserControl>
