@@ -138,7 +138,7 @@ namespace PictureManager.ViewModels {
       App.WMain.MediaViewer.FullVideo.SetMarker(vcvm, true);
       vcvm.IsSelected = true;
       root.Items.Add(vcvm);
-      App.WMain.MediaViewer.FullVideo.CtvClips.ScrollTo(vcvm);
+      App.WMain.ToolsTabs.VideoClips.CtvClips.ScrollTo(vcvm);
 
       CurrentMediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
 
