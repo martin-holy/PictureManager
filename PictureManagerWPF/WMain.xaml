@@ -195,6 +195,24 @@
           
         </Grid>
       </cc:SlidePanelsGrid.ContentMiddle>
+      
+      <cc:SlidePanelsGrid.ContentRight>
+        <cc:SlidePanel Position="Right" Width="340" Margin="0,0,-340,0" x:Name="RightSlidePanel">
+          <cc:SlidePanel.Content>
+            <Grid>
+              <uc:ToolsTabs x:Name="ToolsTabs" />
+              
+              <!-- Pin Button -->
+              <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}"
+                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
+                            IsChecked="{Binding IsPinned, ElementName=RightSlidePanel}"
+                            ToolTip="Pin panel">
+                <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="14" />
+              </ToggleButton>
+            </Grid>
+          </cc:SlidePanel.Content>
+        </cc:SlidePanel>
+      </cc:SlidePanelsGrid.ContentRight>
     </cc:SlidePanelsGrid>
 
     <!-- Status Panel -->
