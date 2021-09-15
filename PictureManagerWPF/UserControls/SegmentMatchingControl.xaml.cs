@@ -32,7 +32,7 @@ namespace PictureManager.UserControls {
 
     public SegmentMatchingControl() {
       InitializeComponent();
-
+      DataContext = this;
       Title = "Segment Matching";
 
       _progress = new Progress<int>(x => {
