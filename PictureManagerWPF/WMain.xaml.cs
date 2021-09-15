@@ -18,9 +18,6 @@ namespace PictureManager {
     public WMain() {
       InitializeComponent();
 
-      // Add Default MainTabs Tab
-      MainTabs.AddTab();
-
       VideoThumbnailPreview = new() {
         LoadedBehavior = MediaState.Manual,
         IsMuted = true,
@@ -35,6 +32,7 @@ namespace PictureManager {
       MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
       RightSlidePanel.CanOpen = () => ToolsTabs.Tabs.Items.Cast<TabItem>().Any(x => x.Visibility == Visibility.Visible);
       ToolsTabs.VideoClips.VideoPlayer = MediaViewer.FullVideo;
+      MainTabs.OnAddTab += () => App.Ui.MediaItemsViewModel.AddThumbsTab();
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
