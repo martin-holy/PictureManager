@@ -1,4 +1,4 @@
-﻿using PictureManager.Commands;
+﻿using MahApps.Metro.Controls;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
@@ -62,17 +62,28 @@ namespace PictureManager.ViewModels {
       return grid;
     }
 
-    public void SetTabContent() {
+    public void AddThumbsTabIfNotActive() {
       if (App.WMain.MainTabs.IsThisContentSet(typeof(MediaItemsThumbsGrid))) return;
+      AddThumbsTab();
+    }
 
-      var dataContext = AddThumbnailsGridModel();
-      var content = new MediaItemsThumbsGrid { DataContext = dataContext };
+    public void AddThumbsTab() {
+      var content = new MediaItemsThumbsGrid();
       var contextMenu = (ContextMenu)content.FindResource("ThumbsGridContextMenu");
+      var dataContext = AddThumbnailsGridModel();
+
+      content.DataContext = dataContext;
       contextMenu.DataContext = dataContext;
-      App.WMain.MainTabs.AddTab();
-      App.WMain.MainTabs.SetTab(dataContext, content, contextMenu);
-      CurrentThumbsGrid = content.ThumbsGrid;
+
+      var tab = App.WMain.MainTabs.AddTab(IconName.Folder, content);
+      tab.DataContext = dataContext;
+      tab.IsSelected = true;
+      tab.UpdateLayout();
+      if (tab.FindChild<StackPanel>("TabHeader") is StackPanel tabHeader)
+        tabHeader.ContextMenu = contextMenu;
+
       _model.ThumbsGrid = dataContext;
+      CurrentThumbsGrid = content.ThumbsGrid;
     }
 
     public static void SetMetadata(ICatTreeViewItem item) {
@@ -124,7 +135,7 @@ namespace PictureManager.ViewModels {
       item.IsSelected = true;
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer)
-        WindowCommands.SwitchToBrowser();
+        Commands.WindowCommands.SwitchToBrowser();
 
       var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
       var folders = Folder.GetFolders(roots, recursive);
