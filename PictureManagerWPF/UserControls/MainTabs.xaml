@@ -1,34 +1,71 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.MainTabs"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:pm="clr-namespace:PictureManager">
+             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:cc="clr-namespace:PictureManager.CustomControls">
 
-  <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left" SizeChanged="OnSizeChanged"
-              Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
-                           Converter={StaticResource AllToVisibilityConverter}, 
-                           ConverterParameter={x:Static pm:AppMode.Browser}}">
+  <Grid Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
+                    Converter={StaticResource AllToVisibilityConverter}, 
+                    ConverterParameter={x:Static pm:AppMode.Browser}}">
+    <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0" TabStripPlacement="Left" SizeChanged="OnSizeChanged">
 
-    <TabControl.Resources>
-      <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MahApps.Styles.TabItem}">
-        <Setter Property="HeaderTemplate">
-          <Setter.Value>
-            <DataTemplate>
-              <StackPanel Orientation="Vertical" ToolTip="{Binding}" x:Name="TabHeader">
-                <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab_Click" 
-                        Visibility="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}, 
-                                                  Converter={StaticResource AllToVisibilityConverter}}" />
-                <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✖" Click="BtnCloseTab_Click" />
-                <TextBlock Text="{Binding}" Margin="0,8">
-                  <TextBlock.LayoutTransform>
-                    <RotateTransform Angle="270" />
-                  </TextBlock.LayoutTransform>
-                </TextBlock>
-              </StackPanel>
-            </DataTemplate>
-          </Setter.Value>
-        </Setter>
-      </Style>
-    </TabControl.Resources>
+      <TabControl.Resources>
+        <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MahApps.Styles.TabItem}">
+          <Setter Property="HeaderTemplate">
+            <Setter.Value>
+              <DataTemplate>
+                <StackPanel Orientation="Vertical" ToolTip="{Binding}" x:Name="TabHeader" Background="Transparent">
+                  
+                  <Grid>
+                    <!-- Close button -->
+                    <Button Content="✖" Click="BtnCloseTab_Click" ToolTip="Close">
+                      <Button.Style>
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleButtonFontSymbol}">
+                          <Setter Property="Visibility" Value="Hidden" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=TabHeader}" Value="True">
+                              <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </Button.Style>
+                    </Button>
+                    
+                    <!-- Tab Icon -->
+                    <cc:IconRect IconName="{Binding Tag, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type TabItem}}}">
+                      <cc:IconRect.Style>
+                        <Style TargetType="{x:Type cc:IconRect}">
+                          <Setter Property="Visibility" Value="Visible" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=TabHeader}" Value="True">
+                              <Setter Property="Visibility" Value="Hidden" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </cc:IconRect.Style>
+                      <cc:IconRect.LayoutTransform>
+                        <RotateTransform Angle="270" />
+                      </cc:IconRect.LayoutTransform>
+                    </cc:IconRect>
+                  </Grid>
 
-  </TabControl>
+                  <!-- Tab text -->
+                  <TextBlock Text="{Binding}" Margin="0,8">
+                    <TextBlock.LayoutTransform>
+                      <RotateTransform Angle="270" />
+                    </TextBlock.LayoutTransform>
+                  </TextBlock>
+                  
+                </StackPanel>
+              </DataTemplate>
+            </Setter.Value>
+          </Setter>
+        </Style>
+      </TabControl.Resources>
+
+    </TabControl>
+    
+    <Button Style="{StaticResource StyleButtonFontSymbol}" Content="✚" Click="BtnAddTab_Click"
+            HorizontalAlignment="Left" VerticalAlignment="Top" Margin="14,2,0,0" ToolTip="Add Tab" />
+  </Grid>
 </UserControl>
