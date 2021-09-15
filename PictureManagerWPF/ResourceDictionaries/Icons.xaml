@@ -142,4 +142,7 @@ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
   <Canvas x:Key="appbar_group">
     <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M3 3h18v18H3V3zm2 2v14h14V5H5zm2 2h4v4H7V7zm6 0h4v4h-4V7zm-6 6h4v4H7v-4zm6 0h4v4h-4v-4z"/>
   </Canvas>
+  <Canvas x:Key="appbar_equals">
+    <Path Stretch="Fill" Fill="{StaticResource WhiteBrush}" Data="M416 304H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32zm0-192H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"/>
+  </Canvas>
 </ResourceDictionary>
