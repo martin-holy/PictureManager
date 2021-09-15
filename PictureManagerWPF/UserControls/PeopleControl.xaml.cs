@@ -27,7 +27,7 @@ namespace PictureManager.UserControls {
 
     public PeopleControl() {
       InitializeComponent();
-
+      DataContext = this;
       Title = "People";
 
       foreach (var person in App.Core.People.All.Cast<Person>())
