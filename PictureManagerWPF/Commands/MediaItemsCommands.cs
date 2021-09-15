@@ -275,7 +275,7 @@ namespace PictureManager.Commands {
 
     private static void SegmentMatching() {
       var mediaItems = ThumbsGrid.GetSelectedOrAll();
-      var control = App.WMain.MainTabs.GetContentOfType<SegmentMatchingControl>();
+      var control = App.WMain.MainTabs.ActivateTab<SegmentMatchingControl>(IconName.Equals);
       var all = MessageDialog.Show("Segment Matching", "Do you want to load all segments or just segments with person?",
         true, new string[] { "All segments", "Segments with person" });
 
