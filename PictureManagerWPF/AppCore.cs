@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace PictureManager {
   public sealed class AppCore {
@@ -78,7 +77,7 @@ namespace PictureManager {
 
       if (item is Rating or Person or Keyword or GeoName) {
         if (loadByTag) {
-          MediaItemsViewModel.SetTabContent();
+          MediaItemsViewModel.AddThumbsTabIfNotActive();
           await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
           return;
         }
@@ -111,13 +110,13 @@ namespace PictureManager {
 
         case Folder:
         case FolderKeyword:
-        MediaItemsViewModel.SetTabContent();
+        MediaItemsViewModel.AddThumbsTabIfNotActive();
         await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
         break;
 
         case ICatTreeViewCategory cat:
         if (cat is People)
-          _ = App.WMain.MainTabs.GetContentOfType<PeopleControl>()?.Reload();
+          _ = App.WMain.MainTabs.ActivateTab<PeopleControl>(IconName.People)?.Reload();
 
         // if category is going to collapse and sub item is selected, category gets selected
         // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
