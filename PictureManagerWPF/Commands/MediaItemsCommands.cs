@@ -53,7 +53,6 @@ namespace PictureManager.Commands {
 
     private static void SelectAll() {
       ThumbsGrid.SelectAll();
-      App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FileSize));
       App.Core.MarkUsedKeywordsAndPeople();
     }
 
