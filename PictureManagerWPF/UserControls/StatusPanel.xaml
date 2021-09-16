@@ -89,10 +89,10 @@
                     Item="{Binding MediaItems.Current.Dimensions}" />
 
       <!-- File Size -->
-      <uc:InfoPanel Visibility="{Binding MediaItems.ThumbsGrid.SelectedCount, Source={x:Static pm:App.Core},
+      <uc:InfoPanel Visibility="{Binding MediaItems.ActiveFileSize, Source={x:Static pm:App.Core},
                                  Converter={StaticResource AllToVisibilityConverter}}"
                     IconName="{x:Static pmd:IconName.PageUpload}"
-                    Item="{Binding FileSize, RelativeSource={RelativeSource AncestorType={x:Type uc:StatusPanel}}}" />
+                    Item="{Binding MediaItems.ActiveFileSize, Source={x:Static pm:App.Core}}" />
 
       <!-- ImageActualZoom -->
       <uc:InfoPanel IconName="{x:Static pmd:IconName.Magnify}"

@@ -3,8 +3,6 @@ using PictureManager.Domain.CatTreeViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -24,27 +22,11 @@ namespace PictureManager.UserControls {
       set => SetValue(IsPinnedProperty, value);
     }
 
-    public string FileSize {
-      get {
-        try {
-          var size = App.Core.MediaItems.Current == null
-            ? App.Core.MediaItems.ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
-            : new FileInfo(App.Core.MediaItems.Current.FilePath).Length;
-
-          return size == null ? string.Empty : Extensions.FileSizeToString((long)size);
-        }
-        catch {
-          return string.Empty;
-        }
-      }
-    }
-
     public ObservableCollection<string> FilePath {
       get {
         var paths = new ObservableCollection<string>();
         var mi = App.Core.MediaItems.Current;
         if (mi == null) return paths;
-
 
         if (App.Ui.AppInfo.AppMode == AppMode.Browser || mi.Folder.FolderKeyword == null) {
           paths.Add(mi.FilePath);
@@ -79,7 +61,6 @@ namespace PictureManager.UserControls {
 
       App.Core.MediaItems.PropertyChanged += (o, e) => {
         if (e.PropertyName.Equals(nameof(App.Core.MediaItems.Current))) {
-          OnPropertyChanged(nameof(FileSize));
           OnPropertyChanged(nameof(DateAndTime));
           OnPropertyChanged(nameof(FilePath));
           UpdateRating();
