@@ -24,8 +24,8 @@ namespace PictureManager.Dialogs {
     private long _totalCompressedSize;
 
     public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
-    public string TotalSourceSize => Extensions.FileSizeToString(_totalSourceSize);
-    public string TotalCompressedSize => Extensions.FileSizeToString(_totalCompressedSize);
+    public string TotalSourceSize => Domain.Extensions.FileSizeToString(_totalSourceSize);
+    public string TotalCompressedSize => Domain.Extensions.FileSizeToString(_totalCompressedSize);
 
     public CompressDialog() {
       InitializeComponent();
