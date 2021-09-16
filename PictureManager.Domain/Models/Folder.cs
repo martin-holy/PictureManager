@@ -235,7 +235,8 @@ namespace PictureManager.Domain.Models {
       }
 
       // sort Items
-      Items.Sort(x => x.Title);
+      if (Items.Sort(x => x.Title))
+        Core.Instance.Folders.SortInDB(Items.Cast<IRecord>().ToList());
     }
 
     public bool HasThisParent(Folder parent) {
