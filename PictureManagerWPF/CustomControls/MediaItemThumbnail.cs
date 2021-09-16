@@ -37,7 +37,6 @@ namespace PictureManager.CustomControls {
       var mi = (MediaItem)((FrameworkElement)sender).DataContext;
       App.Core.MediaItems.ThumbsGrid.Select(mi, isCtrlOn, isShiftOn);
       App.Core.MarkUsedKeywordsAndPeople();
-      App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FileSize));
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
