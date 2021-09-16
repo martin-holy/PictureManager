@@ -1,7 +1,7 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Utils;
+using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +17,8 @@ namespace PictureManager.Domain.Models {
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
+
+    public EventHandler OnSelectionChanged { get; set; }
 
     public List<MediaItem> SelectedItems => _selectedItems;
     public List<MediaItem> LoadedItems { get; } = new();
@@ -62,8 +64,12 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Clear();
     }
 
-    public void SetSelected(MediaItem mi, bool value) =>
-      Selecting.SetSelected<MediaItem>(ref _selectedItems, mi, value, () => OnPropertyChanged(nameof(SelectedCount)));
+    private void SelectionChanged() {
+      OnSelectionChanged?.Invoke(this, EventArgs.Empty);
+      OnPropertyChanged(nameof(SelectedCount));
+    }
+
+    public void SetSelected(MediaItem mi, bool value) => Selecting.SetSelected(ref _selectedItems, mi, value, () => SelectionChanged());
 
     public void UpdateSelected() {
       foreach (var mi in SelectedItems)
@@ -73,11 +79,11 @@ namespace PictureManager.Domain.Models {
         mi.IsSelected = false;
 
       Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
-      OnPropertyChanged(nameof(SelectedCount));
+      SelectionChanged();
     }
 
     public void Select(MediaItem mi, bool isCtrlOn, bool isShiftOn) {
-      Selecting.Select<MediaItem>(ref _selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
+      Selecting.Select(ref _selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => SelectionChanged());
       Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
     }
 
@@ -123,7 +129,6 @@ namespace PictureManager.Domain.Models {
         SetSelected(mi, !mi.IsModified);
 
       Current = null;
-      OnPropertyChanged(nameof(SelectedCount));
     }
 
     public void FilteredItemsSetInPlace(MediaItem mi) {
