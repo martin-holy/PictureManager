@@ -23,12 +23,17 @@ namespace PictureManager.Domain {
       }
     }
 
-    public static void Sort<TSource, TKey>(this ObservableCollection<TSource> collection,
-      Func<TSource, TKey> keySelector) {
+    public static bool Sort<TSource, TKey>(this ObservableCollection<TSource> collection, Func<TSource, TKey> keySelector) {
       var sorted = collection.OrderBy(keySelector).ToList();
-      for (var i = 0; i < sorted.Count; i++) {
-        collection.Move(collection.IndexOf(sorted[i]), i);
+      var modified = false;
+      for (var newI = 0; newI < sorted.Count; newI++) {
+        var oldI = collection.IndexOf(sorted[newI]);
+        if (newI != oldI) {
+          collection.Move(oldI, newI);
+          modified = true;
+        }
       }
+      return modified;
     }
 
     public static void AddInOrder<T>(this List<T> list, T item, Func<T, T, bool> compare) {
