@@ -49,7 +49,7 @@ namespace PictureManager.Commands {
           else
             App.Core.MediaItems.IsEditModeOn = false;
 
-          App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FileSize));
+          App.Core.MediaItems.OnPropertyChanged(nameof(App.Core.MediaItems.ActiveFileSize));
         });
 
       progress.StartDialog();
