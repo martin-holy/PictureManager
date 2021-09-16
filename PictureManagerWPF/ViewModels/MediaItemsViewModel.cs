@@ -54,14 +54,6 @@ namespace PictureManager.ViewModels {
       };
     }
 
-    private ThumbnailsGrid AddThumbnailsGridModel() {
-      var grid = new ThumbnailsGrid();
-      _model.ThumbnailsGrids.Add(grid);
-      _model.ThumbsGrid = grid;
-
-      return grid;
-    }
-
     public void AddThumbsTabIfNotActive() {
       if (App.WMain.MainTabs.IsThisContentSet(typeof(MediaItemsThumbsGrid))) return;
       AddThumbsTab();
@@ -70,7 +62,7 @@ namespace PictureManager.ViewModels {
     public void AddThumbsTab() {
       var content = new MediaItemsThumbsGrid();
       var contextMenu = (ContextMenu)content.FindResource("ThumbsGridContextMenu");
-      var dataContext = AddThumbnailsGridModel();
+      var dataContext = _model.AddThumbnailsGridModel();
 
       content.DataContext = dataContext;
       contextMenu.DataContext = dataContext;
