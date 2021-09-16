@@ -119,6 +119,12 @@ namespace PictureManager.Domain.Models {
       return false;
     }
 
+    public void SortInDB(List<IRecord> sorted) {
+      for (int i = 0; i < sorted.Count; i++)
+        All.Move(sorted[i], i);
+      Core.Instance.Sdb.SetModified<Folders>();
+    }
+
     public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder, IProgress<object[]> progress,
       MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
