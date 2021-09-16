@@ -38,18 +38,6 @@ namespace PictureManager {
       }
     }
 
-    public static string FileSizeToString(long size) {
-      string[] sizes = { "B", "KB", "MB", "GB" };
-      var order = 0;
-      var doubleSize = (double)size;
-      while (doubleSize >= 1024 && order + 1 < sizes.Length) {
-        order++;
-        doubleSize /= 1024;
-      }
-
-      return $"{doubleSize:0.##} {sizes[order]}";
-    }
-
     public static T FindTemplatedParent<T>(FrameworkElement child) where T : FrameworkElement {
       while (true) {
         if (child?.TemplatedParent == null) return null;
