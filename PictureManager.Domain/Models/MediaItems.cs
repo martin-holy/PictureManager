@@ -29,12 +29,34 @@ namespace PictureManager.Domain.Models {
         if (ThumbsGrid != null && ThumbsGrid.Current != value)
           ThumbsGrid.Current = value;
         OnPropertyChanged(nameof(Current));
+        OnPropertyChanged(nameof(ActiveFileSize));
       }
     }
+
     public ThumbnailsGrid ThumbsGrid {
       get => _currentThumbsGrid;
-      set { _currentThumbsGrid = value; OnPropertyChanged(nameof(ThumbsGrid)); }
+      set {
+        _currentThumbsGrid = value;
+        OnPropertyChanged(nameof(ThumbsGrid));
+        OnPropertyChanged(nameof(ActiveFileSize));
+      }
     }
+
+    public string ActiveFileSize {
+      get {
+        try {
+          var size = Current == null
+            ? ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
+            : new FileInfo(Current.FilePath).Length;
+
+          return size == null || size == 0 ? string.Empty : Extensions.FileSizeToString((long)size);
+        }
+        catch {
+          return string.Empty;
+        }
+      }
+    }
+
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
     public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
@@ -428,6 +450,16 @@ namespace PictureManager.Domain.Models {
       }, token);
 
       return output;
+    }
+
+    public ThumbnailsGrid AddThumbnailsGridModel() {
+      var grid = new ThumbnailsGrid();
+      ThumbnailsGrids.Add(grid);
+      ThumbsGrid = grid;
+
+      grid.OnSelectionChanged += (o, e) => OnPropertyChanged(nameof(ActiveFileSize));
+
+      return grid;
     }
   }
 }
