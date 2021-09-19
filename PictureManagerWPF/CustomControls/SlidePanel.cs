@@ -70,11 +70,6 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-
-      MouseLeave += delegate {
-        if (!IsPinned && IsOpen) IsOpen = false;
-      };
-
       UpdateAnimation();
 
       Storyboard.SetTargetProperty(_openAnimation, new(MarginProperty));
