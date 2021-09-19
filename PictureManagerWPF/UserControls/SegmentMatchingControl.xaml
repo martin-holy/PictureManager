@@ -70,8 +70,12 @@
         <cc:IconRect IconName="{x:Static pmd:IconName.PeopleMultiple}" IconFill="White" />
       </ToggleButton>
       
+      <Button x:Name="BtnOpenSegmentsDrawer" ToolTip="Open Segments drawer" Style="{StaticResource _IconButton}">
+        <cc:IconRect IconName="Drawer" />
+      </Button>
+      
       <Button x:Name="BtnCompareAllGroups" ToolTip="Compare all groups of segments" Style="{StaticResource _IconButton}">
-        <cc:IconRect IconName="Star" />
+        <cc:IconRect IconName="Compare" />
       </Button>
 
       <Button x:Name="BtnCompare" ToolTip="Compare" Style="{StaticResource _IconButton}">
