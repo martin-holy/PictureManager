@@ -16,6 +16,8 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
+    private DragDropFactory _ddA;
+    private DragDropFactory _ddB;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
@@ -24,19 +26,23 @@ namespace PictureManager.UserControls {
 
     public PersonSegmentsControl() {
       InitializeComponent();
-
       AttachEvents();
     }
 
     private void AttachEvents() {
-      AllowDrop = true;
-      PreviewMouseLeftButtonDown += SetDragObject;
-      PreviewMouseLeftButtonUp += ReleaseDragObject;
-      MouseMove += StartDragDrop;
-      DragEnter += AllowDropCheck;
-      DragLeave += AllowDropCheck;
-      DragOver += AllowDropCheck;
-      Drop += OnDrop;
+      // Drag from AllSegments to TopSegments
+      _ddA = new DragDropFactory(AllSegmentsGrid, TopSegmentsGrid,
+        (src) => src?.DataContext is Segment,
+        (src) => (src.DataContext, DragDropEffects.Copy),
+        (e, data) => Person.Segments?.Contains(data) != true,
+        (e, data) => TopSegmentsDrop(data as Segment));
+
+      // Drag to remove from TopSegments
+      _ddB = new DragDropFactory(TopSegmentsGrid, TopSegmentsGrid,
+        (src) => src?.DataContext is Segment,
+        (src) => (src.DataContext, DragDropEffects.Move),
+        (e, data) => data != ((FrameworkElement)e.OriginalSource).DataContext,
+        (e, data) => TopSegmentsDrop(data as Segment));
 
       BtnReload.Click += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
 
@@ -45,6 +51,19 @@ namespace PictureManager.UserControls {
 
       if (AppCore.OnSetPerson?.IsRegistered(this) != true)
         AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
+    }
+
+    private void TopSegmentsDrop(Segment segment) {
+      if (segment == null) return;
+
+      Person.Segments = Domain.Extensions.Toggle(Person.Segments, segment, true);
+      Person.OnPropertyChanged(nameof(Person.Segments));
+
+      if (Person.Segments?.Count > 0)
+        Person.Segment = Person.Segments[0];
+
+      App.Db.SetModified<People>();
+      ReloadTopSegments();
     }
 
     private void ReloadTopSegments() {
@@ -104,81 +123,5 @@ namespace PictureManager.UserControls {
       var segment = (Segment)((FrameworkElement)sender).DataContext;
       App.Core.Segments.Select(AllSegments, segment, isCtrlOn, isShiftOn);
     }
-
-    #region Drag & Drop
-
-    private Point _dragDropStartPosition;
-    private FrameworkElement _dragDropSource;
-    private DragDropEffects _dragDropEffects;
-
-    private void SetDragObject(object sender, MouseButtonEventArgs e) {
-      _dragDropSource = null;
-      _dragDropStartPosition = new Point(0, 0);
-
-      var src = e.OriginalSource as FrameworkElement;
-      if (src?.DataContext is not Segment) return;
-
-      _dragDropSource = src;
-      _dragDropEffects = DragDropEffects.Copy;
-      _dragDropStartPosition = e.GetPosition(null);
-    }
-
-    private void ReleaseDragObject(object sender, MouseButtonEventArgs e) => _dragDropSource = null;
-
-    private void StartDragDrop(object sender, MouseEventArgs e) {
-      if (_dragDropSource == null || !IsDragDropStarted(e)) return;
-      _ = DragDrop.DoDragDrop(_dragDropSource, _dragDropSource.DataContext, _dragDropEffects);
-    }
-
-    private bool IsDragDropStarted(MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed) return false;
-      var diff = _dragDropStartPosition - e.GetPosition(null);
-      return Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
-             Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
-    }
-
-    private void AllowDropCheck(object sender, DragEventArgs e) {
-      var dest = (FrameworkElement)e.OriginalSource;
-      var isFromTop = _dragDropSource.IsDescendantOf(TopSegmentsGrid);
-      var isInTop = dest.IsDescendantOf(TopSegmentsGrid);
-      var segment = e.Data.GetData(typeof(Segment)) as Segment;
-
-      if (segment != null
-        && ((isInTop && (Person.Segments?.Contains(segment) != true))
-        || (isFromTop && !isInTop && _dragDropSource != dest))) return;
-
-      // can't be dropped
-      e.Effects = DragDropEffects.None;
-      e.Handled = true;
-    }
-
-    private void OnDrop(object sender, DragEventArgs e) {
-      var dest = (FrameworkElement)e.OriginalSource;
-      var segment = e.Data.GetData(typeof(Segment)) as Segment;
-      var dropInTop = dest.IsDescendantOf(TopSegmentsGrid);
-
-      if (segment == null) return;
-
-      if (dropInTop) {
-        if (Person.Segments == null) {
-          Person.Segments = new();
-          Person.OnPropertyChanged(nameof(Person.Segments));
-        }
-        Person.Segments.Add(segment);
-      }
-      else {
-        _ = Person.Segments.Remove(segment);
-        if (Person.Segments.Count == 0)
-          Person.Segments = null;
-      }
-
-      if (Person.Segments?.Count > 0)
-        Person.Segment = Person.Segments[0];
-
-      App.Db.SetModified<People>();
-      ReloadTopSegments();
-    }
-
-    #endregion Drag & Drop
   }
 }
