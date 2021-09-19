@@ -8,12 +8,15 @@ namespace PictureManager.Domain.Utils {
     private Task _task;
 
     public CancellationToken Token { get; private set; }
+    public bool WaitingForCancel { get; private set; }
 
     public async Task Cancel() {
       if (_task != null) {
+        WaitingForCancel = true;
         _cts?.Cancel();
         if (_task.Status != TaskStatus.Canceled)
           await _task;
+        WaitingForCancel = false;
       }
     }
 
