@@ -157,14 +157,27 @@ namespace PictureManager.Domain {
       e.GetInvocationList().Any(x => x.Target.GetType() == target.GetType());
 
     public static bool Toggle<T>(this HashSet<T> hashSet, T item) {
-      if (hashSet.Contains(item)) {
-        hashSet.Remove(item);
+      if (hashSet.Remove(item))
         return false;
+
+      hashSet.Add(item);
+      return true;
+    }
+
+    public static List<T> Toggle<T>(List<T> list, T item, bool nullIfEmpty) where T : new() {
+      if (list == null) {
+        list = new();
+        list.Add(item);
+        return list;
       }
-      else {
-        hashSet.Add(item);
-        return true;
-      }
+
+      if (!list.Remove(item))
+        list.Add(item);
+
+      if (nullIfEmpty && list.Count == 0)
+        list = null;
+
+      return list;
     }
 
     public static string FileSizeToString(long size) {
