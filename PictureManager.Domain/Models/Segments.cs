@@ -25,6 +25,7 @@ namespace PictureManager.Domain.Models {
     public List<Segment> Loaded { get; } = new();
     public List<List<Segment>> LoadedGroupedByPerson { get; } = new();
     public List<Segment> Selected => _selected;
+    public List<Segment> SegmentsDrawer { get; } = new();
     public List<(int personId, Segment segment, List<(int personId, Segment segment, double sim)> similar)> ConfirmedSegments { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
@@ -102,6 +103,10 @@ namespace PictureManager.Domain.Models {
         SimilarityLimit = int.Parse(similarityLimit);
       if (Helper.TableProps.TryGetValue(nameof(SimilarityLimitMin), out var similarityLimitMin))
         SimilarityLimitMin = int.Parse(similarityLimitMin);
+      if (Helper.TableProps.TryGetValue(nameof(SegmentsDrawer), out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
+        foreach (var segmentId in segmentsDrawer.Split(','))
+          SegmentsDrawer.Add(AllDic[int.Parse(segmentId)]);
+      }
 
       // table props are not needed any more
       Helper.TableProps.Clear();
@@ -114,6 +119,7 @@ namespace PictureManager.Domain.Models {
       Helper.TableProps.Add(nameof(CompareSegmentSize), CompareSegmentSize.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimit), SimilarityLimit.ToString());
       Helper.TableProps.Add(nameof(SimilarityLimitMin), SimilarityLimitMin.ToString());
+      Helper.TableProps.Add(nameof(SegmentsDrawer), string.Join(",", SegmentsDrawer.Select(x => x.Id)));
     }
     #endregion
 
@@ -123,6 +129,14 @@ namespace PictureManager.Domain.Models {
     public void DeselectAll() => Selecting.DeselectAll<Segment>(ref _selected, () => OnPropertyChanged(nameof(SelectedCount)));
 
     public void SetSelected(Segment segment, bool value) => Selecting.SetSelected<Segment>(ref _selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
+
+    public bool SegmentsDrawerToggle(Segment segment) {
+      if (segment == null) return false;
+      Extensions.Toggle(SegmentsDrawer, segment, false);
+      Helper.AreTablePropsModified = true;
+      Core.Instance.Sdb.Changes++;
+      return true;
+    }
 
     private void ResetBeforeNewLoad() {
       DeselectAll();
