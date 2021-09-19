@@ -42,6 +42,7 @@ namespace PictureManager.UserControls {
 
       BindingOperations.SetBinding(tab, HeaderedContentControl.HeaderProperty, new Binding("Title"));
       Tabs.Items.Add(tab);
+      UpdateTabMaxHeight();
 
       return tab;
     }
