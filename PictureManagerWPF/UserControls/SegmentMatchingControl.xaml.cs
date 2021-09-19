@@ -27,6 +27,7 @@ namespace PictureManager.UserControls {
     private bool _loading;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private List<MediaItem> _mediaItems;
+    private DragDropFactory _dd;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
@@ -77,11 +78,24 @@ namespace PictureManager.UserControls {
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
 
+      BtnOpenSegmentsDrawer.Click += (o, e) => OpenSegmentsDrawer();
+
       if (AppCore.OnToggleKeyword?.IsRegistered(this) != true)
         AppCore.OnToggleKeyword += (o, e) => _ = SortAndReload();
 
       if (AppCore.OnSetPerson?.IsRegistered(this) != true)
         AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
+
+      // Drag & Drop to Segments Drawer
+      var sd = App.WMain.ToolsTabs.SegmentsDrawer;
+      _dd = new DragDropFactory(this, sd.SegmentsGrid,
+        (src) => src?.DataContext is Segment,
+        (src) => (src.DataContext, DragDropEffects.Copy),
+        (e, data) => !App.Core.Segments.SegmentsDrawer.Contains(data),
+        (e, data) => {
+          if (App.Core.Segments.SegmentsDrawerToggle(data as Segment))
+            _ = sd.ReloadSegments();
+        });
     }
 
     public async Task LoadSegmentsAsync(bool withPersonOnly) {
@@ -222,6 +236,12 @@ namespace PictureManager.UserControls {
       await Reload(true, true);
       UpdateLayout();
       ConfirmedSegmentsGrid.ScrollToTop();
+    }
+
+    private static void OpenSegmentsDrawer() {
+      App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabSegments, true);
+      App.WMain.RightSlidePanel.IsOpen = true;
+      _ = App.WMain.ToolsTabs.SegmentsDrawer.ReloadSegments();
     }
   }
 }

@@ -12,6 +12,9 @@
       <TabItem Header="Clips" x:Name="TabClips" Visibility="Collapsed">
         <cc:VideoClips x:Name="VideoClips" />
       </TabItem>
+      <TabItem Header="Segments" x:Name="TabSegments" Visibility="Collapsed">
+        <uc:SegmentsDrawerControl x:Name="SegmentsDrawer" />
+      </TabItem>
     </TabControl>
     
     <Button Width="24" Height="24" Margin="0,2,26,0" Style="{StaticResource StyleButtonIcon}"
