@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new List<MediaItem>();
     public List<VideoClip> VideoClips { get; set; }
-    public ObservableCollection<Segment> Segments { get; set; } // Top Segments only
+    public List<Segment> Segments { get; set; } // Top Segments only
     public List<Keyword> Keywords { get; set; }
     public ObservableCollection<Keyword> DisplayKeywords { get; set; }
     public Segment Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
