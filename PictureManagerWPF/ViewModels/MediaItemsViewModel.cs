@@ -277,12 +277,13 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task ThumbsGridReloadItems() {
+      if (_workTask.WaitingForCancel) return;
+      await _workTask.Cancel();
       ScrollToTop();
       CurrentThumbsGrid?.ClearRows();
 
       if (_model.ThumbsGrid == null || _model.ThumbsGrid.FilteredItems.Count == 0) return;
 
-      await _workTask.Cancel();
       await _workTask.Start(Task.Run(async () =>
         await LoadThumbnailsAsync(_model.ThumbsGrid.FilteredItems.ToArray(), _workTask.Token)));
 
