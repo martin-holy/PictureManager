@@ -6,18 +6,20 @@ namespace PictureManager.Domain.Utils {
   public sealed class WorkTask : IDisposable {
     private CancellationTokenSource _cts;
     private Task _task;
+    private bool _waitingForCancel;
 
     public CancellationToken Token { get; private set; }
-    public bool WaitingForCancel { get; private set; }
 
-    public async Task Cancel() {
-      if (_task != null) {
-        WaitingForCancel = true;
-        _cts?.Cancel();
-        if (_task.Status != TaskStatus.Canceled)
-          await _task;
-        WaitingForCancel = false;
-      }
+    public async Task<bool> Cancel() {
+      if (_task == null || _waitingForCancel) return false;
+
+      _waitingForCancel = true;
+      _cts?.Cancel();
+      if (_task.Status != TaskStatus.Canceled)
+        await _task;
+      _waitingForCancel = false;
+
+      return true;
     }
 
     public Task Start(Task task) {

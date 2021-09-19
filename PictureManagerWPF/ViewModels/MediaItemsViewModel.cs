@@ -277,8 +277,8 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task ThumbsGridReloadItems() {
-      if (_workTask.WaitingForCancel) return;
-      await _workTask.Cancel();
+      if (!await _workTask.Cancel()) return;
+
       ScrollToTop();
       CurrentThumbsGrid?.ClearRows();
 
