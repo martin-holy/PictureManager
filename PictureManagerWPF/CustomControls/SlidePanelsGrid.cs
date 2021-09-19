@@ -45,7 +45,7 @@ namespace PictureManager.CustomControls {
       MouseMove += (o, e) => {
         var pos = e.GetPosition(this);
 
-        // to stop opening panel by it self in some cases
+        // to stop opening/closing panel by it self in some cases
         if ((pos.X == 0 && pos.Y == 0) || pos.X < 0 || pos.Y < 0) return;
 
         if (ContentLeft != null) {
