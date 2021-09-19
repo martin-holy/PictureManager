@@ -92,6 +92,8 @@ namespace PictureManager.Domain.Models {
     public double SimMax { get; set; }
     public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
+    public Segment() { }
+
     public Segment(int id, int personId, int x, int y, int radius) {
       Id = id;
       PersonId = personId;
