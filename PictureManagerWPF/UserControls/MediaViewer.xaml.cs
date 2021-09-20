@@ -21,7 +21,11 @@ namespace PictureManager.UserControls {
     public MediaItem Current {
       get => _current;
       set {
+        if (_current != null)
+          App.Core.MediaItems.ThumbsGrid?.SetSelected(_current, false);
         _current = value;
+        if (_current != null)
+          App.Core.MediaItems.ThumbsGrid?.SetSelected(_current, true);
         if (App.Core.MediaItems.Current != value)
           App.Core.MediaItems.Current = value;
         OnPropertyChanged();
