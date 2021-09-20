@@ -74,13 +74,12 @@ namespace PictureManager.Commands {
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      var newCurrent = MediaItems.GetNewCurrent(ThumbsGrid != null
+      App.Core.MediaItems.Current = MediaItems.GetNewCurrent(ThumbsGrid != null
         ? ThumbsGrid.LoadedItems
         : App.WMain.MediaViewer.MediaItems,
         items);
 
       App.Core.MediaItems.Delete(items, AppCore.FileOperationDelete);
-      App.Core.MediaItems.Current = newCurrent;
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
 
       if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl smc)
