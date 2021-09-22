@@ -1,5 +1,6 @@
 ﻿using PictureManager.Domain.Models;
 using PictureManager.Utils;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,11 +17,15 @@ namespace PictureManager.UserControls {
       // Drag to remove from SegmentsGrid
       _dd = new DragDropFactory(SegmentsGrid, SegmentsGrid,
         (src) => src?.DataContext is Segment,
-        (src) => (src.DataContext, DragDropEffects.Move),
-        (e, data) => data != ((FrameworkElement)e.OriginalSource).DataContext,
+        (src) => (App.Core.Segments.GetOneOrSelected(src.DataContext as Segment), DragDropEffects.Move),
+        (e, data) => !((Segment[])data).Contains(((FrameworkElement)e.OriginalSource).DataContext),
         (e, data) => {
-          if (App.Core.Segments.SegmentsDrawerToggle(data as Segment))
-            _ = ReloadSegments();
+          var changed = false;
+          foreach (var segment in (Segment[])data) {
+            if (App.Core.Segments.SegmentsDrawerToggle(segment))
+              changed = true;
+          }
+          if (changed) _ = ReloadSegments();
         });
     }
 
