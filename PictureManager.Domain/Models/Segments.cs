@@ -145,6 +145,8 @@ namespace PictureManager.Domain.Models {
       LoadedGroupedByPerson.Clear();
     }
 
+    public Segment[] GetOneOrSelected(Segment one) => Selected.Contains(one) ? Selected.ToArray() : new Segment[] { one };
+
     public Segment[] GetSegments(List<MediaItem> mediaItems, bool withPersonOnly) {
       if (withPersonOnly) {
         var people = mediaItems.Where(mi => mi.Segments != null).SelectMany(mi => mi.Segments.Select(s => s.PersonId)).Distinct().ToHashSet();
