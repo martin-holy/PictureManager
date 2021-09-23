@@ -39,12 +39,7 @@ namespace PictureManager.UserControls {
 
     public void Activate(TabItem tabItem, bool activate) {
       tabItem.Visibility = activate ? Visibility.Visible : Visibility.Collapsed;
-      if (activate)
-        tabItem.IsSelected = true;
-      else {
-        var tab = Tabs.Items.Cast<TabItem>().FirstOrDefault(x => x.Visibility == Visibility.Visible);
-        if (tab != null) tab.IsSelected = true;
-      }
+      tabItem.IsSelected = activate;
     }
   }
 }
