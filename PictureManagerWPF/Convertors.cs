@@ -17,7 +17,11 @@ namespace PictureManager {
       if (value == null) return false;
 
       if (parameter != null)
-        return value.Equals(parameter);
+        return value switch {
+          string s => s.Equals(parameter),
+          int i => i.Equals(int.Parse((string)parameter)),
+          _ => value.Equals(parameter),
+        };
 
       return value switch {
         string s => !string.IsNullOrEmpty(s),
