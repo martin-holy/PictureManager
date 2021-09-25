@@ -8,7 +8,7 @@
   <Grid Background="{StaticResource ColorBrushBackground}">
     <Grid.Resources>
       <DataTemplate x:Key="_segmentTemplate">
-        <cc:SegmentControl DataContext="{Binding}" PreviewMouseUp="Segment_PreviewMouseUp" />
+        <cc:SegmentControl DataContext="{Binding}" Selected="OnSegmentSelected" />
       </DataTemplate>
     </Grid.Resources>
     

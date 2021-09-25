@@ -8,7 +8,7 @@
     <cc:VirtualizingWrapPanel x:Name="SegmentsGrid" ScrollViewerSpeedFactor="1" Margin="2,0,0,0">
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:SegmentControl DataContext="{Binding}" PreviewMouseUp="Segment_PreviewMouseUp" />
+          <cc:SegmentControl DataContext="{Binding}" Selected="OnSegmentSelected" />
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
     </cc:VirtualizingWrapPanel>
