@@ -16,6 +16,7 @@ namespace PictureManager.CustomControls {
     }
 
     public ObservableCollection<Tuple<Int32Rect, bool>> MediaItemSegmentRects { get; } = new();
+    public EventHandler<MouseButtonEventArgs> Selected { get; set; }
 
     static SegmentControl() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(SegmentControl), new FrameworkPropertyMetadata(typeof(SegmentControl)));
@@ -32,8 +33,18 @@ namespace PictureManager.CustomControls {
       if (Template.FindName("PART_Border", this) is Border b)
         b.ToolTipOpening += (o, e) => ReloadMediaItemSegmentRects();
 
+      if (Template.FindName("PART_ImageGrid", this) is Grid imgGrid)
+        imgGrid.PreviewMouseUp += (o, e) => Selected?.Invoke(o, e);
+
       if (Template.FindName("PART_BtnDetail", this) is Button btnDetail)
         btnDetail.Click += (o, e) => _ = App.Core.People.Current = (DataContext as Segment)?.Person;
+
+      if (Template.FindName("PART_BtnSamePerson", this) is Button btnSamePerson)
+        btnSamePerson.Click += (o, e) => {
+          App.Core.Segments.SetSelectedAsSamePerson();
+          App.Core.Segments.DeselectAll();
+          AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
+        };
     }
 
     public void ReloadMediaItemSegmentRects() {
