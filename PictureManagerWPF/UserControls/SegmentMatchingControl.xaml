@@ -17,7 +17,7 @@
       </Style>
       
       <DataTemplate x:Key="SegmentDataTemplate">
-        <cc:SegmentControl DataContext="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" PreviewMouseUp="Segment_PreviewMouseUp" />
+        <cc:SegmentControl DataContext="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" Selected="OnSegmentSelected" />
       </DataTemplate>
     </Grid.Resources>
     
@@ -70,6 +70,10 @@
         <cc:IconRect IconName="{x:Static pmd:IconName.PeopleMultiple}" IconFill="White" />
       </ToggleButton>
       
+      <Button x:Name="BtnUnknown" ToolTip="Set selected as Unknown" Style="{StaticResource _IconButton}">
+        <cc:IconRect IconName="Question" />
+      </Button>
+      
       <Button x:Name="BtnOpenSegmentsDrawer" ToolTip="Open Segments drawer" Style="{StaticResource _IconButton}">
         <cc:IconRect IconName="Drawer" />
       </Button>
@@ -92,29 +96,7 @@
               Minimum="{Binding Segments.SimilarityLimitMin, Source={x:Static pm:App.Core}}" 
               Maximum="100" Width="100" AutoToolTipPlacement="BottomRight" Margin="8,0" />
     </StackPanel>
-    
-    <!-- Float Control Buttons -->
-    <StackPanel x:Name="ControlButtons" Orientation="Horizontal" Background="#88000000" Height="30" Width="82"
-                HorizontalAlignment="Left" VerticalAlignment="Top"
-                Visibility="{Binding Segments.SelectedCount, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
-      <StackPanel.Resources>
-        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource _IconButton}">
-          <Setter Property="Margin" Value="0" />
-        </Style>
-      </StackPanel.Resources>
-      
-      <!-- Selected -->
-      <Border Background="#1181B1" Style="{StaticResource SBorderGroup}" VerticalAlignment="Center" Margin="2,0">
-        <TextBlock Text="{Binding Segments.SelectedCount, Source={x:Static pm:App.Core}}" Style="{StaticResource STextBlock}" />
-      </Border>
-      
-      <Button x:Name="BtnSamePerson" ToolTip="Same Person">
-        <cc:IconRect IconName="People" IconFill="LimeGreen" Size="17" />
-      </Button>
-      <Button x:Name="BtnUnknown" ToolTip="Unknown">
-        <cc:IconRect IconName="People" IconFill="Orange" Size="17" />
-      </Button>
-    </StackPanel>
+
   </Grid>
 
 </UserControl>
