@@ -48,16 +48,27 @@ namespace PictureManager {
       var pCount = App.Core.People.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
 
-      var msgCount = sCount > 1 || (sCount == 0 && pCount > 1) ? $"'s ({(sCount > 0 ? sCount : pCount)})" : string.Empty;
-      var msg = $"Do you want to toggle #{keyword.FullPath} on selected {(sCount > 0 ? "segment" : "person")}{msgCount}?";
+      var msgA = $"Do you want to toggle #{keyword.FullPath} on selected";
+      var msgS = sCount > 1 ? "Segments" : "Segment";
+      var msgP = pCount > 1 ? "People" : "Person";
+      var msgSCount = sCount > 1 ? $" ({sCount})" : string.Empty;
+      var msgPCount = pCount > 1 ? $" ({pCount})" : string.Empty;
 
-      if (!MessageDialog.Show("Toggle Keyword", msg, true)) return;
-      if (sCount > 0)
+      bool? result = null;
+      if (sCount > 0 && pCount > 0)
+        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgS} or {msgP}?", true, msgS + msgSCount, msgP + msgPCount);
+      else if (sCount > 0)
+        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgS}{msgSCount}?", true) ? true : null;
+      else if (pCount > 0)
+        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgP}{msgPCount}?", true) ? false : null;
+
+      if (result == null) return;
+      if (result == true)
         App.Core.Segments.ToggleKeywordOnSelected(keyword);
       else
         App.Core.People.ToggleKeywordOnSelected(keyword);
 
-      OnToggleKeyword?.Invoke(null, null);
+      OnToggleKeyword?.Invoke(null, EventArgs.Empty);
     }
 
     public static void SetPerson(Person person) {
