@@ -52,5 +52,24 @@ namespace PictureManager.Dialogs {
 
       return result;
     }
+
+    public static bool? Show(string title, string message, bool canCancel, string buttonYes, string buttonNo) {
+      bool? result = null;
+      var md = new MessageDialog(title, message, canCancel, new string[] { buttonYes, buttonNo });
+
+      md.BtnOk.Click += (o, e) => {
+        result = true;
+        md.Close();
+      };
+
+      md.BtnNo.Click += (o, e) => {
+        result = false;
+        md.Close();
+      };
+
+      _ = md.ShowDialog();
+
+      return result;
+    }
   }
 }
