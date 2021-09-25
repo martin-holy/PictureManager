@@ -48,12 +48,6 @@ namespace PictureManager.UserControls {
     }
 
     private void AttachEvents() {
-      BtnSamePerson.Click += (o, e) => {
-        App.Core.Segments.SetSelectedAsSamePerson();
-        App.Core.Segments.DeselectAll();
-        AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
-      };
-
       BtnUnknown.Click += (o, e) => {
         App.Core.Segments.SetSelectedAsUnknown();
         App.Core.Segments.DeselectAll();
@@ -214,21 +208,13 @@ namespace PictureManager.UserControls {
       ConfirmedSegmentsGrid.ScrollTo(itemToScrollTo);
     }
 
-    private void Segment_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var segment = (Segment)((FrameworkElement)sender).DataContext;
       var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row && row.Group != null
         ? row.Group.Items.Cast<Segment>().ToList()
         : new List<Segment>() { segment };
       App.Core.Segments.Select(list, segment, isCtrlOn, isShiftOn);
-      MoveControlButtons();
-    }
-
-    private void MoveControlButtons() {
-      var mouseLoc = Mouse.GetPosition(this);
-      mouseLoc.Y += ControlButtons.Height + 10;
-      mouseLoc.X -= ControlButtons.Width / 2;
-      ControlButtons.RenderTransform = new TranslateTransform(mouseLoc.X, mouseLoc.Y);
     }
 
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
