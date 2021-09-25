@@ -93,9 +93,8 @@ namespace PictureManager.UserControls {
       await Reload();
     }
 
-    private void Segment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) {
-      if (sender is SegmentControl fc && fc.DataContext != null) {
-        var segment = (Segment)fc.DataContext;
+    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
+      if (((FrameworkElement)sender).DataContext is Segment segment) {
         App.Core.Segments.DeselectAll();
         App.Core.People.Select(null, segment.Person, false, false);
       }

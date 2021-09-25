@@ -8,7 +8,7 @@
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:SegmentControl DataContext="{Binding Segment}" MouseLeftButtonUp="Segment_MouseLeftButtonUp">
+          <cc:SegmentControl DataContext="{Binding Segment}" Selected="OnSegmentSelected">
             <cc:SegmentControl.Style>
               <Style TargetType="{x:Type cc:SegmentControl}">
                 <Setter Property="IsCheckmarkVisible" Value="False" />

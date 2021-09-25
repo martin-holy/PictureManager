@@ -44,7 +44,7 @@ namespace PictureManager.UserControls {
       SegmentsGrid.ScrollToTop();
     }
 
-    private void Segment_PreviewMouseUp(object sender, MouseButtonEventArgs e) {
+    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var segment = (Segment)((FrameworkElement)sender).DataContext;
       App.Core.Segments.Select(App.Core.Segments.SegmentsDrawer, segment, isCtrlOn, isShiftOn);
