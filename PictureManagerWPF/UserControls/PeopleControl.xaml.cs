@@ -3,6 +3,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
+using PictureManager.Utils;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -95,8 +96,9 @@ namespace PictureManager.UserControls {
 
     private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
       if (((FrameworkElement)sender).DataContext is Segment segment) {
+        var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
         App.Core.Segments.DeselectAll();
-        App.Core.People.Select(null, segment.Person, false, false);
+        App.Core.People.Select(null, segment.Person, isCtrlOn, isShiftOn);
       }
     }
   }
