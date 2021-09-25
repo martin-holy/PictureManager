@@ -8,18 +8,33 @@
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
-          <cc:SegmentControl DataContext="{Binding Segment}" Selected="OnSegmentSelected">
-            <cc:SegmentControl.Style>
-              <Style TargetType="{x:Type cc:SegmentControl}">
-                <Setter Property="IsCheckmarkVisible" Value="False" />
-                <Style.Triggers>
-                  <DataTrigger Binding="{Binding Person.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
-                    <Setter Property="IsCheckmarkVisible" Value="True" />
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </cc:SegmentControl.Style>
-          </cc:SegmentControl>
+          <Grid>
+            <cc:SegmentControl DataContext="{Binding Segment}" Selected="OnSegmentSelected">
+              <cc:SegmentControl.Style>
+                <Style TargetType="{x:Type cc:SegmentControl}">
+                  <Setter Property="IsCheckmarkVisible" Value="False" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding Person.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
+                      <Setter Property="IsCheckmarkVisible" Value="True" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </cc:SegmentControl.Style>
+            </cc:SegmentControl>
+          
+            <Border BorderThickness="2" DataContext="{Binding Segment.Person}">
+              <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                  <Setter Property="BorderBrush" Value="Transparent" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                      <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Border.Style>
+             </Border>
+           </Grid>
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
     </cc:VirtualizingWrapPanel>
