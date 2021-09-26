@@ -331,6 +331,7 @@ namespace PictureManager.Domain.Utils {
     }
 
     public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
+      if (rect.Width == 0 || rect.Height == 0) return null;
       using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
       var bmp = new BitmapImage();
