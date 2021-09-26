@@ -129,7 +129,7 @@ namespace PictureManager.Domain.Models {
             return Imaging.GetBitmapSource(cacheFilePath);
 
           var src = Imaging.GetCroppedBitmapSource(filePath, ToRect(), size);
-          src.SaveAsJpg(80, cacheFilePath);
+          src?.SaveAsJpg(80, cacheFilePath);
 
           return src;
         }
