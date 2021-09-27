@@ -16,8 +16,6 @@ namespace PictureManager.UserControls {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private DragDropFactory _ddA;
-    private DragDropFactory _ddB;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private Person _person;
 
@@ -30,19 +28,24 @@ namespace PictureManager.UserControls {
     }
 
     private void AttachEvents() {
-      // Drag from AllSegments to TopSegments
-      _ddA = new DragDropFactory(AllSegmentsGrid, TopSegmentsGrid,
-        (src) => src?.DataContext is Segment,
-        (src) => (src.DataContext, DragDropEffects.Copy),
-        (e, data) => Person.Segments?.Contains(data) != true,
-        (e, data) => TopSegmentsDrop(data as Segment));
+      // Drag from AllSegmentsGrid
+      DragDropFactory.SetDrag(AllSegmentsGrid, (src) => src?.DataContext as Segment);
 
-      // Drag to remove from TopSegments
-      _ddB = new DragDropFactory(TopSegmentsGrid, TopSegmentsGrid,
-        (src) => src?.DataContext is Segment,
-        (src) => (src.DataContext, DragDropEffects.Move),
-        (e, data) => data != ((FrameworkElement)e.OriginalSource).DataContext,
-        (e, data) => TopSegmentsDrop(data as Segment));
+      // Drag from TopSegmentsGrid
+      DragDropFactory.SetDrag(TopSegmentsGrid, (src) => src?.DataContext as Segment);
+
+      // Drop to TopSegmentsGrid
+      DragDropFactory.SetDrop(
+        TopSegmentsGrid,
+        (src, data, target) => {
+          if (src == AllSegmentsGrid && Person.Segments?.Contains(data) != true)
+            return DragDropEffects.Copy;
+          if (src == TopSegmentsGrid && data != target?.DataContext)
+            return DragDropEffects.Move;
+
+          return DragDropEffects.None;
+        },
+        (data) => TopSegmentsDrop(data as Segment));
 
       BtnReload.Click += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
 

@@ -9,19 +9,26 @@ using System.Windows.Input;
 namespace PictureManager.UserControls {
   public partial class SegmentsDrawerControl : UserControl {
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
-    private DragDropFactory _dd;
 
     public SegmentsDrawerControl() {
       InitializeComponent();
 
-      // Drag to remove from SegmentsGrid
-      _dd = new DragDropFactory(SegmentsGrid, SegmentsGrid,
-        (src) => src?.DataContext is Segment,
-        (src) => (App.Core.Segments.GetOneOrSelected(src.DataContext as Segment), DragDropEffects.Move),
-        (e, data) => !((Segment[])data).Contains(((FrameworkElement)e.OriginalSource).DataContext),
-        (e, data) => {
+      DragDropFactory.SetDrag(
+        SegmentsGrid,
+        (src) => src?.DataContext is Segment segment ? App.Core.Segments.GetOneOrSelected(segment) : null);
+
+      DragDropFactory.SetDrop(
+        SegmentsGrid,
+        (src, data, target) => {
+          if (src != SegmentsGrid && !App.Core.Segments.SegmentsDrawer.Contains(data))
+            return DragDropEffects.Copy;
+          if (src == SegmentsGrid && (data as Segment[])?.Contains(target?.DataContext) == false)
+            return DragDropEffects.Move;
+          return DragDropEffects.None;
+        },
+        (data) => {
           var changed = false;
-          foreach (var segment in (Segment[])data) {
+          foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment }) {
             if (App.Core.Segments.SegmentsDrawerToggle(segment))
               changed = true;
           }

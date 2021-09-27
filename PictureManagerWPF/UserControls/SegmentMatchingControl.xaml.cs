@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace PictureManager.UserControls {
   public partial class SegmentMatchingControl : INotifyPropertyChanged {
@@ -27,7 +26,6 @@ namespace PictureManager.UserControls {
     private bool _loading;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private List<MediaItem> _mediaItems;
-    private DragDropFactory _dd;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
@@ -80,16 +78,7 @@ namespace PictureManager.UserControls {
       if (AppCore.OnSetPerson?.IsRegistered(this) != true)
         AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
 
-      // Drag & Drop to Segments Drawer
-      var sd = App.WMain.ToolsTabs.SegmentsDrawer;
-      _dd = new DragDropFactory(this, sd.SegmentsGrid,
-        (src) => src?.DataContext is Segment,
-        (src) => (src.DataContext, DragDropEffects.Copy),
-        (e, data) => !App.Core.Segments.SegmentsDrawer.Contains(data),
-        (e, data) => {
-          if (App.Core.Segments.SegmentsDrawerToggle(data as Segment))
-            _ = sd.ReloadSegments();
-        });
+      DragDropFactory.SetDrag(this, (src) => src?.DataContext as Segment);
     }
 
     public async Task LoadSegmentsAsync(bool withPersonOnly) {
