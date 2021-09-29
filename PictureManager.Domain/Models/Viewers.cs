@@ -57,7 +57,7 @@ namespace PictureManager.Domain.Models {
             viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
 
         if (viewer.IsDefault)
-          viewer.UpdateCategoryGroupsVisibility();
+          viewer.Activate();
 
         // adding Viewer to Viewers
         Items.Add(viewer);
