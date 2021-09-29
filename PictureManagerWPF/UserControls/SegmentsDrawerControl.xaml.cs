@@ -13,27 +13,28 @@ namespace PictureManager.UserControls {
     public SegmentsDrawerControl() {
       InitializeComponent();
 
-      DragDropFactory.SetDrag(
-        SegmentsGrid,
-        (src) => src?.DataContext is Segment segment ? App.Core.Segments.GetOneOrSelected(segment) : null);
+      DragDropFactory.SetDrag(SegmentsGrid, CanDrag);
+      DragDropFactory.SetDrop(SegmentsGrid, CanDrop, DoDrop);
+    }
 
-      DragDropFactory.SetDrop(
-        SegmentsGrid,
-        (src, data, target) => {
-          if (src != SegmentsGrid && !App.Core.Segments.SegmentsDrawer.Contains(data))
-            return DragDropEffects.Copy;
-          if (src == SegmentsGrid && (data as Segment[])?.Contains(target?.DataContext) == false)
-            return DragDropEffects.Move;
-          return DragDropEffects.None;
-        },
-        (data) => {
-          var changed = false;
-          foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment }) {
-            if (App.Core.Segments.SegmentsDrawerToggle(segment))
-              changed = true;
-          }
-          if (changed) _ = ReloadSegments();
-        });
+    private object CanDrag(MouseEventArgs e) =>
+      (e.OriginalSource as FrameworkElement)?.DataContext is Segment segment ? App.Core.Segments.GetOneOrSelected(segment) : null;
+
+    private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
+      if (source != SegmentsGrid && !App.Core.Segments.SegmentsDrawer.Contains(data))
+        return DragDropEffects.Copy;
+      if (source == SegmentsGrid && (data as Segment[])?.Contains((e.OriginalSource as FrameworkElement)?.DataContext) == false)
+        return DragDropEffects.Move;
+      return DragDropEffects.None;
+    }
+
+    private void DoDrop(DragEventArgs e, object source, object data) {
+      var changed = false;
+      foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment }) {
+        if (App.Core.Segments.SegmentsDrawerToggle(segment))
+          changed = true;
+      }
+      if (changed) _ = ReloadSegments();
     }
 
     public async Task ReloadSegments() {

@@ -28,24 +28,9 @@ namespace PictureManager.UserControls {
     }
 
     private void AttachEvents() {
-      // Drag from AllSegmentsGrid
-      DragDropFactory.SetDrag(AllSegmentsGrid, (src) => src?.DataContext as Segment);
-
-      // Drag from TopSegmentsGrid
-      DragDropFactory.SetDrag(TopSegmentsGrid, (src) => src?.DataContext as Segment);
-
-      // Drop to TopSegmentsGrid
-      DragDropFactory.SetDrop(
-        TopSegmentsGrid,
-        (src, data, target) => {
-          if (src == AllSegmentsGrid && Person.Segments?.Contains(data) != true)
-            return DragDropEffects.Copy;
-          if (src == TopSegmentsGrid && data != target?.DataContext)
-            return DragDropEffects.Move;
-
-          return DragDropEffects.None;
-        },
-        (data) => TopSegmentsDrop(data as Segment));
+      DragDropFactory.SetDrag(AllSegmentsGrid, CanDrag);
+      DragDropFactory.SetDrag(TopSegmentsGrid, CanDrag);
+      DragDropFactory.SetDrop(TopSegmentsGrid, CanDrop, TopSegmentsDrop);
 
       BtnReload.Click += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
 
@@ -56,8 +41,19 @@ namespace PictureManager.UserControls {
         AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
     }
 
-    private void TopSegmentsDrop(Segment segment) {
-      if (segment == null) return;
+    private object CanDrag(MouseEventArgs e) => (e.OriginalSource as FrameworkElement)?.DataContext as Segment;
+
+    private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
+      if (source == AllSegmentsGrid && Person.Segments?.Contains(data) != true)
+        return DragDropEffects.Copy;
+      if (source == TopSegmentsGrid && data != (e.OriginalSource as FrameworkElement)?.DataContext)
+        return DragDropEffects.Move;
+
+      return DragDropEffects.None;
+    }
+
+    private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
+      if (data is not Segment segment) return;
 
       Person.Segments = Domain.Extensions.Toggle(Person.Segments, segment, true);
       Person.OnPropertyChanged(nameof(Person.Segments));
