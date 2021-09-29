@@ -149,11 +149,6 @@ namespace PictureManager.UserControls {
           AddMenuItem(MediaItemsCommands.RebuildThumbnailsCommand);
           break;
         }
-        case Viewer _: {
-          AddMenuItem(TreeViewCommands.ViewerIncludeFolderCommand);
-          AddMenuItem(TreeViewCommands.ViewerExcludeFolderCommand);
-          break;
-        }
         case Rating _:
         case Person _:
         case Keyword _:

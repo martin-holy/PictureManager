@@ -98,12 +98,6 @@ namespace PictureManager {
         }
       }
 
-      if (item.Parent?.Title.Equals("Category Groups") == true && item.Parent.Parent is Viewer viewer) {
-        viewer.ToggleCategoryGroup(item);
-        item.IsSelected = false;
-        return;
-      }
-
       switch (item) {
         case Keyword k:
         ToggleKeyword(k);
@@ -123,6 +117,10 @@ namespace PictureManager {
         case FolderKeyword:
         MediaItemsViewModel.AddThumbsTabIfNotActive();
         await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
+        break;
+
+        case Viewer v:
+        App.WMain.MainTabs.ActivateTab<ViewerView>(IconName.Eye)?.Reload(v);
         break;
 
         case ICatTreeViewCategory cat:

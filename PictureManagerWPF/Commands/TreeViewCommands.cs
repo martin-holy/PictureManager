@@ -12,8 +12,6 @@ namespace PictureManager.Commands {
     public static RoutedUICommand TagItemDeleteNotUsedCommand { get; } = new() { Text = "Delete not used" };
     public static RoutedUICommand FolderAddToFavoritesCommand { get; } = new() { Text = "Add to Favorites" };
     public static RoutedUICommand FolderSetAsFolderKeywordCommand { get; } = new() { Text = "Set as Folder Keyword" };
-    public static RoutedUICommand ViewerIncludeFolderCommand { get; } = new() { Text = "Include for Viewer" };
-    public static RoutedUICommand ViewerExcludeFolderCommand { get; } = new() { Text = "Exclude for Viewer" };
     public static RoutedUICommand GeoNameNewCommand { get; } = new() { Text = "New" };
     public static RoutedUICommand ActivateFilterAndCommand { get; } = new() { Text = "Filter And" };
     public static RoutedUICommand ActivateFilterOrCommand { get; } = new() { Text = "Filter Or" };
@@ -24,8 +22,6 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, TagItemDeleteNotUsedCommand, TagItemDeleteNotUsed);
       CommandsController.AddCommandBinding(cbc, FolderAddToFavoritesCommand, FolderAddToFavorites);
       CommandsController.AddCommandBinding(cbc, FolderSetAsFolderKeywordCommand, FolderSetAsFolderKeyword);
-      CommandsController.AddCommandBinding(cbc, ViewerIncludeFolderCommand, ViewerIncludeFolder);
-      CommandsController.AddCommandBinding(cbc, ViewerExcludeFolderCommand, ViewerExcludeFolder);
       CommandsController.AddCommandBinding(cbc, GeoNameNewCommand, GeoNameNew);
       CommandsController.AddCommandBinding(cbc, ActivateFilterAndCommand, ActivateFilterAnd);
       CommandsController.AddCommandBinding(cbc, ActivateFilterOrCommand, ActivateFilterOr);
@@ -54,10 +50,6 @@ namespace PictureManager.Commands {
         }
       }
     }
-
-    private static void ViewerIncludeFolder(object parameter) => ViewersViewModel.AddFolder((Viewer)parameter, true);
-
-    private static void ViewerExcludeFolder(object parameter) => ViewersViewModel.AddFolder((Viewer)parameter, false);
 
     private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFolders.ItemCreate((Folder)parameter);
 
