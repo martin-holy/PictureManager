@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Viewers : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
+  public sealed class Viewers : BaseCatTreeViewCategory, ITable {
     public TableHelper Helper { get; set; }
     public List<IRecord> All { get; } = new();
 
@@ -23,10 +23,10 @@ namespace PictureManager.Domain.Models {
     }
 
     public void NewFromCsv(string csv) {
-      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|IsDefault
+      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
       var props = csv.Split('|');
-      if (props.Length != 6) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[5] == "1" };
+      if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
+      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[6] == "1" };
       if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
       All.Add(viewer);
     }
@@ -55,6 +55,11 @@ namespace PictureManager.Domain.Models {
         if (!string.IsNullOrEmpty(viewer.Csv[4]))
           foreach (var groupId in viewer.Csv[4].Split(','))
             viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
+
+        // ExcKeywords
+        if (!string.IsNullOrEmpty(viewer.Csv[5]))
+          foreach (var keywordId in viewer.Csv[5].Split(','))
+            viewer.ExcludedKeywords.Add(Core.Instance.Keywords.AllDic[int.Parse(keywordId)]);
 
         if (viewer.IsDefault)
           viewer.Activate();
