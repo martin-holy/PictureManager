@@ -36,6 +36,12 @@ namespace PictureManager.Domain {
       return modified;
     }
 
+    public static void AddInOrder<TSource, TKey>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, TKey> keySelector) {
+      collection.Add(item);
+      var idx = collection.OrderBy(keySelector).ToList().IndexOf(item);
+      collection.Move(collection.IndexOf(item), idx);
+    }
+
     public static void AddInOrder<T>(this List<T> list, T item, Func<T, T, bool> compare) {
       int i;
       for (i = 0; i < list.Count; i++)
