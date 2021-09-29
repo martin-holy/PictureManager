@@ -1,6 +1,7 @@
 using MahApps.Metro.Controls;
 using PictureManager.Commands;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,99 +44,57 @@ namespace PictureManager.CustomControls {
 
       PreviewMouseRightButtonDown += AttachContextMenu;
 
-      // Drag & Drop
-      PreviewMouseLeftButtonDown += SetDragObject;
-      PreviewMouseLeftButtonUp += ReleaseDragObject;
-      MouseMove += StartDragDrop;
-      DragEnter += AllowDropCheck;
-      DragLeave += AllowDropCheck;
-      DragOver += AllowDropCheck;
-      Drop += OnDrop;
+      DragDropFactory.SetDrag(this, CanDrag);
+      DragDropFactory.SetDrop(this, CanDrop, DoDrop);
     }
 
-    #region Drag & Drop
+    private object CanDrag(MouseEventArgs e) {
+      var tvi = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement);
+      if (tvi == null || tvi.DataContext is ICatTreeViewCategory) return null;
+      if (CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewItem) is not ICatTreeViewCategory) return null;
+      return tvi.DataContext;
+    }
 
-    private Point _dragDropStartPosition;
-    private FrameworkElement _dragDropSource;
-    private DragDropEffects _dragDropEffects;
+    private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
+      DragDropAutoScroll(e);
 
-    private void SetDragObject(object sender, MouseButtonEventArgs e) {
-      _dragDropSource = null;
-      _dragDropStartPosition = new Point(0, 0);
-      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
-      if (tvi == null || tvi.DataContext is ICatTreeViewCategory) return;
-      if (CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewItem) is not ICatTreeViewCategory cat) return;
+      var dest = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement)?.DataContext;
+      var cat = CatTreeViewUtils.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
 
-      if (tvi.DataContext is ICatTreeViewGroup)
-        _dragDropEffects = DragDropEffects.Move;
-      else {
-        if (!cat.CanCopyItem && !cat.CanMoveItem) return;
-
-        if (cat.CanCopyItem && cat.CanMoveItem)
-          _dragDropEffects = DragDropEffects.Copy | DragDropEffects.Move;
-        else if (cat.CanCopyItem)
-          _dragDropEffects = DragDropEffects.Copy;
-        else if (cat.CanMoveItem)
-          _dragDropEffects = DragDropEffects.Move;
+      if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
+        if (dest is ICatTreeViewGroup) return DragDropEffects.Move;
+        if (!cat.CanCopyItem && !cat.CanMoveItem) return DragDropEffects.None;
+        if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return DragDropEffects.Copy;
+        if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return DragDropEffects.Move;
       }
 
-      _dragDropSource = tvi;
-      _dragDropStartPosition = e.GetPosition(null);
+      return DragDropEffects.None;
     }
 
-    private void ReleaseDragObject(object sender, MouseButtonEventArgs e) => _dragDropSource = null;
+    private void DoDrop(DragEventArgs e, object source, object data) {
+      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
+      if (tvi?.DataContext is not ICatTreeViewItem dest ||
+        CatTreeViewUtils.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
 
-    private void StartDragDrop(object sender, MouseEventArgs e) {
-      if (_dragDropSource == null || !IsDragDropStarted(e)) return;
-      DragDrop.DoDragDrop(_dragDropSource, new[] { _dragDropSource.DataContext }, _dragDropEffects);
+      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
+      cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
+
+      // TODO send args in EventArgs
+      CatTreeViewUtils.OnAfterOnDrop?.Invoke(
+        new[] { data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0 },
+        EventArgs.Empty);
     }
 
-    private bool IsDragDropStarted(MouseEventArgs e) {
-      if (e.LeftButton != MouseButtonState.Pressed) return false;
-      var diff = _dragDropStartPosition - e.GetPosition(null);
-      return Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance ||
-             Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
-    }
-
-    private void AllowDropCheck(object sender, DragEventArgs e) {
-      // scroll treeView when the mouse is near the top or bottom
+    /// <summary>
+    /// Scroll treeView when the mouse is near the top or bottom
+    /// </summary>
+    private void DragDropAutoScroll(DragEventArgs e) {
       var pos = e.GetPosition(this);
       if (pos.Y < 25)
         _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset - 25);
       else if (ActualHeight - pos.Y < 25)
         _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset + 25);
-
-      var dest = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource)?.DataContext;
-      var destCat = CatTreeViewUtils.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
-      var src = ((object[])e.Data.GetData(typeof(object[])))?[0] ??
-                (string[])e.Data.GetData(DataFormats.FileDrop);
-
-      if (destCat?.CanDrop(src, dest as ICatTreeViewItem) == true) return;
-
-      // can't be dropped
-      e.Effects = DragDropEffects.None;
-      e.Handled = true;
     }
-
-    private static void OnDrop(object sender, DragEventArgs e) {
-      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
-
-      if (tvi?.DataContext is not ICatTreeViewItem dest ||
-        CatTreeViewUtils.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
-
-      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
-      var src = ((object[])e.Data.GetData(typeof(object[])))?[0] ??
-                (string[])e.Data.GetData(DataFormats.FileDrop);
-
-      cat.OnDrop(src, dest, aboveDest, e.KeyStates == DragDropKeyStates.ControlKey);
-
-      // TODO send args in EventArgs
-      CatTreeViewUtils.OnAfterOnDrop?.Invoke(
-        new[] { src, dest, aboveDest, e.KeyStates == DragDropKeyStates.ControlKey },
-        EventArgs.Empty);
-    }
-
-    #endregion
 
     private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
       //e.Handled = true;

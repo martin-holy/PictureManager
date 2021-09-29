@@ -78,7 +78,7 @@ namespace PictureManager.UserControls {
       if (AppCore.OnSetPerson?.IsRegistered(this) != true)
         AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
 
-      DragDropFactory.SetDrag(this, (src) => src?.DataContext as Segment);
+      DragDropFactory.SetDrag(this, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Segment);
     }
 
     public async Task LoadSegmentsAsync(bool withPersonOnly) {

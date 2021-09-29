@@ -1,10 +1,18 @@
-﻿using System.Windows;
+﻿using PictureManager.Utils;
+using System.Linq;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PictureManager.UserControls {
   public partial class MediaItemsThumbsGrid {
     public MediaItemsThumbsGrid() {
       InitializeComponent();
+      DragDropFactory.SetDrag(this, CanDrag);
+    }
+
+    private object CanDrag(MouseEventArgs e) {
+      var data = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
+      return data.Length == 0 ? null : data;
     }
 
     private async void OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
