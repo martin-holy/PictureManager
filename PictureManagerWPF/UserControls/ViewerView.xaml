@@ -87,6 +87,22 @@
                  SelectionMode="Multiple" />
       </StackPanel>
     </Border>
+    
+    <!-- Excluded Keywords -->
+    <Border>
+      <StackPanel Orientation="Vertical">
+        <StackPanel Style="{StaticResource _header}">
+          <cc:IconRect Style="{StaticResource _headerIcon}" IconName="TagLabel" />
+          <TextBlock Style="{StaticResource _headerText}" Text="Excluded Keywords" />
+        </StackPanel>
+        
+        <ListBox x:Name="LbExcludedKeywords"
+                 ItemsSource="{Binding Viewer.ExcludedKeywords}"
+                 ItemTemplate="{StaticResource _listBoxItem}"
+                 ItemContainerStyle="{StaticResource _listBoxItemContainer}"
+                 MinHeight="200" />
+      </StackPanel>
+    </Border>
 
   </WrapPanel>
 

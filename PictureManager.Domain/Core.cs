@@ -111,9 +111,11 @@ namespace PictureManager.Domain {
       });
     }
 
-    public bool CanViewerSeeThisFolder(Folder folder) => CurrentViewer == null || CurrentViewer.CanSeeThisFolder(folder);
+    public bool CanViewerSeeThisFolder(Folder folder) => CurrentViewer?.CanSeeThisFolder(folder) != false;
 
-    public bool CanViewerSeeContentOfThisFolder(Folder folder) => CurrentViewer == null || CurrentViewer.CanSeeContentOfThisFolder(folder);
+    public bool CanViewerSeeContentOfThisFolder(Folder folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
+
+    public bool CanViewerSee(MediaItem mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
 
     public void SetMediaItemSizesLoadedRange() {
       var zeroItems = MediaItems.ThumbsGrid == null || MediaItems.ThumbsGrid.FilteredItems.Count == 0;

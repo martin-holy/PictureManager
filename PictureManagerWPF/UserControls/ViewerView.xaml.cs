@@ -31,16 +31,19 @@ namespace PictureManager.UserControls {
     private void AttachEvents() {
       DragDropFactory.SetDrag(LbIncludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
       DragDropFactory.SetDrag(LbExcludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
+      DragDropFactory.SetDrag(LbExcludedKeywords, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Keyword);
 
       DragDropFactory.SetDrop(
         LbIncludedFolders,
-        (e, src, data) => CanDrop(e, src, data, true),
-        (e, src, data) => DoDrop(e, src, data, true));
+        (e, source, data) => CanDropFolder(e, source, data, true),
+        (e, source, data) => DoDropFolder(e, source, data, true));
 
       DragDropFactory.SetDrop(
         LbExcludedFolders,
-        (e, src, data) => CanDrop(e, src, data, false),
-        (e, src, data) => DoDrop(e, src, data, false));
+        (e, source, data) => CanDropFolder(e, source, data, false),
+        (e, source, data) => DoDropFolder(e, source, data, false));
+
+      DragDropFactory.SetDrop(LbExcludedKeywords, CanDropKeyword, DoDropKeyword);
 
       LbCategoryGroups.SelectionChanged += (o, e) => {
         if (_reloading) return;
@@ -50,7 +53,7 @@ namespace PictureManager.UserControls {
       };
     }
 
-    private DragDropEffects CanDrop(DragEventArgs e, object source, object data, bool included) {
+    private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
       if (data is not Folder) return DragDropEffects.None;
 
       if (source == App.WMain.TreeViewCategories.TvCategories) {
@@ -67,12 +70,38 @@ namespace PictureManager.UserControls {
       return DragDropEffects.None;
     }
 
-    private void DoDrop(DragEventArgs e, object src, object data, bool included) {
-      if (src == App.WMain.TreeViewCategories.TvCategories)
+    private void DoDropFolder(DragEventArgs e, object source, object data, bool included) {
+      if (source == App.WMain.TreeViewCategories.TvCategories)
         Viewer.AddFolder((Folder)data, included);
 
-      if (e.Source == src)
+      if (e.Source == source)
         Viewer.RemoveFolder((Folder)data, included);
+
+      App.Core.Sdb.SetModified<Viewers>();
+    }
+
+    private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
+      if (data is not Keyword) return DragDropEffects.None;
+
+      if (source == App.WMain.TreeViewCategories.TvCategories)
+        return Viewer.ExcludedKeywords.Contains(data)
+          ? DragDropEffects.None
+          : DragDropEffects.Copy;
+
+      if (source == LbExcludedKeywords)
+        return (e.OriginalSource as FrameworkElement)?.DataContext == data
+          ? DragDropEffects.None
+          : DragDropEffects.Move;
+
+      return DragDropEffects.None;
+    }
+
+    private void DoDropKeyword(DragEventArgs e, object source, object data) {
+      if (source == App.WMain.TreeViewCategories.TvCategories)
+        Viewer.AddKeyword((Keyword)data);
+
+      if (e.Source == source)
+        Viewer.RemoveKeyword((Keyword)data);
 
       App.Core.Sdb.SetModified<Viewers>();
     }

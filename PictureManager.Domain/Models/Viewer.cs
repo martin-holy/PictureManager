@@ -11,11 +11,13 @@ namespace PictureManager.Domain.Models {
     public bool IsDefault { get; set; }
     public ObservableCollection<Folder> IncludedFolders { get; } = new();
     public ObservableCollection<Folder> ExcludedFolders { get; } = new();
+    public ObservableCollection<Keyword> ExcludedKeywords { get; } = new();
     public HashSet<int> ExcCatGroupsIds { get; } = new();
 
     private readonly HashSet<int> _incFoIds = new();
     private readonly HashSet<int> _incFoTreeIds = new();
     private readonly HashSet<int> _excFoIds = new();
+    private readonly HashSet<int> _excKeywordsIds = new();
 
     public Viewer(int id, string name, ICatTreeViewItem parent) {
       Id = id;
@@ -24,7 +26,7 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Eye;
     }
 
-    // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|IsDefault
+    // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
     public string ToCsv() =>
       string.Join("|",
         Id.ToString(),
@@ -32,6 +34,7 @@ namespace PictureManager.Domain.Models {
         string.Join(",", IncludedFolders.Select(x => x.Id)),
         string.Join(",", ExcludedFolders.Select(x => x.Id)),
         string.Join(",", ExcCatGroupsIds),
+        string.Join(",", ExcludedKeywords.Select(x => x.Id)),
         IsDefault ? "1" : string.Empty);
 
     public void Activate() {
@@ -39,20 +42,19 @@ namespace PictureManager.Domain.Models {
       UpdateCategoryGroupsVisibility();
     }
 
-    public void AddFolder(Folder folder, bool included) => SetInPlace(included ? IncludedFolders : ExcludedFolders, folder);
+    public void AddFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).AddInOrder(folder, (x) => x.FullPath);
 
     public void RemoveFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).Remove(folder);
 
-    private static void SetInPlace(ObservableCollection<Folder> collection, Folder item) {
-      collection.Add(item);
-      var idx = collection.OrderBy(x => x.FullPath).ToList().IndexOf(item);
-      collection.Move(collection.IndexOf(item), idx);
-    }
+    public void AddKeyword(Keyword keyword) => ExcludedKeywords.AddInOrder(keyword, (x) => x.FullPath);
+
+    public void RemoveKeyword(Keyword keyword) => ExcludedKeywords.Remove(keyword);
 
     private void UpdateHashSets() {
       _incFoIds.Clear();
       _incFoTreeIds.Clear();
       _excFoIds.Clear();
+      _excKeywordsIds.Clear();
 
       foreach (var folder in IncludedFolders) {
         _incFoIds.Add(folder.Id);
@@ -64,6 +66,9 @@ namespace PictureManager.Domain.Models {
 
       foreach (var folder in ExcludedFolders)
         _excFoIds.Add(folder.Id);
+
+      foreach (var keyword in ExcludedKeywords)
+        _excKeywordsIds.Add(keyword.Id);
     }
 
     public bool CanSeeThisFolder(Folder folder) {
@@ -87,6 +92,32 @@ namespace PictureManager.Domain.Models {
       var excContain = testFos.OfType<Folder>().Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
 
       return incContain && !excContain;
+    }
+
+    /// <summary>
+    /// Checks for People and Keywords on MediaItem and Segments
+    /// </summary>
+    /// <param name="mi"></param>
+    /// <returns>True if viewer can see MediaItem</returns>
+    public bool CanSee(MediaItem mi) {
+      if (mi.People == null && mi.Keywords == null && mi.Segments == null) return true;
+      if (mi.People?.Any(p => p.Parent is CategoryGroup cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
+      if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroup cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
+
+      var keywords = new List<ICatTreeViewItem>();
+      if (mi.Keywords != null)
+        foreach (var keyword in mi.Keywords)
+          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref keywords);
+
+      if (mi.Segments != null)
+        foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
+          foreach (var keyword in segment.Keywords)
+            CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref keywords);
+
+      if (keywords.OfType<CategoryGroup>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
+      if (keywords.OfType<Keyword>().Any(k => ExcludedKeywords.Contains(k))) return false;
+
+      return true;
     }
 
     public void ToggleCategoryGroup(int groupId) {

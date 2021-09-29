@@ -393,6 +393,7 @@ namespace PictureManager.Domain.Models {
           if (token.IsCancellationRequested) break;
           if (!Directory.Exists(folder.FullPath)) continue;
           var folderMediaItems = new List<MediaItem>();
+          var hiddenMediaItems = new List<MediaItem>();
 
           // add MediaItems from current Folder to dictionary for faster search
           var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
@@ -409,6 +410,10 @@ namespace PictureManager.Domain.Models {
               All.Add(inDbFile);
               folder.MediaItems.Add(inDbFile);
             }
+            if (!Core.Instance.CanViewerSee(inDbFile)) {
+              hiddenMediaItems.Add(inDbFile);
+              continue;
+            }
             folderMediaItems.Add(inDbFile);
           }
 
@@ -418,7 +423,7 @@ namespace PictureManager.Domain.Models {
 
           // remove MediaItems deleted outside of this application
           foreach (var fmi in folder.MediaItems.ToArray()) {
-            if (folderMediaItems.Contains(fmi)) continue;
+            if (folderMediaItems.Contains(fmi) || hiddenMediaItems.Contains(fmi)) continue;
             Delete(fmi);
           }
         }
@@ -445,6 +450,7 @@ namespace PictureManager.Domain.Models {
           if (token.IsCancellationRequested) break;
           if (!foldersSet.Contains(mi.Folder.Id)) continue;
           if (!File.Exists(mi.FilePath)) continue;
+          if (!Core.Instance.CanViewerSee(mi)) continue;
           output.Add(mi);
         }
       }, token);
