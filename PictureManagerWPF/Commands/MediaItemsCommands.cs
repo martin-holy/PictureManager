@@ -282,7 +282,7 @@ namespace PictureManager.Commands {
     }
 
     private static void ViewMediaItemsWithSegment(object parameter) {
-      if (parameter is not Segment segment) return;
+      if (parameter is not Segment segment || segment.MediaItem == null) return;
       App.Core.MediaItems.Current = segment.MediaItem;
       WindowCommands.SwitchToFullScreen();
 
