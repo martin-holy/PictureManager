@@ -162,6 +162,14 @@ namespace PictureManager.Domain {
     public static bool IsRegistered(this EventHandler e, object target) =>
       e.GetInvocationList().Any(x => x.Target.GetType() == target.GetType());
 
+    public static bool Toggle<T>(this ObservableCollection<T> collection, T item) {
+      if (collection.Remove(item))
+        return false;
+
+      collection.Add(item);
+      return true;
+    }
+
     public static bool Toggle<T>(this HashSet<T> hashSet, T item) {
       if (hashSet.Remove(item))
         return false;
