@@ -2,6 +2,7 @@
 using SimpleDB;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -25,7 +26,7 @@ namespace PictureManager.Domain.Models {
     public List<Segment> Loaded { get; } = new();
     public List<List<Segment>> LoadedGroupedByPerson { get; } = new();
     public List<Segment> Selected => _selected;
-    public List<Segment> SegmentsDrawer { get; } = new();
+    public ObservableCollection<Segment> SegmentsDrawer { get; } = new();
     public List<(int personId, Segment segment, List<(int personId, Segment segment, double sim)> similar)> ConfirmedSegments { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
@@ -132,7 +133,7 @@ namespace PictureManager.Domain.Models {
 
     public bool SegmentsDrawerToggle(Segment segment) {
       if (segment == null) return false;
-      Extensions.Toggle(SegmentsDrawer, segment, false);
+      SegmentsDrawer.Toggle(segment);
       Helper.AreTablePropsModified = true;
       Core.Instance.Sdb.Changes++;
       return true;

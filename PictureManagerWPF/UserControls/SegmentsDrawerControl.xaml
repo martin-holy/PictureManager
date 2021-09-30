@@ -2,15 +2,28 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             xmlns:pm="clr-namespace:PictureManager">
   
-  <Grid Background="{StaticResource ColorBrushBackground}">
-    <cc:VirtualizingWrapPanel x:Name="SegmentsGrid" ScrollViewerSpeedFactor="1" Margin="2,0,0,0">
-      <cc:VirtualizingWrapPanel.ItemDataTemplate>
+    <ItemsControl x:Name="SegmentsGrid" Margin="2,0,0,0"
+                  ItemsSource="{Binding Segments.SegmentsDrawer, Source={x:Static pm:App.Core}}">
+      <ItemsControl.Template>
+        <ControlTemplate>
+          <ScrollViewer>
+            <ItemsPresenter />
+          </ScrollViewer>
+        </ControlTemplate>
+      </ItemsControl.Template>
+      
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      
+      <ItemsControl.ItemTemplate>
         <DataTemplate>
           <cc:SegmentControl DataContext="{Binding}" Selected="OnSegmentSelected" />
         </DataTemplate>
-      </cc:VirtualizingWrapPanel.ItemDataTemplate>
-    </cc:VirtualizingWrapPanel>
-  </Grid>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
 </UserControl>
