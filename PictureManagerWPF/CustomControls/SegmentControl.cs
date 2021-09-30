@@ -48,8 +48,7 @@ namespace PictureManager.CustomControls {
     }
 
     public void ReloadMediaItemSegmentRects() {
-      var segment = DataContext as Segment;
-      if (segment == null || segment.MediaItem.Segments == null) return;
+      if (DataContext is not Segment segment || segment.MediaItem?.Segments == null) return;
 
       var scale = segment.MediaItem.Width / (double)segment.MediaItem.ThumbWidth;
       MediaItemSegmentRects.Clear();

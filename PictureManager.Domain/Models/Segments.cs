@@ -488,6 +488,7 @@ namespace PictureManager.Domain.Models {
 
       try {
         File.Delete(segment.CacheFilePath);
+        segment.MediaItem = null;
       }
       catch (Exception ex) {
         Core.Instance.LogError(ex);
