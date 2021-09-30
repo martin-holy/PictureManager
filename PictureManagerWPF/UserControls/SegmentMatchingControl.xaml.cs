@@ -213,10 +213,14 @@ namespace PictureManager.UserControls {
       ConfirmedSegmentsGrid.ScrollToTop();
     }
 
-    private static void OpenSegmentsDrawer() {
+    private static async Task OpenSegmentsDrawer() {
       App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabSegments, true);
       App.WMain.RightSlidePanel.IsOpen = true;
-      _ = App.WMain.ToolsTabs.SegmentsDrawer.ReloadSegments();
+      foreach (var segment in App.Core.Segments.SegmentsDrawer) {
+        await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+        segment.MediaItem.SetThumbSize();
+        segment.MediaItem.SetInfoBox();
+      }
     }
   }
 }

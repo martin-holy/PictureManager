@@ -1,15 +1,12 @@
 ﻿using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PictureManager.UserControls {
   public partial class SegmentsDrawerControl : UserControl {
-    private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
-
     public SegmentsDrawerControl() {
       InitializeComponent();
 
@@ -29,33 +26,14 @@ namespace PictureManager.UserControls {
     }
 
     private void DoDrop(DragEventArgs e, object source, object data) {
-      var changed = false;
-      foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment }) {
-        if (App.Core.Segments.SegmentsDrawerToggle(segment))
-          changed = true;
-      }
-      if (changed) _ = ReloadSegments();
-    }
-
-    public async Task ReloadSegments() {
-      SegmentsGrid.ClearRows();
-      UpdateLayout();
-      SegmentsGrid.UpdateMaxRowWidth();
-
-      foreach (var segment in App.Core.Segments.SegmentsDrawer) {
-        await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
-        segment.MediaItem.SetThumbSize();
-        segment.MediaItem.SetInfoBox();
-        SegmentsGrid.AddItem(segment, _segmentGridWidth);
-      }
-
-      SegmentsGrid.ScrollToTop();
+      foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment })
+        App.Core.Segments.SegmentsDrawerToggle(segment);
     }
 
     private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var segment = (Segment)((FrameworkElement)sender).DataContext;
-      App.Core.Segments.Select(App.Core.Segments.SegmentsDrawer, segment, isCtrlOn, isShiftOn);
+      App.Core.Segments.Select(App.Core.Segments.SegmentsDrawer.ToList(), segment, isCtrlOn, isShiftOn);
     }
   }
 }
