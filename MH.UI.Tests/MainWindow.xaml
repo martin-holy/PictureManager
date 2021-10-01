@@ -32,8 +32,11 @@
           <!--<Border BorderThickness="1" BorderBrush="Black" Width="30" Height="30" Background="GreenYellow">
             <mhc:Icon Size="20" Fill="Blue" Source="{StaticResource TreeArrow}" />
           </Border>-->
-          <mhc:IconButton Background="White" Source="{StaticResource TreeArrow}" Size="20" Fill="LightBlue" ToolTip="Test" />
-        </DataTemplate>
+          <StackPanel>
+            <mhc:IconButton Background="White" Source="{StaticResource TreeArrow}" Size="20" Fill="LightBlue" ToolTip="Test" />
+            <mhc:IconToggleButton Background="White" Source="{StaticResource TreeArrow}" Size="20" Fill="LightBlue" ToolTip="Test" />
+          </StackPanel>
+         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
     
