@@ -4,6 +4,7 @@
     
   <Style x:Key="MH.UI.WPF.Controls.Icon" TargetType="{x:Type c:Icon}">
     <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Opacity" Value="1" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:Icon}">
