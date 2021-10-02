@@ -4,10 +4,10 @@
              xmlns:pm="clr-namespace:PictureManager"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
-             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   <Grid>
     <Grid.Resources>
       <!-- CategoriesBarButtonStyle -->
@@ -29,7 +29,7 @@
     </Grid.RowDefinitions>
 
     <Border Grid.Row="0" BorderThickness="0,0,0,4" BorderBrush="{StaticResource AccentColorBrush4}">
-      <DockPanel Height="40">
+      <DockPanel Height="34">
         <!-- TreeView Categories Navigation Bar -->
         <ItemsControl ItemsSource="{Binding TreeViewCategories, Source={x:Static pm:App.Core}}" DockPanel.Dock="Left">
           <ItemsControl.ItemsPanel>
@@ -40,23 +40,21 @@
 
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <Button Style="{StaticResource CategoriesNavBarButtonStyle}" Click="BtnNavCategory_OnClick">
-                <cc:IconRect IconName="{Binding IconName}" Size="20" />
-              </Button>
+              <mhc:IconButton Size="22" ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick" ShowShadow="False"
+                              Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}"
+                              Source="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
           <!-- Search -->
-          <Button Style="{StaticResource SearchButtonStyle}" Click="ShowSearch">
-            <cc:IconRect IconName="{x:Static pmd:IconName.Magnify}" Size="20" />
-          </Button>
+          <mhc:IconButton Size="22" Source="{StaticResource IconMagnify}" Click="ShowSearch" ShowShadow="False" />
 
-          <!-- Button to close/open flyout panel -->
-          <ToggleButton x:Name="BtnPinPanel" Style="{StaticResource StyleToggleButtonIconFlat}" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}">
-            <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="14" />
-          </ToggleButton>
+          <!-- Button to pin slide panel -->
+          <mhc:IconToggleButton x:Name="BtnPinPanel" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}"
+                                Source="{StaticResource IconPin}" Size="14" IsThreeState="False" ShowShadow="False"
+                                IsChecked="{Binding SlidePanelMainTreeView.IsPinned, Source={x:Static pm:App.WMain}}"/>
         </StackPanel>
       </DockPanel>
     </Border>
