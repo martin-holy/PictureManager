@@ -9,20 +9,6 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   <Grid>
-    <Grid.Resources>
-      <!-- CategoriesBarButtonStyle -->
-      <Style x:Key="CategoriesNavBarButtonStyle" TargetType="Button" BasedOn="{StaticResource StyleButtonIcon}">
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="ToolTip" Value="{Binding Title}" />
-      </Style>
-
-      <!-- SearchButtonStyle -->
-      <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource CategoriesNavBarButtonStyle}">
-        <Setter Property="ToolTip" Value="Search" />
-      </Style>
-    </Grid.Resources>
-
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
@@ -49,7 +35,7 @@
 
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
           <!-- Search -->
-          <mhc:IconButton Size="22" Source="{StaticResource IconMagnify}" Click="ShowSearch" ShowShadow="False" />
+          <mhc:IconButton Size="22" Source="{StaticResource IconMagnify}" ToolTip="Search" Click="ShowSearch" ShowShadow="False" />
 
           <!-- Button to pin slide panel -->
           <mhc:IconToggleButton x:Name="BtnPinPanel" Command="{x:Static cmd:WindowCommands.ShowHideTabMainCommand}"
