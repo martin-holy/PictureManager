@@ -46,6 +46,10 @@ namespace PictureManager {
       if (value == null)
         value = IconName.Bug;
 
+      // transition to new icon resources
+      if (targetType == typeof(PathGeometry) && Application.Current.TryFindResource($"Icon{(IconName)value}") is { } res)
+        return res;
+
       var resourceName = $"appbar{Regex.Replace(((IconName)value).ToString(), @"([A-Z])", "_$1").ToLower(CultureInfo.CurrentCulture)}";
 
       return Application.Current.FindResource(resourceName);
