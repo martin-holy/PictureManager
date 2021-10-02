@@ -12,6 +12,8 @@ namespace MH.UI.WPF.Controls {
      DependencyProperty.Register(nameof(Size), typeof(double), typeof(Icon), new PropertyMetadata(18.0));
     public static readonly DependencyProperty IsIconVisibleProperty =
       DependencyProperty.Register(nameof(IsIconVisible), typeof(bool), typeof(Icon), new PropertyMetadata(true));
+    public static readonly DependencyProperty ShowShadowProperty =
+      DependencyProperty.Register(nameof(ShowShadow), typeof(bool), typeof(Icon), new PropertyMetadata(false));
 
     public PathGeometry Source {
       get => (PathGeometry)GetValue(SourceProperty);
@@ -31,6 +33,11 @@ namespace MH.UI.WPF.Controls {
     public bool IsIconVisible {
       get => (bool)GetValue(IsIconVisibleProperty);
       set => SetValue(IsIconVisibleProperty, value);
+    }
+
+    public bool ShowShadow {
+      get => (bool)GetValue(ShowShadowProperty);
+      set => SetValue(ShowShadowProperty, value);
     }
 
     static Icon() {

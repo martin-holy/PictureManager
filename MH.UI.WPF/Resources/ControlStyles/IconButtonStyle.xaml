@@ -36,11 +36,8 @@
                     Size="{TemplateBinding Size}"
                     Fill="{TemplateBinding Fill}"
                     Source="{TemplateBinding Source}"
-                    Margin="{TemplateBinding Padding}">
-              <c:Icon.Effect>
-                <DropShadowEffect BlurRadius="2" Color="Black" Opacity="0.7" ShadowDepth="2" />
-              </c:Icon.Effect>
-            </c:Icon>
+                    Margin="{TemplateBinding Padding}"
+                    ShowShadow="{TemplateBinding ShowShadow}" />
           </Grid>
 
           <ControlTemplate.Triggers>
