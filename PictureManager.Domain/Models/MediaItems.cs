@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.Utils;
+﻿using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,9 @@ using Directory = System.IO.Directory;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaItems : ObservableObject, ITable {
-    public TableHelper Helper { get; set; }
+    private readonly Core _core;
+
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, MediaItem> AllDic { get; set; }
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
@@ -65,67 +68,9 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new();
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
-    public void NewFromCsv(string csv) {
-      // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
-      var props = csv.Split('|');
-      if (props.Length != 12) throw new ArgumentException("Incorrect number of values.", csv);
-      var mi = new MediaItem(int.Parse(props[0]), null, props[2]) {
-        Csv = props,
-        Width = props[3].IntParseOrDefault(0),
-        Height = props[4].IntParseOrDefault(0),
-        Orientation = props[5].IntParseOrDefault(1),
-        Rating = props[6].IntParseOrDefault(0),
-        Comment = string.IsNullOrEmpty(props[7]) ? null : props[7],
-        IsOnlyInDb = props[11] == "1"
-      };
-      All.Add(mi);
-      AllDic.Add(mi.Id, mi);
-    }
-
-    public void LinkReferences() {
-      foreach (var mi in All.Cast<MediaItem>()) {
-        // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = Core.Instance.Folders.AllDic[int.Parse(mi.Csv[1])];
-        mi.Folder.MediaItems.Add(mi);
-
-        // reference to People and back reference from Person to MediaItems
-        if (!string.IsNullOrEmpty(mi.Csv[9])) {
-          var ids = mi.Csv[9].Split(',');
-          mi.People = new(ids.Length);
-          foreach (var personId in ids) {
-            var p = Core.Instance.People.AllDic[int.Parse(personId)];
-            p.MediaItems.Add(mi);
-            mi.People.Add(p);
-          }
-        }
-
-        // reference to Keywords and back reference from Keyword to MediaItems
-        if (!string.IsNullOrEmpty(mi.Csv[10])) {
-          var ids = mi.Csv[10].Split(',');
-          mi.Keywords = new(ids.Length);
-          foreach (var keywordId in ids) {
-            var k = Core.Instance.Keywords.AllDic[int.Parse(keywordId)];
-            k.MediaItems.Add(mi);
-            mi.Keywords.Add(k);
-          }
-        }
-
-        // reference to GeoName
-        if (!string.IsNullOrEmpty(mi.Csv[8])) {
-          mi.GeoName = Core.Instance.GeoNames.AllDic[int.Parse(mi.Csv[8])];
-          mi.GeoName.MediaItems.Add(mi);
-        }
-
-        // CSV array is not needed any more
-        mi.Csv = null;
-      }
-    }
-
-    public void LoadFromFile() {
-      All.Clear();
-      AllDic = new Dictionary<int, MediaItem>();
-      Helper.LoadFromFile();
-      MediaItemsCount = All.Count;
+    public MediaItems(Core core) {
+      _core = core;
+      DataAdapter = new MediaItemsDataAdapter(core, this);
     }
 
     /// <summary>
@@ -168,7 +113,7 @@ namespace PictureManager.Domain.Models {
           // removing segment here prevents removing segment from Segments.Delete
           // and setting DB table as modified multiple times
           item.Segments.Remove(segment);
-          Core.Instance.Segments.Delete(segment);
+          _core.Segments.Delete(segment);
         }
         item.Segments = null;
       }
@@ -207,7 +152,7 @@ namespace PictureManager.Domain.Models {
       SetModified(item, false);
 
       // set MediaItems table as modified
-      Core.Instance.Sdb.SetModified<MediaItems>();
+      DataAdapter.IsModified = true;
     }
 
     public void SetModified(MediaItem mi, bool value) {
@@ -215,7 +160,7 @@ namespace PictureManager.Domain.Models {
       mi.IsModified = value;
       if (value) {
         ModifiedItems.Add(mi);
-        Core.Instance.Sdb.SetModified<MediaItems>();
+        DataAdapter.IsModified = true;
       }
       else
         ModifiedItems.Remove(mi);
@@ -406,11 +351,11 @@ namespace PictureManager.Domain.Models {
             var fileName = Path.GetFileName(file) ?? string.Empty;
             fmis.TryGetValue(fileName, out var inDbFile);
             if (inDbFile == null) {
-              inDbFile = new MediaItem(Helper.GetNextId(), folder, fileName, true);
+              inDbFile = new MediaItem(DataAdapter.GetNextId(), folder, fileName, true);
               All.Add(inDbFile);
               folder.MediaItems.Add(inDbFile);
             }
-            if (!Core.Instance.CanViewerSee(inDbFile)) {
+            if (!_core.CanViewerSee(inDbFile)) {
               hiddenMediaItems.Add(inDbFile);
               continue;
             }

@@ -110,11 +110,6 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(Segment a, Segment b) => !(a == b);
     #endregion IEquatable implementation
 
-    // ID|MediaItemId|PersonId|SegmentBox|Keywords
-    public string ToCsv() =>
-      string.Join("|", Id.ToString(), MediaItem.Id.ToString(), PersonId.ToString(), string.Join(",", X, Y, Radius),
-        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
-
     public async Task SetPictureAsync(int size, bool reload = false) {
       if (reload) {
         Picture = null;

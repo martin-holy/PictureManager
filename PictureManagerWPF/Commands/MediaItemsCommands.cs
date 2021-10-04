@@ -116,7 +116,7 @@ namespace PictureManager.Commands {
           var mmi = App.Core.MediaItems;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = new MediaItem(mmi.Helper.GetNextId(), folder, fileName);
+          var mi = new MediaItem(mmi.DataAdapter.GetNextId(), folder, fileName);
           mmi.All.Add(mi);
           folder.MediaItems.Add(mi);
           await MediaItemsViewModel.ReadMetadata(mi);

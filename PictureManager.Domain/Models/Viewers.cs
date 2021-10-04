@@ -1,75 +1,20 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.DataAdapters;
 using SimpleDB;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class Viewers : BaseCatTreeViewCategory, ITable {
-    public TableHelper Helper { get; set; }
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new();
 
-    public Viewers() : base(Category.Viewers) {
+    public Viewers(Core core) : base(Category.Viewers) {
+      DataAdapter = new ViewersDataAdapter(core, this);
       Title = "Viewers";
       IconName = IconName.Eye;
       CanCreateItems = true;
       CanRenameItems = true;
       CanDeleteItems = true;
-    }
-
-    public void LoadFromFile() {
-      All.Clear();
-      Helper.LoadFromFile();
-    }
-
-    public void NewFromCsv(string csv) {
-      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
-      var props = csv.Split('|');
-      if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new Viewer(int.Parse(props[0]), props[1], this) { Csv = props, IsDefault = props[6] == "1" };
-      if (viewer.IsDefault) Core.Instance.CurrentViewer = viewer;
-      All.Add(viewer);
-    }
-
-    public void LinkReferences() {
-      // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|IsDefault
-
-      Items.Clear();
-
-      foreach (var viewer in All.Cast<Viewer>().OrderBy(x => x.Title)) {
-        // reference to IncludedFolders
-        if (!string.IsNullOrEmpty(viewer.Csv[2]))
-          foreach (var folderId in viewer.Csv[2].Split(',')) {
-            var f = Core.Instance.Folders.AllDic[int.Parse(folderId)];
-            viewer.AddFolder(f, true);
-          }
-
-        // reference to ExcludedFolders
-        if (!string.IsNullOrEmpty(viewer.Csv[3]))
-          foreach (var folderId in viewer.Csv[3].Split(',')) {
-            var f = Core.Instance.Folders.AllDic[int.Parse(folderId)];
-            viewer.AddFolder(f, false);
-          }
-
-        // ExcludedCategoryGroups
-        if (!string.IsNullOrEmpty(viewer.Csv[4]))
-          foreach (var groupId in viewer.Csv[4].Split(','))
-            viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
-
-        // ExcKeywords
-        if (!string.IsNullOrEmpty(viewer.Csv[5]))
-          foreach (var keywordId in viewer.Csv[5].Split(','))
-            viewer.ExcludedKeywords.Add(Core.Instance.Keywords.AllDic[int.Parse(keywordId)]);
-
-        if (viewer.IsDefault)
-          viewer.Activate();
-
-        // adding Viewer to Viewers
-        Items.Add(viewer);
-
-        // CSV array is not needed any more
-        viewer.Csv = null;
-      }
     }
 
     public override bool CanCreateItem(ICatTreeViewItem item) => item is Viewers;
@@ -81,11 +26,10 @@ namespace PictureManager.Domain.Models {
     public override bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && root is ICatTreeViewCategory;
 
     public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var viewer = new Viewer(Helper.GetNextId(), name, root);
+      var viewer = new Viewer(DataAdapter.GetNextId(), name, root);
       All.Add(viewer);
       CatTreeViewUtils.SetItemInPlace(root, viewer);
-      Core.Instance.Sdb.SetModified<Viewers>();
-      Core.Instance.Sdb.SaveIdSequences();
+      DataAdapter.IsModified = true;
 
       return viewer;
     }
@@ -98,7 +42,7 @@ namespace PictureManager.Domain.Models {
       if (item is Viewer viewer)
         All.Remove(viewer);
 
-      Core.Instance.Sdb.SetModified<Viewers>();
+      DataAdapter.IsModified = true;
     }
   }
 }

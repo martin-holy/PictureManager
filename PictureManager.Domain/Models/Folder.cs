@@ -41,14 +41,6 @@ namespace PictureManager.Domain.Models {
       OnCollapse += (o, e) => UpdateIconName();
     }
 
-    // ID|Name|Parent|IsFolderKeyword
-    public string ToCsv() =>
-      string.Join("|",
-        Id.ToString(),
-        Title,
-        (Parent as Folder)?.Id.ToString() ?? string.Empty,
-        IsFolderKeyword ? "1" : string.Empty);
-
     #region IEquatable implementation
 
     public bool Equals(Folder other) => Id == other?.Id;
@@ -171,7 +163,7 @@ namespace PictureManager.Domain.Models {
         if (Items.SingleOrDefault(x => x.Title.Equals(dirName, StringComparison.Ordinal)) is not Folder folder) {
           isNew = true;
           // add new Folder to the database
-          folder = new Folder(Core.Instance.Folders.Helper.GetNextId(), dirName, this);
+          folder = new Folder(Core.Instance.Folders.DataAdapter.GetNextId(), dirName, this);
           Core.Instance.Folders.All.Add(folder);
         }
 

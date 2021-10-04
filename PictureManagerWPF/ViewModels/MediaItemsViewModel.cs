@@ -344,7 +344,7 @@ namespace PictureManager.ViewModels {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
-          await App.Core.RunOnUiThread(App.Db.SetModified<MediaItems>);
+          await App.Core.RunOnUiThread(() => _model.DataAdapter.IsModified = true);
         },
         mi => mi.FilePath,
         // onCompleted
@@ -536,7 +536,7 @@ namespace PictureManager.ViewModels {
         };
         mi.SetThumbSize(true);
 
-        App.Db.SetModified<MediaItems>();
+        App.Core.MediaItems.DataAdapter.IsModified = true;
       }
       catch (Exception ex) {
         App.Core.LogError(ex, mi.FilePath);
@@ -621,7 +621,7 @@ namespace PictureManager.ViewModels {
           mi.Height = frame.PixelHeight;
           mi.SetThumbSize(true);
 
-          App.Db.SetModified<MediaItems>();
+          App.Core.MediaItems.DataAdapter.IsModified = true;
 
           // true because only media item dimensions are required
           if (frame.Metadata is not BitmapMetadata bm) return true;

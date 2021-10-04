@@ -61,7 +61,7 @@ namespace PictureManager.UserControls {
       if (Person.Segments?.Count > 0)
         Person.Segment = Person.Segments[0];
 
-      App.Db.SetModified<People>();
+      App.Core.People.DataAdapter.IsModified = true;
       ReloadTopSegments();
     }
 

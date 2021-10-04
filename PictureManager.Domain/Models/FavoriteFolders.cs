@@ -1,15 +1,15 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.DataAdapters;
 using SimpleDB;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFolders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
-    public TableHelper Helper { get; set; }
+  public sealed class FavoriteFolders : BaseCatTreeViewCategory, ITable {
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new List<IRecord>();
 
-    public FavoriteFolders() : base(Category.FavoriteFolders) {
+    public FavoriteFolders(Core core) : base(Category.FavoriteFolders) {
+      DataAdapter = new FavoriteFoldersDataAdapter(core, this);
       Title = "Favorites";
       IconName = IconName.FolderStar;
       CanRenameItems = true;
@@ -17,32 +17,8 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
     }
 
-    public void LoadFromFile() {
-      All.Clear();
-      Helper.LoadFromFile();
-    }
-
-    public void NewFromCsv(string csv) {
-      // ID|FolderId|Title
-      var props = csv.Split('|');
-      if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      All.Add(new FavoriteFolder(int.Parse(props[0])) { Title = props[2], Csv = props });
-    }
-
-    public void LinkReferences() {
-      foreach (var item in All.Cast<FavoriteFolder>()) {
-        item.Folder = Core.Instance.Folders.AllDic[int.Parse(item.Csv[1])];
-        item.ToolTip = item.Folder.FullPath;
-        item.Parent = this;
-        Items.Add(item);
-
-        // csv array is not needed any more
-        item.Csv = null;
-      }
-    }
-
     public void ItemCreate(Folder folder) {
-      var ff = new FavoriteFolder(Helper.GetNextId()) {
+      var ff = new FavoriteFolder(DataAdapter.GetNextId()) {
         Title = folder.Title,
         Folder = folder,
         Parent = this
@@ -52,8 +28,7 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, this, idx);
 
       All.Insert(allIdx, ff);
-      Core.Instance.Sdb.SetModified<FavoriteFolders>();
-      Core.Instance.Sdb.SaveIdSequences();
+      DataAdapter.IsModified = true;
     }
 
     public override void ItemDelete(ICatTreeViewItem item) {
@@ -66,7 +41,7 @@ namespace PictureManager.Domain.Models {
       All.Remove(folder);
 
       folder.Folder = null;
-      Core.Instance.Sdb.SetModified<FavoriteFolders>();
+      DataAdapter.IsModified = true;
     }
   }
 }

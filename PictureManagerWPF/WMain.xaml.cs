@@ -61,8 +61,7 @@ namespace PictureManager {
         App.Db.SaveAllTables();
       }
 
-      if (App.Db.NeedBackUp)
-        App.Db.BackUp();
+      App.Db.BackUp();
     }
 
     private async void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {

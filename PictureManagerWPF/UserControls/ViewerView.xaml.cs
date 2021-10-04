@@ -77,7 +77,7 @@ namespace PictureManager.UserControls {
       if (e.Source == source)
         Viewer.RemoveFolder((Folder)data, included);
 
-      App.Core.Sdb.SetModified<Viewers>();
+      App.Core.Viewers.DataAdapter.IsModified = true;
     }
 
     private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
@@ -103,7 +103,7 @@ namespace PictureManager.UserControls {
       if (e.Source == source)
         Viewer.RemoveKeyword((Keyword)data);
 
-      App.Core.Sdb.SetModified<Viewers>();
+      App.Core.Viewers.DataAdapter.IsModified = true;
     }
 
     public void Reload(Viewer viewer) {

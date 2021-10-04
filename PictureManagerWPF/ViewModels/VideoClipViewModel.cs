@@ -45,7 +45,7 @@ namespace PictureManager.ViewModels {
       OnPropertyChanged(nameof(Duration));
       OnPropertyChanged(nameof(Volume));
       OnPropertyChanged(nameof(Speed));
-      App.Db.SetModified<VideoClips>();
+      App.Core.VideoClips.DataAdapter.IsModified = true;
     }
   }
 }

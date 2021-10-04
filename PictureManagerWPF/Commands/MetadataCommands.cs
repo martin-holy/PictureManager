@@ -109,7 +109,7 @@ namespace PictureManager.Commands {
       current.SetInfoBox();
       current.OnPropertyChanged(nameof(current.Comment));
       MediaItemsViewModel.TryWriteMetadata(current);
-      App.Db.SetModified<MediaItems>();
+      App.Core.MediaItems.DataAdapter.IsModified = true;
     }
 
     private static bool CanReload(object parameter) => parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;

@@ -19,9 +19,6 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Tag;
     }
 
-    // ID|Name|Parent
-    public string ToCsv() => string.Join("|", Id.ToString(), Title, (Parent as Keyword)?.Id.ToString());
-
     private string GetFullPath() {
       var parent = Parent as Keyword;
       var names = new List<string> { Title };

@@ -86,7 +86,7 @@ namespace PictureManager.UserControls {
       }
 
       if (_isCurrentModified) {
-        App.Db.SetModified<Segments>();
+        App.Core.Segments.DataAdapter.IsModified = true;
         _ = _current.Segment.SetPictureAsync(App.Core.Segments.SegmentSize, true);
         _isCurrentModified = false;
         IsEditOn = false;

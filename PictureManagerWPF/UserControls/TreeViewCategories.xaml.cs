@@ -46,8 +46,8 @@ namespace PictureManager.UserControls {
         switch (src) {
           case Folder srcData:  // Folder
           FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
-          App.Db.SetModified<MediaItems>();
-          App.Db.SetModified<Folders>();
+          App.Core.MediaItems.DataAdapter.IsModified = true;
+          App.Core.Folders.DataAdapter.IsModified = true;
           App.Core.FolderKeywords.Load();
 
           // reload last selected source if was moved
@@ -63,7 +63,7 @@ namespace PictureManager.UserControls {
           case string[]:  // MediaItems
           App.Ui.MediaItemsViewModel.CopyMove(foMode,
             App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
-          App.Db.SetModified<MediaItems>();
+          App.Core.MediaItems.DataAdapter.IsModified = true;
 
           break;
         }
@@ -83,7 +83,7 @@ namespace PictureManager.UserControls {
         foreach (var group in groups)
           App.Core.CategoryGroups.All.Add(group as IRecord);
         if (groups.Length != 0)
-          App.Db.SetModified<CategoryGroups>();
+          App.Core.CategoryGroups.DataAdapter.IsModified = true;
 
         // sort items
         var items = root.Items.Where(x => x is not ICatTreeViewGroup).ToArray();
@@ -91,10 +91,8 @@ namespace PictureManager.UserControls {
           table.All.Remove(item as IRecord);
         foreach (var item in items)
           table.All.Add(item as IRecord);
-        if (items.Length != 0) {
-          App.Db.Changes++;
-          table.Helper.IsModified = true;
-        }
+        if (items.Length != 0)
+          table.DataAdapter.IsModified = true;
       };
     }
 

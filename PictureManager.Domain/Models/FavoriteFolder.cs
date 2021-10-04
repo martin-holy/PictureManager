@@ -11,8 +11,5 @@ namespace PictureManager.Domain.Models {
       Id = id;
       IconName = IconName.Folder;
     }
-
-    // ID|FolderId|Title
-    public string ToCsv() => string.Join("|", Id.ToString(), Folder.Id.ToString(), Title);
   }
 }
