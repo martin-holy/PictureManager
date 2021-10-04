@@ -1,22 +1,25 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Utils;
 using SimpleDB;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class People : BaseCatTreeViewCategory, ITable {
+    private readonly Core _core;
     private List<Person> _selected = new();
     private Person _current;
 
-    public TableHelper Helper { get; set; }
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Person> AllDic { get; set; }
     public List<Person> Selected => _selected;
     public Person Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public People() : base(Category.People) {
+    public People(Core core) : base(Category.People) {
+      _core = core;
+      DataAdapter = new PeopleDataAdapter(core, this);
       Title = "People";
       IconName = IconName.PeopleMultiple;
       CanHaveGroups = true;
@@ -26,67 +29,21 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
     }
 
-    public void LoadFromFile() {
-      All.Clear();
-      AllDic = new Dictionary<int, Person>();
-      Helper.LoadFromFile();
-    }
-
-    public void NewFromCsv(string csv) {
-      // ID|Name|Segments|Keywords
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var person = new Person(int.Parse(props[0]), props[1]) { Csv = props };
-      All.Add(person);
-      AllDic.Add(person.Id, person);
-    }
-
-    public void LinkReferences() {
-      // MediaItems to the Person are added in LinkReferences on MediaItem
-
-      Items.Clear();
-      LoadGroupsAndItems(All);
-
-      foreach (var person in All.Cast<Person>()) {
-        // Persons top segments
-        if (!string.IsNullOrEmpty(person.Csv[2])) {
-          var ids = person.Csv[2].Split(',');
-          person.Segments = new();
-          foreach (var segmentId in ids)
-            person.Segments.Add(Core.Instance.Segments.AllDic[int.Parse(segmentId)]);
-          person.Segment = person.Segments[0];
-        }
-
-        // reference to Keywords
-        if (!string.IsNullOrEmpty(person.Csv[3])) {
-          var ids = person.Csv[3].Split(',');
-          person.Keywords = new(ids.Length);
-          foreach (var keywordId in ids)
-            person.Keywords.Add(Core.Instance.Keywords.AllDic[int.Parse(keywordId)]);
-        }
-
-        // CSV array is not needed any more
-        person.Csv = null;
-      }
-    }
-
     public Person GetPerson(string name, bool create) =>
-      Core.Instance.RunOnUiThread(() => {
+      _core.RunOnUiThread(() => {
         var person = All.Cast<Person>().SingleOrDefault(x => x.Title.Equals(name));
         return person ?? (create ? ItemCreate(this, name) as Person : null);
       }).Result;
 
     public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var item = new Person(Helper.GetNextId(), name) { Parent = root };
+      var item = new Person(DataAdapter.GetNextId(), name) { Parent = root };
       var idx = CatTreeViewUtils.SetItemInPlace(root, item);
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, root, idx);
 
       All.Insert(allIdx, item);
-      Core.Instance.Sdb.SetModified<People>();
+      DataAdapter.IsModified = true;
       if (root is ICatTreeViewGroup)
-        Core.Instance.Sdb.SetModified<CategoryGroups>();
-
-      Core.Instance.Sdb.SaveIdSequences();
+        _core.CategoryGroups.DataAdapter.IsModified = true;
 
       return item;
     }
@@ -101,13 +58,13 @@ namespace PictureManager.Domain.Models {
           if (mi.People.Count == 0)
             mi.People = null;
         }
-        Core.Instance.Sdb.SetModified<MediaItems>();
+        _core.MediaItems.DataAdapter.IsModified = true;
       }
 
       // remove Person from the tree
       item.Parent.Items.Remove(item);
       if (item.Parent is ICatTreeViewGroup)
-        Core.Instance.Sdb.SetModified<CategoryGroups>();
+        _core.CategoryGroups.DataAdapter.IsModified = true;
       item.Parent = null;
 
       // set Person Segments to unknown
@@ -115,7 +72,7 @@ namespace PictureManager.Domain.Models {
         foreach (var segment in person.Segments) {
           segment.PersonId = 0;
           segment.Person = null;
-          Core.Instance.Sdb.SetModified<Segments>();
+          _core.Segments.DataAdapter.IsModified = true;
         }
         person.Segments = null;
       }
@@ -125,7 +82,7 @@ namespace PictureManager.Domain.Models {
       // remove Person from DB
       All.Remove(person);
 
-      Core.Instance.Sdb.SetModified<People>();
+      DataAdapter.IsModified = true;
     }
 
     public void Select(List<Person> list, Person p, bool isCtrlOn, bool isShiftOn) =>
@@ -165,7 +122,7 @@ namespace PictureManager.Domain.Models {
       var currentKeywords = person.Keywords;
       Keywords.Toggle(keyword, ref currentKeywords, null, null);
       person.Keywords = currentKeywords;
-      Core.Instance.Sdb.SetModified<People>();
+      Core.Instance.People.DataAdapter.IsModified = true;
     }
   }
 }

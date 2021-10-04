@@ -2,13 +2,7 @@
 
 namespace SimpleDB {
   public interface ITable {
-    TableHelper Helper { get; set; }
+    DataAdapter DataAdapter { get; }
     List<IRecord> All { get; }
-    void NewFromCsv(string csv);
-    void LinkReferences();
-    void LoadFromFile();
-
-    public void SaveToFile() => Helper.SaveToFile(All);
-    public virtual void TablePropsToCsv() {}
   }
 }

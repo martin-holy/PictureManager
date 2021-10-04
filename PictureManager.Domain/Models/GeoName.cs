@@ -21,9 +21,6 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.LocationCheckin;
     }
 
-    // ID|Name|ToponymName|FCode|Parent
-    public string ToCsv() => string.Join("|", Id.ToString(), Title, ToponymName, Fcode, (Parent as GeoName)?.Id.ToString());
-
     public MediaItem[] GetMediaItems(bool recursive) => recursive ? GetMediaItemsRecursive() : MediaItems.ToArray();
 
     public MediaItem[] GetMediaItemsRecursive() {

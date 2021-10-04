@@ -55,7 +55,7 @@ namespace PictureManager.Commands {
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
-      App.Db.SetModified<Folders>();
+      App.Core.Folders.DataAdapter.IsModified = true;
       App.Core.FolderKeywords.Load();
     }
 

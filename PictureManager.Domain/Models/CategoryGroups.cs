@@ -1,31 +1,19 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.DataAdapters;
 using SimpleDB;
-using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
   public sealed class CategoryGroups : ITable {
-    public TableHelper Helper { get; set; }
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new List<IRecord>();
 
-    public void NewFromCsv(string csv) {
-      // ID|Name|Category|GroupItems
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      All.Add(new CategoryGroup(int.Parse(props[0]), props[1], (Category)int.Parse(props[2])) { Csv = props });
-    }
-
-    public void LinkReferences() {
-      // ID|Name|Category|GroupItems
-    }
-
-    public void LoadFromFile() {
-      All.Clear();
-      Helper.LoadFromFile();
+    public CategoryGroups(Core core) {
+      DataAdapter = new CategoryGroupsDataAdapter(core, this);
     }
 
     public ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
-      var group = new CategoryGroup(Helper.GetNextId(), name, cat.Category) {
+      var group = new CategoryGroup(DataAdapter.GetNextId(), name, cat.Category) {
         IconName = cat.CategoryGroupIconName,
         Parent = cat
       };
@@ -34,8 +22,7 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, cat, idx);
 
       All.Insert(allIdx, group);
-      Core.Instance.Sdb.SetModified<CategoryGroups>();
-      Core.Instance.Sdb.SaveIdSequences();
+      DataAdapter.IsModified = true;
 
       return group;
     }
@@ -47,17 +34,17 @@ namespace PictureManager.Domain.Models {
       var allIdx = Core.GetAllIndexBasedOnTreeOrder(All, group.Parent, idx);
 
       All.Move(group as CategoryGroup, allIdx);
-      Core.Instance.Sdb.SetModified<CategoryGroups>();
+      DataAdapter.IsModified = true;
     }
 
     public void GroupDelete(CategoryGroup record) {
       All.Remove(record);
-      Core.Instance.Sdb.SetModified<CategoryGroups>();
+      DataAdapter.IsModified = true;
     }
 
     public void GroupMove(CategoryGroup group, CategoryGroup dest, bool aboveDest) {
       All.Move(group, dest, aboveDest);
-      Core.Instance.Sdb.SetModified<CategoryGroups>();
+      DataAdapter.IsModified = true;
     }
   }
 }

@@ -77,22 +77,6 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(MediaItem a, MediaItem b) => !(a == b);
     #endregion
 
-    // ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
-    public string ToCsv() =>
-      string.Join("|",
-        Id.ToString(),
-        Folder.Id.ToString(),
-        FileName,
-        Width.ToString(),
-        Height.ToString(),
-        Orientation.ToString(),
-        Rating.ToString(),
-        Comment ?? string.Empty,
-        GeoName?.Id.ToString(),
-        People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
-        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)),
-        IsOnlyInDb ? "1" : string.Empty);
-
     public int RotationAngle =>
       (MediaOrientation)Orientation switch {
         MediaOrientation.Rotate90 => 90,
@@ -174,7 +158,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public MediaItem CopyTo(Folder folder, string fileName) {
-      var copy = new MediaItem(Core.Instance.MediaItems.Helper.GetNextId(), folder, fileName) {
+      var copy = new MediaItem(Core.Instance.MediaItems.DataAdapter.GetNextId(), folder, fileName) {
         Width = Width,
         Height = Height,
         Orientation = Orientation,
@@ -227,7 +211,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Rename(string newFileName) {
-      Core.Instance.Sdb.SetModified<MediaItems>();
+      Core.Instance.MediaItems.DataAdapter.IsModified = true;
       var oldFilePath = FilePath;
       var oldFilePathCache = FilePathCache;
       FileName = newFileName;

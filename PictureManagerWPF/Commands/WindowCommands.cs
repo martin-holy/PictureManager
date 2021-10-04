@@ -1,10 +1,8 @@
 ﻿using PictureManager.Dialogs;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -133,7 +131,7 @@ namespace PictureManager.Commands {
           MediaItemsViewModel.TryWriteMetadata(mi);
           await App.Core.RunOnUiThread(() => {
             mi.SetInfoBox();
-            App.Db.SetModified<MediaItems>();
+            App.Core.MediaItems.DataAdapter.IsModified = true;
           });
         },
         mi => mi.FilePath,
@@ -151,7 +149,7 @@ namespace PictureManager.Commands {
 
       var viewer = (Viewer)parameter;
       viewer.IsDefault = true;
-      ((SimpleDB.ITable)App.Core.Viewers).SaveToFile();
+      App.Core.Viewers.DataAdapter.Save();
 
       App.WMain.MenuViewers.Header = viewer.Title;
       App.Core.CurrentViewer = viewer;

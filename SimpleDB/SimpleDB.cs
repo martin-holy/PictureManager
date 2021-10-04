@@ -11,117 +11,136 @@ using System.Text;
 namespace SimpleDB {
   public class SimpleDB : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
-
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public Dictionary<Type, TableHelper> Tables { get; } = new();
-    public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
-    public bool NeedBackUp { get; set; }
-
+    private readonly List<DataAdapter> _dataAdapters = new();
     private readonly Dictionary<string, int> _idSequences = new();
-    private readonly ILogger _logger;
+    private readonly string _isSequencesFilePath;
     private int _changes;
+    private bool _needBackUp;
+
+    public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
+    public ILogger Logger { get; }
 
     public SimpleDB(ILogger logger) {
-      _logger = logger;
+      Logger = logger;
       Directory.CreateDirectory("db");
+      _isSequencesFilePath = Path.Combine("db", "IdSequences.csv");
       LoadIdSequences();
     }
 
-    public void AddTable(ITable table, bool autoLoad = true) {
-      if (!_idSequences.TryGetValue(table.GetType().Name, out var maxId))
-        _idSequences.Add(table.GetType().Name, 0);
+    public void AddDataAdapter(DataAdapter dataAdapter) {
+      if (!_idSequences.TryGetValue(dataAdapter.TableName, out var maxId))
+        _idSequences.Add(dataAdapter.TableName, 0);
 
-      Tables.Add(table.GetType(), new TableHelper(table, maxId, _logger, autoLoad, this));
+      dataAdapter.MaxId = maxId;
+      _dataAdapters.Add(dataAdapter);
     }
 
     public void LoadAllTables(IProgress<string> progress) {
-      foreach (var table in Tables) {
-        if (!table.Value.AutoLoad) continue;
-        progress.Report($"Loading data for {table.Key.Name}");
-        table.Value.Table.LoadFromFile();
-        table.Value.LoadPropsFromFile();
+      foreach (var da in _dataAdapters) {
+        progress.Report($"Loading data for {da.TableName}");
+        da.Load();
+        da.LoadProps();
       }
     }
 
     public void LinkReferences(IProgress<string> progress) {
-      foreach (var table in Tables) {
-        if (!table.Value.AutoLoad) continue;
-        progress.Report($"Loading data for {table.Key.Name}");
+      foreach (var da in _dataAdapters) {
+        progress.Report($"Loading data for {da.TableName}");
         try {
-          table.Value.Table.LinkReferences();
+          da.LinkReferences();
         }
         catch (Exception ex) {
-          _logger.LogError(ex, table.Key.Name);
+          Logger.LogError(ex, da.TableName);
         }
       }
     }
 
     public void SaveAllTables() {
-      foreach (var helper in Tables.Values.Where(x => x.IsModified))
-        helper.Table.SaveToFile();
+      foreach (var da in _dataAdapters.Where(x => x.IsModified))
+        da.Save();
 
-      foreach (var helper in Tables.Values.Where(x => x.AreTablePropsModified))
-        helper.SaveTablePropsToFile();
+      foreach (var da in _dataAdapters.Where(x => x.AreTablePropsModified))
+        da.SaveProps();
 
       SaveIdSequences();
       Changes = 0;
     }
 
     private void LoadIdSequences() {
-      var filePath = Path.Combine("db", "IdSequences.csv");
-      try {
-        if (!File.Exists(filePath)) return;
-        using var sr = new StreamReader(filePath, Encoding.UTF8);
-        string line;
-        while ((line = sr.ReadLine()) != null) {
+      SimpleDB.LoadFromFile(
+        (line) => {
           var vals = line.Split('|');
-          if (vals.Length != 2) throw new ArgumentException("Incorrect number of values.", line);
+          if (vals.Length != 2)
+            throw new ArgumentException("Incorrect number of values.", line);
           _idSequences.Add(vals[0], int.Parse(vals[1]));
-        }
-      }
-      catch (Exception ex) {
-        _logger.LogError(ex);
-      }
+        },
+        _isSequencesFilePath,
+        Logger);
     }
 
     public void SaveIdSequences() {
       // check if something changed
       var isModified = false;
-      foreach (var table in Tables) {
-        if (_idSequences[table.Key.Name] == table.Value.MaxId) continue;
-        _idSequences[table.Key.Name] = table.Value.MaxId;
+      foreach (var da in _dataAdapters) {
+        if (_idSequences[da.TableName] == da.MaxId) continue;
+        _idSequences[da.TableName] = da.MaxId;
         isModified = true;
       }
 
       if (!isModified) return;
 
-      try {
-        using var sw = new StreamWriter(Path.Combine("db", "IdSequences.csv"), false, Encoding.UTF8);
-        foreach (var table in Tables)
-          sw.WriteLine(string.Join("|", table.Key.Name, table.Value.MaxId));
-      }
-      catch (Exception ex) {
-        _logger.LogError(ex);
-      }
+      SaveToFile<DataAdapter>(
+        _dataAdapters,
+        (x) => string.Join("|", x.TableName, x.MaxId),
+        _isSequencesFilePath,
+        Logger);
     }
 
-    public void SetModified<T>() {
-      if (!Tables.ContainsKey(typeof(T))) return;
-      Tables[typeof(T)].IsModified = true;
+    public void AddChange() {
       Changes++;
-      NeedBackUp = true;
+      _needBackUp = true;
     }
 
     public void BackUp() {
+      if (!_needBackUp) return;
+
       try {
         using var zip = ZipFile.Open(Path.Combine("db", DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
         foreach (var file in Directory.EnumerateFiles("db", "*.csv"))
           _ = zip.CreateEntryFromFile(file, file);
       }
       catch (Exception ex) {
-        _logger.LogError(ex, "Error while backing up database.");
+        Logger.LogError(ex, "Error while backing up database.");
+      }
+    }
+
+    public static void LoadFromFile(Action<string> parseLine, string filePath, ILogger logger) {
+      if (!File.Exists(filePath)) return;
+      try {
+        using var sr = new StreamReader(filePath, Encoding.UTF8);
+        string line;
+        while ((line = sr.ReadLine()) != null)
+          parseLine(line);
+      }
+      catch (Exception ex) {
+        logger.LogError(ex);
+      }
+    }
+
+    public static bool SaveToFile<T>(IEnumerable<T> items, Func<T, string> toString, string filePath, ILogger logger) {
+      try {
+        using var sw = new StreamWriter(filePath, false, Encoding.UTF8, 65536);
+        foreach (var item in items)
+          sw.WriteLine(toString(item));
+
+        return true;
+      }
+      catch (Exception ex) {
+        logger.LogError(ex);
+        return false;
       }
     }
   }

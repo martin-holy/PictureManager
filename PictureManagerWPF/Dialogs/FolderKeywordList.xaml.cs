@@ -30,7 +30,7 @@ namespace PictureManager.Dialogs {
         Items.Remove(item);
       }
 
-      App.Db.SetModified<Folders>();
+      App.Core.Folders.DataAdapter.IsModified = true;
       App.Core.FolderKeywords.Load();
     }
   }

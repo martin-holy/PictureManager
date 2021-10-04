@@ -149,7 +149,7 @@ namespace PictureManager.ViewModels {
 
     public override void ItemRename(ICatTreeViewItem item, string name) {
       item.Title = name;
-      VideoClips.ItemRename(item.Tag as VideoClip, name);
+      App.Core.VideoClips.ItemRename(item.Tag as VideoClip, name);
     }
 
     public override void ItemDelete(ICatTreeViewItem item) {
@@ -169,7 +169,7 @@ namespace PictureManager.ViewModels {
 
       // move item to end of category or group
       if (dest is ICatTreeViewCategory or ICatTreeViewGroup) {
-        VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClipsGroup);
+        App.Core.VideoClips.ItemMove(item.Tag as VideoClip, dest.Tag as VideoClipsGroup);
         item.Parent.Items.Remove(item);
         dest.Items.Add(item);
         item.Parent = dest;
@@ -177,7 +177,7 @@ namespace PictureManager.ViewModels {
       else {
         // update parent 
         if (!Equals(item.Parent, dest.Parent)) {
-          VideoClips.ItemMove(item.Tag as VideoClip, dest.Parent.Tag as VideoClipsGroup);
+          App.Core.VideoClips.ItemMove(item.Tag as VideoClip, dest.Parent.Tag as VideoClipsGroup);
           item.Parent.Items.Remove(item);
           dest.Parent.Items.Add(item);
           item.Parent = dest.Parent;
@@ -198,7 +198,7 @@ namespace PictureManager.ViewModels {
 
     public override void GroupRename(ICatTreeViewGroup group, string name) {
       group.Title = name;
-      VideoClipsGroups.ItemRename(group.Tag as VideoClipsGroup, name);
+      App.Core.VideoClipsGroups.ItemRename(group.Tag as VideoClipsGroup, name);
     }
 
     public override void GroupDelete(ICatTreeViewGroup group) {

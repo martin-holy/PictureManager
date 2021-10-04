@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.DataAdapters;
 using SimpleDB;
 using System;
 using System.Collections.Generic;
@@ -8,12 +9,16 @@ using System.Linq;
 using System.Threading;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Folders : BaseCatTreeViewCategory, ITable, ICatTreeViewCategory {
-    public TableHelper Helper { get; set; }
+  public sealed class Folders : BaseCatTreeViewCategory, ITable {
+    private readonly Core _core;
+
+    public DataAdapter DataAdapter { get; }
     public List<IRecord> All { get; } = new();
     public Dictionary<int, Folder> AllDic { get; set; }
 
-    public Folders() : base(Category.Folders) {
+    public Folders(Core core) : base(Category.Folders) {
+      _core = core;
+      DataAdapter = new FoldersDataAdapter(core, this);
       Title = "Folders";
       IconName = IconName.Folder;
       CanHaveSubItems = true;
@@ -22,32 +27,6 @@ namespace PictureManager.Domain.Models {
       CanDeleteItems = true;
       CanMoveItem = true;
       CanCopyItem = true;
-    }
-
-    public void NewFromCsv(string csv) {
-      // ID|Name|Parent|IsFolderKeyword
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var folder = new Folder(int.Parse(props[0]), props[1], null) { Csv = props, IsFolderKeyword = props[3] == "1" };
-      All.Add(folder);
-      AllDic.Add(folder.Id, folder);
-    }
-
-    public void LinkReferences() {
-      // ID|Name|Parent|IsFolderKeyword
-      foreach (var folder in All.Cast<Folder>()) {
-        // reference to Parent and back reference from Parent to SubFolder
-        folder.Parent = !string.IsNullOrEmpty(folder.Csv[2]) ? AllDic[int.Parse(folder.Csv[2])] : this;
-        folder.Parent.Items.Add(folder);
-        // csv array is not needed any more
-        folder.Csv = null;
-      }
-    }
-
-    public void LoadFromFile() {
-      All.Clear();
-      AllDic = new Dictionary<int, Folder>();
-      Helper.LoadFromFile();
     }
 
     public void AddDrives() {
@@ -64,7 +43,7 @@ namespace PictureManager.Domain.Models {
 
         // add Drive to the database and to the tree if not already exists
         if (Items.SingleOrDefault(x => x.Title.Equals(driveName, StringComparison.Ordinal)) is not Folder item) {
-          item = new Folder(Helper.GetNextId(), driveName, this);
+          item = new Folder(DataAdapter.GetNextId(), driveName, this);
           All.Add(item);
           Items.Add(item);
         }
@@ -74,7 +53,7 @@ namespace PictureManager.Domain.Models {
         item.IsExpanded = false;
 
         // if Viewer can't see this Drive set it as hidden and continue
-        if (!Core.Instance.CanViewerSeeThisFolder(item)) {
+        if (!_core.CanViewerSeeThisFolder(item)) {
           item.IsHidden = true;
           continue;
         }
@@ -122,7 +101,7 @@ namespace PictureManager.Domain.Models {
     public void SortInDB(List<IRecord> sorted) {
       for (int i = 0; i < sorted.Count; i++)
         All.Move(sorted[i], i);
-      Core.Instance.Sdb.SetModified<Folders>();
+      DataAdapter.IsModified = true;
     }
 
     public static void CopyMove(FileOperationMode mode, Folder srcFolder, Folder destFolder, IProgress<object[]> progress,
@@ -265,9 +244,9 @@ namespace PictureManager.Domain.Models {
           break;
         }
         case string[] dragged: { // MediaItems
-          if (Core.Instance.MediaItems.ThumbsGrid == null) break;
+          if (_core.MediaItems.ThumbsGrid == null) break;
 
-          var selected = Core.Instance.MediaItems.ThumbsGrid.FilteredItems
+          var selected = _core.MediaItems.ThumbsGrid.FilteredItems
             .Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
           if (selected.SequenceEqual(dragged.OrderBy(x => x)) && dest is Folder destData && destData.IsAccessible) return true;
@@ -308,7 +287,7 @@ namespace PictureManager.Domain.Models {
 
       // create Folder
       Directory.CreateDirectory(Extensions.PathCombine(((Folder)root).FullPath, name));
-      var item = new Folder(Helper.GetNextId(), name, root) { IsAccessible = true };
+      var item = new Folder(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
       All.Add(item);
@@ -316,12 +295,11 @@ namespace PictureManager.Domain.Models {
       // add new Folder to the tree
       CatTreeViewUtils.SetItemInPlace(root, item);
 
-      Core.Instance.Sdb.SetModified<Folders>();
-      Core.Instance.Sdb.SaveIdSequences();
+      DataAdapter.IsModified = true;
 
       // reload FolderKeywords
       if (((Folder)root).IsFolderKeyword || ((Folder)root).FolderKeyword != null)
-        Core.Instance.FolderKeywords.Load();
+        _core.FolderKeywords.Load();
 
       return item;
     }
@@ -337,11 +315,11 @@ namespace PictureManager.Domain.Models {
       item.Title = name;
 
       CatTreeViewUtils.SetItemInPlace(item.Parent, item);
-      Core.Instance.Sdb.SetModified<Folders>();
+      DataAdapter.IsModified = true;
 
       // reload FolderKeywords
       if (self.IsFolderKeyword || self.FolderKeyword != null)
-        Core.Instance.FolderKeywords.Load();
+        _core.FolderKeywords.Load();
     }
 
     public override void ItemDelete(ICatTreeViewItem item) {
@@ -362,7 +340,7 @@ namespace PictureManager.Domain.Models {
 
         // remove MediaItems
         foreach (var mi in f.MediaItems.ToList())
-          Core.Instance.MediaItems.Delete(mi);
+          _core.MediaItems.Delete(mi);
 
         // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
         f.MediaItems.Clear();
@@ -374,14 +352,14 @@ namespace PictureManager.Domain.Models {
         f.Items.Clear();
 
         // remove FavoriteFolder
-        Core.Instance.FavoriteFolders.ItemDelete(
-          Core.Instance.FavoriteFolders.All.Cast<FavoriteFolder>().SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
+        _core.FavoriteFolders.ItemDelete(
+          _core.FavoriteFolders.All.Cast<FavoriteFolder>().SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
 
         // set Folders table as modified
-        Core.Instance.Sdb.SetModified<Folders>();
+        DataAdapter.IsModified = true;
       }
 
-      Core.Instance.FolderKeywords.Load();
+      _core.FolderKeywords.Load();
 
       // delete folder, subfolders and mediaItems from cache
       if (Directory.Exists(((Folder)item).FullPathCache))

@@ -357,11 +357,11 @@ namespace PictureManager.CustomControls {
     }
 
     private static bool CanVideoClipsSave() =>
-      App.Core.VideoClips.Helper.IsModified || App.Core.VideoClipsGroups.Helper.IsModified;
+      App.Core.VideoClips.DataAdapter.IsModified || App.Core.VideoClipsGroups.DataAdapter.IsModified;
 
     private static void VideoClipsSave() {
-      ((SimpleDB.ITable)App.Core.VideoClips).SaveToFile();
-      ((SimpleDB.ITable)App.Core.VideoClipsGroups).SaveToFile();
+      App.Core.VideoClips.DataAdapter.Save();
+      App.Core.VideoClipsGroups.DataAdapter.Save();
     }
   }
 }

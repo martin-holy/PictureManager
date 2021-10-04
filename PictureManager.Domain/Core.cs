@@ -44,41 +44,41 @@ namespace PictureManager.Domain {
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
-      FavoriteFolders = new();
-      Folders = new();
+      Sdb = new(this);
+
+      FavoriteFolders = new(this);
+      Folders = new(this);
       Ratings = new();
       MediaItemSizes = new();
-      People = new();
+      People = new(this);
       FolderKeywords = new();
-      Keywords = new();
-      GeoNames = new();
-      Viewers = new();
+      Keywords = new(this);
+      GeoNames = new(this);
+      Viewers = new(this);
 
       TreeViewCategories = new() { FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers };
 
-      CategoryGroups = new();
+      CategoryGroups = new(this);
 
-      MediaItems = new();
-      VideoClips = new();
-      VideoClipsGroups = new();
-      Segments = new();
+      MediaItems = new(this);
+      VideoClips = new(this);
+      VideoClipsGroups = new(this);
+      Segments = new(this);
     }
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
-        Sdb = new(this);
-
-        Sdb.AddTable(CategoryGroups);
-        Sdb.AddTable(Folders); // needs to be before Viewers
-        Sdb.AddTable(Viewers);
-        Sdb.AddTable(People);
-        Sdb.AddTable(Keywords);
-        Sdb.AddTable(GeoNames);
-        Sdb.AddTable(MediaItems);
-        Sdb.AddTable(VideoClipsGroups); // needs to be before VideoClips
-        Sdb.AddTable(VideoClips);
-        Sdb.AddTable(FavoriteFolders);
-        Sdb.AddTable(Segments);
+        Sdb.AddDataAdapter(CategoryGroups.DataAdapter);
+        Sdb.AddDataAdapter(Folders.DataAdapter); // needs to be before Viewers
+        Sdb.AddDataAdapter(Viewers.DataAdapter);
+        Sdb.AddDataAdapter(People.DataAdapter);
+        Sdb.AddDataAdapter(Keywords.DataAdapter);
+        Sdb.AddDataAdapter(GeoNames.DataAdapter);
+        Sdb.AddDataAdapter(MediaItems.DataAdapter);
+        Sdb.AddDataAdapter(VideoClipsGroups.DataAdapter); // needs to be before VideoClips
+        Sdb.AddDataAdapter(VideoClips.DataAdapter);
+        Sdb.AddDataAdapter(FavoriteFolders.DataAdapter);
+        Sdb.AddDataAdapter(Segments.DataAdapter);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);

@@ -24,13 +24,6 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.People;
     }
 
-    // ID|Name|Segments|Keywords
-    public string ToCsv() => string.Join("|",
-      Id.ToString(),
-      Title,
-      Segments == null ? string.Empty : string.Join(",", Segments.Select(x => x.Id)),
-      Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
-
     public MediaItem[] GetMediaItems() =>
       Core.Instance.Segments.All.Cast<Segment>().Where(x => x.PersonId == Id).Select(x => x.MediaItem)
       .Concat(MediaItems).Distinct().OrderBy(x => x.FileName).ToArray();
@@ -46,7 +39,7 @@ namespace PictureManager.Domain.Models {
       }
 
       UpdateDisplayKeywords();
-      Core.Instance.Sdb.SetModified<People>();
+      Core.Instance.People.DataAdapter.IsModified = true;
     }
 
     public void UpdateDisplayKeywords() {

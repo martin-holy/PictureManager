@@ -26,17 +26,6 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Eye;
     }
 
-    // ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
-    public string ToCsv() =>
-      string.Join("|",
-        Id.ToString(),
-        Title,
-        string.Join(",", IncludedFolders.Select(x => x.Id)),
-        string.Join(",", ExcludedFolders.Select(x => x.Id)),
-        string.Join(",", ExcCatGroupsIds),
-        string.Join(",", ExcludedKeywords.Select(x => x.Id)),
-        IsDefault ? "1" : string.Empty);
-
     public void Activate() {
       UpdateHashSets();
       UpdateCategoryGroupsVisibility();
@@ -122,7 +111,7 @@ namespace PictureManager.Domain.Models {
 
     public void ToggleCategoryGroup(int groupId) {
       ExcCatGroupsIds.Toggle(groupId);
-      Core.Instance.Sdb.SetModified<Viewers>();
+      Core.Instance.Viewers.DataAdapter.IsModified = true;
     }
 
     private void UpdateCategoryGroupsVisibility() {

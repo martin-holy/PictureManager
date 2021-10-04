@@ -1,6 +1,5 @@
 ﻿using SimpleDB;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClip : IRecord {
@@ -18,23 +17,7 @@ namespace PictureManager.Domain.Models {
     public string Comment { get; set; }
     public List<Person> People { get; set; }
     public List<Keyword> Keywords { get; set; }
-
     public VideoClipsGroup Group { get; set; }
-
-    // ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
-    public string ToCsv() =>
-      string.Join("|",
-        Id.ToString(),
-        MediaItem.Id.ToString(),
-        TimeStart.ToString(),
-        TimeEnd.ToString(),
-        Name ?? string.Empty,
-        ((int)(Volume * 100)).ToString(),
-        ((int)(Speed * 10)).ToString(),
-        Rating == 0 ? string.Empty : Rating.ToString(),
-        Comment ?? string.Empty,
-        People == null ? string.Empty : string.Join(",", People.Select(x => x.Id)),
-        Keywords == null ? string.Empty : string.Join(",", Keywords.Select(x => x.Id)));
 
     public VideoClip(int id, MediaItem mediaItem) {
       Id = id;
