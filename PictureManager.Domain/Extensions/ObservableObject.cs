@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace PictureManager.Domain.Models {
+namespace PictureManager.Domain.Extensions {
   public class ObservableObject : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged;
 

@@ -3,6 +3,7 @@ using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -265,7 +266,7 @@ namespace PictureManager.ViewModels {
       }
 
       if (_model.ThumbsGrid.GroupByDate) {
-        var title = Domain.Extensions.DateTimeFromString(mi.FileName, _dateFormats, null);
+        var title = Extension.DateTimeFromString(mi.FileName, _dateFormats, null);
         if (!string.IsNullOrEmpty(title))
           groupItems.Add(new() { Icon = IconName.Calendar, Title = title });
       }

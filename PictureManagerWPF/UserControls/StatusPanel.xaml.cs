@@ -1,5 +1,6 @@
 ﻿using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -53,7 +54,7 @@ namespace PictureManager.UserControls {
     }
 
     public string ZoomActualFormatted => App.WMain?.MediaViewer.FullImage.ZoomActualFormatted;
-    public string DateAndTime => Domain.Extensions.DateTimeFromString(App.Core.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
+    public string DateAndTime => Extension.DateTimeFromString(App.Core.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<IconName> Rating { get; } = new();
 
     public StatusPanel() {

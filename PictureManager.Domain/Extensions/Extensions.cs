@@ -5,8 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain {
-  public static class Extensions {
+namespace PictureManager.Domain.Extensions {
+  public static class Extension {
     public static int IntParseOrDefault(this string s, int d) => int.TryParse(s, out var result) ? result : d;
 
     private static Random _random;

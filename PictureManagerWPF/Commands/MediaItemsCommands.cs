@@ -1,5 +1,6 @@
 ﻿using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -245,7 +246,7 @@ namespace PictureManager.Commands {
           return;
         }
 
-        if (File.Exists(Domain.Extensions.PathCombine(current.Folder.FullPath, newFileName))) {
+        if (File.Exists(Extension.PathCombine(current.Folder.FullPath, newFileName))) {
           inputDialog.ShowErrorMessage("New file name already exists!");
           return;
         }

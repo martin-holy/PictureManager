@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;

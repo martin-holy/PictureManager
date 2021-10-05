@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.Utils;
+﻿using PictureManager.Domain.Extensions;
+using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,7 @@ namespace PictureManager.Domain.Models {
     public bool IsNotUnknown => PersonId != 0;
     public Dictionary<Segment, double> Similar { get; set; }
     public double SimMax { get; set; }
-    public string CacheFilePath => Extensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
+    public string CacheFilePath => Extension.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
     public Segment() { }
 

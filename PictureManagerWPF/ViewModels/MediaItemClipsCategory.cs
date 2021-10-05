@@ -1,5 +1,6 @@
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
