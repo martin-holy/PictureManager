@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.Models;
+﻿using PictureManager.Domain.Extensions;
+using PictureManager.Domain.Models;
 using SimpleDB;
 using System;
 using System.Collections.Generic;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PictureManager.Domain.Extensions;
+using System;
 using System.Linq;
 
 namespace PictureManager.Domain.CatTreeViewModels {

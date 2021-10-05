@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using PictureManager.CustomControls;
 using PictureManager.Domain;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Utils;
@@ -70,7 +71,7 @@ namespace PictureManager.UserControls {
 
       BtnSort.Click += (o, e) => _ = SortAndReload(true, true);
 
-      BtnOpenSegmentsDrawer.Click += (o, e) => OpenSegmentsDrawer();
+      BtnOpenSegmentsDrawer.Click += (o, e) => _ = OpenSegmentsDrawer();
 
       if (AppCore.OnToggleKeyword?.IsRegistered(this) != true)
         AppCore.OnToggleKeyword += (o, e) => _ = SortAndReload();

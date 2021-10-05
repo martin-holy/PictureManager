@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
@@ -43,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
     public ObservableCollection<Segment> Segments { get; set; }
     public string Dimensions => $"{Width}x{Height}";
-    public string FilePath => Extensions.PathCombine(Folder.FullPath, FileName);
+    public string FilePath => Extension.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");
     public Uri FilePathUri => new(FilePath);

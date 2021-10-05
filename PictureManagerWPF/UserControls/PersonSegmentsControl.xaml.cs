@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using System;
@@ -55,7 +56,7 @@ namespace PictureManager.UserControls {
     private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
       if (data is not Segment segment) return;
 
-      Person.Segments = Domain.Extensions.Toggle(Person.Segments, segment, true);
+      Person.Segments = Extension.Toggle(Person.Segments, segment, true);
       Person.OnPropertyChanged(nameof(Person.Segments));
 
       if (Person.Segments?.Count > 0)

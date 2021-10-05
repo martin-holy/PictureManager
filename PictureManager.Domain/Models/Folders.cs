@@ -1,5 +1,6 @@
 ﻿using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Extensions;
 using SimpleDB;
 using System;
 using System.Collections.Generic;
@@ -110,7 +111,7 @@ namespace PictureManager.Domain.Models {
       var renamedFiles = new Dictionary<string, string>();
 
       // Copy/Move Files and Cache on file system
-      CopyMoveFilesAndCache(mode, srcFolder.FullPath, Extensions.PathCombine(destFolder.FullPath, srcFolder.Title),
+      CopyMoveFilesAndCache(mode, srcFolder.FullPath, Extension.PathCombine(destFolder.FullPath, srcFolder.Title),
         ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
 
       // update objects with skipped and renamed files in mind
@@ -143,7 +144,7 @@ namespace PictureManager.Domain.Models {
 
       // run this function for each sub directory
       foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
-        CopyMoveFilesAndCache(mode, dir, Extensions.PathCombine(destDirPath, dir[srcDirPathLength..]),
+        CopyMoveFilesAndCache(mode, dir, Extension.PathCombine(destDirPath, dir[srcDirPathLength..]),
           ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
       }
 
@@ -161,9 +162,9 @@ namespace PictureManager.Domain.Models {
 
         var srcFileName = srcFilePath[srcDirPathLength..];
         var destFileName = srcFileName;
-        var destFilePath = Extensions.PathCombine(destDirPath, destFileName);
-        var srcFilePathCache = Extensions.PathCombine(srcDirPathCache, srcFileName);
-        var destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
+        var destFilePath = Extension.PathCombine(destDirPath, destFileName);
+        var srcFilePathCache = Extension.PathCombine(srcDirPathCache, srcFileName);
+        var destFilePathCache = Extension.PathCombine(destDirPathCache, destFileName);
 
         progress.Report(new object[] { 0, srcDirPath, destDirPath, srcFileName });
 
@@ -175,8 +176,8 @@ namespace PictureManager.Domain.Models {
           switch (result) {
             case CollisionResult.Rename: {
               renamedFiles.Add(srcFilePath, destFileName);
-              destFilePath = Extensions.PathCombine(destDirPath, destFileName);
-              destFilePathCache = Extensions.PathCombine(destDirPathCache, destFileName);
+              destFilePath = Extension.PathCombine(destDirPath, destFileName);
+              destFilePathCache = Extension.PathCombine(destDirPathCache, destFileName);
               break;
             }
             case CollisionResult.Replace: {
@@ -229,8 +230,8 @@ namespace PictureManager.Domain.Models {
       if (mode == FileOperationMode.Move) {
         // if this is done on worker thread => directory is not deleted until worker is finished
         Core.Instance.RunOnUiThread(() => {
-          Extensions.DeleteDirectoryIfEmpty(srcDirPath);
-          Extensions.DeleteDirectoryIfEmpty(srcDirPathCache);
+          Extension.DeleteDirectoryIfEmpty(srcDirPath);
+          Extension.DeleteDirectoryIfEmpty(srcDirPathCache);
         });
       }
     }
@@ -272,7 +273,7 @@ namespace PictureManager.Domain.Models {
 
     public override string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
       // check if folder already exists
-      if (Directory.Exists(Extensions.PathCombine(((Folder)root).FullPath, name)))
+      if (Directory.Exists(Extension.PathCombine(((Folder)root).FullPath, name)))
         return "Folder already exists!";
 
       // check if is correct folder name
@@ -286,7 +287,7 @@ namespace PictureManager.Domain.Models {
       root.IsExpanded = true;
 
       // create Folder
-      Directory.CreateDirectory(Extensions.PathCombine(((Folder)root).FullPath, name));
+      Directory.CreateDirectory(Extension.PathCombine(((Folder)root).FullPath, name));
       var item = new Folder(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
@@ -308,9 +309,9 @@ namespace PictureManager.Domain.Models {
       var parent = (Folder)item.Parent;
       var self = (Folder)item;
 
-      Directory.Move(self.FullPath, Extensions.PathCombine(parent.FullPath, name));
+      Directory.Move(self.FullPath, Extension.PathCombine(parent.FullPath, name));
       if (Directory.Exists(self.FullPathCache))
-        Directory.Move(self.FullPathCache, Extensions.PathCombine(parent.FullPathCache, name));
+        Directory.Move(self.FullPathCache, Extension.PathCombine(parent.FullPathCache, name));
 
       item.Title = name;
 

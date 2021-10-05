@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
@@ -52,7 +53,7 @@ namespace PictureManager.Domain.Models {
             ? ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
             : new FileInfo(Current.FilePath).Length;
 
-          return size == null || size == 0 ? string.Empty : Extensions.FileSizeToString((long)size);
+          return size == null || size == 0 ? string.Empty : Extension.FileSizeToString((long)size);
         }
         catch {
           return string.Empty;
@@ -209,7 +210,7 @@ namespace PictureManager.Domain.Models {
           {Convert.ToInt32((double) done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName});
 
         var miNewFileName = mi.FileName;
-        var destFilePath = Extensions.PathCombine(destFolder.FullPath, mi.FileName);
+        var destFilePath = Extension.PathCombine(destFolder.FullPath, mi.FileName);
 
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file

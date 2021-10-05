@@ -1,4 +1,5 @@
 ﻿using PictureManager.Domain;
+using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using System;
@@ -28,11 +29,11 @@ namespace PictureManager.Dialogs {
 
       _items = items.ToArray();
       var firstMi = _items.First();
-      var fileName = Domain.Extensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
+      var fileName = Extension.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 
       Owner = owner;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
-      _outputFilePath = Domain.Extensions.PathCombine(firstMi.Folder.FullPath, fileName);
+      _outputFilePath = Extension.PathCombine(firstMi.Folder.FullPath, fileName);
       _outputFileName = fileName;
       _outputFolder = firstMi.Folder;
       _onSuccess = onSuccess;
