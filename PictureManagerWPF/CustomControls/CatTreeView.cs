@@ -40,7 +40,7 @@ namespace PictureManager.CustomControls {
       base.OnApplyTemplate();
       ItemTemplateSelector = new CatTreeViewInterfaceTemplateSelector();
 
-      _scrollViewer = Template.FindName("CatTreeViewScrollViewer", this) as ScrollViewer;
+      _scrollViewer = Template.FindName("PART_ScrollViewer", this) as ScrollViewer;
 
       PreviewMouseRightButtonDown += AttachContextMenu;
 
