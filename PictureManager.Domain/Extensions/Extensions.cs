@@ -36,6 +36,26 @@ namespace PictureManager.Domain.Extensions {
       return modified;
     }
 
+    public static void SetInOrder<TSource>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, string> keySelector) {
+      int newIdx;
+      for (newIdx = 0; newIdx < collection.Count; newIdx++) {
+        var strA = keySelector.Invoke(collection[newIdx]);
+        var strB = keySelector.Invoke(item);
+        var cRes = string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase);
+        if (collection[newIdx].Equals(item) || cRes < 0) continue;
+
+        break;
+      }
+      
+      var oldIdx = collection.IndexOf(item);
+      if (oldIdx < 0)
+        collection.Insert(newIdx, item);
+      else if (oldIdx != newIdx) {
+        if (newIdx > oldIdx) newIdx--;
+        collection.Move(oldIdx, newIdx);
+      }
+    }
+
     public static void AddInOrder<TSource, TKey>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, TKey> keySelector) {
       collection.Add(item);
       var idx = collection.OrderBy(keySelector).ToList().IndexOf(item);
