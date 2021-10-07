@@ -15,9 +15,11 @@ namespace PictureManager.Domain {
     public ObservableCollection<LogItem> Log { get; set; } = new();
     public ILogger Logger { get; set; }
 
+    #region DB Models
+    public FavoriteFoldersM FavoriteFoldersM { get; }
+    #endregion
+
     #region TreeView Roots and Categories
-    public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
-    public FavoriteFolders FavoriteFolders { get; }
     public Folders Folders { get; }
     public Ratings Ratings { get; }
     public MediaItemSizes MediaItemSizes { get; }
@@ -46,7 +48,7 @@ namespace PictureManager.Domain {
 
       Sdb = new(this);
 
-      FavoriteFolders = new(this);
+      FavoriteFoldersM = new(this);
       Folders = new(this);
       Ratings = new();
       MediaItemSizes = new();
@@ -56,8 +58,7 @@ namespace PictureManager.Domain {
       GeoNames = new(this);
       Viewers = new(this);
 
-      TreeViewCategories = new() { FavoriteFolders, Folders, Ratings, MediaItemSizes, People, FolderKeywords, Keywords, GeoNames, Viewers };
-
+      
       CategoryGroups = new(this);
 
       MediaItems = new(this);
@@ -77,7 +78,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(MediaItems.DataAdapter);
         Sdb.AddDataAdapter(VideoClipsGroups.DataAdapter); // needs to be before VideoClips
         Sdb.AddDataAdapter(VideoClips.DataAdapter);
-        Sdb.AddDataAdapter(FavoriteFolders.DataAdapter);
+        Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(Segments.DataAdapter);
 
         Sdb.LoadAllTables(progress);
