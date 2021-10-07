@@ -16,6 +16,8 @@
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2021)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>false</EnableNETAnalyzers>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
