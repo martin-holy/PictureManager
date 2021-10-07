@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SimpleDB {
   public abstract class DataAdapter {
@@ -53,14 +51,13 @@ namespace SimpleDB {
 
     public int GetNextId() {
       IsModified = true;
-      _db.AddChange();
       return ++MaxId;
     }
 
     public void LoadFromFile() => SimpleDB.LoadFromFile(FromCsv, _tableFilePath, _logger);
 
     public void SaveToFile<T>(IEnumerable<T> items, Func<T, string> toCsv) {
-      if (SimpleDB.SaveToFile<T>(items, toCsv, _tableFilePath, _logger))
+      if (SimpleDB.SaveToFile(items, toCsv, _tableFilePath, _logger))
         IsModified = false;
     }
 
@@ -77,7 +74,7 @@ namespace SimpleDB {
       PropsToCsv();
       if (TableProps.Count == 0) return;
 
-      if (SimpleDB.SaveToFile<string>(TableProps.Select(x => $"{x.Key}|{x.Value}"), (x) => x, _tablePropsFilePath, _logger))
+      if (SimpleDB.SaveToFile(TableProps.Select(x => $"{x.Key}|{x.Value}"), (x) => x, _tablePropsFilePath, _logger))
         AreTablePropsModified = false;
     }
   }
