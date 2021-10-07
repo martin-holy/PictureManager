@@ -8,12 +8,18 @@ using PictureManager.UserControls;
 using PictureManager.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace PictureManager {
   public sealed class AppCore {
+    #region TreeView Roots and Categories
+    public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
+    public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
+    #endregion
+
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
@@ -29,6 +35,10 @@ namespace PictureManager {
 
       MediaItemsViewModel = new(App.Core);
       MediaItemClipsCategory = new();
+
+      FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, App.Core.People, App.Core.FolderKeywords, App.Core.Keywords, App.Core.GeoNames, App.Core.Viewers };
+
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -80,7 +90,7 @@ namespace PictureManager {
 
       if (!MessageDialog.Show("Set Person", msg, true)) return;
       App.Core.Segments.SetSelectedAsPerson(person);
-      OnSetPerson?.Invoke(null, null);
+      OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
@@ -107,10 +117,10 @@ namespace PictureManager {
         SetPerson(p);
         break;
 
-        case FavoriteFolder ff:
-        if (ff.Folder.IsThisOrParentHidden()) break;
-        CatTreeViewUtils.ExpandTo(ff.Folder);
-        App.WMain.TreeViewCategories.TvCategories.ScrollTo(ff.Folder);
+        case FavoriteFolderTreeVM ff:
+        if (ff.Model.Folder.IsThisOrParentHidden()) break;
+        CatTreeViewUtils.ExpandTo(ff.Model.Folder);
+        App.WMain.TreeViewCategories.TvCategories.ScrollTo(ff.Model.Folder);
         break;
 
         case Folder:
