@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+                    xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.radiobutton.xaml" />
@@ -70,6 +71,24 @@
                               ItemsSource="{Binding MediaItemClips}">
 
               <cc:CatTreeView.Resources>
+                <!-- ICatTreeViewCategory -->
+                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
+                  <Border Height="40">
+                    <StackPanel Orientation="Horizontal">
+                      <cc:IconRect IconName="{Binding IconName}" Size="24" />
+                      <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="18" />
+                    </StackPanel>
+                  </Border>
+                </HierarchicalDataTemplate>
+
+                <!-- ICatTreeViewItem -->
+                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
+                  <StackPanel Orientation="Horizontal">
+                    <cc:IconRect IconName="{Binding IconName}" />
+                    <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="14" />
+                  </StackPanel>
+                </HierarchicalDataTemplate>
+                
                 <HierarchicalDataTemplate DataType="{x:Type vm:VideoClipViewModel}">
                   <Border>
                     <StackPanel Orientation="Horizontal">
