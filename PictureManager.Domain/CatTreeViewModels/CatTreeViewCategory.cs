@@ -86,6 +86,9 @@ namespace PictureManager.Domain.CatTreeViewModels {
         ? $"{name} group already exists!"
         : null;
 
+    public virtual string GetTitle(ICatTreeViewItem item) => item.Title;
+    public virtual void SetTitle(ICatTreeViewItem item, string title) => item.Title = title;
+
     public virtual ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
       var group = new CatTreeViewGroup { Title = name, IconName = CategoryGroupIconName, Parent = cat };
       CatTreeViewUtils.SetItemInPlace(cat, group);
