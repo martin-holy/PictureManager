@@ -6,5 +6,11 @@
     <Setter Property="Foreground" Value="White" />
     <Setter Property="HorizontalAlignment" Value="Center" />
   </Style>
+  
+  <Style x:Key="CatTreeViewTitle" TargetType="TextBlock">
+    <Setter Property="Text" Value="{Binding Title}" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="5,0,0,0" />
+  </Style>
 
 </ResourceDictionary>
