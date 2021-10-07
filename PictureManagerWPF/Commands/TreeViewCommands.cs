@@ -51,7 +51,7 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFolders.ItemCreate((Folder)parameter);
+    private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFoldersM.ItemCreate((Folder)parameter);
 
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
@@ -74,11 +74,11 @@ namespace PictureManager.Commands {
       ((GeoNames)parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
-    private async static void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
+    private static async void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
 
-    private async static void ActivateFilterOr(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
+    private static async void ActivateFilterOr(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
 
-    private async static void ActivateFilterNot(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
+    private static async void ActivateFilterNot(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
 
     private static void LoadByTag(object parameter) =>
       _ = App.Ui.TreeView_Select((ICatTreeViewItem)parameter,
