@@ -353,8 +353,8 @@ namespace PictureManager.Domain.Models {
         f.Items.Clear();
 
         // remove FavoriteFolder
-        _core.FavoriteFolders.ItemDelete(
-          _core.FavoriteFolders.All.Cast<FavoriteFolder>().SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
+        _core.FavoriteFoldersM.ItemDelete(
+          _core.FavoriteFoldersM.All.SingleOrDefault(x => x.Folder.Id.Equals(f.Id)));
 
         // set Folders table as modified
         DataAdapter.IsModified = true;
