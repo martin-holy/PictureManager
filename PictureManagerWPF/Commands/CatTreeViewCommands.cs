@@ -52,7 +52,7 @@ namespace PictureManager.Commands {
         cat.CategoryGroupIconName,
         "Rename Item",
         "Enter the new name for the Item.",
-        item.Title,
+        cat.GetTitle(item),
         answer => cat.ValidateNewItemTitle(item.Parent, answer),
         out var output);
 
@@ -72,7 +72,7 @@ namespace PictureManager.Commands {
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
-        $"Do you really want to delete '{item.Title}'?",
+        $"Do you really want to delete '{cat.GetTitle(item)}'?",
         true)) return;
 
       try {
