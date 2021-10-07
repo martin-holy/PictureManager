@@ -20,6 +20,8 @@ namespace PictureManager.Domain.CatTreeViewModels {
     bool CanSort(ICatTreeViewItem root);
 
     string ValidateNewItemTitle(ICatTreeViewItem root, string name);
+    string GetTitle(ICatTreeViewItem item);
+    void SetTitle(ICatTreeViewItem item, string title);
     ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name);
     void ItemRename(ICatTreeViewItem item, string name);
     void ItemDelete(ICatTreeViewItem item);
