@@ -1,29 +1,11 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+                    xmlns:uc="clr-namespace:PictureManager.UserControls">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:CategoryGroupTreeVM}" ItemsSource="{Binding Items}">
     <StackPanel Orientation="Horizontal">
-      <mhc:Icon>
-        <mhc:Icon.Style>
-          <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding BaseVM.Model.Category}" 
-                           Value="{x:Static pmd:Category.People}">
-                <Setter Property="Source" Value="{StaticResource IconPeopleMultiple}" />
-                <Setter Property="Fill" Value="{StaticResource ColorBrushPeople}" />
-              </DataTrigger>
-              <DataTrigger Binding="{Binding BaseVM.Model.Category}" 
-                           Value="{x:Static pmd:Category.Keywords}">
-                <Setter Property="Source" Value="{StaticResource IconTagLabel}" />
-                <Setter Property="Fill" Value="{StaticResource ColorBrushTag}" />
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </mhc:Icon.Style>
-      </mhc:Icon>
+      <uc:CategoryGroupIconControl Category="{Binding BaseVM.Model.Category}" />
       <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
     </StackPanel>
   </HierarchicalDataTemplate>
