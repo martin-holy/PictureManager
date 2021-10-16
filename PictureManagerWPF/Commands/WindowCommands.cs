@@ -149,13 +149,13 @@ namespace PictureManager.Commands {
 
       var viewer = (Viewer)parameter;
       viewer.IsDefault = true;
+      viewer.UpdateHashSets();
       App.Core.Viewers.DataAdapter.Save();
 
       App.WMain.MenuViewers.Header = viewer.Title;
       App.Core.CurrentViewer = viewer;
       App.Core.Folders.AddDrives();
       App.Core.FolderKeywords.Load();
-      viewer.UpdateHashSets();
       App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(viewer);
     }
 
