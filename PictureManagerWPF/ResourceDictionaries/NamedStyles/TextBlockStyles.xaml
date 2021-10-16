@@ -6,11 +6,29 @@
     <Setter Property="Foreground" Value="White" />
     <Setter Property="HorizontalAlignment" Value="Center" />
   </Style>
-  
-  <Style x:Key="CatTreeViewTitle" TargetType="TextBlock">
-    <Setter Property="Text" Value="{Binding Title}" />
+
+  <Style x:Key="TreeItemTitle" TargetType="{x:Type TextBlock}">
     <Setter Property="VerticalAlignment" Value="Center" />
     <Setter Property="Margin" Value="5,0,0,0" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+
+  <Style x:Key="TreeItemKeywordsPicCount" TargetType="{x:Type TextBlock}">
+    <Setter Property="Text" Value="{Binding PicCount}" />
+    <Setter Property="Visibility" Value="Collapsed"/>
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Margin" Value="5,0,0,0" />
+    <Setter Property="Padding" Value="5,0" />
+    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+    <Style.Triggers>
+      <MultiDataTrigger>
+        <MultiDataTrigger.Conditions>
+          <Condition Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True" />
+          <Condition Binding="{Binding IsMarked}" Value="True"/>
+        </MultiDataTrigger.Conditions>
+        <Setter Property="Visibility" Value="Visible"/>
+      </MultiDataTrigger>
+    </Style.Triggers>
   </Style>
 
 </ResourceDictionary>

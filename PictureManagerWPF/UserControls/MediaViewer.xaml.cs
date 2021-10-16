@@ -159,7 +159,7 @@ namespace PictureManager.UserControls {
           PresentationPanel.Start(true);
       }
 
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     public bool CanPrevious() => _indexOfCurrent > 0;
@@ -170,7 +170,7 @@ namespace PictureManager.UserControls {
 
       Current = MediaItems[--_indexOfCurrent];
       SetMediaItemSource(Current);
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     private bool CanPresentation() => Current != null;

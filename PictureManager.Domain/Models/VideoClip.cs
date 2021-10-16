@@ -15,8 +15,8 @@ namespace PictureManager.Domain.Models {
     public double Speed { get; set; }
     public int? Rating { get; set; }
     public string Comment { get; set; }
-    public List<Person> People { get; set; }
-    public List<Keyword> Keywords { get; set; }
+    public List<PersonM> People { get; set; }
+    public List<KeywordM> Keywords { get; set; }
     public VideoClipsGroup Group { get; set; }
 
     public VideoClip(int id, MediaItem mediaItem) {

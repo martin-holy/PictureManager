@@ -9,7 +9,7 @@
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
         <DataTemplate>
           <Grid>
-            <cc:SegmentControl DataContext="{Binding Segment}" Selected="OnSegmentSelected">
+            <cc:SegmentControl DataContext="{Binding Model.Segment}" Selected="OnSegmentSelected">
               <cc:SegmentControl.Style>
                 <Style TargetType="{x:Type cc:SegmentControl}">
                   <Setter Property="IsCheckmarkVisible" Value="False" />
@@ -22,7 +22,7 @@
               </cc:SegmentControl.Style>
             </cc:SegmentControl>
           
-            <Border BorderThickness="2" DataContext="{Binding Segment.Person}">
+            <Border BorderThickness="2">
               <Border.Style>
                 <Style TargetType="{x:Type Border}">
                   <Setter Property="BorderBrush" Value="Transparent" />

@@ -6,6 +6,7 @@ using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
 using System.Windows.Input;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.Commands {
   public static class TreeViewCommands {
@@ -31,23 +32,17 @@ namespace PictureManager.Commands {
 
     private static void TagItemDeleteNotUsed(object parameter) {
       if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
-
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete not used items in '{item.Title}'?", true)) return;
 
       switch (cat.Category) {
-        case Category.People: {
-          foreach (var person in item.Items.Cast<Person>().Where(x => x.MediaItems.Count == 0).ToArray())
-            cat.ItemDelete(person);
-
+        case Category.People: 
+          App.Core.PeopleM.DeleteNotUsed(item.Items.OfType<PersonTreeVM>().Select(x => x.BaseVM.Model));
           break;
-        }
-        case Category.Keywords: {
-          foreach (var keyword in item.Items.Cast<Keyword>().Where(x => x.MediaItems.Count == 0).ToArray())
-            cat.ItemDelete(keyword);
 
+        case Category.Keywords:
+          App.Core.KeywordsM.DeleteNotUsed(item.Items.OfType<KeywordTreeVM>().Select(x => x.BaseVM.Model));
           break;
-        }
       }
     }
 

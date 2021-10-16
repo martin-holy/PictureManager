@@ -11,7 +11,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly Viewers _model;
 
-    public ViewersDataAdapter(Core core, Viewers model) : base(nameof(Viewers), core.Sdb) {
+    public ViewersDataAdapter(Core core, Viewers model) : base("Viewers", core.Sdb) {
       _core = core;
       _model = model;
     }
@@ -67,10 +67,10 @@ namespace PictureManager.Domain.DataAdapters {
         // ExcKeywords
         if (!string.IsNullOrEmpty(viewer.Csv[5]))
           foreach (var keywordId in viewer.Csv[5].Split(','))
-            viewer.ExcludedKeywords.Add(_core.Keywords.AllDic[int.Parse(keywordId)]);
+            viewer.ExcludedKeywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
 
         if (viewer.IsDefault)
-          viewer.Activate();
+          viewer.UpdateHashSets();
 
         // adding Viewer to Viewers
         _model.Items.Add(viewer);

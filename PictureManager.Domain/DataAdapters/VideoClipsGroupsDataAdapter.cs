@@ -11,7 +11,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly VideoClipsGroups _model;
 
-    public VideoClipsGroupsDataAdapter(Core core, VideoClipsGroups model) : base(nameof(VideoClipsGroups), core.Sdb) {
+    public VideoClipsGroupsDataAdapter(Core core, VideoClipsGroups model) : base("VideoClipsGroups", core.Sdb) {
       _core = core;
       _model = model;
     }

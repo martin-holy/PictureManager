@@ -47,14 +47,14 @@ namespace PictureManager.UserControls {
       var sep = Path.DirectorySeparatorChar.ToString();
 
       // People
-      AddToSearchResult(App.Core.People.All.Cast<Person>()
-        .Where(x => x.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.People, x.Title, (x.Parent as CategoryGroup)?.Title, x)));
+      AddToSearchResult(App.Core.PeopleM.All
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        .Select(x => new SearchItem(IconName.People, x.Name, (x.Parent as CategoryGroupM)?.Name, App.Ui.PeopleTreeVM.All[x.Id])));
 
       // Keywords
-      AddToSearchResult(App.Core.Keywords.All.Cast<Keyword>()
-        .Where(x => x.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.Tag, x.Title, x.FullPath, x)));
+      AddToSearchResult(App.Core.KeywordsM.All
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        .Select(x => new SearchItem(IconName.Tag, x.Name, x.FullName, App.Ui.KeywordsTreeVM.All[x.Id])));
 
       // GeoNames
       AddToSearchResult(App.Core.GeoNames.All.Cast<GeoName>()

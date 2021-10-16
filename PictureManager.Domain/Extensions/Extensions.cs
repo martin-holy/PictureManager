@@ -36,7 +36,22 @@ namespace PictureManager.Domain.Extensions {
       return modified;
     }
 
-    public static void SetInOrder<TSource>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, string> keySelector) {
+    public static int SetRelativeTo<T>(this ObservableCollection<T> collection, T item, T dest, bool aboveDest) {
+      var oldIdx = collection.IndexOf(item);
+      var newIdx = collection.IndexOf(dest);
+
+      if (aboveDest && oldIdx > -1 && oldIdx < newIdx) newIdx--;
+      if (!aboveDest && (oldIdx < 0 || oldIdx > newIdx)) newIdx++;
+
+      if (oldIdx < 0)
+        collection.Insert(newIdx, item);
+      else
+        collection.Move(oldIdx, newIdx);
+
+      return newIdx;
+    }
+
+    public static int SetInOrder<TSource>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, string> keySelector) {
       int newIdx;
       for (newIdx = 0; newIdx < collection.Count; newIdx++) {
         var strA = keySelector.Invoke(collection[newIdx]);
@@ -54,6 +69,8 @@ namespace PictureManager.Domain.Extensions {
         if (newIdx > oldIdx) newIdx--;
         collection.Move(oldIdx, newIdx);
       }
+
+      return newIdx;
     }
 
     public static void AddInOrder<TSource, TKey>(this ObservableCollection<TSource> collection, TSource item, Func<TSource, TKey> keySelector) {
@@ -180,7 +197,7 @@ namespace PictureManager.Domain.Extensions {
     }
 
     public static bool IsRegistered(this EventHandler e, object target) =>
-      e.GetInvocationList().Any(x => x.Target.GetType() == target.GetType());
+      e.GetInvocationList().Any(x => x.Target?.GetType() == target.GetType());
 
     public static bool Toggle<T>(this ObservableCollection<T> collection, T item) {
       if (collection.Remove(item))

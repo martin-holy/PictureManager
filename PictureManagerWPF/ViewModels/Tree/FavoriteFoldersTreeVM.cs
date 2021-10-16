@@ -4,7 +4,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 
-namespace PictureManager.ViewModels {
+namespace PictureManager.ViewModels.Tree {
   public sealed class FavoriteFoldersTreeVM : BaseCatTreeViewCategory {
     public FavoriteFoldersM Model { get; }
 
@@ -46,8 +46,6 @@ namespace PictureManager.ViewModels {
     }
 
     public override string GetTitle(ICatTreeViewItem item) => ((FavoriteFolderTreeVM)item).Model.Title;
-
-    public override void SetTitle(ICatTreeViewItem item, string title) => ((FavoriteFolderTreeVM)item).Model.Title = title;
 
     public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
       Model.ItemMove(((FavoriteFolderTreeVM)item).Model,((FavoriteFolderTreeVM)dest).Model, aboveDest);

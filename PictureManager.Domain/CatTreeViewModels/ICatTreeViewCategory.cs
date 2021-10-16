@@ -29,7 +29,9 @@ namespace PictureManager.Domain.CatTreeViewModels {
     void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest);
 
     string ValidateNewGroupTitle(ICatTreeViewItem root, string name);
-    ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name);
+    string GetGroupTitle(ICatTreeViewGroup item);
+    void SetGroupTitle(ICatTreeViewGroup item, string title);
+    void GroupCreate(ICatTreeViewCategory cat, string name);
     void GroupRename(ICatTreeViewGroup group, string name);
     void GroupDelete(ICatTreeViewGroup group);
     void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest);

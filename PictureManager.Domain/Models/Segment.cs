@@ -16,7 +16,7 @@ namespace PictureManager.Domain.Models {
     private bool _isSelected;
 
     #region DB Properties
-    private Person _person;
+    private PersonM _person;
     private int _personId;
     private int _x;
     private int _y;
@@ -25,8 +25,8 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     public int Id { get; }
     public MediaItem MediaItem { get; set; }
-    public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
-    public List<Keyword> Keywords { get; set; }
+    public PersonM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
+    public List<KeywordM> Keywords { get; set; }
 
     public int PersonId { // < 0 for unknown people, 0 for unknown, > 0 for known people
       get => _personId;

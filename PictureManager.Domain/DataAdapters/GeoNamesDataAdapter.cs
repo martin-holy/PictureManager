@@ -11,7 +11,7 @@ namespace PictureManager.Domain.DataAdapters {
   public class GeoNamesDataAdapter : DataAdapter {
     private readonly GeoNames _model;
 
-    public GeoNamesDataAdapter(Core core, GeoNames model) : base(nameof(GeoNames), core.Sdb) {
+    public GeoNamesDataAdapter(Core core, GeoNames model) : base("GeoNames", core.Sdb) {
       _model = model;
     }
 

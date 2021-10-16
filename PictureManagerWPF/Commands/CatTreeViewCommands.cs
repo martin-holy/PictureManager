@@ -106,7 +106,7 @@ namespace PictureManager.Commands {
         cat.CategoryGroupIconName,
         "Rename Group",
         "Enter the new name for the Group.",
-        item.Title,
+        cat.GetGroupTitle(item),
         answer => cat.ValidateNewGroupTitle(item.Parent, answer),
         out var output);
 
@@ -119,7 +119,7 @@ namespace PictureManager.Commands {
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
-        $"Do you really want to delete '{item.Title}'?",
+        $"Do you really want to delete '{cat.GetGroupTitle(item)}'?",
         true)) return;
 
       cat.GroupDelete(item);

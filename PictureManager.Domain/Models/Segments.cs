@@ -44,11 +44,11 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Select(List<Segment> list, Segment segment, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select<Segment>(ref _selected, list, (ISelectable)segment, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
+      Selecting.Select<Segment>(_selected, list, (ISelectable)segment, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
 
-    public void DeselectAll() => Selecting.DeselectAll<Segment>(ref _selected, () => OnPropertyChanged(nameof(SelectedCount)));
+    public void DeselectAll() => Selecting.DeselectAll<Segment>(_selected, () => OnPropertyChanged(nameof(SelectedCount)));
 
-    public void SetSelected(Segment segment, bool value) => Selecting.SetSelected<Segment>(ref _selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
+    public void SetSelected(Segment segment, bool value) => Selecting.SetSelected<Segment>(_selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
 
     public bool SegmentsDrawerToggle(Segment segment) {
       if (segment == null) return false;
@@ -180,7 +180,7 @@ namespace PictureManager.Domain.Models {
     /// and select random segment from each group for display
     /// </summary>
     public async Task ReloadConfirmedSegments() {
-      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
+      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
       var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
       var groups = groupsA.Concat(groupsB);
       var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
@@ -233,7 +233,7 @@ namespace PictureManager.Domain.Models {
         List<Segment> segmentsGroup;
 
         // add segments with PersonId != 0 with all similar segments with PersonId == 0
-        var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Title);
+        var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
         var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
         var samePerson = groupsA.Concat(groupsB);
         foreach (var segments in samePerson) {
@@ -283,7 +283,7 @@ namespace PictureManager.Domain.Models {
     /// Sets new Person to all Segments that are selected or that have the same PersonId (< 0) as some of the selected.
     /// </summary>
     /// <param name="person"></param>
-    public void SetSelectedAsPerson(Person person) {
+    public void SetSelectedAsPerson(PersonM person) {
       var unknownPeople = Selected.Select(x => x.PersonId).Distinct().Where(x => x < 0).ToDictionary(x => x);
       var segments = Selected.Where(x => x.PersonId >= 0).Concat(All.Cast<Segment>().Where(x => unknownPeople.ContainsKey(x.PersonId)));
 
@@ -326,7 +326,7 @@ namespace PictureManager.Domain.Models {
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
-      var person = newId < 1 ? null : _core.People.All.Find(x => x.Id == newId) as Person;
+      var person = newId < 1 ? null : _core.PeopleM.All.Find(x => x.Id == newId);
 
       foreach (var segment in toUpdate) {
         segment.PersonId = newId;
@@ -345,16 +345,32 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void ToggleKeywordOnSelected(Keyword keyword) {
+    public void ToggleKeywordOnSelected(KeywordM keyword) {
       foreach (var segment in Selected)
         ToggleKeyword(segment, keyword);
     }
 
-    public static void ToggleKeyword(Segment segment, Keyword keyword) {
-      var currentKeywords = segment.Keywords;
-      Keywords.Toggle(keyword, ref currentKeywords, null, null);
-      segment.Keywords = currentKeywords;
-      Core.Instance.Segments.DataAdapter.IsModified = true;
+    public void ToggleKeyword(Segment segment, KeywordM keyword) {
+      segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
+      DataAdapter.IsModified = true;
+    }
+
+    public void RemoveKeywordsFromSegments(IEnumerable<KeywordM> keywords) {
+      var set = new HashSet<KeywordM>(keywords);
+      foreach (var segment in All.Cast<Segment>().Where(s => s.Keywords != null)) {
+        foreach (var keyword in segment.Keywords.Where(set.Contains)) {
+          segment.Keywords = Extension.Toggle(segment.Keywords, keyword, true);
+          DataAdapter.IsModified = true;
+        }
+      }
+    }
+
+    public void RemovePersonFromSegments(PersonM person) {
+      foreach (var segment in All.Cast<Segment>().Where(s => s.Person?.Equals(person) == true)) {
+        segment.Person = null;
+        segment.PersonId = 0;
+        DataAdapter.IsModified = true;
+      }
     }
 
     private static void RemovePersonFromSegment(Segment segment) {
@@ -364,17 +380,17 @@ namespace PictureManager.Domain.Models {
       if (segment.Person.Segments?.Remove(segment) == true) {
         if (!segment.Person.Segments.Any())
           segment.Person.Segments = null;
-        Core.Instance.People.DataAdapter.IsModified = true;
+        Core.Instance.PeopleM.DataAdapter.IsModified = true;
       }
       segment.Person = null;
     }
 
-    public void ChangePerson(int personId, Person person) {
+    public void ChangePerson(int personId, PersonM person) {
       foreach (var segment in All.Cast<Segment>().Where(x => x.PersonId == personId))
         ChangePerson(segment, person);
     }
 
-    public static void ChangePerson(Segment segment, Person person) {
+    public static void ChangePerson(Segment segment, PersonM person) {
       RemovePersonFromSegment(segment);
       segment.PersonId = person.Id;
       segment.Person = person;

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class MediaItemsThumbsGrid {
@@ -26,7 +27,8 @@ namespace PictureManager.UserControls {
 
     private async void Refresh(object sender, RoutedEventArgs e) {
       if (App.Core.MediaItems.ThumbsGrid != null)
-        await App.Core.MediaItems.ThumbsGrid.ReloadFilteredItems();
+        await App.Core.MediaItems.ThumbsGrid.ReloadFilteredItems(
+          MediaItemsViewModel.Filter(App.Core.MediaItems.ThumbsGrid.LoadedItems));
       await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
   }

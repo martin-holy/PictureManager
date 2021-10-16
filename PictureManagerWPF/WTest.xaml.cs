@@ -40,5 +40,9 @@ namespace PictureManager {
     private void EventSetter_OnHandler(object sender, MouseEventArgs e) {
 
     }
+
+    private void IconButton_Click(object sender, RoutedEventArgs e) {
+
+    }
   }
 }

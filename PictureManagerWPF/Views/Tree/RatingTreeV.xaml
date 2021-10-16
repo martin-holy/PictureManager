@@ -1,0 +1,18 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+
+  <HierarchicalDataTemplate DataType="{x:Type models:Rating}">
+    <StackPanel Orientation="Horizontal">
+      <StackPanel Orientation="Horizontal">
+        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
+        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
+        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
+        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
+        <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+      </StackPanel>
+      <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
+    </StackPanel>
+  </HierarchicalDataTemplate>
+
+</ResourceDictionary>

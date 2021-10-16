@@ -19,6 +19,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsViewModel {
@@ -51,7 +52,7 @@ namespace PictureManager.ViewModels {
         grid?.UpdateSelected();
         if (grid?.NeedReload == true)
           await ThumbsGridReloadItems();
-        App.Core.MarkUsedKeywordsAndPeople();
+        App.Ui.MarkUsedKeywordsAndPeople();
       };
     }
 
@@ -84,16 +85,38 @@ namespace PictureManager.ViewModels {
 
       bti.IsMarked = !bti.IsMarked;
       if (bti.IsMarked) {
-        App.Core.MarkedTags.Add(bti);
+        App.Ui.MarkedTags.Add(bti);
       }
       else {
-        _ = App.Core.MarkedTags.Remove(bti);
+        _ = App.Ui.MarkedTags.Remove(bti);
         bti.PicCount = 0;
       }
 
-      App.Core.MediaItems.SetMetadata(item);
+      foreach (var mi in App.Core.MediaItems.ThumbsGrid.SelectedItems) {
+        App.Core.MediaItems.SetModified(mi, true);
 
-      App.Core.MarkUsedKeywordsAndPeople();
+        switch (item) {
+          case PersonTreeVM p:
+            mi.People = Extension.Toggle(mi.People, p.BaseVM.Model, true);
+            break;
+
+          case KeywordTreeVM k:
+            mi.Keywords = KeywordsM.Toggle(mi.Keywords, k.BaseVM.Model);
+            break;
+
+          case Rating r:
+            mi.Rating = r.Value;
+            break;
+
+          case GeoName g:
+            GeoNames.Toggle(g, mi);
+            break;
+        }
+
+        mi.SetInfoBox();
+      }
+
+      App.Ui.MarkUsedKeywordsAndPeople();
       App.WMain.StatusPanel.UpdateRating();
     }
 
@@ -107,14 +130,14 @@ namespace PictureManager.ViewModels {
         items = App.Core.MediaItems.ThumbsGrid.LoadedItems.Except(items).ToList();
 
       await LoadAsync(items, null, tabTitle);
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
       var items = item switch {
         Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
-        Person person => person.GetMediaItems().ToList(),
-        Keyword keyword => keyword.GetMediaItems(recursive).ToList(),
+        PersonTreeVM person => App.Core.PeopleM.GetMediaItems(person.BaseVM.Model),
+        KeywordTreeVM keyword => App.Core.KeywordsM.GetMediaItems(keyword.BaseVM.Model, recursive),
         GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
         _ => new()
       };
@@ -140,7 +163,7 @@ namespace PictureManager.ViewModels {
       }
 
       await LoadAsync(null, folders, folders[0].Title);
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
@@ -173,7 +196,7 @@ namespace PictureManager.ViewModels {
           currentGrid.LoadedItems.Add(mi);
         }
 
-        await currentGrid.ReloadFilteredItems();
+        await currentGrid.ReloadFilteredItems(Filter(App.Core.MediaItems.ThumbsGrid.LoadedItems));
 
         await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), _workTask.Token);
         App.Core.SetMediaItemSizesLoadedRange();
@@ -392,8 +415,9 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task ReapplyFilter() {
-      await _model.ThumbsGrid?.ReloadFilteredItems();
-      App.Core.MarkUsedKeywordsAndPeople();
+      if (_model.ThumbsGrid != null)
+        await _model.ThumbsGrid.ReloadFilteredItems(Filter(_model.ThumbsGrid.LoadedItems));
+      App.Ui.MarkUsedKeywordsAndPeople();
       await ThumbsGridReloadItems();
     }
 
@@ -442,7 +466,7 @@ namespace PictureManager.ViewModels {
                   var existingPerson = metadata.GetQuery(microsoftRegions + idx) as BitmapMetadata;
                   var personDisplayName = existingPerson?.GetQuery(microsoftPersonDisplayName);
                   if (personDisplayName == null) continue;
-                  if (!mi.People.Any(p => p.Title.Equals(personDisplayName.ToString()))) continue;
+                  if (!mi.People.Any(p => p.Name.Equals(personDisplayName.ToString()))) continue;
                   addedPeople.Add(personDisplayName.ToString());
                   peopleIdx++;
                   people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", existingPerson);
@@ -450,10 +474,10 @@ namespace PictureManager.ViewModels {
               }
 
               //Adding new people
-              foreach (var person in mi.People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Title)))) {
+              foreach (var person in mi.People.Where(p => !addedPeople.Any(ap => ap.Equals(p.Name)))) {
                 peopleIdx++;
                 people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}", new BitmapMetadata("xmpstruct"));
-                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Title);
+                people.SetQuery($"{microsoftRegions}/{{ulong={peopleIdx}}}" + microsoftPersonDisplayName, person.Name);
               }
 
               //Writing all people to MediaItem metadata
@@ -464,7 +488,7 @@ namespace PictureManager.ViewModels {
 
             metadata.Rating = mi.Rating;
             metadata.Comment = mi.Comment ?? string.Empty;
-            metadata.Keywords = new(mi.Keywords?.Select(k => k.FullPath).ToList() ?? new List<string>());
+            metadata.Keywords = new(mi.Keywords?.Select(k => k.FullName).ToList() ?? new List<string>());
             metadata.SetQuery("System.Photo.Orientation", (ushort)mi.Orientation);
 
             //GeoNameId
@@ -544,7 +568,7 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    private static void ReadImageMetadata(MediaItem mi, BitmapMetadata bm, bool gpsOnly) {
+    private static async void ReadImageMetadata(MediaItem mi, BitmapMetadata bm, bool gpsOnly) {
       // Lat Lng
       var tmpLat = bm.GetQuery("System.GPS.Latitude.Proxy")?.ToString();
       if (tmpLat != null) {
@@ -569,11 +593,9 @@ namespace PictureManager.ViewModels {
         mi.People = new(regions.Count());
         foreach (var region in regions) {
           var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
-          if (personDisplayName != null) {
-            var person = App.Core.People.GetPerson(personDisplayName.ToString(), true);
-            person.MediaItems.Add(mi);
-            mi.People.Add(person);
-          }
+          if (personDisplayName != null)
+            mi.People.Add(await App.Core.RunOnUiThread(() =>
+              App.Core.PeopleM.GetPerson(personDisplayName.ToString(), true)));
         }
       }
 
@@ -592,12 +614,12 @@ namespace PictureManager.ViewModels {
         mi.Keywords = new();
         // Filter out duplicities
         foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
-          if (mi.Keywords.SingleOrDefault(x => x.FullPath.Equals(k)) != null) continue;
-          var keyword = App.Core.Keywords.GetByFullPath(k);
-          if (keyword != null) {
-            keyword.MediaItems.Add(mi);
-            mi.Keywords.Add(keyword);
-          }
+          if (mi.Keywords.SingleOrDefault(x => x.FullName.Equals(k)) != null) continue;
+          await App.Core.RunOnUiThread(() => {
+            var keyword = App.Core.KeywordsM.GetByFullPath(k);
+            if (keyword != null)
+              mi.Keywords.Add(keyword);
+          });
         }
       }
 
@@ -646,6 +668,71 @@ namespace PictureManager.ViewModels {
       }
 
       return true;
+    }
+
+    public static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {
+      // Media Type
+      var grid = Core.Instance.MediaItems.ThumbsGrid;
+      var mediaTypes = new HashSet<MediaType>();
+      if (grid.ShowImages) mediaTypes.Add(MediaType.Image);
+      if (grid.ShowVideos) mediaTypes.Add(MediaType.Video);
+      mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
+
+      //Ratings
+      var chosenRatings = Core.Instance.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
+      if (chosenRatings.Length > 0)
+        mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
+
+      // MediaItemSizes
+      if (!Core.Instance.MediaItemSizes.Size.AllSizes())
+        mediaItems = mediaItems.Where(mi => mi.IsNew || Core.Instance.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
+
+      // People
+      var orPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andPeopleAny = andPeople.Length > 0;
+      var orPeopleAny = orPeople.Length > 0;
+      if (orPeopleAny || andPeopleAny || notPeople.Length > 0) {
+        mediaItems = mediaItems.Where(mi => {
+          if (mi.IsNew)
+            return true;
+          if (mi.People != null && notPeople.Any(p => mi.People.Any(x => x == p.BaseVM.Model)))
+            return false;
+          if (!andPeopleAny && !orPeopleAny)
+            return true;
+          if (mi.People != null && andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p.BaseVM.Model)))
+            return true;
+          if (mi.People != null && orPeople.Any(p => mi.People.Any(x => x == p.BaseVM.Model)))
+            return true;
+
+          return false;
+        }).ToList();
+      }
+
+      // Keywords
+      var orKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
+      var andKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
+      var notKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andKeywordsAny = andKeywords.Length > 0;
+      var orKeywordsAny = orKeywords.Length > 0;
+      if (orKeywordsAny || andKeywordsAny || notKeywords.Length > 0) {
+        mediaItems = mediaItems.Where(mi => {
+          if (mi.IsNew)
+            return true;
+          if (mi.Keywords != null && notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullName.StartsWith(k.BaseVM.Model.FullName))))
+            return false;
+          if (!andKeywordsAny && !orKeywordsAny)
+            return true;
+          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullName.StartsWith(k.BaseVM.Model.FullName))))
+            return true;
+          if (mi.Keywords != null && orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullName.StartsWith(k.BaseVM.Model.FullName))))
+            return true;
+          return false;
+        }).ToList();
+      }
+
+      return mediaItems;
     }
   }
 }

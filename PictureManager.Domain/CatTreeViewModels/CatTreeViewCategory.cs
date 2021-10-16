@@ -81,19 +81,19 @@ namespace PictureManager.Domain.CatTreeViewModels {
       }
     }
 
+    public virtual string GetTitle(ICatTreeViewItem item) => item.Title;
+    public virtual void SetTitle(ICatTreeViewItem item, string title) => item.Title = title;
+    public virtual string GetGroupTitle(ICatTreeViewGroup item) => item.Title;
+    public virtual void SetGroupTitle(ICatTreeViewGroup item, string title) => item.Title = title;
+
     public virtual string ValidateNewGroupTitle(ICatTreeViewItem root, string name) =>
       root.Items.OfType<ICatTreeViewGroup>().SingleOrDefault(x => x.Title.Equals(name, StringComparison.Ordinal)) != null
         ? $"{name} group already exists!"
         : null;
 
-    public virtual string GetTitle(ICatTreeViewItem item) => item.Title;
-    public virtual void SetTitle(ICatTreeViewItem item, string title) => item.Title = title;
-
-    public virtual ICatTreeViewGroup GroupCreate(ICatTreeViewCategory cat, string name) {
+    public virtual void GroupCreate(ICatTreeViewCategory cat, string name) {
       var group = new CatTreeViewGroup { Title = name, IconName = CategoryGroupIconName, Parent = cat };
       CatTreeViewUtils.SetItemInPlace(cat, group);
-
-      return group;
     }
 
     public virtual void GroupRename(ICatTreeViewGroup group, string name) {

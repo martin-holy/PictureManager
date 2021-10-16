@@ -19,6 +19,7 @@ namespace PictureManager.CustomControls {
     }
 
     public void ScrollTo(ICatTreeViewItem item) {
+      if (item == null) return;
       UpdateLayout();
       var items = new List<ICatTreeViewItem>();
       CatTreeViewUtils.GetThisAndParentRecursive(item, ref items);

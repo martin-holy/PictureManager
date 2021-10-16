@@ -108,18 +108,16 @@ namespace PictureManager.Domain.CatTreeViewModels {
     }
 
     public static bool CanDrop(ICatTreeViewItem src, ICatTreeViewItem dest) {
-      // if src or dest are null or they are equal
-      if (src == null || dest == null || Equals(src, dest)) return false;
+      if (src == null || dest == null || Equals(src, dest) ||
+          src.Parent.Equals(dest) || dest.Parent?.Equals(src) == true ||
+          (src is ICatTreeViewGroup && dest is not ICatTreeViewGroup)) return false;
+
       // if src or dest categories are null or they are not equal
       if (GetTopParent(src) is not ICatTreeViewCategory srcCat ||
           GetTopParent(dest) is not ICatTreeViewCategory destCat ||
         !Equals(srcCat, destCat)) return false;
-      // if src and dest are groups
-      if (src is ICatTreeViewGroup && dest is ICatTreeViewGroup) return true;
-      // if src is item and src parent is not dest
-      if (!(src is ICatTreeViewGroup) && !Equals(src.Parent, dest)) return true;
 
-      return false;
+      return true;
     }
 
     public static void Sort(ICatTreeViewItem root) {

@@ -54,14 +54,14 @@ namespace PictureManager.Commands {
 
     private static void SelectAll() {
       ThumbsGrid.SelectAll();
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanSelectNotModified() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void SelectNotModified() {
       ThumbsGrid.SelectNotModified();
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanDelete() => ThumbsGrid?.SelectedItems.Count > 0 || App.Ui.AppInfo.AppMode == AppMode.Viewer;

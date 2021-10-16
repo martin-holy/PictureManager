@@ -12,7 +12,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly Segments _model;
 
-    public SegmentsDataAdapter(Core core, Segments model) : base(nameof(Segments), core.Sdb) {
+    public SegmentsDataAdapter(Core core, Segments model) : base("Segments", core.Sdb) {
       _core = core;
       _model = model;
     }
@@ -63,7 +63,7 @@ namespace PictureManager.Domain.DataAdapters {
           mi.Segments ??= new();
           mi.Segments.Add(segment);
 
-          if (segment.PersonId > 0 && _core.People.AllDic.TryGetValue(segment.PersonId, out var person)) {
+          if (segment.PersonId > 0 && _core.PeopleM.AllDic.TryGetValue(segment.PersonId, out var person)) {
             segment.Person = person;
             person.Segment ??= segment;
           }
@@ -77,7 +77,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = segment.Csv[4].Split(',');
           segment.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
-            var k = _core.Keywords.AllDic[int.Parse(keywordId)];
+            var k = _core.KeywordsM.AllDic[int.Parse(keywordId)];
             segment.Keywords.Add(k);
           }
         }

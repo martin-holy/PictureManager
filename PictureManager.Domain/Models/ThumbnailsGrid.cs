@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(SelectedCount));
     }
 
-    public void SetSelected(MediaItem mi, bool value) => Selecting.SetSelected(ref _selectedItems, mi, value, () => SelectionChanged());
+    public void SetSelected(MediaItem mi, bool value) => Selecting.SetSelected(_selectedItems, mi, value, () => SelectionChanged());
 
     public void UpdateSelected() {
       foreach (var mi in SelectedItems)
@@ -84,7 +84,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Select(MediaItem mi, bool isCtrlOn, bool isShiftOn) {
-      Selecting.Select(ref _selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => SelectionChanged());
+      Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, () => SelectionChanged());
       Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
     }
 
@@ -139,10 +139,8 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Insert(newIndex, mi);
     }
 
-    public async Task ReloadFilteredItems() {
+    public async Task ReloadFilteredItems(IEnumerable<MediaItem> filtered) {
       FilteredItems.Clear();
-
-      var filtered = MediaItems.Filter(LoadedItems);
 
       var sorted = SortByFileFirst
         ? filtered.OrderBy(x => x.FileName).ThenBy(

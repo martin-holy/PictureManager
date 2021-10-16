@@ -9,7 +9,20 @@
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
              xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
-             xmlns:vm="clr-namespace:PictureManager.ViewModels">
+             xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree">
+  
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/Tree/CategoryGroupTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/FavoriteFolderTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/RatingTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/KewordTreeV.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </UserControl.Resources>
+  
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
@@ -67,51 +80,6 @@
       </cc:CatTreeView.Style>
 
       <cc:CatTreeView.Resources>
-        <Style x:Key="ResItemTitle" TargetType="{x:Type TextBlock}">
-          <Setter Property="VerticalAlignment" Value="Center" />
-          <Setter Property="Margin" Value="5,0,0,0" />
-          <Setter Property="FontSize" Value="14" />
-        </Style>
-        
-        <Style x:Key="ResKeywordsPicCountStyle" TargetType="{x:Type TextBlock}">
-          <Setter Property="Text" Value="{Binding PicCount}" />
-          <Setter Property="Visibility" Value="Collapsed"/>
-          <Setter Property="VerticalAlignment" Value="Center" />
-          <Setter Property="Margin" Value="5,0,0,0" />
-          <Setter Property="Padding" Value="5,0" />
-          <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-          <Style.Triggers>
-            <MultiDataTrigger>
-              <MultiDataTrigger.Conditions>
-                <Condition Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True" />
-                <Condition Binding="{Binding IsMarked}" Value="True"/>
-              </MultiDataTrigger.Conditions>
-              <Setter Property="Visibility" Value="Visible"/>
-            </MultiDataTrigger>
-          </Style.Triggers>
-        </Style>
-        
-        <!-- DataTemplate - Favorite Folder -->
-        <HierarchicalDataTemplate DataType="{x:Type vm:FavoriteFolderTreeVM}">
-          <StackPanel Orientation="Horizontal">
-            <mhc:Icon Source="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}" />
-            <TextBlock Style="{StaticResource ResItemTitle}" Text="{Binding Model.Title}" />
-          </StackPanel>
-        </HierarchicalDataTemplate>
-        
-        <!-- DataTemplate - Rating -->
-        <HierarchicalDataTemplate DataType="{x:Type models:Rating}">
-          <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Horizontal">
-              <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
-              <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
-              <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
-              <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
-              <Rectangle Style="{StaticResource IconRect}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
-            </StackPanel>
-            <TextBlock Style="{StaticResource ResKeywordsPicCountStyle}" />
-          </StackPanel>
-        </HierarchicalDataTemplate>
 
         <!-- DataTemplate - MediaItemSize -->
         <HierarchicalDataTemplate DataType="{x:Type models:MediaItemSize}">
@@ -137,7 +105,7 @@
                                LowerValue="{Binding PixelMin}" UpperValue="{Binding PixelMax}" 
                                UpperThumbDragCompleted="MediaItemSize_OnDragCompleted"
                                LowerThumbDragCompleted="MediaItemSize_OnDragCompleted"
-                               CentralThumbDragCompleted="MediaItemSize_OnDragCompleted"/>
+                               CentralThumbDragCompleted="MediaItemSize_OnDragCompleted" />
             </Grid>
           </StackPanel>
         </HierarchicalDataTemplate>
@@ -147,7 +115,7 @@
           <Border Height="40">
             <StackPanel Orientation="Horizontal">
               <cc:IconRect IconName="{Binding IconName}" Size="24" />
-              <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="18" />
+              <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
             </StackPanel>
           </Border>
         </HierarchicalDataTemplate>
@@ -156,8 +124,8 @@
         <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal">
             <cc:IconRect IconName="{Binding IconName}" />
-            <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="14" />
-            <TextBlock Style="{StaticResource ResKeywordsPicCountStyle}" />
+            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
+            <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
           </StackPanel>
         </HierarchicalDataTemplate>
       </cc:CatTreeView.Resources>
@@ -189,21 +157,21 @@
               <Setter Property="ToolTip" Value="{Binding ToolTip}" />
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type vm:FavoriteFolderTreeVM}">
+            <DataTrigger Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type tree:FavoriteFolderTreeVM}">
               <Setter Property="ToolTip" Value="{Binding Model.Folder.FullPath}" />
             </DataTrigger>
             
             <!-- Persons Segment -->
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
-                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type models:Person}" />
-                <Condition Binding="{Binding Segment, Converter={StaticResource AllToBoolConverter}}" Value="True" />
+                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type tree:PersonTreeVM}" />
+                <Condition Binding="{Binding BaseVM.Model.Segment, Converter={StaticResource AllToBoolConverter}}" Value="True" />
               </MultiDataTrigger.Conditions>
               <Setter Property="ToolTip">
                 <Setter.Value>
                   <ToolTip BorderThickness="0" Padding="0">
                     <Border BorderThickness="1" BorderBrush="Black">
-                      <Image Source="{Binding Segment.Picture}" Width="{Binding Segments.SegmentSize, Source={x:Static pm:App.Core}}" />
+                      <Image Source="{Binding BaseVM.Model.Segment.Picture}" Width="{Binding Segments.SegmentSize, Source={x:Static pm:App.Core}}" />
                     </Border>
                   </ToolTip>
                 </Setter.Value>

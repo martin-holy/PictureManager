@@ -13,7 +13,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly MediaItems _model;
 
-    public MediaItemsDataAdapter(Core core, MediaItems model) : base(nameof(MediaItems), core.Sdb) {
+    public MediaItemsDataAdapter(Core core, MediaItems model) : base("MediaItems", core.Sdb) {
       _core = core;
       _model = model;
     }
@@ -64,26 +64,20 @@ namespace PictureManager.Domain.DataAdapters {
         mi.Folder = _core.Folders.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
-        // reference to People and back reference from Person to MediaItems
+        // reference to People
         if (!string.IsNullOrEmpty(mi.Csv[9])) {
           var ids = mi.Csv[9].Split(',');
           mi.People = new(ids.Length);
-          foreach (var personId in ids) {
-            var p = _core.People.AllDic[int.Parse(personId)];
-            p.MediaItems.Add(mi);
-            mi.People.Add(p);
-          }
+          foreach (var id in ids)
+            mi.People.Add(_core.PeopleM.AllDic[int.Parse(id)]);
         }
 
-        // reference to Keywords and back reference from Keyword to MediaItems
+        // reference to Keywords
         if (!string.IsNullOrEmpty(mi.Csv[10])) {
           var ids = mi.Csv[10].Split(',');
           mi.Keywords = new(ids.Length);
-          foreach (var keywordId in ids) {
-            var k = _core.Keywords.AllDic[int.Parse(keywordId)];
-            k.MediaItems.Add(mi);
-            mi.Keywords.Add(k);
-          }
+          foreach (var id in ids)
+            mi.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(id)]);
         }
 
         // reference to GeoName
