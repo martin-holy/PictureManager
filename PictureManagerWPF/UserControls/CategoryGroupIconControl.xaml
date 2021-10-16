@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="PictureManager.UserControls.CategoryGroupIconControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+             x:Name="Root">
+  
+  <mhc:Icon>
+    <mhc:Icon.Style>
+      <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding Category, ElementName=Root}" 
+                       Value="{x:Static pmd:Category.People}">
+            <Setter Property="Source" Value="{StaticResource IconPeopleMultiple}" />
+            <Setter Property="Fill" Value="{StaticResource ColorBrushPeople}" />
+          </DataTrigger>
+          <DataTrigger Binding="{Binding Category, ElementName=Root}" 
+                       Value="{x:Static pmd:Category.Keywords}">
+            <Setter Property="Source" Value="{StaticResource IconTagLabel}" />
+            <Setter Property="Fill" Value="{StaticResource ColorBrushTag}" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </mhc:Icon.Style>
+  </mhc:Icon>
+
+</UserControl>
