@@ -12,17 +12,28 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager {
   public sealed class AppCore {
+    public PeopleBaseVM PeopleBaseVM { get; }
+    public KeywordsBaseVM KeywordsBaseVM { get; }
+    public ViewersBaseVM ViewersBaseVM { get; }
+    public CategoryGroupsBaseVM CategoryGroupsBaseVM { get; }
+
     #region TreeView Roots and Categories
+    public CategoryGroupsTreeVM CategoryGroupsTreeVM { get; }
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
+    public PeopleTreeVM PeopleTreeVM { get; }
+    public KeywordsTreeVM KeywordsTreeVM { get; }
     #endregion
 
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
+    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
+    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
 
@@ -36,29 +47,36 @@ namespace PictureManager {
       MediaItemsViewModel = new(App.Core);
       MediaItemClipsCategory = new();
 
-      FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, App.Core.People, App.Core.FolderKeywords, App.Core.Keywords, App.Core.GeoNames, App.Core.Viewers };
+      CategoryGroupsBaseVM = new();
+      PeopleBaseVM = new(this, App.Core.PeopleM);
+      KeywordsBaseVM = new(this, App.Core.KeywordsM);
+      ViewersBaseVM = new(App.Core, App.Core.Viewers);
 
+      CategoryGroupsTreeVM = new();
+      FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
+      PeopleTreeVM = new(this, PeopleBaseVM);
+      KeywordsTreeVM = new(this, KeywordsBaseVM);
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, App.Core.GeoNames, App.Core.Viewers };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
       item.BackgroundBrush = backgroundBrush;
       if (backgroundBrush == BackgroundBrush.Default)
-        App.Core.ActiveFilterItems.Remove(item);
+        ActiveFilterItems.Remove(item);
       else
-        App.Core.ActiveFilterItems.Add(item);
+        ActiveFilterItems.Add(item);
 
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
     }
 
-    public static void ToggleKeyword(Keyword keyword) {
+    public static void ToggleKeyword(KeywordTreeVM keyword) {
       var sCount = App.Core.Segments.Selected.Count;
-      var pCount = App.Core.People.Selected.Count;
+      var pCount = App.Ui.PeopleBaseVM.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
 
-      var msgA = $"Do you want to toggle #{keyword.FullPath} on selected";
+      var msgA = $"Do you want to toggle #{keyword.BaseVM.Model.FullName} on selected";
       var msgS = sCount > 1 ? "Segments" : "Segment";
       var msgP = pCount > 1 ? "People" : "Person";
       var msgSCount = sCount > 1 ? $" ({sCount})" : string.Empty;
@@ -74,29 +92,29 @@ namespace PictureManager {
 
       if (result == null) return;
       if (result == true)
-        App.Core.Segments.ToggleKeywordOnSelected(keyword);
+        App.Core.Segments.ToggleKeywordOnSelected(keyword.BaseVM.Model);
       else
-        App.Core.People.ToggleKeywordOnSelected(keyword);
+        App.Ui.PeopleBaseVM.ToggleKeywordOnSelected(keyword.BaseVM.Model);
 
       OnToggleKeyword?.Invoke(null, EventArgs.Empty);
     }
 
-    public static void SetPerson(Person person) {
+    public static void SetPerson(PersonBaseVM person) {
       var sCount = App.Core.Segments.Selected.Count;
       if (sCount == 0) return;
 
       var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
-      var msg = $"Do you want to set ({person.Title}) to selected segment{msgCount}??";
+      var msg = $"Do you want to set ({person.Model.Name}) to selected segment{msgCount}??";
 
       if (!MessageDialog.Show("Set Person", msg, true)) return;
-      App.Core.Segments.SetSelectedAsPerson(person);
+      App.Core.Segments.SetSelectedAsPerson(person.Model);
       OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
-      if (item is Rating or Person or Keyword or GeoName) {
+      if (item is Rating or PersonTreeVM or KeywordTreeVM or GeoName) {
         if (loadByTag) {
           MediaItemsViewModel.AddThumbsTabIfNotActive();
           await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
@@ -109,12 +127,12 @@ namespace PictureManager {
       }
 
       switch (item) {
-        case Keyword k:
+        case KeywordTreeVM k:
         ToggleKeyword(k);
         break;
 
-        case Person p:
-        SetPerson(p);
+        case PersonTreeVM p:
+        SetPerson(p.BaseVM);
         break;
 
         case FavoriteFolderTreeVM ff:
@@ -134,7 +152,7 @@ namespace PictureManager {
         break;
 
         case ICatTreeViewCategory cat:
-        if (cat is People)
+        if (cat is PeopleTreeVM)
           _ = App.WMain.MainTabs.ActivateTab<PeopleControl>(IconName.People)?.Reload();
 
         // if category is going to collapse and sub item is selected, category gets selected
@@ -153,11 +171,81 @@ namespace PictureManager {
     }
 
     public async Task ClearFilters() {
-      foreach (var item in App.Core.ActiveFilterItems.ToArray())
+      foreach (var item in ActiveFilterItems.ToArray())
         SetBackgroundBrush(item, BackgroundBrush.Default);
 
       // reload with new filter
       await MediaItemsViewModel.ReapplyFilter();
+    }
+
+    public void MarkUsedKeywordsAndPeople() {
+      //can be Person, Keyword, FolderKeyword, Rating or GeoName
+
+      void MarkedTagsAddWithIncrease(ICatTreeViewTagItem item) {
+        if (item == null) return;
+        item.PicCount++;
+        if (item.IsMarked) return;
+        item.IsMarked = true;
+        MarkedTags.Add(item);
+      }
+
+      // clear previous marked tags
+      foreach (var item in MarkedTags) {
+        item.IsMarked = false;
+        item.PicCount = 0;
+      }
+      MarkedTags.Clear();
+
+      if (App.Core.MediaItems.ThumbsGrid == null) return;
+
+      var mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
+      foreach (var mi in mediaItems) {
+
+        // People
+        if (mi.People != null)
+          foreach (var person in mi.People) {
+            var vm = PeopleTreeVM.All[person.Id];
+            MarkedTagsAddWithIncrease(vm);
+            MarkedTagsAddWithIncrease(vm.Parent as CategoryGroupTreeVM);
+          }
+
+        // Keywords
+        if (mi.Keywords != null) {
+          foreach (var keyword in mi.Keywords) {
+            var k = keyword;
+            while (k != null) {
+              var vm = KeywordsTreeVM.All[k.Id];
+              MarkedTagsAddWithIncrease(vm);
+              MarkedTagsAddWithIncrease(vm.Parent as CategoryGroupTreeVM);
+              k = k.Parent as KeywordM;
+            }
+          }
+        }
+
+        // Folders
+        var f = mi.Folder;
+        while (f != null) {
+          MarkedTagsAddWithIncrease(f);
+          f = f.Parent as Folder;
+        }
+
+        // FolderKeywords
+        var fk = mi.Folder.FolderKeyword;
+        while (fk != null) {
+          MarkedTagsAddWithIncrease(fk);
+          fk = fk.Parent as FolderKeyword;
+        }
+
+        // GeoNames
+        var gn = mi.GeoName;
+        while (gn != null) {
+          MarkedTagsAddWithIncrease(gn);
+          gn = gn.Parent as GeoName;
+        }
+
+        // Ratings
+        MarkedTagsAddWithIncrease(App.Core.Ratings.GetRatingByValue(mi.Rating));
+      }
     }
 
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {

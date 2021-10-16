@@ -59,7 +59,7 @@ namespace PictureManager.Commands {
       App.Ui.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
       App.Ui.MediaItemsViewModel.ScrollToCurrent();
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
 
       App.WMain.MediaViewer.Deactivate();
     }
@@ -155,7 +155,8 @@ namespace PictureManager.Commands {
       App.Core.CurrentViewer = viewer;
       App.Core.Folders.AddDrives();
       App.Core.FolderKeywords.Load();
-      viewer.Activate();
+      viewer.UpdateHashSets();
+      App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(viewer);
     }
 
     private static void OpenLog() {

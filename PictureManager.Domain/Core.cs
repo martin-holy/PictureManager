@@ -17,18 +17,18 @@ namespace PictureManager.Domain {
 
     #region DB Models
     public FavoriteFoldersM FavoriteFoldersM { get; }
+    public PeopleM PeopleM { get; }
+    public CategoryGroupsM CategoryGroupsM { get; }
     #endregion
 
     #region TreeView Roots and Categories
     public Folders Folders { get; }
     public Ratings Ratings { get; }
     public MediaItemSizes MediaItemSizes { get; }
-    public People People { get; }
     public FolderKeywords FolderKeywords { get; }
-    public Keywords Keywords { get; }
+    public KeywordsM KeywordsM { get; }
     public GeoNames GeoNames { get; }
     public Viewers Viewers { get; }
-    public CategoryGroups CategoryGroups { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -36,10 +36,8 @@ namespace PictureManager.Domain {
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
     public Segments Segments { get; }
-    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public Viewer CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
-    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new();
 
     private TaskScheduler UiTaskScheduler { get; }
 
@@ -52,14 +50,16 @@ namespace PictureManager.Domain {
       Folders = new(this);
       Ratings = new();
       MediaItemSizes = new();
-      People = new(this);
+      PeopleM = new(this);
       FolderKeywords = new();
-      Keywords = new(this);
+      KeywordsM = new(this);
       GeoNames = new(this);
       Viewers = new(this);
 
       
-      CategoryGroups = new(this);
+      CategoryGroupsM = new(this);
+      CategoryGroupsM.Categories.Add(Category.People, PeopleM);
+      CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
 
       MediaItems = new(this);
       VideoClips = new(this);
@@ -69,11 +69,11 @@ namespace PictureManager.Domain {
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
-        Sdb.AddDataAdapter(CategoryGroups.DataAdapter);
+        Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
+        Sdb.AddDataAdapter(KeywordsM.DataAdapter);
         Sdb.AddDataAdapter(Folders.DataAdapter); // needs to be before Viewers
         Sdb.AddDataAdapter(Viewers.DataAdapter);
-        Sdb.AddDataAdapter(People.DataAdapter);
-        Sdb.AddDataAdapter(Keywords.DataAdapter);
+        Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNames.DataAdapter);
         Sdb.AddDataAdapter(MediaItems.DataAdapter);
         Sdb.AddDataAdapter(VideoClipsGroups.DataAdapter); // needs to be before VideoClips
@@ -97,12 +97,12 @@ namespace PictureManager.Domain {
         Folders.AllDic = null;
         GeoNames.AllDic.Clear();
         GeoNames.AllDic = null;
-        Keywords.AllDic.Clear();
-        Keywords.AllDic = null;
+        KeywordsM.AllDic.Clear();
+        KeywordsM.AllDic = null;
         MediaItems.AllDic.Clear();
         MediaItems.AllDic = null;
-        People.AllDic.Clear();
-        People.AllDic = null;
+        PeopleM.AllDic.Clear();
+        PeopleM.AllDic = null;
         VideoClips.AllDic.Clear();
         VideoClips.AllDic = null;
         Segments.AllDic.Clear();
@@ -123,74 +123,6 @@ namespace PictureManager.Domain {
       var min = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
       var max = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
       MediaItemSizes.Size.SetLoadedRange(min, max);
-    }
-
-    public void MarkUsedKeywordsAndPeople() {
-      //can be Person, Keyword, FolderKeyword, Rating or GeoName
-
-      void MarkedTagsAddWithIncrease(ICatTreeViewTagItem item) {
-        if (item == null) return;
-        item.PicCount++;
-        if (item.IsMarked) return;
-        item.IsMarked = true;
-        MarkedTags.Add(item);
-      }
-
-      // clear previous marked tags
-      foreach (var item in MarkedTags) {
-        item.IsMarked = false;
-        item.PicCount = 0;
-      }
-      MarkedTags.Clear();
-
-      if (MediaItems.ThumbsGrid == null) return;
-
-      var mediaItems = MediaItems.ThumbsGrid.GetSelectedOrAll();
-      foreach (var mi in mediaItems) {
-
-        // People
-        if (mi.People != null)
-          foreach (var person in mi.People) {
-            MarkedTagsAddWithIncrease(person);
-            MarkedTagsAddWithIncrease(person.Parent as CategoryGroup);
-          }
-
-        // Keywords
-        if (mi.Keywords != null) {
-          foreach (var keyword in mi.Keywords) {
-            var k = keyword;
-            while (k != null) {
-              MarkedTagsAddWithIncrease(k);
-              MarkedTagsAddWithIncrease(k.Parent as CategoryGroup);
-              k = k.Parent as Keyword;
-            }
-          }
-        }
-
-        // Folders
-        var f = mi.Folder;
-        while (f != null) {
-          MarkedTagsAddWithIncrease(f);
-          f = f.Parent as Folder;
-        }
-
-        // FolderKeywords
-        var fk = mi.Folder.FolderKeyword;
-        while (fk != null) {
-          MarkedTagsAddWithIncrease(fk);
-          fk = fk.Parent as FolderKeyword;
-        }
-
-        // GeoNames
-        var gn = mi.GeoName;
-        while (gn != null) {
-          MarkedTagsAddWithIncrease(gn);
-          gn = gn.Parent as GeoName;
-        }
-
-        // Ratings
-        MarkedTagsAddWithIncrease(Ratings.GetRatingByValue(mi.Rating));
-      }
     }
 
     // get index for an item in DB in same order as it is in the tree

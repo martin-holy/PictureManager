@@ -42,7 +42,7 @@ namespace PictureManager.UserControls {
 
       AttachEvents();
 
-      foreach (var person in App.Core.People.All.Cast<Person>())
+      foreach (var person in App.Ui.PeopleBaseVM.All.Values)
         person.UpdateDisplayKeywords();
     }
 
@@ -141,7 +141,7 @@ namespace PictureManager.UserControls {
           await App.Core.Segments.ReloadLoadedGroupedByPersonAsync();
 
         foreach (var group in App.Core.Segments.LoadedGroupedByPerson) {
-          var groupTitle = group[0].Person != null ? group[0].Person.Title : group[0].PersonId.ToString();
+          var groupTitle = group[0].Person != null ? group[0].Person.Name : group[0].PersonId.ToString();
           SegmentsGrid.AddGroup(IconName.People, groupTitle);
 
           foreach (var segment in group)
@@ -166,7 +166,7 @@ namespace PictureManager.UserControls {
 
       if (App.Core.Segments.GroupConfirmedSegments) {
         foreach (var (personId, segment, similar) in App.Core.Segments.ConfirmedSegments) {
-          var groupTitle = segment.Person != null ? segment.Person.Title : personId.ToString();
+          var groupTitle = segment.Person != null ? segment.Person.Name : personId.ToString();
           ConfirmedSegmentsGrid.AddGroup(IconName.People, groupTitle);
           ConfirmedSegmentsGrid.AddItem(segment, _segmentGridWidth);
 
@@ -178,8 +178,8 @@ namespace PictureManager.UserControls {
         foreach (var group in App.Core.Segments.ConfirmedSegments
           .GroupBy(x => {
             if (x.segment.Person == null) return "Unknown";
-            if (x.segment.Person.DisplayKeywords == null) return string.Empty;
-            return string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Title));
+            if (x.segment.Person.Keywords == null) return string.Empty;
+            return string.Join(", ", App.Ui.PeopleBaseVM.All[x.segment.Person.Id].DisplayKeywords.Select(k => k.Name));
           })
           .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
 

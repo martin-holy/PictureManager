@@ -12,7 +12,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly Folders _model;
 
-    public FoldersDataAdapter(Core core, Folders model) : base(nameof(Folders), core.Sdb) {
+    public FoldersDataAdapter(Core core, Folders model) : base("Folders", core.Sdb) {
       _core = core;
       _model = model;
     }

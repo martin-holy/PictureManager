@@ -37,7 +37,11 @@ namespace PictureManager.CustomControls {
         imgGrid.PreviewMouseUp += (o, e) => Selected?.Invoke(o, e);
 
       if (Template.FindName("PART_BtnDetail", this) is Button btnDetail)
-        btnDetail.Click += (o, e) => _ = App.Core.People.Current = (DataContext as Segment)?.Person;
+        btnDetail.Click += (o, e) => {
+          if (DataContext is Segment segment && segment.Person != null)
+            App.Ui.PeopleBaseVM.Current = App.Ui.PeopleBaseVM.All[segment.Person.Id];
+        };
+          
 
       if (Template.FindName("PART_BtnSamePerson", this) is Button btnSamePerson)
         btnSamePerson.Click += (o, e) => {

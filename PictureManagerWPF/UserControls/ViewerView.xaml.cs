@@ -1,10 +1,10 @@
 ﻿using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
   public partial class ViewerView : INotifyPropertyChanged {
@@ -18,8 +18,8 @@ namespace PictureManager.UserControls {
 
     public Viewer Viewer { get => _viewer; set { _viewer = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public static IOrderedEnumerable<CategoryGroup> CategoryGroups =>
-      App.Core.CategoryGroups.All.Cast<CategoryGroup>().OrderBy(x => x.Category).ThenBy(x => x.Title);
+    public static IOrderedEnumerable<CategoryGroupM> CategoryGroups =>
+      App.Core.CategoryGroupsM.All.OrderBy(x => x.Category).ThenBy(x => x.Name);
 
     public ViewerView() {
       InitializeComponent();
@@ -31,7 +31,7 @@ namespace PictureManager.UserControls {
     private void AttachEvents() {
       DragDropFactory.SetDrag(LbIncludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
       DragDropFactory.SetDrag(LbExcludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
-      DragDropFactory.SetDrag(LbExcludedKeywords, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Keyword);
+      DragDropFactory.SetDrag(LbExcludedKeywords, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as KeywordM);
 
       DragDropFactory.SetDrop(
         LbIncludedFolders,
@@ -48,8 +48,8 @@ namespace PictureManager.UserControls {
       LbCategoryGroups.SelectionChanged += (o, e) => {
         if (_reloading) return;
 
-        foreach (var cg in e.AddedItems.Cast<CategoryGroup>().Concat(e.RemovedItems.Cast<CategoryGroup>()))
-          Viewer.ToggleCategoryGroup(cg.Id);
+        foreach (var cg in e.AddedItems.Cast<CategoryGroupTreeVM>().Concat(e.RemovedItems.Cast<CategoryGroupTreeVM>()))
+          Viewer.ToggleCategoryGroup(cg.BaseVM.Model.Id);
       };
     }
 
@@ -81,7 +81,7 @@ namespace PictureManager.UserControls {
     }
 
     private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
-      if (data is not Keyword) return DragDropEffects.None;
+      if (data is not KeywordM) return DragDropEffects.None;
 
       if (source == App.WMain.TreeViewCategories.TvCategories)
         return Viewer.ExcludedKeywords.Contains(data)
@@ -98,10 +98,10 @@ namespace PictureManager.UserControls {
 
     private void DoDropKeyword(DragEventArgs e, object source, object data) {
       if (source == App.WMain.TreeViewCategories.TvCategories)
-        Viewer.AddKeyword((Keyword)data);
+        Viewer.AddKeyword((KeywordM)data);
 
       if (e.Source == source)
-        Viewer.RemoveKeyword((Keyword)data);
+        Viewer.RemoveKeyword((KeywordM)data);
 
       App.Core.Viewers.DataAdapter.IsModified = true;
     }

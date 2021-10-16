@@ -119,19 +119,8 @@ namespace PictureManager.Domain.Models {
         item.Segments = null;
       }
 
-      // remove People
-      if (item.People != null) {
-        foreach (var person in item.People)
-          person.MediaItems.Remove(item);
-        item.People = null;
-      }
-
-      // remove Keywords
-      if (item.Keywords != null) {
-        foreach (var keyword in item.Keywords)
-          keyword.MediaItems.Remove(item);
-        item.Keywords = null;
-      }
+      item.People = null;
+      item.Keywords = null;
 
       // remove item from Folder
       item.Folder.MediaItems.Remove(item);
@@ -167,34 +156,6 @@ namespace PictureManager.Domain.Models {
         ModifiedItems.Remove(mi);
 
       OnPropertyChanged(nameof(ModifiedCount));
-    }
-
-    public void SetMetadata(object tag) {
-      foreach (var mi in ThumbsGrid.SelectedItems) {
-        SetModified(mi, true);
-
-        switch (tag) {
-          case Person p:
-          People.Toggle(p, mi);
-          break;
-
-          case Keyword k:
-          var currentKeywords = mi.Keywords;
-          Keywords.Toggle(k, ref currentKeywords, () => k.MediaItems.Add(mi), (rmK) => rmK.MediaItems.Remove(mi));
-          mi.Keywords = currentKeywords;
-          break;
-
-          case Rating r:
-          mi.Rating = r.Value;
-          break;
-
-          case GeoName g:
-          GeoNames.Toggle(g, mi);
-          break;
-        }
-
-        mi.SetInfoBox();
-      }
     }
 
     public static void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder,
@@ -264,71 +225,6 @@ namespace PictureManager.Domain.Models {
 
         done++;
       }
-    }
-
-    public static IEnumerable<MediaItem> Filter(List<MediaItem> mediaItems) {
-      // Media Type
-      var grid = Core.Instance.MediaItems.ThumbsGrid;
-      var mediaTypes = new HashSet<MediaType>();
-      if (grid.ShowImages) mediaTypes.Add(MediaType.Image);
-      if (grid.ShowVideos) mediaTypes.Add(MediaType.Video);
-      mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
-
-      //Ratings
-      var chosenRatings = Core.Instance.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
-      if (chosenRatings.Length > 0)
-        mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
-
-      // MediaItemSizes
-      if (!Core.Instance.MediaItemSizes.Size.AllSizes())
-        mediaItems = mediaItems.Where(mi => mi.IsNew || Core.Instance.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
-
-      // People
-      var orPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notPeople = Core.Instance.ActiveFilterItems.OfType<Person>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andPeopleAny = andPeople.Length > 0;
-      var orPeopleAny = orPeople.Length > 0;
-      if (orPeopleAny || andPeopleAny || notPeople.Length > 0) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.People != null && notPeople.Any(p => mi.People.Any(x => x == p)))
-            return false;
-          if (!andPeopleAny && !orPeopleAny)
-            return true;
-          if (mi.People != null && andPeopleAny && andPeople.All(p => mi.People.Any(x => x == p)))
-            return true;
-          if (mi.People != null && orPeople.Any(p => mi.People.Any(x => x == p)))
-            return true;
-
-          return false;
-        }).ToList();
-      }
-
-      // Keywords
-      var orKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notKeywords = Core.Instance.ActiveFilterItems.OfType<Keyword>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
-      var andKeywordsAny = andKeywords.Length > 0;
-      var orKeywordsAny = orKeywords.Length > 0;
-      if (orKeywordsAny || andKeywordsAny || notKeywords.Length > 0) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.Keywords != null && notKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return false;
-          if (!andKeywordsAny && !orKeywordsAny)
-            return true;
-          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return true;
-          if (mi.Keywords != null && orKeywords.Any(k => mi.Keywords.Any(mik => mik.FullPath.StartsWith(k.FullPath))))
-            return true;
-          return false;
-        }).ToList();
-      }
-
-      return mediaItems;
     }
 
     public async Task<List<MediaItem>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<Folder> folders, CancellationToken token) {
@@ -412,6 +308,23 @@ namespace PictureManager.Domain.Models {
       grid.OnSelectionChanged += (o, e) => OnPropertyChanged(nameof(ActiveFileSize));
 
       return grid;
+    }
+
+    public void RemovePersonFromMediaItems(PersonM person) {
+      foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.People != null && mi.People.Contains(person))) {
+        mi.People = Extension.Toggle(mi.People, person, true);
+        DataAdapter.IsModified = true;
+      }
+    }
+
+    public void RemoveKeywordsFromMediaItems(IEnumerable<KeywordM> keywords) {
+      var set = new HashSet<KeywordM>(keywords);
+      foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.Keywords != null)) {
+        foreach (var keyword in mi.Keywords.Where(set.Contains).ToArray()) {
+          mi.Keywords = Extension.Toggle(mi.Keywords, keyword, true);
+          DataAdapter.IsModified = true;
+        }
+      }
     }
   }
 }

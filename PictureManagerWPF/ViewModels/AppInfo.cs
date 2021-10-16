@@ -53,7 +53,7 @@ namespace PictureManager.ViewModels {
     }
 
     private static string GetActiveFilterCountFor(BackgroundBrush bgb) {
-      var count = App.Core.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
+      var count = App.Ui.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
       return count == 0 ? string.Empty : count.ToString();
     }
   }

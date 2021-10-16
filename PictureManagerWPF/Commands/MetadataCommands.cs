@@ -74,7 +74,7 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         (o, e) => {
-          App.Core.MarkUsedKeywordsAndPeople();
+          App.Ui.MarkUsedKeywordsAndPeople();
           App.Core.MediaItems.IsEditModeOn = false;
         });
 
@@ -135,7 +135,7 @@ namespace PictureManager.Commands {
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => App.Core.MarkUsedKeywordsAndPeople());
+        (o, e) => App.Ui.MarkUsedKeywordsAndPeople());
 
       progress.Start();
     }

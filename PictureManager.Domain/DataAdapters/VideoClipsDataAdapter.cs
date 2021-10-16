@@ -13,7 +13,7 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly Core _core;
     private readonly VideoClips _model;
 
-    public VideoClipsDataAdapter(Core core, VideoClips model) : base(nameof(VideoClips), core.Sdb) {
+    public VideoClipsDataAdapter(Core core, VideoClips model) : base("VideoClips", core.Sdb) {
       _core = core;
       _model = model;
     }
@@ -69,24 +69,16 @@ namespace PictureManager.Domain.DataAdapters {
         if (!string.IsNullOrEmpty(vc.Csv[9])) {
           var ids = vc.Csv[9].Split(',');
           vc.People = new(ids.Length);
-          foreach (var personId in ids) {
-            var p = _core.People.AllDic[int.Parse(personId)];
-            p.VideoClips ??= new();
-            p.VideoClips.Add(vc);
-            vc.People.Add(p);
-          }
+          foreach (var personId in ids) 
+            vc.People.Add(_core.PeopleM.AllDic[int.Parse(personId)]);
         }
 
-        // reference to Keywords and back reference from Keyword to VideoClip
+        // reference to Keywords
         if (!string.IsNullOrEmpty(vc.Csv[10])) {
           var ids = vc.Csv[10].Split(',');
           vc.Keywords = new(ids.Length);
-          foreach (var keywordId in ids) {
-            var k = _core.Keywords.AllDic[int.Parse(keywordId)];
-            k.VideoClips ??= new();
-            k.VideoClips.Add(vc);
-            vc.Keywords.Add(k);
-          }
+          foreach (var keywordId in ids)
+            vc.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
         }
 
         // csv array is not needed any more

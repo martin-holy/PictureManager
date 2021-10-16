@@ -19,7 +19,7 @@
 
     <StackPanel Grid.Row="0">
       <Grid Background="#88000000" Margin="0,0,0,5">
-        <TextBlock Text="{Binding Person.Title}" FontSize="20" Padding="8" HorizontalAlignment="Center" VerticalAlignment="Center" />
+        <TextBlock Text="{Binding Person.Model.Name}" FontSize="20" Padding="8" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <cc:IconRect IconName="People" HorizontalAlignment="Left" Margin="6,0" />
         <Button x:Name="BtnReload" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}" HorizontalAlignment="Right">
           <cc:IconRect IconName="Refresh" Size="10" />
@@ -41,7 +41,7 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Style="{StaticResource SBorderText}">
-                  <TextBlock Text="{Binding Title}" Style="{StaticResource STextBlock}" />
+                  <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}" />
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>

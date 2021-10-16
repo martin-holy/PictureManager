@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -92,7 +91,7 @@ namespace SimpleDB {
 
       if (!isModified) return;
 
-      SaveToFile<DataAdapter>(
+      SaveToFile(
         _dataAdapters,
         (x) => string.Join("|", x.TableName, x.MaxId),
         _isSequencesFilePath,

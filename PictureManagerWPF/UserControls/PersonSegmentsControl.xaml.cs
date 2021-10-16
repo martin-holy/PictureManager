@@ -2,7 +2,6 @@
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -10,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class PersonSegmentsControl : INotifyPropertyChanged {
@@ -18,10 +18,10 @@ namespace PictureManager.UserControls {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
-    private Person _person;
+    private PersonBaseVM _person;
 
     public List<Segment> AllSegments { get; } = new();
-    public Person Person { get => _person; set { _person = value; OnPropertyChanged(); } }
+    public PersonBaseVM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
 
     public PersonSegmentsControl() {
       InitializeComponent();
@@ -45,7 +45,7 @@ namespace PictureManager.UserControls {
     private object CanDrag(MouseEventArgs e) => (e.OriginalSource as FrameworkElement)?.DataContext as Segment;
 
     private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
-      if (source == AllSegmentsGrid && Person.Segments?.Contains(data) != true)
+      if (source == AllSegmentsGrid && Person.Model.Segments?.Contains(data) != true)
         return DragDropEffects.Copy;
       if (source == TopSegmentsGrid && data != (e.OriginalSource as FrameworkElement)?.DataContext)
         return DragDropEffects.Move;
@@ -56,29 +56,29 @@ namespace PictureManager.UserControls {
     private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
       if (data is not Segment segment) return;
 
-      Person.Segments = Extension.Toggle(Person.Segments, segment, true);
-      Person.OnPropertyChanged(nameof(Person.Segments));
+      Person.Model.Segments = Extension.Toggle(Person.Model.Segments, segment, true);
+      Person.OnPropertyChanged(nameof(Person.Model.Segments));
 
-      if (Person.Segments?.Count > 0)
-        Person.Segment = Person.Segments[0];
+      if (Person.Model.Segments?.Count > 0)
+        Person.Model.Segment = Person.Model.Segments[0];
 
-      App.Core.People.DataAdapter.IsModified = true;
+      App.Core.PeopleM.DataAdapter.IsModified = true;
       ReloadTopSegments();
     }
 
     private void ReloadTopSegments() {
       TopSegmentsGrid.ClearRows();
-      if (Person.Segments == null) return;
+      if (Person.Model.Segments == null) return;
       UpdateLayout();
       TopSegmentsGrid.UpdateMaxRowWidth();
 
-      foreach (var segment in Person.Segments)
+      foreach (var segment in Person.Model.Segments)
         TopSegmentsGrid.AddItem(segment, _segmentGridWidth);
 
       TopSegmentsGrid.ScrollToTop();
     }
 
-    public async Task ReloadPersonSegmentsAsync(Person person) {
+    public async Task ReloadPersonSegmentsAsync(PersonBaseVM person) {
       Person = person;
       AllSegments.Clear();
       AllSegmentsGrid.ClearRows();
@@ -91,10 +91,10 @@ namespace PictureManager.UserControls {
 
       await Task.Run(async () => {
         foreach (var group in App.Core.Segments.All.Cast<Segment>()
-          .Where(x => x.PersonId == person.Id)
+          .Where(x => x.PersonId == person.Model.Id)
           .GroupBy(x => x.Keywords == null
             ? string.Empty
-            : string.Join(", ", Keywords.GetAllKeywords(x.Keywords).Select(k => k.Title)))
+            : string.Join(", ", KeywordsM.GetAllKeywords(x.Keywords).Select(k => k.Name)))
           .OrderBy(x => x.Key)) {
 
           // add group

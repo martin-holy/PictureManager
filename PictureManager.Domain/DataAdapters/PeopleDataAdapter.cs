@@ -1,7 +1,6 @@
 ﻿using PictureManager.Domain.Models;
 using SimpleDB;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.DataAdapters {
@@ -10,47 +9,42 @@ namespace PictureManager.Domain.DataAdapters {
   /// </summary>
   public class PeopleDataAdapter : DataAdapter {
     private readonly Core _core;
-    private readonly People _model;
+    private readonly PeopleM _model;
 
-    public PeopleDataAdapter(Core core, People model) : base(nameof(People), core.Sdb) {
+    public PeopleDataAdapter(Core core, PeopleM model) : base("People", core.Sdb) {
       _core = core;
       _model = model;
     }
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new Dictionary<int, Person>();
+      _model.AllDic = new();
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<Person>(), ToCsv);
+    public override void Save() => SaveToFile(_model.GetAll(), ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var person = new Person(int.Parse(props[0]), props[1]) { Csv = props };
+      var person = new PersonM(int.Parse(props[0]), props[1]) { Csv = props };
       _model.All.Add(person);
       _model.AllDic.Add(person.Id, person);
     }
 
-    public static string ToCsv(Person person) =>
+    private static string ToCsv(PersonM person) =>
       string.Join("|",
         person.Id.ToString(),
-        person.Title,
+        person.Name,
         person.Segments == null ? string.Empty : string.Join(",", person.Segments.Select(x => x.Id)),
         person.Keywords == null ? string.Empty : string.Join(",", person.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
-      // MediaItems to the Person are added in LinkReferences on MediaItem
-
-      _model.Items.Clear();
-      _model.LoadGroupsAndItems(_model.All);
-
-      foreach (var person in _model.All.Cast<Person>()) {
+      foreach (var person in _model.All) {
         // Persons top segments
         if (!string.IsNullOrEmpty(person.Csv[2])) {
           var ids = person.Csv[2].Split(',');
-          person.Segments = new();
+          person.Segments = new(ids.Length);
           foreach (var segmentId in ids)
             person.Segments.Add(_core.Segments.AllDic[int.Parse(segmentId)]);
           person.Segment = person.Segments[0];
@@ -61,7 +55,13 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = person.Csv[3].Split(',');
           person.Keywords = new(ids.Length);
           foreach (var keywordId in ids)
-            person.Keywords.Add(_core.Keywords.AllDic[int.Parse(keywordId)]);
+            person.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
+        }
+
+        // add loose people
+        foreach (var personM in _model.All.Where(x => x.Parent == null)) {
+          personM.Parent = _model;
+          _model.Items.Add(personM);
         }
 
         // CSV array is not needed any more

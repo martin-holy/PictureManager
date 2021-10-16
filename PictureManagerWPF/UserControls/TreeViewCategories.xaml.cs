@@ -3,7 +3,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.ViewModels;
-using SimpleDB;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
   public partial class TreeViewCategories {
@@ -68,11 +68,12 @@ namespace PictureManager.UserControls {
           break;
         }
 
-        App.Core.MarkUsedKeywordsAndPeople();
+        App.Ui.MarkUsedKeywordsAndPeople();
       };
 
       CatTreeViewUtils.OnAfterSort += (o, e) => {
-        // sort items in DB (items in root are already sorted from CatTreeViewUtils.Sort)
+        // TODO tohle musi bejt jinak. setridim to v Modelu a ten to reportuje to ViewModelu
+        /*// sort items in DB (items in root are already sorted from CatTreeViewUtils.Sort)
         if (o is not ICatTreeViewItem root) return;
         if (CatTreeViewUtils.GetTopParent(root) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
@@ -92,7 +93,7 @@ namespace PictureManager.UserControls {
         foreach (var item in items)
           table.All.Add(item as IRecord);
         if (items.Length != 0)
-          table.DataAdapter.IsModified = true;
+          table.DataAdapter.IsModified = true;*/
       };
     }
 
@@ -148,8 +149,8 @@ namespace PictureManager.UserControls {
           break;
         }
         case Rating _:
-        case Person _:
-        case Keyword _:
+        case PersonTreeVM _:
+        case KeywordM _:
         case GeoName _: {
           AddMenuItem(TreeViewCommands.LoadByTagCommand);
           AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
@@ -196,6 +197,6 @@ namespace PictureManager.UserControls {
     }
 
     private void ItemToolTip_ToolTipOpening(object sender, ToolTipEventArgs e) =>
-      (((FrameworkElement)sender).DataContext as Person)?.Segment?.SetPictureAsync(App.Core.Segments.SegmentSize);
+      (((FrameworkElement)sender).DataContext as PersonTreeVM)?.BaseVM.Model.Segment?.SetPictureAsync(App.Core.Segments.SegmentSize);
   }
 }

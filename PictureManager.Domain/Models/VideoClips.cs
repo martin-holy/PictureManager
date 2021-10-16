@@ -39,19 +39,8 @@ namespace PictureManager.Domain.Models {
         _core.VideoClipsGroups.DataAdapter.IsModified = true;
       }
 
-      if (vc.People != null)
-        foreach (var p in vc.People) {
-          p.VideoClips.Remove(vc);
-          if (p.VideoClips.Count == 0)
-            p.VideoClips = null;
-        }
-
-      if (vc.Keywords != null)
-        foreach (var k in vc.Keywords) {
-          k.VideoClips.Remove(vc);
-          if (k.VideoClips.Count == 0)
-            k.VideoClips = null;
-        }
+      vc.People = null;
+      vc.Keywords = null;
 
       All.Remove(vc);
       DataAdapter.IsModified = true;

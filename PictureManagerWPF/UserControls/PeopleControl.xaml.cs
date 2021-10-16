@@ -12,6 +12,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using PictureManager.ViewModels;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
   public partial class PeopleControl : INotifyPropertyChanged {
@@ -31,17 +33,17 @@ namespace PictureManager.UserControls {
       DataContext = this;
       Title = "People";
 
-      foreach (var person in App.Core.People.All.Cast<Person>())
+      foreach (var person in App.Ui.PeopleBaseVM.All.Values)
         person.UpdateDisplayKeywords();
     }
 
     public async Task Reload() {
-      async Task AddPeopleAsync(string groupTitle, IEnumerable<Person> people, CancellationToken token) {
+      async Task AddPeopleAsync(string groupTitle, IEnumerable<PersonBaseVM> people, CancellationToken token) {
         // group people by keywords
         foreach (var group in people
           .GroupBy(p => p.DisplayKeywords == null
             ? string.Empty
-            : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Title)))
+            : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Name)))
           .OrderBy(g => g.Key)) {
 
           // add group
@@ -53,11 +55,11 @@ namespace PictureManager.UserControls {
           }
 
           // add people
-          foreach (var person in group.OrderBy(p => p.Title)) {
+          foreach (var person in group.OrderBy(p => p.Model.Name)) {
             if (token.IsCancellationRequested) break;
-            if (person.Segment != null) {
-              await person.Segment.SetPictureAsync(App.Core.Segments.SegmentSize);
-              person.Segment.MediaItem.SetThumbSize();
+            if (person.Model.Segment != null) {
+              await person.Model.Segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+              person.Model.Segment.MediaItem.SetThumbSize();
             }
             await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
           }
@@ -72,16 +74,16 @@ namespace PictureManager.UserControls {
       PeopleGrid.UpdateMaxRowWidth();
 
       await _workTask.Start(Task.Run(async () => {
-        foreach (var group in App.Core.People.Items.OfType<ICatTreeViewGroup>().Where(x => !x.IsHidden)) {
+        foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<ICatTreeViewGroup>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.Title));
-          await AddPeopleAsync(group.Title, group.Items.Cast<Person>(), _workTask.Token);
+          await AddPeopleAsync(group.Title, group.Items.Cast<PersonTreeVM>().Select(x => x.BaseVM), _workTask.Token);
         }
 
-        var peopleWithoutGroup = App.Core.People.Items.OfType<Person>().ToArray();
+        var peopleWithoutGroup = App.Ui.PeopleTreeVM.Items.OfType<PersonTreeVM>().ToArray();
         if (peopleWithoutGroup.Length > 0) {
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, string.Empty));
-          await AddPeopleAsync(string.Empty, peopleWithoutGroup, _workTask.Token);
+          await AddPeopleAsync(string.Empty, peopleWithoutGroup.Select(x => x.BaseVM), _workTask.Token);
         }
       }));
 
@@ -98,7 +100,7 @@ namespace PictureManager.UserControls {
       if (((FrameworkElement)sender).DataContext is Segment segment) {
         var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
         App.Core.Segments.DeselectAll();
-        App.Core.People.Select(null, segment.Person, isCtrlOn, isShiftOn);
+        App.Ui.PeopleBaseVM.Select(null, App.Ui.PeopleBaseVM.All[segment.Person.Id], isCtrlOn, isShiftOn);
       }
     }
   }

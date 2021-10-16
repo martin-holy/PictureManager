@@ -1,5 +1,4 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Extensions;
+﻿using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 using System;
@@ -25,8 +24,8 @@ namespace PictureManager.Domain.Models {
     public int Rating { get; set; }
     public string Comment { get; set; }
     public GeoName GeoName { get; set; }
-    public List<Person> People { get; set; }
-    public List<Keyword> Keywords { get; set; }
+    public List<PersonM> People { get; set; }
+    public List<KeywordM> Keywords { get; set; }
 
     private bool _isSelected;
     private int _thumbWidth;
@@ -123,9 +122,9 @@ namespace PictureManager.Domain.Models {
         var people = Enumerable.Empty<string>();
 
         if (People != null)
-          people = People.Select(x => x.Title);
+          people = People.Select(x => x.Name);
         if (Segments != null)
-          people = people.Concat(Segments.Where(x => x.Person != null).Select(x => x.Person.Title));
+          people = people.Concat(Segments.Where(x => x.Person != null).Select(x => x.Person.Name));
 
         if (people.Any()) {
           InfoBoxPeople = new ObservableCollection<string>();
@@ -139,14 +138,14 @@ namespace PictureManager.Domain.Models {
 
       if (Keywords != null) {
         InfoBoxKeywords = new ObservableCollection<string>();
-        var allKeywords = new List<ICatTreeViewItem>();
+        var allKeywords = new List<KeywordM>();
 
         foreach (var keyword in Keywords)
-          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref allKeywords);
+          Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
 
-        foreach (var keyword in allKeywords.OfType<Keyword>().Distinct().OrderBy(x => x.FullPath)) {
-          InfoBoxKeywords.Add(keyword.Title);
-          InfoBoxThumb.Add(keyword.Title);
+        foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName)) {
+          InfoBoxKeywords.Add(keyword.Name);
+          InfoBoxThumb.Add(keyword.Name);
         }
       }
 
@@ -170,15 +169,11 @@ namespace PictureManager.Domain.Models {
         Lng = Lng
       };
 
-      if (People != null) {
-        copy.People = new List<Person>(People);
-        copy.People.ForEach(x => x.MediaItems.Add(copy));
-      }
+      if (People != null)
+        copy.People = new(People);
 
-      if (Keywords != null) {
-        copy.Keywords = new List<Keyword>(Keywords);
-        copy.Keywords.ForEach(x => x.MediaItems.Add(copy));
-      }
+      if (Keywords != null)
+        copy.Keywords = new (Keywords);
 
       if (Segments != null) {
         copy.Segments = new();

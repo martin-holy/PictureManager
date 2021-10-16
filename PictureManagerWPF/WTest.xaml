@@ -9,6 +9,7 @@
         xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
         xmlns:cmd="clr-namespace:PictureManager.Commands"
         xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
+        xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
         mc:Ignorable="d"
         Title="WTest" Height="450" Width="700" Background="#007ACC" x:Name="WinTest" >
   <Grid>
@@ -81,11 +82,6 @@
 
       <StackPanel Orientation="Vertical">
         <StackPanel.Resources>
-
-          
-
-
-
           <Style TargetType="Button" BasedOn="{StaticResource StyleBaseButtonBase}"></Style>
         </StackPanel.Resources>
         <Button>TEXT button</Button>
@@ -95,6 +91,18 @@
         </Button>
         <Button Style="{StaticResource StyleButtonDialog}">DONE</Button>
       </StackPanel>
+      
+      <WrapPanel Orientation="Horizontal">
+        <cc:IconRect IconName="PeopleMultiple" />
+        
+        <cc:IconRect Size="30" IconName="Pin" />
+        <mhc:Icon Size="30" Source="{StaticResource IconPin}" Fill="White" />
+        
+        <mhc:IconButton Source="{StaticResource IconPeople}" Click="IconButton_Click" />
+        <mhc:IconToggleButton Source="{StaticResource IconPeopleMultiple}" />
+      </WrapPanel>
+      
+      <TextBlock Text="{Binding ElementName=WinTest, Path=FFVM.Title}" />
     </StackPanel>
 
   </Grid>

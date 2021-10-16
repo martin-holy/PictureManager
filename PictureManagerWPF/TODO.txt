@@ -15,6 +15,7 @@
   - height change on StatusBar Visibility
 - kdyz ma obrazek metadata jen v DB, tak se rotace neaplikuje na vytvoreni thumbnail
 - SegmentRectsControl resize on slide panel IsPinned changed
+- TagItemDeleteNotUsed: Person and Keyword can be also on Segment
 
 
 #Update
@@ -33,6 +34,8 @@
 - DB:
   - remove direct access to Helper.IsModified
 - remove Folder Browser
+- can classes like Folders, Keywords, MediaItems, ... be static if there is always just one instance???
+- Rethink hierarchical keywords moving
 
 
 # Segment Matching
@@ -44,7 +47,6 @@
    - confirmed segments reload is slow when it has to much columns (9)
    - remove DisplayKeywords from Person and use Keywords.GetAllKeywords
    - show "select as same person" only if different peopleIds are selected
-   - change SegmentDrawer to ObservableCollection in WrapPanel
  - New:
    - keywords:
      - sort like in the tree
@@ -67,6 +69,7 @@
   - TODO GeoNames, user name dat do prop na GeoNames, user name checkovat OnBeforeItemCreate, menuitem GeoNameNewCommand udelat obecne
   - vymyslet jinej nazev pro PicCount a ICatTreeViewTagItem
   - ItemCreate na People a Keywords je skoro stejny
+  - Interfaces ICatTreeRoot, ICatTreeBranch ICatTreeLeaf
 - Clips: akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
          lock na volume a speed, aby se ignorovalo to co je u clipu
          - import/export
@@ -102,6 +105,7 @@
 - MessageDialog:
   - Extend
 - IListBoxItem as ancestor of ICatTreeViewItem
+- Allow drag outside of app for MediaItems
 
 
 

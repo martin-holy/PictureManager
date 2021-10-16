@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+
+  <HierarchicalDataTemplate DataType="{x:Type tree:FavoriteFolderTreeVM}">
+    <StackPanel Orientation="Horizontal">
+      <mhc:Icon Source="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}" />
+      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Title}" />
+    </StackPanel>
+  </HierarchicalDataTemplate>
+
+</ResourceDictionary>

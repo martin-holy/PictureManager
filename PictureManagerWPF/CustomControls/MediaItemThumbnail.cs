@@ -33,7 +33,7 @@ namespace PictureManager.CustomControls {
       var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
       var mi = (MediaItem)((FrameworkElement)sender).DataContext;
       App.Core.MediaItems.ThumbsGrid.Select(mi, isCtrlOn, isShiftOn);
-      App.Core.MarkUsedKeywordsAndPeople();
+      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     private void Thumb_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e) {

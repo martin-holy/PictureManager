@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models {
     public bool IsDefault { get; set; }
     public ObservableCollection<Folder> IncludedFolders { get; } = new();
     public ObservableCollection<Folder> ExcludedFolders { get; } = new();
-    public ObservableCollection<Keyword> ExcludedKeywords { get; } = new();
+    public ObservableCollection<KeywordM> ExcludedKeywords { get; } = new();
     public HashSet<int> ExcCatGroupsIds { get; } = new();
 
     private readonly HashSet<int> _incFoIds = new();
@@ -27,20 +27,15 @@ namespace PictureManager.Domain.Models {
       IconName = IconName.Eye;
     }
 
-    public void Activate() {
-      UpdateHashSets();
-      UpdateCategoryGroupsVisibility();
-    }
-
     public void AddFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).AddInOrder(folder, (x) => x.FullPath);
 
     public void RemoveFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).Remove(folder);
 
-    public void AddKeyword(Keyword keyword) => ExcludedKeywords.AddInOrder(keyword, (x) => x.FullPath);
+    public void AddKeyword(KeywordM keyword) => ExcludedKeywords.AddInOrder(keyword, (x) => x.FullName);
 
-    public void RemoveKeyword(Keyword keyword) => ExcludedKeywords.Remove(keyword);
+    public void RemoveKeyword(KeywordM keyword) => ExcludedKeywords.Remove(keyword);
 
-    private void UpdateHashSets() {
+    public void UpdateHashSets() {
       _incFoIds.Clear();
       _incFoTreeIds.Clear();
       _excFoIds.Clear();
@@ -91,21 +86,21 @@ namespace PictureManager.Domain.Models {
     /// <returns>True if viewer can see MediaItem</returns>
     public bool CanSee(MediaItem mi) {
       if (mi.People == null && mi.Keywords == null && mi.Segments == null) return true;
-      if (mi.People?.Any(p => p.Parent is CategoryGroup cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
-      if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroup cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
+      if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
+      if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
 
-      var keywords = new List<ICatTreeViewItem>();
+      var keywords = new List<object>();
       if (mi.Keywords != null)
         foreach (var keyword in mi.Keywords)
-          CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref keywords);
+          Utils.Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
       if (mi.Segments != null)
         foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
           foreach (var keyword in segment.Keywords)
-            CatTreeViewUtils.GetThisAndParentRecursive(keyword, ref keywords);
+            Utils.Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
-      if (keywords.OfType<CategoryGroup>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
-      if (keywords.OfType<Keyword>().Any(k => ExcludedKeywords.Contains(k))) return false;
+      if (keywords.OfType<CategoryGroupM>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
+      if (keywords.OfType<KeywordM>().Any(k => ExcludedKeywords.Contains(k))) return false;
 
       return true;
     }
@@ -113,11 +108,6 @@ namespace PictureManager.Domain.Models {
     public void ToggleCategoryGroup(int groupId) {
       ExcCatGroupsIds.Toggle(groupId);
       Core.Instance.Viewers.DataAdapter.IsModified = true;
-    }
-
-    private void UpdateCategoryGroupsVisibility() {
-      foreach (var g in Core.Instance.CategoryGroups.All.Cast<CategoryGroup>())
-        g.IsHidden = ExcCatGroupsIds.Contains(g.Id);
     }
   }
 }

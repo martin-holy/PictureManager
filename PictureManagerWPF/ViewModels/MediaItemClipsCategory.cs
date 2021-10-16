@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 
 namespace PictureManager.ViewModels {
-  public sealed class MediaItemClipsCategory : CatTreeViewCategory, ICatTreeViewCategory {
+  public sealed class MediaItemClipsCategory : CatTreeViewCategory {
     public MediaItem CurrentMediaItem { get; private set; }
 
     public MediaItemClipsCategory() : base(Category.MediaItemClips) {
@@ -190,11 +190,10 @@ namespace PictureManager.ViewModels {
       UpdateClipTitles(items);
     }
 
-    public override ICatTreeViewGroup GroupCreate(ICatTreeViewCategory root, string name) {
+    public override void GroupCreate(ICatTreeViewCategory root, string name) {
       var vcg = App.Core.VideoClipsGroups.ItemCreate(name, CurrentMediaItem);
       var ctvg = CreateGroupItem(vcg, root);
       root.Items.Insert(root.Items.Count(x => x is ICatTreeViewGroup), ctvg);
-      return ctvg;
     }
 
     public override void GroupRename(ICatTreeViewGroup group, string name) {

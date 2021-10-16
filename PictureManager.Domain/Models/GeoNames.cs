@@ -30,7 +30,7 @@ namespace PictureManager.Domain.Models {
       GeoName parentGeoName = null;
       foreach (XmlNode geoname in geonames) {
         var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-        var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
+        var dbGeoName = All.Cast<GeoName>().SingleOrDefault(x => x.Id == geoNameId);
 
         if (dbGeoName == null) {
           dbGeoName = new GeoName(

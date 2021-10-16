@@ -11,6 +11,7 @@
 
     <ResourceDictionary Source="../Converters.xaml" />
     <ResourceDictionary Source="../NamedStyles/ButtonStyles.xaml" />
+    <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
     <ResourceDictionary Source="../Brushes/Brushes.xaml" />
     <ResourceDictionary Source="CatTreeViewStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
@@ -76,7 +77,7 @@
                   <Border Height="40">
                     <StackPanel Orientation="Horizontal">
                       <cc:IconRect IconName="{Binding IconName}" Size="24" />
-                      <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="18" />
+                      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
                     </StackPanel>
                   </Border>
                 </HierarchicalDataTemplate>
@@ -85,7 +86,7 @@
                 <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
                   <StackPanel Orientation="Horizontal">
                     <cc:IconRect IconName="{Binding IconName}" />
-                    <TextBlock Style="{StaticResource CatTreeViewTitle}" FontSize="14" />
+                    <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
                   </StackPanel>
                 </HierarchicalDataTemplate>
                 

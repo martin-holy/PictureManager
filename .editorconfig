@@ -1,7 +1,7 @@
-﻿[*.cs]
+[*.cs]
 
 # IDE0011: Add braces
-csharp_prefer_braces = false
+csharp_prefer_braces=false
 csharp_style_var_for_built_in_types=true:silent
 csharp_style_var_when_type_is_apparent=true:silent
 csharp_style_var_elsewhere=true:silent
@@ -12,25 +12,32 @@ csharp_indent_case_contents=false
 csharp_indent_case_contents_when_block=false
 
 # CA1305: Specify IFormatProvider
-dotnet_diagnostic.CA1305.severity = none
+dotnet_diagnostic.ca1305.severity=none
 
 # RCS1001: Add braces (when expression spans over multiple lines).
-dotnet_diagnostic.RCS1001.severity = none
+dotnet_diagnostic.rcs1001.severity=none
 
 # RCS1003: Add braces to if-else (when expression spans over multiple lines).
-dotnet_diagnostic.RCS1003.severity = none
+dotnet_diagnostic.rcs1003.severity=none
 
 # RCS1090: Add call to 'ConfigureAwait' (or vice versa).
-dotnet_diagnostic.RCS1090.severity = none
+dotnet_diagnostic.rcs1090.severity=none
 
 # CA1707: Identifiers should not contain underscores
-dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.ca1707.severity=none
 
 # IDE0010: Add missing cases
-dotnet_diagnostic.IDE0010.severity = none
+dotnet_diagnostic.ide0010.severity=none
 
 # IDE0058: Expression value is never used
-dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.ide0058.severity=none
+
+# Microsoft .NET properties
+csharp_indent_braces=false
+csharp_new_line_before_open_brace=accessors,events,indexers,properties
+
+# ReSharper properties
+resharper_other_braces=end_of_line
 
 [*.{cs,vb}]
 dotnet_style_parentheses_in_other_operators=always_for_clarity:silent
