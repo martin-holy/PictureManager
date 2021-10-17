@@ -19,6 +19,7 @@ namespace PictureManager.Domain {
     public FavoriteFoldersM FavoriteFoldersM { get; }
     public PeopleM PeopleM { get; }
     public CategoryGroupsM CategoryGroupsM { get; }
+    public ViewersM ViewersM { get; }
     #endregion
 
     #region TreeView Roots and Categories
@@ -28,7 +29,6 @@ namespace PictureManager.Domain {
     public FolderKeywords FolderKeywords { get; }
     public KeywordsM KeywordsM { get; }
     public GeoNames GeoNames { get; }
-    public Viewers Viewers { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -36,7 +36,7 @@ namespace PictureManager.Domain {
     public VideoClips VideoClips { get; }
     public VideoClipsGroups VideoClipsGroups { get; }
     public Segments Segments { get; }
-    public Viewer CurrentViewer { get; set; }
+    public ViewerM CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
 
     private TaskScheduler UiTaskScheduler { get; }
@@ -54,7 +54,7 @@ namespace PictureManager.Domain {
       FolderKeywords = new();
       KeywordsM = new(this);
       GeoNames = new(this);
-      Viewers = new(this);
+      ViewersM = new(this);
 
       
       CategoryGroupsM = new(this);
@@ -72,7 +72,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
         Sdb.AddDataAdapter(Folders.DataAdapter); // needs to be before Viewers
-        Sdb.AddDataAdapter(Viewers.DataAdapter);
+        Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNames.DataAdapter);
         Sdb.AddDataAdapter(MediaItems.DataAdapter);

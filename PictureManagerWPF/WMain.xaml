@@ -98,11 +98,11 @@
           <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Style="{StaticResource StyleMenuItemRoot}" Icon="{StaticResource EyeIcon}"
-                  ItemsSource="{Binding Viewers.Items, Source={x:Static pm:App.Core}}"
-                  Visibility="{Binding Viewers.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+                  ItemsSource="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"
+                  Visibility="{Binding ViewersM.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource StyleBaseMenuItem}">
-              <Setter Property="Header" Value="{Binding Title}" />
+              <Setter Property="Header" Value="{Binding Name}" />
               <Setter Property="Command" Value="cmd:WindowCommands.ViewerChangeCommand" />
               <Setter Property="CommandParameter" Value="{Binding}" />
               <Setter Property="Icon" Value="{StaticResource EyeIcon}" />

@@ -46,7 +46,7 @@ namespace PictureManager {
       CommandsController.AddCommandBindings(CommandBindings);
       CommandsController.AddInputBindings();
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
-      MenuViewers.Header = App.Core.CurrentViewer?.Title ?? "Viewer";
+      MenuViewers.Header = App.Core.CurrentViewer?.Name ?? "Viewer";
       App.Ui.MediaItemsViewModel.RegisterEvents();
     }
 

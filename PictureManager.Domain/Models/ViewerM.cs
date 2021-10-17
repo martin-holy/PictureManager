@@ -1,14 +1,38 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Extensions;
-using SimpleDB;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Extensions;
+using PictureManager.Domain.Interfaces;
+using PictureManager.Domain.Utils;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Viewer : CatTreeViewItem, IRecord {
-    public string[] Csv { get; set; }
+  /// <summary>
+  /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
+  /// </summary>
+  public sealed class ViewerM : ObservableObject, IEquatable<ViewerM>, IRecord, ITreeLeaf {
+    #region IEquatable implementation
+    public bool Equals(ViewerM other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as ViewerM);
+    public override int GetHashCode() => Id;
+    public static bool operator ==(ViewerM a, ViewerM b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(ViewerM a, ViewerM b) => !(a == b);
+    #endregion
+
+    #region IRecord implementation
     public int Id { get; }
+    public string[] Csv { get; set; }
+    #endregion
+
+    #region ITreeLeaf implementation
+    public object Parent { get; set; }
+    #endregion
+
+    private string _name;
+
+    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public bool IsDefault { get; set; }
     public ObservableCollection<Folder> IncludedFolders { get; } = new();
     public ObservableCollection<Folder> ExcludedFolders { get; } = new();
@@ -20,20 +44,11 @@ namespace PictureManager.Domain.Models {
     private readonly HashSet<int> _excFoIds = new();
     private readonly HashSet<int> _excKeywordsIds = new();
 
-    public Viewer(int id, string name, ICatTreeViewItem parent) {
+    public ViewerM(int id, string name, object parent) {
       Id = id;
-      Title = name;
+      Name = name;
       Parent = parent;
-      IconName = IconName.Eye;
     }
-
-    public void AddFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).AddInOrder(folder, (x) => x.FullPath);
-
-    public void RemoveFolder(Folder folder, bool included) => (included ? IncludedFolders : ExcludedFolders).Remove(folder);
-
-    public void AddKeyword(KeywordM keyword) => ExcludedKeywords.AddInOrder(keyword, (x) => x.FullName);
-
-    public void RemoveKeyword(KeywordM keyword) => ExcludedKeywords.Remove(keyword);
 
     public void UpdateHashSets() {
       _incFoIds.Clear();
@@ -43,6 +58,7 @@ namespace PictureManager.Domain.Models {
 
       foreach (var folder in IncludedFolders) {
         _incFoIds.Add(folder.Id);
+        // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
         var fos = new List<ICatTreeViewItem>();
         CatTreeViewUtils.GetThisAndParentRecursive(folder, ref fos);
         foreach (var fo in fos.OfType<Folder>())
@@ -60,6 +76,7 @@ namespace PictureManager.Domain.Models {
       // If Any part of Test Folder ID matches Any Included Folder ID
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
+      // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
       var testFos = new List<ICatTreeViewItem>();
       CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
@@ -71,6 +88,7 @@ namespace PictureManager.Domain.Models {
 
     public bool CanSeeContentOfThisFolder(Folder folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
+      // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
       var testFos = new List<ICatTreeViewItem>();
       CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
       var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
@@ -92,22 +110,17 @@ namespace PictureManager.Domain.Models {
       var keywords = new List<object>();
       if (mi.Keywords != null)
         foreach (var keyword in mi.Keywords)
-          Utils.Tree.GetThisAndParentRecursive(keyword, ref keywords);
+          Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
       if (mi.Segments != null)
         foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
-          foreach (var keyword in segment.Keywords)
-            Utils.Tree.GetThisAndParentRecursive(keyword, ref keywords);
+        foreach (var keyword in segment.Keywords)
+          Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
       if (keywords.OfType<CategoryGroupM>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
       if (keywords.OfType<KeywordM>().Any(k => ExcludedKeywords.Contains(k))) return false;
 
       return true;
-    }
-
-    public void ToggleCategoryGroup(int groupId) {
-      ExcCatGroupsIds.Toggle(groupId);
-      Core.Instance.Viewers.DataAdapter.IsModified = true;
     }
   }
 }

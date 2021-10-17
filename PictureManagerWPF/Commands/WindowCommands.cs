@@ -147,12 +147,12 @@ namespace PictureManager.Commands {
       if (App.Core.CurrentViewer != null)
         App.Core.CurrentViewer.IsDefault = false;
 
-      var viewer = (Viewer)parameter;
+      var viewer = (ViewerM)parameter;
       viewer.IsDefault = true;
       viewer.UpdateHashSets();
-      App.Core.Viewers.DataAdapter.Save();
+      App.Core.ViewersM.DataAdapter.Save();
 
-      App.WMain.MenuViewers.Header = viewer.Title;
+      App.WMain.MenuViewers.Header = viewer.Name;
       App.Core.CurrentViewer = viewer;
       App.Core.Folders.AddDrives();
       App.Core.FolderKeywords.Load();
