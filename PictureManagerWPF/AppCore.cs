@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using PictureManager.ViewModels.Tree;
+using PictureManager.Views;
 
 namespace PictureManager {
   public sealed class AppCore {
@@ -27,6 +28,7 @@ namespace PictureManager {
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
     public PeopleTreeVM PeopleTreeVM { get; }
     public KeywordsTreeVM KeywordsTreeVM { get; }
+    public ViewersTreeVM ViewersTreeVM { get; }
     #endregion
 
     public MediaItemsViewModel MediaItemsViewModel { get; }
@@ -50,13 +52,14 @@ namespace PictureManager {
       CategoryGroupsBaseVM = new();
       PeopleBaseVM = new(this, App.Core.PeopleM);
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
-      ViewersBaseVM = new(App.Core, App.Core.Viewers);
+      ViewersBaseVM = new(this, App.Core.ViewersM);
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
       PeopleTreeVM = new(this, PeopleBaseVM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, App.Core.GeoNames, App.Core.Viewers };
+      ViewersTreeVM = new(ViewersBaseVM);
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, App.Core.GeoNames, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -147,8 +150,8 @@ namespace PictureManager {
         await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
         break;
 
-        case Viewer v:
-        App.WMain.MainTabs.ActivateTab<ViewerView>(IconName.Eye)?.Reload(v);
+        case ViewerTreeVM v:
+          App.WMain.MainTabs.ActivateTab<ViewerV>(IconName.Eye)?.Reload(App.Core.ViewersM, v.Model, App.WMain.TreeViewCategories.TvCategories);
         break;
 
         case ICatTreeViewCategory cat:

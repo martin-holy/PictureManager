@@ -1,19 +1,18 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Models;
+﻿using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
   public class ViewersBaseVM {
-    private readonly Core _core;
+    private readonly AppCore _coreVM;
 
-    public Viewers Model { get; }
+    public ViewersM Model { get; }
 
-    public ViewersBaseVM(Core core, Viewers model) {
-      _core = core;
+    public ViewersBaseVM(AppCore coreVM, ViewersM model) {
+      _coreVM = coreVM;
       Model = model;
     }
 
-    public void UpdateCategoryGroupsVisibility(Viewer viewer) {
-      foreach (var g in App.Ui.CategoryGroupsTreeVM.All.Values)
+    public void UpdateCategoryGroupsVisibility(ViewerM viewer) {
+      foreach (var g in _coreVM.CategoryGroupsTreeVM.All.Values)
         g.IsHidden = viewer.ExcCatGroupsIds.Contains(g.BaseVM.Model.Id);
     }
   }

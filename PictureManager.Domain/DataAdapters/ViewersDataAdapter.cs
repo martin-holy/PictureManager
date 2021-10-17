@@ -2,6 +2,7 @@
 using SimpleDB;
 using System;
 using System.Linq;
+using PictureManager.Domain.Extensions;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
@@ -9,9 +10,9 @@ namespace PictureManager.Domain.DataAdapters {
   /// </summary>
   public class ViewersDataAdapter : DataAdapter {
     private readonly Core _core;
-    private readonly Viewers _model;
+    private readonly ViewersM _model;
 
-    public ViewersDataAdapter(Core core, Viewers model) : base("Viewers", core.Sdb) {
+    public ViewersDataAdapter(Core core, ViewersM model) : base("Viewers", core.Sdb) {
       _core = core;
       _model = model;
     }
@@ -21,20 +22,20 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<Viewer>(), ToCsv);
+    public override void Save() => SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new Viewer(int.Parse(props[0]), props[1], _model) { Csv = props, IsDefault = props[6] == "1" };
+      var viewer = new ViewerM(int.Parse(props[0]), props[1], _model) { Csv = props, IsDefault = props[6] == "1" };
       if (viewer.IsDefault) _core.CurrentViewer = viewer;
       _model.All.Add(viewer);
     }
 
-    public static string ToCsv(Viewer viewer) =>
+    public static string ToCsv(ViewerM viewer) =>
       string.Join("|",
         viewer.Id.ToString(),
-        viewer.Title,
+        viewer.Name,
         string.Join(",", viewer.IncludedFolders.Select(x => x.Id)),
         string.Join(",", viewer.ExcludedFolders.Select(x => x.Id)),
         string.Join(",", viewer.ExcCatGroupsIds),
@@ -44,19 +45,19 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       _model.Items.Clear();
 
-      foreach (var viewer in _model.All.Cast<Viewer>().OrderBy(x => x.Title)) {
+      foreach (var viewer in _model.All.OrderBy(x => x.Name)) {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
             var f = _core.Folders.AllDic[int.Parse(folderId)];
-            viewer.AddFolder(f, true);
+            viewer.IncludedFolders.AddInOrder(f, x => x.FullPath);
           }
 
         // reference to ExcludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[3]))
           foreach (var folderId in viewer.Csv[3].Split(',')) {
             var f = _core.Folders.AllDic[int.Parse(folderId)];
-            viewer.AddFolder(f, false);
+            viewer.ExcludedFolders.AddInOrder(f, x => x.FullPath);
           }
 
         // ExcludedCategoryGroups
