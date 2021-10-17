@@ -104,7 +104,7 @@ namespace PictureManager.ViewModels {
             mi.Keywords = KeywordsM.Toggle(mi.Keywords, k.BaseVM.Model);
             break;
 
-          case Rating r:
+          case RatingTreeVM r:
             mi.Rating = r.Value;
             break;
 
@@ -135,7 +135,7 @@ namespace PictureManager.ViewModels {
 
     public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
       var items = item switch {
-        Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
+        RatingTreeVM rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
         PersonTreeVM person => App.Core.PeopleM.GetMediaItems(person.BaseVM.Model),
         KeywordTreeVM keyword => App.Core.KeywordsM.GetMediaItems(keyword.BaseVM.Model, recursive),
         GeoNameTreeVM geoName => App.Core.GeoNamesM.GetMediaItems(geoName.Model, recursive).OrderBy(x => x.FileName).ToList(),
@@ -679,7 +679,7 @@ namespace PictureManager.ViewModels {
       mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
 
       //Ratings
-      var chosenRatings = Core.Instance.Ratings.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<Rating>().ToArray();
+      var chosenRatings = App.Ui.RatingsTreeVM.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<RatingTreeVM>().ToArray();
       if (chosenRatings.Length > 0)
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 

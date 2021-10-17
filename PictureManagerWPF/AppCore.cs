@@ -26,6 +26,7 @@ namespace PictureManager {
     public CategoryGroupsTreeVM CategoryGroupsTreeVM { get; }
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
+    public RatingsTreeVM RatingsTreeVM { get; }
     public PeopleTreeVM PeopleTreeVM { get; }
     public KeywordsTreeVM KeywordsTreeVM { get; }
     public ViewersTreeVM ViewersTreeVM { get; }
@@ -57,11 +58,12 @@ namespace PictureManager {
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
+      RatingsTreeVM = new();
       PeopleTreeVM = new(this, PeopleBaseVM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
       ViewersTreeVM = new(ViewersBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -119,7 +121,7 @@ namespace PictureManager {
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
-      if (item is Rating or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
+      if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
         if (loadByTag) {
           MediaItemsViewModel.AddThumbsTabIfNotActive();
           await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
@@ -250,7 +252,7 @@ namespace PictureManager {
         }
 
         // Ratings
-        MarkedTagsAddWithIncrease(App.Core.Ratings.GetRatingByValue(mi.Rating));
+        MarkedTagsAddWithIncrease(App.Ui.RatingsTreeVM.GetRatingByValue(mi.Rating));
       }
     }
 
