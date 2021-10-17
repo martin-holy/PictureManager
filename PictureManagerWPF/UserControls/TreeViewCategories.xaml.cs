@@ -148,7 +148,7 @@ namespace PictureManager.UserControls {
           AddMenuItem(MediaItemsCommands.RebuildThumbnailsCommand);
           break;
         }
-        case Rating _:
+        case RatingTreeVM _:
         case PersonTreeVM _:
         case KeywordTreeVM _:
         case GeoNameTreeVM _: {

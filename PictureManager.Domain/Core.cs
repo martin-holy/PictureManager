@@ -26,7 +26,6 @@ namespace PictureManager.Domain {
 
     #region TreeView Roots and Categories
     public Folders Folders { get; }
-    public Ratings Ratings { get; }
     public MediaItemSizes MediaItemSizes { get; }
     public FolderKeywords FolderKeywords { get; }
     #endregion
@@ -48,7 +47,6 @@ namespace PictureManager.Domain {
 
       FavoriteFoldersM = new(this);
       Folders = new(this);
-      Ratings = new();
       MediaItemSizes = new();
       PeopleM = new(this);
       FolderKeywords = new();
@@ -87,8 +85,6 @@ namespace PictureManager.Domain {
         Folders.AddDrives();
         progress.Report("Loading Folder Keywords");
         FolderKeywords.Load();
-        progress.Report("Loading Ratings");
-        Ratings.Load();
 
         // TODO better
         // cleanup
