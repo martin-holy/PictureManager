@@ -1,10 +1,9 @@
 ﻿using System;
 using SimpleDB;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Interfaces;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
@@ -32,7 +31,7 @@ namespace PictureManager.Domain.Models {
     private string _name;
     
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
-    public string FullName => GetFullName();
+    public string FullName => Tree.GetFullName(this, "/", x => x.Name);
 
     public KeywordM() { }
 
@@ -40,13 +39,6 @@ namespace PictureManager.Domain.Models {
       Id = id;
       Name = name;
       Parent = parent;
-    }
-
-    private string GetFullName() {
-      var keywords = new List<KeywordM>();
-      Utils.Tree.GetThisAndParentRecursive(this, ref keywords);
-      keywords.Reverse();
-      return string.Join("/", keywords.Select(x => x.Name));
     }
   }
 }
