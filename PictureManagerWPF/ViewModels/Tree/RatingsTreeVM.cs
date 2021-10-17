@@ -11,7 +11,6 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void Load() {
-      Items.Clear();
       for (var i = 0; i < 6; i++)
         Items.Add(new RatingTreeVM(i));
     }
