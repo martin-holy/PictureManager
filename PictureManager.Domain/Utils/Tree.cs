@@ -26,6 +26,13 @@ namespace PictureManager.Domain.Utils {
       }
     }
 
+    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) {
+      var list = new List<T>();
+      GetThisAndParentRecursive(self, ref list);
+      list.Reverse();
+      return string.Join(separator, list.Select(nameSelector));
+    }
+
     public static void ItemMove<T>(T item, object dest, bool aboveDest, Func<object, string> keySelector) where T : ITreeLeaf {
       if ((dest is T and ITreeLeaf { Parent: { } } x ? x.Parent : dest) is not ITreeBranch destParent) return;
       
