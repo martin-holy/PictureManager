@@ -150,8 +150,8 @@ namespace PictureManager.UserControls {
         }
         case Rating _:
         case PersonTreeVM _:
-        case KeywordM _:
-        case GeoName _: {
+        case KeywordTreeVM _:
+        case GeoNameTreeVM _: {
           AddMenuItem(TreeViewCommands.LoadByTagCommand);
           AddMenuItem(TreeViewCommands.ActivateFilterAndCommand);
           AddMenuItem(TreeViewCommands.ActivateFilterOrCommand);

@@ -108,8 +108,8 @@ namespace PictureManager.ViewModels {
             mi.Rating = r.Value;
             break;
 
-          case GeoName g:
-            GeoNames.Toggle(g, mi);
+          case GeoNameTreeVM g:
+            mi.GeoName = g.Model;
             break;
         }
 
@@ -138,7 +138,7 @@ namespace PictureManager.ViewModels {
         Rating rating => App.Core.MediaItems.All.Cast<MediaItem>().Where(x => x.Rating == rating.Value).ToList(),
         PersonTreeVM person => App.Core.PeopleM.GetMediaItems(person.BaseVM.Model),
         KeywordTreeVM keyword => App.Core.KeywordsM.GetMediaItems(keyword.BaseVM.Model, recursive),
-        GeoName geoName => geoName.GetMediaItems(recursive).ToList(),
+        GeoNameTreeVM geoName => App.Core.GeoNamesM.GetMediaItems(geoName.Model, recursive).OrderBy(x => x.FileName).ToList(),
         _ => new()
       };
 
@@ -627,7 +627,7 @@ namespace PictureManager.ViewModels {
       var tmpGId = bm.GetQuery("/xmp/GeoNames:GeoNameId");
       if (!string.IsNullOrEmpty(tmpGId as string)) {
         // TODO find/create GeoName
-        mi.GeoName = App.Core.GeoNames.All.Cast<GeoName>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
+        mi.GeoName = App.Core.GeoNamesM.All.Cast<GeoNameM>().SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
       }
     }
 

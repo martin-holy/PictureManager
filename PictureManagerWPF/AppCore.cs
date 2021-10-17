@@ -29,6 +29,7 @@ namespace PictureManager {
     public PeopleTreeVM PeopleTreeVM { get; }
     public KeywordsTreeVM KeywordsTreeVM { get; }
     public ViewersTreeVM ViewersTreeVM { get; }
+    public GeoNamesTreeVM GeoNamesTreeVM { get; }
     #endregion
 
     public MediaItemsViewModel MediaItemsViewModel { get; }
@@ -59,7 +60,8 @@ namespace PictureManager {
       PeopleTreeVM = new(this, PeopleBaseVM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
       ViewersTreeVM = new(ViewersBaseVM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, App.Core.GeoNames, ViewersTreeVM };
+      GeoNamesTreeVM = new(App.Core.GeoNamesM);
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, App.Core.Ratings, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -117,7 +119,7 @@ namespace PictureManager {
     public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
       if (item == null) return;
 
-      if (item is Rating or PersonTreeVM or KeywordTreeVM or GeoName) {
+      if (item is Rating or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
         if (loadByTag) {
           MediaItemsViewModel.AddThumbsTabIfNotActive();
           await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
@@ -242,8 +244,9 @@ namespace PictureManager {
         // GeoNames
         var gn = mi.GeoName;
         while (gn != null) {
-          MarkedTagsAddWithIncrease(gn);
-          gn = gn.Parent as GeoName;
+          var vm = GeoNamesTreeVM.All[gn.Id];
+          MarkedTagsAddWithIncrease(vm);
+          gn = gn.Parent as GeoNameM;
         }
 
         // Ratings
