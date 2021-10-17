@@ -20,6 +20,8 @@ namespace PictureManager.Domain {
     public PeopleM PeopleM { get; }
     public CategoryGroupsM CategoryGroupsM { get; }
     public ViewersM ViewersM { get; }
+    public KeywordsM KeywordsM { get; }
+    public GeoNamesM GeoNamesM { get; }
     #endregion
 
     #region TreeView Roots and Categories
@@ -27,8 +29,6 @@ namespace PictureManager.Domain {
     public Ratings Ratings { get; }
     public MediaItemSizes MediaItemSizes { get; }
     public FolderKeywords FolderKeywords { get; }
-    public KeywordsM KeywordsM { get; }
-    public GeoNames GeoNames { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -53,10 +53,9 @@ namespace PictureManager.Domain {
       PeopleM = new(this);
       FolderKeywords = new();
       KeywordsM = new(this);
-      GeoNames = new(this);
+      GeoNamesM = new(this);
       ViewersM = new(this);
 
-      
       CategoryGroupsM = new(this);
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
@@ -74,7 +73,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(Folders.DataAdapter); // needs to be before Viewers
         Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
-        Sdb.AddDataAdapter(GeoNames.DataAdapter);
+        Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
         Sdb.AddDataAdapter(MediaItems.DataAdapter);
         Sdb.AddDataAdapter(VideoClipsGroups.DataAdapter); // needs to be before VideoClips
         Sdb.AddDataAdapter(VideoClips.DataAdapter);
@@ -95,8 +94,8 @@ namespace PictureManager.Domain {
         // cleanup
         Folders.AllDic.Clear();
         Folders.AllDic = null;
-        GeoNames.AllDic.Clear();
-        GeoNames.AllDic = null;
+        GeoNamesM.AllDic.Clear();
+        GeoNamesM.AllDic = null;
         KeywordsM.AllDic.Clear();
         KeywordsM.AllDic = null;
         MediaItems.AllDic.Clear();

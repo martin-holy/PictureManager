@@ -62,11 +62,11 @@ namespace PictureManager.Commands {
         "GeoName latitude and longitude",
         "Enter in format: N36.75847,W3.84609",
         string.Empty,
-        answer => null,
+        _ => null,
         out var output);
 
       if (!result) return;
-      ((GeoNames)parameter).New(output, Settings.Default.GeoNamesUserName);
+      ((GeoNamesM)parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
     private static async void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);

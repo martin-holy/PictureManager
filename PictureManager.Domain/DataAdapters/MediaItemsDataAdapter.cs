@@ -81,10 +81,8 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         // reference to GeoName
-        if (!string.IsNullOrEmpty(mi.Csv[8])) {
-          mi.GeoName = _core.GeoNames.AllDic[int.Parse(mi.Csv[8])];
-          mi.GeoName.MediaItems.Add(mi);
-        }
+        if (!string.IsNullOrEmpty(mi.Csv[8]))
+          mi.GeoName = _core.GeoNamesM.AllDic[int.Parse(mi.Csv[8])];
 
         // CSV array is not needed any more
         mi.Csv = null;

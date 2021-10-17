@@ -120,11 +120,11 @@ namespace PictureManager.Commands {
         App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
-        async (MediaItem mi) => {
+        async mi => {
           if (mi.Lat == null || mi.Lng == null) _ = await MediaItemsViewModel.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
-          var lastGeoName = App.Core.GeoNames.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
+          var lastGeoName = App.Core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
@@ -137,7 +137,7 @@ namespace PictureManager.Commands {
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.MediaItems.Current?.GeoName?.OnPropertyChanged(nameof(App.Core.MediaItems.Current.GeoName.FullGeoName));
+          App.Core.MediaItems.Current?.GeoName?.OnPropertyChanged(nameof(App.Core.MediaItems.Current.GeoName.FullName));
         });
 
       progress.StartDialog();

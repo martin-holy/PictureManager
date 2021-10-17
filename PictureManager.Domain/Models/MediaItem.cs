@@ -23,7 +23,7 @@ namespace PictureManager.Domain.Models {
     public int Orientation { get; set; }
     public int Rating { get; set; }
     public string Comment { get; set; }
-    public GeoName GeoName { get; set; }
+    public GeoNameM GeoName { get; set; }
     public List<PersonM> People { get; set; }
     public List<KeywordM> Keywords { get; set; }
 
@@ -116,7 +116,7 @@ namespace PictureManager.Domain.Models {
         InfoBoxThumb.Add(Comment);
 
       if (GeoName != null)
-        InfoBoxThumb.Add(GeoName.Title);
+        InfoBoxThumb.Add(GeoName.Name);
 
       if (People != null || Segments != null) {
         var people = Enumerable.Empty<string>();
@@ -185,7 +185,6 @@ namespace PictureManager.Domain.Models {
       }
 
       copy.Folder.MediaItems.Add(copy);
-      copy.GeoName?.MediaItems.Add(copy);
 
       copy.SetThumbSize();
       copy.SetInfoBox();

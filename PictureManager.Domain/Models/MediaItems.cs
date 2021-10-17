@@ -127,7 +127,6 @@ namespace PictureManager.Domain.Models {
       item.Folder = null;
 
       // remove GeoName
-      item.GeoName?.MediaItems.Remove(item);
       item.GeoName = null;
 
       // remove from ThumbnailsGrids

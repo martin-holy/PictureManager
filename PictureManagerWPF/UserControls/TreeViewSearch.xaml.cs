@@ -57,9 +57,9 @@ namespace PictureManager.UserControls {
         .Select(x => new SearchItem(IconName.Tag, x.Name, x.FullName, App.Ui.KeywordsTreeVM.All[x.Id])));
 
       // GeoNames
-      AddToSearchResult(App.Core.GeoNames.All.Cast<GeoName>()
-        .Where(x => x.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.LocationCheckin, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
+      AddToSearchResult(App.Core.GeoNamesM.All
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        .Select(x => new SearchItem(IconName.LocationCheckin, x.Name, x.FullName, App.Ui.GeoNamesTreeVM.All[x.Id])));
 
       // Folders
       var result = App.Core.Folders.All.Cast<Folder>()

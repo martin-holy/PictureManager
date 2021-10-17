@@ -136,13 +136,13 @@
       </Border>
 
       <!-- GeoName -->
-      <Border DataContext="{x:Static pm:App.Core}" ToolTip="{Binding MediaItems.Current.GeoName.FullGeoName}">
+      <Border DataContext="{x:Static pm:App.Core}" ToolTip="{Binding MediaItems.Current.GeoName.FullName}">
         <Border.Style>
           <Style TargetType="Border" BasedOn="{StaticResource SBorderGroup}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="Margin" Value="2,2,0,0" />
             <Style.Triggers>
-              <DataTrigger Binding="{Binding MediaItems.Current.GeoName.FullGeoName,
+              <DataTrigger Binding="{Binding MediaItems.Current.GeoName.FullName,
                                      Converter={StaticResource AllToBoolConverter}}"
                            Value="True">
                 <Setter Property="Visibility" Value="Visible" />

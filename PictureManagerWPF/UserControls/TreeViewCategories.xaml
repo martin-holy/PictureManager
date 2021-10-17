@@ -20,6 +20,7 @@
         <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/KewordTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/ViewerTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/GeoNameTreeV.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </UserControl.Resources>
