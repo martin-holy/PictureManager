@@ -4,7 +4,6 @@ using SimpleDB;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
@@ -26,7 +25,6 @@ namespace PictureManager.Domain {
 
     #region TreeView Roots and Categories
     public Folders Folders { get; }
-    public MediaItemSizes MediaItemSizes { get; }
     public FolderKeywords FolderKeywords { get; }
     #endregion
 
@@ -47,7 +45,6 @@ namespace PictureManager.Domain {
 
       FavoriteFoldersM = new(this);
       Folders = new(this);
-      MediaItemSizes = new();
       PeopleM = new(this);
       FolderKeywords = new();
       KeywordsM = new(this);
@@ -112,13 +109,6 @@ namespace PictureManager.Domain {
     public bool CanViewerSeeContentOfThisFolder(Folder folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
 
     public bool CanViewerSee(MediaItem mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
-
-    public void SetMediaItemSizesLoadedRange() {
-      var zeroItems = MediaItems.ThumbsGrid == null || MediaItems.ThumbsGrid.FilteredItems.Count == 0;
-      var min = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
-      var max = zeroItems ? 0 : MediaItems.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
-      MediaItemSizes.Size.SetLoadedRange(min, max);
-    }
 
     // get index for an item in DB in same order as it is in the tree
     public static int GetAllIndexBasedOnTreeOrder(List<IRecord> all, ICatTreeViewItem root, int treeIdx) {

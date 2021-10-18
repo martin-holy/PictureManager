@@ -5,8 +5,6 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
-             xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
              xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
              xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree">
@@ -17,6 +15,7 @@
         <ResourceDictionary Source="../Views/Tree/CategoryGroupTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/FavoriteFolderTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/RatingTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/MediaItemSizeTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/KewordTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/ViewerTreeV.xaml" />
@@ -82,36 +81,6 @@
       </cc:CatTreeView.Style>
 
       <cc:CatTreeView.Resources>
-
-        <!-- DataTemplate - MediaItemSize -->
-        <HierarchicalDataTemplate DataType="{x:Type models:MediaItemSize}">
-          <StackPanel Orientation="Horizontal" Margin="0,0,3,3">
-            <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
-              <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-              </Grid.RowDefinitions>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-              </Grid.ColumnDefinitions>
-
-              <TextBlock HorizontalAlignment="Left" Grid.Row="0" Grid.Column="0" 
-                         Text="{Binding PixelMin, Converter={StaticResource MediaItemSizeConverter}}" />
-              <TextBlock HorizontalAlignment="Right" Grid.Row="0" Grid.Column="1" 
-                         Text="{Binding PixelMax, Converter={StaticResource MediaItemSizeConverter}}" />
-
-              <mah:RangeSlider Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" 
-                               MoveWholeRange="True" IsSnapToTickEnabled="True" TickFrequency="0.1"
-                               Minimum="{Binding Min}" Maximum="{Binding Max}"
-                               LowerValue="{Binding PixelMin}" UpperValue="{Binding PixelMax}" 
-                               UpperThumbDragCompleted="MediaItemSize_OnDragCompleted"
-                               LowerThumbDragCompleted="MediaItemSize_OnDragCompleted"
-                               CentralThumbDragCompleted="MediaItemSize_OnDragCompleted" />
-            </Grid>
-          </StackPanel>
-        </HierarchicalDataTemplate>
-
         <!-- ICatTreeViewCategory -->
         <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
           <Border Height="40">

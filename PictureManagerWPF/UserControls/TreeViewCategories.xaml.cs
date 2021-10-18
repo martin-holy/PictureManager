@@ -186,11 +186,6 @@ namespace PictureManager.UserControls {
         (Keyboard.Modifiers & ModifierKeys.Shift) > 0);
     }
 
-    private async void MediaItemSize_OnDragCompleted(object sender, DragCompletedEventArgs e) {
-      App.Core.MediaItemSizes.Size.SliderChanged = true;
-      await App.Ui.MediaItemsViewModel.ReapplyFilter();
-    }
-
     private void ShowSearch(object sender, RoutedEventArgs e) {
       Search.TbSearch.Text = string.Empty;
       Search.Visibility = Visibility.Visible;
