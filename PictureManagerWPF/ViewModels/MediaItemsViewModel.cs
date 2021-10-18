@@ -199,8 +199,15 @@ namespace PictureManager.ViewModels {
         await currentGrid.ReloadFilteredItems(Filter(App.Core.MediaItems.ThumbsGrid.LoadedItems));
 
         await LoadThumbnailsAsync(currentGrid.FilteredItems.ToArray(), _workTask.Token);
-        App.Core.SetMediaItemSizesLoadedRange();
+        SetMediaItemSizesLoadedRange();
       }));
+    }
+
+    private void SetMediaItemSizesLoadedRange() {
+      var zeroItems = _model.ThumbsGrid == null || _model.ThumbsGrid.FilteredItems.Count == 0;
+      var min = zeroItems ? 0 : _model.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
+      var max = zeroItems ? 0 : _model.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
+      App.Ui.MediaItemSizesTreeVM.Size.SetLoadedRange(min, max);
     }
 
     private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
@@ -684,8 +691,8 @@ namespace PictureManager.ViewModels {
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 
       // MediaItemSizes
-      if (!Core.Instance.MediaItemSizes.Size.AllSizes())
-        mediaItems = mediaItems.Where(mi => mi.IsNew || Core.Instance.MediaItemSizes.Size.Fits(mi.Width * mi.Height)).ToList();
+      if (!App.Ui.MediaItemSizesTreeVM.Size.AllSizes())
+        mediaItems = mediaItems.Where(mi => mi.IsNew || App.Ui.MediaItemSizesTreeVM.Size.Fits(mi.Width * mi.Height)).ToList();
 
       // People
       var orPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();

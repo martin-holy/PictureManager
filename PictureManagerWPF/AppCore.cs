@@ -27,6 +27,7 @@ namespace PictureManager {
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
     public RatingsTreeVM RatingsTreeVM { get; }
+    public MediaItemSizesTreeVM MediaItemSizesTreeVM { get; }
     public PeopleTreeVM PeopleTreeVM { get; }
     public KeywordsTreeVM KeywordsTreeVM { get; }
     public ViewersTreeVM ViewersTreeVM { get; }
@@ -59,11 +60,12 @@ namespace PictureManager {
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
       RatingsTreeVM = new();
+      MediaItemSizesTreeVM = new(this);
       PeopleTreeVM = new(this, PeopleBaseVM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
       ViewersTreeVM = new(ViewersBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, App.Core.MediaItemSizes, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
