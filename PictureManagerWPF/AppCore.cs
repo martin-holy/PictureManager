@@ -17,21 +17,23 @@ using PictureManager.Views;
 
 namespace PictureManager {
   public sealed class AppCore {
+    public CategoryGroupsBaseVM CategoryGroupsBaseVM { get; }
     public PeopleBaseVM PeopleBaseVM { get; }
     public KeywordsBaseVM KeywordsBaseVM { get; }
     public ViewersBaseVM ViewersBaseVM { get; }
-    public CategoryGroupsBaseVM CategoryGroupsBaseVM { get; }
 
     #region TreeView Roots and Categories
-    public CategoryGroupsTreeVM CategoryGroupsTreeVM { get; }
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
+    public CategoryGroupsTreeVM CategoryGroupsTreeVM { get; }
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
+    // public FoldersTreeVM FoldersTreeVM { get; }
     public RatingsTreeVM RatingsTreeVM { get; }
     public MediaItemSizesTreeVM MediaItemSizesTreeVM { get; }
     public PeopleTreeVM PeopleTreeVM { get; }
+    public FolderKeywordsTreeVM FolderKeywordsTreeVM { get; }
     public KeywordsTreeVM KeywordsTreeVM { get; }
-    public ViewersTreeVM ViewersTreeVM { get; }
     public GeoNamesTreeVM GeoNamesTreeVM { get; }
+    public ViewersTreeVM ViewersTreeVM { get; }
     #endregion
 
     public MediaItemsViewModel MediaItemsViewModel { get; }
@@ -59,13 +61,16 @@ namespace PictureManager {
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
+      // FoldersTreeVM = new(this);
       RatingsTreeVM = new();
       MediaItemSizesTreeVM = new(this);
       PeopleTreeVM = new(this, PeopleBaseVM);
+      FolderKeywordsTreeVM = new(App.Core.FolderKeywordsM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
-      ViewersTreeVM = new(ViewersBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, App.Core.FolderKeywords, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
+      ViewersTreeVM = new(ViewersBaseVM);
+
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -151,7 +156,7 @@ namespace PictureManager {
         break;
 
         case Folder:
-        case FolderKeyword:
+        case FolderKeywordTreeVM:
         MediaItemsViewModel.AddThumbsTabIfNotActive();
         await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
         break;
@@ -241,8 +246,9 @@ namespace PictureManager {
         // FolderKeywords
         var fk = mi.Folder.FolderKeyword;
         while (fk != null) {
-          MarkedTagsAddWithIncrease(fk);
-          fk = fk.Parent as FolderKeyword;
+          var vm = FolderKeywordsTreeVM.All[fk.Id];
+          MarkedTagsAddWithIncrease(vm);
+          fk = fk.Parent as FolderKeywordM;
         }
 
         // GeoNames

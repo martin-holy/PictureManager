@@ -146,13 +146,13 @@ namespace PictureManager.Domain.Models {
         ? filtered.OrderBy(x => x.FileName).ThenBy(
           x => GroupByFolders
             ? x.Folder.FolderKeyword != null
-              ? CatTreeViewUtils.GetFullPath(x.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+              ? x.Folder.FolderKeyword.FullPath
               : x.Folder.FullPath
             : string.Empty)
         : GroupByFolders
           ? filtered.OrderBy(
             x => x.Folder.FolderKeyword != null
-              ? CatTreeViewUtils.GetFullPath(x.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+              ? x.Folder.FolderKeyword.FullPath
               : x.Folder.FullPath).ThenBy(x => x.FileName)
           : filtered.OrderBy(x => x.FileName);
 

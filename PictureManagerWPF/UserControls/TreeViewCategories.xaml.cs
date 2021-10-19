@@ -48,7 +48,7 @@ namespace PictureManager.UserControls {
           FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
           App.Core.MediaItems.DataAdapter.IsModified = true;
           App.Core.Folders.DataAdapter.IsModified = true;
-          App.Core.FolderKeywords.Load();
+          App.Core.FolderKeywordsM.Load();
 
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected) {
@@ -158,7 +158,7 @@ namespace PictureManager.UserControls {
           AddMenuItem(TreeViewCommands.ActivateFilterNotCommand);
           break;
         }
-        case FolderKeywords _: {
+        case FolderKeywordsTreeVM _: {
           AddMenuItem(WindowCommands.OpenFolderKeywordsListCommand);
           break;
         }

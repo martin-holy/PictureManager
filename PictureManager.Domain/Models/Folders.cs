@@ -300,7 +300,7 @@ namespace PictureManager.Domain.Models {
 
       // reload FolderKeywords
       if (((Folder)root).IsFolderKeyword || ((Folder)root).FolderKeyword != null)
-        _core.FolderKeywords.Load();
+        _core.FolderKeywordsM.Load();
 
       return item;
     }
@@ -320,7 +320,7 @@ namespace PictureManager.Domain.Models {
 
       // reload FolderKeywords
       if (self.IsFolderKeyword || self.FolderKeyword != null)
-        _core.FolderKeywords.Load();
+        _core.FolderKeywordsM.Load();
     }
 
     public override void ItemDelete(ICatTreeViewItem item) {
@@ -360,7 +360,7 @@ namespace PictureManager.Domain.Models {
         DataAdapter.IsModified = true;
       }
 
-      _core.FolderKeywords.Load();
+      _core.FolderKeywordsM.Load();
 
       // delete folder, subfolders and mediaItems from cache
       if (Directory.Exists(((Folder)item).FullPathCache))

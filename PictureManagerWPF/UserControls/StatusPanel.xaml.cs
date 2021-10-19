@@ -1,5 +1,4 @@
 ﻿using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,6 +6,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.UserControls {
   public partial class StatusPanel : INotifyPropertyChanged {
@@ -34,16 +35,16 @@ namespace PictureManager.UserControls {
           return paths;
         }
 
-        var fks = new List<ICatTreeViewItem>();
-        CatTreeViewUtils.GetThisAndParentRecursive(mi.Folder.FolderKeyword, ref fks);
+        var fks = new List<FolderKeywordM>();
+        Tree.GetThisAndParentRecursive(mi.Folder.FolderKeyword, ref fks);
         fks.Reverse();
         foreach (var fk in fks)
           if (fk.Parent != null) {
-            var startIndex = fk.Title.FirstIndexOfLetter();
+            var startIndex = fk.Name.FirstIndexOfLetter();
 
-            if (fk.Title.Length - 1 == startIndex) continue;
+            if (fk.Name.Length - 1 == startIndex) continue;
 
-            paths.Add(startIndex == 0 ? fk.Title : fk.Title[startIndex..]);
+            paths.Add(startIndex == 0 ? fk.Name : fk.Name[startIndex..]);
           }
 
         var fileName = string.IsNullOrEmpty(DateAndTime) ? mi.FileName : mi.FileName[15..];

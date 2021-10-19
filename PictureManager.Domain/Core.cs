@@ -15,17 +15,17 @@ namespace PictureManager.Domain {
     public ILogger Logger { get; set; }
 
     #region DB Models
+    public CategoryGroupsM CategoryGroupsM { get; }
     public FavoriteFoldersM FavoriteFoldersM { get; }
     public PeopleM PeopleM { get; }
-    public CategoryGroupsM CategoryGroupsM { get; }
-    public ViewersM ViewersM { get; }
+    public FolderKeywordsM FolderKeywordsM { get; }
     public KeywordsM KeywordsM { get; }
     public GeoNamesM GeoNamesM { get; }
+    public ViewersM ViewersM { get; }
     #endregion
 
     #region TreeView Roots and Categories
     public Folders Folders { get; }
-    public FolderKeywords FolderKeywords { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -46,7 +46,7 @@ namespace PictureManager.Domain {
       FavoriteFoldersM = new(this);
       Folders = new(this);
       PeopleM = new(this);
-      FolderKeywords = new();
+      FolderKeywordsM = new(this);
       KeywordsM = new(this);
       GeoNamesM = new(this);
       ViewersM = new(this);
@@ -81,7 +81,7 @@ namespace PictureManager.Domain {
         progress.Report("Loading Drives");
         Folders.AddDrives();
         progress.Report("Loading Folder Keywords");
-        FolderKeywords.Load();
+        FolderKeywordsM.Load();
 
         // TODO better
         // cleanup

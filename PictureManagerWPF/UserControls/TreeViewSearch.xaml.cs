@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -44,8 +43,6 @@ namespace PictureManager.UserControls {
           SearchResult.Add(searchItem);
       }
 
-      var sep = Path.DirectorySeparatorChar.ToString();
-
       // People
       AddToSearchResult(App.Core.PeopleM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
@@ -67,9 +64,9 @@ namespace PictureManager.UserControls {
         .Select(x => new SearchItem(IconName.Folder, x.Title, x.FullPath, x)).ToList();
 
       // Folder Keywords
-      result.AddRange(App.Core.FolderKeywords.All
-        .Where(x => x.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.FolderPuzzle, x.Title, CatTreeViewUtils.GetFullPath(x, sep), x)));
+      result.AddRange(App.Core.FolderKeywordsM.All
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        .Select(x => new SearchItem(IconName.FolderPuzzle, x.Name, x.FullPath, App.Ui.FolderKeywordsTreeVM.All[x.Id])));
       AddToSearchResult(result);
     }
 
