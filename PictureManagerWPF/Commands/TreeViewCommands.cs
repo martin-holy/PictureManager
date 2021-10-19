@@ -51,7 +51,7 @@ namespace PictureManager.Commands {
     private static void FolderSetAsFolderKeyword(object parameter) {
       ((Folder)parameter).IsFolderKeyword = true;
       App.Core.Folders.DataAdapter.IsModified = true;
-      App.Core.FolderKeywords.Load();
+      App.Core.FolderKeywordsM.Load();
     }
 
     private static void GeoNameNew(object parameter) {

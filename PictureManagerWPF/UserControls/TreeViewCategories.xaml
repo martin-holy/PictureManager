@@ -17,6 +17,7 @@
         <ResourceDictionary Source="../Views/Tree/RatingTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/MediaItemSizeTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/FolderKeywordTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/KewordTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/ViewerTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/GeoNameTreeV.xaml" />

@@ -153,7 +153,7 @@ namespace PictureManager.ViewModels {
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer)
         Commands.WindowCommands.SwitchToBrowser();
 
-      var roots = (item as FolderKeyword)?.Folders ?? new List<Folder> { (Folder)item };
+      var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<Folder> { (Folder)item };
       var folders = Folder.GetFolders(roots, recursive);
 
       if (and || hide) {
@@ -290,7 +290,7 @@ namespace PictureManager.ViewModels {
         var iOfL = folderName.FirstIndexOfLetter();
         var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName[iOfL..];
         var toolTip = mi.Folder.FolderKeyword != null
-          ? CatTreeViewUtils.GetFullPath(mi.Folder.FolderKeyword, Path.DirectorySeparatorChar.ToString())
+          ? mi.Folder.FolderKeyword.FullPath
           : mi.Folder.FullPath;
         groupItems.Add(new() { Icon = IconName.Folder, Title = title, ToolTip = toolTip });
       }

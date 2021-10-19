@@ -155,7 +155,7 @@ namespace PictureManager.Commands {
       App.WMain.MenuViewers.Header = viewer.Name;
       App.Core.CurrentViewer = viewer;
       App.Core.Folders.AddDrives();
-      App.Core.FolderKeywords.Load();
+      App.Core.FolderKeywordsM.Load();
       App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(viewer);
     }
 

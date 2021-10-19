@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     public int Id { get; }
     public List<MediaItem> MediaItems { get; } = new();
-    public FolderKeyword FolderKeyword { get; set; }
+    public FolderKeywordM FolderKeyword { get; set; }
 
     private bool _isAccessible;
     private bool _isFolderKeyword;
@@ -182,16 +182,11 @@ namespace PictureManager.Domain.Models {
         if (FolderKeyword == null) continue;
 
         // remove placeholder
-        if (FolderKeyword.Items.Count == 1 && FolderKeyword.Items[0].Title == null)
+        if (FolderKeyword.Items.Count == 1 && ((ICatTreeViewItem)FolderKeyword.Items[0]).Title == null)
           FolderKeyword.Items.Clear();
 
-        if (FolderKeyword.Items.SingleOrDefault(x => x.Title.Equals(folder.Title, StringComparison.Ordinal)) is not FolderKeyword fk) {
-          fk = new FolderKeyword { Title = folder.Title, Parent = FolderKeyword };
-          FolderKeyword.Items.Add(fk);
-          FolderKeyword.Items.Sort(x => x.Title);
-        }
-        fk.Folders.Add(folder);
-        folder.FolderKeyword = fk;
+        var fk = Core.Instance.FolderKeywordsM.GetForFolder(this, FolderKeyword);
+        FolderKeywordsM.LinkWithFolder(this, fk);
       }
 
       // remove Folders deleted outside of this application
