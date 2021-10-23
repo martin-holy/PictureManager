@@ -10,6 +10,18 @@ namespace PictureManager.Domain.Utils {
   public static class Tree {
     public delegate void OnItemsChanged(ObservableCollection<object> src, ObservableCollection<object> dest, ITreeBranch parent, OnItemsChanged onItemsChanged);
 
+    public static T GetTopParent<T>(T item) {
+      var top = item;
+      var parent = (item as ITreeLeaf)?.Parent;
+      
+      while (parent is T t) {
+        top = t;
+        parent = (parent as ITreeLeaf)?.Parent;
+      }
+
+      return top;
+    }
+
     public static void GetThisAndItemsRecursive<T>(object root, ref List<T> output) {
       output.Add((T)root);
       if (root is not ITreeBranch branch) return;
