@@ -146,15 +146,15 @@ namespace PictureManager.ViewModels {
     }
 
     public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      if (item is Folder folder && !folder.IsAccessible) return;
+      if (item is FolderTreeVM folder && !folder.Model.IsAccessible) return;
 
       item.IsSelected = true;
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer)
         Commands.WindowCommands.SwitchToBrowser();
 
-      var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<Folder> { (Folder)item };
-      var folders = Folder.GetFolders(roots, recursive);
+      var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<FolderM> { ((FolderTreeVM)item).Model };
+      var folders = FoldersM.GetFolders(roots, recursive).Where(f => !App.Ui.FoldersTreeVM.All[f.Id].IsHidden).ToList();
 
       if (and || hide) {
         var items = folders.SelectMany(x => x.MediaItems).ToList();
@@ -162,11 +162,11 @@ namespace PictureManager.ViewModels {
         return;
       }
 
-      await LoadAsync(null, folders, folders[0].Title);
+      await LoadAsync(null, folders, folders[0].Name);
       App.Ui.MarkUsedKeywordsAndPeople();
     }
 
-    public async Task LoadAsync(List<MediaItem> mediaItems, List<Folder> folders, string tabTitle) {
+    public async Task LoadAsync(List<MediaItem> mediaItems, List<FolderM> folders, string tabTitle) {
       await _workTask.Cancel();
 
       ScrollToTop();
@@ -286,7 +286,7 @@ namespace PictureManager.ViewModels {
       var groupItems = new List<VirtualizingWrapPanelGroupItem>();
 
       if (_model.ThumbsGrid.GroupByFolders) {
-        var folderName = mi.Folder.Title;
+        var folderName = mi.Folder.Name;
         var iOfL = folderName.FirstIndexOfLetter();
         var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName[iOfL..];
         var toolTip = mi.Folder.FolderKeyword != null
@@ -390,7 +390,7 @@ namespace PictureManager.ViewModels {
     /// <param name="mode"></param>
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
-    public void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder) {
+    public void CopyMove(FileOperationMode mode, List<MediaItem> items, FolderM destFolder) {
       var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = false, Value = 0 } };
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new();

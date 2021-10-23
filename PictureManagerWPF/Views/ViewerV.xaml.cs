@@ -31,8 +31,8 @@ namespace PictureManager.Views {
     }
 
     private void AttachEvents() {
-      DragDropFactory.SetDrag(LbIncludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
-      DragDropFactory.SetDrag(LbExcludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Folder);
+      DragDropFactory.SetDrag(LbIncludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as FolderM);
+      DragDropFactory.SetDrag(LbExcludedFolders, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as FolderM);
       DragDropFactory.SetDrag(LbExcludedKeywords, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as KeywordM);
 
       DragDropFactory.SetDrop(
@@ -56,7 +56,7 @@ namespace PictureManager.Views {
     }
 
     private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
-      if (data is not Folder) return DragDropEffects.None;
+      if (data is not FolderM) return DragDropEffects.None;
 
       if (source.Equals(_catTvCategories)) {
         return (included ? Viewer.IncludedFolders : Viewer.ExcludedFolders).Contains(data)
@@ -74,10 +74,10 @@ namespace PictureManager.Views {
 
     private void DoDropFolder(DragEventArgs e, object source, object data, bool included) {
       if (source.Equals(_catTvCategories))
-        _model.AddFolder(Viewer, (Folder)data, included);
+        _model.AddFolder(Viewer, (FolderM)data, included);
 
       if (e.Source == source)
-        _model.RemoveFolder(Viewer, (Folder)data, included);
+        _model.RemoveFolder(Viewer, (FolderM)data, included);
     }
 
     private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {

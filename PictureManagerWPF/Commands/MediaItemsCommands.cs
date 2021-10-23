@@ -113,7 +113,7 @@ namespace PictureManager.Commands {
     private static void ImagesToVideo() {
       ImagesToVideoDialog.ShowDialog(App.WMain,
         ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
-        async (Folder folder, string fileName) => {
+        async (FolderM folder, string fileName) => {
           var mmi = App.Core.MediaItems;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
@@ -162,12 +162,12 @@ namespace PictureManager.Commands {
       App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
     }
 
-    public static bool CanRebuildThumbnails(object parameter) => parameter is Folder || ThumbsGrid?.FilteredItems.Count > 0;
+    public static bool CanRebuildThumbnails(object parameter) => parameter is FolderM || ThumbsGrid?.FilteredItems.Count > 0;
 
     public static void RebuildThumbnails(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var mediaItems = parameter switch {
-        Folder folder => folder.GetMediaItems(recursive),
+        FolderM folder => folder.GetMediaItems(recursive),
         List<MediaItem> items => items,
         _ => ThumbsGrid.GetSelectedOrAll(),
       };

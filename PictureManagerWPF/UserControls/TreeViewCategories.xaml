@@ -14,6 +14,7 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/Tree/CategoryGroupTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/FavoriteFolderTreeV.xaml" />
+        <ResourceDictionary Source="../Views/Tree/FolderTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/RatingTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/MediaItemSizeTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />

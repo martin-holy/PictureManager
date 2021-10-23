@@ -19,10 +19,10 @@ namespace PictureManager.Dialogs {
     private readonly string _inputListPath;
     private readonly string _outputFilePath;
     private readonly string _outputFileName;
-    private readonly Folder _outputFolder;
+    private readonly FolderM _outputFolder;
     private readonly OnSuccess _onSuccess;
 
-    public delegate void OnSuccess(Folder folder, string fileName);
+    public delegate void OnSuccess(FolderM folder, string fileName);
 
     public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
       InitializeComponent();

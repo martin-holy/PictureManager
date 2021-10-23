@@ -14,9 +14,9 @@ namespace PictureManager.Domain.Models {
       DataAdapter = new FavoriteFoldersDataAdapter(core, this);
     }
 
-    public void ItemCreate(Folder folder) {
+    public void ItemCreate(FolderM folder) {
       var ff = new FavoriteFolderM(DataAdapter.GetNextId()) {
-        Title = folder.Title,
+        Title = folder.Name,
         Folder = folder
       };
 

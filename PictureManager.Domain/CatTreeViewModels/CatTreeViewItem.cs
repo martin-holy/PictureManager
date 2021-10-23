@@ -7,8 +7,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
   public class CatTreeViewItem : INotifyPropertyChanged, ICatTreeViewItem {
     public ObservableCollection<ICatTreeViewItem> Items { get; set; } = new();
     public object Tag { get; set; }
-    public EventHandler OnExpand { get; set; }
-    public EventHandler OnCollapse { get; set; }
+    public event EventHandler OnExpandedChanged = delegate { };
 
     private bool _isExpanded;
     private bool _isSelected;
@@ -25,10 +24,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       get => _isExpanded;
       set {
         _isExpanded = value;
-        if (value)
-          OnExpand?.Invoke(this, EventArgs.Empty);
-        else
-          OnCollapse?.Invoke(this, EventArgs.Empty);
+        OnExpandedChanged(this, EventArgs.Empty);
         OnPropertyChanged();
       }
     }

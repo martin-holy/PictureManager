@@ -2,7 +2,6 @@
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,16 +21,16 @@ namespace PictureManager.UserControls {
 
     private static void TreeViewItemsEvents() {
       CatTreeViewUtils.OnAfterItemRename += async (o, e) => {
-        if (o is Folder folder && folder.IsSelected) {
+        if (o is FolderTreeVM { IsSelected: true } folder) {
           // reload if the folder was selected before
           await App.Ui.TreeView_Select(folder, false, false, false);
         }
       };
 
       CatTreeViewUtils.OnAfterItemDelete += (o, e) => {
-        if (o is Folder folder && Directory.Exists(folder.FullPath)) {
+        if (o is FolderTreeVM folder && Directory.Exists(folder.Model.FullPath)) {
           // delete folder, sub folders and mediaItems from file system
-          AppCore.FileOperationDelete(new List<string> { folder.FullPath }, true, false);
+          AppCore.FileOperationDelete(new List<string> { folder.Model.FullPath }, true, false);
         }
       };
 
@@ -44,28 +43,29 @@ namespace PictureManager.UserControls {
         var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
         switch (src) {
-          case Folder srcData:  // Folder
-          FoldersViewModel.CopyMove(foMode, srcData, (Folder)dest);
-          App.Core.MediaItems.DataAdapter.IsModified = true;
-          App.Core.Folders.DataAdapter.IsModified = true;
-          App.Core.FolderKeywordsM.Load();
+          case FolderTreeVM srcData: // Folder
+            FoldersTreeVM.CopyMove(foMode, srcData.Model, ((FolderTreeVM)dest)?.Model);
+            App.Core.MediaItems.DataAdapter.IsModified = true;
+            App.Core.FoldersM.DataAdapter.IsModified = true;
+            App.Core.FolderKeywordsM.Load();
 
-          // reload last selected source if was moved
-          if (foMode == FileOperationMode.Move && srcData.IsSelected) {
-            var folder = ((Folder)dest)?.GetByPath(srcData.Title);
-            if (folder == null) return;
-            CatTreeViewUtils.ExpandTo(folder);
-            await App.Ui.TreeView_Select(folder, false, false, false);
-          }
+            // reload last selected source if was moved
+            if (foMode == FileOperationMode.Move && srcData.IsSelected) {
+              var folder = ((FolderTreeVM)dest)?.Model.GetByPath(srcData.Title);
+              if (folder == null) return;
+              CatTreeViewUtils.ExpandTo((FolderTreeVM)dest);
+              await App.Ui.TreeView_Select((FolderTreeVM)dest, false, false, false);
+            }
 
-          break;
+            break;
 
-          case string[]:  // MediaItems
-          App.Ui.MediaItemsViewModel.CopyMove(foMode,
-            App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(), (Folder)dest);
-          App.Core.MediaItems.DataAdapter.IsModified = true;
+          case string[]: // MediaItems
+            App.Ui.MediaItemsViewModel.CopyMove(foMode,
+              App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(),
+              ((FolderTreeVM)dest)?.Model);
+            App.Core.MediaItems.DataAdapter.IsModified = true;
 
-          break;
+            break;
         }
 
         App.Ui.MarkUsedKeywordsAndPeople();
@@ -139,7 +139,7 @@ namespace PictureManager.UserControls {
       }
 
       switch (item) {
-        case Folder folder: {
+        case FolderM folder: {
           if (!(folder.Parent is ICatTreeViewCategory))
             AddMenuItem(TreeViewCommands.FolderAddToFavoritesCommand);
 

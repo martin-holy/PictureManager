@@ -59,13 +59,13 @@ namespace PictureManager.UserControls {
         .Select(x => new SearchItem(IconName.LocationCheckin, x.Name, x.FullName, App.Ui.GeoNamesTreeVM.All[x.Id])));
 
       // Folders
-      var result = App.Core.Folders.All.Cast<Folder>()
-        .Where(x => x.Title.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && !x.IsThisOrParentHidden())
-        .Select(x => new SearchItem(IconName.Folder, x.Title, x.FullPath, x)).ToList();
+      var result = App.Core.FoldersM.All
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && App.Core.CanViewerSeeThisFolder(x))
+        .Select(x => new SearchItem(IconName.Folder, x.Name, x.FullPath, App.Ui.FoldersTreeVM.All[x.Id])).ToList();
 
       // Folder Keywords
       result.AddRange(App.Core.FolderKeywordsM.All
-        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && x.Folders.All(f => App.Core.CanViewerSeeThisFolder(f)))
         .Select(x => new SearchItem(IconName.FolderPuzzle, x.Name, x.FullPath, App.Ui.FolderKeywordsTreeVM.All[x.Id])));
       AddToSearchResult(result);
     }

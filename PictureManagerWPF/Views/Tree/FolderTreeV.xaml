@@ -1,0 +1,62 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+
+  <HierarchicalDataTemplate DataType="{x:Type tree:FolderTreeVM}" ItemsSource="{Binding Items}">
+    <StackPanel Orientation="Horizontal">
+      <mhc:Icon>
+        <mhc:Icon.Style>
+          <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.Folder}">
+                <Setter Property="Source" Value="{StaticResource IconFolder}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushFolder}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.FolderStar}">
+                <Setter Property="Source" Value="{StaticResource IconFolderStar}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushFolder}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.FolderLock}">
+                <Setter Property="Source" Value="{StaticResource IconFolderLock}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushFolder}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.FolderPuzzle}">
+                <Setter Property="Source" Value="{StaticResource IconFolderPuzzle}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushFolder}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.FolderOpen}">
+                <Setter Property="Source" Value="{StaticResource IconFolderOpen}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushFolder}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.Drive}">
+                <Setter Property="Source" Value="{StaticResource IconDrive}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushDrive}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.DriveError}">
+                <Setter Property="Source" Value="{StaticResource IconDriveError}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushDrive}" />
+              </DataTrigger>
+
+              <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.Cd}">
+                <Setter Property="Source" Value="{StaticResource IconCd}" />
+                <Setter Property="Fill" Value="{StaticResource ColorBrushDrive}" />
+              </DataTrigger>
+              
+            </Style.Triggers>
+          </Style>
+        </mhc:Icon.Style>
+      </mhc:Icon>
+      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
+      <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
+    </StackPanel>
+  </HierarchicalDataTemplate>
+    
+</ResourceDictionary>

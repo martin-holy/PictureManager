@@ -112,11 +112,11 @@ namespace PictureManager.Commands {
       App.Core.MediaItems.DataAdapter.IsModified = true;
     }
 
-    private static bool CanReload(object parameter) => parameter is Folder || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
+    private static bool CanReload(object parameter) => parameter is FolderM || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void Reload(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      var folder = parameter as Folder;
+      var folder = parameter as FolderM;
       var mediaItems = folder != null
         ? folder.GetMediaItems(recursive)
         : App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
