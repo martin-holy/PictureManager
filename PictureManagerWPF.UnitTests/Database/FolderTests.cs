@@ -4,11 +4,11 @@ using PictureManager.Domain.Models;
 namespace PictureManagerWPF.UnitTests.Database {
   [TestClass]
   public class FolderTests {
-    public Folder GetByPath_GetTestData() {
-      var folderA = new Folder(1, "D:", null);
-      var folderB = new Folder(2, "subFolder", folderA);
-      var folderC = new Folder(3, "sub folder", folderB);
-      var folderD = new Folder(4, "sub folder 2", folderC);
+    public FolderM GetByPath_GetTestData() {
+      var folderA = new FolderM(1, "D:", null);
+      var folderB = new FolderM(2, "subFolder", folderA);
+      var folderC = new FolderM(3, "sub folder", folderB);
+      var folderD = new FolderM(4, "sub folder 2", folderC);
 
       folderA.Items.Add(folderB);
       folderB.Items.Add(folderC);
@@ -24,7 +24,7 @@ namespace PictureManagerWPF.UnitTests.Database {
 
       var result = root.GetByPath("D:");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -34,7 +34,7 @@ namespace PictureManagerWPF.UnitTests.Database {
 
       var result = root.GetByPath("D:\\subFolder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -44,7 +44,7 @@ namespace PictureManagerWPF.UnitTests.Database {
 
       var result = root.GetByPath("D:\\subFolder\\sub folder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -52,9 +52,9 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathD_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((Folder)root.Items[0]).GetByPath("D:\\subFolder");
+      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -62,9 +62,9 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathE_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((Folder)root.Items[0]).GetByPath("D:\\subFolder\\sub folder");
+      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder\\sub folder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -72,7 +72,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathF_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((Folder)root.Items[0]).GetByPath("D:\\other");
+      var result = ((FolderM)root.Items[0]).GetByPath("D:\\other");
 
       Assert.IsNull(result);
     }
@@ -82,7 +82,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathG_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((Folder)root.Items[0]).GetByPath("D:\\subFolder2\\neco");
+      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder2\\neco");
 
       Assert.IsNull(result);
     }
@@ -94,7 +94,7 @@ namespace PictureManagerWPF.UnitTests.Database {
 
       var result = root.GetByPath("subFolder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ namespace PictureManagerWPF.UnitTests.Database {
 
       var result = root.GetByPath("subFolder\\sub folder");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
 
     [TestMethod]
@@ -112,9 +112,9 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_PartialPathC_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((Folder)root.Items[0]).GetByPath("sub folder\\sub folder 2");
+      var result = ((FolderM)root.Items[0]).GetByPath("sub folder\\sub folder 2");
 
-      Assert.IsInstanceOfType(result, typeof(Folder));
+      Assert.IsInstanceOfType(result, typeof(FolderM));
     }
   }
 }

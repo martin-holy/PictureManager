@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Utils;
@@ -34,8 +33,8 @@ namespace PictureManager.Domain.Models {
 
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public bool IsDefault { get; set; }
-    public ObservableCollection<Folder> IncludedFolders { get; } = new();
-    public ObservableCollection<Folder> ExcludedFolders { get; } = new();
+    public ObservableCollection<FolderM> IncludedFolders { get; } = new();
+    public ObservableCollection<FolderM> ExcludedFolders { get; } = new();
     public ObservableCollection<KeywordM> ExcludedKeywords { get; } = new();
     public HashSet<int> ExcCatGroupsIds { get; } = new();
 
@@ -58,10 +57,9 @@ namespace PictureManager.Domain.Models {
 
       foreach (var folder in IncludedFolders) {
         _incFoIds.Add(folder.Id);
-        // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
-        var fos = new List<ICatTreeViewItem>();
-        CatTreeViewUtils.GetThisAndParentRecursive(folder, ref fos);
-        foreach (var fo in fos.OfType<Folder>())
+        var fos = new List<FolderM>();
+        Tree.GetThisAndParentRecursive(folder, ref fos);
+        foreach (var fo in fos)
           _incFoTreeIds.Add(fo.Id);
       }
 
@@ -72,27 +70,25 @@ namespace PictureManager.Domain.Models {
         _excKeywordsIds.Add(keyword.Id);
     }
 
-    public bool CanSeeThisFolder(Folder folder) {
+    public bool CanSeeThisFolder(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
-      // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
-      var testFos = new List<ICatTreeViewItem>();
-      CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
-      var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
+      var testFos = new List<FolderM>();
+      Tree.GetThisAndParentRecursive(folder, ref testFos);
+      var incContain = testFos.Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
                        || _incFoTreeIds.Any(incFoId => incFoId == folder.Id);
-      var excContain = testFos.OfType<Folder>().Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
+      var excContain = testFos.Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
 
       return incContain && !excContain;
     }
 
-    public bool CanSeeContentOfThisFolder(Folder folder) {
+    public bool CanSeeContentOfThisFolder(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
-      // TODO change to Tree.GetThisAndParentRecursive after Folder implements ITreeLeaf
-      var testFos = new List<ICatTreeViewItem>();
-      CatTreeViewUtils.GetThisAndParentRecursive(folder, ref testFos);
-      var incContain = testFos.OfType<Folder>().Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
-      var excContain = testFos.OfType<Folder>().Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
+      var testFos = new List<FolderM>();
+      Tree.GetThisAndParentRecursive(folder, ref testFos);
+      var incContain = testFos.Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
+      var excContain = testFos.Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
 
       return incContain && !excContain;
     }

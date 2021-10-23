@@ -16,7 +16,7 @@ namespace PictureManager.Domain.Models {
     
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
-    public List<Folder> Folders { get; } = new();
+    public List<FolderM> Folders { get; } = new();
     public int Id { get; }
 
     public FolderKeywordM(int id, string name, ITreeBranch parent) {

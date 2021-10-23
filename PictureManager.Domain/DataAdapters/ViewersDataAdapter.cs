@@ -49,14 +49,14 @@ namespace PictureManager.Domain.DataAdapters {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
-            var f = _core.Folders.AllDic[int.Parse(folderId)];
+            var f = _core.FoldersM.AllDic[int.Parse(folderId)];
             viewer.IncludedFolders.AddInOrder(f, x => x.FullPath);
           }
 
         // reference to ExcludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[3]))
           foreach (var folderId in viewer.Csv[3].Split(',')) {
-            var f = _core.Folders.AllDic[int.Parse(folderId)];
+            var f = _core.FoldersM.AllDic[int.Parse(folderId)];
             viewer.ExcludedFolders.AddInOrder(f, x => x.FullPath);
           }
 

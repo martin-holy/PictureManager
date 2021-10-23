@@ -32,10 +32,10 @@
         <Setter Property="VerticalAlignment" Value="Center" />
       </Style>
       
-      <DataTemplate DataType="{x:Type models:Folder}">
+      <DataTemplate DataType="{x:Type models:FolderM}">
         <StackPanel Orientation="Horizontal">
           <cc:IconRect IconName="{Binding IconName}" />
-          <TextBlock Text="{Binding Title}" Margin="5,0" FontSize="14" />
+          <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
         </StackPanel>
       </DataTemplate>
 

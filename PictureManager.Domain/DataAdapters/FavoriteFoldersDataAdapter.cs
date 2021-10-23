@@ -36,7 +36,7 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void LinkReferences() {
       foreach (var item in _model.All) {
-        item.Folder = _core.Folders.AllDic[int.Parse(item.Csv[1])];
+        item.Folder = _core.FoldersM.AllDic[int.Parse(item.Csv[1])];
 
         // csv array is not needed any more
         item.Csv = null;

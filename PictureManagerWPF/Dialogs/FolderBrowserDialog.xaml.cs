@@ -33,7 +33,7 @@ namespace PictureManager.Dialogs {
 
         var item = new FolderTreeViewItem {
           Title = di.Name.TrimEnd(Path.DirectorySeparatorChar),
-          IconName = Folders.GetDriveIconName(di.DriveType)
+          IconName = FoldersM.GetDriveIconName(di.DriveType)
         };
 
         // add placeholder so the Drive can be expanded
@@ -58,12 +58,11 @@ namespace PictureManager.Dialogs {
     public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
 
     public FolderTreeViewItem() {
-      OnExpand += (o, e) => {
-        LoadSubFolders();
+      OnExpandedChanged += (_, _) => {
+        if (IsExpanded)
+          LoadSubFolders();
         UpdateIconName();
       };
-
-      OnCollapse += (o, e) => UpdateIconName();
     }
 
     private void UpdateIconName() {

@@ -61,7 +61,7 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       foreach (var mi in _model.All.Cast<MediaItem>()) {
         // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = _core.Folders.AllDic[int.Parse(mi.Csv[1])];
+        mi.Folder = _core.FoldersM.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
         // reference to People

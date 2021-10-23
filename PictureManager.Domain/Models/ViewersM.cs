@@ -58,12 +58,12 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void AddFolder(ViewerM viewer, Folder folder, bool included) {
+    public void AddFolder(ViewerM viewer, FolderM folder, bool included) {
       (included ? viewer.IncludedFolders : viewer.ExcludedFolders).AddInOrder(folder, (x) => x.FullPath);
       DataAdapter.IsModified = true;
     }
 
-    public void RemoveFolder(ViewerM viewer, Folder folder, bool included) {
+    public void RemoveFolder(ViewerM viewer, FolderM folder, bool included) {
       (included ? viewer.IncludedFolders : viewer.ExcludedFolders).Remove(folder);
       DataAdapter.IsModified = true;
     }

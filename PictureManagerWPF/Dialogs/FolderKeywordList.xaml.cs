@@ -11,10 +11,10 @@ namespace PictureManager.Dialogs {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public ObservableCollection<Folder> Items { get; } = new();
+    public ObservableCollection<FolderM> Items { get; } = new();
 
     public FolderKeywordList() {
-      foreach (var folder in App.Core.Folders.All.Cast<Folder>().Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
+      foreach (var folder in App.Core.FoldersM.All.Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
         Items.Add(folder);
       }
 
@@ -25,12 +25,12 @@ namespace PictureManager.Dialogs {
       if (LbFolderKeywords.SelectedItems.Count == 0) return;
       if (!MessageDialog.Show("Remove Confirmation", "Are you sure?", true)) return;
 
-      foreach (var item in LbFolderKeywords.SelectedItems.Cast<Folder>().ToList()) {
+      foreach (var item in LbFolderKeywords.SelectedItems.Cast<FolderM>().ToList()) {
         item.IsFolderKeyword = false;
         Items.Remove(item);
       }
 
-      App.Core.Folders.DataAdapter.IsModified = true;
+      App.Core.FoldersM.DataAdapter.IsModified = true;
       App.Core.FolderKeywordsM.Load();
     }
   }

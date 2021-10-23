@@ -8,7 +8,6 @@ namespace PictureManager.ViewModels.Tree {
     public FolderKeywordTreeVM(FolderKeywordM model, ICatTreeViewItem parent) {
       Model = model;
       Parent = parent;
-      OnExpand += (_, _) => Model.Folders.ForEach(x => x.LoadSubFolders(false));
     }
   }
 }

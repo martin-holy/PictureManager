@@ -16,7 +16,7 @@ namespace PictureManager.Domain.Models {
 
     // DB Fields
     public int Id { get; }
-    public Folder Folder { get; set; }
+    public FolderM Folder { get; set; }
     public string FileName { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
@@ -61,7 +61,7 @@ namespace PictureManager.Domain.Models {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    public MediaItem(int id, Folder folder, string fileName, bool isNew = false) {
+    public MediaItem(int id, FolderM folder, string fileName, bool isNew = false) {
       Id = id;
       Folder = folder;
       FileName = fileName;
@@ -157,7 +157,7 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(InfoBoxKeywords));
     }
 
-    public MediaItem CopyTo(Folder folder, string fileName) {
+    public MediaItem CopyTo(FolderM folder, string fileName) {
       var copy = new MediaItem(Core.Instance.MediaItems.DataAdapter.GetNextId(), folder, fileName) {
         Width = Width,
         Height = Height,
@@ -195,7 +195,7 @@ namespace PictureManager.Domain.Models {
       return copy;
     }
 
-    public void MoveTo(Folder folder, string fileName) {
+    public void MoveTo(FolderM folder, string fileName) {
       // delete existing MediaItem if exists
       Core.Instance.MediaItems.Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
 

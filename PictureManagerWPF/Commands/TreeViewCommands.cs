@@ -46,11 +46,11 @@ namespace PictureManager.Commands {
       }
     }
 
-    private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFoldersM.ItemCreate((Folder)parameter);
+    private static void FolderAddToFavorites(object parameter) => App.Core.FavoriteFoldersM.ItemCreate((FolderM)parameter);
 
     private static void FolderSetAsFolderKeyword(object parameter) {
-      ((Folder)parameter).IsFolderKeyword = true;
-      App.Core.Folders.DataAdapter.IsModified = true;
+      ((FolderM)parameter).IsFolderKeyword = true;
+      App.Core.FoldersM.DataAdapter.IsModified = true;
       App.Core.FolderKeywordsM.Load();
     }
 

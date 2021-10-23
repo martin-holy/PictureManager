@@ -17,15 +17,12 @@ namespace PictureManager.Domain {
     #region DB Models
     public CategoryGroupsM CategoryGroupsM { get; }
     public FavoriteFoldersM FavoriteFoldersM { get; }
+    public FoldersM FoldersM { get; }
     public PeopleM PeopleM { get; }
     public FolderKeywordsM FolderKeywordsM { get; }
     public KeywordsM KeywordsM { get; }
     public GeoNamesM GeoNamesM { get; }
     public ViewersM ViewersM { get; }
-    #endregion
-
-    #region TreeView Roots and Categories
-    public Folders Folders { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
@@ -44,7 +41,7 @@ namespace PictureManager.Domain {
       Sdb = new(this);
 
       FavoriteFoldersM = new(this);
-      Folders = new(this);
+      FoldersM = new(this);
       PeopleM = new(this);
       FolderKeywordsM = new(this);
       KeywordsM = new(this);
@@ -65,7 +62,7 @@ namespace PictureManager.Domain {
       return Task.Run(() => {
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
-        Sdb.AddDataAdapter(Folders.DataAdapter); // needs to be before Viewers
+        Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers
         Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
@@ -79,14 +76,14 @@ namespace PictureManager.Domain {
         Sdb.LinkReferences(progress);
 
         progress.Report("Loading Drives");
-        Folders.AddDrives();
+        FoldersM.AddDrives();
         progress.Report("Loading Folder Keywords");
         FolderKeywordsM.Load();
 
         // TODO better
         // cleanup
-        Folders.AllDic.Clear();
-        Folders.AllDic = null;
+        FoldersM.AllDic.Clear();
+        FoldersM.AllDic = null;
         GeoNamesM.AllDic.Clear();
         GeoNamesM.AllDic = null;
         KeywordsM.AllDic.Clear();
@@ -99,14 +96,12 @@ namespace PictureManager.Domain {
         VideoClips.AllDic = null;
         Segments.AllDic.Clear();
         Segments.AllDic = null;
-
-        Folders.IsExpanded = true;
       });
     }
 
-    public bool CanViewerSeeThisFolder(Folder folder) => CurrentViewer?.CanSeeThisFolder(folder) != false;
+    public bool CanViewerSeeThisFolder(FolderM folder) => CurrentViewer?.CanSeeThisFolder(folder) != false;
 
-    public bool CanViewerSeeContentOfThisFolder(Folder folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
+    public bool CanViewerSeeContentOfThisFolder(FolderM folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
 
     public bool CanViewerSee(MediaItem mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
 

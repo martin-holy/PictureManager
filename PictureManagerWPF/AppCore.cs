@@ -26,7 +26,7 @@ namespace PictureManager {
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
     public CategoryGroupsTreeVM CategoryGroupsTreeVM { get; }
     public FavoriteFoldersTreeVM FavoriteFoldersTreeVM { get; }
-    // public FoldersTreeVM FoldersTreeVM { get; }
+    public FoldersTreeVM FoldersTreeVM { get; }
     public RatingsTreeVM RatingsTreeVM { get; }
     public MediaItemSizesTreeVM MediaItemSizesTreeVM { get; }
     public PeopleTreeVM PeopleTreeVM { get; }
@@ -61,16 +61,16 @@ namespace PictureManager {
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
-      // FoldersTreeVM = new(this);
+      FoldersTreeVM = new(App.Core, App.Core.FoldersM);
       RatingsTreeVM = new();
       MediaItemSizesTreeVM = new(this);
       PeopleTreeVM = new(this, PeopleBaseVM);
-      FolderKeywordsTreeVM = new(App.Core.FolderKeywordsM);
+      FolderKeywordsTreeVM = new(App.Core, App.Core.FolderKeywordsM);
       KeywordsTreeVM = new(this, KeywordsBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
       ViewersTreeVM = new(ViewersBaseVM);
 
-      TreeViewCategories = new() { FavoriteFoldersTreeVM, App.Core.Folders, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
+      TreeViewCategories = new() { FavoriteFoldersTreeVM, FoldersTreeVM, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
@@ -142,38 +142,40 @@ namespace PictureManager {
 
       switch (item) {
         case KeywordTreeVM k:
-        ToggleKeyword(k);
-        break;
+          ToggleKeyword(k);
+          break;
 
         case PersonTreeVM p:
-        SetPerson(p.BaseVM);
-        break;
+          SetPerson(p.BaseVM);
+          break;
 
         case FavoriteFolderTreeVM ff:
-        if (ff.Model.Folder.IsThisOrParentHidden()) break;
-        CatTreeViewUtils.ExpandTo(ff.Model.Folder);
-        App.WMain.TreeViewCategories.TvCategories.ScrollTo(ff.Model.Folder);
-        break;
+          if (!App.Core.FoldersM.IsFolderVisible(ff.Model.Folder)) break;
+          var folderTreeVM = FoldersTreeVM.All[ff.Model.Folder.Id];
+          CatTreeViewUtils.ExpandTo(folderTreeVM);
+          App.WMain.TreeViewCategories.TvCategories.ScrollTo(folderTreeVM);
+          break;
 
-        case Folder:
+        case FolderTreeVM:
         case FolderKeywordTreeVM:
-        MediaItemsViewModel.AddThumbsTabIfNotActive();
-        await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
-        break;
+          MediaItemsViewModel.AddThumbsTabIfNotActive();
+          await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
+          break;
 
         case ViewerTreeVM v:
-          App.WMain.MainTabs.ActivateTab<ViewerV>(IconName.Eye)?.Reload(App.Core.ViewersM, v.Model, App.WMain.TreeViewCategories.TvCategories);
-        break;
+          App.WMain.MainTabs.ActivateTab<ViewerV>(IconName.Eye)
+            ?.Reload(App.Core.ViewersM, v.Model, App.WMain.TreeViewCategories.TvCategories);
+          break;
 
         case ICatTreeViewCategory cat:
-        if (cat is PeopleTreeVM)
-          _ = App.WMain.MainTabs.ActivateTab<PeopleControl>(IconName.People)?.Reload();
+          if (cat is PeopleTreeVM)
+            _ = App.WMain.MainTabs.ActivateTab<PeopleControl>(IconName.People)?.Reload();
 
-        // if category is going to collapse and sub item is selected, category gets selected
-        // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
-        // this will only prevent selecting category if selection was made with mouse click
-        cat.IsSelected = false;
-        break;
+          // if category is going to collapse and sub item is selected, category gets selected
+          // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
+          // this will only prevent selecting category if selection was made with mouse click
+          cat.IsSelected = false;
+          break;
       }
     }
 
@@ -239,8 +241,9 @@ namespace PictureManager {
         // Folders
         var f = mi.Folder;
         while (f != null) {
-          MarkedTagsAddWithIncrease(f);
-          f = f.Parent as Folder;
+          var vm = FoldersTreeVM.All[f.Id];
+          MarkedTagsAddWithIncrease(vm);
+          f = f.Parent as FolderM;
         }
 
         // FolderKeywords
@@ -267,8 +270,8 @@ namespace PictureManager {
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
       var result = CollisionResult.Skip;
       var outFileName = fileName;
-      var srcMi = App.Core.Folders.GetMediaItemByPath(srcFilePath);
-      var destMi = App.Core.Folders.GetMediaItemByPath(destFilePath);
+      var srcMi = App.Core.FoldersM.GetMediaItemByPath(srcFilePath);
+      var destMi = App.Core.FoldersM.GetMediaItemByPath(destFilePath);
 
       App.Core.RunOnUiThread(() => {
         srcMi?.SetThumbSize();
@@ -280,7 +283,7 @@ namespace PictureManager {
         cd.ShowDialog();
         result = cd.Result;
         outFileName = cd.FileName;
-      });
+      }).GetAwaiter().GetResult();
 
       fileName = outFileName;
 

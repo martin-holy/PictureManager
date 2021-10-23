@@ -157,7 +157,7 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(ModifiedCount));
     }
 
-    public static void CopyMove(FileOperationMode mode, List<MediaItem> items, Folder destFolder,
+    public static void CopyMove(FileOperationMode mode, List<MediaItem> items, FolderM destFolder,
       IProgress<object[]> progress, CollisionResolver collisionResolver, CancellationToken token) {
       var count = items.Count;
       var done = 0;
@@ -226,11 +226,11 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public async Task<List<MediaItem>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<Folder> folders, CancellationToken token) {
+    public async Task<List<MediaItem>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders, CancellationToken token) {
       var output = new List<MediaItem>();
 
       await Task.Run(() => {
-        foreach (var folder in folders.Where(x => !x.IsHidden)) {
+        foreach (var folder in folders) {
           if (token.IsCancellationRequested) break;
           if (!Directory.Exists(folder.FullPath)) continue;
           var folderMediaItems = new List<MediaItem>();
