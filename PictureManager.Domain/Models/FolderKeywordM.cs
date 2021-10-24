@@ -8,8 +8,8 @@ using PictureManager.Domain.Utils;
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordM : ObservableObject, ITreeBranch {
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     private string _name;

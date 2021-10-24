@@ -41,11 +41,11 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-      SyncCollection((ObservableCollection<object>)sender, Items, this, SyncCollection);
+      SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       UpdateDrivesVisibility();
     }
 
-    private void SyncCollection(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<FolderM, FolderTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
         model => Domain.Utils.Tree.GetDestItemCat(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));

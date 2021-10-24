@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
@@ -29,9 +30,9 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
-      SyncCollection((ObservableCollection<object>)sender, Items, this, SyncCollection);
+      SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
 
-    private void SyncCollection(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<FolderKeywordM, FolderKeywordTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
         model => Domain.Utils.Tree.GetDestItemCat(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));

@@ -23,7 +23,7 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     #region ITreeLeaf implementation
-    public object Parent { get; set; }
+    public ITreeBranch Parent { get; set; }
     #endregion
 
     private string _name;

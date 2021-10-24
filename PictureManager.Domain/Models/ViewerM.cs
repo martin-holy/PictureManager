@@ -26,7 +26,7 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     #region ITreeLeaf implementation
-    public object Parent { get; set; }
+    public ITreeBranch Parent { get; set; }
     #endregion
 
     private string _name;
@@ -43,7 +43,7 @@ namespace PictureManager.Domain.Models {
     private readonly HashSet<int> _excFoIds = new();
     private readonly HashSet<int> _excKeywordsIds = new();
 
-    public ViewerM(int id, string name, object parent) {
+    public ViewerM(int id, string name, ITreeBranch parent) {
       Id = id;
       Name = name;
       Parent = parent;
@@ -103,7 +103,7 @@ namespace PictureManager.Domain.Models {
       if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
       if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
 
-      var keywords = new List<object>();
+      var keywords = new List<ITreeLeaf>();
       if (mi.Keywords != null)
         foreach (var keyword in mi.Keywords)
           Tree.GetThisAndParentRecursive(keyword, ref keywords);

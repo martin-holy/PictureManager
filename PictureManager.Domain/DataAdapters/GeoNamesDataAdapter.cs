@@ -2,7 +2,6 @@
 using SimpleDB;
 using System;
 using System.Linq;
-using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
@@ -43,7 +42,7 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var geoName in _model.All.Cast<GeoNameM>()) {
         // reference to parent and back reference to children
         geoName.Parent = !string.IsNullOrEmpty(geoName.Csv[4]) ? _model.AllDic[int.Parse(geoName.Csv[4])] : _model;
-        ((ITreeBranch)geoName.Parent).Items.Add(geoName);
+        geoName.Parent.Items.Add(geoName);
         
         // csv array is not needed any more
         geoName.Csv = null;

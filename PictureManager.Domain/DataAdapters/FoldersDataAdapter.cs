@@ -2,7 +2,6 @@
 using SimpleDB;
 using System;
 using System.Linq;
-using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
@@ -42,7 +41,7 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var folder in _model.All.Cast<FolderM>()) {
         // reference to Parent and back reference from Parent to SubFolder
         folder.Parent = !string.IsNullOrEmpty(folder.Csv[2]) ? _model.AllDic[int.Parse(folder.Csv[2])] : _model;
-        ((ITreeBranch)folder.Parent).Items.Add(folder);
+        folder.Parent.Items.Add(folder);
         // csv array is not needed any more
         folder.Csv = null;
       }

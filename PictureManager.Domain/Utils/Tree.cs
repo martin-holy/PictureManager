@@ -8,15 +8,15 @@ using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Utils {
   public static class Tree {
-    public delegate void OnItemsChanged(ObservableCollection<object> src, ObservableCollection<object> dest, ITreeBranch parent, OnItemsChanged onItemsChanged);
+    public delegate void OnItemsChanged(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, OnItemsChanged onItemsChanged);
 
-    public static T GetTopParent<T>(T item) {
+    public static T GetTopParent<T>(T item) where T : ITreeLeaf {
       var top = item;
-      var parent = (item as ITreeLeaf)?.Parent;
+      var parent = item?.Parent;
       
       while (parent is T t) {
         top = t;
-        parent = (parent as ITreeLeaf)?.Parent;
+        parent = parent.Parent;
       }
 
       return top;
@@ -29,16 +29,16 @@ namespace PictureManager.Domain.Utils {
         GetThisAndItemsRecursive(item, ref output);
     }
 
-    public static void GetThisAndParentRecursive<T>(object self, ref List<T> output) {
-      output.Add((T)self);
-      var parent = (self as ITreeLeaf)?.Parent;
+    public static void GetThisAndParentRecursive<T>(T self, ref List<T> output) where T : ITreeLeaf {
+      output.Add(self);
+      var parent = self.Parent;
       while (parent is T t) {
         output.Add(t);
-        parent = (parent as ITreeLeaf)?.Parent;
+        parent = parent.Parent;
       }
     }
 
-    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) {
+    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) where T : ITreeLeaf {
       var list = new List<T>();
       GetThisAndParentRecursive(self, ref list);
       list.Reverse();
@@ -49,17 +49,17 @@ namespace PictureManager.Domain.Utils {
       if ((dest is T and ITreeLeaf { Parent: { } } x ? x.Parent : dest) is not ITreeBranch destParent) return;
       
       if (!item.Parent.Equals(destParent)) {
-        (item.Parent as ITreeBranch)?.Items.Remove(item);
+        item.Parent.Items.Remove(item);
         item.Parent = destParent;
       }
 
-      if (dest is T)
-        destParent.Items.SetRelativeTo(item, dest, aboveDest);
+      if (dest is T leaf)
+        destParent.Items.SetRelativeTo(item, leaf, aboveDest);
       else
         destParent.Items.SetInOrder(item, keySelector);
     }
 
-    public static void SyncCollection<TSrc, TDest>(ObservableCollection<object> src, ObservableCollection<object> dest,
+    public static void SyncCollection<TSrc, TDest>(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest,
       ITreeBranch parent, Func<TSrc, TDest, bool> itemsEquals, Func<TSrc, TDest> getDestItem) where TDest : class, ITreeLeaf {
       // Remove
       foreach (var o in dest.OfType<TDest>().Where(d => !src.OfType<TSrc>().Any(s => itemsEquals(s, d))).ToArray()) {
@@ -98,9 +98,9 @@ namespace PictureManager.Domain.Utils {
 
     // TODO temporary until I change ICatTreeViewItem to implement ITreeBranch
     #region Temporary
-    public delegate void OnItemsChangedCat(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, OnItemsChangedCat onItemsChanged);
+    public delegate void OnItemsChangedCat(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, OnItemsChangedCat onItemsChanged);
 
-    public static void SyncCollection<TSrc, TDest>(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest,
+    public static void SyncCollection<TSrc, TDest>(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest,
       ICatTreeViewItem parent, Func<TSrc, TDest, bool> itemsEquals, Func<TSrc, TDest> getDestItem) where TDest : class, ICatTreeViewItem {
       // Remove
       foreach (var o in dest.OfType<TDest>().Where(d => !src.OfType<TSrc>().Any(s => itemsEquals(s, d))).ToArray()) {

@@ -11,8 +11,8 @@ using SimpleDB;
 namespace PictureManager.Domain.Models {
   public sealed class ViewersM : ITreeBranch {
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     public DataAdapter DataAdapter { get; }
@@ -38,12 +38,12 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(ViewerM item, string name) {
       item.Name = name;
-      ((ITreeBranch)item.Parent).Items.SetInOrder(item, x => ((ViewerM)x).Name);
+      item.Parent.Items.SetInOrder(item, x => ((ViewerM)x).Name);
       DataAdapter.IsModified = true;
     }
 
     public void ItemDelete(ViewerM viewer) {
-      ((ITreeBranch)viewer.Parent).Items.Remove(viewer);
+      viewer.Parent.Items.Remove(viewer);
       viewer.Parent = null;
       viewer.IncludedFolders.Clear();
       viewer.ExcludedFolders.Clear();

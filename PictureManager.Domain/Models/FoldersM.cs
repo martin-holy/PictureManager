@@ -14,8 +14,8 @@ using PictureManager.Domain.Utils;
 namespace PictureManager.Domain.Models {
   public sealed class FoldersM : ITreeBranch {
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     private readonly Core _core;
@@ -260,7 +260,7 @@ namespace PictureManager.Domain.Models {
 
       // if nothing was skipped and folder with the same name doesn't exist in destination
       if (!srcExists && targetFolder == null) {
-        ((ITreeBranch)src.Parent).Items.Remove(src);
+        src.Parent.Items.Remove(src);
         src.Parent = dest;
 
         // add folder to the tree if destination is empty
@@ -333,7 +333,7 @@ namespace PictureManager.Domain.Models {
 
       item.Name = name;
 
-      ((ITreeBranch)item.Parent).Items.SetInOrder(item, x => ((FolderM)x).Name);
+      item.Parent.Items.SetInOrder(item, x => ((FolderM)x).Name);
       DataAdapter.IsModified = true;
 
       // reload FolderKeywords
@@ -343,7 +343,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemDelete(FolderM item) {
       // remove Folder from the Tree
-      ((ITreeBranch)item.Parent).Items.Remove(item);
+      item.Parent.Items.Remove(item);
 
       // get all folders recursive
       var folders = new List<FolderM>();

@@ -1,6 +1,5 @@
 ﻿using SimpleDB;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroup : IRecord {
