@@ -24,8 +24,8 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     public string Name { get; }

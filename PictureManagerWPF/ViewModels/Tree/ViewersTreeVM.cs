@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using PictureManager.Domain;
 using PictureManager.Domain.CatTreeViewModels;
+using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using DU = PictureManager.Domain.Utils;
 
@@ -28,10 +29,10 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-      SyncCollection((ObservableCollection<object>)sender, Items, this, SyncCollection);
+      SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
       DU.Tree.SyncCollection<ViewerM, ViewerTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
         model => DU.Tree.GetDestItemCat(model, model.Id, All, () => new(model, parent), null));

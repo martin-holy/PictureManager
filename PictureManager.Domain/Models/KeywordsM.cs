@@ -12,8 +12,8 @@ using PictureManager.Domain.Utils;
 namespace PictureManager.Domain.Models {
   public sealed class KeywordsM : ITreeBranch {
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     private readonly Core _core;
@@ -46,7 +46,7 @@ namespace PictureManager.Domain.Models {
         return keyword;
 
       // set root as => Parent of the first Keyword from fullPath (or) CategoryGroup "Auto Added"
-      var root = (ITreeBranch)(keyword?.Parent ?? AutoAddedGroup);
+      var root = keyword?.Parent ?? AutoAddedGroup;
 
       // for each keyword in pathNames => find or create
       foreach (var name in pathNames)
@@ -74,7 +74,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(KeywordM item, string name) {
       item.Name = name;
-      ((ITreeBranch)item.Parent).Items.SetInOrder(item, GetItemName);
+      item.Parent.Items.SetInOrder(item, GetItemName);
       DataAdapter.IsModified = true;
     }
 
@@ -86,7 +86,7 @@ namespace PictureManager.Domain.Models {
       _core.Segments.RemoveKeywordsFromSegments(keywords);
       _core.MediaItems.RemoveKeywordsFromMediaItems(keywords);
 
-      ((ITreeBranch)item.Parent).Items.Remove(item);
+      item.Parent.Items.Remove(item);
 
       foreach (var keyword in keywords) {
         keyword.Parent = null;

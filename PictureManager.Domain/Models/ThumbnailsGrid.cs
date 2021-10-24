@@ -1,9 +1,7 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Extensions;
+﻿using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

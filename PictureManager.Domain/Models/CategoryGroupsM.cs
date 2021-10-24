@@ -39,12 +39,12 @@ namespace PictureManager.Domain.Models {
 
     public void GroupRename(CategoryGroupM group, string name) {
       group.Name = name;
-      ((ITreeBranch)group.Parent).Items.SetInOrder(group, x => x is CategoryGroupM cg ? cg.Name : string.Empty);
+      group.Parent.Items.SetInOrder(group, x => x is CategoryGroupM cg ? cg.Name : string.Empty);
       DataAdapter.IsModified = true;
     }
 
     public void GroupMove(CategoryGroupM group, CategoryGroupM dest, bool aboveDest) {
-      ((ITreeBranch)group.Parent).Items.Move(group, dest, aboveDest);
+      group.Parent.Items.Move(group, dest, aboveDest);
       DataAdapter.IsModified = true;
     }
 
@@ -61,7 +61,7 @@ namespace PictureManager.Domain.Models {
           break;
       }
 
-      ((ITreeBranch)group.Parent).Items.Remove(group);
+      group.Parent.Items.Remove(group);
       All.Remove(group);
       DataAdapter.IsModified = true;
     }

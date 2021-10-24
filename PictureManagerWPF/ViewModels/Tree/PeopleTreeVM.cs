@@ -35,12 +35,12 @@ namespace PictureManager.ViewModels.Tree {
 
     private void BaseVMItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
       // sync Category Groups
-      _coreVM.CategoryGroupsTreeVM.SyncCollection((ObservableCollection<object>)sender, Items, this, SyncCollection);
+      _coreVM.CategoryGroupsTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       // sync Items
-      SyncCollection((ObservableCollection<object>)sender, Items, this, SyncCollection);
+      SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<object> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<PersonBaseVM, PersonTreeVM>(src, dest, parent,
         (baseVM, treeVM) => treeVM.BaseVM.Equals(baseVM),
         baseVM => DU.Tree.GetDestItemCat(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), null));

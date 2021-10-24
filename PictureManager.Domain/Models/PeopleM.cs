@@ -12,8 +12,8 @@ using SimpleDB;
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : ITreeBranch {
     #region ITreeBranch implementation
-    public object Parent { get; set; }
-    public ObservableCollection<object> Items { get; set; } = new();
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     private readonly Core _core;
@@ -64,14 +64,14 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(PersonM item, string name) {
       item.Name = name;
-      ((ITreeBranch)item.Parent).Items.SetInOrder(item, GetItemName);
+      item.Parent.Items.SetInOrder(item, GetItemName);
       DataAdapter.IsModified = true;
     }
 
     public void ItemDelete(PersonM person) {
       _core.MediaItems.RemovePersonFromMediaItems(person);
       _core.Segments.RemovePersonFromSegments(person);
-      ((ITreeBranch)person.Parent).Items.Remove(person);
+      person.Parent.Items.Remove(person);
       person.Parent = null;
       person.Segment = null;
       person.Segments = null;

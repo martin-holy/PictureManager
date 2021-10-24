@@ -14,7 +14,7 @@ namespace PictureManager.ViewModels {
     #endregion
 
     #region ITreeLeaf implementation
-    public object Parent { get; set; }
+    public ITreeBranch Parent { get; set; }
     #endregion
 
     public PersonM Model { get; }

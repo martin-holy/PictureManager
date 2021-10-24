@@ -2,7 +2,6 @@
 using SimpleDB;
 using System;
 using System.Linq;
-using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
@@ -45,7 +44,7 @@ namespace PictureManager.Domain.DataAdapters {
         // reference to parent and back reference to children
         if (!string.IsNullOrEmpty(keyword.Csv[2])) {
           keyword.Parent = _model.AllDic[int.Parse(keyword.Csv[2])];
-          ((ITreeBranch)keyword.Parent).Items.Add(keyword);
+          keyword.Parent.Items.Add(keyword);
         }
 
         // csv array is not needed any more
