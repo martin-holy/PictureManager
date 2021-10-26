@@ -190,8 +190,5 @@ namespace PictureManager.UserControls {
       Search.TbSearch.Text = string.Empty;
       Search.Visibility = Visibility.Visible;
     }
-
-    private void ItemToolTip_ToolTipOpening(object sender, ToolTipEventArgs e) =>
-      (((FrameworkElement)sender).DataContext as PersonTreeVM)?.BaseVM.Model.Segment?.SetPictureAsync(App.Core.Segments.SegmentSize);
   }
 }

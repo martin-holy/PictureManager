@@ -4,7 +4,8 @@
                     xmlns:uc="clr-namespace:PictureManager.UserControls">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:CategoryGroupTreeVM}" ItemsSource="{Binding Items}">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal"
+                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
       <uc:CategoryGroupIconControl Category="{Binding BaseVM.Model.Category}" />
       <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
     </StackPanel>
