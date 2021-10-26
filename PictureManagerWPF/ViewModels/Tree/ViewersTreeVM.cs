@@ -32,10 +32,10 @@ namespace PictureManager.ViewModels.Tree {
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, DU.Tree.OnItemsChanged onItemsChanged) {
       DU.Tree.SyncCollection<ViewerM, ViewerTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => DU.Tree.GetDestItemCat(model, model.Id, All, () => new(model, parent), null));
+        model => DU.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), null));
     }
 
     public override string GetTitle(ICatTreeViewItem item) => ((ViewerTreeVM)item).Model.Name;

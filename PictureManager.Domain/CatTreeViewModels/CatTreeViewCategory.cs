@@ -45,7 +45,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public virtual bool CanSort(ICatTreeViewItem root) => root.Items.Count > 0 && (CanCreateItems || CanRenameItems);
 
     public virtual string ValidateNewItemTitle(ICatTreeViewItem root, string name) =>
-      root.Items.SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name, StringComparison.Ordinal)) != null
+      root.Items.Cast<ICatTreeViewItem>().SingleOrDefault(x => !(x is ICatTreeViewGroup) && x.Title.Equals(name, StringComparison.Ordinal)) != null
         ? $"{name} item already exists!"
         : null;
 
@@ -58,7 +58,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
 
     public virtual void ItemRename(ICatTreeViewItem item, string name) {
       item.Title = name;
-      CatTreeViewUtils.SetItemInPlace(item.Parent, item);
+      CatTreeViewUtils.SetItemInPlace((ICatTreeViewItem)item.Parent, item);
     }
 
     public virtual void ItemDelete(ICatTreeViewItem item) => item.Parent.Items.Remove(item);
@@ -98,7 +98,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
 
     public virtual void GroupRename(ICatTreeViewGroup group, string name) {
       group.Title = name;
-      CatTreeViewUtils.SetItemInPlace(group.Parent, group);
+      CatTreeViewUtils.SetItemInPlace((ICatTreeViewItem)group.Parent, group);
     }
 
     public virtual void GroupDelete(ICatTreeViewGroup group) {

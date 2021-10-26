@@ -53,7 +53,7 @@ namespace PictureManager.Commands {
         "Rename Item",
         "Enter the new name for the Item.",
         cat.GetTitle(item),
-        answer => cat.ValidateNewItemTitle(item.Parent, answer),
+        answer => cat.ValidateNewItemTitle((ICatTreeViewItem)item.Parent, answer),
         out var output);
 
       if (!result) return;
@@ -107,7 +107,7 @@ namespace PictureManager.Commands {
         "Rename Group",
         "Enter the new name for the Group.",
         cat.GetGroupTitle(item),
-        answer => cat.ValidateNewGroupTitle(item.Parent, answer),
+        answer => cat.ValidateNewGroupTitle((ICatTreeViewItem)item.Parent, answer),
         out var output);
 
       if (!result) return;

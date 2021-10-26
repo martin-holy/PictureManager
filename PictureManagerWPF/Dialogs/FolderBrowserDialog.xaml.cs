@@ -72,7 +72,7 @@ namespace PictureManager.Dialogs {
 
     public void LoadSubFolders() {
       // remove placeholder
-      if (Items.Count == 1 && Items[0].Title == null) Items.Clear();
+      if (Items.Count == 1 && ((ICatTreeViewItem)Items[0]).Title == null) Items.Clear();
 
       var fullPath = FullPath + Path.DirectorySeparatorChar;
 

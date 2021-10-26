@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 
@@ -32,10 +31,10 @@ namespace PictureManager.ViewModels.Tree {
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<FolderKeywordM, FolderKeywordTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItemCat(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
+        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
     }
 
     private void LoadRoot() {
@@ -49,7 +48,7 @@ namespace PictureManager.ViewModels.Tree {
           item.IsHidden = true;
     }
 
-    private FolderKeywordTreeVM ItemCreateVM(FolderKeywordM model, ICatTreeViewItem parent) {
+    private FolderKeywordTreeVM ItemCreateVM(FolderKeywordM model, ITreeBranch parent) {
       var item = new FolderKeywordTreeVM(model, parent);
       item.OnExpandedChanged += (o, _) => HandleItemExpandedChanged(o as FolderKeywordTreeVM);
 

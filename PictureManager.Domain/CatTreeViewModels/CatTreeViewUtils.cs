@@ -29,22 +29,22 @@ namespace PictureManager.Domain.CatTreeViewModels {
       if (item == null) return null;
       while (true) {
         if (item.Parent == null) return item;
-        item = item.Parent;
+        item = (ICatTreeViewItem)item.Parent;
       }
     }
 
     public static void GetThisAndItemsRecursive(ICatTreeViewItem self, ref List<ICatTreeViewItem> items) {
       items.Add(self);
-      foreach (var item in self.Items)
+      foreach (var item in self.Items.Cast<ICatTreeViewItem>())
         GetThisAndItemsRecursive(item, ref items);
     }
 
     public static void GetThisAndParentRecursive(ICatTreeViewItem self, ref List<ICatTreeViewItem> items) {
       items.Add(self);
-      var parent = self.Parent;
+      var parent = (ICatTreeViewItem)self.Parent;
       while (parent != null) {
         items.Add(parent);
-        parent = parent.Parent;
+        parent = (ICatTreeViewItem)parent.Parent;
       }
     }
 
@@ -54,7 +54,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
       var names = new List<string> { item.Title };
       while (parent != null) {
         if (parent is ICatTreeViewCategory) break;
-        names.Add(parent.Title);
+        names.Add(((ICatTreeViewItem)parent).Title);
         parent = parent.Parent;
       }
       names.Reverse();
@@ -65,18 +65,18 @@ namespace PictureManager.Domain.CatTreeViewModels {
     public static void ExpandAll(ICatTreeViewItem root) {
       if (root.Items.Count == 0) return;
       root.IsExpanded = true;
-      foreach (var item in root.Items)
+      foreach (var item in root.Items.Cast<ICatTreeViewItem>())
         ExpandAll(item);
     }
 
     public static void ExpandTo(ICatTreeViewItem item) {
       // expand item as well if it has any sub item and not just placeholder
-      if (item.Items.Count > 0 && item.Items[0].Title != null)
+      if (item.Items.Count > 0 && ((ICatTreeViewItem)item.Items[0]).Title != null)
         item.IsExpanded = true;
-      var parent = item.Parent;
+      var parent = (ICatTreeViewItem)item.Parent;
       while (parent != null) {
         parent.IsExpanded = true;
-        parent = parent.Parent;
+        parent = (ICatTreeViewItem)parent.Parent;
       }
     }
 
@@ -98,7 +98,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
           }
         }
 
-        if (string.Compare(item.Title, i.Title, StringComparison.CurrentCultureIgnoreCase) < 0) break;
+        if (string.Compare(item.Title, ((ICatTreeViewItem)i).Title, StringComparison.CurrentCultureIgnoreCase) < 0) break;
         idx++;
       }
 
@@ -130,7 +130,7 @@ namespace PictureManager.Domain.CatTreeViewModels {
         root.Items.Move(root.Items.IndexOf(group), groups.IndexOf(group));
 
       // sort items
-      var items = root.Items.Where(x => x is not ICatTreeViewGroup)
+      var items = root.Items.Cast<ICatTreeViewItem>().Where(x => x is not ICatTreeViewGroup)
         .OrderBy(x => x.Title, StringComparer.CurrentCultureIgnoreCase).ToList();
       foreach (var item in items)
         root.Items.Move(root.Items.IndexOf(item), items.IndexOf(item));

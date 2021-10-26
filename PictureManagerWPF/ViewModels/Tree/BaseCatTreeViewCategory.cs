@@ -15,8 +15,8 @@ namespace PictureManager.ViewModels.Tree {
 
       cat.SetTitle(item, name);
 
-      var idx = CatTreeViewUtils.SetItemInPlace(item.Parent, item);
-      var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, item.Parent, idx);
+      var idx = CatTreeViewUtils.SetItemInPlace((ICatTreeViewItem)item.Parent, item);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, (ICatTreeViewItem)item.Parent, idx);
 
       table.All.Move(item as IRecord, allIdx);
       table.DataAdapter.IsModified = true;
@@ -33,7 +33,7 @@ namespace PictureManager.ViewModels.Tree {
 
       base.ItemMove(item, dest, aboveDest);
       var idx = item.Parent.Items.IndexOf(item);
-      var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, item.Parent, idx);
+      var allIdx = Core.GetAllIndexBasedOnTreeOrder(table.All, (ICatTreeViewItem)item.Parent, idx);
 
       table.All.Move(item as IRecord, allIdx);
       table.DataAdapter.IsModified = true;

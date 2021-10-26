@@ -53,10 +53,10 @@ namespace PictureManager.ViewModels {
 
     public void SelectNext(VideoClipViewModel current, bool inGroup) {
       var groups = new List<List<ICatTreeViewItem>>();
-      groups.AddRange(Items.Where(x => x is ICatTreeViewGroup g && g.Items.Count > 0).Select(g => g.Items.ToList()));
+      groups.AddRange(Items.Where(x => x is ICatTreeViewGroup g && g.Items.Count > 0).Select(g => ((ICatTreeViewItem)g).Items.Cast<ICatTreeViewItem>().ToList()));
 
       if (Items.Any(x => x is not ICatTreeViewGroup))
-        groups.Add(Items.Where(x => x is not ICatTreeViewGroup).ToList());
+        groups.Add(Items.Where(x => x is not ICatTreeViewGroup).Cast<ICatTreeViewItem>().ToList());
 
       if (groups.Count == 0) return;
 
@@ -178,7 +178,7 @@ namespace PictureManager.ViewModels {
       else {
         // update parent 
         if (!Equals(item.Parent, dest.Parent)) {
-          App.Core.VideoClips.ItemMove(item.Tag as VideoClip, dest.Parent.Tag as VideoClipsGroup);
+          App.Core.VideoClips.ItemMove(item.Tag as VideoClip, ((ICatTreeViewItem)dest.Parent).Tag as VideoClipsGroup);
           item.Parent.Items.Remove(item);
           dest.Parent.Items.Add(item);
           item.Parent = dest.Parent;
@@ -202,7 +202,7 @@ namespace PictureManager.ViewModels {
     }
 
     public override void GroupDelete(ICatTreeViewGroup group) {
-      foreach (var item in group.Items)
+      foreach (var item in group.Items.Cast<ICatTreeViewItem>())
         ItemDelete(item);
 
       group.Parent.Items.Remove(group);
