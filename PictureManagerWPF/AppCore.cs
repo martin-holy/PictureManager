@@ -21,6 +21,7 @@ namespace PictureManager {
     public PeopleBaseVM PeopleBaseVM { get; }
     public KeywordsBaseVM KeywordsBaseVM { get; }
     public ViewersBaseVM ViewersBaseVM { get; }
+    public SegmentsBaseVM SegmentsBaseVM { get; }
 
     #region TreeView Roots and Categories
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
@@ -58,6 +59,7 @@ namespace PictureManager {
       PeopleBaseVM = new(this, App.Core.PeopleM);
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
       ViewersBaseVM = new(this, App.Core.ViewersM);
+      SegmentsBaseVM = new(App.Core);
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
