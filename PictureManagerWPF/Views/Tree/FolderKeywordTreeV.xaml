@@ -4,7 +4,8 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:FolderKeywordTreeVM}" ItemsSource="{Binding Items}">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal"
+                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
       <mhc:Icon Source="{StaticResource IconFolderPuzzle}" Fill="{StaticResource ColorBrushFolder}" />
       <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
       <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />

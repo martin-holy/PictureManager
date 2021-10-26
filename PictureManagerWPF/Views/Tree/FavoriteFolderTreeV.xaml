@@ -4,10 +4,15 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:FavoriteFolderTreeVM}">
-    <StackPanel Orientation="Horizontal">
-      <mhc:Icon Source="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}" />
-      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Title}" />
-    </StackPanel>
+    <Grid Background="Transparent"
+          ToolTip="{Binding Model.Folder.FullPath}">
+      <StackPanel Orientation="Horizontal"
+                  Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
+        <mhc:Icon Source="{StaticResource IconFolder}" Fill="{StaticResource ColorBrushFolder}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Title}" />
+      </StackPanel>
+    </Grid>
+    
   </HierarchicalDataTemplate>
 
 </ResourceDictionary>

@@ -6,8 +6,7 @@
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-             xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
-             xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree">
+             xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain">
   
   <UserControl.Resources>
     <ResourceDictionary>
@@ -86,7 +85,8 @@
         <!-- ICatTreeViewCategory -->
         <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
           <Border Height="40">
-            <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal"
+                        Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
               <cc:IconRect IconName="{Binding IconName}" Size="24" />
               <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
             </StackPanel>
@@ -110,7 +110,6 @@
           <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
           <EventSetter Event="MouseLeftButtonUp" Handler="TreeView_Select" />
           <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
-          <EventSetter Event="ToolTipOpening" Handler="ItemToolTip_ToolTipOpening" />
           
           <Style.Triggers>
             <MultiDataTrigger>
@@ -121,36 +120,9 @@
               <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
             </MultiDataTrigger>
 
-            <!-- this is for Folder -->
             <DataTrigger Binding="{Binding IsHidden}" Value="True">
               <Setter Property="Visibility" Value="Collapsed" />
             </DataTrigger>
-
-            <DataTrigger Binding="{Binding ToolTip, Converter={StaticResource AllToBoolConverter}}" Value="True">
-              <Setter Property="ToolTip" Value="{Binding ToolTip}" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type tree:FavoriteFolderTreeVM}">
-              <Setter Property="ToolTip" Value="{Binding Model.Folder.FullPath}" />
-            </DataTrigger>
-            
-            <!-- Persons Segment -->
-            <MultiDataTrigger>
-              <MultiDataTrigger.Conditions>
-                <Condition Binding="{Binding Converter={StaticResource DataTypeConverter}}" Value="{x:Type tree:PersonTreeVM}" />
-                <Condition Binding="{Binding BaseVM.Model.Segment, Converter={StaticResource AllToBoolConverter}}" Value="True" />
-              </MultiDataTrigger.Conditions>
-              <Setter Property="ToolTip">
-                <Setter.Value>
-                  <ToolTip BorderThickness="0" Padding="0">
-                    <Border BorderThickness="1" BorderBrush="Black">
-                      <Image Source="{Binding BaseVM.Model.Segment.Picture}" Width="{Binding Segments.SegmentSize, Source={x:Static pm:App.Core}}" />
-                    </Border>
-                  </ToolTip>
-                </Setter.Value>
-              </Setter>
-            </MultiDataTrigger>
-
           </Style.Triggers>
         </Style>
       </cc:CatTreeView.ItemContainerStyle>

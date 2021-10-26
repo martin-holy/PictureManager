@@ -5,7 +5,8 @@
                     xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:FolderTreeVM}" ItemsSource="{Binding Items}">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal"
+                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
       <mhc:Icon>
         <mhc:Icon.Style>
           <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">

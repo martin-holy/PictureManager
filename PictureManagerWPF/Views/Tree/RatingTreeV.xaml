@@ -4,7 +4,7 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:RatingTreeVM}">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" Margin="18,0,0,0">
       <StackPanel Orientation="Horizontal">
         <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
         <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
