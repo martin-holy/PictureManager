@@ -11,7 +11,7 @@ namespace PictureManager.ViewModels.Tree {
     public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) => throw new NotImplementedException();
 
     public override void ItemRename(ICatTreeViewItem item, string name) {
-      if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
+      if (Domain.Utils.Tree.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       cat.SetTitle(item, name);
 
@@ -27,7 +27,7 @@ namespace PictureManager.ViewModels.Tree {
     public override void ItemCopy(ICatTreeViewItem item, ICatTreeViewItem dest) => throw new NotImplementedException();
 
     public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) {
-      if (CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
+      if (Domain.Utils.Tree.GetTopParent(item) is not ICatTreeViewCategory cat || cat is not ITable table) return;
 
       var saveGroups = dest is ICatTreeViewCategory || dest is ICatTreeViewGroup || !Equals(item.Parent, dest.Parent);
 

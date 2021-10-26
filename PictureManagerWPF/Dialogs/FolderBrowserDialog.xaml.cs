@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.Dialogs {
   public partial class FolderBrowserDialog : INotifyPropertyChanged {
@@ -55,7 +56,7 @@ namespace PictureManager.Dialogs {
   }
 
   public class FolderTreeViewItem : CatTreeViewItem {
-    public string FullPath => CatTreeViewUtils.GetFullPath(this, Path.DirectorySeparatorChar.ToString());
+    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Title);
 
     public FolderTreeViewItem() {
       OnExpandedChanged += (_, _) => {

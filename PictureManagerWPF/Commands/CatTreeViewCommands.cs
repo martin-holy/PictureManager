@@ -2,6 +2,8 @@ using PictureManager.Dialogs;
 using PictureManager.Domain.CatTreeViewModels;
 using System;
 using System.Windows.Input;
+using PictureManager.Domain.Interfaces;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.Commands {
   public static class CatTreeViewCommands {
@@ -24,7 +26,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemNew(object parameter) {
-      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewItem item || Tree.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -46,7 +48,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemRename(object parameter) {
-      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewItem item || Tree.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -68,7 +70,7 @@ namespace PictureManager.Commands {
     }
 
     public static void ItemDelete(object parameter) {
-      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewItem item || Tree.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
@@ -85,7 +87,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupNew(object parameter) {
-      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewItem item || Tree.GetTopParent(item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -100,7 +102,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupRename(object parameter) {
-      if (parameter is not ICatTreeViewGroup item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewGroup item || Tree.GetTopParent((ITreeLeaf)item) is not ICatTreeViewCategory cat) return;
 
       var result = InputDialog.Open(
         cat.CategoryGroupIconName,
@@ -115,7 +117,7 @@ namespace PictureManager.Commands {
     }
 
     public static void GroupDelete(object parameter) {
-      if (parameter is not ICatTreeViewGroup item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewGroup item || Tree.GetTopParent((ITreeLeaf)item) is not ICatTreeViewCategory cat) return;
 
       if (!MessageDialog.Show(
         "Delete Confirmation",
