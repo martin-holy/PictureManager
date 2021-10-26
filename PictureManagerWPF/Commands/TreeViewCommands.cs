@@ -6,6 +6,7 @@ using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
 using System.Windows.Input;
+using PictureManager.Domain.Utils;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.Commands {
@@ -31,7 +32,7 @@ namespace PictureManager.Commands {
     }
 
     private static void TagItemDeleteNotUsed(object parameter) {
-      if (parameter is not ICatTreeViewItem item || CatTreeViewUtils.GetTopParent(item) is not ICatTreeViewCategory cat) return;
+      if (parameter is not ICatTreeViewItem item || Tree.GetTopParent(item) is not ICatTreeViewCategory cat) return;
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete not used items in '{item.Title}'?", true)) return;
 

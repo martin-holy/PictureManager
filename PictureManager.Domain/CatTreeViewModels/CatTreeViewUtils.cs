@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.Domain.CatTreeViewModels {
   public static class CatTreeViewUtils {
@@ -23,43 +24,6 @@ namespace PictureManager.Domain.CatTreeViewModels {
         Category.MediaItemClips => IconName.MovieClapper,
         _ => IconName.Bug
       };
-    }
-
-    public static ICatTreeViewItem GetTopParent(ICatTreeViewItem item) {
-      if (item == null) return null;
-      while (true) {
-        if (item.Parent == null) return item;
-        item = (ICatTreeViewItem)item.Parent;
-      }
-    }
-
-    public static void GetThisAndItemsRecursive(ICatTreeViewItem self, ref List<ICatTreeViewItem> items) {
-      items.Add(self);
-      foreach (var item in self.Items.Cast<ICatTreeViewItem>())
-        GetThisAndItemsRecursive(item, ref items);
-    }
-
-    public static void GetThisAndParentRecursive(ICatTreeViewItem self, ref List<ICatTreeViewItem> items) {
-      items.Add(self);
-      var parent = (ICatTreeViewItem)self.Parent;
-      while (parent != null) {
-        items.Add(parent);
-        parent = (ICatTreeViewItem)parent.Parent;
-      }
-    }
-
-    public static string GetFullPath(ICatTreeViewItem item, string separator) {
-      if (item == null) return null;
-      var parent = item.Parent;
-      var names = new List<string> { item.Title };
-      while (parent != null) {
-        if (parent is ICatTreeViewCategory) break;
-        names.Add(((ICatTreeViewItem)parent).Title);
-        parent = parent.Parent;
-      }
-      names.Reverse();
-
-      return string.Join(separator, names);
     }
 
     public static void ExpandAll(ICatTreeViewItem root) {
@@ -113,8 +77,8 @@ namespace PictureManager.Domain.CatTreeViewModels {
           (src is ICatTreeViewGroup && dest is not ICatTreeViewGroup)) return false;
 
       // if src or dest categories are null or they are not equal
-      if (GetTopParent(src) is not ICatTreeViewCategory srcCat ||
-          GetTopParent(dest) is not ICatTreeViewCategory destCat ||
+      if (Tree.GetTopParent(src) is not ICatTreeViewCategory srcCat ||
+          Tree.GetTopParent(dest) is not ICatTreeViewCategory destCat ||
         !Equals(srcCat, destCat)) return false;
 
       return true;

@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using PictureManager.Domain.Interfaces;
+using PictureManager.Domain.Utils;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
@@ -129,7 +131,7 @@ namespace PictureManager.UserControls {
         menu.Items.Add(menuItem);
       }
 
-      if (CatTreeViewUtils.GetTopParent(item as ICatTreeViewItem) is ICatTreeViewCategory category) {
+      if (Tree.GetTopParent(item as ITreeLeaf) is ICatTreeViewCategory category) {
         if ((item as ICatTreeViewCategory)?.Category == Category.GeoNames)
           AddMenuItem(TreeViewCommands.GeoNameNewCommand);
 

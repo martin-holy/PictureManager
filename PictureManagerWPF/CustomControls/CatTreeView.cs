@@ -9,6 +9,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using PictureManager.Domain.Interfaces;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.CustomControls {
   public class CatTreeView : TreeView {
@@ -22,7 +24,7 @@ namespace PictureManager.CustomControls {
       if (item == null) return;
       UpdateLayout();
       var items = new List<ICatTreeViewItem>();
-      CatTreeViewUtils.GetThisAndParentRecursive(item, ref items);
+      Tree.GetThisAndParentRecursive(item, ref items);
       items.Reverse();
       var tvi = ItemContainerGenerator.ContainerFromItem(items[0]) as TreeViewItem;
 
@@ -52,7 +54,7 @@ namespace PictureManager.CustomControls {
     private object CanDrag(MouseEventArgs e) {
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement);
       if (tvi == null || tvi.DataContext is ICatTreeViewCategory) return null;
-      if (CatTreeViewUtils.GetTopParent(tvi.DataContext as ICatTreeViewItem) is not ICatTreeViewCategory) return null;
+      if (Tree.GetTopParent(tvi.DataContext as ITreeLeaf) is not ICatTreeViewCategory) return null;
       return tvi.DataContext;
     }
 
@@ -60,7 +62,7 @@ namespace PictureManager.CustomControls {
       DragDropAutoScroll(e);
 
       var dest = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement)?.DataContext;
-      var cat = CatTreeViewUtils.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
+      var cat = Tree.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
 
       if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
         if (dest is ICatTreeViewGroup) return DragDropEffects.Move;
@@ -75,7 +77,7 @@ namespace PictureManager.CustomControls {
     private void DoDrop(DragEventArgs e, object source, object data) {
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
       if (tvi?.DataContext is not ICatTreeViewItem dest ||
-        CatTreeViewUtils.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
+        Tree.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
 
       var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
       cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
@@ -115,7 +117,7 @@ namespace PictureManager.CustomControls {
         menu.Items.Add(menuItem);
       }
 
-      if (CatTreeViewUtils.GetTopParent(item) is ICatTreeViewCategory category) {
+      if (Tree.GetTopParent(item) is ICatTreeViewCategory category) {
         if (category.CanCreateItems || category.CanRenameItems || category.CanDeleteItems) {
           var cat = b.DataContext as ICatTreeViewCategory;
           var group = b.DataContext as ICatTreeViewGroup;
