@@ -45,7 +45,7 @@ namespace PictureManager.Commands {
 
     public void Execute(object parameter) {
       if (_command != null) _command();
-      if (_canExecuteWithParameter != null) _commandWithParameter(parameter);
+      if (_commandWithParameter != null) _commandWithParameter(parameter);
     }
 
     public event EventHandler CanExecuteChanged;
