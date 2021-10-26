@@ -1,9 +1,7 @@
-using System.Collections.ObjectModel;
+using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.CatTreeViewModels {
-  public interface ICatTreeViewItem {
-    ICatTreeViewItem Parent { get; set; }
-    ObservableCollection<ICatTreeViewItem> Items { get; set; }
+  public interface ICatTreeViewItem : ITreeBranch {
     IconName IconName { get; set; }
     string Title { get; set; }
     bool IsExpanded { get; set; }

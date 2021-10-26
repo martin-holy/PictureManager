@@ -686,7 +686,7 @@ namespace PictureManager.ViewModels {
       mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
 
       //Ratings
-      var chosenRatings = App.Ui.RatingsTreeVM.Items.Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<RatingTreeVM>().ToArray();
+      var chosenRatings = App.Ui.RatingsTreeVM.Items.Cast<ICatTreeViewItem>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<RatingTreeVM>().ToArray();
       if (chosenRatings.Length > 0)
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 

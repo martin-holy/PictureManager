@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Extensions;
 using PictureManager.Domain.Interfaces;
 
@@ -95,47 +94,5 @@ namespace PictureManager.Domain.Utils {
 
       return dest;
     }
-
-    // TODO temporary until I change ICatTreeViewItem to implement ITreeBranch
-    #region Temporary
-    public delegate void OnItemsChangedCat(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, OnItemsChangedCat onItemsChanged);
-
-    public static void SyncCollection<TSrc, TDest>(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest,
-      ICatTreeViewItem parent, Func<TSrc, TDest, bool> itemsEquals, Func<TSrc, TDest> getDestItem) where TDest : class, ICatTreeViewItem {
-      // Remove
-      foreach (var o in dest.OfType<TDest>().Where(d => !src.OfType<TSrc>().Any(s => itemsEquals(s, d))).ToArray()) {
-        dest.Remove(o);
-        o.Parent = null;
-      }
-
-      // Insert or Move
-      for (var i = 0; i < src.Count; i++) {
-        if (src[i] is not TSrc srcItem) continue;
-        if (i < dest.Count && itemsEquals(srcItem, (TDest)dest[i])) continue;
-        var destItem = getDestItem(srcItem);
-        var oldIdx = dest.IndexOf(destItem);
-        if (oldIdx < 0) {
-          dest.Insert(i, destItem);
-          destItem.Parent = parent;
-        }
-        else
-          dest.Move(oldIdx, i);
-      }
-    }
-
-    public static TDest GetDestItemCat<TSrc, TDest>(TSrc src, int srcIdx, Dictionary<int, TDest> destSrc, Func<TDest> createNew, OnItemsChangedCat onItemsChanged) {
-      if (destSrc.TryGetValue(srcIdx, out var dest)) return dest;
-
-      dest = createNew();
-      destSrc.Add(srcIdx, dest);
-
-      if (onItemsChanged == null || src is not ITreeBranch s || dest is not ICatTreeViewItem d) return dest;
-
-      s.Items.CollectionChanged += (_, _) => onItemsChanged(s.Items, d.Items, d, onItemsChanged);
-      onItemsChanged(s.Items, d.Items, d, onItemsChanged);
-
-      return dest;
-    }
-    #endregion
   }
 }

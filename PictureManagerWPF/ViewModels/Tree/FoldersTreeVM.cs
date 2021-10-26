@@ -45,10 +45,10 @@ namespace PictureManager.ViewModels.Tree {
       UpdateDrivesVisibility();
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, Domain.Utils.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<FolderM, FolderTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItemCat(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
+        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
     }
 
     public void UpdateDrivesVisibility() {
@@ -69,7 +69,7 @@ namespace PictureManager.ViewModels.Tree {
           item.IsHidden = true;
     }
 
-    private FolderTreeVM ItemCreateVM(FolderM model, ICatTreeViewItem parent) {
+    private FolderTreeVM ItemCreateVM(FolderM model, ITreeBranch parent) {
       var item = new FolderTreeVM(model, parent);
       item.OnExpandedChanged += (o, _) => HandleItemExpandedChanged(o as FolderTreeVM);
 
@@ -147,7 +147,7 @@ namespace PictureManager.ViewModels.Tree {
 
       // collapse parent if doesn't have any sub folders
       if (item.Parent.Items.Count == 0)
-        item.Parent.IsExpanded = false;
+        ((ICatTreeViewItem)item.Parent).IsExpanded = false;
     }
 
     public static void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {

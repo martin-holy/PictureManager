@@ -40,10 +40,10 @@ namespace PictureManager.ViewModels.Tree {
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ICatTreeViewItem> dest, ICatTreeViewItem parent, DU.Tree.OnItemsChangedCat onItemsChanged) {
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, DU.Tree.OnItemsChanged onItemsChanged) {
       Domain.Utils.Tree.SyncCollection<PersonBaseVM, PersonTreeVM>(src, dest, parent,
         (baseVM, treeVM) => treeVM.BaseVM.Equals(baseVM),
-        baseVM => DU.Tree.GetDestItemCat(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), null));
+        baseVM => DU.Tree.GetDestItem(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), null));
     }
 
     public override string GetTitle(ICatTreeViewItem item) => ((PersonTreeVM)item).BaseVM.Model.Name;
