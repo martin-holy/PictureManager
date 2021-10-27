@@ -17,7 +17,7 @@ namespace PictureManager.ViewModels.Tree {
     
     public bool AllSizes() => !_sliderChanged;
     public bool Fits(int size) => size >= PixelMin && size <= PixelMax;
-    public RelayCommand RangeChangedCommand { get; }
+    public RelayCommand<object> RangeChangedCommand { get; }
     public event EventHandler RangeChangedEvent = delegate { };
 
     public MediaItemSizeTreeVM() {
