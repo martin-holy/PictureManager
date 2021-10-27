@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-             xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   
@@ -41,7 +40,8 @@
 
       <DataTemplate DataType="{x:Type models:CategoryGroupM}">
         <StackPanel Orientation="Horizontal">
-          <uc:CategoryGroupIconControl Category="{Binding Category}" />
+          <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
+                    Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}" />
           <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
         </StackPanel>
       </DataTemplate>
