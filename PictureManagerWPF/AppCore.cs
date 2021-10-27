@@ -18,6 +18,7 @@ using PictureManager.Views;
 namespace PictureManager {
   public sealed class AppCore {
     public CategoryGroupsBaseVM CategoryGroupsBaseVM { get; }
+    public DrivesTreeVM DrivesTreeVM { get; }
     public PeopleBaseVM PeopleBaseVM { get; }
     public KeywordsBaseVM KeywordsBaseVM { get; }
     public ViewersBaseVM ViewersBaseVM { get; }
@@ -56,6 +57,7 @@ namespace PictureManager {
       MediaItemClipsCategory = new();
 
       CategoryGroupsBaseVM = new();
+      DrivesTreeVM = new(this);
       PeopleBaseVM = new(this, App.Core.PeopleM);
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
       ViewersBaseVM = new(this, App.Core.ViewersM);
@@ -63,7 +65,7 @@ namespace PictureManager {
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
-      FoldersTreeVM = new(App.Core, App.Core.FoldersM);
+      FoldersTreeVM = new(App.Core, this, App.Core.FoldersM);
       RatingsTreeVM = new();
       MediaItemSizesTreeVM = new(this);
       PeopleTreeVM = new(this, PeopleBaseVM);
@@ -73,6 +75,8 @@ namespace PictureManager {
       ViewersTreeVM = new(ViewersBaseVM);
 
       TreeViewCategories = new() { FavoriteFoldersTreeVM, FoldersTreeVM, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
+
+      FoldersTreeVM.Load();
     }
 
     public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {

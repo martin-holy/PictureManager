@@ -15,12 +15,14 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels.Tree {
   public sealed class FoldersTreeVM : BaseCatTreeViewCategory {
     private readonly Core _core;
+    private readonly AppCore _coreVM;
 
     public FoldersM Model { get; }
     public readonly Dictionary<int, FolderTreeVM> All = new();
 
-    public FoldersTreeVM(Core core, FoldersM model) : base(Category.Folders) {
+    public FoldersTreeVM(Core core, AppCore coreVM, FoldersM model) : base(Category.Folders) {
       _core = core;
+      _coreVM = coreVM;
       Model = model;
       Title = "Folders";
       CanHaveSubItems = true;
@@ -33,13 +35,12 @@ namespace PictureManager.ViewModels.Tree {
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.FolderDeletedEvent += (_, e) => All.Remove(e.Folder.Id);
-
-      // load items
-      ModelItems_CollectionChanged(Model.Items, null);
     }
 
+    public void Load() => ModelItems_CollectionChanged(Model.Items, null);
+
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-      SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
+      _coreVM.DrivesTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       UpdateDrivesVisibility();
     }
 
@@ -74,10 +75,8 @@ namespace PictureManager.ViewModels.Tree {
       return item;
     }
 
-    private void HandleItemExpandedChanged(FolderTreeVM item) {
-      if (item == null) return;
-      item.UpdateIconName();
-      if (!item.IsExpanded) return;
+    public void HandleItemExpandedChanged(FolderTreeVM item) {
+      if (item is not { IsExpanded: true }) return;
       item.Model.LoadSubFolders(false);
       UpdateItemsVisibility(item.Items.Cast<FolderTreeVM>());
     }
