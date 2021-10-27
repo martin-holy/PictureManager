@@ -13,7 +13,6 @@ namespace PictureManager.ViewModels {
 
     public MediaItemClipsCategory() : base(Category.MediaItemClips) {
       Title = "Clips";
-      IconName = IconName.MovieClapper;
       CanHaveGroups = true;
       CanCreateItems = true;
       CanRenameItems = true;

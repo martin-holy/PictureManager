@@ -17,9 +17,7 @@ namespace PictureManager.ViewModels.Tree {
     public KeywordsTreeVM(AppCore coreVM, KeywordsBaseVM baseVM) : base(Category.Keywords) {
       _coreVM = coreVM;
       BaseVM = baseVM;
-
       Title = "Keywords";
-      IconName = IconName.TagLabel;
       CanHaveGroups = true;
       CanHaveSubItems = true;
       CanCreateItems = true;
