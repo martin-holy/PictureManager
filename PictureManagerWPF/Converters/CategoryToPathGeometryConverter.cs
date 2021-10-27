@@ -13,15 +13,23 @@ namespace PictureManager.Converters {
         Category.FavoriteFolders => "IconFolderStar",
         Category.Folders => "IconFolder",
         Category.Ratings => "IconStar",
+        Category.MediaItemSizes => "IconRuler",
         Category.People => "IconPeopleMultiple",
         Category.FolderKeywords => "IconFolder",
         Category.Keywords => "IconTagLabel",
+        Category.GeoNames => "IconLocationCheckin",
         Category.Viewers => "IconEye",
         Category.MediaItemClips => "IconMovieClapper",
         _ => "IconBug"
       };
 
-      return Application.Current.FindResource(resourceName);
+      try {
+        return Application.Current.FindResource(resourceName);
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex);
+        return null;
+      }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>

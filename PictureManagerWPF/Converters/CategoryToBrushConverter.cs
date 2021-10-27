@@ -21,7 +21,13 @@ namespace PictureManager.Converters {
         _ => "ColorBrushWhite"
       };
 
-      return Application.Current.FindResource(resourceName);
+      try {
+        return Application.Current.FindResource(resourceName);
+      }
+      catch (Exception ex) {
+        App.Core.LogError(ex);
+        return null;
+      }
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
