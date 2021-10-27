@@ -12,9 +12,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public GeoNamesTreeVM(GeoNamesM model) : base(Category.GeoNames) {
       Model = model;
-
       Title = "GeoNames";
-      IconName = IconName.LocationCheckin;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
 

@@ -17,7 +17,6 @@ namespace PictureManager.ViewModels.Tree {
       _core = core;
       Model = model;
       Title = "Folder Keywords";
-      IconName = IconName.FolderPuzzle;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.ReloadEvent += (_, _) => {

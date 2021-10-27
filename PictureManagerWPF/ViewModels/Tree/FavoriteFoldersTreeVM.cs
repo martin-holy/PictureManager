@@ -11,7 +11,6 @@ namespace PictureManager.ViewModels.Tree {
     public FavoriteFoldersTreeVM(FavoriteFoldersM model) : base(Category.FavoriteFolders) {
       Model = model;
       Title = "Favorites";
-      IconName = IconName.FolderStar;
       CanRenameItems = true;
       CanDeleteItems = true;
       CanMoveItem = true;

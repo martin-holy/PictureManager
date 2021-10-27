@@ -19,7 +19,6 @@ namespace PictureManager.ViewModels.Tree {
       BaseVM = baseVM;
 
       Title = "People";
-      IconName = IconName.PeopleMultiple;
       CanHaveGroups = true;
       CanCreateItems = true;
       CanRenameItems = true;

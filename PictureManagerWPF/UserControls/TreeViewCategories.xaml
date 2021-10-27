@@ -43,9 +43,12 @@
 
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <mhc:IconButton Size="22" ToolTip="{Binding Title}" Click="BtnNavCategory_OnClick" ShowShadow="False"
-                              Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}"
-                              Source="{Binding IconName, Converter={StaticResource IconNameToStaticResourceConverter}}" />
+              <mhc:IconButton Size="22"
+                              ShowShadow="False"
+                              ToolTip="{Binding Title}"
+                              Click="BtnNavCategory_OnClick"
+                              Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
+                              Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -87,7 +90,9 @@
           <Border Height="40">
             <StackPanel Orientation="Horizontal"
                         Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-              <cc:IconRect IconName="{Binding IconName}" Size="24" />
+              <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
+                        Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
+                        Size="24" />
               <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
             </StackPanel>
           </Border>

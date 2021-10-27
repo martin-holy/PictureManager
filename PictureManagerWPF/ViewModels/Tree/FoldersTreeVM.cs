@@ -22,9 +22,7 @@ namespace PictureManager.ViewModels.Tree {
     public FoldersTreeVM(Core core, FoldersM model) : base(Category.Folders) {
       _core = core;
       Model = model;
-
       Title = "Folders";
-      IconName = IconName.Folder;
       CanHaveSubItems = true;
       CanCreateItems = true;
       CanRenameItems = true;
