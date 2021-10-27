@@ -247,7 +247,7 @@ namespace PictureManager {
         // Folders
         var f = mi.Folder;
         while (f != null) {
-          var vm = FoldersTreeVM.All[f.Id];
+          var vm = f.Parent is FoldersM ? DrivesTreeVM.All[f.Id] : FoldersTreeVM.All[f.Id];
           MarkedTagsAddWithIncrease(vm);
           f = f.Parent as FolderM;
         }
