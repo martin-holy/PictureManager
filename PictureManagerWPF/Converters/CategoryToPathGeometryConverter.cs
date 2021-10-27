@@ -15,7 +15,7 @@ namespace PictureManager.Converters {
         Category.Ratings => "IconStar",
         Category.MediaItemSizes => "IconRuler",
         Category.People => "IconPeopleMultiple",
-        Category.FolderKeywords => "IconFolder",
+        Category.FolderKeywords => "IconFolderPuzzle",
         Category.Keywords => "IconTagLabel",
         Category.GeoNames => "IconLocationCheckin",
         Category.Viewers => "IconEye",
