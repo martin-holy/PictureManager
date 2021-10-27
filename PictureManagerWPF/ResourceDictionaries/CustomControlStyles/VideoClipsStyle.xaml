@@ -75,7 +75,8 @@
                 <!-- ICatTreeViewCategory -->
                 <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
                   <Border Height="40">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
                       <cc:IconRect IconName="{Binding IconName}" Size="24" />
                       <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
                     </StackPanel>
@@ -84,7 +85,8 @@
 
                 <!-- ICatTreeViewItem -->
                 <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
-                  <StackPanel Orientation="Horizontal">
+                  <StackPanel Orientation="Horizontal"
+                              Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
                     <cc:IconRect IconName="{Binding IconName}" />
                     <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
                   </StackPanel>
@@ -92,7 +94,8 @@
                 
                 <HierarchicalDataTemplate DataType="{x:Type vm:VideoClipViewModel}">
                   <Border>
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal"
+                                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
                       <Image Source="{Binding ThumbPath, Converter={StaticResource ImageSourceConverter}, ConverterParameter=IgnoreImageCache}" 
                           Stretch="Uniform" Width="100" Margin="0,4,4,4" />
                       <StackPanel>
