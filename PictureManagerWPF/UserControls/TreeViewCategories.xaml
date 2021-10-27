@@ -5,12 +5,12 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
-             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-             xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain">
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <UserControl.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/Tree/CategoryTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/CategoryGroupTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/FavoriteFolderTreeV.xaml" />
         <ResourceDictionary Source="../Views/Tree/DriveTreeV.xaml" />
@@ -84,30 +84,6 @@
           </Style.Triggers>
         </Style>
       </cc:CatTreeView.Style>
-
-      <cc:CatTreeView.Resources>
-        <!-- ICatTreeViewCategory -->
-        <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
-          <Border Height="40">
-            <StackPanel Orientation="Horizontal"
-                        Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-              <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                        Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
-                        Size="24" />
-              <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
-            </StackPanel>
-          </Border>
-        </HierarchicalDataTemplate>
-
-        <!-- ICatTreeViewItem -->
-        <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
-          <StackPanel Orientation="Horizontal">
-            <cc:IconRect IconName="{Binding IconName}" />
-            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
-            <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
-          </StackPanel>
-        </HierarchicalDataTemplate>
-      </cc:CatTreeView.Resources>
 
       <cc:CatTreeView.ItemContainerStyle>
         <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource CatTreeViewItem}">
