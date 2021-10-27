@@ -1,6 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:pm="clr-namespace:PictureManager">
+                    xmlns:pm="clr-namespace:PictureManager"
+                    xmlns:converters="clr-namespace:PictureManager.Converters">
 
   <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
   <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
@@ -13,4 +14,6 @@
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
   <pm:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
   <pm:DataTypeConverter x:Key="DataTypeConverter" />
+  <converters:CategoryToPathGeometryConverter x:Key="CategoryToPathGeometryConverter" />
+  <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
 </ResourceDictionary>
