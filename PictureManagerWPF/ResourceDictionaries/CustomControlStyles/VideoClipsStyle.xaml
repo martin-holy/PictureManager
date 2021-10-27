@@ -3,7 +3,8 @@
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
                     xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-                    xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain">
+                    xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/controls.radiobutton.xaml" />
@@ -13,6 +14,7 @@
     <ResourceDictionary Source="../NamedStyles/ButtonStyles.xaml" />
     <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
     <ResourceDictionary Source="../Brushes/Brushes.xaml" />
+    <ResourceDictionary Source="../Icons.xaml" />
     <ResourceDictionary Source="CatTreeViewStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
@@ -77,8 +79,12 @@
                   <Border Height="40">
                     <StackPanel Orientation="Horizontal"
                                 Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-                      <cc:IconRect IconName="{Binding IconName}" Size="24" />
-                      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
+                      <mhc:Icon Source="{StaticResource IconFolder}"
+                                Fill="{StaticResource ColorBrushFolder}"
+                                Size="24" />
+                      <TextBlock Style="{StaticResource TreeItemTitle}"
+                                 Text="{Binding Title}"
+                                 FontSize="18" />
                     </StackPanel>
                   </Border>
                 </HierarchicalDataTemplate>
@@ -87,8 +93,10 @@
                 <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
                   <StackPanel Orientation="Horizontal"
                               Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-                    <cc:IconRect IconName="{Binding IconName}" />
-                    <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
+                    <mhc:Icon Source="{StaticResource IconFolder}"
+                              Fill="{StaticResource ColorBrushFolder}" />
+                    <TextBlock Style="{StaticResource TreeItemTitle}"
+                               Text="{Binding Title}" />
                   </StackPanel>
                 </HierarchicalDataTemplate>
                 

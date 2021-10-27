@@ -109,7 +109,6 @@ namespace PictureManager.ViewModels {
       new CatTreeViewGroup {
         Parent = parent,
         Title = group.Name,
-        IconName = IconName.Folder,
         Tag = group
       };
 
@@ -117,7 +116,6 @@ namespace PictureManager.ViewModels {
       new VideoClipViewModel(clip) {
         Parent = parent,
         Title = string.IsNullOrEmpty(clip.Name) ? $"Clip #{parent.Items.Count(x => x is not ICatTreeViewGroup) + 1}" : clip.Name,
-        IconName = IconName.MovieClapper,
         Tag = clip
       };
 
