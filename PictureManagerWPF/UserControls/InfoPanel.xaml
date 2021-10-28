@@ -1,14 +1,16 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.InfoPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:uc="clr-namespace:PictureManager.UserControls">
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <Border DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:InfoPanel}}}"
           Style="{StaticResource SBorderGroup}" >
     <WrapPanel Orientation="Horizontal">
       <!-- Icon -->
-      <cc:IconRect IconName="{Binding IconName}" />
+      <mhc:Icon Source="{Binding IconSource}"
+                Fill="{Binding IconFill}"
+                Size="{Binding IconSize}" />
       
       <!-- Single Item -->
       <Border Style="{StaticResource SBorderText}" 
