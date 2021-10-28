@@ -8,7 +8,9 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
-  <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}" />
+  <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+    <Setter Property="Fill" Value="White" />
+  </Style>
   
   <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
     <Setter Property="Fill" Value="White" />
