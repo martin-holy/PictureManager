@@ -96,8 +96,8 @@ namespace PictureManager.UserControls {
     }
 
     private void SegmentRect_PreviewMouseDown(object sender, MouseButtonEventArgs e) {
-      if (e.OriginalSource is FrameworkElement fe && (fe.Name.Equals("MoveEllipse") || fe.Name.Equals("ResizeBorder"))) {
-        _isEditModeMove = fe.Name.Equals("MoveEllipse");
+      if (e.Source is FrameworkElement fe && (fe.Name.Equals("MovePoint") || fe.Name.Equals("ResizeBorder"))) {
+        _isEditModeMove = fe.Name.Equals("MovePoint");
         _current = (SegmentRect)fe.DataContext;
         App.Core.Segments.DeselectAll();
         App.Core.Segments.SetSelected(_current.Segment, true);

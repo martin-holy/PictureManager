@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.SegmentRectsControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:uc="clr-namespace:PictureManager.UserControls">
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <UserControl.Resources>
     <!-- SegmentRect DataTemplate -->
-    <DataTemplate x:Key="_segmentRect">
+    <DataTemplate x:Key="_segmentRect" DataType="{x:Type uc:SegmentRect}">
       <Border MinWidth="{Binding Size}" MinHeight="{Binding Size}" Background="Transparent"
               ToolTipService.InitialShowDelay="0"
               Effect="{StaticResource Res_ShadowEffect}"
@@ -22,7 +22,7 @@
             </Setter>
             <Setter Property="BorderBrush" Value="White" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="ToolTip" Value="{Binding Segment.Person.Title}" />
+            <Setter Property="ToolTip" Value="{Binding Segment.Person.Name}" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding Segment.IsSelected}" Value="True">
                 <Setter Property="BorderBrush" Value="LimeGreen" />
@@ -59,15 +59,22 @@
             </Grid.Style>
             
             <!-- Move Point -->
-            <Ellipse x:Name="MoveEllipse" Width="12" Height="12" VerticalAlignment="Center" HorizontalAlignment="Center"
-                     Effect="{StaticResource Res_ShadowEffect}" Cursor="SizeAll" Fill="White" />
+            <mhc:Icon x:Name="MovePoint"
+                      Size="12"
+                      Source="{StaticResource IconDot}"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Center"
+                      Cursor="SizeAll" />
 
             <!-- Delete Segment -->
-            <Button x:Name="BtnDelete" Width="20" Height="20" VerticalAlignment="Top" HorizontalAlignment="Right"
-                    Effect="{StaticResource Res_ShadowEffect}" Style="{StaticResource StyleButtonIcon}"
-                    ToolTip="Delete"  Margin="2,0" Click="BtnDelete_Click">
-              <cc:IconRect IconName="XCross" Size="10" />
-            </Button>
+            <mhc:IconButton x:Name="BtnDelete"
+                            Source="{StaticResource IconXCross}"
+                            Size="10"
+                            VerticalAlignment="Top"
+                            HorizontalAlignment="Right"
+                            ToolTip="Delete"
+                            Margin="2,0"
+                            Click="BtnDelete_Click" />
           </Grid>
         </Grid>
       </Border> 

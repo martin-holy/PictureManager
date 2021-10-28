@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MH.UI.WPF.Controls;
 
 namespace PictureManager.CustomControls {
   public class SegmentControl : Control {
@@ -25,26 +26,26 @@ namespace PictureManager.CustomControls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      PreviewMouseDoubleClick += (o, e) => {
+      PreviewMouseDoubleClick += (_, e) => {
         if (e.LeftButton != MouseButtonState.Pressed) return;
         MediaItemsCommands.ViewMediaItemsWithSegmentCommand.Execute(DataContext, this);
       };
 
       if (Template.FindName("PART_Border", this) is Border b)
-        b.ToolTipOpening += (o, e) => ReloadMediaItemSegmentRects();
+        b.ToolTipOpening += (_, _) => ReloadMediaItemSegmentRects();
 
       if (Template.FindName("PART_ImageGrid", this) is Grid imgGrid)
         imgGrid.PreviewMouseUp += (o, e) => Selected?.Invoke(o, e);
 
-      if (Template.FindName("PART_BtnDetail", this) is Button btnDetail)
-        btnDetail.Click += (o, e) => {
+      if (Template.FindName("PART_BtnDetail", this) is IconButton btnDetail)
+        btnDetail.Click += (_, _) => {
           if (DataContext is Segment segment && segment.Person != null)
             App.Ui.PeopleBaseVM.Current = App.Ui.PeopleBaseVM.All[segment.Person.Id];
         };
           
 
-      if (Template.FindName("PART_BtnSamePerson", this) is Button btnSamePerson)
-        btnSamePerson.Click += (o, e) => {
+      if (Template.FindName("PART_BtnSamePerson", this) is IconButton btnSamePerson)
+        btnSamePerson.Click += (_, _) => {
           App.Core.Segments.SetSelectedAsSamePerson();
           App.Core.Segments.DeselectAll();
           AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
