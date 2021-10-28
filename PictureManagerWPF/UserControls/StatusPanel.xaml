@@ -4,7 +4,7 @@
              xmlns:pm="clr-namespace:PictureManager"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
              PreviewMouseLeftButtonUp="OnPreviewMouseLeftButtonUp"
              Foreground="White" Focusable="True" VerticalAlignment="Bottom">
 
@@ -57,7 +57,7 @@
       <Border Style="{StaticResource SBorderGroup}" DataContext="{x:Static pm:App.Core}">
         <StackPanel Orientation="Horizontal">
           <!-- Icon -->
-          <cc:IconRect IconName="{x:Static pmd:IconName.ImageMultiple}" />
+          <mhc:Icon Source="{StaticResource IconImageMultiple}" />
 
           <!-- PositionSlashCount -->
           <Border>
@@ -85,17 +85,20 @@
       <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
                     Visibility="{Binding MediaItems.Current,
                                  Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.Ruler}"
+                    IconSource="{StaticResource IconRuler}"
+                    IconFill="{StaticResource ColorBrushWhite}"
                     Item="{Binding MediaItems.Current.Dimensions}" />
 
       <!-- File Size -->
       <uc:InfoPanel Visibility="{Binding MediaItems.ActiveFileSize, Source={x:Static pm:App.Core},
                                  Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.PageUpload}"
+                    IconSource="{StaticResource IconPageUpload}"
+                    IconFill="{StaticResource ColorBrushWhite}"
                     Item="{Binding MediaItems.ActiveFileSize, Source={x:Static pm:App.Core}}" />
 
       <!-- ImageActualZoom -->
-      <uc:InfoPanel IconName="{x:Static pmd:IconName.Magnify}"
+      <uc:InfoPanel IconSource="{StaticResource IconMagnify}"
+                    IconFill="{StaticResource ColorBrushWhite}"
                     Item="{Binding ZoomActualFormatted, RelativeSource={RelativeSource AncestorType={x:Type uc:StatusPanel}}}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
@@ -128,7 +131,7 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
               <DataTemplate>
-                <cc:IconRect IconName="{Binding}" />
+                <mhc:Icon Source="{StaticResource IconStar}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
@@ -150,25 +153,28 @@
             </Style.Triggers>
           </Style>
         </Border.Style>
-        <cc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
+        <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
       </Border>
 
       <!-- FilePath -->
       <uc:InfoPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type uc:StatusPanel}}}"
                     Visibility="{Binding FilePath, Converter={StaticResource AllToVisibilityConverter}}"
                     ToolTip="{Binding MediaItems.Current.FilePath, Source={x:Static pm:App.Core}}"
-                    IconName="{x:Static pmd:IconName.Folder}"
+                    IconSource="{StaticResource IconFolder}"
+                    IconFill="{StaticResource ColorBrushFolder}"
                     Items="{Binding FilePath}" />
 
       <!-- DateAndTime -->
       <uc:InfoPanel DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type uc:StatusPanel}}}"
                     Visibility="{Binding DateAndTime, Converter={StaticResource AllToVisibilityConverter}}"
-                    IconName="{x:Static pmd:IconName.Calendar}"
+                    IconSource="{StaticResource IconCalendar}"
+                    IconFill="{StaticResource ColorBrushWhite}"
                     Item="{Binding DateAndTime}" />
 
       <!-- People -->
       <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
-                    IconName="{x:Static pmd:IconName.People}"
+                    IconSource="{StaticResource IconPeople}"
+                    IconFill="{StaticResource ColorBrushPeople}"
                     Items="{Binding MediaItems.Current.InfoBoxPeople}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
@@ -191,7 +197,8 @@
 
       <!-- Keywords -->
       <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
-                    IconName="{x:Static pmd:IconName.Tag}"
+                    IconSource="{StaticResource IconTag}"
+                    IconFill="{StaticResource ColorBrushTag}"
                     Items="{Binding MediaItems.Current.InfoBoxKeywords}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
@@ -214,7 +221,8 @@
 
       <!-- Comment -->
       <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
-                    IconName="{x:Static pmd:IconName.Notification}"
+                    IconSource="{StaticResource IconNotification}"
+                    IconFill="{StaticResource ColorBrushWhite}"
                     Item="{Binding MediaItems.Current.Comment}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">

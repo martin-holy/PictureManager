@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
                     xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
@@ -43,18 +42,25 @@
 
               <Button Name="PART_BtnMarkerA" ToolTip="Set start">A</Button>
               <Button Name="PART_BtnMarkerB" ToolTip="Set end">B</Button>
-              <Button Command="cc:VideoPlayer.VideoClipsSaveCommand">
-                <cc:IconRect IconName="{x:Static pmd:IconName.Save}" Size="16" />
-              </Button>
-              <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Mute" IsChecked="{Binding VideoPlayer.Player.IsMuted}">
-                <cc:IconRect IconName="{x:Static pmd:IconName.SoundMute}" />
-              </ToggleButton>
+              <mhc:IconButton Command="cc:VideoPlayer.VideoClipsSaveCommand"
+                              Source="{StaticResource IconSave}"
+                              Size="16" />
+              <mhc:IconToggleButton Source="{StaticResource IconSoundMute}"
+                                    IsChecked="{Binding VideoPlayer.Player.IsMuted}"
+                                    ToolTip="Mute" />
                         
-              <StackPanel Orientation="Horizontal" Margin="4" 
+              <StackPanel Orientation="Horizontal"
+                          Margin="4" 
                           Visibility="{Binding VideoPlayer.ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
-                <TextBlock Text="Repeat for: " Margin="0,0,4,0" />
-                <Slider Name="PART_RepeatSlider" Value="{Binding VideoPlayer.RepeatForSeconds}" Width="70"
-                        Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" 
+                <TextBlock Text="Repeat for: "
+                           Margin="0,0,4,0" />
+                <Slider Name="PART_RepeatSlider"
+                        Value="{Binding VideoPlayer.RepeatForSeconds}"
+                        Width="70"
+                        Minimum="0"
+                        Maximum="10"
+                        TickFrequency="1"
+                        IsSnapToTickEnabled="True" 
                         AutoToolTipPlacement="BottomRight"/>
               </StackPanel>
             </StackPanel>
@@ -69,18 +75,20 @@
             </StackPanel>
 
             <!-- Clips TreeView -->
-            <cc:CatTreeView x:Name="PART_CtvClips" Grid.Row="2" Style="{StaticResource CatTreeView}" 
-                              FocusManager.IsFocusScope="True"
-                              ItemsSource="{Binding MediaItemClips}">
+            <cc:CatTreeView x:Name="PART_CtvClips"
+                            Grid.Row="2"
+                            Style="{StaticResource CatTreeView}" 
+                            FocusManager.IsFocusScope="True"
+                            ItemsSource="{Binding MediaItemClips}">
 
               <cc:CatTreeView.Resources>
                 <!-- ICatTreeViewCategory -->
-                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}" ItemsSource="{Binding Items}">
+                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewCategory}"
+                                          ItemsSource="{Binding Items}">
                   <Border Height="40">
                     <StackPanel Orientation="Horizontal"
                                 Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-                      <mhc:Icon Source="{StaticResource IconFolder}"
-                                Fill="{StaticResource ColorBrushFolder}"
+                      <mhc:Icon Source="{StaticResource IconMovieClapper}"
                                 Size="24" />
                       <TextBlock Style="{StaticResource TreeItemTitle}"
                                  Text="{Binding Title}"
@@ -90,7 +98,8 @@
                 </HierarchicalDataTemplate>
 
                 <!-- ICatTreeViewItem -->
-                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}" ItemsSource="{Binding Items}">
+                <HierarchicalDataTemplate DataType="{x:Type ctvm:ICatTreeViewItem}"
+                                          ItemsSource="{Binding Items}">
                   <StackPanel Orientation="Horizontal"
                               Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
                     <mhc:Icon Source="{StaticResource IconFolder}"
@@ -105,7 +114,9 @@
                     <StackPanel Orientation="Horizontal"
                                 Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
                       <Image Source="{Binding ThumbPath, Converter={StaticResource ImageSourceConverter}, ConverterParameter=IgnoreImageCache}" 
-                          Stretch="Uniform" Width="100" Margin="0,4,4,4" />
+                             Stretch="Uniform"
+                             Width="100"
+                             Margin="0,4,4,4" />
                       <StackPanel>
                         <TextBlock Text="{Binding Title}" Name="TbName" FontSize="16" />
 
@@ -116,11 +127,11 @@
                               <Setter Property="Margin" Value="4,0" />
                             </Style>
                           </StackPanel.Resources>
-                          <cc:IconRect IconName="Clock" Size="12" />
+                          <mhc:Icon Source="{StaticResource IconClock}" Size="12" />
                           <TextBlock Text="{Binding Duration}" />
-                          <cc:IconRect IconName="Sound3" Size="12" />
+                          <mhc:Icon Source="{StaticResource IconSound3}" Size="12" />
                           <TextBlock Text="{Binding Volume}" />
-                          <cc:IconRect IconName="RunFast" Size="12" />
+                          <mhc:Icon Source="{StaticResource IconRunFast}" Size="12" />
                           <TextBlock Text="{Binding Speed}" />
                         </StackPanel>
 

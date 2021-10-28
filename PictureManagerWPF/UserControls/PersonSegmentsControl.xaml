@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   
   <Grid Background="{StaticResource ColorBrushBackground}">
@@ -19,18 +19,31 @@
 
     <StackPanel Grid.Row="0">
       <Grid Background="#88000000" Margin="0,0,0,5">
-        <TextBlock Text="{Binding Person.Model.Name}" FontSize="20" Padding="8" HorizontalAlignment="Center" VerticalAlignment="Center" />
-        <cc:IconRect IconName="People" HorizontalAlignment="Left" Margin="6,0" />
-        <Button x:Name="BtnReload" Width="20" Height="20" Margin="2,0" Style="{StaticResource StyleButtonIcon}" HorizontalAlignment="Right">
-          <cc:IconRect IconName="Refresh" Size="10" />
-        </Button>
+        <TextBlock Text="{Binding Person.Model.Name}"
+                   FontSize="20"
+                   Padding="8"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+        <mhc:Icon Source="{StaticResource IconPeople}"
+                  Fill="{StaticResource ColorBrushPeople}"
+                  HorizontalAlignment="Left"
+                  Margin="6,0" />
+        <mhc:IconButton x:Name="BtnReload"
+                        Source="{StaticResource IconRefresh}"
+                        Size="12"
+                        Margin="2,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        ToolTip="Reload" />
       </Grid>
         
       <!-- Keywords -->
       <Border Style="{StaticResource SBorderGroup}" Margin="4,0" Background="Transparent" BorderThickness="0"
               Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
-          <cc:IconRect IconName="{x:Static pmd:IconName.Tag}" Margin="0,0,4,0" />
+          <mhc:Icon Source="{StaticResource IconTag}"
+                    Fill="{StaticResource ColorBrushTag}"
+                    Margin="0,0,4,0" />
             
           <ItemsControl ItemsSource="{Binding Person.DisplayKeywords}">
             <ItemsControl.ItemsPanel>

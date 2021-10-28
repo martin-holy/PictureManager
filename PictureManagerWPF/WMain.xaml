@@ -7,8 +7,8 @@
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:uc="clr-namespace:PictureManager.UserControls"
         xmlns:cmd="clr-namespace:PictureManager.Commands"
-        xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
         xmlns:cc="clr-namespace:PictureManager.CustomControls"
+        xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
@@ -40,19 +40,19 @@
     <controls:WindowCommands>
       <Menu x:Name="MainMenu" Background="Transparent">
         <Menu.Resources>
-          <cc:IconRect x:Key="EyeIcon" x:Shared="False" IconName="{x:Static pmd:IconName.Eye}" />
+          <mhc:Icon x:Key="EyeIcon" x:Shared="False" Source="{StaticResource IconEye}" />
         </Menu.Resources>
 
         <MenuItem Header="Tools" Style="{StaticResource StyleMenuItemRoot}">
           <MenuItem Command="cmd:WindowCommands.OpenFolderKeywordsListCommand" />
           <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand">
             <MenuItem.Icon>
-              <cc:IconRect IconName="{x:Static pmd:IconName.Settings}" />
+              <mhc:Icon Source="{StaticResource IconSettings}" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem Command="cmd:WindowCommands.AddGeoNamesFromFilesCommand">
             <MenuItem.Icon>
-              <cc:IconRect IconName="{x:Static pmd:IconName.LocationCheckin}" />
+              <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
             </MenuItem.Icon>
           </MenuItem>
           <MenuItem Command="cmd:WindowCommands.TestButtonCommand" />
@@ -70,29 +70,29 @@
           <MenuItem Command="cmd:MediaItemsCommands.RenameCommand" />
           <MenuItem Command="cmd:MediaItemsCommands.SegmentMatchingCommand">
             <MenuItem.Icon>
-              <cc:IconRect IconName="{x:Static pmd:IconName.Equals}" />
+              <mhc:Icon Source="{StaticResource IconEquals}" />
             </MenuItem.Icon>
           </MenuItem>
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource StyleMenuItemRoot}">
           <MenuItem Command="cmd:MetadataCommands.EditCommand">
             <MenuItem.Icon>
-              <cc:IconRect IconName="{x:Static pmd:IconName.Edit}" />
+              <mhc:Icon Source="{StaticResource IconEdit}" />
             </MenuItem.Icon>
           </MenuItem>
             <MenuItem Command="cmd:MetadataCommands.SaveCommand">
               <MenuItem.Icon>
-                <cc:IconRect IconName="{x:Static pmd:IconName.Save}" />
+                <mhc:Icon Source="{StaticResource IconSave}" />
               </MenuItem.Icon>
             </MenuItem>
           <MenuItem Command="cmd:MetadataCommands.CancelCommand">
             <MenuItem.Icon>
-              <cc:IconRect IconName="{x:Static pmd:IconName.Cancel}" />
+              <mhc:Icon Source="{StaticResource IconCancel}" />
             </MenuItem.Icon>
           </MenuItem>
             <MenuItem Command="cmd:MetadataCommands.CommentCommand">
               <MenuItem.Icon>
-                <cc:IconRect IconName="{x:Static pmd:IconName.Notification}" />
+                <mhc:Icon Source="{StaticResource IconNotification}" />
               </MenuItem.Icon>
             </MenuItem>
           <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
@@ -138,11 +138,11 @@
       <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Image" Click="OnMediaTypesChanged"
                       IsChecked="{Binding MediaItems.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
-          <cc:IconRect IconName="{x:Static pmd:IconName.Image}" />
+          <mhc:Icon Source="{StaticResource IconImage}" />
         </ToggleButton>
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Video" Click="OnMediaTypesChanged"
                       IsChecked="{Binding MediaItems.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
-          <cc:IconRect IconName="{x:Static pmd:IconName.MovieClapper}" />
+          <mhc:Icon Source="{StaticResource IconMovieClapper}" />
         </ToggleButton>
       </StackPanel>
 
@@ -207,12 +207,12 @@
               <uc:ToolsTabs x:Name="ToolsTabs" />
               
               <!-- Pin Button -->
-              <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}"
-                            HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2"
-                            IsChecked="{Binding IsPinned, ElementName=RightSlidePanel}"
-                            ToolTip="Pin panel">
-                <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" Size="14" />
-              </ToggleButton>
+              <mhc:IconToggleButton Source="{StaticResource IconPin}"
+                                    Size="14"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    IsChecked="{Binding IsPinned, ElementName=RightSlidePanel}"
+                                    ToolTip="Pin panel" />
             </Grid>
           </cc:SlidePanel.Content>
         </cc:SlidePanel>

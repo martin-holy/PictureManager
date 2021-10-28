@@ -2,12 +2,14 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:pm="clr-namespace:PictureManager"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../Converters.xaml" />
     <ResourceDictionary Source="../NamedStyles/BorderStyles.xaml" />
     <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
+    <ResourceDictionary Source="../Icons.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
   <Style TargetType="cc:MediaItemThumbnail">
@@ -56,8 +58,12 @@
               </ContentControl>
 
               <!-- Video Clips over layer -->
-              <cc:IconRect IconName="ImageMultiple" Size="20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5"
-                           Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
+              <mhc:Icon Source="{StaticResource IconImageMultiple}"
+                        Size="20"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Bottom"
+                        Margin="5"
+                        Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
 
               <!-- Thumbnail Info Box -->
               <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
