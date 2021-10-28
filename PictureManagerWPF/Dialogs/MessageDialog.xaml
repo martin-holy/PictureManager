@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:cc="clr-namespace:PictureManager.CustomControls"
+        xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
         mc:Ignorable="d"
         Title="{Binding TitleText}" SizeToContent="WidthAndHeight" MinWidth="300"
         BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -27,7 +27,18 @@
 
   <StackPanel>
     <StackPanel Orientation="Horizontal" Margin="15">
-      <cc:IconRect IconName="{Binding IconName}" Size="32" Margin="0,0,5,0" />
+      <mhc:Icon Size="32" Margin="0,0,5,0" Fill="{StaticResource ColorBrushWhite}">
+        <mhc:Icon.Style>
+          <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+            <Setter Property="Source" Value="{StaticResource IconQuestion}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding CanCancel}" Value="False">
+                <Setter Property="Source" Value="{StaticResource IconInformation}" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </mhc:Icon.Style>
+      </mhc:Icon>
       <TextBlock Text="{Binding Message}" VerticalAlignment="Center" Margin="0,0,10,0" />
     </StackPanel>
 
