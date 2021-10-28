@@ -1,19 +1,15 @@
-﻿using PictureManager.Domain;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace PictureManager.Dialogs {
   public partial class MessageDialog : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
-    private IconName _iconName = IconName.Bug;
     private string _titleText;
     private string _message;
     private bool _canCancel;
 
-    public IconName IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string TitleText { get => _titleText; set { _titleText = value; OnPropertyChanged(); } }
     public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
     public bool CanCancel { get => _canCancel; set { _canCancel = value; OnPropertyChanged(); } }
@@ -23,7 +19,6 @@ namespace PictureManager.Dialogs {
 
       TitleText = title;
       Message = message;
-      IconName = canCancel ? IconName.Question : IconName.Information;
       CanCancel = canCancel;
       Owner = App.WMain;
       if (buttons == null)
@@ -55,14 +50,14 @@ namespace PictureManager.Dialogs {
 
     public static bool? Show(string title, string message, bool canCancel, string buttonYes, string buttonNo) {
       bool? result = null;
-      var md = new MessageDialog(title, message, canCancel, new string[] { buttonYes, buttonNo });
+      var md = new MessageDialog(title, message, canCancel, new [] { buttonYes, buttonNo });
 
-      md.BtnOk.Click += (o, e) => {
+      md.BtnOk.Click += (_, _) => {
         result = true;
         md.Close();
       };
 
-      md.BtnNo.Click += (o, e) => {
+      md.BtnNo.Click += (_, _) => {
         result = false;
         md.Close();
       };
