@@ -686,7 +686,7 @@ namespace PictureManager.ViewModels {
       mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
 
       //Ratings
-      var chosenRatings = App.Ui.RatingsTreeVM.Items.Cast<ICatTreeViewItem>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).Cast<RatingTreeVM>().ToArray();
+      var chosenRatings = App.Ui.RatingsTreeVM.Items.Cast<RatingTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.Or).ToArray();
       if (chosenRatings.Length > 0)
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Value.Equals(mi.Rating))).ToList();
 
@@ -695,9 +695,9 @@ namespace PictureManager.ViewModels {
         mediaItems = mediaItems.Where(mi => mi.IsNew || App.Ui.MediaItemSizesTreeVM.Size.Fits(mi.Width * mi.Height)).ToList();
 
       // People
-      var orPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.And).ToArray();
+      var orPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.Or).ToArray();
+      var notPeople = App.Ui.ActiveFilterItems.OfType<PersonTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.Not).ToArray();
       var andPeopleAny = andPeople.Length > 0;
       var orPeopleAny = orPeople.Length > 0;
       if (orPeopleAny || andPeopleAny || notPeople.Length > 0) {
@@ -718,9 +718,9 @@ namespace PictureManager.ViewModels {
       }
 
       // Keywords
-      var orKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.OrThis).ToArray();
-      var andKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.AndThis).ToArray();
-      var notKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.BackgroundBrush == BackgroundBrush.Hidden).ToArray();
+      var andKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.And).ToArray();
+      var orKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.Or).ToArray();
+      var notKeywords = App.Ui.ActiveFilterItems.OfType<KeywordTreeVM>().Where(x => x.DisplayFilter == DisplayFilter.Not).ToArray();
       var andKeywordsAny = andKeywords.Length > 0;
       var orKeywordsAny = orKeywords.Length > 0;
       if (orKeywordsAny || andKeywordsAny || notKeywords.Length > 0) {

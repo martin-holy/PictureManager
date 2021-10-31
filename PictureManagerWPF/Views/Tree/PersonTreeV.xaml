@@ -6,7 +6,7 @@
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
   
   <HierarchicalDataTemplate DataType="{x:Type tree:PersonTreeVM}">
-    <Grid Background="Transparent">
+    <Grid Background="{Binding DisplayFilter, Converter={StaticResource DisplayFilterToBrushConverter}}">
       <!-- ToolTip -->
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">

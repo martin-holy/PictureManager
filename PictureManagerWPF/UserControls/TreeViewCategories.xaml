@@ -89,7 +89,6 @@
         <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource CatTreeViewItem}">
           <Setter Property="VerticalContentAlignment" Value="Stretch" />
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Setter Property="Background" Value="{Binding BackgroundBrush, Converter={StaticResource BgColorConverter}}" />
           <EventSetter Event="MouseLeftButtonUp" Handler="TreeView_Select" />
           <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
           
@@ -97,7 +96,7 @@
             <MultiDataTrigger>
               <MultiDataTrigger.Conditions>
                 <Condition Binding="{Binding IsMarked}" Value="True" />
-                <Condition Binding="{Binding BackgroundBrush}" Value="0" />
+                <!--<Condition Binding="{Binding BackgroundBrush}" Value="0" />-->
               </MultiDataTrigger.Conditions>
               <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
             </MultiDataTrigger>

@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using PictureManager.Interfaces;
 using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
 
@@ -42,7 +43,7 @@ namespace PictureManager {
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
     public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
-    public HashSet<ICatTreeViewItem> ActiveFilterItems { get; } = new();
+    public HashSet<IFilterItem> ActiveFilterItems { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
 
@@ -79,16 +80,16 @@ namespace PictureManager {
       FoldersTreeVM.Load();
     }
 
-    public void SetBackgroundBrush(ICatTreeViewItem item, BackgroundBrush backgroundBrush) {
-      item.BackgroundBrush = backgroundBrush;
-      if (backgroundBrush == BackgroundBrush.Default)
+    public void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
+      item.DisplayFilter = displayFilter;
+      if (displayFilter == DisplayFilter.None)
         ActiveFilterItems.Remove(item);
       else
         ActiveFilterItems.Add(item);
 
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
       AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
-      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterHiddenCount));
+      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterNotCount));
     }
 
     public static void ToggleKeyword(KeywordTreeVM keyword) {
@@ -185,8 +186,8 @@ namespace PictureManager {
       }
     }
 
-    public async Task ActivateFilter(ICatTreeViewItem item, BackgroundBrush mode) {
-      SetBackgroundBrush(item, item.BackgroundBrush != BackgroundBrush.Default ? BackgroundBrush.Default : mode);
+    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
+      SetDisplayFilter(item, item.DisplayFilter != DisplayFilter.None ? DisplayFilter.None : displayFilter);
 
       // reload with new filter
       await MediaItemsViewModel.ReapplyFilter();
@@ -194,7 +195,7 @@ namespace PictureManager {
 
     public async Task ClearFilters() {
       foreach (var item in ActiveFilterItems.ToArray())
-        SetBackgroundBrush(item, BackgroundBrush.Default);
+        SetDisplayFilter(item, DisplayFilter.None);
 
       // reload with new filter
       await MediaItemsViewModel.ReapplyFilter();

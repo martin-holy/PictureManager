@@ -7,7 +7,6 @@
   <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
   <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
   <pm:RatingConverter x:Key="RatingConverter" />
-  <pm:BackgroundColorConverter x:Key="BgColorConverter" />
   <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
   <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
@@ -16,4 +15,5 @@
   <pm:DataTypeConverter x:Key="DataTypeConverter" />
   <converters:CategoryToPathGeometryConverter x:Key="CategoryToPathGeometryConverter" />
   <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
+  <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
 </ResourceDictionary>

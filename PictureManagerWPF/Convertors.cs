@@ -116,22 +116,6 @@ namespace PictureManager {
       throw new NotSupportedException();
   }
 
-  public class BackgroundColorConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException(nameof(value));
-
-      return (BackgroundBrush)value switch {
-        BackgroundBrush.AndThis => new SolidColorBrush(Color.FromRgb(142, 193, 99)),
-        BackgroundBrush.OrThis => new SolidColorBrush(Color.FromRgb(21, 133, 181)),
-        BackgroundBrush.Hidden => new SolidColorBrush(Color.FromRgb(222, 87, 58)),
-        _ => new SolidColorBrush(Color.FromRgb(37, 37, 37)),
-      };
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
-
   public class ImageSourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       try {

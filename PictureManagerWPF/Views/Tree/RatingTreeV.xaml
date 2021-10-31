@@ -4,16 +4,18 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:RatingTreeVM}">
-    <StackPanel Orientation="Horizontal" Margin="18,0,0,0">
-      <StackPanel Orientation="Horizontal">
-        <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
-        <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
-        <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
-        <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
-        <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+    <Grid Background="{Binding DisplayFilter, Converter={StaticResource DisplayFilterToBrushConverter}}">
+      <StackPanel Orientation="Horizontal" Margin="18,0,0,0">
+        <StackPanel Orientation="Horizontal">
+          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
+          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
+          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
+          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
+          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+        </StackPanel>
+        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>
-      <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
-    </StackPanel>
+    </Grid>
   </HierarchicalDataTemplate>
 
 </ResourceDictionary>
