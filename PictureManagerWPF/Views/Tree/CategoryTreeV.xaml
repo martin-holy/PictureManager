@@ -10,7 +10,7 @@
         <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
                   Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
                   Size="24" />
-        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" FontSize="18" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}" FontSize="18" />
       </StackPanel>
     </Border>
   </HierarchicalDataTemplate>

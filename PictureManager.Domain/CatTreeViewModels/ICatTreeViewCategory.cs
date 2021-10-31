@@ -1,5 +1,6 @@
 namespace PictureManager.Domain.CatTreeViewModels {
   public interface ICatTreeViewCategory : ICatTreeViewItem {
+    string Name { get; set; }
     Category Category { get; }
     bool CanHaveGroups { get; set; }
     bool CanHaveSubItems { get; set; }

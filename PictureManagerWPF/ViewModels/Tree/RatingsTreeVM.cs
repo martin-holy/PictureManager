@@ -4,7 +4,7 @@ using PictureManager.Domain;
 namespace PictureManager.ViewModels.Tree {
   public sealed class RatingsTreeVM : BaseCatTreeViewCategory {
     public RatingsTreeVM() : base(Category.Ratings) {
-      Title = "Ratings";
+      Name = "Ratings";
 
       Load();
     }

@@ -18,7 +18,7 @@ namespace PictureManager.ViewModels.Tree {
       _coreVM = coreVM;
       BaseVM = baseVM;
 
-      Title = "People";
+      Name = "People";
       CanHaveGroups = true;
       CanCreateItems = true;
       CanRenameItems = true;
