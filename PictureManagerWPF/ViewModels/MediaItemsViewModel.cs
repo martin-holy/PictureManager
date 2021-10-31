@@ -83,14 +83,8 @@ namespace PictureManager.ViewModels {
     public static void SetMetadata(ICatTreeViewItem item) {
       if (item is not ICatTreeViewTagItem bti) return;
 
-      bti.IsMarked = !bti.IsMarked;
-      if (bti.IsMarked) {
-        App.Ui.MarkedTags.Add(bti);
-      }
-      else {
-        _ = App.Ui.MarkedTags.Remove(bti);
+      if (!App.Ui.MarkedTags.Toggle(bti))
         bti.PicCount = 0;
-      }
 
       foreach (var mi in App.Core.MediaItems.ThumbsGrid.SelectedItems) {
         App.Core.MediaItems.SetModified(mi, true);

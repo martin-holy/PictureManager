@@ -42,7 +42,7 @@ namespace PictureManager {
     public MediaItemsViewModel MediaItemsViewModel { get; }
     public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
-    public Collection<ICatTreeViewTagItem> MarkedTags { get; } = new();
+    public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public HashSet<IFilterItem> ActiveFilterItems { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
@@ -207,16 +207,13 @@ namespace PictureManager {
       void MarkedTagsAddWithIncrease(ICatTreeViewTagItem item) {
         if (item == null) return;
         item.PicCount++;
-        if (item.IsMarked) return;
-        item.IsMarked = true;
-        MarkedTags.Add(item);
+        if (!MarkedTags.Contains(item))
+          MarkedTags.Add(item);
       }
 
       // clear previous marked tags
-      foreach (var item in MarkedTags) {
-        item.IsMarked = false;
+      foreach (var item in MarkedTags)
         item.PicCount = 0;
-      }
       MarkedTags.Clear();
 
       if (App.Core.MediaItems.ThumbsGrid == null) return;

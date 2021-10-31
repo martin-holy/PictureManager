@@ -93,13 +93,9 @@
           <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
           
           <Style.Triggers>
-            <MultiDataTrigger>
-              <MultiDataTrigger.Conditions>
-                <Condition Binding="{Binding IsMarked}" Value="True" />
-                <!--<Condition Binding="{Binding BackgroundBrush}" Value="0" />-->
-              </MultiDataTrigger.Conditions>
+            <DataTrigger Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True">
               <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
-            </MultiDataTrigger>
+            </DataTrigger>
 
             <DataTrigger Binding="{Binding IsHidden}" Value="True">
               <Setter Property="Visibility" Value="Collapsed" />
