@@ -21,13 +21,9 @@
     <Setter Property="Padding" Value="5,0" />
     <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
     <Style.Triggers>
-      <MultiDataTrigger>
-        <MultiDataTrigger.Conditions>
-          <Condition Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True" />
-          <Condition Binding="{Binding IsMarked}" Value="True"/>
-        </MultiDataTrigger.Conditions>
+      <DataTrigger Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True">
         <Setter Property="Visibility" Value="Visible"/>
-      </MultiDataTrigger>
+      </DataTrigger>
     </Style.Triggers>
   </Style>
 
