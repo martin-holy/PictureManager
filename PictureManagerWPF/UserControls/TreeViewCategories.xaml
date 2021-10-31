@@ -46,7 +46,7 @@
             <DataTemplate>
               <mhc:IconButton Size="22"
                               ShowShadow="False"
-                              ToolTip="{Binding Title}"
+                              ToolTip="{Binding Name}"
                               Click="BtnNavCategory_OnClick"
                               Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
                               Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}" />

@@ -16,7 +16,7 @@ namespace PictureManager.ViewModels.Tree {
     public FolderKeywordsTreeVM(Core core, FolderKeywordsM model) : base(Category.FolderKeywords) {
       _core = core;
       Model = model;
-      Title = "Folder Keywords";
+      Name = "Folder Keywords";
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.ReloadEvent += (_, _) => {

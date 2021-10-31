@@ -24,7 +24,7 @@ namespace PictureManager.ViewModels.Tree {
       _core = core;
       _coreVM = coreVM;
       Model = model;
-      Title = "Folders";
+      Name = "Folders";
       CanHaveSubItems = true;
       CanCreateItems = true;
       CanRenameItems = true;

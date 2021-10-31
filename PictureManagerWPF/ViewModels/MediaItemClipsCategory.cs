@@ -12,7 +12,7 @@ namespace PictureManager.ViewModels {
     public MediaItem CurrentMediaItem { get; private set; }
 
     public MediaItemClipsCategory() : base(Category.MediaItemClips) {
-      Title = "Clips";
+      Name = "Clips";
       CanHaveGroups = true;
       CanCreateItems = true;
       CanRenameItems = true;

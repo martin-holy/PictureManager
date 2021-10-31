@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace PictureManager.Domain.CatTreeViewModels {
   public class CatTreeViewCategory : CatTreeViewItem, ICatTreeViewCategory {
+    private string _name;
+
+    public virtual string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public Category Category { get; }
     public bool CanHaveGroups { get; set; }
     public bool CanHaveSubItems { get; set; }

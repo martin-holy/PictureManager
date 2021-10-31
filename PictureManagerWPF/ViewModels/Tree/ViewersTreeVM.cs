@@ -14,7 +14,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public ViewersTreeVM(ViewersBaseVM baseVM) : base(Category.Viewers) {
       BaseVM = baseVM;
-      Title = "Viewers";
+      Name = "Viewers";
       CanCreateItems = true;
       CanRenameItems = true;
       CanDeleteItems = true;

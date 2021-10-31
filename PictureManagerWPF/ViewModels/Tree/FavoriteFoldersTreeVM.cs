@@ -10,7 +10,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public FavoriteFoldersTreeVM(FavoriteFoldersM model) : base(Category.FavoriteFolders) {
       Model = model;
-      Title = "Favorites";
+      Name = "Favorites";
       CanRenameItems = true;
       CanDeleteItems = true;
       CanMoveItem = true;
