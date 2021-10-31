@@ -1,6 +1,5 @@
 ﻿using PictureManager.CustomControls;
 using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Utils;
@@ -74,10 +73,10 @@ namespace PictureManager.UserControls {
       PeopleGrid.UpdateMaxRowWidth();
 
       await _workTask.Start(Task.Run(async () => {
-        foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<ICatTreeViewGroup>().Where(x => !x.IsHidden)) {
+        foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<CategoryGroupTreeVM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.Title));
-          await AddPeopleAsync(group.Title, group.Items.Cast<PersonTreeVM>().Select(x => x.BaseVM), _workTask.Token);
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.BaseVM.Model.Name));
+          await AddPeopleAsync(group.BaseVM.Model.Name, group.Items.Cast<PersonTreeVM>().Select(x => x.BaseVM), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Ui.PeopleTreeVM.Items.OfType<PersonTreeVM>().ToArray();
