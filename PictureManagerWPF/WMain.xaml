@@ -119,18 +119,18 @@
       <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2,2,0" DataContext="{x:Static pm:App.Ui}"
                   ToolTip="Clear filters" Cursor="Hand" PreviewMouseLeftButtonUp="FiltersPanel_ClearFilters">
         <!-- And -->
-        <Border Background="#8EC163" Style="{StaticResource SBorderActiveFilter}">
+        <Border Background="{StaticResource DisplayFilterAndBrush}" Style="{StaticResource SBorderActiveFilter}">
           <Label Content="{Binding AppInfo.FilterAndCount}" Style="{StaticResource SShadowLabel}" />
         </Border>
 
         <!-- Or -->
-        <Border Background="#1585B5" Style="{StaticResource SBorderActiveFilter}">
+        <Border Background="{StaticResource DisplayFilterOrBrush}" Style="{StaticResource SBorderActiveFilter}">
           <Label Content="{Binding AppInfo.FilterOrCount}" Style="{StaticResource SShadowLabel}" />
         </Border>
 
-        <!-- Hidden -->
-        <Border Background="#DE573A" Style="{StaticResource SBorderActiveFilter}">
-          <Label Content="{Binding AppInfo.FilterHiddenCount}" Style="{StaticResource SShadowLabel}" />
+        <!-- Not -->
+        <Border Background="{StaticResource DisplayFilterNotBrush}" Style="{StaticResource SBorderActiveFilter}">
+          <Label Content="{Binding AppInfo.FilterNotCount}" Style="{StaticResource SShadowLabel}" />
         </Border>
       </StackPanel>
 

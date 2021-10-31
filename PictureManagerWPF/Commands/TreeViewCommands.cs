@@ -7,6 +7,7 @@ using PictureManager.ViewModels;
 using System.Linq;
 using System.Windows.Input;
 using PictureManager.Domain.Utils;
+using PictureManager.Interfaces;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.Commands {
@@ -70,11 +71,11 @@ namespace PictureManager.Commands {
       ((GeoNamesM)parameter).New(output, Settings.Default.GeoNamesUserName);
     }
 
-    private static async void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.AndThis);
+    private static async void ActivateFilterAnd(object parameter) => await App.Ui.ActivateFilter((IFilterItem)parameter, DisplayFilter.And);
 
-    private static async void ActivateFilterOr(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.OrThis);
+    private static async void ActivateFilterOr(object parameter) => await App.Ui.ActivateFilter((IFilterItem)parameter, DisplayFilter.Or);
 
-    private static async void ActivateFilterNot(object parameter) => await App.Ui.ActivateFilter((ICatTreeViewItem)parameter, BackgroundBrush.Hidden);
+    private static async void ActivateFilterNot(object parameter) => await App.Ui.ActivateFilter((IFilterItem)parameter, DisplayFilter.Not);
 
     private static void LoadByTag(object parameter) =>
       _ = App.Ui.TreeView_Select((ICatTreeViewItem)parameter,

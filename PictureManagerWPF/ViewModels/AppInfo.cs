@@ -1,5 +1,4 @@
-﻿using PictureManager.Domain;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -24,9 +23,9 @@ namespace PictureManager.ViewModels {
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
     public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
 
-    public string FilterAndCount => GetActiveFilterCountFor(BackgroundBrush.AndThis);
-    public string FilterOrCount => GetActiveFilterCountFor(BackgroundBrush.OrThis);
-    public string FilterHiddenCount => GetActiveFilterCountFor(BackgroundBrush.Hidden);
+    public string FilterAndCount => GetActiveFilterCountFor(DisplayFilter.And);
+    public string FilterOrCount => GetActiveFilterCountFor(DisplayFilter.Or);
+    public string FilterNotCount => GetActiveFilterCountFor(DisplayFilter.Not);
 
     public AppMode AppMode {
       get => _appMode;
@@ -52,8 +51,8 @@ namespace PictureManager.ViewModels {
       ProgressBarMaxB = max;
     }
 
-    private static string GetActiveFilterCountFor(BackgroundBrush bgb) {
-      var count = App.Ui.ActiveFilterItems.Count(x => x.BackgroundBrush == bgb);
+    private static string GetActiveFilterCountFor(DisplayFilter displayFilter) {
+      var count = App.Ui.ActiveFilterItems.Count(x => x.DisplayFilter == displayFilter);
       return count == 0 ? string.Empty : count.ToString();
     }
   }

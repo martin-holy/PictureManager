@@ -5,6 +5,7 @@
   <Color x:Key="White20Color">#33FFFFFF</Color>
   <Color x:Key="White30Color">#4CFFFFFF</Color>
   <Color x:Key="BlackColor">#FF252525</Color>
+  <Color x:Key="TransparentColor">#00000000</Color>
 
   <Color x:Key="GrayColorNormal">#FF7D7D7D</Color>
   <Color x:Key="GrayColor1">#FFF9F9F9</Color>
@@ -23,6 +24,13 @@
 
   <Color x:Key="MenuShadowColor">#FF000000</Color>
 
+  <Color x:Key="DisplayFilterAndColor">#FF8EC163</Color>
+  <Color x:Key="DisplayFilterOrColor">#FF1585B5</Color>
+  <Color x:Key="DisplayFilterNotColor">#FFDE573A</Color>
+  <SolidColorBrush x:Key="DisplayFilterAndBrush" Color="{StaticResource DisplayFilterAndColor}" />
+  <SolidColorBrush x:Key="DisplayFilterOrBrush" Color="{StaticResource DisplayFilterOrColor}" />
+  <SolidColorBrush x:Key="DisplayFilterNotBrush" Color="{StaticResource DisplayFilterNotColor}" />
+
   <SolidColorBrush Color="#FFF9DA77" x:Key="ColorBrushFolder" />
   <SolidColorBrush Color="#FF8EC163" x:Key="ColorBrushTag" />
   <SolidColorBrush Color="#FF137AA6" x:Key="ColorBrushPeople" />
@@ -35,6 +43,7 @@
   <SolidColorBrush x:Key="White20Brush" Color="{StaticResource White20Color}" />
   <SolidColorBrush x:Key="White30Brush" Color="{StaticResource White30Color}" />
   <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource BlackColor}" />
+  <SolidColorBrush x:Key="TransparentBrush" Color="{StaticResource TransparentColor}" />
 
   <SolidColorBrush x:Key="GrayNormalBrush" Color="{StaticResource GrayColorNormal}"/>
   <SolidColorBrush x:Key="GrayBrush1" Color="{StaticResource GrayColor1}"/>
