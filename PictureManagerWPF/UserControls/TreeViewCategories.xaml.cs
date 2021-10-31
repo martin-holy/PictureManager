@@ -53,7 +53,7 @@ namespace PictureManager.UserControls {
 
             // reload last selected source if was moved
             if (foMode == FileOperationMode.Move && srcData.IsSelected) {
-              var folder = ((FolderTreeVM)dest)?.Model.GetByPath(srcData.Title);
+              var folder = ((FolderTreeVM)dest)?.Model.GetByPath(srcData.Model.Name);
               if (folder == null) return;
               CatTreeViewUtils.ExpandTo((FolderTreeVM)dest);
               await App.Ui.TreeView_Select((FolderTreeVM)dest, false, false, false);
