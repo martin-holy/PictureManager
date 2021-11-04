@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MH.Utils.Extensions;
 using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {

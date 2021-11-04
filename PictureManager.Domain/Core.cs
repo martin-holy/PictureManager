@@ -1,10 +1,8 @@
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using SimpleDB;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using PictureManager.Domain.Models;
+using SimpleDB;
 
 namespace PictureManager.Domain {
   public sealed class Core : ILogger {
@@ -104,26 +102,6 @@ namespace PictureManager.Domain {
     public bool CanViewerSeeContentOfThisFolder(FolderM folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
 
     public bool CanViewerSee(MediaItem mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
-
-    // get index for an item in DB in same order as it is in the tree
-    public static int GetAllIndexBasedOnTreeOrder(List<IRecord> all, ICatTreeViewItem root, int treeIdx) {
-      var allIdx = 0;
-      if (all == null || root == null || treeIdx < 0) return allIdx;
-
-      // if is item below
-      if (treeIdx < root.Items.Count - 1) {
-        allIdx = all.IndexOf(root.Items[treeIdx + 1] as IRecord);
-        if (allIdx >= 0) return allIdx;
-      }
-
-      // if is item above
-      if (treeIdx > 0) {
-        allIdx = all.IndexOf(root.Items[treeIdx - 1] as IRecord);
-        if (allIdx >= 0) return allIdx + 1;
-      }
-
-      return 0;
-    }
 
     public void LogError(Exception ex) => LogError(ex, string.Empty);
 

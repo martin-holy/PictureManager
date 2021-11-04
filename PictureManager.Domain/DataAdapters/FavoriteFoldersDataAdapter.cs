@@ -1,6 +1,6 @@
-﻿using PictureManager.Domain.Models;
+﻿using System;
+using PictureManager.Domain.Models;
 using SimpleDB;
-using System;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>

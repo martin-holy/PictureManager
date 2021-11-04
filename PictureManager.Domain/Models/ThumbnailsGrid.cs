@@ -1,9 +1,9 @@
-﻿using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MH.Utils;
+using MH.Utils.BaseClasses;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGrid : ObservableObject {

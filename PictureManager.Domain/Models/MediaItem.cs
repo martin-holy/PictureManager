@@ -1,7 +1,4 @@
-﻿using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,6 +6,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using MH.Utils;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.Utils;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaItem : INotifyPropertyChanged, IRecord, IEquatable<MediaItem>, ISelectable {
@@ -43,7 +45,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
     public ObservableCollection<Segment> Segments { get; set; }
     public string Dimensions => $"{Width}x{Height}";
-    public string FilePath => Extension.PathCombine(Folder.FullPath, FileName);
+    public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");
     public Uri FilePathUri => new(FilePath);
@@ -141,7 +143,7 @@ namespace PictureManager.Domain.Models {
         var allKeywords = new List<KeywordM>();
 
         foreach (var keyword in Keywords)
-          Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
+          Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
 
         foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName)) {
           InfoBoxKeywords.Add(keyword.Name);

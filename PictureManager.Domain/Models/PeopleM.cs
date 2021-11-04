@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MH.Utils;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Utils;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -41,7 +41,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ToggleKeyword(PersonM person, KeywordM keyword) {
-      person.Keywords = Extension.Toggle(person.Keywords, keyword, true);
+      person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
       DataAdapter.IsModified = true;
     }
 
@@ -113,7 +113,7 @@ namespace PictureManager.Domain.Models {
       var set = new HashSet<KeywordM>(keywords);
       foreach (var person in All.Where(p => p.Keywords != null)) {
         foreach (var keyword in person.Keywords.Where(set.Contains)) {
-          person.Keywords = Extension.Toggle(person.Keywords, keyword, true);
+          person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
           DataAdapter.IsModified = true;
         }
       }

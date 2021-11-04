@@ -1,8 +1,4 @@
-﻿using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -10,6 +6,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.DataAdapters;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class Segments : ObservableObject, ITable {
@@ -359,7 +361,7 @@ namespace PictureManager.Domain.Models {
       var set = new HashSet<KeywordM>(keywords);
       foreach (var segment in All.Cast<Segment>().Where(s => s.Keywords != null)) {
         foreach (var keyword in segment.Keywords.Where(set.Contains)) {
-          segment.Keywords = Extension.Toggle(segment.Keywords, keyword, true);
+          segment.Keywords = ListExtensions.Toggle(segment.Keywords, keyword, true);
           DataAdapter.IsModified = true;
         }
       }

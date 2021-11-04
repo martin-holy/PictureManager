@@ -1,15 +1,15 @@
-﻿using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using MH.Utils;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Utils;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class FoldersM : ITreeBranch {
@@ -92,7 +92,7 @@ namespace PictureManager.Domain.Models {
       var renamedFiles = new Dictionary<string, string>();
 
       // Copy/Move Files and Cache on file system
-      CopyMoveFilesAndCache(mode, srcFolder.FullPath, Extension.PathCombine(destFolder.FullPath, srcFolder.Name),
+      CopyMoveFilesAndCache(mode, srcFolder.FullPath, IOExtensions.PathCombine(destFolder.FullPath, srcFolder.Name),
         ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
 
       // update objects with skipped and renamed files in mind
@@ -126,7 +126,7 @@ namespace PictureManager.Domain.Models {
 
       // run this function for each sub directory
       foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
-        CopyMoveFilesAndCache(mode, dir, Extension.PathCombine(destDirPath, dir[srcDirPathLength..]),
+        CopyMoveFilesAndCache(mode, dir, IOExtensions.PathCombine(destDirPath, dir[srcDirPathLength..]),
           ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
       }
 
@@ -144,9 +144,9 @@ namespace PictureManager.Domain.Models {
 
         var srcFileName = srcFilePath[srcDirPathLength..];
         var destFileName = srcFileName;
-        var destFilePath = Extension.PathCombine(destDirPath, destFileName);
-        var srcFilePathCache = Extension.PathCombine(srcDirPathCache, srcFileName);
-        var destFilePathCache = Extension.PathCombine(destDirPathCache, destFileName);
+        var destFilePath = IOExtensions.PathCombine(destDirPath, destFileName);
+        var srcFilePathCache = IOExtensions.PathCombine(srcDirPathCache, srcFileName);
+        var destFilePathCache = IOExtensions.PathCombine(destDirPathCache, destFileName);
 
         progress.Report(new object[] { 0, srcDirPath, destDirPath, srcFileName });
 
@@ -158,8 +158,8 @@ namespace PictureManager.Domain.Models {
           switch (result) {
             case CollisionResult.Rename: {
               renamedFiles.Add(srcFilePath, destFileName);
-              destFilePath = Extension.PathCombine(destDirPath, destFileName);
-              destFilePathCache = Extension.PathCombine(destDirPathCache, destFileName);
+              destFilePath = IOExtensions.PathCombine(destDirPath, destFileName);
+              destFilePathCache = IOExtensions.PathCombine(destDirPathCache, destFileName);
               break;
             }
             case CollisionResult.Replace: {
@@ -212,8 +212,8 @@ namespace PictureManager.Domain.Models {
       if (mode == FileOperationMode.Move) {
         // if this is done on worker thread => directory is not deleted until worker is finished
         Core.Instance.RunOnUiThread(() => {
-          Extension.DeleteDirectoryIfEmpty(srcDirPath);
-          Extension.DeleteDirectoryIfEmpty(srcDirPathCache);
+          IOExtensions.DeleteDirectoryIfEmpty(srcDirPath);
+          IOExtensions.DeleteDirectoryIfEmpty(srcDirPathCache);
         });
       }
     }
@@ -306,7 +306,7 @@ namespace PictureManager.Domain.Models {
 
     public FolderM ItemCreate(ITreeBranch root, string name) {
       // create Folder
-      Directory.CreateDirectory(Extension.PathCombine(((FolderM)root).FullPath, name));
+      Directory.CreateDirectory(IOExtensions.PathCombine(((FolderM)root).FullPath, name));
       var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
@@ -327,9 +327,9 @@ namespace PictureManager.Domain.Models {
     public void ItemRename(FolderM item, string name) {
       var parent = (FolderM)item.Parent;
 
-      Directory.Move(item.FullPath, Extension.PathCombine(parent.FullPath, name));
+      Directory.Move(item.FullPath, IOExtensions.PathCombine(parent.FullPath, name));
       if (Directory.Exists(item.FullPathCache))
-        Directory.Move(item.FullPathCache, Extension.PathCombine(parent.FullPathCache, name));
+        Directory.Move(item.FullPathCache, IOExtensions.PathCombine(parent.FullPathCache, name));
 
       item.Name = name;
 

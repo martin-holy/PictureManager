@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
