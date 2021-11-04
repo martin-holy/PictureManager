@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Utils;
+using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordM : ObservableObject, ITreeBranch {

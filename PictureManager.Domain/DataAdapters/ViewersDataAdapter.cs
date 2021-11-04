@@ -1,8 +1,8 @@
-﻿using PictureManager.Domain.Models;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Linq;
-using PictureManager.Domain.Extensions;
+using MH.Utils.Extensions;
+using PictureManager.Domain.Models;
+using SimpleDB;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
@@ -50,14 +50,14 @@ namespace PictureManager.Domain.DataAdapters {
         if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
             var f = _core.FoldersM.AllDic[int.Parse(folderId)];
-            viewer.IncludedFolders.AddInOrder(f, x => x.FullPath);
+            viewer.IncludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
         // reference to ExcludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[3]))
           foreach (var folderId in viewer.Csv[3].Split(',')) {
             var f = _core.FoldersM.AllDic[int.Parse(folderId)];
-            viewer.ExcludedFolders.AddInOrder(f, x => x.FullPath);
+            viewer.ExcludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
         // ExcludedCategoryGroups

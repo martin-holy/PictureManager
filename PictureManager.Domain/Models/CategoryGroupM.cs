@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {

@@ -1,14 +1,15 @@
-﻿using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Utils;
+using SimpleDB;
 using Directory = System.IO.Directory;
 
 namespace PictureManager.Domain.Models {
@@ -53,7 +54,7 @@ namespace PictureManager.Domain.Models {
             ? ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
             : new FileInfo(Current.FilePath).Length;
 
-          return size == null || size == 0 ? string.Empty : Extension.FileSizeToString((long)size);
+          return size == null || size == 0 ? string.Empty : IOExtensions.FileSizeToString((long)size);
         }
         catch {
           return string.Empty;
@@ -170,7 +171,7 @@ namespace PictureManager.Domain.Models {
           {Convert.ToInt32((double) done / count * 100), mi.Folder.FullPath, destFolder.FullPath, mi.FileName});
 
         var miNewFileName = mi.FileName;
-        var destFilePath = Extension.PathCombine(destFolder.FullPath, mi.FileName);
+        var destFilePath = IOExtensions.PathCombine(destFolder.FullPath, mi.FileName);
 
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
@@ -311,7 +312,7 @@ namespace PictureManager.Domain.Models {
 
     public void RemovePersonFromMediaItems(PersonM person) {
       foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.People != null && mi.People.Contains(person))) {
-        mi.People = Extension.Toggle(mi.People, person, true);
+        mi.People = ListExtensions.Toggle(mi.People, person, true);
         DataAdapter.IsModified = true;
       }
     }
@@ -320,7 +321,7 @@ namespace PictureManager.Domain.Models {
       var set = new HashSet<KeywordM>(keywords);
       foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.Keywords != null)) {
         foreach (var keyword in mi.Keywords.Where(set.Contains).ToArray()) {
-          mi.Keywords = Extension.Toggle(mi.Keywords, keyword, true);
+          mi.Keywords = ListExtensions.Toggle(mi.Keywords, keyword, true);
           DataAdapter.IsModified = true;
         }
       }

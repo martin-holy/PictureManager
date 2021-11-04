@@ -1,5 +1,5 @@
-﻿using SimpleDB;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClip : IRecord {

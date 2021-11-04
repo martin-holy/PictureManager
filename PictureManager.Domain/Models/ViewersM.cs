@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -59,7 +59,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void AddFolder(ViewerM viewer, FolderM folder, bool included) {
-      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).AddInOrder(folder, (x) => x.FullPath);
+      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).SetInOrder(folder, (x) => x.FullPath);
       DataAdapter.IsModified = true;
     }
 
@@ -69,7 +69,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void AddKeyword(ViewerM viewer, KeywordM keyword) {
-      viewer.ExcludedKeywords.AddInOrder(keyword, (x) => x.FullName);
+      viewer.ExcludedKeywords.SetInOrder(keyword, (x) => x.FullName);
       DataAdapter.IsModified = true;
     }
 

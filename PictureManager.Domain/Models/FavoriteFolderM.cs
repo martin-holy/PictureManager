@@ -1,4 +1,4 @@
-﻿using PictureManager.Domain.Extensions;
+﻿using MH.Utils.BaseClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {

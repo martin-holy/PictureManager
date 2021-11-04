@@ -1,13 +1,15 @@
-﻿using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Utils;
-using SimpleDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.Utils;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class Segment : ObservableObject, IRecord, IEquatable<Segment>, ISelectable {
@@ -90,7 +92,7 @@ namespace PictureManager.Domain.Models {
     public bool IsNotUnknown => PersonId != 0;
     public Dictionary<Segment, double> Similar { get; set; }
     public double SimMax { get; set; }
-    public string CacheFilePath => Extension.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
+    public string CacheFilePath => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
     public Segment() { }
 

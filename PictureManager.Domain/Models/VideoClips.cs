@@ -1,7 +1,7 @@
-﻿using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.Extensions;
+﻿using System.Collections.Generic;
+using MH.Utils.Extensions;
+using PictureManager.Domain.DataAdapters;
 using SimpleDB;
-using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClips : ITable {

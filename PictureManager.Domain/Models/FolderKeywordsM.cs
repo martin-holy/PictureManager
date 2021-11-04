@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordsM : ITreeBranch {
