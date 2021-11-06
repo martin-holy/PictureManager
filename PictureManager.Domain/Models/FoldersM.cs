@@ -396,5 +396,11 @@ namespace PictureManager.Domain.Models {
 
       return output.ToList();
     }
+
+    public void SetAsFolderKeyword(FolderM folder) {
+      folder.IsFolderKeyword = true;
+      DataAdapter.IsModified = true;
+      _core.FolderKeywordsM.Load();
+    }
   }
 }
