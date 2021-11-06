@@ -1,21 +1,20 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MH.Utils.Extensions;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
 using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class PersonSegmentsControl : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private PersonBaseVM _person;
@@ -56,7 +55,7 @@ namespace PictureManager.UserControls {
     private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
       if (data is not Segment segment) return;
 
-      Person.Model.Segments = Extension.Toggle(Person.Model.Segments, segment, true);
+      Person.Model.Segments = ListExtensions.Toggle(Person.Model.Segments, segment, true);
       Person.OnPropertyChanged(nameof(Person.Model.Segments));
 
       if (Person.Model.Segments?.Count > 0)

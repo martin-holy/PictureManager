@@ -1,19 +1,18 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using MH.Utils;
+using MH.Utils.Extensions;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 
 namespace PictureManager.UserControls {
   public partial class StatusPanel : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
@@ -55,7 +54,7 @@ namespace PictureManager.UserControls {
     }
 
     public string ZoomActualFormatted => App.WMain?.MediaViewer.FullImage.ZoomActualFormatted;
-    public string DateAndTime => Extension.DateTimeFromString(App.Core.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
+    public string DateAndTime => DateTimeExtensions.DateTimeFromString(App.Core.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<IconName> Rating { get; } = new();
 
     public StatusPanel() {
