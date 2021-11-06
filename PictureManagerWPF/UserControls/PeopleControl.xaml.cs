@@ -1,9 +1,4 @@
-﻿using PictureManager.CustomControls;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -11,14 +6,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MH.Utils;
+using PictureManager.CustomControls;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
 using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
   public partial class PeopleControl : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private readonly WorkTask _workTask = new();

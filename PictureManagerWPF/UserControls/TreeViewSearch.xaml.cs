@@ -1,7 +1,4 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,12 +7,15 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MH.UI.WPF.Interfaces;
+using PictureManager.CustomControls;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.UserControls {
   public partial class TreeViewSearch : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private string _searchText;
 
@@ -72,7 +72,7 @@ namespace PictureManager.UserControls {
 
     private void NavigateTo(ICatTreeViewItem item) {
       if (item != null) {
-        CatTreeViewUtils.ExpandTo(item);
+        CatTreeView.ExpandTo(item);
         App.WMain.TreeViewCategories.TvCategories.ScrollTo(item);
       }
 

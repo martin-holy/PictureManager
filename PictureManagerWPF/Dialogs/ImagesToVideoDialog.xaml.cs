@@ -1,8 +1,4 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -11,6 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MH.Utils.Extensions;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
   public partial class ImagesToVideoDialog {
@@ -29,11 +29,11 @@ namespace PictureManager.Dialogs {
 
       _items = items.ToArray();
       var firstMi = _items.First();
-      var fileName = Extension.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
+      var fileName = IOExtensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 
       Owner = owner;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
-      _outputFilePath = Extension.PathCombine(firstMi.Folder.FullPath, fileName);
+      _outputFilePath = IOExtensions.PathCombine(firstMi.Folder.FullPath, fileName);
       _outputFileName = fileName;
       _outputFolder = firstMi.Folder;
       _onSuccess = onSuccess;
@@ -102,7 +102,7 @@ namespace PictureManager.Dialogs {
         }
       };
 
-      _process.Exited += (s, e) => {
+      _process.Exited += (_, _) => {
         tcs.TrySetResult(true);
         _process.Dispose();
       };

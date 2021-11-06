@@ -1,11 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using PictureManager.CustomControls;
-using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -14,12 +7,18 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MahApps.Metro.Controls;
+using MH.Utils;
+using MH.Utils.Extensions;
+using PictureManager.CustomControls;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
 
 namespace PictureManager.UserControls {
   public partial class SegmentMatchingControl : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private readonly WorkTask _workTask = new();
     private readonly IProgress<int> _progress;

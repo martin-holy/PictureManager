@@ -1,8 +1,4 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -10,12 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using MH.Utils.Extensions;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Dialogs {
   public partial class CompressDialog : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     private CancellationTokenSource _cts;
     private Task _workTask;
@@ -25,8 +24,8 @@ namespace PictureManager.Dialogs {
     private long _totalCompressedSize;
 
     public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
-    public string TotalSourceSize => Extension.FileSizeToString(_totalSourceSize);
-    public string TotalCompressedSize => Extension.FileSizeToString(_totalCompressedSize);
+    public string TotalSourceSize => IOExtensions.FileSizeToString(_totalSourceSize);
+    public string TotalCompressedSize => IOExtensions.FileSizeToString(_totalCompressedSize);
 
     public CompressDialog() {
       InitializeComponent();
@@ -41,7 +40,7 @@ namespace PictureManager.Dialogs {
           var originalSize = new FileInfo(mi.FilePath).Length;
           var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
-          return new long[] { originalSize, newSize };
+          return new[] { originalSize, newSize };
         });
       }
     }
