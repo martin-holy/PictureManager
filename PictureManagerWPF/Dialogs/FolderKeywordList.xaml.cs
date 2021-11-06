@@ -21,6 +21,11 @@ namespace PictureManager.Dialogs {
       InitializeComponent();
     }
 
+    public static void Open() {
+      var fkl = new FolderKeywordList { Owner = App.WMain };
+      fkl.ShowDialog();
+    }
+
     private void BtnRemove_OnClick(object sender, RoutedEventArgs e) {
       if (LbFolderKeywords.SelectedItems.Count == 0) return;
       if (!MessageDialog.Show("Remove Confirmation", "Are you sure?", true)) return;
