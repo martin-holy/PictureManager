@@ -1,37 +1,33 @@
 ﻿using PictureManager.Commands;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Properties;
-using PictureManager.ViewModels;
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.CustomControls {
   public enum TimelineShift { Beginning, LargeBack, SmallBack, SmallForward, LargeForward, End }
   public enum PlayType { Video, Clip, Clips, Group }
 
   public class VideoPlayer : Control, INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    private void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    private void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
     public static readonly DependencyProperty IsPlayingProperty = DependencyProperty.Register(nameof(IsPlaying), typeof(bool), typeof(VideoPlayer));
     public static readonly DependencyProperty RotationProperty = DependencyProperty.Register(nameof(Rotation), typeof(double), typeof(VideoPlayer));
-    public static readonly DependencyProperty RepeatForSecondsProperty = DependencyProperty.Register(nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new PropertyMetadata(3));
-    public static readonly DependencyProperty PlayTypeProperty = DependencyProperty.Register(nameof(PlayType), typeof(PlayType), typeof(VideoPlayer));
+    public static readonly DependencyProperty RepeatForSecondsProperty = DependencyProperty.Register(nameof(RepeatForSeconds), typeof(int), typeof(VideoPlayer), new(3));
+    public static readonly DependencyProperty PlayTypeProperty = DependencyProperty.Register(nameof(PlayType), typeof(PlayType), typeof(VideoPlayer), new(PlayType.Video, OnPlayTypeChanged));
 
-    public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
+    //public static RoutedUICommand VideoClipSplitCommand { get; } = CommandsController.CreateCommand("Split", "Split", new KeyGesture(Key.S, ModifierKeys.Alt));
     public static RoutedUICommand VideoClipsSaveCommand { get; } = new() { Text = "Save Video Clips" };
 
     public MediaElement Player { get; set; }
     public Action RepeatEnded { get; set; }
-    public VideoClipViewModel CurrentVideoClip { get; set; }
+    public VideoClipTreeVM CurrentVideoClip { get; set; }
     public bool ShowRepeatSlider => PlayType is PlayType.Clips or PlayType.Group;
     public Slider TimelineSlider { get; private set; }
     public Slider SpeedSlider { get; private set; }
@@ -92,12 +88,13 @@ namespace PictureManager.CustomControls {
 
     public PlayType PlayType {
       get => (PlayType)GetValue(PlayTypeProperty);
-      set {
-        SetValue(PlayTypeProperty, value);
-        StartClipTimer();
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(ShowRepeatSlider));
-      }
+      set => SetValue(PlayTypeProperty, value);
+    }
+
+    private static void OnPlayTypeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) {
+      var vp = (VideoPlayer)o;
+      vp.StartClipTimer();
+      vp.OnPropertyChanged(nameof(ShowRepeatSlider));
     }
 
     static VideoPlayer() {
@@ -126,7 +123,6 @@ namespace PictureManager.CustomControls {
     private void SetUpCommands(CommandBindingCollection cbc) {
       MediaCommands.TogglePlayPause.InputGestures.Add(new KeyGesture(Key.Space));
       MediaCommands.TogglePlayPause.InputGestures.Add(new MouseGesture(MouseAction.LeftClick));
-      CommandsController.AddCommandBinding(cbc, VideoClipSplitCommand, VideoClipSplit, VideoSourceIsNotNull);
       CommandsController.AddCommandBinding(cbc, VideoClipsSaveCommand, VideoClipsSave, CanVideoClipsSave);
       CommandsController.SetTargetToCommand(MediaCommands.TogglePlayPause, this);
     }
@@ -153,7 +149,7 @@ namespace PictureManager.CustomControls {
 
       if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
-      var vc = CurrentVideoClip.Clip;
+      var vc = CurrentVideoClip.Model;
       var duration = (vc.TimeEnd - vc.TimeStart) / SpeedSlider.Value;
 
       if (duration <= 0) return;
@@ -228,7 +224,7 @@ namespace PictureManager.CustomControls {
       _clipTimer.Tick += (o, e) => {
         if (CurrentVideoClip == null || PlayType == PlayType.Video) return;
 
-        var vc = CurrentVideoClip.Clip;
+        var vc = CurrentVideoClip.Model;
         if (vc.TimeEnd > vc.TimeStart) {
           switch (PlayType) {
             case PlayType.Clip:
@@ -242,7 +238,7 @@ namespace PictureManager.CustomControls {
               TimelineSlider.Value = vc.TimeStart;
             }
             else {
-              App.Ui.MediaItemClipsCategory.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
+              App.Ui.VideoClipsTreeVM.SelectNext(CurrentVideoClip, PlayType == PlayType.Group);
             }
             break;
           }
@@ -282,7 +278,7 @@ namespace PictureManager.CustomControls {
       IsPlaying = true;
 
       if (PlayType != PlayType.Video)
-        App.Ui.MediaItemClipsCategory.SelectNext(null, false);
+        App.Ui.VideoClipsTreeVM.SelectNext(null, false);
     }
 
     private void MediaElement_OnMediaEnded(object sender, RoutedEventArgs e) {
@@ -334,34 +330,17 @@ namespace PictureManager.CustomControls {
 
     private void PlayPauseToggle(object sender, RoutedEventArgs e) => PlayPauseToggle();
 
-    public void SetMarker(VideoClipViewModel vc, bool start) {
-      vc.SetMarker(start, (int)Math.Round(TimelineSlider.Value), VolumeSlider.Value, SpeedSlider.Value);
-      if (start) CreateThumbnail(vc, Player, true);
-    }
-
-    public static void CreateThumbnail(VideoClipViewModel vc, FrameworkElement visual, bool reCreate = false) {
-      if (!File.Exists(vc.ThumbPath.LocalPath) || reCreate) {
-        Imaging.CreateVideoThumbnailFromVisual(visual, vc.ThumbPath.LocalPath, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel);
-
-        vc.OnPropertyChanged(nameof(vc.ThumbPath));
-      }
-    }
-
-    private bool VideoSourceIsNotNull() => Player.Source != null;
-
-    private void VideoClipSplit() {
-      if (CurrentVideoClip?.Clip.TimeEnd == 0)
-        SetMarker(CurrentVideoClip, false);
-      else
-        App.Ui.MediaItemClipsCategory.ItemCreate(App.Ui.MediaItemClipsCategory, string.Empty);
+    public void SetMarker(VideoClipTreeVM vc, bool start) {
+      App.Core.VideoClipsM.SetMarker(vc.Model, start, (int)Math.Round(TimelineSlider.Value), VolumeSlider.Value, SpeedSlider.Value);
+      if (start) VideoClipsTreeVM.CreateThumbnail(vc.Model, Player, true);
     }
 
     private static bool CanVideoClipsSave() =>
-      App.Core.VideoClips.DataAdapter.IsModified || App.Core.VideoClipsGroups.DataAdapter.IsModified;
+      App.Core.VideoClipsM.DataAdapter.IsModified || App.Core.VideoClipsGroupsM.DataAdapter.IsModified;
 
     private static void VideoClipsSave() {
-      App.Core.VideoClips.DataAdapter.Save();
-      App.Core.VideoClipsGroups.DataAdapter.Save();
+      App.Core.VideoClipsM.DataAdapter.Save();
+      App.Core.VideoClipsGroupsM.DataAdapter.Save();
     }
   }
 }

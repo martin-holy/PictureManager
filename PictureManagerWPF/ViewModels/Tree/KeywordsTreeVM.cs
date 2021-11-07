@@ -1,29 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MH.UI.WPF.Interfaces;
+using MH.Utils.Interfaces;
 using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
-using DU = PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class KeywordsTreeVM : BaseCatTreeViewCategory {
+  public sealed class KeywordsTreeVM : CatTreeViewCategoryBase {
+    private readonly Core _core;
     private readonly AppCore _coreVM;
 
     public KeywordsBaseVM BaseVM { get; }
     public readonly Dictionary<int, KeywordTreeVM> All = new();
 
-    public KeywordsTreeVM(AppCore coreVM, KeywordsBaseVM baseVM) : base(Category.Keywords) {
+    public KeywordsTreeVM(Core core, AppCore coreVM, KeywordsBaseVM baseVM) : base(Category.Keywords, "Keywords") {
+      _core = core;
       _coreVM = coreVM;
       BaseVM = baseVM;
-      Name = "Keywords";
-      CanHaveGroups = true;
-      CanHaveSubItems = true;
-      CanCreateItems = true;
-      CanRenameItems = true;
-      CanDeleteItems = true;
-      CanMoveItem = true;
 
       BaseVM.Items.CollectionChanged += BaseVMItems_CollectionChanged;
       BaseVM.Model.KeywordDeletedEvent += (_, e) => All.Remove(e.Keyword.Id);
@@ -39,43 +33,56 @@ namespace PictureManager.ViewModels.Tree {
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, DU.Tree.OnItemsChanged onItemsChanged) {
-      Domain.Utils.Tree.SyncCollection<KeywordBaseVM, KeywordTreeVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<KeywordBaseVM, KeywordTreeVM>(src, dest, parent,
         (baseVM, treeVM) => treeVM.BaseVM.Equals(baseVM),
-        baseVM => DU.Tree.GetDestItem(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), onItemsChanged));
+        baseVM => MH.Utils.Tree.GetDestItem(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), onItemsChanged));
     }
 
-    public override string GetTitle(ICatTreeViewItem item) => TreeToModel(item).Name;
+    protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
+      All[BaseVM.Model.ItemCreate((ITreeBranch)ToModel(root), name).Id];
 
-    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var keywordM = BaseVM.Model.ItemCreate(ToTreeBranch(root), name);
+    protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
+      BaseVM.Model.ItemRename((KeywordM)ToModel(item), name);
 
-      return All[keywordM.Id];
-    }
+    protected override void ModelItemDelete(ICatTreeViewItem item) =>
+      BaseVM.Model.ItemDelete((KeywordM)ToModel(item));
 
-    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
-      BaseVM.Model.ItemMove(TreeToModel(item), ToTreeBranch(dest), aboveDest);
+    protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
+      KeywordsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} item already exists!";
 
-    public override void ItemRename(ICatTreeViewItem item, string name) =>
-      BaseVM.Model.ItemRename(TreeToModel(item), name);
+    protected override void ModelGroupCreate(ICatTreeViewItem root, string name) =>
+      _core.CategoryGroupsM.GroupCreate(name, Category);
 
-    public override string ValidateNewItemTitle(ICatTreeViewItem root, string name) =>
-      KeywordsM.ItemCanRename(ToTreeBranch(root), name) ? null : $"{name} item already exists!";
+    protected override void ModelGroupRename(ICatTreeViewGroup group, string name) =>
+      _core.CategoryGroupsM.GroupRename((CategoryGroupM)ToModel(group), name);
 
-    public override string ValidateNewGroupTitle(ICatTreeViewItem root, string name) =>
-      CategoryGroupsM.ItemCanRename(ToTreeBranch(root), name) ? null : $"{name} group already exists!";
+    protected override void ModelGroupDelete(ICatTreeViewGroup group) =>
+      _core.CategoryGroupsM.GroupDelete((CategoryGroupM)ToModel(group));
 
-    public override void ItemDelete(ICatTreeViewItem item) =>
-      BaseVM.Model.ItemDelete(TreeToModel(item));
+    protected override string ValidateNewGroupName(ICatTreeViewItem root, string name) =>
+      CategoryGroupsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} group already exists!";
 
-    private static KeywordM TreeToModel(object item) => ((KeywordTreeVM)item).BaseVM.Model;
+    public override string GetTitle(object item) =>
+      ToModel(item) switch {
+        KeywordM x => x.Name,
+        CategoryGroupM x => x.Name,
+        _ => null
+      };
 
-    private static ITreeBranch ToTreeBranch(object item) =>
+    private static object ToModel(object item) =>
       item switch {
         KeywordTreeVM x => x.BaseVM.Model,
         KeywordsTreeVM x => x.BaseVM.Model,
         CategoryGroupTreeVM x => x.BaseVM.Model,
         _ => null
       };
+
+    /*
+
+    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
+      BaseVM.Model.ItemMove(TreeToModel(item), ToTreeBranch(dest), aboveDest);
+
+    */
   }
 }

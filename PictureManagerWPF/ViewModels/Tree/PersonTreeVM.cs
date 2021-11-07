@@ -1,9 +1,8 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Interfaces;
+﻿using MH.Utils.Interfaces;
 using PictureManager.Interfaces;
 
 namespace PictureManager.ViewModels.Tree {
-  public class PersonTreeVM : CatTreeViewItem, ICatTreeViewTagItem, IFilterItem {
+  public class PersonTreeVM : CatTreeViewTagItemBase, IFilterItem {
     #region IFilterItem implementation
     private DisplayFilter _displayFilter;
     public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }

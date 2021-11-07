@@ -1,20 +1,23 @@
-﻿using PictureManager.Dialogs;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using PictureManager.Properties;
-using PictureManager.ShellStuff;
-using PictureManager.UserControls;
-using PictureManager.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using MH.UI.WPF.Interfaces;
+using PictureManager.CustomControls;
+using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
+using PictureManager.Properties;
+using PictureManager.ShellStuff;
+using PictureManager.UserControls;
+using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
+
 
 namespace PictureManager {
   public sealed class AppCore {
@@ -37,10 +40,10 @@ namespace PictureManager {
     public KeywordsTreeVM KeywordsTreeVM { get; }
     public GeoNamesTreeVM GeoNamesTreeVM { get; }
     public ViewersTreeVM ViewersTreeVM { get; }
+    public VideoClipsTreeVM VideoClipsTreeVM { get; }
     #endregion
 
     public MediaItemsViewModel MediaItemsViewModel { get; }
-    public MediaItemClipsCategory MediaItemClipsCategory { get; }
     public AppInfo AppInfo { get; } = new();
     public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public HashSet<IFilterItem> ActiveFilterItems { get; } = new();
@@ -55,7 +58,7 @@ namespace PictureManager {
       AppInfo.ProgressBarValueB = 100;
 
       MediaItemsViewModel = new(App.Core);
-      MediaItemClipsCategory = new();
+      VideoClipsTreeVM = new(App.Core, App.Core.VideoClipsM);
 
       CategoryGroupsBaseVM = new();
       DrivesTreeVM = new(this);
@@ -69,9 +72,9 @@ namespace PictureManager {
       FoldersTreeVM = new(App.Core, this, App.Core.FoldersM);
       RatingsTreeVM = new();
       MediaItemSizesTreeVM = new(this);
-      PeopleTreeVM = new(this, PeopleBaseVM);
+      PeopleTreeVM = new(App.Core, this, PeopleBaseVM);
       FolderKeywordsTreeVM = new(App.Core, App.Core.FolderKeywordsM);
-      KeywordsTreeVM = new(this, KeywordsBaseVM);
+      KeywordsTreeVM = new(App.Core, this, KeywordsBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
       ViewersTreeVM = new(ViewersBaseVM);
 
@@ -132,8 +135,12 @@ namespace PictureManager {
       OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 
-    public async Task TreeView_Select(ICatTreeViewItem item, bool and, bool hide, bool recursive, bool loadByTag = false) {
+    public async Task TreeView_Select(ICatTreeViewItem item, bool loadByTag = false) {
       if (item == null) return;
+
+      var and = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+      var hide = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
 
       if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
         if (loadByTag) {
@@ -159,7 +166,7 @@ namespace PictureManager {
         case FavoriteFolderTreeVM ff:
           if (!App.Core.FoldersM.IsFolderVisible(ff.Model.Folder)) break;
           var folderTreeVM = FoldersTreeVM.All[ff.Model.Folder.Id];
-          CatTreeViewUtils.ExpandTo(folderTreeVM);
+          CatTreeView.ExpandTo(folderTreeVM);
           App.WMain.TreeViewCategories.TvCategories.ScrollTo(folderTreeVM);
           break;
 

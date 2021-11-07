@@ -1,6 +1,5 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using System;
-using PictureManager.Commands;
+﻿using System;
+using MH.UI.WPF.BaseClasses;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class MediaItemSizeTreeVM : CatTreeViewItem {

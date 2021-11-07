@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels {
   public class PersonBaseVM : ObservableObject, ISelectable, ITreeLeaf {
@@ -39,7 +38,7 @@ namespace PictureManager.ViewModels {
       var allKeywords = new List<KeywordM>();
 
       foreach (var keyword in Model.Keywords)
-        Domain.Utils.Tree.GetThisAndItemsRecursive(keyword, ref allKeywords);
+        MH.Utils.Tree.GetThisAndItemsRecursive(keyword, ref allKeywords);
 
       foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName))
         DisplayKeywords.Add(keyword);

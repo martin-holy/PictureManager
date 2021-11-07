@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {

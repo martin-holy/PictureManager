@@ -1,23 +1,59 @@
-using MahApps.Metro.Controls;
-using PictureManager.Commands;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
-using PictureManager.Domain.Interfaces;
-using PictureManager.Domain.Utils;
+using MahApps.Metro.Controls;
+using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Interfaces;
+using MH.Utils;
+using MH.Utils.Interfaces;
+using PictureManager.Utils;
 
 namespace PictureManager.CustomControls {
   public class CatTreeView : TreeView {
+    public static RelayCommand<ICatTreeViewItem> ItemCreateCommand { get; } =
+      new(item => GetCategory(item)?.ItemCreate(item), item => item != null);
+
+    public static RelayCommand<ICatTreeViewItem> ItemRenameCommand { get; } =
+      new(item => GetCategory(item)?.ItemRename(item), item => item != null);
+
+    public static RelayCommand<ICatTreeViewItem> ItemDeleteCommand { get; } =
+      new(item => GetCategory(item)?.ItemDelete(item), item => item != null);
+
+    public static RelayCommand<ICatTreeViewCategory> GroupCreateCommand { get; } =
+      new(item => GetCategory(item)?.GroupCreate(item), item => item != null);
+    
+    public static RelayCommand<ICatTreeViewGroup> GroupRenameCommand { get; } =
+      new(item => GetCategory(item)?.GroupRename(item), item => item != null);
+    
+    public static RelayCommand<ICatTreeViewGroup> GroupDeleteCommand { get; } =
+      new(item => GetCategory(item)?.GroupDelete(item), item => item != null);
+
     private ScrollViewer _scrollViewer;
 
     static CatTreeView() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
+    }
+
+    private static ICatTreeViewCategory GetCategory(ITreeLeaf item) => Tree.GetTopParent(item) as ICatTreeViewCategory;
+
+    public static void ExpandAll(ICatTreeViewItem root) {
+      if (root.Items.Count == 0) return;
+      root.IsExpanded = true;
+      foreach (var item in root.Items.Cast<ICatTreeViewItem>())
+        ExpandAll(item);
+    }
+
+    public static void ExpandTo(ICatTreeViewItem item) {
+      // expand item as well if it has any sub item and not just placeholder
+      if (item.Items.Count > 0 && ((ICatTreeViewItem)item.Items[0]).Parent != null)
+        item.IsExpanded = true;
+      var parent = (ICatTreeViewItem)item.Parent;
+      while (parent != null) {
+        parent.IsExpanded = true;
+        parent = (ICatTreeViewItem)parent.Parent;
+      }
     }
 
     public void ScrollTo(ICatTreeViewItem item) {
@@ -45,7 +81,7 @@ namespace PictureManager.CustomControls {
 
       _scrollViewer = Template.FindName("PART_ScrollViewer", this) as ScrollViewer;
 
-      PreviewMouseRightButtonDown += AttachContextMenu;
+      //PreviewMouseRightButtonDown += AttachContextMenu;
 
       DragDropFactory.SetDrag(this, CanDrag);
       DragDropFactory.SetDrop(this, CanDrop, DoDrop);
@@ -64,12 +100,12 @@ namespace PictureManager.CustomControls {
       var dest = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement)?.DataContext;
       var cat = Tree.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
 
-      if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
+      /*if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
         if (dest is ICatTreeViewGroup) return DragDropEffects.Move;
         if (!cat.CanCopyItem && !cat.CanMoveItem) return DragDropEffects.None;
         if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return DragDropEffects.Copy;
         if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return DragDropEffects.Move;
-      }
+      }*/
 
       return DragDropEffects.None;
     }
@@ -79,13 +115,13 @@ namespace PictureManager.CustomControls {
       if (tvi?.DataContext is not ICatTreeViewItem dest ||
         Tree.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
 
-      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
+      /*var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
       cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
 
       // TODO send args in EventArgs
       CatTreeViewUtils.OnAfterOnDrop?.Invoke(
         new[] { data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0 },
-        EventArgs.Empty);
+        EventArgs.Empty);*/
     }
 
     /// <summary>
@@ -97,56 +133,6 @@ namespace PictureManager.CustomControls {
         _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset - 25);
       else if (ActualHeight - pos.Y < 25)
         _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset + 25);
-    }
-
-    private void AttachContextMenu(object sender, MouseButtonEventArgs e) {
-      //e.Handled = true;
-
-      var b = Extensions.FindThisOrParent<Border>(e.OriginalSource as FrameworkElement, "Border");
-
-      if (b == null || b.ContextMenu != null || b.DataContext is not ICatTreeViewItem item) return;
-
-      var menu = new ContextMenu();
-      var binding = new Binding(nameof(ContextMenu.PlacementTarget)) {
-        RelativeSource = new RelativeSource(RelativeSourceMode.FindAncestor, typeof(ContextMenu), 1)
-      };
-
-      void AddMenuItem(ICommand command) {
-        var menuItem = new MenuItem { Command = command, CommandParameter = item };
-        menuItem.SetBinding(MenuItem.CommandTargetProperty, binding);
-        menu.Items.Add(menuItem);
-      }
-
-      if (Tree.GetTopParent(item) is ICatTreeViewCategory category) {
-        if (category.CanCreateItems || category.CanRenameItems || category.CanDeleteItems) {
-          var cat = b.DataContext as ICatTreeViewCategory;
-          var group = b.DataContext as ICatTreeViewGroup;
-
-          if (category.CanCreateItem(item) && (cat != null || group != null || category.CanHaveSubItems))
-            AddMenuItem(CatTreeViewCommands.ItemNewCommand);
-
-          if (cat == null && group == null) {
-            if (category.CanRenameItem(item))
-              AddMenuItem(CatTreeViewCommands.ItemRenameCommand);
-            if (category.CanDeleteItem(item))
-              AddMenuItem(CatTreeViewCommands.ItemDeleteCommand);
-          }
-
-          if (category.CanHaveGroups && cat != null)
-            AddMenuItem(CatTreeViewCommands.GroupNewCommand);
-
-          if (group != null) {
-            AddMenuItem(CatTreeViewCommands.GroupRenameCommand);
-            AddMenuItem(CatTreeViewCommands.GroupDeleteCommand);
-          }
-
-          if (category.CanSort(item))
-            AddMenuItem(CatTreeViewCommands.SortCommand);
-        }
-      }
-
-      if (menu.Items.Count > 0)
-        b.ContextMenu = menu;
     }
   }
 

@@ -90,7 +90,6 @@
           <Setter Property="VerticalContentAlignment" Value="Stretch" />
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
           <EventSetter Event="MouseLeftButtonUp" Handler="TreeView_Select" />
-          <EventSetter Event="PreviewMouseRightButtonDown" Handler="AttachContextMenu" />
           
           <Style.Triggers>
             <DataTrigger Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True">

@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:pm="clr-namespace:PictureManager"
-                    xmlns:converters="clr-namespace:PictureManager.Converters">
+                    xmlns:converters="clr-namespace:PictureManager.Converters"
+                    xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
   <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
@@ -15,5 +16,7 @@
   <pm:DataTypeConverter x:Key="DataTypeConverter" />
   <converters:CategoryToPathGeometryConverter x:Key="CategoryToPathGeometryConverter" />
   <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
+  <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
+  <mhConverters:DebugConverter x:Key="DebugConverter" />
 </ResourceDictionary>

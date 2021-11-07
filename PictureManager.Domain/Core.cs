@@ -21,12 +21,12 @@ namespace PictureManager.Domain {
     public KeywordsM KeywordsM { get; }
     public GeoNamesM GeoNamesM { get; }
     public ViewersM ViewersM { get; }
+    public VideoClipsM VideoClipsM { get; }
+    public VideoClipsGroupsM VideoClipsGroupsM { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
     public MediaItems MediaItems { get; }
-    public VideoClips VideoClips { get; }
-    public VideoClipsGroups VideoClipsGroups { get; }
     public Segments Segments { get; }
     public ViewerM CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -51,8 +51,8 @@ namespace PictureManager.Domain {
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
 
       MediaItems = new(this);
-      VideoClips = new(this);
-      VideoClipsGroups = new(this);
+      VideoClipsM = new(this);
+      VideoClipsGroupsM = new(this);
       Segments = new(this);
     }
 
@@ -65,8 +65,8 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
         Sdb.AddDataAdapter(MediaItems.DataAdapter);
-        Sdb.AddDataAdapter(VideoClipsGroups.DataAdapter); // needs to be before VideoClips
-        Sdb.AddDataAdapter(VideoClips.DataAdapter);
+        Sdb.AddDataAdapter(VideoClipsGroupsM.DataAdapter); // needs to be before VideoClips
+        Sdb.AddDataAdapter(VideoClipsM.DataAdapter);
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(Segments.DataAdapter);
 
@@ -90,8 +90,8 @@ namespace PictureManager.Domain {
         MediaItems.AllDic = null;
         PeopleM.AllDic.Clear();
         PeopleM.AllDic = null;
-        VideoClips.AllDic.Clear();
-        VideoClips.AllDic = null;
+        VideoClipsM.AllDic.Clear();
+        VideoClipsM.AllDic = null;
         Segments.AllDic.Clear();
         Segments.AllDic = null;
       });

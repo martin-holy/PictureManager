@@ -1,15 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using PictureManager.CustomControls;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Properties;
-using PictureManager.UserControls;
-using PictureManager.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -19,6 +8,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using MahApps.Metro.Controls;
+using MH.UI.WPF.Interfaces;
+using MH.Utils;
+using MH.Utils.Extensions;
+using PictureManager.CustomControls;
+using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
+using PictureManager.Interfaces;
+using PictureManager.Properties;
+using PictureManager.UserControls;
+using PictureManager.Utils;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.ViewModels {
@@ -91,7 +93,7 @@ namespace PictureManager.ViewModels {
 
         switch (item) {
           case PersonTreeVM p:
-            mi.People = Extension.Toggle(mi.People, p.BaseVM.Model, true);
+            mi.People = ListExtensions.Toggle(mi.People, p.BaseVM.Model, true);
             break;
 
           case KeywordTreeVM k:
@@ -136,7 +138,8 @@ namespace PictureManager.ViewModels {
         _ => new()
       };
 
-      await LoadMediaItems(items, and, hide, and || hide ? _model.ThumbsGrid.Title : item.Title);
+      // TODO item.Title
+      await LoadMediaItems(items, and, hide, and || hide ? _model.ThumbsGrid.Title : "BUG TODO");
     }
 
     public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
@@ -290,7 +293,7 @@ namespace PictureManager.ViewModels {
       }
 
       if (_model.ThumbsGrid.GroupByDate) {
-        var title = Extension.DateTimeFromString(mi.FileName, _dateFormats, null);
+        var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
         if (!string.IsNullOrEmpty(title))
           groupItems.Add(new() { Icon = IconName.Calendar, Title = title });
       }

@@ -7,8 +7,6 @@ namespace PictureManager.Commands {
   public static class CommandsController {
     public static void AddCommandBindings(CommandBindingCollection cbc) {
       MediaItemsCommands.AddCommandBindings(cbc);
-      TreeViewCommands.AddCommandBindings(cbc);
-      CatTreeViewCommands.AddCommandBindings(cbc);
       MetadataCommands.AddCommandBindings(cbc);
       WindowCommands.AddCommandBindings(cbc);
     }

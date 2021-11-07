@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
+using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using DU = PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels {
   public class PeopleBaseVM : ObservableObject, ITreeBranch {
@@ -40,10 +39,10 @@ namespace PictureManager.ViewModels {
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, DU.Tree.OnItemsChanged onItemsChanged) {
-      Domain.Utils.Tree.SyncCollection<PersonM, PersonBaseVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<PersonM, PersonBaseVM>(src, dest, parent,
         (m, vm) => vm.Model.Equals(m),
-        m => DU.Tree.GetDestItem(m, m.Id, All, () => new(m, parent), null));
+        m => MH.Utils.Tree.GetDestItem(m, m.Id, All, () => new(m, parent), null));
     }
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {

@@ -2,21 +2,23 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
+using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class FolderKeywordsTreeVM : BaseCatTreeViewCategory {
+  public sealed class FolderKeywordsTreeVM : CatTreeViewCategoryBase {
     private readonly Core _core;
 
     public FolderKeywordsM Model { get; }
     public readonly Dictionary<int, FolderKeywordTreeVM> All = new();
+    public static RelayCommand<object> OpenFolderKeywordsListCommand { get; } = new(FolderKeywordList.Open);
 
-    public FolderKeywordsTreeVM(Core core, FolderKeywordsM model) : base(Category.FolderKeywords) {
+    public FolderKeywordsTreeVM(Core core, FolderKeywordsM model) : base(Category.FolderKeywords, "Folder Keywords") {
       _core = core;
       Model = model;
-      Name = "Folder Keywords";
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.ReloadEvent += (_, _) => {
@@ -30,10 +32,10 @@ namespace PictureManager.ViewModels.Tree {
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) {
-      Domain.Utils.Tree.SyncCollection<FolderKeywordM, FolderKeywordTreeVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<FolderKeywordM, FolderKeywordTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
     }
 
     private void LoadRoot() {

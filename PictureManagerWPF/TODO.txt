@@ -7,6 +7,7 @@
 - Clips: 
     - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac a je to na restart appky (do OnMediaEnded se to nedostane)
     - ulozeni v klipech nezmeni modifed v main toolbaru
+    - RadioButtons default value and IsChecked binding
 - DB
   - presun souboru vygeneruje jen jednu zmenu v db
 - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop
@@ -15,7 +16,8 @@
   - height change on StatusBar Visibility
 - kdyz ma obrazek metadata jen v DB, tak se rotace neaplikuje na vytvoreni thumbnail
 - SegmentRectsControl resize on slide panel IsPinned changed
-- TagItemDeleteNotUsed: Person and Keyword can be also on Segment
+- ThumbsGrid:
+  - drag scroll bar doesn't work after selecting any image. it works only after load
 
 
 #Update
@@ -33,9 +35,16 @@
 - static delegates
 - DB:
   - remove direct access to Helper.IsModified
+  - should I use private fields in FromCsv and LinkReferences to avoid calling OnPropertyChanged?
 - remove Folder Browser
 - can classes like Folders, Keywords, MediaItems, ... be static if there is always just one instance???
 - Rethink hierarchical keywords moving
+- MainTabs: change adding tabs in a way that parameters can be passed to constructor
+- Viewers:
+  - pass data in constructor to ViewerV
+  - methods CanSeePerson, CanSeeKeyword for TreeViewSearch and elsewhere
+- MarkUsedKeywordsAndPeople:
+  - add People and Keywords from Segments
 
 
 # Segment Matching

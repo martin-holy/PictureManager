@@ -41,8 +41,8 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<string> InfoBoxThumb { get; set; }
     public ObservableCollection<string> InfoBoxPeople { get; set; }
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
-    public ObservableCollection<VideoClip> VideoClips { get; set; }
-    public ObservableCollection<VideoClipsGroup> VideoClipsGroups { get; set; }
+    public ObservableCollection<VideoClipM> VideoClips { get; set; }
+    public ObservableCollection<VideoClipsGroupM> VideoClipsGroups { get; set; }
     public ObservableCollection<Segment> Segments { get; set; }
     public string Dimensions => $"{Width}x{Height}";
     public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
@@ -227,14 +227,14 @@ namespace PictureManager.Domain.Models {
       return success ? dt.ToString(format, CultureInfo.CurrentCulture) : string.Empty;
     }
 
-    public VideoClipsGroup VideoClipsGroupAdd(VideoClipsGroup group) {
+    public VideoClipsGroupM VideoClipsGroupAdd(VideoClipsGroupM group) {
       VideoClipsGroups ??= new();
       VideoClipsGroups.Add(group);
 
       return group;
     }
 
-    public VideoClip VideoClipAdd(VideoClip vc, VideoClipsGroup group) {
+    public VideoClipM VideoClipAdd(VideoClipM vc, VideoClipsGroupM group) {
       if (group == null) {
         VideoClips ??= new();
         VideoClips.Add(vc);
@@ -243,6 +243,8 @@ namespace PictureManager.Domain.Models {
         group.Clips.Add(vc);
         vc.Group = group;
       }
+
+      OnPropertyChanged(nameof(HasVideoClips));
 
       return vc;
     }

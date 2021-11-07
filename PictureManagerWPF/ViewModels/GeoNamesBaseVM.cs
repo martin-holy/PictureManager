@@ -2,7 +2,7 @@
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
-  public static class GeoNamesViewModel {
+  public static class GeoNamesBaseVM {
     public static bool IsGeoNamesUserNameInSettings() {
       if (!string.IsNullOrEmpty(Settings.Default.GeoNamesUserName)) return true;
 

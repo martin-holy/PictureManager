@@ -4,6 +4,8 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="ResourceDictionaries/DataTypes.xaml" />
+        
         <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
@@ -28,6 +30,8 @@
         <ResourceDictionary Source="ResourceDictionaries/MahAppsMetro.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/themes/dark.blue.xaml" />
+
+        <ResourceDictionary Source="../Views/Tree/TreeContextMenus.xaml" />
         
         <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml" />
       </ResourceDictionary.MergedDictionaries>

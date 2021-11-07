@@ -5,32 +5,29 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Interfaces;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class FoldersTreeVM : BaseCatTreeViewCategory {
+  public sealed class FoldersTreeVM : CatTreeViewCategoryBase {
     private readonly Core _core;
     private readonly AppCore _coreVM;
 
     public FoldersM Model { get; }
     public readonly Dictionary<int, FolderTreeVM> All = new();
 
-    public FoldersTreeVM(Core core, AppCore coreVM, FoldersM model) : base(Category.Folders) {
+    public static RelayCommand<FolderTreeVM> SetAsFolderKeywordCommand { get; } =
+      new(item => App.Core.FoldersM.SetAsFolderKeyword(item.Model), item => item != null);
+
+    public FoldersTreeVM(Core core, AppCore coreVM, FoldersM model) : base(Category.Folders, "Folders") {
       _core = core;
       _coreVM = coreVM;
       Model = model;
-      Name = "Folders";
-      CanHaveSubItems = true;
-      CanCreateItems = true;
-      CanRenameItems = true;
-      CanDeleteItems = true;
-      CanMoveItem = true;
-      CanCopyItem = true;
       IsExpanded = true;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
@@ -44,10 +41,10 @@ namespace PictureManager.ViewModels.Tree {
       UpdateDrivesVisibility();
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) {
-      Domain.Utils.Tree.SyncCollection<FolderM, FolderTreeVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<FolderM, FolderTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
     }
 
     public void UpdateDrivesVisibility() {
@@ -81,7 +78,7 @@ namespace PictureManager.ViewModels.Tree {
       UpdateItemsVisibility(item.Items.Cast<FolderTreeVM>());
     }
 
-    public override bool CanDrop(object src, ICatTreeViewItem dest) {
+    /*public override bool CanDrop(object src, ICatTreeViewItem dest) {
       switch (src) {
         case FolderTreeVM srcData: { // Folder
           if (dest is FolderTreeVM destData && !destData.Model.HasThisParent(srcData.Model) && !Equals(srcData, destData) &&
@@ -106,46 +103,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public override void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
       // handled in OnAfterOnDrop (TreeViewCategories)
-    }
-
-    public override string GetTitle(ICatTreeViewItem item) => TreeToModel(item).Name;
-
-    public override bool CanCreateItem(ICatTreeViewItem item) => item is FolderTreeVM;
-
-    public override bool CanRenameItem(ICatTreeViewItem item) => item is FolderTreeVM && item.Parent is not ICatTreeViewCategory;
-
-    public override bool CanDeleteItem(ICatTreeViewItem item) => item is FolderTreeVM && item.Parent is not ICatTreeViewCategory;
-
-    public override bool CanSort(ICatTreeViewItem root) => false;
-
-    public override string ValidateNewItemTitle(ICatTreeViewItem root, string name) {
-      // check if folder already exists
-      if (Directory.Exists(Extension.PathCombine(((FolderTreeVM)root).Model.FullPath, name)))
-        return "Folder already exists!";
-
-      // check if is correct folder name
-      if (Path.GetInvalidPathChars().Any(name.Contains))
-        return "New folder's name contains incorrect character(s)!";
-
-      return null;
-    }
-
-    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      root.IsExpanded = true;
-      var folderM = _core.FoldersM.ItemCreate(ToTreeBranch(root), name);
-      return All[folderM.Id];
-    }
-
-    public override void ItemRename(ICatTreeViewItem item, string name) =>
-      _core.FoldersM.ItemRename(TreeToModel(item), name);
-
-    public override void ItemDelete(ICatTreeViewItem item) {
-      _core.FoldersM.ItemDelete(TreeToModel(item));
-
-      // collapse parent if doesn't have any sub folders
-      if (item.Parent.Items.Count == 0)
-        ((ICatTreeViewItem)item.Parent).IsExpanded = false;
-    }
+    }*/
 
     public static void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
       var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = true } };
@@ -166,9 +124,31 @@ namespace PictureManager.ViewModels.Tree {
       fop.ShowDialog();
     }
 
-    private static FolderM TreeToModel(object item) => ((FolderTreeVM)item).Model;
+    protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
+      All[Model.ItemCreate((ITreeBranch)ToModel(root), name).Id];
 
-    private static ITreeBranch ToTreeBranch(object item) =>
+    protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
+      Model.ItemRename((FolderM)ToModel(item), name);
+
+    protected override void ModelItemDelete(ICatTreeViewItem item) =>
+      Model.ItemDelete((FolderM)ToModel(item));
+
+    protected override string ValidateNewItemName(ICatTreeViewItem root, string name) {
+      // check if folder already exists
+      if (Directory.Exists(IOExtensions.PathCombine(((FolderM)ToModel(root)).FullPath, name)))
+        return "Folder already exists!";
+
+      // check if is correct folder name
+      if (Path.GetInvalidPathChars().Any(name.Contains))
+        return "New folder's name contains incorrect character(s)!";
+
+      return null;
+    }
+
+    public override string GetTitle(object item) =>
+      (item as FolderTreeVM)?.Model.Name;
+
+    private static object ToModel(object item) =>
       item switch {
         FolderTreeVM x => x.Model,
         FoldersTreeVM x => x.Model,

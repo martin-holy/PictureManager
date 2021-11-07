@@ -1,7 +1,6 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.ToolsTabs"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
@@ -11,7 +10,7 @@
         <uc:PersonSegmentsControl x:Name="PersonControl" />
       </TabItem>
       <TabItem Header="Clips" x:Name="TabClips" Visibility="Collapsed">
-        <cc:VideoClips x:Name="VideoClips" />
+        <uc:VideoClipsControl x:Name="VideoClips" />
       </TabItem>
       <TabItem Header="Segments" x:Name="TabSegments" Visibility="Collapsed">
         <uc:SegmentsDrawerControl x:Name="SegmentsDrawer" />

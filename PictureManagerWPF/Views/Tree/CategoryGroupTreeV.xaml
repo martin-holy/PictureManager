@@ -1,15 +1,48 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:commands="clr-namespace:PictureManager.Commands">
 
-  <HierarchicalDataTemplate DataType="{x:Type tree:CategoryGroupTreeVM}" ItemsSource="{Binding Items}">
-    <StackPanel Orientation="Horizontal"
-                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-      <mhc:Icon Source="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                Fill="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
-      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
-    </StackPanel>
+  <ContextMenu x:Key="CatGroupTreeContextMenu"
+               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                             RelativeSource={RelativeSource Self}}">
+    <MenuItem Header="New"
+              Command="cc:CatTreeView.ItemCreateCommand"
+              CommandParameter="{Binding}" />
+    <MenuItem Header="Rename Group"
+              Command="cc:CatTreeView.GroupRenameCommand"
+              CommandParameter="{Binding}" />
+    <MenuItem Header="Delete Group"
+              Command="cc:CatTreeView.GroupDeleteCommand"
+              CommandParameter="{Binding}" />
+    <MenuItem Header="Delete not used"
+              Command="commands:TreeViewCommands.TagItemDeleteNotUsedCommand"
+              CommandParameter="{Binding}" />
+
+    <!--TODO: Sort-->
+  </ContextMenu>
+
+  <HierarchicalDataTemplate DataType="{x:Type tree:CategoryGroupTreeVM}"
+                            ItemsSource="{Binding Items}">
+    <Grid Background="Transparent">
+      <b:Interaction.Triggers>
+        <!-- Attach ContextMenu -->
+        <b:EventTrigger EventName="PreviewMouseRightButtonDown">
+          <mhu:SetterAction PropertyName="ContextMenu" Value="{StaticResource CatGroupTreeContextMenu}" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+      <StackPanel Orientation="Horizontal"
+                  Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
+        <mhc:Icon Source="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
+                  Fill="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
+      </StackPanel>
+    </Grid>
   </HierarchicalDataTemplate>
 
 </ResourceDictionary>

@@ -1,4 +1,4 @@
-﻿using PictureManager.Commands;
+﻿using MH.UI.WPF.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 

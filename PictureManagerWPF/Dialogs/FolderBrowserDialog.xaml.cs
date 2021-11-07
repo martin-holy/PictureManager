@@ -1,13 +1,15 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Models;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using PictureManager.Domain.Utils;
+using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Interfaces;
+using MH.Utils;
+using MH.Utils.Interfaces;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
   public partial class FolderBrowserDialog : INotifyPropertyChanged {
@@ -32,13 +34,12 @@ namespace PictureManager.Dialogs {
         var di = new DriveInfo(drive);
         if (!di.IsReady) continue;
 
-        var item = new FolderTreeViewItem {
-          Title = di.Name.TrimEnd(Path.DirectorySeparatorChar),
+        var item = new FolderTreeViewItem(null, di.Name.TrimEnd(Path.DirectorySeparatorChar)) {
           IconName = FoldersM.GetDriveIconName(di.DriveType)
         };
 
         // add placeholder so the Drive can be expanded
-        item.Items.Add(new CatTreeViewItem());
+        item.Items.Add(new FolderTreeViewItem(null, null));
 
         Drives.Add(item);
       }
@@ -56,9 +57,16 @@ namespace PictureManager.Dialogs {
   }
 
   public class FolderTreeViewItem : CatTreeViewItem {
+    private IconName _iconName;
+
+    public string Title { get; }
+    public IconName IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Title);
 
-    public FolderTreeViewItem() {
+    public FolderTreeViewItem(ITreeBranch parent, string title) {
+      Parent = parent;
+      Title = title;
+
       OnExpandedChanged += (_, _) => {
         if (IsExpanded)
           LoadSubFolders();
@@ -73,21 +81,17 @@ namespace PictureManager.Dialogs {
 
     public void LoadSubFolders() {
       // remove placeholder
-      if (Items.Count == 1 && ((ICatTreeViewItem)Items[0]).Title == null) Items.Clear();
+      if (Items.Count == 1 && ((ICatTreeViewItem)Items[0]).Parent == null) Items.Clear();
 
       var fullPath = FullPath + Path.DirectorySeparatorChar;
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
-        var folder = new FolderTreeViewItem {
-          Title = dir[fullPath.Length..],
-          Parent = this,
-          IconName = IconName.Folder
-        };
+        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]) { IconName = IconName.Folder };
 
         try {
           // add placeholder so the folder can be expanded
           if (Directory.EnumerateDirectories(folder.FullPath).GetEnumerator().MoveNext())
-            folder.Items.Add(new CatTreeViewItem());
+            folder.Items.Add(new FolderTreeViewItem(null, null));
 
           // add new Folder to the tree if is Accessible
           Items.Add(folder);
