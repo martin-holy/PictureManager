@@ -1,10 +1,10 @@
 using PictureManager.Commands;
-using PictureManager.Domain.CatTreeViewModels;
 using PictureManager.Domain.Models;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using MH.UI.WPF.Interfaces;
 
 namespace PictureManager {
   public partial class WTest {
@@ -27,10 +27,10 @@ namespace PictureManager {
     }
 
     private void SetUpMediaItemTest() {
-      App.Ui.MediaItemClipsCategory.SetMediaItem(
+      App.Ui.VideoClipsTreeVM.SetMediaItem(
         App.Core.MediaItems.All.Cast<MediaItem>().FirstOrDefault(mi => mi.Id == 138791));
 
-      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> { App.Ui.MediaItemClipsCategory };
+      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> { App.Ui.VideoClipsTreeVM };
     }
 
     public void AllowDropCheck(object sender, DragEventArgs e) {

@@ -8,7 +8,6 @@
         xmlns:pm="clr-namespace:PictureManager"
         xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
         xmlns:cmd="clr-namespace:PictureManager.Commands"
-        xmlns:ctvm="clr-namespace:PictureManager.Domain.CatTreeViewModels;assembly=PictureManager.Domain"
         xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
         mc:Ignorable="d"
         Title="WTest" Height="450" Width="700" Background="#007ACC" x:Name="WinTest" >
@@ -20,12 +19,10 @@
         <cc:SlidePanel IsOpen="True" Width="300" Margin="0,50,0,20" Position="Left" x:Name="SlideLeft">
           <cc:SlidePanel.Content>
             <DockPanel Background="{StaticResource ColorBrushBackground}">
-
-              <ToggleButton Style="{StaticResource StyleBaseToggleButton}" 
-                            IsChecked="{Binding ElementName=SlideLeft, Path=IsPinned}" 
-                            DockPanel.Dock="Top" HorizontalAlignment="Right">
-                <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
-              </ToggleButton>
+              <mhc:IconToggleButton Source="{StaticResource IconPin}"
+                                    IsChecked="{Binding ElementName=SlideLeft, Path=IsPinned}" 
+                                    DockPanel.Dock="Top"
+                                    HorizontalAlignment="Right"/>
 
               <cc:CatTreeView x:Name="TvCategories" Style="{StaticResource CatTreeView}" FocusManager.IsFocusScope="True">
                 <!--<cc:CatTreeView.ItemContainerStyle>
@@ -53,11 +50,10 @@
           <cc:SlidePanel.Content>
             <DockPanel Background="DarkOliveGreen">
 
-              <ToggleButton Style="{StaticResource StyleBaseToggleButton}" 
-                            IsChecked="{Binding ElementName=SlideRight, Path=IsPinned}" 
-                            DockPanel.Dock="Top" HorizontalAlignment="Left">
-                <cc:IconRect IconName="{x:Static pmd:IconName.Pin}" />
-              </ToggleButton>
+              <mhc:IconToggleButton Source="{StaticResource IconPin}"
+                                    IsChecked="{Binding ElementName=SlideRight, Path=IsPinned}" 
+                                    DockPanel.Dock="Top"
+                                    HorizontalAlignment="Left"/>
 
               <TextBlock Text="test right" />
 
@@ -93,9 +89,6 @@
       </StackPanel>
       
       <WrapPanel Orientation="Horizontal">
-        <cc:IconRect IconName="PeopleMultiple" />
-        
-        <cc:IconRect Size="30" IconName="Pin" />
         <mhc:Icon Size="30" Source="{StaticResource IconPin}" Fill="White" />
         
         <mhc:IconButton Source="{StaticResource IconPeople}" Click="IconButton_Click" />

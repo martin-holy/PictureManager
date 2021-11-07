@@ -1,0 +1,39 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+
+  <ContextMenu x:Key="VideoClipsGroupTreeContextMenu"
+               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                             RelativeSource={RelativeSource Self}}">
+    <MenuItem Header="Rename Group"
+              Command="cc:CatTreeView.GroupRenameCommand"
+              CommandParameter="{Binding}" />
+    <MenuItem Header="Delete Group"
+              Command="cc:CatTreeView.GroupDeleteCommand"
+              CommandParameter="{Binding}" />
+  </ContextMenu>
+    
+  <HierarchicalDataTemplate DataType="{x:Type tree:VideoClipsGroupTreeVM}"
+                            ItemsSource="{Binding Items}">
+    <Grid Background="Transparent">
+      <b:Interaction.Triggers>
+        <!-- Attach ContextMenu -->
+        <b:EventTrigger EventName="PreviewMouseRightButtonDown">
+          <mhu:SetterAction PropertyName="ContextMenu" Value="{StaticResource VideoClipsGroupTreeContextMenu}" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+      <StackPanel Orientation="Horizontal"
+                  Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
+        <mhc:Icon Source="{StaticResource IconFolder}"
+                  Fill="{StaticResource ColorBrushFolder}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}"
+                   Text="{Binding Model.Name}" />
+      </StackPanel>
+    </Grid>
+  </HierarchicalDataTemplate>
+</ResourceDictionary>

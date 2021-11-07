@@ -11,25 +11,25 @@ namespace PictureManager.Domain.DataAdapters {
   /// </summary>
   public class VideoClipsDataAdapter : DataAdapter {
     private readonly Core _core;
-    private readonly VideoClips _model;
+    private readonly VideoClipsM _model;
 
-    public VideoClipsDataAdapter(Core core, VideoClips model) : base("VideoClips", core.Sdb) {
+    public VideoClipsDataAdapter(Core core, VideoClipsM model) : base("VideoClips", core.Sdb) {
       _core = core;
       _model = model;
     }
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new Dictionary<int, VideoClip>();
+      _model.AllDic = new Dictionary<int, VideoClipM>();
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<VideoClip>(), ToCsv);
+    public override void Save() => SaveToFile(_model.All.Cast<VideoClipM>(), ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 11) throw new ArgumentException("Incorrect number of values.", csv);
-      var vc = new VideoClip(int.Parse(props[0]), null) {
+      var vc = new VideoClipM(int.Parse(props[0]), null) {
         TimeStart = props[2].IntParseOrDefault(0),
         TimeEnd = props[3].IntParseOrDefault(0),
         Name = string.IsNullOrEmpty(props[4]) ? null : props[4],
@@ -44,7 +44,7 @@ namespace PictureManager.Domain.DataAdapters {
       _model.AllDic.Add(vc.Id, vc);
     }
 
-    public static string ToCsv(VideoClip videoClip) =>
+    public static string ToCsv(VideoClipM videoClip) =>
       string.Join("|",
         videoClip.Id.ToString(),
         videoClip.MediaItem.Id.ToString(),
@@ -59,7 +59,7 @@ namespace PictureManager.Domain.DataAdapters {
         videoClip.Keywords == null ? string.Empty : string.Join(",", videoClip.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
-      foreach (var vc in _model.All.Cast<VideoClip>()) {
+      foreach (var vc in _model.All.Cast<VideoClipM>()) {
         // reference to MediaItem and back reference from MediaItem to VideoClip without group
         vc.MediaItem = _core.MediaItems.AllDic[int.Parse(vc.Csv[1])];
         if (vc.Group == null)

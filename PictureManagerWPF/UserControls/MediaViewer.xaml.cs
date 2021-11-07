@@ -125,12 +125,12 @@ namespace PictureManager.UserControls {
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(mediaItem, decoded);
-          App.Ui.MediaItemClipsCategory.SetMediaItem(null);
+          App.Ui.VideoClipsTreeVM.SetMediaItem(null);
           FullVideo.SetSource(null);
           break;
         }
         case MediaType.Video: {
-          App.Ui.MediaItemClipsCategory.SetMediaItem(mediaItem);
+          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem);
           FullVideo.SetSource(mediaItem);
           break;
         }

@@ -44,7 +44,6 @@
         </Menu.Resources>
 
         <MenuItem Header="Tools" Style="{StaticResource StyleMenuItemRoot}">
-          <MenuItem Command="cmd:WindowCommands.OpenFolderKeywordsListCommand" />
           <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand">
             <MenuItem.Icon>
               <mhc:Icon Source="{StaticResource IconSettings}" />

@@ -19,7 +19,7 @@ namespace PictureManager.Converters {
         Category.Keywords => "IconTagLabel",
         Category.GeoNames => "IconLocationCheckin",
         Category.Viewers => "IconEye",
-        Category.MediaItemClips => "IconMovieClapper",
+        Category.VideoClips => "IconMovieClapper",
         _ => "IconBug"
       };
 

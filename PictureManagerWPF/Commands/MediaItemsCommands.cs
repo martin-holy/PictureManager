@@ -1,18 +1,18 @@
-﻿using PictureManager.Dialogs;
-using PictureManager.Domain;
-using PictureManager.Domain.Extensions;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Properties;
-using PictureManager.UserControls;
-using PictureManager.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using MH.Utils.Extensions;
+using PictureManager.Dialogs;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
+using PictureManager.Properties;
+using PictureManager.UserControls;
+using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public static class MediaItemsCommands {
@@ -246,7 +246,7 @@ namespace PictureManager.Commands {
           return;
         }
 
-        if (File.Exists(Extension.PathCombine(current.Folder.FullPath, newFileName))) {
+        if (File.Exists(IOExtensions.PathCombine(current.Folder.FullPath, newFileName))) {
           inputDialog.ShowErrorMessage("New file name already exists!");
           return;
         }

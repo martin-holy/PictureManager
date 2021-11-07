@@ -17,7 +17,7 @@ namespace PictureManager {
 
     public WMain() {
       InitializeComponent();
-
+      
       VideoThumbnailPreview = new() {
         LoadedBehavior = MediaState.Manual,
         IsMuted = true,

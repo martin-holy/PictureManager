@@ -17,7 +17,7 @@ namespace PictureManager.Converters {
         Category.Keywords => "ColorBrushTag",
         Category.Ratings or
         Category.Viewers or
-        Category.MediaItemClips or
+        Category.VideoClips or
         _ => "ColorBrushWhite"
       };
 

@@ -1,5 +1,5 @@
-﻿using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Interfaces;
+﻿using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {

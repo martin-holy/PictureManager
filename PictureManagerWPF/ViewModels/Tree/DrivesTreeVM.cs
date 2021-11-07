@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
@@ -13,10 +13,10 @@ namespace PictureManager.ViewModels.Tree {
       _coreVM = coreVM;
     }
 
-    public void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) {
-      Domain.Utils.Tree.SyncCollection<FolderM, DriveTreeVM>(src, dest, parent,
+    public void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<FolderM, DriveTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => ItemCreateVM(model, parent), onItemsChanged));
     }
 
     private DriveTreeVM ItemCreateVM(FolderM model, ITreeBranch parent) {

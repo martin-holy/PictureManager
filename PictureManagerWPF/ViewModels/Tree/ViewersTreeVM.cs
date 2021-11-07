@@ -1,23 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MH.UI.WPF.Interfaces;
+using MH.Utils.Interfaces;
 using PictureManager.Domain;
-using PictureManager.Domain.CatTreeViewModels;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
-using DU = PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class ViewersTreeVM : BaseCatTreeViewCategory {
+  public sealed class ViewersTreeVM : CatTreeViewCategoryBase {
     public ViewersBaseVM BaseVM { get; }
     public readonly Dictionary<int, ViewerTreeVM> All = new();
 
-    public ViewersTreeVM(ViewersBaseVM baseVM) : base(Category.Viewers) {
+    public ViewersTreeVM(ViewersBaseVM baseVM) : base(Category.Viewers, "Viewers") {
       BaseVM = baseVM;
-      Name = "Viewers";
-      CanCreateItems = true;
-      CanRenameItems = true;
-      CanDeleteItems = true;
 
       BaseVM.Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       BaseVM.Model.ViewerDeletedEvent += (_, e) => All.Remove(e.Viewer.Id);
@@ -30,27 +25,25 @@ namespace PictureManager.ViewModels.Tree {
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, DU.Tree.OnItemsChanged onItemsChanged) {
-      DU.Tree.SyncCollection<ViewerM, ViewerTreeVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
+      MH.Utils.Tree.SyncCollection<ViewerM, ViewerTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => DU.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), null));
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), null));
     }
 
-    public override string GetTitle(ICatTreeViewItem item) => ((ViewerTreeVM)item).Model.Name;
+    protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
+      All[BaseVM.Model.ItemCreate(root, name).Id];
 
-    public override ICatTreeViewItem ItemCreate(ICatTreeViewItem root, string name) {
-      var viewerM = BaseVM.Model.ItemCreate(((ViewersTreeVM)root).BaseVM.Model, name);
-
-      return All[viewerM.Id];
-    }
-
-    public override void ItemRename(ICatTreeViewItem item, string name) =>
+    protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
       BaseVM.Model.ItemRename(((ViewerTreeVM)item).Model, name);
 
-    public override string ValidateNewItemTitle(ICatTreeViewItem root, string name) =>
+    protected override void ModelItemDelete(ICatTreeViewItem item) =>
+      BaseVM.Model.ItemDelete(((ViewerTreeVM)item).Model);
+
+    protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
       BaseVM.Model.ItemCanRename(name) ? null : $"{name} item already exists!";
 
-    public override void ItemDelete(ICatTreeViewItem item) =>
-      BaseVM.Model.ItemDelete(((ViewerTreeVM)item).Model);
+    public override string GetTitle(object item) =>
+      (item as ViewerTreeVM)?.Model.Name;
   }
 }

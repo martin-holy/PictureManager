@@ -1,14 +1,37 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+
+  <ContextMenu x:Key="ViewerTreeContextMenu"
+               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                             RelativeSource={RelativeSource Self}}">
+    <MenuItem Header="Rename"
+              Command="cc:CatTreeView.ItemRenameCommand"
+              CommandParameter="{Binding}" />
+    <MenuItem Header="Delete"
+              Command="cc:CatTreeView.ItemDeleteCommand"
+              CommandParameter="{Binding}" />
+  </ContextMenu>
 
   <HierarchicalDataTemplate DataType="{x:Type tree:ViewerTreeVM}">
-    <StackPanel Orientation="Horizontal"
-                Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-      <mhc:Icon Source="{StaticResource IconEye}" Fill="{StaticResource ColorBrushWhite}" />
-      <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
-    </StackPanel>
+    <Grid Background="Transparent">
+      <b:Interaction.Triggers>
+        <!-- Attach ContextMenu -->
+        <b:EventTrigger EventName="PreviewMouseRightButtonDown">
+          <mhu:SetterAction PropertyName="ContextMenu" Value="{StaticResource ViewerTreeContextMenu}" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+      <StackPanel Orientation="Horizontal"
+                  Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
+        <mhc:Icon Source="{StaticResource IconEye}" Fill="{StaticResource ColorBrushWhite}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
+      </StackPanel>
+    </Grid>
   </HierarchicalDataTemplate>
     
 </ResourceDictionary>

@@ -48,6 +48,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MH.UI.WPF\MH.UI.WPF.csproj" />
+    <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\PictureManager.Domain\PictureManager.Domain.csproj" />
     <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
   </ItemGroup>

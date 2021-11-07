@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
+using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Properties;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class GeoNamesTreeVM : BaseCatTreeViewCategory {
+  public sealed class GeoNamesTreeVM : CatTreeViewCategoryBase {
     public GeoNamesM Model { get; }
     public readonly Dictionary<int, GeoNameTreeVM> All = new();
 
-    public GeoNamesTreeVM(GeoNamesM model) : base(Category.GeoNames) {
+    public static RelayCommand<GeoNamesTreeVM> NewGeoNameFromGpsCommand { get; } =
+      new(NewGeoNameFromGps, cat => cat != null);
+
+    public GeoNamesTreeVM(GeoNamesM model) : base(Category.GeoNames, "GeoNames") {
       Model = model;
-      Name = "GeoNames";
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
 
@@ -23,9 +28,24 @@ namespace PictureManager.ViewModels.Tree {
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) =>
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
 
-    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, Domain.Utils.Tree.OnItemsChanged onItemsChanged) =>
-      Domain.Utils.Tree.SyncCollection<GeoNameM, GeoNameTreeVM>(src, dest, parent,
+    private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) =>
+      MH.Utils.Tree.SyncCollection<GeoNameM, GeoNameTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
-        model => Domain.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), onItemsChanged));
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), onItemsChanged));
+
+    private static void NewGeoNameFromGps(GeoNamesTreeVM treeVM) {
+      if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
+
+      var result = InputDialog.Open(
+        IconName.LocationCheckin,
+        "GeoName latitude and longitude",
+        "Enter in format: N36.75847,W3.84609",
+        string.Empty,
+        _ => null,
+        out var output);
+
+      if (!result) return;
+      treeVM.Model.New(output, Settings.Default.GeoNamesUserName);
+    }
   }
 }

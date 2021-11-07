@@ -16,7 +16,6 @@ namespace PictureManager.Commands {
     public static RoutedUICommand ShowHideTabMainCommand { get; } = CommandsController.CreateCommand("S/H", "ShowHideTabMain", new KeyGesture(Key.T, ModifierKeys.Control));
     public static RoutedUICommand AddGeoNamesFromFilesCommand { get; } = new() { Text = "GeoNames" };
     public static RoutedUICommand ViewerChangeCommand { get; } = new() { Text = "" };
-    public static RoutedUICommand OpenFolderKeywordsListCommand { get; } = new() { Text = "Folder Keyword List" };
     public static RoutedUICommand OpenLogCommand { get; } = new() { Text = "Log" };
     public static RoutedUICommand SaveDbCommand { get; } = new() { Text = "DB" };
 
@@ -31,7 +30,6 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, AddGeoNamesFromFilesCommand, AddGeoNamesFromFiles, CanAddGeoNamesFromFiles);
       CommandsController.AddCommandBinding(cbc, ViewerChangeCommand, ViewerChange);
       CommandsController.AddCommandBinding(cbc, OpenAboutCommand, OpenAbout);
-      CommandsController.AddCommandBinding(cbc, OpenFolderKeywordsListCommand, OpenFolderKeywordsList);
       CommandsController.AddCommandBinding(cbc, ShowHideTabMainCommand, ShowHideTabMain);
       CommandsController.AddCommandBinding(cbc, OpenLogCommand, OpenLog);
       CommandsController.AddCommandBinding(cbc, SaveDbCommand, SaveDb, CanSaveDb);
@@ -105,15 +103,10 @@ namespace PictureManager.Commands {
         await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
     }
 
-    private static void OpenFolderKeywordsList() {
-      var fkl = new FolderKeywordList { Owner = App.WMain };
-      fkl.ShowDialog();
-    }
-
     private static bool CanAddGeoNamesFromFiles() => App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
 
     private static void AddGeoNamesFromFiles() {
-      if (!GeoNamesViewModel.IsGeoNamesUserNameInSettings()) return;
+      if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
