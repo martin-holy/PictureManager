@@ -12,6 +12,7 @@ using PictureManager.Utils;
 
 namespace PictureManager.CustomControls {
   public class CatTreeView : TreeView {
+    #region Item Commands
     public static RelayCommand<ICatTreeViewItem> ItemCreateCommand { get; } =
       new(item => GetCategory(item)?.ItemCreate(item), item => item != null);
 
@@ -20,7 +21,9 @@ namespace PictureManager.CustomControls {
 
     public static RelayCommand<ICatTreeViewItem> ItemDeleteCommand { get; } =
       new(item => GetCategory(item)?.ItemDelete(item), item => item != null);
+    #endregion
 
+    #region Group Commands
     public static RelayCommand<ICatTreeViewCategory> GroupCreateCommand { get; } =
       new(item => GetCategory(item)?.GroupCreate(item), item => item != null);
     
@@ -29,6 +32,7 @@ namespace PictureManager.CustomControls {
     
     public static RelayCommand<ICatTreeViewGroup> GroupDeleteCommand { get; } =
       new(item => GetCategory(item)?.GroupDelete(item), item => item != null);
+    #endregion
 
     private ScrollViewer _scrollViewer;
 
@@ -81,12 +85,11 @@ namespace PictureManager.CustomControls {
 
       _scrollViewer = Template.FindName("PART_ScrollViewer", this) as ScrollViewer;
 
-      //PreviewMouseRightButtonDown += AttachContextMenu;
-
       DragDropFactory.SetDrag(this, CanDrag);
       DragDropFactory.SetDrop(this, CanDrop, DoDrop);
     }
 
+    #region Drag & Drop
     private object CanDrag(MouseEventArgs e) {
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement);
       if (tvi == null || tvi.DataContext is ICatTreeViewCategory) return null;
@@ -100,28 +103,23 @@ namespace PictureManager.CustomControls {
       var dest = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement)?.DataContext;
       var cat = Tree.GetTopParent(dest as ICatTreeViewItem) as ICatTreeViewCategory;
 
-      /*if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
+      if (cat?.CanDrop(data, dest as ICatTreeViewItem) == true) {
         if (dest is ICatTreeViewGroup) return DragDropEffects.Move;
         if (!cat.CanCopyItem && !cat.CanMoveItem) return DragDropEffects.None;
         if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return DragDropEffects.Copy;
         if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return DragDropEffects.Move;
-      }*/
+      }
 
       return DragDropEffects.None;
     }
 
-    private void DoDrop(DragEventArgs e, object source, object data) {
+    private static void DoDrop(DragEventArgs e, object source, object data) {
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
       if (tvi?.DataContext is not ICatTreeViewItem dest ||
         Tree.GetTopParent(dest) is not ICatTreeViewCategory cat) return;
 
-      /*var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
+      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
       cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
-
-      // TODO send args in EventArgs
-      CatTreeViewUtils.OnAfterOnDrop?.Invoke(
-        new[] { data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0 },
-        EventArgs.Empty);*/
     }
 
     /// <summary>
@@ -134,6 +132,7 @@ namespace PictureManager.CustomControls {
       else if (ActualHeight - pos.Y < 25)
         _scrollViewer.ScrollToVerticalOffset(_scrollViewer.VerticalOffset + 25);
     }
+    #endregion
   }
 
   public sealed class CatTreeViewInterfaceTemplateSelector : DataTemplateSelector {
