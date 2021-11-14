@@ -18,6 +18,7 @@ namespace PictureManager.ViewModels.Tree {
       _core = core;
       _coreVM = coreVM;
       BaseVM = baseVM;
+      CanMoveItem = true;
 
       BaseVM.Items.CollectionChanged += BaseVMItems_CollectionChanged;
       BaseVM.Model.KeywordDeletedEvent += (_, e) => All.Remove(e.Keyword.Id);
@@ -48,6 +49,9 @@ namespace PictureManager.ViewModels.Tree {
     protected override void ModelItemDelete(ICatTreeViewItem item) =>
       BaseVM.Model.ItemDelete((KeywordM)ToModel(item));
 
+    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
+      BaseVM.Model.ItemMove((KeywordM)ToModel(item), (ITreeLeaf)ToModel(dest), aboveDest);
+
     protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
       KeywordsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} item already exists!";
 
@@ -59,6 +63,9 @@ namespace PictureManager.ViewModels.Tree {
 
     protected override void ModelGroupDelete(ICatTreeViewGroup group) =>
       _core.CategoryGroupsM.GroupDelete((CategoryGroupM)ToModel(group));
+
+    public override void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) =>
+      _core.CategoryGroupsM.GroupMove((CategoryGroupM)ToModel(group), (CategoryGroupM)ToModel(dest), aboveDest);
 
     protected override string ValidateNewGroupName(ICatTreeViewItem root, string name) =>
       CategoryGroupsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} group already exists!";
@@ -77,12 +84,5 @@ namespace PictureManager.ViewModels.Tree {
         CategoryGroupTreeVM x => x.BaseVM.Model,
         _ => null
       };
-
-    /*
-
-    public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
-      BaseVM.Model.ItemMove(TreeToModel(item), ToTreeBranch(dest), aboveDest);
-
-    */
   }
 }
