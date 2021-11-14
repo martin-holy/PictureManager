@@ -9,6 +9,7 @@ using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -28,10 +29,24 @@ namespace PictureManager.ViewModels.Tree {
       _core = core;
       _coreVM = coreVM;
       Model = model;
+      CanMoveItem = true;
+      CanCopyItem = true;
       IsExpanded = true;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.FolderDeletedEvent += (_, e) => All.Remove(e.Folder.Id);
+      
+      OnAfterItemRename += (o, e) => {
+        // reload if the folder was selected before
+        if (o is FolderTreeVM { IsSelected: true } folder)
+          _ = _coreVM.TreeView_Select(folder);
+      };
+
+      OnAfterItemDelete += (o, _) => {
+        // delete folder, sub folders and mediaItems from file system
+        if (o is FolderTreeVM folder && Directory.Exists(folder.Model.FullPath))
+          AppCore.FileOperationDelete(new() { folder.Model.FullPath }, true, false);
+      };
     }
 
     public void Load() => ModelItems_CollectionChanged(Model.Items, null);
@@ -78,7 +93,7 @@ namespace PictureManager.ViewModels.Tree {
       UpdateItemsVisibility(item.Items.Cast<FolderTreeVM>());
     }
 
-    /*public override bool CanDrop(object src, ICatTreeViewItem dest) {
+    public override bool CanDrop(object src, ICatTreeViewItem dest) {
       switch (src) {
         case FolderTreeVM srcData: { // Folder
           if (dest is FolderTreeVM destData && !destData.Model.HasThisParent(srcData.Model) && !Equals(srcData, destData) &&
@@ -102,24 +117,48 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     public override void OnDrop(object src, ICatTreeViewItem dest, bool aboveDest, bool copy) {
-      // handled in OnAfterOnDrop (TreeViewCategories)
-    }*/
+      if (dest is not FolderTreeVM destFolder) return;
+      var foMode = copy ? FileOperationMode.Copy : FileOperationMode.Move;
 
-    public static void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
+      switch (src) {
+        case FolderTreeVM srcData: // Folder
+          CopyMove(foMode, srcData.Model, destFolder.Model);
+
+          // reload last selected source if was moved
+          if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.Model.GetByPath(srcData.Model.Name) != null) {
+            CatTreeView.ExpandTo(destFolder);
+            _ = _coreVM.TreeView_Select(destFolder);
+          }
+
+          break;
+
+        case string[]: // MediaItems
+          _coreVM.MediaItemsViewModel.CopyMove(foMode,
+            _core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(),
+            destFolder.Model);
+          _core.MediaItems.DataAdapter.IsModified = true;
+
+          break;
+      }
+
+      _coreVM.MarkUsedKeywordsAndPeople();
+    }
+
+    private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
       var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = true } };
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new();
         var token = fop.LoadCts.Token;
 
         try {
-          FoldersM.CopyMove(mode, srcFolder, destFolder, fop.Progress,
+          Model.CopyMove(mode, srcFolder, destFolder, fop.Progress,
             (string srcFilePath, string destFilePath, ref string destFileName) =>
               AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
         }
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(_ => App.Core.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(_ => _core.RunOnUiThread(() => fop.Close()));
 
       fop.ShowDialog();
     }
