@@ -138,8 +138,17 @@ namespace PictureManager.ViewModels {
         _ => new()
       };
 
-      // TODO item.Title
-      await LoadMediaItems(items, and, hide, and || hide ? _model.ThumbsGrid.Title : "BUG TODO");
+      var tabTitle = and || hide
+        ? _model.ThumbsGrid.Title
+        : item switch {
+          RatingTreeVM rating => rating.Value.ToString(),
+          PersonTreeVM person => person.BaseVM.Model.Name,
+          KeywordTreeVM keyword => keyword.BaseVM.Model.Name,
+          GeoNameTreeVM geoName => geoName.Model.Name,
+          _ => string.Empty
+        };
+
+      await LoadMediaItems(items, and, hide, tabTitle);
     }
 
     public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
