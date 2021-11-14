@@ -6,6 +6,10 @@ using PictureManager.Domain;
 
 namespace PictureManager.ViewModels.Tree {
   public class CatTreeViewCategoryBase : CatTreeViewCategory {
+    public event EventHandler OnAfterItemCreate = delegate { };
+    public event EventHandler OnAfterItemRename = delegate { };
+    public event EventHandler OnAfterItemDelete = delegate { };
+
     public Category Category { get; }
     public string Name { get; }
 
@@ -33,7 +37,7 @@ namespace PictureManager.ViewModels.Tree {
       try {
         root.IsExpanded = true;
         var item = ModelItemCreate(root, newName);
-        
+        OnAfterItemCreate(item, EventArgs.Empty);
         // TODO add event
         //App.WMain.TreeViewCategories.TvCategories.ScrollTo(item);
       }
@@ -48,7 +52,7 @@ namespace PictureManager.ViewModels.Tree {
 
       try {
         ModelItemRename(item, newName);
-        //CatTreeViewUtils.OnAfterItemRename?.Invoke(item, EventArgs.Empty);
+        OnAfterItemRename(item, EventArgs.Empty);
       }
       catch (Exception ex) {
         ErrorDialog.Show(ex);
@@ -67,7 +71,7 @@ namespace PictureManager.ViewModels.Tree {
         if (parent != null && parent.Items.Count == 0)
           parent.IsExpanded = false;
 
-        //CatTreeViewUtils.OnAfterItemDelete?.Invoke(item, EventArgs.Empty);
+        OnAfterItemDelete(item, EventArgs.Empty);
       }
       catch (Exception ex) {
         ErrorDialog.Show(ex);
@@ -132,6 +136,5 @@ namespace PictureManager.ViewModels.Tree {
         _ => IconName.Bug
       };
     }
-
   }
 }
