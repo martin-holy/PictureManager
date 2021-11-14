@@ -86,7 +86,7 @@ namespace PictureManager.Domain.Models {
     public bool IsFolderVisible(FolderM folder) =>
       Tree.GetTopParent(folder)?.IsAvailable == true && _core.CanViewerSeeThisFolder(folder);
 
-    public static void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
+    public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
       MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
       // update objects with skipped and renamed files in mind
       switch (mode) {
         case FileOperationMode.Copy: {
-          Core.Instance.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
+          _core.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
           break;
         }
         case FileOperationMode.Move: {
@@ -111,10 +111,14 @@ namespace PictureManager.Domain.Models {
             mi.FileName = newFileName;
           }
 
-          Core.Instance.RunOnUiThread(() => Core.Instance.FoldersM.MoveFolder(srcFolder, destFolder, ref skippedFiles));
+          _core.RunOnUiThread(() => MoveFolder(srcFolder, destFolder, ref skippedFiles));
           break;
         }
       }
+
+      DataAdapter.IsModified = true;
+      _core.MediaItems.DataAdapter.IsModified = true;
+      _core.FolderKeywordsM.Load();
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
@@ -382,7 +386,8 @@ namespace PictureManager.Domain.Models {
         Directory.Delete(item.FullPathCache, true);
 
       // delete folder, sub folders and mediaItems from file system
-      // done in OnAfterItemDelete (TreeViewItemsEvents)
+      // TODO it should be in Model
+      // done in OnAfterItemDelete (FoldersTreeVM)
     }
 
     public static List<FolderM> GetFolders(List<FolderM> roots, bool recursive) {
