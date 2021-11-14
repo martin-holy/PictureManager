@@ -8,7 +8,7 @@ namespace PictureManager.UserControls {
   public partial class MediaItemsThumbsGrid {
     public MediaItemsThumbsGrid() {
       InitializeComponent();
-      DragDropFactory.SetDrag(this, CanDrag);
+      DragDropFactory.SetDrag(this, CanDrag, DataFormats.FileDrop);
     }
 
     private object CanDrag(MouseEventArgs e) {
