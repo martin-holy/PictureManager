@@ -38,8 +38,6 @@ namespace PictureManager.ViewModels.Tree {
         root.IsExpanded = true;
         var item = ModelItemCreate(root, newName);
         OnAfterItemCreate(item, EventArgs.Empty);
-        // TODO add event
-        //App.WMain.TreeViewCategories.TvCategories.ScrollTo(item);
       }
       catch (Exception ex) {
         ErrorDialog.Show(ex);
