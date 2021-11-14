@@ -8,6 +8,10 @@ namespace PictureManager.UserControls {
   public partial class TreeViewCategories {
     public TreeViewCategories() {
       InitializeComponent();
+
+      App.Ui.FoldersTreeVM.OnAfterItemCreate += (o, _) => TvCategories.ScrollTo((ICatTreeViewItem)o);
+      App.Ui.PeopleTreeVM.OnAfterItemCreate += (o, _) => TvCategories.ScrollTo((ICatTreeViewItem)o);
+      App.Ui.KeywordsTreeVM.OnAfterItemCreate += (o, _) => TvCategories.ScrollTo((ICatTreeViewItem)o);
     }
 
     private void BtnNavCategory_OnClick(object sender, RoutedEventArgs e) =>
