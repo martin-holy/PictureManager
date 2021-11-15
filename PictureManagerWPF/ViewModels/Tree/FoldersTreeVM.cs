@@ -64,6 +64,8 @@ namespace PictureManager.ViewModels.Tree {
 
     public void UpdateDrivesVisibility() {
       // unHide all hidden
+      foreach (var driveTreeVM in _coreVM.DrivesTreeVM.All.Values.Where(x => x.IsHidden))
+        driveTreeVM.IsHidden = false;
       foreach (var folderTreeVM in All.Values.Where(x => x.IsHidden))
         folderTreeVM.IsHidden = false;
 
