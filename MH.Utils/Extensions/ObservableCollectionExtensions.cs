@@ -72,5 +72,20 @@ namespace MH.Utils.Extensions {
       collection.Add(item);
       return true;
     }
+
+    public static ObservableCollection<T> Toggle<T>(ObservableCollection<T> collection, T item, bool nullIfEmpty) where T : new() {
+      if (collection == null) {
+        collection = new() { item };
+        return collection;
+      }
+
+      if (!collection.Remove(item))
+        collection.Add(item);
+
+      if (nullIfEmpty && collection.Count == 0)
+        collection = null;
+
+      return collection;
+    }
   }
 }
