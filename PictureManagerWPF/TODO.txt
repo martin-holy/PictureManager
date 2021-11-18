@@ -18,6 +18,7 @@
 - SegmentRectsControl resize on slide panel IsPinned changed
 - ThumbsGrid:
   - drag scroll bar doesn't work after selecting any image. it works only after load
+- CatTreeView search => show tool tip on full row
 
 
 #Update
@@ -45,6 +46,8 @@
   - methods CanSeePerson, CanSeeKeyword for TreeViewSearch and elsewhere
 - MarkUsedKeywordsAndPeople:
   - add People and Keywords from Segments
+- Filters
+  - update DisplayFilter on items on MainTabs tab change
 
 
 # Segment Matching
@@ -91,7 +94,6 @@
 - Folders a Folder GetByPath udelat univerzalni pro CatTreeView
 - statickou tridu Prefs v App, ktera bude odkazovat na Settings.Default, takze se bude psat App.Prefs.FfmpegPath
 - ThumbnailsGrid:
-  - Filter for each TG
   - ThumbSize for each TG
   - Auto groups from People and Keywords
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
@@ -114,7 +116,6 @@
 - MessageDialog:
   - Extend
 - IListBoxItem as ancestor of ICatTreeViewItem
-- Allow drag outside of app for MediaItems
 
 
 

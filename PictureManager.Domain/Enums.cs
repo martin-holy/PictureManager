@@ -5,4 +5,5 @@ namespace PictureManager.Domain {
   public enum CollisionResult { Rename, Replace, Skip }
   public enum FileOperationMode { Copy, Move, Delete }
   public enum IconName { Folder, FolderStar, FolderLock, FolderOpen, FolderPuzzle, Star, People, PeopleMultiple, Tag, TagLabel, Filter, Eye, DatabaseSql, Bug, LocationCheckin, Notification, Cd, Drive, DriveError, Edit, Cancel, Save, Ruler, Settings, Question, Information, RotateClockwise, RotateLeft, RotateRight, Pin, Calendar, Magnify, Image, ImageMultiple, PageUpload, MovieClapper, SoundMute, Sound3, Clock, RunFast, Checkmark, XCross, Sort, Compare, Refresh, Group, Equals, Drawer, Delete }
+  public enum DisplayFilter { None = 0, And = 1, Or = 2, Not = 3 }
 }

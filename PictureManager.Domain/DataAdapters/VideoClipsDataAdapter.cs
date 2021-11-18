@@ -61,9 +61,9 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       foreach (var vc in _model.All.Cast<VideoClipM>()) {
         // reference to MediaItem and back reference from MediaItem to VideoClip without group
-        vc.MediaItem = _core.MediaItems.AllDic[int.Parse(vc.Csv[1])];
+        vc.MediaItem = _core.MediaItemsM.AllDic[int.Parse(vc.Csv[1])];
         if (vc.Group == null)
-          vc.MediaItem.VideoClipAdd(vc, null);
+          VideoClipsM.VideoClipAdd(vc.MediaItem, vc);
 
         // reference to People and back reference from Person to VideoClip
         if (!string.IsNullOrEmpty(vc.Csv[9])) {

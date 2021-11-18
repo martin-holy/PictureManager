@@ -69,7 +69,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(PersonM person) {
-      _core.MediaItems.RemovePersonFromMediaItems(person);
+      _core.MediaItemsM.RemovePersonFromMediaItems(person);
       _core.Segments.RemovePersonFromSegments(person);
       person.Parent.Items.Remove(person);
       person.Parent = null;
@@ -87,7 +87,7 @@ namespace PictureManager.Domain.Models {
 
     public void DeleteNotUsed(IEnumerable<PersonM> list) {
       var people = new HashSet<PersonM>(list);
-      foreach (var mi in _core.MediaItems.All.Cast<MediaItem>()) {
+      foreach (var mi in _core.MediaItemsM.All.Cast<MediaItemM>()) {
         if (mi.People != null)
           foreach (var personM in mi.People.Where(x => people.Contains(x)))
             people.Remove(personM);
@@ -103,8 +103,8 @@ namespace PictureManager.Domain.Models {
         ItemDelete(person);
     }
 
-    public List<MediaItem> GetMediaItems(PersonM person) =>
-      _core.MediaItems.All.Cast<MediaItem>().Where(mi =>
+    public List<MediaItemM> GetMediaItems(PersonM person) =>
+      _core.MediaItemsM.All.Where(mi =>
           mi.People?.Contains(person) == true ||
           mi.Segments?.Any(s => s.Person == person) == true)
         .OrderBy(mi => mi.FileName).ToList();

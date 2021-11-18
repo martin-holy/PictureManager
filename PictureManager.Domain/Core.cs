@@ -21,12 +21,12 @@ namespace PictureManager.Domain {
     public KeywordsM KeywordsM { get; }
     public GeoNamesM GeoNamesM { get; }
     public ViewersM ViewersM { get; }
+    public MediaItemsM MediaItemsM { get; }
     public VideoClipsM VideoClipsM { get; }
     public VideoClipsGroupsM VideoClipsGroupsM { get; }
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
-    public MediaItems MediaItems { get; }
     public Segments Segments { get; }
     public ViewerM CurrentViewer { get; set; }
     public double ThumbScale { get; set; } = 1.0;
@@ -50,7 +50,7 @@ namespace PictureManager.Domain {
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
 
-      MediaItems = new(this);
+      MediaItemsM = new(this);
       VideoClipsM = new(this);
       VideoClipsGroupsM = new(this);
       Segments = new(this);
@@ -64,7 +64,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
-        Sdb.AddDataAdapter(MediaItems.DataAdapter);
+        Sdb.AddDataAdapter(MediaItemsM.DataAdapter);
         Sdb.AddDataAdapter(VideoClipsGroupsM.DataAdapter); // needs to be before VideoClips
         Sdb.AddDataAdapter(VideoClipsM.DataAdapter);
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
@@ -86,8 +86,8 @@ namespace PictureManager.Domain {
         GeoNamesM.AllDic = null;
         KeywordsM.AllDic.Clear();
         KeywordsM.AllDic = null;
-        MediaItems.AllDic.Clear();
-        MediaItems.AllDic = null;
+        MediaItemsM.AllDic.Clear();
+        MediaItemsM.AllDic = null;
         PeopleM.AllDic.Clear();
         PeopleM.AllDic = null;
         VideoClipsM.AllDic.Clear();
@@ -101,7 +101,7 @@ namespace PictureManager.Domain {
 
     public bool CanViewerSeeContentOfThisFolder(FolderM folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
 
-    public bool CanViewerSee(MediaItem mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
+    public bool CanViewerSee(MediaItemM mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
 
     public void LogError(Exception ex) => LogError(ex, string.Empty);
 

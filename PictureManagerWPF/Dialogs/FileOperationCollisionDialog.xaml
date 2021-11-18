@@ -50,7 +50,7 @@
       <!-- Source Thumbnail -->
       <Grid Grid.Row="0" Grid.Column="0" ToolTip="{Binding SrcFileInfo.FullName}">
         <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding SrcThumbVisibility}">
-          <Image Stretch="Uniform" Source="{Binding SrcFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
+          <Image Stretch="Uniform" Source="{Binding SrcFilePathCache, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
         </Border>
 
         <Grid Visibility="{Binding SrcMediaItemThumbVisibility}">
@@ -61,7 +61,7 @@
       <!-- Destination Thumbnail -->
       <Grid Grid.Row="0" Grid.Column="2" ToolTip="{Binding DestFileInfo.FullName}">
         <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding DestThumbVisibility}">
-          <Image Stretch="Uniform" Source="{Binding DestFilePathCacheUri, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
+          <Image Stretch="Uniform" Source="{Binding DestFilePathCache, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
         </Border>
 
         <Grid Visibility="{Binding DestMediaItemThumbVisibility}" ToolTip="{Binding DestFileInfo.FullName}">

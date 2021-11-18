@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
@@ -7,30 +6,30 @@ using SimpleDB;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
-  /// DB fields: ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
+  /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
   /// </summary>
   public class MediaItemsDataAdapter : DataAdapter {
     private readonly Core _core;
-    private readonly MediaItems _model;
+    private readonly MediaItemsM _model;
 
-    public MediaItemsDataAdapter(Core core, MediaItems model) : base("MediaItems", core.Sdb) {
+    public MediaItemsDataAdapter(Core core, MediaItemsM model) : base("MediaItems", core.Sdb) {
       _core = core;
       _model = model;
     }
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new Dictionary<int, MediaItem>();
+      _model.AllDic = new();
       LoadFromFile();
-      _model.MediaItemsCount = _model.All.Count;
+      _model.OnPropertyChanged(nameof(_model.MediaItemsCount));
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<MediaItem>(), ToCsv);
+    public override void Save() => SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 12) throw new ArgumentException("Incorrect number of values.", csv);
-      var mi = new MediaItem(int.Parse(props[0]), null, props[2]) {
+      var mi = new MediaItemM(int.Parse(props[0]), null, props[2]) {
         Csv = props,
         Width = props[3].IntParseOrDefault(0),
         Height = props[4].IntParseOrDefault(0),
@@ -43,7 +42,7 @@ namespace PictureManager.Domain.DataAdapters {
       _model.AllDic.Add(mi.Id, mi);
     }
 
-    public static string ToCsv(MediaItem mediaItem) =>
+    public static string ToCsv(MediaItemM mediaItem) =>
       string.Join("|",
         mediaItem.Id.ToString(),
         mediaItem.Folder.Id.ToString(),
@@ -59,7 +58,7 @@ namespace PictureManager.Domain.DataAdapters {
         mediaItem.IsOnlyInDb ? "1" : string.Empty);
 
     public override void LinkReferences() {
-      foreach (var mi in _model.All.Cast<MediaItem>()) {
+      foreach (var mi in _model.All.Cast<MediaItemM>()) {
         // reference to Folder and back reference from Folder to MediaItems
         mi.Folder = _core.FoldersM.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);

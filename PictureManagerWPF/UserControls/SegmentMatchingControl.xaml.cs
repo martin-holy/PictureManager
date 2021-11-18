@@ -25,7 +25,7 @@ namespace PictureManager.UserControls {
     private string _title;
     private bool _loading;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
-    private List<MediaItem> _mediaItems;
+    private List<MediaItemM> _mediaItems;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
@@ -102,7 +102,7 @@ namespace PictureManager.UserControls {
       _ = SortAndReload(App.Core.Segments.GroupSegments, true);
     }
 
-    public void SetMediaItems(List<MediaItem> mediaItems) => _mediaItems = mediaItems;
+    public void SetMediaItems(List<MediaItemM> mediaItems) => _mediaItems = mediaItems;
 
     public async Task CompareAsync() {
       await _workTask.Cancel();
@@ -219,7 +219,7 @@ namespace PictureManager.UserControls {
       foreach (var segment in App.Core.Segments.SegmentsDrawer) {
         await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
         segment.MediaItem.SetThumbSize();
-        segment.MediaItem.SetInfoBox();
+        App.Ui.MediaItemsBaseVM.SetInfoBox(segment.MediaItem);
       }
     }
   }

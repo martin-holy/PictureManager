@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Models {
     // DB Fields
     public int Id { get; }
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
-    public MediaItem MediaItem { get; set; }
+    public MediaItemM MediaItem { get; set; }
     public List<VideoClipM> Clips { get; set; } = new();
 
     public VideoClipsGroupM(int id, string name) {

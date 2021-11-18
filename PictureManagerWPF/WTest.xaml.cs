@@ -26,13 +26,6 @@ namespace PictureManager {
       "".TryParseDoubleUniversal(out var res5);
     }
 
-    private void SetUpMediaItemTest() {
-      App.Ui.VideoClipsTreeVM.SetMediaItem(
-        App.Core.MediaItems.All.Cast<MediaItem>().FirstOrDefault(mi => mi.Id == 138791));
-
-      TvCategories.ItemsSource = new ObservableCollection<ICatTreeViewItem> { App.Ui.VideoClipsTreeVM };
-    }
-
     public void AllowDropCheck(object sender, DragEventArgs e) {
       //TvCategories.AllowDropCheck(sender, e);
     }

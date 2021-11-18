@@ -14,32 +14,39 @@ namespace PictureManager.Domain.Models {
       DataAdapter = new VideoClipsGroupsDataAdapter(core, this);
     }
 
-    public bool ItemCanRename(string name, MediaItem mediaItem) =>
-      !All.Any(x => x.MediaItem.Equals(mediaItem) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+    public bool ItemCanRename(string name, MediaItemM mi) =>
+      !All.Any(x => x.MediaItem.Equals(mi) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
-    public VideoClipsGroupM ItemCreate(string name, MediaItem mediaItem) {
-      var vcg = new VideoClipsGroupM(DataAdapter.GetNextId(), name) { MediaItem = mediaItem };
-      vcg.MediaItem.VideoClipsGroupAdd(vcg);
-      All.Add(vcg);
+    public VideoClipsGroupM ItemCreate(string name, MediaItemM mi) {
+      var group = new VideoClipsGroupM(DataAdapter.GetNextId(), name);
+      SetMediaItem(group, mi);
+      All.Add(group);
 
-      return vcg;
+      return group;
     }
 
-    public void ItemRename(VideoClipsGroupM vcg, string name) {
-      vcg.Name = name;
+    public void ItemRename(VideoClipsGroupM group, string name) {
+      group.Name = name;
       DataAdapter.IsModified = true;
     }
 
-    public void ItemDelete(VideoClipsGroupM vcg) {
-      vcg.MediaItem.VideoClipsGroups.Remove(vcg);
-      All.Remove(vcg);
+    public void ItemDelete(VideoClipsGroupM group) {
+      group.MediaItem.VideoClipsGroups.Remove(group);
+      All.Remove(group);
       DataAdapter.IsModified = true;
     }
 
+    // TODO
     public void GroupMove(VideoClipsGroupM group, VideoClipsGroupM dest, bool aboveDest) {
       All.Move(group, dest, aboveDest);
       group.MediaItem.VideoClipsGroups.Move(group, dest, aboveDest);
       DataAdapter.IsModified = true;
+    }
+
+    public static void SetMediaItem(VideoClipsGroupM group, MediaItemM mi) {
+      group.MediaItem = mi;
+      mi.VideoClipsGroups ??= new();
+      mi.VideoClipsGroups.Add(group);
     }
   }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class MediaItemsThumbsGrid {
@@ -12,7 +11,7 @@ namespace PictureManager.UserControls {
     }
 
     private object CanDrag(MouseEventArgs e) {
-      var data = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
+      var data = App.Core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
 
@@ -21,15 +20,15 @@ namespace PictureManager.UserControls {
       if (e.Delta < 0 && App.Core.ThumbScale < .1) return;
       App.Core.ThumbScale += e.Delta > 0 ? .05 : -.05;
       App.Ui.AppInfo.IsThumbInfoVisible = App.Core.ThumbScale > 0.5;
-      App.Core.MediaItems.ThumbsGrid.ResetThumbsSize();
-      await App .Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MediaItemsM.ThumbsGrid.ResetThumbsSize();
+      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
     }
 
     private async void Refresh(object sender, RoutedEventArgs e) {
-      if (App.Core.MediaItems.ThumbsGrid != null)
-        await App.Core.MediaItems.ThumbsGrid.ReloadFilteredItems(
-          MediaItemsViewModel.Filter(App.Core.MediaItems.ThumbsGrid.LoadedItems));
-      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      if (App.Core.MediaItemsM.ThumbsGrid != null)
+        await App.Core.MediaItemsM.ThumbsGrid.ReloadFilteredItems(
+          App.Ui.MediaItemsBaseVM.Filter(App.Core.MediaItemsM.ThumbsGrid.LoadedItems));
+      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
     }
   }
 }

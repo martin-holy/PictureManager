@@ -9,7 +9,6 @@ using System.Windows;
 using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.ViewModels;
 
 namespace PictureManager.Dialogs {
   public partial class CompressDialog : INotifyPropertyChanged {
@@ -32,13 +31,13 @@ namespace PictureManager.Dialogs {
       JpegQualityLevel = Properties.Settings.Default.JpegQualityLevel;
     }
 
-    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<MediaItem> items, [EnumeratorCancellation] CancellationToken token = default) {
+    private static async IAsyncEnumerable<long[]> CompressMediaItemsAsync(List<MediaItemM> items, [EnumeratorCancellation] CancellationToken token = default) {
       foreach (var mi in items) {
         if (token.IsCancellationRequested) yield break;
 
         yield return await Task.Run(() => {
           var originalSize = new FileInfo(mi.FilePath).Length;
-          var bSuccess = MediaItemsViewModel.TryWriteMetadata(mi);
+          var bSuccess = App.Ui.MediaItemsBaseVM.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
           return new[] { originalSize, newSize };
         });
@@ -46,7 +45,7 @@ namespace PictureManager.Dialogs {
     }
 
     private async Task Compress() {
-      var items = App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x =>
+      var items = App.Core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x =>
         x.MediaType == MediaType.Image && (OptSelected.IsChecked != true || x.IsSelected)).ToList();
 
       PbCompressProgress.Maximum = items.Count;

@@ -17,7 +17,7 @@ namespace PictureManager.ViewModels.Tree {
     private readonly Core _core;
 
     public VideoClipsM Model { get; }
-    public MediaItem CurrentMediaItem { get; private set; }
+    public MediaItemM CurrentMediaItem { get; private set; }
 
     public VideoClipsTreeVM(Core core, VideoClipsM model) : base(Category.VideoClips, "Clips") {
       _core = core;
@@ -25,7 +25,7 @@ namespace PictureManager.ViewModels.Tree {
       IsExpanded = true;
     }
 
-    public void SetMediaItem(MediaItem mi) {
+    public void SetMediaItem(MediaItemM mi) {
       // clear previous items
       foreach (var group in Items.OfType<ICatTreeViewGroup>())
         group.Items.Clear();
@@ -55,8 +55,8 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     public static void CreateThumbnail(VideoClipM vc, FrameworkElement visual, bool reCreate = false) {
-      if (!File.Exists(vc.ThumbPath.LocalPath) || reCreate) {
-        Imaging.CreateVideoThumbnailFromVisual(visual, vc.ThumbPath.LocalPath, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel);
+      if (!File.Exists(vc.ThumbPath) || reCreate) {
+        Imaging.CreateVideoThumbnailFromVisual(visual, vc.ThumbPath, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel);
 
         vc.OnPropertyChanged(nameof(vc.ThumbPath));
       }

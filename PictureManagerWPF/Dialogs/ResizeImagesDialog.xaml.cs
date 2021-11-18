@@ -21,7 +21,7 @@ namespace PictureManager.Dialogs {
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
     private CancellationTokenSource _cts;
-    private readonly MediaItem[] _items;
+    private readonly MediaItemM[] _items;
     private bool _error;
     private string _fileName;
     private double _maxMpx;
@@ -32,7 +32,7 @@ namespace PictureManager.Dialogs {
     public double MaxMpx { get => _maxMpx; set { _maxMpx = value; OnPropertyChanged(); } }
     public ObservableCollection<string> DirPaths { get => _dirPaths; set { _dirPaths = value; OnPropertyChanged(); } }
 
-    public ResizeImagesDialog(Window owner, IEnumerable<MediaItem> items) {
+    public ResizeImagesDialog(Window owner, IEnumerable<MediaItemM> items) {
       InitializeComponent();
       Owner = owner;
       _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
@@ -43,7 +43,7 @@ namespace PictureManager.Dialogs {
       SetMaxMpx();
     }
 
-    public static void Show(Window owner, IEnumerable<MediaItem> items) {
+    public static void Show(Window owner, IEnumerable<MediaItemM> items) {
       var dlg = new ResizeImagesDialog(owner, items);
       dlg.Show();
     }

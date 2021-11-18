@@ -16,7 +16,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="cc:MediaItemThumbnail">
-          <Border x:Name="PART_Border" Width="{Binding ThumbWidth}" Height="{Binding ThumbHeight}" ClipToBounds="True">
+          <Border x:Name="PART_Border" Width="{Binding Model.ThumbWidth}" Height="{Binding Model.ThumbHeight}" ClipToBounds="True">
             <Border.Style>
               <Style TargetType="{x:Type Border}">
                 <Setter Property="BorderBrush" Value="Black" />
@@ -24,7 +24,7 @@
                 <Setter Property="Margin" Value="1" />
 
                 <Style.Triggers>
-                  <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                  <DataTrigger Binding="{Binding Model.IsSelected}" Value="True">
                     <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
                   </DataTrigger>
                 </Style.Triggers>
@@ -47,12 +47,12 @@
 
             <Grid x:Name="PART_Grid">
               <!-- Thumbnail Image -->
-              <Image Source="{Binding FilePathCacheUri, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
+              <Image Source="{Binding Model.FilePathCache, Converter={StaticResource ImageSourceConverter}}" Stretch="Fill" />
 
               <!-- Video over layer -->
               <ContentControl Content="&#xE29E;" FontFamily="Segoe UI Symbol" FontSize="20" 
                             VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.77"
-                            Visibility="{Binding MediaType, 
+                            Visibility="{Binding Model.MediaType, 
                                                  Converter={StaticResource AllToVisibilityConverter},
                                                  ConverterParameter={x:Static pmd:MediaType.Video}}">
               </ContentControl>
@@ -63,7 +63,7 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
                         Margin="5"
-                        Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
+                        Visibility="{Binding Model.HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}" />
 
               <!-- Thumbnail Info Box -->
               <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
@@ -83,7 +83,7 @@
               </ItemsControl>
 
               <!-- Selected over layer -->
-              <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
+              <Grid Visibility="{Binding Model.IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
                 <Polygon Width="40" Height="40" Points="0,0 40,0 40,40" Stroke="Black" StrokeThickness="2"
                          HorizontalAlignment="Right" VerticalAlignment="Top" Fill="{DynamicResource AccentColorBrush}" />
 

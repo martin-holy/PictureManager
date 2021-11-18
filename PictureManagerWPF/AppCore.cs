@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using MH.UI.WPF.Interfaces;
+using MH.Utils.Extensions;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
@@ -14,10 +13,10 @@ using PictureManager.Interfaces;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.UserControls;
+using PictureManager.Utils;
 using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
-
 
 namespace PictureManager {
   public sealed class AppCore {
@@ -27,6 +26,7 @@ namespace PictureManager {
     public KeywordsBaseVM KeywordsBaseVM { get; }
     public ViewersBaseVM ViewersBaseVM { get; }
     public SegmentsBaseVM SegmentsBaseVM { get; }
+    public MediaItemsBaseVM MediaItemsBaseVM { get; }
 
     #region TreeView Roots and Categories
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
@@ -43,10 +43,8 @@ namespace PictureManager {
     public VideoClipsTreeVM VideoClipsTreeVM { get; }
     #endregion
 
-    public MediaItemsViewModel MediaItemsViewModel { get; }
     public AppInfo AppInfo { get; } = new();
     public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
-    public HashSet<IFilterItem> ActiveFilterItems { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
 
@@ -57,7 +55,6 @@ namespace PictureManager {
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
 
-      MediaItemsViewModel = new(App.Core);
       VideoClipsTreeVM = new(App.Core, App.Core.VideoClipsM);
 
       CategoryGroupsBaseVM = new();
@@ -66,6 +63,7 @@ namespace PictureManager {
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
       ViewersBaseVM = new(this, App.Core.ViewersM);
       SegmentsBaseVM = new(App.Core);
+      MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
@@ -83,19 +81,7 @@ namespace PictureManager {
       FoldersTreeVM.Load();
     }
 
-    public void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
-      item.DisplayFilter = displayFilter;
-      if (displayFilter == DisplayFilter.None)
-        ActiveFilterItems.Remove(item);
-      else
-        ActiveFilterItems.Add(item);
-
-      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterAndCount));
-      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterOrCount));
-      AppInfo.OnPropertyChanged(nameof(AppInfo.FilterNotCount));
-    }
-
-    public static void ToggleKeyword(KeywordTreeVM keyword) {
+    private static void ToggleKeyword(KeywordTreeVM keyword) {
       var sCount = App.Core.Segments.Selected.Count;
       var pCount = App.Ui.PeopleBaseVM.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
@@ -123,7 +109,7 @@ namespace PictureManager {
       OnToggleKeyword?.Invoke(null, EventArgs.Empty);
     }
 
-    public static void SetPerson(PersonBaseVM person) {
+    private static void SetPerson(PersonBaseVM person) {
       var sCount = App.Core.Segments.Selected.Count;
       if (sCount == 0) return;
 
@@ -135,21 +121,19 @@ namespace PictureManager {
       OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 
-    public async Task TreeView_Select(ICatTreeViewItem item, bool loadByTag = false) {
+    public async Task TreeView_Select(ICatTreeViewItem item) {
       if (item == null) return;
 
-      var and = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-      var hide = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
-      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-
       if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
-        if (loadByTag) {
-          MediaItemsViewModel.AddThumbsTabIfNotActive();
-          await MediaItemsViewModel.LoadByTag(item, and, hide, recursive);
-          return;
-        }
-        else if (App.Core.MediaItems.IsEditModeOn) {
-          MediaItemsViewModel.SetMetadata(item);
+        if (App.Core.MediaItemsM.IsEditModeOn && item is ICatTreeViewTagItem tagItem) {
+          if (!MarkedTags.Toggle(tagItem))
+            tagItem.PicCount = 0;
+
+          MediaItemsBaseVM.SetMetadata(tagItem);
+
+          MarkUsedKeywordsAndPeople();
+          App.WMain.StatusPanel.UpdateRating();
+
           return;
         }
       }
@@ -172,8 +156,10 @@ namespace PictureManager {
 
         case FolderTreeVM:
         case FolderKeywordTreeVM:
-          MediaItemsViewModel.AddThumbsTabIfNotActive();
-          await MediaItemsViewModel.LoadByFolder(item, and, hide, recursive);
+          // TODO move to MediaItemsBaseVM
+          MediaItemsBaseVM.AddThumbsTabIfNotActive();
+          var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
+          await MediaItemsBaseVM.LoadByFolder(item, and, hide, recursive);
           break;
 
         case ViewerTreeVM v:
@@ -193,21 +179,6 @@ namespace PictureManager {
       }
     }
 
-    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
-      SetDisplayFilter(item, item.DisplayFilter != DisplayFilter.None ? DisplayFilter.None : displayFilter);
-
-      // reload with new filter
-      await MediaItemsViewModel.ReapplyFilter();
-    }
-
-    public async Task ClearFilters() {
-      foreach (var item in ActiveFilterItems.ToArray())
-        SetDisplayFilter(item, DisplayFilter.None);
-
-      // reload with new filter
-      await MediaItemsViewModel.ReapplyFilter();
-    }
-
     public void MarkUsedKeywordsAndPeople() {
       //can be Person, Keyword, FolderKeyword, Rating or GeoName
 
@@ -223,9 +194,9 @@ namespace PictureManager {
         item.PicCount = 0;
       MarkedTags.Clear();
 
-      if (App.Core.MediaItems.ThumbsGrid == null) return;
+      if (App.Core.MediaItemsM.ThumbsGrid == null) return;
 
-      var mediaItems = App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
+      var mediaItems = App.Core.MediaItemsM.ThumbsGrid.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
 
         // People
@@ -286,9 +257,9 @@ namespace PictureManager {
 
       App.Core.RunOnUiThread(() => {
         srcMi?.SetThumbSize();
-        srcMi?.SetInfoBox();
         destMi?.SetThumbSize();
-        destMi?.SetInfoBox();
+        App.Ui.MediaItemsBaseVM.SetInfoBox(srcMi);
+        App.Ui.MediaItemsBaseVM.SetInfoBox(destMi);
 
         var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
         cd.ShowDialog();

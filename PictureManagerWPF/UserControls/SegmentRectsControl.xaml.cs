@@ -11,13 +11,13 @@ using System.Windows.Input;
 namespace PictureManager.UserControls {
   public partial class SegmentRectsControl : UserControl {
     public static readonly DependencyProperty MediaItemProperty = DependencyProperty.Register(
-      nameof(MediaItem), typeof(MediaItem), typeof(SegmentRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnMediaItemChanged)));
+      nameof(MediaItem), typeof(MediaItemM), typeof(SegmentRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnMediaItemChanged)));
     public static readonly DependencyProperty ZoomProperty = DependencyProperty.Register(
       nameof(Zoom), typeof(double), typeof(SegmentRectsControl), new PropertyMetadata(new PropertyChangedCallback(OnZoomChanged)));
     public static readonly DependencyProperty IsEditOnProperty = DependencyProperty.Register(
       nameof(IsEditOn), typeof(bool), typeof(SegmentRectsControl));
 
-    public MediaItem MediaItem { get => (MediaItem)GetValue(MediaItemProperty); set => SetValue(MediaItemProperty, value); }
+    public MediaItemM MediaItem { get => (MediaItemM)GetValue(MediaItemProperty); set => SetValue(MediaItemProperty, value); }
     public double Zoom { get => (double)GetValue(ZoomProperty); set => SetValue(ZoomProperty, value); }
     public bool IsEditOn { get => (bool)GetValue(IsEditOnProperty); set => SetValue(IsEditOnProperty, value); }
 

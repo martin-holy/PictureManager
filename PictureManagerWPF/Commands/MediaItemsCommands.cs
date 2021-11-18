@@ -31,7 +31,7 @@ namespace PictureManager.Commands {
     public static RoutedUICommand SegmentMatchingCommand { get; } = new() { Text = "Segment Matching" };
     public static RoutedUICommand ViewMediaItemsWithSegmentCommand { get; } = new();
 
-    private static ThumbnailsGrid ThumbsGrid => App.Core.MediaItems.ThumbsGrid;
+    private static ThumbnailsGridM ThumbsGrid => App.Core.MediaItemsM.ThumbsGrid;
 
     public static void AddCommandBindings(CommandBindingCollection cbc) {
       CommandsController.AddCommandBinding(cbc, SelectAllCommand, SelectAll, CanSelectAll);
@@ -68,28 +68,28 @@ namespace PictureManager.Commands {
 
     private async static void Delete() {
       var items = App.Ui.AppInfo.AppMode == AppMode.Viewer
-        ? new List<MediaItem>() { App.Core.MediaItems.Current }
+        ? new List<MediaItemM>() { App.Core.MediaItemsM.Current }
         : ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
 
       if (!MessageDialog.Show("Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      App.Core.MediaItems.Current = MediaItems.GetNewCurrent(ThumbsGrid != null
+      App.Core.MediaItemsM.Current = MediaItemsM.GetNewCurrent(ThumbsGrid != null
         ? ThumbsGrid.LoadedItems
-        : App.WMain.MediaViewer.MediaItems,
+        : App.WMain.MediaViewer.MediaItems.Select(x => x.Model).ToList(),
         items);
 
-      App.Core.MediaItems.Delete(items, AppCore.FileOperationDelete);
-      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      App.Core.MediaItemsM.Delete(items, AppCore.FileOperationDelete);
+      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
 
       if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl smc)
         _ = smc.SortAndReload();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
-        _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
-        if (App.Core.MediaItems.Current != null)
-          App.WMain.MediaViewer.SetMediaItemSource(App.Core.MediaItems.Current);
+        _ = App.WMain.MediaViewer.MediaItems.Remove(App.Ui.MediaItemsBaseVM.ToViewModel(items[0]));
+        if (App.Core.MediaItemsM.Current != null)
+          App.WMain.MediaViewer.SetMediaItemSource(App.Ui.MediaItemsBaseVM.ToViewModel(App.Core.MediaItemsM.Current));
         else
           WindowCommands.SwitchToBrowser();
       }
@@ -101,7 +101,7 @@ namespace PictureManager.Commands {
       ThumbsGrid.FilteredItems.Shuffle();
       ThumbsGrid.GroupByFolders = false;
       ThumbsGrid.GroupByDate = false;
-      _ = App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      _ = App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
     }
 
     private static bool CanResizeImages() => ThumbsGrid?.FilteredItems.Count > 0;
@@ -114,21 +114,22 @@ namespace PictureManager.Commands {
       ImagesToVideoDialog.ShowDialog(App.WMain,
         ThumbsGrid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (FolderM folder, string fileName) => {
-          var mmi = App.Core.MediaItems;
+          var mmi = App.Core.MediaItemsM;
 
           // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = new MediaItem(mmi.DataAdapter.GetNextId(), folder, fileName);
+          var mi = new MediaItemM(mmi.DataAdapter.GetNextId(), folder, fileName);
           mmi.All.Add(mi);
+          App.Core.MediaItemsM.OnPropertyChanged(nameof(App.Core.MediaItemsM.MediaItemsCount));
           folder.MediaItems.Add(mi);
-          await MediaItemsViewModel.ReadMetadata(mi);
+          await App.Ui.MediaItemsBaseVM.ReadMetadata(mi);
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
 
           // reload grid
           mmi.ThumbsGrid.LoadedItems.AddInOrder(mi,
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          await App.Ui.MediaItemsViewModel.ReapplyFilter();
-          App.Ui.MediaItemsViewModel.ScrollTo(mi);
+          await App.Ui.MediaItemsBaseVM.ReapplyFilter();
+          App.Ui.MediaItemsBaseVM.ScrollTo(App.Ui.MediaItemsBaseVM.ToViewModel(mi));
         }
       );
     }
@@ -156,10 +157,10 @@ namespace PictureManager.Commands {
     private static void Rotate() {
       var rotation = RotationDialog.Show();
       if (rotation == Rotation.Rotate0) return;
-      App.Ui.MediaItemsViewModel.SetOrientation(ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
+      App.Ui.MediaItemsBaseVM.SetOrientation(ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (App.Ui.AppInfo.AppMode != AppMode.Viewer) return;
-      App.WMain.MediaViewer.SetMediaItemSource(ThumbsGrid.Current);
+      App.WMain.MediaViewer.SetMediaItemSource(App.Ui.MediaItemsBaseVM.ToViewModel(ThumbsGrid.Current));
     }
 
     public static bool CanRebuildThumbnails(object parameter) => parameter is FolderM || ThumbsGrid?.FilteredItems.Count > 0;
@@ -168,7 +169,7 @@ namespace PictureManager.Commands {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var mediaItems = parameter switch {
         FolderM folder => folder.GetMediaItems(recursive),
-        List<MediaItem> items => items,
+        List<MediaItemM> items => items,
         _ => ThumbsGrid.GetSelectedOrAll(),
       };
 
@@ -176,20 +177,20 @@ namespace PictureManager.Commands {
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
-        async (MediaItem mi) => {
+        async (mi) => {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
         },
         mi => mi.FilePath,
         delegate {
-          _ = App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+          _ = App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
         });
 
       progress.Start();
     }
 
-    public static void Resize(MediaItem[] items, int px, string destination, bool withMetadata, bool withThumbnail) {
+    public static void Resize(MediaItemM[] items, int px, string destination, bool withMetadata, bool withThumbnail) {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Resizing Images ...");
 
       progress.AddEvents(
@@ -206,7 +207,7 @@ namespace PictureManager.Commands {
           }
         },
         // action
-        delegate (MediaItem mi) {
+        delegate (MediaItemM mi) {
           if (mi.MediaType == MediaType.Video) return;
 
           try {
@@ -226,10 +227,10 @@ namespace PictureManager.Commands {
       progress.Start();
     }
 
-    private static bool CanRename() => App.Core.MediaItems.Current != null;
+    private static bool CanRename() => App.Core.MediaItemsM.Current != null;
 
     private async static void Rename() {
-      var current = App.Core.MediaItems.Current;
+      var current = App.Core.MediaItemsM.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -259,9 +260,9 @@ namespace PictureManager.Commands {
       if (!(inputDialog.ShowDialog() ?? true)) return;
 
       try {
-        current.Rename(inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
+        App.Core.MediaItemsM.Rename(current, inputDialog.TxtAnswer.Text + Path.GetExtension(current.FileName));
         ThumbsGrid?.FilteredItemsSetInPlace(current);
-        await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+        await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
         App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
       }
@@ -284,10 +285,10 @@ namespace PictureManager.Commands {
 
     private static void ViewMediaItemsWithSegment(object parameter) {
       if (parameter is not Segment segment || segment.MediaItem == null) return;
-      App.Core.MediaItems.Current = segment.MediaItem;
+      App.Core.MediaItemsM.Current = segment.MediaItem;
       WindowCommands.SwitchToFullScreen();
 
-      List<MediaItem> items = null;
+      List<MediaItemM> items = null;
 
       if (segment.PersonId == 0) {
         if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl
@@ -296,14 +297,16 @@ namespace PictureManager.Commands {
           items = App.Core.Segments.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
         }
         else
-          items = new List<MediaItem> { segment.MediaItem };
+          items = new List<MediaItemM> { segment.MediaItem };
       }
       else {
         items = App.Core.Segments.All.Cast<Segment>().Where(x => x.PersonId == segment.PersonId).Select(x => x.MediaItem).Distinct().OrderBy(x => x.FileName).ToList();
       }
 
-      App.WMain.MediaViewer.SetMediaItems(items);
-      App.WMain.MediaViewer.SetMediaItemSource(segment.MediaItem);
+      var itemsVM = App.Ui.MediaItemsBaseVM.ToViewModel(items).ToList();
+
+      App.WMain.MediaViewer.SetMediaItems(itemsVM);
+      App.WMain.MediaViewer.SetMediaItemSource(App.Ui.MediaItemsBaseVM.ToViewModel(segment.MediaItem));
     }
   }
 }

@@ -6,7 +6,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public MediaItemSizesTreeVM(AppCore coreVM) : base(Category.MediaItemSizes, "Sizes") {
       Size.RangeChangedEvent += (_, _) => {
-        _ = coreVM.MediaItemsViewModel.ReapplyFilter();
+        _ = coreVM.MediaItemsBaseVM.ReapplyFilter();
       };
 
       Items.Add(Size);

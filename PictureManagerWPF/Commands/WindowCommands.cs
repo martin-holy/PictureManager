@@ -38,7 +38,7 @@ namespace PictureManager.Commands {
     private static bool CanSwitchToFullScreen() => App.Ui.AppInfo.AppMode == AppMode.Browser;
 
     public static void SwitchToFullScreen() {
-      if (App.Core.MediaItems.Current == null) return;
+      if (App.Core.MediaItemsM.Current == null) return;
       App.Ui.AppInfo.AppMode = AppMode.Viewer;
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
@@ -56,7 +56,7 @@ namespace PictureManager.Commands {
 
       App.Ui.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Ui.MediaItemsViewModel.ScrollToCurrent();
+      App.Ui.MediaItemsBaseVM.ScrollToCurrent();
       App.Ui.MarkUsedKeywordsAndPeople();
 
       App.WMain.MediaViewer.Deactivate();
@@ -100,37 +100,37 @@ namespace PictureManager.Commands {
       App.WMain.SlidePanelMainTreeView.IsOpen = show;
 
       if (reload)
-        await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+        await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
     }
 
-    private static bool CanAddGeoNamesFromFiles() => App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
+    private static bool CanAddGeoNamesFromFiles() => App.Core.MediaItemsM.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
 
     private static void AddGeoNamesFromFiles() {
       if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
-        App.Core.MediaItems.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        App.Core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         async mi => {
-          if (mi.Lat == null || mi.Lng == null) _ = await MediaItemsViewModel.ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) _ = await App.Ui.MediaItemsBaseVM.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = App.Core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
-          MediaItemsViewModel.TryWriteMetadata(mi);
+          App.Ui.MediaItemsBaseVM.TryWriteMetadata(mi);
           await App.Core.RunOnUiThread(() => {
-            mi.SetInfoBox();
-            App.Core.MediaItems.DataAdapter.IsModified = true;
+            App.Ui.MediaItemsBaseVM.SetInfoBox(mi);
+            App.Core.MediaItemsM.DataAdapter.IsModified = true;
           });
         },
         mi => mi.FilePath,
         // onCompleted
         delegate {
-          App.Core.MediaItems.Current?.GeoName?.OnPropertyChanged(nameof(App.Core.MediaItems.Current.GeoName.FullName));
+          App.Core.MediaItemsM.Current?.GeoName?.OnPropertyChanged(nameof(App.Core.MediaItemsM.Current.GeoName.FullName));
         });
 
       progress.StartDialog();

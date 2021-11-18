@@ -64,12 +64,12 @@ namespace PictureManager.Domain.Models {
       InsertGeoNameHierarchy(lat, lng, userName);
     }
 
-    public IEnumerable<MediaItem> GetMediaItems(GeoNameM geoName, bool recursive) {
+    public IEnumerable<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
       var geoNames = new List<GeoNameM> { geoName };
       if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
       var set = new HashSet<GeoNameM>(geoNames);
 
-      return _core.MediaItems.All.Cast<MediaItem>().Where(mi => set.Contains(mi.GeoName));
+      return _core.MediaItemsM.All.Where(mi => set.Contains(mi.GeoName));
     }
   }
 }

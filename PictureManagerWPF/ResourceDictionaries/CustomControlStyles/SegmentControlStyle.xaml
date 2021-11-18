@@ -37,7 +37,7 @@
                 <DockPanel>
                   <Grid DockPanel.Dock="Top">
                     <!-- Thumbnail -->
-                    <cc:MediaItemThumbnail DataContext="{Binding MediaItem}" />
+                    <cc:MediaItemThumbnail DataContext="{Binding MediaItem, Converter={StaticResource MediaItemM2VmConverter}}" />
                     
                     <!-- Segments Rects -->
                     <ItemsControl ItemsSource="{Binding MediaItemSegmentRects, RelativeSource={RelativeSource TemplatedParent}}">

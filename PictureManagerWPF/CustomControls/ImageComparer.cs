@@ -61,8 +61,8 @@ namespace PictureManager.CustomControls {
     }
 
     public async Task Compare() {
-      var thumbsGrid = App.Core.MediaItems.ThumbsGrid;
-      var items = MediaItemsViewModel.Filter(thumbsGrid.LoadedItems);
+      var thumbsGrid = App.Core.MediaItemsM.ThumbsGrid;
+      var items = App.Ui.MediaItemsBaseVM.Filter(thumbsGrid.LoadedItems);
       List<object> similar = null;
 
       switch (SelectedMode) {
@@ -83,15 +83,15 @@ namespace PictureManager.CustomControls {
       thumbsGrid.FilteredItems.Clear();
 
       if (similar != null)
-        foreach (var mi in similar.Cast<MediaItem>())
+        foreach (var mi in similar.Cast<MediaItemM>())
           thumbsGrid.FilteredItems.Add(mi);
 
       thumbsGrid.Current = null;
-      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
       App.Ui.MarkUsedKeywordsAndPeople();
     }
 
-    private static List<object> GetSimilar(MediaItem[] items, int limit, Dictionary<object, long> hashes, HashMethod hashMethod) {
+    private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, HashMethod hashMethod) {
       // get hashes
       if (hashes.Count == 0)
         GetHashes(items, hashes, hashMethod);
@@ -100,13 +100,13 @@ namespace PictureManager.CustomControls {
       return Imaging.GetSimilarImages(hashes, limit);
     }
 
-    private static void GetHashes(MediaItem[] items, Dictionary<object, long> hashes, HashMethod hashMethod) {
+    private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, HashMethod hashMethod) {
       var progress = new ProgressBarDialog(App.WMain, false, 1, "Computing Hashes ...");
       progress.AddEvents(
         items,
         null,
         // action
-        (MediaItem mi) => {
+        (MediaItemM mi) => {
           if (!hashes.ContainsKey(mi))
             hashes.Add(mi, hashMethod(mi.FilePathCache, Int32Rect.Empty));
         },

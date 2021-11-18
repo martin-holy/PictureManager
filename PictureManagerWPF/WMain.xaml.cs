@@ -29,10 +29,10 @@ namespace PictureManager {
         ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
 
-      MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
       RightSlidePanel.CanOpen = () => ToolsTabs.Tabs.Items.Cast<TabItem>().Any(x => x.Visibility == Visibility.Visible);
       ToolsTabs.VideoClips.VideoPlayer = MediaViewer.FullVideo;
-      MainTabs.OnAddTab += () => App.Ui.MediaItemsViewModel.AddThumbsTab();
+      MainTabs.OnAddTab += () => App.Ui.MediaItemsBaseVM.AddThumbsTab();
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
@@ -47,11 +47,11 @@ namespace PictureManager {
       CommandsController.AddInputBindings();
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Name ?? "Viewer";
-      App.Ui.MediaItemsViewModel.RegisterEvents();
+      App.Ui.MediaItemsBaseVM.RegisterEvents();
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
-      if (App.Core.MediaItems.ModifiedItems.Count > 0 &&
+      if (App.Core.MediaItemsM.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
         MetadataCommands.Save();
       }
@@ -66,11 +66,9 @@ namespace PictureManager {
 
     private async void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) return;
-      await App.Ui.MediaItemsViewModel.ThumbsGridReloadItems();
+      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
     }
 
-    private async void FiltersPanel_ClearFilters(object sender, MouseButtonEventArgs e) => await App.Ui.ClearFilters();
-
-    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) => await App.Ui.MediaItemsViewModel.ReapplyFilter();
+    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) => await App.Ui.MediaItemsBaseVM.ReapplyFilter();
   }
 }

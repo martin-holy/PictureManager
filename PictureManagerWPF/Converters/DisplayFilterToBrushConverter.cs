@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
+using PictureManager.Domain;
 
 namespace PictureManager.Converters {
   public class DisplayFilterToBrushConverter : IValueConverter {
