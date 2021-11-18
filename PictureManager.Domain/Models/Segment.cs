@@ -25,7 +25,7 @@ namespace PictureManager.Domain.Models {
 
     public string[] Csv { get; set; }
     public int Id { get; }
-    public MediaItem MediaItem { get; set; }
+    public MediaItemM MediaItem { get; set; }
     public PersonM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
     public List<KeywordM> Keywords { get; set; }
 

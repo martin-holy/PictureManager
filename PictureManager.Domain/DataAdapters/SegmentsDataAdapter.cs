@@ -58,7 +58,7 @@ namespace PictureManager.Domain.DataAdapters {
       var withoutMediaItem = new List<Segment>();
 
       foreach (var segment in _model.All.Cast<Segment>()) {
-        if (_core.MediaItems.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
+        if (_core.MediaItemsM.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
           mi.Segments.Add(segment);

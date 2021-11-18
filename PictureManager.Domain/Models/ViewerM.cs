@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
     /// </summary>
     /// <param name="mi"></param>
     /// <returns>True if viewer can see MediaItem</returns>
-    public bool CanSee(MediaItem mi) {
+    public bool CanSee(MediaItemM mi) {
       if (mi.People == null && mi.Keywords == null && mi.Segments == null) return true;
       if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
       if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;

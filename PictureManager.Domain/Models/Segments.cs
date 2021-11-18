@@ -11,6 +11,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -40,6 +41,8 @@ namespace PictureManager.Domain.Models {
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
 
+    public event EventHandler<SegmentPersonChangedEventArgs> SegmentPersonChangedEvent = delegate { };
+
     public Segments(Core core) {
       _core = core;
       DataAdapter = new SegmentsDataAdapter(core, this);
@@ -68,7 +71,7 @@ namespace PictureManager.Domain.Models {
 
     public Segment[] GetOneOrSelected(Segment one) => Selected.Contains(one) ? Selected.ToArray() : new Segment[] { one };
 
-    public Segment[] GetSegments(List<MediaItem> mediaItems, bool withPersonOnly) {
+    public Segment[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
       if (withPersonOnly) {
         var people = mediaItems.Where(mi => mi.Segments != null).SelectMany(mi => mi.Segments.Select(s => s.PersonId)).Distinct().ToHashSet();
         people.Remove(0);
@@ -95,7 +98,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public Segment AddNewSegment(int x, int y, int radius, MediaItem mediaItem) {
+    public Segment AddNewSegment(int x, int y, int radius, MediaItemM mediaItem) {
       var newSegment = new Segment(DataAdapter.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
       _ = newSegment.SetPictureAsync(SegmentSize);
       mediaItem.Segments ??= new();
@@ -333,7 +336,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in toUpdate) {
         segment.PersonId = newId;
         segment.Person = person;
-        segment.MediaItem.SetInfoBox();
+        SegmentPersonChangedEvent.Invoke(this, new(segment));
         DataAdapter.IsModified = true;
       }
     }
@@ -342,7 +345,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in Selected) {
         RemovePersonFromSegment(segment);
         segment.PersonId = 0;
-        segment.MediaItem.SetInfoBox();
+        SegmentPersonChangedEvent.Invoke(this, new(segment));
         DataAdapter.IsModified = true;
       }
     }
@@ -392,12 +395,12 @@ namespace PictureManager.Domain.Models {
         ChangePerson(segment, person);
     }
 
-    public static void ChangePerson(Segment segment, PersonM person) {
+    private void ChangePerson(Segment segment, PersonM person) {
       RemovePersonFromSegment(segment);
       segment.PersonId = person.Id;
       segment.Person = person;
       person.Segment ??= segment;
-      segment.MediaItem.SetInfoBox();
+      SegmentPersonChangedEvent.Invoke(this, new(segment));
 
       Core.Instance.Segments.DataAdapter.IsModified = true;
     }

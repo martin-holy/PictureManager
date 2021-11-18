@@ -2,9 +2,8 @@
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using PictureManager.ViewModels;
 using System;
-using System.ComponentModel;
+using System.Linq;
 using System.Windows.Input;
 
 namespace PictureManager.Commands {
@@ -25,21 +24,21 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, Reload2Command, Reload, CanReload);
     }
 
-    private static bool CanEdit() => !App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
+    private static bool CanEdit() => !App.Core.MediaItemsM.IsEditModeOn && App.Core.MediaItemsM.ThumbsGrid?.FilteredItems.Count > 0;
 
-    private static void Edit() => App.Core.MediaItems.IsEditModeOn = true;
+    private static void Edit() => App.Core.MediaItemsM.IsEditModeOn = true;
 
-    private static bool CanSave() => App.Core.MediaItems.IsEditModeOn && App.Core.MediaItems.ModifiedItems.Count > 0;
+    private static bool CanSave() => App.Core.MediaItemsM.IsEditModeOn && App.Core.MediaItemsM.ModifiedItems.Count > 0;
 
     public static void Save() {
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifiedItems.ToArray(),
+        App.Core.MediaItemsM.ModifiedItems.ToArray(),
         null,
         // action
-        async (MediaItem mi) => {
-          MediaItemsViewModel.TryWriteMetadata(mi);
-          await App.Core.RunOnUiThread(() => App.Core.MediaItems.SetModified(mi, false));
+        async (MediaItemM mi) => {
+          App.Ui.MediaItemsBaseVM.TryWriteMetadata(mi);
+          await App.Core.RunOnUiThread(() => App.Core.MediaItemsM.SetModified(mi, false));
         },
         mi => mi.FilePath,
         // onCompleted
@@ -47,44 +46,44 @@ namespace PictureManager.Commands {
           if (e.Cancelled)
             Cancel();
           else
-            App.Core.MediaItems.IsEditModeOn = false;
+            App.Core.MediaItemsM.IsEditModeOn = false;
 
-          App.Core.MediaItems.OnPropertyChanged(nameof(App.Core.MediaItems.ActiveFileSize));
+          App.Core.MediaItemsM.OnPropertyChanged(nameof(App.Core.MediaItemsM.ActiveFileSize));
         });
 
       progress.StartDialog();
     }
 
-    private static bool CanCancel() => App.Core.MediaItems.IsEditModeOn;
+    private static bool CanCancel() => App.Core.MediaItemsM.IsEditModeOn;
 
     private static void Cancel() {
       var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
-        App.Core.MediaItems.ModifiedItems.ToArray(),
+        App.Core.MediaItemsM.ModifiedItems.ToArray(),
         null,
         // action
-        async (MediaItem mi) => {
-          await MediaItemsViewModel.ReadMetadata(mi);
+        async mi => {
+          await App.Ui.MediaItemsBaseVM.ReadMetadata(mi);
 
           await App.Core.RunOnUiThread(() => {
-            App.Core.MediaItems.SetModified(mi, false);
-            mi.SetInfoBox();
+            App.Core.MediaItemsM.SetModified(mi, false);
+            App.Ui.MediaItemsBaseVM.SetInfoBox(mi);
           });
         },
         mi => mi.FilePath,
         // onCompleted
         (o, e) => {
           App.Ui.MarkUsedKeywordsAndPeople();
-          App.Core.MediaItems.IsEditModeOn = false;
+          App.Core.MediaItemsM.IsEditModeOn = false;
         });
 
       progress.StartDialog();
     }
 
-    private static bool CanComment() => App.Core.MediaItems.ThumbsGrid?.Current != null;
+    private static bool CanComment() => App.Core.MediaItemsM.ThumbsGrid?.Current != null;
 
     private static void Comment() {
-      var current = App.Core.MediaItems.ThumbsGrid.Current;
+      var current = App.Core.MediaItemsM.ThumbsGrid.Current;
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = IconName.Notification,
@@ -106,36 +105,36 @@ namespace PictureManager.Commands {
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
-      current.SetInfoBox();
+      App.Ui.MediaItemsBaseVM.SetInfoBox(current);
       current.OnPropertyChanged(nameof(current.Comment));
-      MediaItemsViewModel.TryWriteMetadata(current);
-      App.Core.MediaItems.DataAdapter.IsModified = true;
+      App.Ui.MediaItemsBaseVM.TryWriteMetadata(current);
+      App.Core.MediaItemsM.DataAdapter.IsModified = true;
     }
 
-    private static bool CanReload(object parameter) => parameter is FolderM || App.Core.MediaItems.ThumbsGrid?.FilteredItems.Count > 0;
+    private static bool CanReload(object parameter) => parameter is FolderM || App.Core.MediaItemsM.ThumbsGrid?.FilteredItems.Count > 0;
 
     private static void Reload(object parameter) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       var folder = parameter as FolderM;
       var mediaItems = folder != null
         ? folder.GetMediaItems(recursive)
-        : App.Core.MediaItems.ThumbsGrid.GetSelectedOrAll();
+        : App.Core.MediaItemsM.ThumbsGrid.GetSelectedOrAll();
 
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
         // action
-        async (MediaItem mi) => {
-          await MediaItemsViewModel.ReadMetadata(mi);
+        async (mi) => {
+          await App.Ui.MediaItemsBaseVM.ReadMetadata(mi);
 
           // set info box just for loaded media items
           if (folder == null)
-            await App.Core.RunOnUiThread(mi.SetInfoBox);
+            await App.Core.RunOnUiThread(() => App.Ui.MediaItemsBaseVM.SetInfoBox(mi));
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => App.Ui.MarkUsedKeywordsAndPeople());
+        (_, _) => App.Ui.MarkUsedKeywordsAndPeople());
 
       progress.Start();
     }

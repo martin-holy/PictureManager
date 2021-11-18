@@ -33,7 +33,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    public List<MediaItem> MediaItems { get; } = new();
+    public List<MediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
 
     private string _name;
@@ -154,10 +154,10 @@ namespace PictureManager.Domain.Models {
       return root;
     }
 
-    public MediaItem GetMediaItemByName(string fileName) =>
+    public MediaItemM GetMediaItemByName(string fileName) =>
       MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
 
-    public List<MediaItem> GetMediaItems(bool recursive) {
+    public List<MediaItemM> GetMediaItems(bool recursive) {
       if (!recursive) return MediaItems;
 
       // get all Folders
@@ -165,7 +165,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(this, ref folders);
 
       // get all MediaItems from folders
-      var mis = new List<MediaItem>();
+      var mis = new List<MediaItemM>();
       foreach (var f in folders)
         mis.AddRange(f.MediaItems);
 

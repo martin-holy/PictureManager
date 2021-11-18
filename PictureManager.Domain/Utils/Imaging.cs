@@ -155,7 +155,7 @@ namespace PictureManager.Domain.Utils {
       }
     }
 
-    public static Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItem> items, int size, int quality, IProgress<int> progress, CancellationToken token) {
+    public static Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, int size, int quality, IProgress<int> progress, CancellationToken token) {
       return Task.Run(async () => {
         var count = items.Count;
         var workingOn = 0;
@@ -177,7 +177,6 @@ namespace PictureManager.Domain.Utils {
                 if (mi == null || mi.Folder == null) continue;
                 if (File.Exists(mi.FilePathCache)) continue;
                 await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, size, 0, quality);
-
                 mi.ReloadThumbnail();
               }
             }

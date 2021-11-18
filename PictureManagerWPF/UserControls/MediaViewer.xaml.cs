@@ -1,10 +1,10 @@
 ﻿using PictureManager.Commands;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class MediaViewer : INotifyPropertyChanged {
@@ -15,24 +15,24 @@ namespace PictureManager.UserControls {
     // local props
     private int _indexOfCurrent;
 
-    private MediaItem _current;
+    private MediaItemBaseVM _current;
 
     // public props
-    public MediaItem Current {
+    public MediaItemBaseVM Current {
       get => _current;
       set {
         if (_current != null)
-          App.Core.MediaItems.ThumbsGrid?.SetSelected(_current, false);
+          App.Core.MediaItemsM.ThumbsGrid?.SetSelected(_current.Model, false);
         _current = value;
         if (_current != null)
-          App.Core.MediaItems.ThumbsGrid?.SetSelected(_current, true);
-        if (App.Core.MediaItems.Current != value)
-          App.Core.MediaItems.Current = value;
+          App.Core.MediaItemsM.ThumbsGrid?.SetSelected(_current.Model, true);
+        if (App.Core.MediaItemsM.Current != value.Model)
+          App.Core.MediaItemsM.Current = value.Model;
         OnPropertyChanged();
         UpdatePositionSlashCount();
       }
     }
-    public List<MediaItem> MediaItems { get; private set; }
+    public List<MediaItemBaseVM> MediaItems { get; private set; }
 
     // commands
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
@@ -99,7 +99,7 @@ namespace PictureManager.UserControls {
       MediaItems.Clear();
     }
 
-    public void SetMediaItems(List<MediaItem> mediaItems) {
+    public void SetMediaItems(List<MediaItemBaseVM> mediaItems) {
       if (mediaItems == null || mediaItems.Count == 0) {
         MediaItems.Clear();
         Current = null;
@@ -116,13 +116,13 @@ namespace PictureManager.UserControls {
       UpdatePositionSlashCount();
     }
 
-    public void SetMediaItemSource(MediaItem mediaItem, bool decoded = false) {
+    public void SetMediaItemSource(MediaItemBaseVM mediaItem, bool decoded = false) {
       var index = MediaItems.IndexOf(mediaItem);
       if (index < 0) return;
       _indexOfCurrent = index;
       Current = mediaItem;
 
-      switch (mediaItem.MediaType) {
+      switch (mediaItem.Model.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(mediaItem, decoded);
           App.Ui.VideoClipsTreeVM.SetMediaItem(null);
@@ -130,15 +130,15 @@ namespace PictureManager.UserControls {
           break;
         }
         case MediaType.Video: {
-          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem);
-          FullVideo.SetSource(mediaItem);
+          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem.Model);
+          FullVideo.SetSource(mediaItem.Model);
           break;
         }
       }
     }
 
     private void UpdatePositionSlashCount() =>
-      App.Core.MediaItems.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
+      App.Core.MediaItemsM.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
 
     #region Commands
 
@@ -147,15 +147,15 @@ namespace PictureManager.UserControls {
     public void Next() {
       Current = MediaItems[++_indexOfCurrent];
 
-      var decoded = PresentationPanel.IsRunning && Current.MediaType == MediaType.Image && Current.IsPanoramic;
+      var decoded = PresentationPanel.IsRunning && Current.Model.MediaType == MediaType.Image && Current.Model.IsPanoramic;
       SetMediaItemSource(Current, decoded);
 
-      if (PresentationPanel.IsRunning && (Current.MediaType == MediaType.Video ||
-        (Current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
+      if (PresentationPanel.IsRunning && (Current.Model.MediaType == MediaType.Video ||
+        (Current.Model.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
 
         PresentationPanel.Pause();
 
-        if (Current.MediaType == MediaType.Image && Current.IsPanoramic)
+        if (Current.Model.MediaType == MediaType.Image && Current.Model.IsPanoramic)
           PresentationPanel.Start(true);
       }
 

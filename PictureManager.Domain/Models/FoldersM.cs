@@ -68,7 +68,7 @@ namespace PictureManager.Domain.Models {
         _ => IconName.Drive,
       };
 
-    public MediaItem GetMediaItemByPath(string path) {
+    public MediaItemM GetMediaItemByPath(string path) {
       var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
       var folderPath = path[..lioSep];
       var fileName = path[(lioSep + 1)..];
@@ -87,7 +87,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetTopParent(folder)?.IsAvailable == true && _core.CanViewerSeeThisFolder(folder);
 
     public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
-      MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
+      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
 
@@ -117,13 +117,13 @@ namespace PictureManager.Domain.Models {
       }
 
       DataAdapter.IsModified = true;
-      _core.MediaItems.DataAdapter.IsModified = true;
+      _core.MediaItemsM.DataAdapter.IsModified = true;
       _core.FolderKeywordsM.Load();
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
       ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress,
-      MediaItems.CollisionResolver collisionResolver, CancellationToken token) {
+      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
 
       Directory.CreateDirectory(destDirPath);
       var srcDirPathLength = srcDirPath.Length + 1;
@@ -222,7 +222,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private static void CopyFolder(FolderM src, FolderM dest, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
+    private void CopyFolder(FolderM src, FolderM dest, ref HashSet<string> skipped, ref Dictionary<string, string> renamed) {
       // reload destFolder so that new folder is added
       dest.LoadSubFolders(false);
 
@@ -244,7 +244,7 @@ namespace PictureManager.Domain.Models {
           renamed.Remove(filePath);
         }
 
-        mi.CopyTo(targetFolder, fileName);
+        _core.MediaItemsM.CopyTo(mi, targetFolder, fileName);
       }
 
       // Copy all subFolders
@@ -292,7 +292,7 @@ namespace PictureManager.Domain.Models {
         // skip if this file was skipped
         if (skipped.Remove(mi.FilePath)) continue;
 
-        mi.MoveTo(targetFolder, mi.FileName);
+        _core.MediaItemsM.MoveTo(mi, targetFolder, mi.FileName);
       }
 
       // Move all subFolders
@@ -360,7 +360,7 @@ namespace PictureManager.Domain.Models {
 
         // remove MediaItems
         foreach (var mi in f.MediaItems.ToList())
-          _core.MediaItems.Delete(mi);
+          _core.MediaItemsM.Delete(mi);
 
         // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
         f.MediaItems.Clear();

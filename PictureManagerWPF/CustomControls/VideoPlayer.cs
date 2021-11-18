@@ -1,5 +1,4 @@
 ﻿using PictureManager.Commands;
-using PictureManager.Domain.Models;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -7,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
+using PictureManager.Domain.Models;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.CustomControls {
@@ -127,13 +127,13 @@ namespace PictureManager.CustomControls {
       CommandsController.SetTargetToCommand(MediaCommands.TogglePlayPause, this);
     }
 
-    public void SetSource(MediaItem mediaItem) {
+    public void SetSource(MediaItemM mediaItem) {
       if (mediaItem != null) {
         var data = ShellStuff.FileInformation.GetVideoMetadata(mediaItem.Folder.FullPath, mediaItem.FileName);
         var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
         SmallChange = (int)Math.Round(1000 / fps, 0);
         Rotation = mediaItem.RotationAngle;
-        Player.Source = mediaItem.FilePathUri;
+        Player.Source = new(mediaItem.FilePath);
         IsPlaying = true;
       }
       else {

@@ -14,7 +14,7 @@ using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
   public partial class ImagesToVideoDialog {
-    private readonly MediaItem[] _items;
+    private readonly MediaItemM[] _items;
     private Process _process;
     private readonly string _inputListPath;
     private readonly string _outputFilePath;
@@ -24,7 +24,7 @@ namespace PictureManager.Dialogs {
 
     public delegate void OnSuccess(FolderM folder, string fileName);
 
-    public ImagesToVideoDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
+    public ImagesToVideoDialog(Window owner, IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
       InitializeComponent();
 
       _items = items.ToArray();
@@ -39,7 +39,7 @@ namespace PictureManager.Dialogs {
       _onSuccess = onSuccess;
     }
 
-    public static void ShowDialog(Window owner, IEnumerable<MediaItem> items, OnSuccess onSuccess) {
+    public static void ShowDialog(Window owner, IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
       var dlg = new ImagesToVideoDialog(owner, items, onSuccess);
       dlg.ShowDialog();
     }

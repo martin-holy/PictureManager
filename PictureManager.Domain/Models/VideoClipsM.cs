@@ -22,9 +22,9 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public VideoClipM ItemCreate(string name, MediaItem mediaItem, VideoClipsGroupM group) {
+    public VideoClipM ItemCreate(string name, MediaItemM mediaItem, VideoClipsGroupM group) {
       var vc = new VideoClipM(DataAdapter.GetNextId(), mediaItem) { Name = name };
-      vc.MediaItem.VideoClipAdd(vc, group);
+      VideoClipAdd(vc.MediaItem, vc, group);
       All.Add(vc);
 
       return vc;
@@ -37,7 +37,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemDelete(VideoClipM vc) {
       vc.MediaItem.VideoClips?.Remove(vc);
-      vc.MediaItem.OnPropertyChanged(nameof(MediaItem.HasVideoClips));
+      vc.MediaItem.OnPropertyChanged(nameof(MediaItemM.HasVideoClips));
       vc.MediaItem = null;
 
       if (vc.Group != null) {
@@ -49,12 +49,13 @@ namespace PictureManager.Domain.Models {
       vc.People = null;
       vc.Keywords = null;
 
-      File.Delete(vc.ThumbPath.LocalPath);
+      File.Delete(vc.ThumbPath);
 
       All.Remove(vc);
       DataAdapter.IsModified = true;
     }
 
+    // TODO
     public void ItemMove(VideoClipM vc, VideoClipM dest, bool aboveDest) {
       All.Move(vc, dest, aboveDest);
 
@@ -66,6 +67,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
+    // TODO
     public void ItemMove(VideoClipM vc, VideoClipsGroupM dest) {
       if (vc.Group == null)
         vc.MediaItem.VideoClips.Remove(vc);
@@ -74,12 +76,24 @@ namespace PictureManager.Domain.Models {
       vc.Group = dest;
 
       if (dest == null)
-        vc.MediaItem.VideoClipAdd(vc, null);
+        VideoClipAdd(vc.MediaItem, vc);
       else
         dest.Clips.Add(vc);
 
       _core.VideoClipsGroupsM.DataAdapter.IsModified = true;
       DataAdapter.IsModified = true;
+    }
+
+    public static void VideoClipAdd(MediaItemM mi, VideoClipM vc) {
+      mi.VideoClips ??= new();
+      mi.VideoClips.Add(vc);
+      mi.OnPropertyChanged(nameof(mi.HasVideoClips));
+    }
+
+    public static void VideoClipAdd(MediaItemM mi, VideoClipM vc, VideoClipsGroupM group) {
+      group.Clips.Add(vc);
+      vc.Group = group;
+      mi.OnPropertyChanged(nameof(mi.HasVideoClips));
     }
   }
 }

@@ -2,7 +2,6 @@
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -22,17 +21,17 @@ namespace PictureManager.Dialogs {
     private string _fileName;
     private FileInfo _srcFileInfo;
     private FileInfo _destFileInfo;
-    private MediaItem _srcMediaItem;
-    private MediaItem _destMediaItem;
+    private MediaItemM _srcMediaItem;
+    private MediaItemM _destMediaItem;
 
     public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
     public FileInfo SrcFileInfo { get => _srcFileInfo; set { _srcFileInfo = value; OnPropertyChanged(); } }
     public FileInfo DestFileInfo { get => _destFileInfo; set { _destFileInfo = value; OnPropertyChanged(); } }
-    public MediaItem SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
-    public MediaItem DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
-    public Uri SrcFilePathCacheUri => GetThumbFilePath(SrcFileInfo.FullName).Result;
-    public Uri DestFilePathCacheUri => GetThumbFilePath(DestFileInfo.FullName).Result;
+    public MediaItemM SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
+    public MediaItemM DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
+    public string SrcFilePathCache => GetThumbFilePath(SrcFileInfo.FullName).Result;
+    public string DestFilePathCache => GetThumbFilePath(DestFileInfo.FullName).Result;
     public string SrcFileSize => $"File size: {SrcFileInfo.Length} B";
     public string DestFileSize => $"File size: {DestFileInfo.Length} B";
     public string SrcFileModified => $"Modified: {SrcFileInfo.LastWriteTime}";
@@ -47,7 +46,7 @@ namespace PictureManager.Dialogs {
 
     public CollisionResult Result { get; set; }
 
-    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, MediaItem srcMediaItem, MediaItem destMediaItem, Window owner) {
+    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, MediaItemM srcMediaItem, MediaItemM destMediaItem, Window owner) {
       SrcFileInfo = new(srcFilePath);
       DestFileInfo = new(destFilePath);
       SrcMediaItem = srcMediaItem;
@@ -63,7 +62,7 @@ namespace PictureManager.Dialogs {
       return size == null ? string.Empty : $"Dimensions: {size[0]} x {size[1]}";
     }
 
-    private async Task<Uri> GetThumbFilePath(string filePath) {
+    private async Task<string> GetThumbFilePath(string filePath) {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
@@ -71,7 +70,7 @@ namespace PictureManager.Dialogs {
           Settings.Default.ThumbnailSize, 0, Settings.Default.JpegQualityLevel);
       }
 
-      return new Uri(thumbPath);
+      return thumbPath;
     }
 
     private void BtnRename_OnClick(object sender, RoutedEventArgs e) {
@@ -92,7 +91,7 @@ namespace PictureManager.Dialogs {
       var newFilePath = Path.Combine(DestFileInfo.DirectoryName, FileName);
       if (File.Exists(newFilePath)) {
         DestFileInfo = new(newFilePath);
-        OnPropertyChanged(nameof(DestFilePathCacheUri));
+        OnPropertyChanged(nameof(DestFilePathCache));
         OnPropertyChanged(nameof(DestFileSize));
         OnPropertyChanged(nameof(DestFileModified));
         return;

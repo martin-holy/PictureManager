@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.IO;
-using System.Net.Cache;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using MH.UI.WPF.Interfaces;
 using PictureManager.Domain;
 
@@ -114,36 +111,6 @@ namespace PictureManager {
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-  }
-
-  public class ImageSourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      try {
-        var uriValue = value as Uri;
-        if (uriValue == null) return null;
-
-        if (!File.Exists(uriValue.LocalPath)) return null;
-
-        var src = new BitmapImage();
-        src.BeginInit();
-
-        if (parameter is string s && s.Equals("IgnoreImageCache", StringComparison.Ordinal)) {
-          src.UriCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
-          src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-        }
-
-        src.CacheOption = BitmapCacheOption.OnLoad;
-        src.UriSource = uriValue;
-        src.EndInit();
-        return src;
-      }
-      catch (Exception ex) {
-        Console.WriteLine(ex);
-        return null;
-      }
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
   }
 
   public class MediaItemSizeConverter : IValueConverter {

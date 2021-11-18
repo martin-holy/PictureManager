@@ -15,7 +15,7 @@ namespace PictureManager.Domain.Models {
 
     // DB Fields
     public int Id { get; }
-    public MediaItem MediaItem { get; set; }
+    public MediaItemM MediaItem { get; set; }
     public int TimeStart { get => _timeStart; set { _timeStart = value; OnPropertyChanged(); } }
     public int TimeEnd { get => _timeEnd; set { _timeEnd = value; OnPropertyChanged(); } }
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
@@ -32,9 +32,9 @@ namespace PictureManager.Domain.Models {
     public string DurationStr => GetDuration(TimeStart, TimeEnd);
     public string VolumeStr => $"{(int)(Volume * 100)}%";
     public string SpeedStr => $"{Speed}x";
-    public Uri ThumbPath => GetThumbPath();
+    public string ThumbPath => GetThumbPath();
 
-    public VideoClipM(int id, MediaItem mediaItem) {
+    public VideoClipM(int id, MediaItemM mediaItem) {
       Id = id;
       MediaItem = mediaItem;
     }
@@ -57,9 +57,9 @@ namespace PictureManager.Domain.Models {
       return TimeSpan.FromMilliseconds(ms).ToString(format);
     }
 
-    private Uri GetThumbPath() {
+    private string GetThumbPath() {
       var fpc = MediaItem.FilePathCache;
-      return new($"{fpc[..fpc.LastIndexOf('.')]}_{Id}.jpg");
+      return $"{fpc[..fpc.LastIndexOf('.')]}_{Id}.jpg";
     }
 
     public void SetMarker(bool start, int ms, double volume, double speed) {

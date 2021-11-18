@@ -26,7 +26,7 @@ namespace PictureManager.UserControls {
     public ObservableCollection<string> FilePath {
       get {
         var paths = new ObservableCollection<string>();
-        var mi = App.Core.MediaItems.Current;
+        var mi = App.Core.MediaItemsM.Current;
         if (mi == null) return paths;
 
         if (App.Ui.AppInfo.AppMode == AppMode.Browser || mi.Folder.FolderKeyword == null) {
@@ -54,14 +54,14 @@ namespace PictureManager.UserControls {
     }
 
     public string ZoomActualFormatted => App.WMain?.MediaViewer.FullImage.ZoomActualFormatted;
-    public string DateAndTime => DateTimeExtensions.DateTimeFromString(App.Core.MediaItems.Current?.FileName, _dateFormats, "H:mm:ss");
+    public string DateAndTime => DateTimeExtensions.DateTimeFromString(App.Core.MediaItemsM.Current?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<IconName> Rating { get; } = new();
 
     public StatusPanel() {
       InitializeComponent();
 
-      App.Core.MediaItems.PropertyChanged += (o, e) => {
-        if (e.PropertyName.Equals(nameof(App.Core.MediaItems.Current))) {
+      App.Core.MediaItemsM.PropertyChanged += (o, e) => {
+        if (e.PropertyName.Equals(nameof(App.Core.MediaItemsM.Current))) {
           OnPropertyChanged(nameof(DateAndTime));
           OnPropertyChanged(nameof(FilePath));
           UpdateRating();
@@ -71,7 +71,7 @@ namespace PictureManager.UserControls {
 
     public void UpdateRating() {
       Rating.Clear();
-      for (var i = 0; i < App.Core.MediaItems.Current?.Rating; i++)
+      for (var i = 0; i < App.Core.MediaItemsM.Current?.Rating; i++)
         Rating.Add(IconName.Star);
     }
 

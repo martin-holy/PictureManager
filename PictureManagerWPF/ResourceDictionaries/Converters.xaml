@@ -8,7 +8,7 @@
   <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
   <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
   <pm:RatingConverter x:Key="RatingConverter" />
-  <pm:ImageSourceConverter x:Key="ImageSourceConverter" />
+  <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
   <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
@@ -18,5 +18,6 @@
   <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
   <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
+  <converters:MediaItemM2VMConverter x:Key="MediaItemM2VmConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
 </ResourceDictionary>

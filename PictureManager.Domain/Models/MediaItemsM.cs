@@ -10,39 +10,38 @@ using MH.Utils.Extensions;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Utils;
 using SimpleDB;
-using Directory = System.IO.Directory;
 
 namespace PictureManager.Domain.Models {
-  public sealed class MediaItems : ObservableObject, ITable {
+  public sealed class MediaItemsM : ObservableObject {
     private readonly Core _core;
 
-    public DataAdapter DataAdapter { get; }
-    public List<IRecord> All { get; } = new();
-    public Dictionary<int, MediaItem> AllDic { get; set; }
-    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
-
     private bool _isEditModeOn;
-    private int _mediaItemsCount;
+    private MediaItemM _current;
+    private ThumbnailsGridM _currentThumbsGrid;
     private string _positionSlashCount;
-    private MediaItem _current;
-    private ThumbnailsGrid _currentThumbsGrid;
 
-    public MediaItem Current {
+    public DataAdapter DataAdapter { get; }
+    public List<MediaItemM> All { get; } = new();
+    public Dictionary<int, MediaItemM> AllDic { get; set; }
+    public ObservableCollection<ThumbnailsGridM> ThumbnailsGrids { get; } = new();
+    public HashSet<MediaItemM> ModifiedItems { get; } = new();
+
+    public MediaItemM Current {
       get => _current;
       set {
         _current = value;
         if (ThumbsGrid != null && ThumbsGrid.Current != value)
           ThumbsGrid.Current = value;
-        OnPropertyChanged(nameof(Current));
+        OnPropertyChanged();
         OnPropertyChanged(nameof(ActiveFileSize));
       }
     }
 
-    public ThumbnailsGrid ThumbsGrid {
+    public ThumbnailsGridM ThumbsGrid {
       get => _currentThumbsGrid;
       set {
         _currentThumbsGrid = value;
-        OnPropertyChanged(nameof(ThumbsGrid));
+        OnPropertyChanged();
         OnPropertyChanged(nameof(ActiveFileSize));
       }
     }
@@ -54,7 +53,7 @@ namespace PictureManager.Domain.Models {
             ? ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
             : new FileInfo(Current.FilePath).Length;
 
-          return size == null || size == 0 ? string.Empty : IOExtensions.FileSizeToString((long)size);
+          return size is null or 0 ? string.Empty : IOExtensions.FileSizeToString((long)size);
         }
         catch {
           return string.Empty;
@@ -62,17 +61,26 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public int MediaItemsCount => All.Count;
+    public int ModifiedItemsCount => ModifiedItems.Count;
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
-    public int MediaItemsCount { get => _mediaItemsCount; set { _mediaItemsCount = value; OnPropertyChanged(); } }
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
-    public int ModifiedCount => ModifiedItems.Count;
-    public List<MediaItem> ModifiedItems { get; } = new();
-    public ObservableCollection<ThumbnailsGrid> ThumbnailsGrids { get; } = new();
+
+    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
-    public MediaItems(Core core) {
+    public MediaItemsM(Core core) {
       _core = core;
       DataAdapter = new MediaItemsDataAdapter(core, this);
+    }
+
+    public ThumbnailsGridM AddThumbnailsGridModel() {
+      var grid = new ThumbnailsGridM(_core);
+      ThumbnailsGrids.Add(grid);
+      ThumbsGrid = ThumbnailsGridM.ActivateThumbnailsGrid(ThumbsGrid, grid);
+      grid.SelectionChangedEventHandler += (_, _) => OnPropertyChanged(nameof(ActiveFileSize));
+
+      return grid;
     }
 
     /// <summary>
@@ -81,7 +89,7 @@ namespace PictureManager.Domain.Models {
     /// <param name="all"></param>
     /// <param name="selected"></param>
     /// <returns>Returns next MediaItem from all after last in the selected or one before first or null</returns>
-    public static MediaItem GetNewCurrent(List<MediaItem> all, List<MediaItem> selected) {
+    public static MediaItemM GetNewCurrent(List<MediaItemM> all, List<MediaItemM> selected) {
       if (all == null || selected == null || selected.Count == 0) return null;
 
       var index = all.IndexOf(selected[^1]) + 1;
@@ -90,23 +98,62 @@ namespace PictureManager.Domain.Models {
       return index >= 0 ? all[index] : null;
     }
 
-    public void Delete(List<MediaItem> items, FileOperationDelete fileOperationDelete) {
-      if (items.Count == 0) return;
+    public MediaItemM CopyTo(MediaItemM mi, FolderM folder, string fileName) {
+      var copy = new MediaItemM(DataAdapter.GetNextId(), folder, fileName) {
+        Width = mi.Width,
+        Height = mi.Height,
+        Orientation = mi.Orientation,
+        Rating = mi.Rating,
+        Comment = mi.Comment,
+        GeoName = mi.GeoName,
+        Lat = mi.Lat,
+        Lng = mi.Lng
+      };
 
-      var files = new List<string>();
-      var cache = new List<string>();
+      if (mi.People != null)
+        copy.People = new(mi.People);
 
-      foreach (var mi in items) {
-        files.Add(mi.FilePath);
-        cache.Add(mi.FilePathCache);
-        Delete(mi);
+      if (mi.Keywords != null)
+        copy.Keywords = new (mi.Keywords);
+
+      if (mi.Segments != null) {
+        copy.Segments = new();
+        foreach (var segment in mi.Segments) {
+          var sCopy = _core.Segments.GetCopy(segment);
+          sCopy.MediaItem = copy;
+          copy.Segments.Add(sCopy);
+        }
       }
 
-      fileOperationDelete.Invoke(files, true, false);
-      cache.ForEach(File.Delete);
+      copy.Folder.MediaItems.Add(copy);
+      All.Add(copy);
+      OnPropertyChanged(nameof(MediaItemsCount));
+
+      return copy;
     }
 
-    public void Delete(MediaItem item) {
+    public void MoveTo(MediaItemM mi, FolderM folder, string fileName) {
+      // delete existing MediaItem if exists
+      Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
+
+      mi.FileName = fileName;
+      mi.Folder.MediaItems.Remove(mi);
+      mi.Folder = folder;
+      mi.Folder.MediaItems.Add(mi);
+
+      DataAdapter.IsModified = true;
+    }
+
+    public void Rename(MediaItemM mi, string newFileName) {
+      var oldFilePath = mi.FilePath;
+      var oldFilePathCache = mi.FilePathCache;
+      mi.FileName = newFileName;
+      File.Move(oldFilePath, mi.FilePath);
+      File.Move(oldFilePathCache, mi.FilePathCache);
+      DataAdapter.IsModified = true;
+    }
+
+    public void Delete(MediaItemM item) {
       if (item == null) return;
 
       // remove Segments
@@ -136,8 +183,7 @@ namespace PictureManager.Domain.Models {
 
       // remove from DB
       All.Remove(item);
-
-      MediaItemsCount--;
+      OnPropertyChanged(nameof(MediaItemsCount));
 
       SetModified(item, false);
 
@@ -145,9 +191,23 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void SetModified(MediaItem mi, bool value) {
-      if (mi.IsModified == value) return;
-      mi.IsModified = value;
+    public void Delete(List<MediaItemM> items, FileOperationDelete fileOperationDelete) {
+      if (items.Count == 0) return;
+
+      var files = new List<string>();
+      var cache = new List<string>();
+
+      foreach (var mi in items) {
+        files.Add(mi.FilePath);
+        cache.Add(mi.FilePathCache);
+        Delete(mi);
+      }
+
+      fileOperationDelete.Invoke(files, true, false);
+      cache.ForEach(File.Delete);
+    }
+
+    public void SetModified(MediaItemM mi, bool value) {
       if (value) {
         ModifiedItems.Add(mi);
         DataAdapter.IsModified = true;
@@ -155,10 +215,10 @@ namespace PictureManager.Domain.Models {
       else
         ModifiedItems.Remove(mi);
 
-      OnPropertyChanged(nameof(ModifiedCount));
+      OnPropertyChanged(nameof(ModifiedItemsCount));
     }
 
-    public static void CopyMove(FileOperationMode mode, List<MediaItem> items, FolderM destFolder,
+    public void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder,
       IProgress<object[]> progress, CollisionResolver collisionResolver, CancellationToken token) {
       var count = items.Count;
       var done = 0;
@@ -179,63 +239,65 @@ namespace PictureManager.Domain.Models {
           var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Core.Instance.RunOnUiThread(() => Core.Instance.MediaItems.ThumbsGrid.SetSelected(mi, false));
+            _core.RunOnUiThread(() => ThumbsGrid.SetSelected(mi, false));
             continue;
           }
         }
 
         switch (mode) {
           case FileOperationMode.Copy:
-          // create object copy
-          var miCopy = mi.CopyTo(destFolder, miNewFileName);
-          // copy MediaItem and cache on file system
-          Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
-          File.Copy(mi.FilePath, miCopy.FilePath, true);
-          File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
+            // create object copy
+            var miCopy = CopyTo(mi, destFolder, miNewFileName);
+            // copy MediaItem and cache on file system
+            Directory.CreateDirectory(Path.GetDirectoryName(miCopy.FilePathCache) ?? throw new ArgumentNullException());
+            File.Copy(mi.FilePath, miCopy.FilePath, true);
+            File.Copy(mi.FilePathCache, miCopy.FilePathCache, true);
 
-          if (mi.Segments != null)
-            for (int i = 0; i < mi.Segments.Count; i++)
-              File.Copy(mi.Segments[i].CacheFilePath, miCopy.Segments[i].CacheFilePath, true);
-          break;
+            if (mi.Segments != null)
+              for (int i = 0; i < mi.Segments.Count; i++)
+                File.Copy(mi.Segments[i].CacheFilePath, miCopy.Segments[i].CacheFilePath, true);
+            
+            break;
 
           case FileOperationMode.Move:
-          var srcFilePath = mi.FilePath;
-          var srcFilePathCache = mi.FilePathCache;
-          var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
+            var srcFilePath = mi.FilePath;
+            var srcFilePathCache = mi.FilePathCache;
+            var srcDirPathCache = Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException();
 
-          // DB
-          mi.MoveTo(destFolder, miNewFileName);
+            // DB
+            MoveTo(mi, destFolder, miNewFileName);
 
-          // File System
-          File.Delete(mi.FilePath);
-          File.Move(srcFilePath, mi.FilePath);
+            // File System
+            File.Delete(mi.FilePath);
+            File.Move(srcFilePath, mi.FilePath);
 
-          // Cache
-          Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
-          // Thumbnail
-          File.Delete(mi.FilePathCache);
-          File.Move(srcFilePathCache, mi.FilePathCache);
-          // Segments
-          foreach (var segment in mi.Segments ?? Enumerable.Empty<Segment>()) {
-            File.Delete(segment.CacheFilePath);
-            File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.CacheFilePath);
-          }
-          break;
+            // Cache
+            Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
+            // Thumbnail
+            File.Delete(mi.FilePathCache);
+            File.Move(srcFilePathCache, mi.FilePathCache);
+            // Segments
+            foreach (var segment in mi.Segments ?? Enumerable.Empty<Segment>()) {
+              File.Delete(segment.CacheFilePath);
+              File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.CacheFilePath);
+            }
+
+            break;
         }
 
         done++;
       }
     }
 
-    public async Task<List<MediaItem>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders, CancellationToken token) {
-      var output = new List<MediaItem>();
+    public async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders, CancellationToken token) {
+      var output = new List<MediaItemM>();
 
       await Task.Run(() => {
         foreach (var folder in folders) {
           if (token.IsCancellationRequested) break;
           if (!Directory.Exists(folder.FullPath)) continue;
-          var folderMediaItems = new List<MediaItem>();
-          var hiddenMediaItems = new List<MediaItem>();
+          var folderMediaItems = new List<MediaItemM>();
+          var hiddenMediaItems = new List<MediaItemM>();
 
           // add MediaItems from current Folder to dictionary for faster search
           var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
@@ -245,11 +307,12 @@ namespace PictureManager.Domain.Models {
             if (!Imaging.IsSupportedFileType(file)) continue;
 
             // check if the MediaItem is already in DB, if not put it there
-            var fileName = Path.GetFileName(file) ?? string.Empty;
+            var fileName = Path.GetFileName(file);
             fmis.TryGetValue(fileName, out var inDbFile);
             if (inDbFile == null) {
-              inDbFile = new MediaItem(DataAdapter.GetNextId(), folder, fileName, true);
+              inDbFile = new(DataAdapter.GetNextId(), folder, fileName, true);
               All.Add(inDbFile);
+              OnPropertyChanged(nameof(MediaItemsCount));
               folder.MediaItems.Add(inDbFile);
             }
             if (!_core.CanViewerSee(inDbFile)) {
@@ -274,8 +337,8 @@ namespace PictureManager.Domain.Models {
       return output;
     }
 
-    public static async Task<List<MediaItem>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItem> items, CancellationToken token) {
-      var output = new List<MediaItem>();
+    public async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
+      var output = new List<MediaItemM>();
 
       await Task.Run(() => {
         var folders = items.Select(x => x.Folder).Distinct();
@@ -283,7 +346,7 @@ namespace PictureManager.Domain.Models {
 
         foreach (var folder in folders) {
           if (token.IsCancellationRequested) break;
-          if (!Core.Instance.CanViewerSeeContentOfThisFolder(folder)) continue;
+          if (!_core.CanViewerSeeContentOfThisFolder(folder)) continue;
           if (!Directory.Exists(folder.FullPath)) continue;
           foldersSet.Add(folder.Id);
         }
@@ -291,8 +354,8 @@ namespace PictureManager.Domain.Models {
         foreach (var mi in items) {
           if (token.IsCancellationRequested) break;
           if (!foldersSet.Contains(mi.Folder.Id)) continue;
+          if (!_core.CanViewerSee(mi)) continue;
           if (!File.Exists(mi.FilePath)) continue;
-          if (!Core.Instance.CanViewerSee(mi)) continue;
           output.Add(mi);
         }
       }, token);
@@ -300,18 +363,8 @@ namespace PictureManager.Domain.Models {
       return output;
     }
 
-    public ThumbnailsGrid AddThumbnailsGridModel() {
-      var grid = new ThumbnailsGrid();
-      ThumbnailsGrids.Add(grid);
-      ThumbsGrid = grid;
-
-      grid.OnSelectionChanged += (o, e) => OnPropertyChanged(nameof(ActiveFileSize));
-
-      return grid;
-    }
-
     public void RemovePersonFromMediaItems(PersonM person) {
-      foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.People != null && mi.People.Contains(person))) {
+      foreach (var mi in All.Where(mi => mi.People != null && mi.People.Contains(person))) {
         mi.People = ListExtensions.Toggle(mi.People, person, true);
         DataAdapter.IsModified = true;
       }
@@ -319,7 +372,7 @@ namespace PictureManager.Domain.Models {
 
     public void RemoveKeywordsFromMediaItems(IEnumerable<KeywordM> keywords) {
       var set = new HashSet<KeywordM>(keywords);
-      foreach (var mi in All.Cast<MediaItem>().Where(mi => mi.Keywords != null)) {
+      foreach (var mi in All.Where(mi => mi.Keywords != null)) {
         foreach (var keyword in mi.Keywords.Where(set.Contains).ToArray()) {
           mi.Keywords = ListExtensions.Toggle(mi.Keywords, keyword, true);
           DataAdapter.IsModified = true;
