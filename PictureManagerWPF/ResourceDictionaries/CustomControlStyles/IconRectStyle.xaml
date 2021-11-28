@@ -22,7 +22,7 @@
                 <Setter Property="Fill" Value="{Binding IconFill}" />
                 <Style.Triggers>
                   <DataTrigger Binding="{Binding IconFill}" Value="{x:Null}">
-                    <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}" />
+                    <Setter Property="Fill" Value="{Binding IconName, Converter={StaticResource IconNameToBrushConverterOld}}" />
                   </DataTrigger>
                 </Style.Triggers>
               </Style>
