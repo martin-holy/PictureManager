@@ -5,28 +5,34 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using PictureManager.CustomControls;
+using PictureManager.Interfaces;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.Views {
-  public partial class ViewerV : INotifyPropertyChanged {
+  public partial class ViewerV : INotifyPropertyChanged, IMainTabsItem {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
+
+    #region IMainTabsItem implementation
+    private string _title;
+
+    public string IconName { get; set; }
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    #endregion
 
     private CatTreeView _catTvCategories;
     private ViewersM _model;
     private ViewerM _viewer;
-    private string _title;
     private bool _reloading;
 
     public ViewerM Viewer { get => _viewer; set { _viewer = value; OnPropertyChanged(); } }
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public IOrderedEnumerable<CategoryGroupM> CategoryGroups =>
       App.Core.CategoryGroupsM.All.OrderBy(x => x.Category).ThenBy(x => x.Name);
 
     public ViewerV() {
-      InitializeComponent();
-      DataContext = this;
       Title = "Viewer";
+      IconName = "IconEye";
+      InitializeComponent();
       AttachEvents();
     }
 
