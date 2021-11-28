@@ -29,7 +29,6 @@ namespace PictureManager.Commands {
 
     private static async void LoadByTag(ICatTreeViewTagItem item) {
       var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
-      App.Ui.MediaItemsBaseVM.AddThumbsTabIfNotActive();
       await App.Ui.MediaItemsBaseVM.LoadByTag(item, and, hide, recursive);
     }
 

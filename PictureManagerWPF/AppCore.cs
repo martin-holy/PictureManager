@@ -43,6 +43,8 @@ namespace PictureManager {
     public VideoClipsTreeVM VideoClipsTreeVM { get; }
     #endregion
 
+    public MainTabsVM MainTabsVM { get; }
+
     public AppInfo AppInfo { get; } = new();
     public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
@@ -51,6 +53,8 @@ namespace PictureManager {
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
+
+      MainTabsVM = new();
 
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
@@ -156,20 +160,17 @@ namespace PictureManager {
 
         case FolderTreeVM:
         case FolderKeywordTreeVM:
-          // TODO move to MediaItemsBaseVM
-          MediaItemsBaseVM.AddThumbsTabIfNotActive();
           var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
           await MediaItemsBaseVM.LoadByFolder(item, and, hide, recursive);
           break;
 
         case ViewerTreeVM v:
-          App.WMain.MainTabs.ActivateTab<ViewerV>(IconName.Eye)
-            ?.Reload(App.Core.ViewersM, v.Model, App.WMain.TreeViewCategories.TvCategories);
+          MainTabsVM.ActivateTab<ViewerV>()?.Reload(App.Core.ViewersM, v.Model, App.WMain.TreeViewCategories.TvCategories);
           break;
 
         case ICatTreeViewCategory cat:
           if (cat is PeopleTreeVM)
-            _ = App.WMain.MainTabs.ActivateTab<PeopleControl>(IconName.People)?.Reload();
+            _ = MainTabsVM.ActivateTab<PeopleControl>()?.Reload();
 
           // if category is going to collapse and sub item is selected, category gets selected
           // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
@@ -258,10 +259,12 @@ namespace PictureManager {
       App.Core.RunOnUiThread(() => {
         srcMi?.SetThumbSize();
         destMi?.SetThumbSize();
-        App.Ui.MediaItemsBaseVM.SetInfoBox(srcMi);
-        App.Ui.MediaItemsBaseVM.SetInfoBox(destMi);
+        var srcMiVM = App.Ui.MediaItemsBaseVM.ToViewModel(srcMi);
+        var destMiVM = App.Ui.MediaItemsBaseVM.ToViewModel(destMi);
+        srcMiVM?.SetInfoBox();
+        destMiVM?.SetInfoBox();
 
-        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
+        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMiVM, destMiVM, owner);
         cd.ShowDialog();
         result = cd.Result;
         outFileName = cd.FileName;

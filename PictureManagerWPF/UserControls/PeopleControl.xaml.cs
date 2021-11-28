@@ -8,28 +8,33 @@ using System.Windows;
 using System.Windows.Input;
 using MH.Utils;
 using PictureManager.CustomControls;
-using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Interfaces;
 using PictureManager.Utils;
 using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.UserControls {
-  public partial class PeopleControl : INotifyPropertyChanged {
+  public partial class PeopleControl : INotifyPropertyChanged, IMainTabsItem {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
+
+    #region IMainTabsItem implementation
+    private string _title;
+
+    public string IconName { get; set; }
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    #endregion
 
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private readonly WorkTask _workTask = new();
     private bool _loading;
-    private string _title;
-
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
     public PeopleControl() {
       InitializeComponent();
       DataContext = this;
       Title = "People";
+      IconName = "IconPeople";
 
       foreach (var person in App.Ui.PeopleBaseVM.All.Values)
         person.UpdateDisplayKeywords();
@@ -46,9 +51,9 @@ namespace PictureManager.UserControls {
 
           // add group
           if (!group.Key.Equals(string.Empty)) {
-            var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = IconName.Tag, Title = group.Key } };
+            var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = Domain.IconName.Tag, Title = group.Key } };
             if (!string.IsNullOrEmpty(groupTitle))
-              groupItems.Insert(0, new() { Icon = IconName.People, Title = groupTitle });
+              groupItems.Insert(0, new() { Icon = Domain.IconName.People, Title = groupTitle });
             await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(groupItems.ToArray()));
           }
 
@@ -74,13 +79,13 @@ namespace PictureManager.UserControls {
       await _workTask.Start(Task.Run(async () => {
         foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<CategoryGroupTreeVM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, group.BaseVM.Model.Name));
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.BaseVM.Model.Name));
           await AddPeopleAsync(group.BaseVM.Model.Name, group.Items.Cast<PersonTreeVM>().Select(x => x.BaseVM), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Ui.PeopleTreeVM.Items.OfType<PersonTreeVM>().ToArray();
         if (peopleWithoutGroup.Length > 0) {
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(IconName.People, string.Empty));
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, string.Empty));
           await AddPeopleAsync(string.Empty, peopleWithoutGroup.Select(x => x.BaseVM), _workTask.Token);
         }
       }));

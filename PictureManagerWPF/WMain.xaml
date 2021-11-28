@@ -17,6 +17,14 @@
         LeftWindowCommandsOverlayBehavior="Never" Closing="WMain_OnClosing"
         SizeChanged="WMain_OnSizeChanged">
 
+  <controls:MetroWindow.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Views/MainTabsV.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </controls:MetroWindow.Resources>
+
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
       <Grid>
@@ -210,8 +218,11 @@
 
       <cc:SlidePanelsGrid.ContentMiddle>
         <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Ui}">
-          <!-- Thumbnails Tabs -->
-          <uc:MainTabs x:Name="MainTabs" />
+          <!-- Main Tabs -->
+          <ContentPresenter Content="{Binding MainTabsVM}"
+                            Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
+                                          Converter={StaticResource AllToVisibilityConverter}, 
+                                          ConverterParameter={x:Static pm:AppMode.Browser}}" />
 
           <!-- MediaViewer -->
           <uc:MediaViewer x:Name="MediaViewer"
