@@ -5,7 +5,7 @@
                     xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
-  <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
+  <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverterOld" />
   <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
   <pm:RatingConverter x:Key="RatingConverter" />
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
@@ -19,5 +19,7 @@
   <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
   <converters:MediaItemM2VMConverter x:Key="MediaItemM2VmConverter" />
+  <converters:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
+  <converters:IconNameToPathGeometryConverter x:Key="IconNameToPathGeometryConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
 </ResourceDictionary>
