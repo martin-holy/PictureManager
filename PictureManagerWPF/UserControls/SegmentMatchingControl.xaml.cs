@@ -11,28 +11,33 @@ using MahApps.Metro.Controls;
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.CustomControls;
-using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Interfaces;
 using PictureManager.Utils;
 
 namespace PictureManager.UserControls {
-  public partial class SegmentMatchingControl : INotifyPropertyChanged {
+  public partial class SegmentMatchingControl : INotifyPropertyChanged, IMainTabsItem {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged.Invoke(this, new(name));
 
+    #region IMainTabsItem implementation
+    private string _title;
+
+    public string IconName { get; set; }
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    #endregion
+
     private readonly WorkTask _workTask = new();
     private readonly IProgress<int> _progress;
-    private string _title;
     private bool _loading;
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private List<MediaItemM> _mediaItems;
-
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
 
     public SegmentMatchingControl() {
       InitializeComponent();
       DataContext = this;
       Title = "Segment Matching";
+      IconName = "IconEquals";
 
       _progress = new Progress<int>(x => {
         App.Ui.AppInfo.ProgressBarValueA = x;
@@ -86,7 +91,7 @@ namespace PictureManager.UserControls {
       await _workTask.Cancel();
 
       SegmentsGrid.ClearRows();
-      SegmentsGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = IconName.People, Title = "?" } });
+      SegmentsGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = Domain.IconName.People, Title = "?" } });
       ConfirmedSegmentsGrid.ClearRows();
       App.Core.Segments.GroupSegments = false;
       var segments = App.Core.Segments.GetSegments(_mediaItems, withPersonOnly);
@@ -141,14 +146,14 @@ namespace PictureManager.UserControls {
 
         foreach (var group in App.Core.Segments.LoadedGroupedByPerson) {
           var groupTitle = group[0].Person != null ? group[0].Person.Name : group[0].PersonId.ToString();
-          SegmentsGrid.AddGroup(IconName.People, groupTitle);
+          SegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
 
           foreach (var segment in group)
             SegmentsGrid.AddItem(segment, _segmentGridWidth);
         }
       }
       else {
-        SegmentsGrid.AddGroup(IconName.People, "?");
+        SegmentsGrid.AddGroup(Domain.IconName.People, "?");
         foreach (var segment in App.Core.Segments.Loaded)
           SegmentsGrid.AddItem(segment, _segmentGridWidth);
       }
@@ -166,7 +171,7 @@ namespace PictureManager.UserControls {
       if (App.Core.Segments.GroupConfirmedSegments) {
         foreach (var (personId, segment, similar) in App.Core.Segments.ConfirmedSegments) {
           var groupTitle = segment.Person != null ? segment.Person.Name : personId.ToString();
-          ConfirmedSegmentsGrid.AddGroup(IconName.People, groupTitle);
+          ConfirmedSegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
           ConfirmedSegmentsGrid.AddItem(segment, _segmentGridWidth);
 
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
@@ -184,9 +189,9 @@ namespace PictureManager.UserControls {
 
           // add group
           if (!string.IsNullOrEmpty(group.Key) && !group.Key.Equals("Unknown"))
-            ConfirmedSegmentsGrid.AddGroup(IconName.Tag, group.Key);
+            ConfirmedSegmentsGrid.AddGroup(Domain.IconName.Tag, group.Key);
           if (group.Key.Equals("Unknown"))
-            ConfirmedSegmentsGrid.AddGroup(IconName.People, group.Key);
+            ConfirmedSegmentsGrid.AddGroup(Domain.IconName.People, group.Key);
 
           // add people
           foreach (var (_, segment, _) in group)

@@ -16,7 +16,6 @@ using PictureManager.ViewModels;
 
 namespace PictureManager.Commands {
   public static class MediaItemsCommands {
-    public static RoutedUICommand SelectAllCommand { get; } = CommandsController.CreateCommand("Select All", "SelectAll", new KeyGesture(Key.A, ModifierKeys.Control));
     public static RoutedUICommand SelectNotModifiedCommand { get; } = new() { Text = "Select Not Modified" };
     public static RoutedUICommand DeleteCommand { get; } = CommandsController.CreateCommand("Delete", "Delete", new KeyGesture(Key.Delete));
     public static RoutedUICommand CompressCommand { get; } = new() { Text = "Compress" };
@@ -34,7 +33,6 @@ namespace PictureManager.Commands {
     private static ThumbnailsGridM ThumbsGrid => App.Core.MediaItemsM.ThumbsGrid;
 
     public static void AddCommandBindings(CommandBindingCollection cbc) {
-      CommandsController.AddCommandBinding(cbc, SelectAllCommand, SelectAll, CanSelectAll);
       CommandsController.AddCommandBinding(cbc, SelectNotModifiedCommand, SelectNotModified, CanSelectNotModified);
       CommandsController.AddCommandBinding(cbc, DeleteCommand, Delete, CanDelete);
       CommandsController.AddCommandBinding(cbc, CompressCommand, Compress, CanCompress);
@@ -48,13 +46,6 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, RenameCommand, Rename, CanRename);
       CommandsController.AddCommandBinding(cbc, SegmentMatchingCommand, SegmentMatching, CanSegmentMatching);
       CommandsController.AddCommandBinding(cbc, ViewMediaItemsWithSegmentCommand, ViewMediaItemsWithSegment);
-    }
-
-    private static bool CanSelectAll() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
-
-    private static void SelectAll() {
-      ThumbsGrid.SelectAll();
-      App.Ui.MarkUsedKeywordsAndPeople();
     }
 
     private static bool CanSelectNotModified() => App.Ui.AppInfo.AppMode == AppMode.Browser && ThumbsGrid?.FilteredItems.Count > 0;
@@ -83,7 +74,7 @@ namespace PictureManager.Commands {
       App.Core.MediaItemsM.Delete(items, AppCore.FileOperationDelete);
       await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
 
-      if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl smc)
+      if (App.Ui.MainTabsVM.Selected is SegmentMatchingControl smc)
         _ = smc.SortAndReload();
 
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) {
@@ -275,7 +266,7 @@ namespace PictureManager.Commands {
 
     private static void SegmentMatching() {
       var mediaItems = ThumbsGrid.GetSelectedOrAll();
-      var control = App.WMain.MainTabs.ActivateTab<SegmentMatchingControl>(IconName.Equals);
+      var control = App.Ui.MainTabsVM.ActivateTab<SegmentMatchingControl>();
       var all = MessageDialog.Show("Segment Matching", "Do you want to load all segments or just segments with person?",
         true, new string[] { "All segments", "Segments with person" });
 
@@ -291,7 +282,7 @@ namespace PictureManager.Commands {
       List<MediaItemM> items = null;
 
       if (segment.PersonId == 0) {
-        if (App.WMain.MainTabs.GetSelectedContent() is SegmentMatchingControl
+        if (App.Ui.MainTabsVM.Selected is SegmentMatchingControl
           && App.Core.Segments.LoadedGroupedByPerson.Count > 0
           && App.Core.Segments.LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
           items = App.Core.Segments.LoadedGroupedByPerson[^1].Select(x => x.MediaItem).Distinct().ToList();
