@@ -22,4 +22,5 @@
   <converters:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
   <converters:IconNameToPathGeometryConverter x:Key="IconNameToPathGeometryConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
+  <mhConverters:EqualityConverter x:Key="EqualityConverter" />
 </ResourceDictionary>
