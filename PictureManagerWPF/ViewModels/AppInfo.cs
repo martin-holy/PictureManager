@@ -12,7 +12,6 @@ namespace PictureManager.ViewModels {
     private int _progressBarMaxB;
     private bool _progressBarIsIndeterminate;
     private AppMode _appMode;
-    private bool _isThumbInfoVisible = true;
 
     public int ProgressBarValueA { get => _progressBarValueA; set { _progressBarValueA = value; OnPropertyChanged(); } }
     public int ProgressBarValueB { get => _progressBarValueB; set { _progressBarValueB = value; OnPropertyChanged(); } }
@@ -20,7 +19,6 @@ namespace PictureManager.ViewModels {
     public int ProgressBarMaxB { get => _progressBarMaxB; set { _progressBarMaxB = value; OnPropertyChanged(); } }
     // TODO check that ProgressBar is not leaved in state of IsIndeterminate
     public bool ProgressBarIsIndeterminate { get => _progressBarIsIndeterminate; set { _progressBarIsIndeterminate = value; OnPropertyChanged(); } }
-    public bool IsThumbInfoVisible { get => _isThumbInfoVisible; set { _isThumbInfoVisible = value; OnPropertyChanged(); } }
 
     public AppMode AppMode {
       get => _appMode;

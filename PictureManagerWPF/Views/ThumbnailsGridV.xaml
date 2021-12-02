@@ -1,0 +1,101 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:pm="clr-namespace:PictureManager"
+                    xmlns:vm="clr-namespace:PictureManager.ViewModels"
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:commands="clr-namespace:PictureManager.Commands">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
+    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+
+  <ContextMenu x:Key="ThumbnailsGridContextMenu"
+               DataContext="{Binding ThumbnailsGridsVM.Current, Source={x:Static pm:App.Ui}}">
+    <MenuItem Header="Group by Folders"
+              IsCheckable="True"
+              IsChecked="{Binding Model.GroupByFolders}"
+              Command="{Binding RefreshCommand}" />
+    <MenuItem Header="Group by Date"
+              IsCheckable="True"
+              IsChecked="{Binding Model.GroupByDate}"
+              Command="{Binding RefreshCommand}" />
+    <MenuItem Header="Sort by File first"
+              IsCheckable="True"
+              IsChecked="{Binding Model.SortByFileFirst}"
+              Command="{Binding RefreshCommand}" />
+  </ContextMenu>
+
+  <DataTemplate x:Key="MiThumbWithCommands" DataType="{x:Type vm:MediaItemBaseVM}">
+    <ContentPresenter ContentTemplate="{StaticResource MediaItemThumbnailV}"
+                      DataContext="{Binding}">
+
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="MouseEnter">
+          <b:InvokeCommandAction Command="{Binding Tag.ShowVideoPreviewCommand,
+                                            RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                                 CommandParameter="{Binding 
+                                                     RelativeSource={RelativeSource FindAncestor,
+                                                     AncestorType={x:Type ContentPresenter}}}" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="MouseLeave">
+          <b:InvokeCommandAction Command="{Binding Tag.HideVideoPreviewCommand,
+                                            RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                                 CommandParameter="{Binding}" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="PreviewMouseUp">
+          <b:InvokeCommandAction Command="{Binding Tag.SelectMediaItemCommand,
+                                            RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                                 PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="MouseLeftButtonDown">
+          <b:InvokeCommandAction Command="{Binding Tag.OpenMediaItemCommand,
+                                            RelativeSource={RelativeSource FindAncestor,
+                                            AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                                 PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+    </ContentPresenter>
+  </DataTemplate>
+
+  <DataTemplate DataType="{x:Type vm:ThumbnailsGridVM}">
+    <ContentPresenter Content="{Binding Panel}" x:Name="TestGrid">
+      <ContentPresenter.Resources>
+        <Style TargetType="{x:Type cc:VirtualizingWrapPanel}" BasedOn="{StaticResource CustomControls.VirtualizingWrapPanel}">
+          <Setter Property="ShowGroupItemsCount" Value="True" />
+          <Setter Property="GroupItemsCountIcon" Value="ImageMultiple" />
+          <Setter Property="ItemDataTemplate" Value="{StaticResource MiThumbWithCommands}" />
+          <Setter Property="Tag" Value="{Binding}" />
+        </Style>
+      </ContentPresenter.Resources>
+
+      <ContentPresenter.InputBindings>
+        <KeyBinding Modifiers="Control" Key="A"
+                    Command="{Binding SelectAllCommand}" />
+        <KeyBinding Modifiers="Control" Key="R"
+                    Command="{Binding MediaItemsBaseVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding Key="F2"
+                    Command="{Binding MediaItemsBaseVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding Key="Delete"
+                    Command="{Binding MediaItemsBaseVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding Modifiers="Control" Key="K"
+                    Command="{Binding MediaItemsBaseVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+      </ContentPresenter.InputBindings>
+
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="PreviewMouseWheel">
+          <b:InvokeCommandAction Command="{Binding ZoomCommand}"
+                                 PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+    </ContentPresenter>
+  </DataTemplate>
+    
+</ResourceDictionary>

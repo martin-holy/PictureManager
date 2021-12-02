@@ -3,21 +3,22 @@
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:commands="clr-namespace:PictureManager.Commands">
+                    xmlns:commands="clr-namespace:PictureManager.Commands"
+                    xmlns:pm="clr-namespace:PictureManager">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
     <MenuItem Header="Load"
-              Command="commands:TreeViewCommands.LoadByTagCommand"
+              Command="{Binding ThumbnailsGridsVM.LoadByTagCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter And"
-              Command="commands:TreeViewCommands.ActivateFilterAndCommand"
+              Command="{Binding ThumbnailsGridsVM.ActivateFilterAndCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter Or"
-              Command="commands:TreeViewCommands.ActivateFilterOrCommand"
+              Command="{Binding ThumbnailsGridsVM.ActivateFilterOrCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter Not"
-              Command="commands:TreeViewCommands.ActivateFilterNotCommand"
+              Command="{Binding ThumbnailsGridsVM.ActivateFilterNotCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
   </x:Array>
 

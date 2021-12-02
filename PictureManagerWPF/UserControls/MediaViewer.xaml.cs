@@ -22,10 +22,10 @@ namespace PictureManager.UserControls {
       get => _current;
       set {
         if (_current != null)
-          App.Core.MediaItemsM.ThumbsGrid?.SetSelected(_current.Model, false);
+          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current.Model, false);
         _current = value;
         if (_current != null)
-          App.Core.MediaItemsM.ThumbsGrid?.SetSelected(_current.Model, true);
+          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current.Model, true);
         if (App.Core.MediaItemsM.Current != value.Model)
           App.Core.MediaItemsM.Current = value.Model;
         OnPropertyChanged();

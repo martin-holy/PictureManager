@@ -11,6 +11,7 @@
     <ResourceDictionary Source="../NamedStyles/BorderStyles.xaml" />
     <ResourceDictionary Source="../NamedStyles/TextBlockStyles.xaml" />
     <ResourceDictionary Source="../Icons.xaml" />
+    <ResourceDictionary Source="../../Views/MediaItemThumbnailV.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
@@ -37,7 +38,8 @@
                 <DockPanel>
                   <Grid DockPanel.Dock="Top">
                     <!-- Thumbnail -->
-                    <cc:MediaItemThumbnail DataContext="{Binding MediaItem, Converter={StaticResource MediaItemM2VmConverter}}" />
+                    <ContentPresenter Content="{Binding MediaItem, Converter={StaticResource MediaItemM2VmConverter}}"
+                                      ContentTemplate="{StaticResource MediaItemThumbnailV}" />
                     
                     <!-- Segments Rects -->
                     <ItemsControl ItemsSource="{Binding MediaItemSegmentRects, RelativeSource={RelativeSource TemplatedParent}}">

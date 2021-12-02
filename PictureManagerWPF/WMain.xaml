@@ -25,6 +25,16 @@
     </ResourceDictionary>
   </controls:MetroWindow.Resources>
 
+  <controls:MetroWindow.InputBindings>
+    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsBaseVM.EditCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsBaseVM.SaveEditCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsBaseVM.CancelEditCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Key="F2" Command="{Binding MediaItemsBaseVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Key="Delete" Command="{Binding MediaItemsBaseVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsBaseVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="R" Command="{Binding MediaItemsBaseVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+  </controls:MetroWindow.InputBindings>
+
   <controls:MetroWindow.TitleTemplate>
     <DataTemplate>
       <Grid>
@@ -66,16 +76,25 @@
           <MenuItem Command="cmd:WindowCommands.TestButtonCommand" />
         </MenuItem>
         <MenuItem Header="Media Items" Style="{StaticResource StyleMenuItemRoot}">
-          <MenuItem Command="cmd:MediaItemsCommands.CompressCommand" />
+          <MenuItem Header="Compress"
+                    Command="{Binding ThumbnailsGridsVM.CompressCommand, Source={x:Static pm:App.Ui}}" />
           <MenuItem Command="cmd:MediaItemsCommands.RebuildThumbnailsCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.RotateCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.SelectNotModifiedCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.ShuffleCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.ResizeImagesCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.ImagesToVideoCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.CopyPathsCommand" />
+          <MenuItem Header="Rotate"
+                    Command="{Binding MediaItemsBaseVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+          <MenuItem Header="Select Not Modified"
+                    Command="{Binding ThumbnailsGridsVM.SelectNotModifiedCommand, Source={x:Static pm:App.Ui}}" />
+          <MenuItem Header="Shuffle"
+                    Command="{Binding ThumbnailsGridsVM.ShuffleCommand, Source={x:Static pm:App.Ui}}" />
+          <MenuItem Header="Resize Images"
+                    Command="{Binding ThumbnailsGridsVM.ResizeImagesCommand, Source={x:Static pm:App.Ui}}" />
+          <MenuItem Header="Images to Video"
+                    Command="{Binding ThumbnailsGridsVM.ImagesToVideoCommand, Source={x:Static pm:App.Ui}}" />
+          <MenuItem Header="Copy Paths"
+                    Command="{Binding ThumbnailsGridsVM.CopyPathsCommand, Source={x:Static pm:App.Ui}}" />
           <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
-          <MenuItem Command="cmd:MediaItemsCommands.RenameCommand" />
+          <MenuItem Header="Rename"
+                    InputGestureText="F2"
+                    Command="{Binding MediaItemsBaseVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
           <MenuItem Command="cmd:MediaItemsCommands.SegmentMatchingCommand">
             <MenuItem.Icon>
               <mhc:Icon Source="{StaticResource IconEquals}" />
@@ -83,27 +102,36 @@
           </MenuItem>
         </MenuItem>
         <MenuItem Header="Metadata" Style="{StaticResource StyleMenuItemRoot}">
-          <MenuItem Command="cmd:MetadataCommands.EditCommand">
+          <MenuItem Header="Edit"
+                    InputGestureText="Ctrl+E"
+                    Command="{Binding MediaItemsBaseVM.EditCommand, Source={x:Static pm:App.Ui}}">
             <MenuItem.Icon>
               <mhc:Icon Source="{StaticResource IconEdit}" />
             </MenuItem.Icon>
           </MenuItem>
-            <MenuItem Command="cmd:MetadataCommands.SaveCommand">
+            <MenuItem Header="Save"
+                      InputGestureText="Ctrl+S"
+                      Command="{Binding MediaItemsBaseVM.SaveEditCommand, Source={x:Static pm:App.Ui}}">
               <MenuItem.Icon>
                 <mhc:Icon Source="{StaticResource IconSave}" />
               </MenuItem.Icon>
             </MenuItem>
-          <MenuItem Command="cmd:MetadataCommands.CancelCommand">
+          <MenuItem Header="Cancel"
+                    InputGestureText="Ctrl+Q"
+                    Command="{Binding MediaItemsBaseVM.CancelEditCommand, Source={x:Static pm:App.Ui}}">
             <MenuItem.Icon>
               <mhc:Icon Source="{StaticResource IconCancel}" />
             </MenuItem.Icon>
           </MenuItem>
-            <MenuItem Command="cmd:MetadataCommands.CommentCommand">
+            <MenuItem Header="Comment"
+                      InputGestureText="Ctrl+K"
+                      Command="{Binding MediaItemsBaseVM.CommentCommand, Source={x:Static pm:App.Ui}}">
               <MenuItem.Icon>
                 <mhc:Icon Source="{StaticResource IconNotification}" />
               </MenuItem.Icon>
             </MenuItem>
-          <MenuItem Command="cmd:MetadataCommands.ReloadCommand" />
+          <MenuItem Header="Reload"
+                    Command="{Binding MediaItemsBaseVM.ReloadMetadataCommand, Source={x:Static pm:App.Ui}}" />
         </MenuItem>
         <MenuItem Header="Viewer" x:Name="MenuViewers" Style="{StaticResource StyleMenuItemRoot}" Icon="{StaticResource EyeIcon}"
                   ItemsSource="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"
@@ -138,29 +166,29 @@
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
-            <b:InvokeCommandAction Command="{Binding MediaItemsBaseVM.ClearFiltersCommand,
+            <b:InvokeCommandAction Command="{Binding ThumbnailsGridsVM.ClearFiltersCommand,
                                              Source={x:Static pm:App.Ui}}" />
           </b:EventTrigger>
         </b:Interaction.Triggers>
 
         <!-- And -->
         <Border Background="{StaticResource DisplayFilterAndBrush}">
-          <Label Content="{Binding MediaItemsM.ThumbsGrid.FilterAndCount}"
-                 Visibility="{Binding MediaItemsM.ThumbsGrid.FilterAndCount,
+          <Label Content="{Binding ThumbnailsGridsM.Current.FilterAndCount}"
+                 Visibility="{Binding ThumbnailsGridsM.Current.FilterAndCount,
                               Converter={StaticResource AllToVisibilityConverter}}" />
         </Border>
 
         <!-- Or -->
         <Border Background="{StaticResource DisplayFilterOrBrush}">
-          <Label Content="{Binding MediaItemsM.ThumbsGrid.FilterOrCount}"
-                 Visibility="{Binding MediaItemsM.ThumbsGrid.FilterOrCount,
+          <Label Content="{Binding ThumbnailsGridsM.Current.FilterOrCount}"
+                 Visibility="{Binding ThumbnailsGridsM.Current.FilterOrCount,
                               Converter={StaticResource AllToVisibilityConverter}}"/>
         </Border>
 
         <!-- Not -->
         <Border Background="{StaticResource DisplayFilterNotBrush}">
-          <Label Content="{Binding MediaItemsM.ThumbsGrid.FilterNotCount}"
-                 Visibility="{Binding MediaItemsM.ThumbsGrid.FilterNotCount,
+          <Label Content="{Binding ThumbnailsGridsM.Current.FilterNotCount}"
+                 Visibility="{Binding ThumbnailsGridsM.Current.FilterNotCount,
                               Converter={StaticResource AllToVisibilityConverter}}"/>
         </Border>
       </StackPanel>
@@ -168,11 +196,11 @@
       <!-- Media Types -->
       <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Image" Click="OnMediaTypesChanged"
-                      IsChecked="{Binding MediaItemsM.ThumbsGrid.ShowImages, Source={x:Static pm:App.Core}}">
+                      IsChecked="{Binding ThumbnailsGridsM.Current.ShowImages, Source={x:Static pm:App.Core}}">
           <mhc:Icon Source="{StaticResource IconImage}" />
         </ToggleButton>
         <ToggleButton Style="{StaticResource StyleToggleButtonIconFlat}" ToolTip="Video" Click="OnMediaTypesChanged"
-                      IsChecked="{Binding MediaItemsM.ThumbsGrid.ShowVideos, Source={x:Static pm:App.Core}}">
+                      IsChecked="{Binding ThumbnailsGridsM.Current.ShowVideos, Source={x:Static pm:App.Core}}">
           <mhc:Icon Source="{StaticResource IconMovieClapper}" />
         </ToggleButton>
       </StackPanel>

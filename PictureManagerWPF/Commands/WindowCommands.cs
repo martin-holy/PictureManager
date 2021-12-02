@@ -56,7 +56,7 @@ namespace PictureManager.Commands {
 
       App.Ui.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
-      App.Ui.MediaItemsBaseVM.ScrollToCurrent();
+      App.Ui.ThumbnailsGridsVM.ScrollToCurrentMediaItem();
       App.Ui.MarkUsedKeywordsAndPeople();
 
       App.WMain.MediaViewer.Deactivate();
@@ -100,17 +100,17 @@ namespace PictureManager.Commands {
       App.WMain.SlidePanelMainTreeView.IsOpen = show;
 
       if (reload)
-        await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
+        await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
     }
 
-    private static bool CanAddGeoNamesFromFiles() => App.Core.MediaItemsM.ThumbsGrid?.FilteredItems.Count(x => x.IsSelected) > 0;
+    private static bool CanAddGeoNamesFromFiles() => App.Core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0;
 
     private static void AddGeoNamesFromFiles() {
       if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
 
       var progress = new ProgressBarDialog(App.WMain, true, 1, "Adding GeoNames ...");
       progress.AddEvents(
-        App.Core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        App.Core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         async mi => {

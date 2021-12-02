@@ -35,7 +35,7 @@
                                     ShowShadow="False"
                                     ToolTip="Add Thumbnails Grid Tab"
                                     HorizontalAlignment="Center"
-                                    Command="{Binding MediaItemsBaseVM.AddThumbnailsGridCommand,
+                                    Command="{Binding ThumbnailsGridsVM.AddThumbnailsGridCommand,
                                               Source={x:Static pm:App.Ui}}" />
 
                     <TabPanel IsItemsHost="True"

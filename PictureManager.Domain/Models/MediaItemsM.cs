@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -17,47 +16,20 @@ namespace PictureManager.Domain.Models {
 
     private bool _isEditModeOn;
     private MediaItemM _current;
-    private ThumbnailsGridM _currentThumbsGrid;
     private string _positionSlashCount;
 
     public DataAdapter DataAdapter { get; }
     public List<MediaItemM> All { get; } = new();
     public Dictionary<int, MediaItemM> AllDic { get; set; }
-    public ObservableCollection<ThumbnailsGridM> ThumbnailsGrids { get; } = new();
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
 
     public MediaItemM Current {
       get => _current;
       set {
         _current = value;
-        if (ThumbsGrid != null && ThumbsGrid.Current != value)
-          ThumbsGrid.Current = value;
+        if (_core.ThumbnailsGridsM.Current != null && _core.ThumbnailsGridsM.Current.CurrentMediaItem != value)
+          _core.ThumbnailsGridsM.Current.CurrentMediaItem = value;
         OnPropertyChanged();
-        OnPropertyChanged(nameof(ActiveFileSize));
-      }
-    }
-
-    public ThumbnailsGridM ThumbsGrid {
-      get => _currentThumbsGrid;
-      set {
-        _currentThumbsGrid = value;
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(ActiveFileSize));
-      }
-    }
-
-    public string ActiveFileSize {
-      get {
-        try {
-          var size = Current == null
-            ? ThumbsGrid?.SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
-            : new FileInfo(Current.FilePath).Length;
-
-          return size is null or 0 ? string.Empty : IOExtensions.FileSizeToString((long)size);
-        }
-        catch {
-          return string.Empty;
-        }
       }
     }
 
@@ -72,15 +44,6 @@ namespace PictureManager.Domain.Models {
     public MediaItemsM(Core core) {
       _core = core;
       DataAdapter = new MediaItemsDataAdapter(core, this);
-    }
-
-    public ThumbnailsGridM AddThumbnailsGridModel() {
-      var grid = new ThumbnailsGridM(_core);
-      ThumbnailsGrids.Add(grid);
-      ThumbsGrid = ThumbnailsGridM.ActivateThumbnailsGrid(ThumbsGrid, grid);
-      grid.SelectionChangedEventHandler += (_, _) => OnPropertyChanged(nameof(ActiveFileSize));
-
-      return grid;
     }
 
     /// <summary>
@@ -178,7 +141,7 @@ namespace PictureManager.Domain.Models {
       item.GeoName = null;
 
       // remove from ThumbnailsGrids
-      foreach (var thumbnailsGrid in ThumbnailsGrids)
+      foreach (var thumbnailsGrid in _core.ThumbnailsGridsM.All)
         thumbnailsGrid.Remove(item);
 
       // remove from DB
@@ -239,7 +202,7 @@ namespace PictureManager.Domain.Models {
           var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            _core.RunOnUiThread(() => ThumbsGrid.SetSelected(mi, false));
+            _core.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
             continue;
           }
         }
@@ -287,6 +250,22 @@ namespace PictureManager.Domain.Models {
 
         done++;
       }
+    }
+
+    public async Task<List<MediaItemM>> GetMediaItemsForLoadAsync(IReadOnlyCollection<MediaItemM> mediaItems, IReadOnlyCollection<FolderM> folders, CancellationToken token) {
+      var items = new List<MediaItemM>();
+
+      if (mediaItems != null)
+        // filter out items if directory or file not exists or Viewer can not see items
+        items = await VerifyAccessibilityOfMediaItemsAsync(mediaItems, token);
+
+      if (folders != null)
+        items = await GetMediaItemsFromFoldersAsync(folders, token);
+
+      foreach (var mi in items)
+        mi.SetThumbSize();
+
+      return items;
     }
 
     public async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders, CancellationToken token) {

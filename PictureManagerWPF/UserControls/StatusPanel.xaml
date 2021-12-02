@@ -29,7 +29,7 @@
       <Style.Triggers>
         <MultiDataTrigger>
           <MultiDataTrigger.Conditions>
-            <Condition Binding="{Binding MediaItemsM.ThumbsGrid, Source={x:Static pm:App.Core},
+            <Condition Binding="{Binding ThumbnailsGridsM.Current, Source={x:Static pm:App.Core},
                                  Converter={StaticResource AllToBoolConverter}}"
                        Value="False" />
             <Condition Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui}}"
@@ -69,7 +69,7 @@
                   Visibility="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui},
                                Converter={StaticResource AllToVisibilityConverter}, 
                                ConverterParameter={x:Static pm:AppMode.Browser}}">
-            <TextBlock Text="{Binding MediaItemsM.ThumbsGrid.SelectedCount}" />
+            <TextBlock Text="{Binding ThumbnailsGridsM.Current.SelectedCount}" />
           </Border>
 
           <!-- Modified -->
@@ -90,11 +90,11 @@
                     Item="{Binding MediaItemsBaseVM.Current.Dimensions, Source={x:Static pm:App.Ui}}" />
 
       <!-- File Size -->
-      <uc:InfoPanel Visibility="{Binding MediaItemsM.ActiveFileSize, Source={x:Static pm:App.Core},
+      <uc:InfoPanel Visibility="{Binding ThumbnailsGridsM.Current.ActiveFileSize, Source={x:Static pm:App.Core},
                                  Converter={StaticResource AllToVisibilityConverter}}"
                     IconSource="{StaticResource IconPageUpload}"
                     IconFill="{StaticResource ColorBrushWhite}"
-                    Item="{Binding MediaItemsM.ActiveFileSize, Source={x:Static pm:App.Core}}" />
+                    Item="{Binding ThumbnailsGridsM.Current.ActiveFileSize, Source={x:Static pm:App.Core}}" />
 
       <!-- ImageActualZoom -->
       <uc:InfoPanel IconSource="{StaticResource IconMagnify}"

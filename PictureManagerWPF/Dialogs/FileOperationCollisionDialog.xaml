@@ -4,7 +4,6 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls"
   mc:Ignorable="d"
   Title="The destination already has a file with this name" SizeToContent="WidthAndHeight" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -15,21 +14,27 @@
   Closing="OnClosing">
 
   <controls:MetroWindow.Resources>
-    <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource StyleBaseTextBox}">
-      <Style.Triggers>
-        <DataTrigger Binding="{Binding Path=Error}" Value="True">
-          <Setter Property="Background" Value="#7FFF0000" />
-        </DataTrigger>
-      </Style.Triggers>
-    </Style>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
+      <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource StyleBaseTextBox}">
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding Path=Error}" Value="True">
+            <Setter Property="Background" Value="#7FFF0000" />
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
     
-    <Style x:Key="ThumbBorder" TargetType="Border">
-      <Setter Property="BorderBrush" Value="Black" />
-      <Setter Property="BorderThickness" Value="2" />
-      <Setter Property="Margin" Value="0,0,0,0" />
-      <Setter Property="MaxWidth" Value="{Binding MaxThumbSize}" />
-      <Setter Property="MaxHeight" Value="{Binding MaxThumbSize}" />
-    </Style>
+      <Style x:Key="ThumbBorder" TargetType="Border">
+        <Setter Property="BorderBrush" Value="Black" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Margin" Value="0,0,0,0" />
+        <Setter Property="MaxWidth" Value="{Binding MaxThumbSize}" />
+        <Setter Property="MaxHeight" Value="{Binding MaxThumbSize}" />
+      </Style>
+    </ResourceDictionary>
   </controls:MetroWindow.Resources>
 
   <StackPanel Margin="5">
@@ -49,23 +54,29 @@
 
       <!-- Source Thumbnail -->
       <Grid Grid.Row="0" Grid.Column="0" ToolTip="{Binding SrcFileInfo.FullName}">
-        <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding SrcThumbVisibility}">
+        <Border Style="{StaticResource ThumbBorder}"
+                Visibility="{Binding SrcThumbVisibility}">
           <Image Stretch="Uniform" Source="{Binding SrcFilePathCache, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
         </Border>
 
-        <Grid Visibility="{Binding SrcMediaItemThumbVisibility}">
-          <cc:MediaItemThumbnail DataContext="{Binding SrcMediaItem}" />
+        <Grid Visibility="{Binding SrcMediaItemThumbVisibility}"
+              ToolTip="{Binding SrcFileInfo.FullName}">
+          <ContentPresenter Content="{Binding SrcMediaItem}"
+                            ContentTemplate="{StaticResource MediaItemThumbnailV}" />
         </Grid>
       </Grid>
 
       <!-- Destination Thumbnail -->
       <Grid Grid.Row="0" Grid.Column="2" ToolTip="{Binding DestFileInfo.FullName}">
-        <Border Style="{StaticResource ThumbBorder}" Visibility="{Binding DestThumbVisibility}">
+        <Border Style="{StaticResource ThumbBorder}"
+                Visibility="{Binding DestThumbVisibility}">
           <Image Stretch="Uniform" Source="{Binding DestFilePathCache, IsAsync=True, Converter={StaticResource ImageSourceConverter}}" />
         </Border>
 
-        <Grid Visibility="{Binding DestMediaItemThumbVisibility}" ToolTip="{Binding DestFileInfo.FullName}">
-          <cc:MediaItemThumbnail DataContext="{Binding DestMediaItem}" />
+        <Grid Visibility="{Binding DestMediaItemThumbVisibility}"
+              ToolTip="{Binding DestFileInfo.FullName}">
+          <ContentPresenter Content="{Binding DestMediaItem}"
+                            ContentTemplate="{StaticResource MediaItemThumbnailV}" />
         </Grid>
       </Grid>
 

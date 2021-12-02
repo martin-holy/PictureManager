@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
@@ -15,9 +17,8 @@ namespace PictureManager.Domain.Models {
     private readonly List<object> _filterNot = new();
     private readonly Dictionary<IFilterItem, DisplayFilter> _filterAll = new();
 
-    private MediaItemM _current;
+    private MediaItemM _currentMediaItem;
     private int? _indexOfCurrent;
-    private string _title;
     private bool _showImages = true;
     private bool _showVideos = true;
     private bool _groupByFolders = true;
@@ -29,13 +30,13 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> SelectedItems => _selectedItems;
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
+    public MediaItemFilterSizeM FilterSize { get; } = new();
 
     public int FilterAndCount => _filterAnd.Count;
     public int FilterOrCount => _filterOr.Count;
     public int FilterNotCount => _filterNot.Count;
     public int SelectedCount => SelectedItems.Count;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
     public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
@@ -43,11 +44,12 @@ namespace PictureManager.Domain.Models {
     public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
 
     public bool NeedReload { get; set; }
+    public double ThumbScale { get; set; } = 1.0;
 
-    public MediaItemM Current {
-      get => _current;
+    public MediaItemM CurrentMediaItem {
+      get => _currentMediaItem;
       set {
-        _current = value;
+        _currentMediaItem = value;
         _indexOfCurrent = value == null ? null : FilteredItems.IndexOf(value);
 
         // TODO temporary
@@ -59,26 +61,43 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public string ActiveFileSize {
+      get {
+        try {
+          var size = CurrentMediaItem == null
+            ? SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
+            : new FileInfo(CurrentMediaItem.FilePath).Length;
+
+          return size == 0 ? string.Empty : IOExtensions.FileSizeToString(size);
+        }
+        catch {
+          return string.Empty;
+        }
+      }
+    }
+
     public ThumbnailsGridM(Core core) {
       _core = core;
     }
 
     private void UpdatePositionSlashCount() =>
-      _core.MediaItemsM.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
+      _core.MediaItemsM.PositionSlashCount = $"{(CurrentMediaItem == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{FilteredItems.Count}";
 
     public void ClearItBeforeLoad() {
-      Current = null;
+      CurrentMediaItem = null;
       foreach (var item in SelectedItems)
-        SetSelected(item, false);
+        item.IsSelected = false;
 
       SelectedItems.Clear();
       LoadedItems.Clear();
       FilteredItems.Clear();
+      SelectionChanged();
     }
 
     private void SelectionChanged() {
       SelectionChangedEventHandler.Invoke(this, EventArgs.Empty);
       OnPropertyChanged(nameof(SelectedCount));
+      OnPropertyChanged(nameof(ActiveFileSize));
     }
 
     public void SetSelected(MediaItemM mi, bool value) => Selecting.SetSelected(_selectedItems, mi, value, SelectionChanged);
@@ -90,29 +109,36 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems.Except(SelectedItems))
         mi.IsSelected = false;
 
-      Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
+      CurrentMediaItem = SelectedItems.Count == 1 ? SelectedItems[0] : null;
       SelectionChanged();
     }
 
     public void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) {
       Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, SelectionChanged);
-      Current = SelectedItems.Count == 1 ? SelectedItems[0] : null;
+      CurrentMediaItem = SelectedItems.Count == 1 ? SelectedItems[0] : null;
     }
 
     public void DeselectAll() {
-      Current = null;
-      foreach (var mi in SelectedItems.ToArray())
-        SetSelected(mi, false);
+      foreach (var mi in SelectedItems)
+        mi.IsSelected = false;
+
+      CurrentMediaItem = null;
+      SelectedItems.Clear();
+      SelectionChanged();
     }
 
     public void SelectAll() {
-      Current = null;
       foreach (var mi in FilteredItems)
-        SetSelected(mi, true);
+        mi.IsSelected = true;
+
+      CurrentMediaItem = null;
+      SelectedItems.Clear();
+      SelectedItems.AddRange(FilteredItems);
+      SelectionChanged();
     }
 
     public void Remove(List<MediaItemM> items) {
-      Current = MediaItemsM.GetNewCurrent(FilteredItems, items);
+      CurrentMediaItem = MediaItemsM.GetNewCurrent(FilteredItems, items);
 
       foreach (var mi in items)
         Remove(mi);
@@ -120,14 +146,20 @@ namespace PictureManager.Domain.Models {
 
     public void Remove(MediaItemM item) {
       SetSelected(item, false);
-      if (item == Current)
-        Current = null;
+      if (item == CurrentMediaItem)
+        CurrentMediaItem = null;
       LoadedItems.Remove(item);
       if (FilteredItems.Remove(item))
         NeedReload = true;
     }
 
     public void RemoveSelected() => Remove(FilteredItems.Where(x => x.IsSelected).ToList());
+
+    public void Zoom(int delta) {
+      if (delta < 0 && ThumbScale < .1) return;
+      ThumbScale += delta > 0 ? .05 : -.05;
+      ResetThumbsSize();
+    }
 
     public void ResetThumbsSize() {
       foreach (var item in LoadedItems)
@@ -140,7 +172,13 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems)
         SetSelected(mi, !_core.MediaItemsM.ModifiedItems.Contains(mi));
 
-      Current = null;
+      CurrentMediaItem = null;
+    }
+
+    public void Shuffle() {
+      FilteredItems.Shuffle();
+      GroupByFolders = false;
+      GroupByDate = false;
     }
 
     public void FilteredItemsSetInPlace(MediaItemM mi) {
@@ -150,8 +188,9 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Insert(newIndex, mi);
     }
 
-    public async Task ReloadFilteredItems(IEnumerable<MediaItemM> filtered) {
+    public async Task ReloadFilteredItems() {
       FilteredItems.Clear();
+      var filtered = Filter(LoadedItems);
 
       var sorted = SortByFileFirst
         ? filtered.OrderBy(x => x.FileName).ThenBy(
@@ -170,8 +209,8 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in sorted)
         FilteredItems.Add(mi);
 
-      if (FilteredItems.IndexOf(Current) < 0)
-        await _core.RunOnUiThread(() => Current = null);
+      if (FilteredItems.IndexOf(CurrentMediaItem) < 0)
+        await _core.RunOnUiThread(() => CurrentMediaItem = null);
 
       UpdatePositionSlashCount();
     }
@@ -186,6 +225,13 @@ namespace PictureManager.Domain.Models {
           k.DisplayFilter = v;
 
       return newGrid;
+    }
+
+    public void SetMediaItemFilterSizeRange() {
+      var zeroItems = FilteredItems.Count == 0;
+      var min = zeroItems ? 0 : FilteredItems.Min(x => x.Width * x.Height);
+      var max = zeroItems ? 0 : FilteredItems.Max(x => x.Width * x.Height);
+      FilterSize.SetLoadedRange(min, max);
     }
 
     public void ClearFilters() {
@@ -230,7 +276,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public IEnumerable<MediaItemM> Filter(List<MediaItemM> mediaItems, Func<int, bool> filterSize) {
+    public IEnumerable<MediaItemM> Filter(List<MediaItemM> mediaItems) {
       // Media Type
       var mediaTypes = new HashSet<MediaType>();
       if (ShowImages) mediaTypes.Add(MediaType.Image);
@@ -246,8 +292,8 @@ namespace PictureManager.Domain.Models {
         mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Equals(mi.Rating))).ToList();
 
       // MediaItemSizes
-      if (filterSize != null)
-        mediaItems = mediaItems.Where(mi => mi.IsNew || filterSize(mi.Width * mi.Height)).ToList();
+      if (!FilterSize.AllSizes)
+        mediaItems = mediaItems.Where(mi => mi.IsNew || FilterSize.Fits(mi.Width * mi.Height)).ToList();
 
       // People
       var andPeople = _filterAnd.OfType<PersonM>().ToArray();
