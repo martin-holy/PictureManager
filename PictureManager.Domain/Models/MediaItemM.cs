@@ -88,13 +88,17 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetThumbSize(bool reload = false) {
-      // TODO pass core as parameter
-      var core = Core.Instance;
+      
       if (ThumbSize != 0 && !reload) return;
       if (Width == 0 || Height == 0) return;
 
+      // TODO pass core as parameter
+      var core = Core.Instance;
+      // TODO pass scale as parameter
+      var thumbScale = core.ThumbnailsGridsM.Current?.ThumbScale ?? 1.0;
+
       // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int)(core.ThumbnailSize / core.WindowsDisplayScale * 100 * core.ThumbScale);
+      var desiredSize = (int)(core.ThumbnailSize / core.WindowsDisplayScale * 100 * thumbScale);
       var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
       
       // TODO move rotation check to GetThumbSize or create func for getting w & h rotated
@@ -108,7 +112,7 @@ namespace PictureManager.Domain.Models {
       IsPanoramic = w > desiredSize;
       ThumbWidth = w;
       ThumbHeight = h;
-      ThumbSize = (int)((w > h ? w : h) * core.WindowsDisplayScale / 100 / core.ThumbScale);
+      ThumbSize = (int)((w > h ? w : h) * core.WindowsDisplayScale / 100 / thumbScale);
     }
 
     public void ReloadThumbnail() => OnPropertyChanged(nameof(FilePathCache));

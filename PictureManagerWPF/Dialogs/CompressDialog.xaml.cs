@@ -45,7 +45,7 @@ namespace PictureManager.Dialogs {
     }
 
     private async Task Compress() {
-      var items = App.Core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x =>
+      var items = App.Core.ThumbnailsGridsM.Current.FilteredItems.Where(x =>
         x.MediaType == MediaType.Image && (OptSelected.IsChecked != true || x.IsSelected)).ToList();
 
       PbCompressProgress.Maximum = items.Count;

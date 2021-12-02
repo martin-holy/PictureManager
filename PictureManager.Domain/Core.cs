@@ -29,7 +29,7 @@ namespace PictureManager.Domain {
     public SimpleDB.SimpleDB Sdb { get; private set; }
     public Segments Segments { get; }
     public ViewerM CurrentViewer { get; set; }
-    public double ThumbScale { get; set; } = 1.0;
+    public ThumbnailsGridsM ThumbnailsGridsM { get; }
 
     private TaskScheduler UiTaskScheduler { get; }
 
@@ -54,6 +54,7 @@ namespace PictureManager.Domain {
       VideoClipsM = new(this);
       VideoClipsGroupsM = new(this);
       Segments = new(this);
+      ThumbnailsGridsM = new(this);
     }
 
     public Task InitAsync(IProgress<string> progress) {

@@ -19,6 +19,12 @@
 - ThumbsGrid:
   - drag scroll bar doesn't work after selecting any image. it works only after load
 - CatTreeView search => show tool tip on full row
+- one new media item raised two changes in DB
+- after media items drop to folder => status panel shows wrong position / count number
+  - same with deleting in full screen
+  - when scrolled back and than delete => position is 0/xxx
+- 15% CPU usage on media item delete from full screen
+- when thumbnail is selected in grid => click on folder in tree view just select item, but not trigger command
 
 
 #Update

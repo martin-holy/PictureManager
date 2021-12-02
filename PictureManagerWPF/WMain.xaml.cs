@@ -1,38 +1,21 @@
 ﻿using PictureManager.Commands;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
-using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace PictureManager {
   public partial class WMain {
-    public MediaElement VideoThumbnailPreview { get; }
-
     public WMain() {
       InitializeComponent();
-      
-      VideoThumbnailPreview = new() {
-        LoadedBehavior = MediaState.Manual,
-        IsMuted = true,
-        Stretch = Stretch.Fill
-      };
 
-      VideoThumbnailPreview.MediaEnded += (o, args) => {
-        // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
-        ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
-      };
-
-      MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
+      MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
       RightSlidePanel.CanOpen = () => ToolsTabs.Tabs.Items.Cast<TabItem>().Any(x => x.Visibility == Visibility.Visible);
       ToolsTabs.VideoClips.VideoPlayer = MediaViewer.FullVideo;
-      MainTabs.OnAddTab += () => App.Ui.MediaItemsBaseVM.AddThumbsTab();
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
@@ -44,16 +27,14 @@ namespace PictureManager {
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
       CommandsController.AddCommandBindings(CommandBindings);
-      CommandsController.AddInputBindings();
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Name ?? "Viewer";
-      App.Ui.MediaItemsBaseVM.RegisterEvents();
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
       if (App.Core.MediaItemsM.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
-        MetadataCommands.Save();
+        App.Ui.MediaItemsBaseVM.SaveEdit();
       }
 
       if (App.Db.Changes > 0 &&
@@ -66,9 +47,9 @@ namespace PictureManager {
 
     private async void WMain_OnSizeChanged(object sender, SizeChangedEventArgs e) {
       if (App.Ui.AppInfo.AppMode == AppMode.Viewer) return;
-      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
+      await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
     }
 
-    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) => await App.Ui.MediaItemsBaseVM.ReapplyFilter();
+    private async void OnMediaTypesChanged(object sender, RoutedEventArgs e) => await App.Ui.ThumbnailsGridsVM.ReapplyFilter();
   }
 }

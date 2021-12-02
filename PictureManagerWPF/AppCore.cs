@@ -27,6 +27,7 @@ namespace PictureManager {
     public ViewersBaseVM ViewersBaseVM { get; }
     public SegmentsBaseVM SegmentsBaseVM { get; }
     public MediaItemsBaseVM MediaItemsBaseVM { get; }
+    public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
 
     #region TreeView Roots and Categories
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
@@ -68,12 +69,13 @@ namespace PictureManager {
       ViewersBaseVM = new(this, App.Core.ViewersM);
       SegmentsBaseVM = new(App.Core);
       MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
+      ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
       FoldersTreeVM = new(App.Core, this, App.Core.FoldersM);
       RatingsTreeVM = new();
-      MediaItemSizesTreeVM = new(this);
+      MediaItemSizesTreeVM = new(ThumbnailsGridsVM);
       PeopleTreeVM = new(App.Core, this, PeopleBaseVM);
       FolderKeywordsTreeVM = new(App.Core, App.Core.FolderKeywordsM);
       KeywordsTreeVM = new(App.Core, this, KeywordsBaseVM);
@@ -161,7 +163,7 @@ namespace PictureManager {
         case FolderTreeVM:
         case FolderKeywordTreeVM:
           var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
-          await MediaItemsBaseVM.LoadByFolder(item, and, hide, recursive);
+          await ThumbnailsGridsVM.LoadByFolder(item, and, hide, recursive);
           break;
 
         case ViewerTreeVM v:
@@ -195,9 +197,9 @@ namespace PictureManager {
         item.PicCount = 0;
       MarkedTags.Clear();
 
-      if (App.Core.MediaItemsM.ThumbsGrid == null) return;
+      if (App.Core.ThumbnailsGridsM.Current == null) return;
 
-      var mediaItems = App.Core.MediaItemsM.ThumbsGrid.GetSelectedOrAll();
+      var mediaItems = App.Core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
 
         // People

@@ -104,9 +104,9 @@ namespace PictureManager.ViewModels.Tree {
           break;
         }
         case string[] dragged: { // MediaItems
-          if (_core.MediaItemsM.ThumbsGrid == null) break;
+          if (_core.ThumbnailsGridsM.Current == null) break;
 
-          var selected = _core.MediaItemsM.ThumbsGrid.FilteredItems
+          var selected = _core.ThumbnailsGridsM.Current.FilteredItems
             .Where(x => x.IsSelected).Select(p => p.FilePath).OrderBy(p => p).ToArray();
 
           if (selected.SequenceEqual(dragged.OrderBy(x => x)) && dest is FolderTreeVM folder && folder.Model.IsAccessible) return true;
@@ -136,7 +136,7 @@ namespace PictureManager.ViewModels.Tree {
 
         case string[]: // MediaItems
           _coreVM.MediaItemsBaseVM.CopyMove(foMode,
-            _core.MediaItemsM.ThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList(),
+            _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
             destFolder.Model);
           _core.MediaItemsM.DataAdapter.IsModified = true;
 

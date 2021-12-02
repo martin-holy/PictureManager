@@ -8,11 +8,10 @@
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
   
   <Grid Background="Transparent">
-
     <!-- Full Media Image -->
     <Grid Visibility="{Binding Current.Model.MediaType,
       Converter={StaticResource AllToVisibilityConverter},
-      ConverterParameter={x:Static pmd:MediaType.Image}}">
+      ConverterParameter={x:Static pmd:MediaType.Image}}" Focusable="True">
 
       <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Ui}" />
 

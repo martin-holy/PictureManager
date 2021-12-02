@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using PictureManager.ViewModels;
 
 namespace PictureManager.CustomControls {
   public class ImageComparer : Control {
@@ -61,8 +60,8 @@ namespace PictureManager.CustomControls {
     }
 
     public async Task Compare() {
-      var thumbsGrid = App.Core.MediaItemsM.ThumbsGrid;
-      var items = App.Ui.MediaItemsBaseVM.Filter(thumbsGrid.LoadedItems);
+      var thumbsGrid = App.Core.ThumbnailsGridsM.Current;
+      var items = thumbsGrid.Filter(thumbsGrid.LoadedItems);
       List<object> similar = null;
 
       switch (SelectedMode) {
@@ -86,8 +85,8 @@ namespace PictureManager.CustomControls {
         foreach (var mi in similar.Cast<MediaItemM>())
           thumbsGrid.FilteredItems.Add(mi);
 
-      thumbsGrid.Current = null;
-      await App.Ui.MediaItemsBaseVM.ThumbsGridReloadItems();
+      thumbsGrid.CurrentMediaItem = null;
+      await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
       App.Ui.MarkUsedKeywordsAndPeople();
     }
 

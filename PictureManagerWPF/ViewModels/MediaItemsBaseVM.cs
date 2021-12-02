@@ -4,19 +4,14 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
-using MH.UI.WPF.Interfaces;
-using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.CustomControls;
+using PictureManager.Commands;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Interfaces;
@@ -30,15 +25,20 @@ namespace PictureManager.ViewModels {
   public class MediaItemsBaseVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
-    private readonly WorkTask _workTask = new();
-    private VirtualizingWrapPanel _currentThumbsGridPanel;
-    private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
     public MediaItemsM Model { get; }
     public Dictionary<int, MediaItemBaseVM> All { get; } = new();
     public MediaItemBaseVM Current => ToViewModel(Model.Current);
 
-    public RelayCommand<object> ClearFiltersCommand { get; }
+    public RelayCommand<object> RotateCommand { get; }
+    public RelayCommand<object> RenameCommand { get; }
+    public RelayCommand<object> DeleteCommand { get; }
+    public RelayCommand<object> EditCommand { get; }
+    public RelayCommand<object> SaveEditCommand { get; }
+    public RelayCommand<object> CancelEditCommand { get; }
+    public RelayCommand<object> CommentCommand { get; }
+    public RelayCommand<object> ReloadMetadataCommand { get; }
+    public RelayCommand<FolderTreeVM> ReloadMetadataInFolderCommand { get; }
 
     public MediaItemsBaseVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
@@ -50,9 +50,46 @@ namespace PictureManager.ViewModels {
           OnPropertyChanged(nameof(Current));
       };
 
-      _core.Segments.SegmentPersonChangedEvent += (_, e) => SetInfoBox(e.Segment.MediaItem);
+      #region Commands
+      RotateCommand = new(
+        Rotate,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(
+          x => x.IsSelected && x.MediaType == MediaType.Image) > 0);
 
-      ClearFiltersCommand = new(() => _ = ClearFilters());
+      RenameCommand = new(
+        Rename,
+        () => Model.Current != null);
+
+      DeleteCommand = new(
+        Delete,
+        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || _coreVM.AppInfo.AppMode == AppMode.Viewer);
+
+      EditCommand = new(
+        () => Model.IsEditModeOn = true,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      SaveEditCommand = new(
+        SaveEdit,
+        () => Model.IsEditModeOn && Model.ModifiedItems.Count > 0);
+
+      CancelEditCommand = new(
+        CancelEdit,
+        () => Model.IsEditModeOn);
+
+      CommentCommand = new(
+        Comment,
+        () => Model.Current != null);
+
+      ReloadMetadataCommand = new(
+        () => ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      ReloadMetadataInFolderCommand = new(
+        ReloadMetadataInFolder,
+        x => x != null);
+      #endregion
+
+      _core.Segments.SegmentPersonChangedEvent += (_, e) => SetInfoBox(e.Segment.MediaItem);
     }
 
     public IEnumerable<MediaItemBaseVM> ToViewModel(IEnumerable<MediaItemM> items, bool create = true) =>
@@ -69,51 +106,59 @@ namespace PictureManager.ViewModels {
       return miBaseVM;
     }
 
-    // TODO rethink
-    public void RegisterEvents() {
-      App.WMain.MainTabs.OnTabItemClose += (o, _) => {
-        if (o is not TabItem { DataContext: ThumbnailsGridM grid } tab) return;
+    private void Rotate() {
+      var rotation = RotationDialog.Show();
+      if (rotation == Rotation.Rotate0) return;
+      SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
-        (tab.Content as VirtualizingWrapPanel)?.ClearRows();
-        grid.ClearItBeforeLoad();
-        Model.ThumbnailsGrids.Remove(grid);
-      };
-
-      App.WMain.MainTabs.Tabs.SelectionChanged += async (o, _) => {
-        var tabItem = ((TabControl)o).SelectedItem as TabItem;
-        var grid = tabItem?.DataContext as ThumbnailsGridM;
-
-        _currentThumbsGridPanel = grid == null ? null : (tabItem.Content as MediaItemsThumbsGrid)?.ThumbsGrid;
-
-        Model.ThumbsGrid = ThumbnailsGridM.ActivateThumbnailsGrid(Model.ThumbsGrid, grid);
-        grid?.UpdateSelected();
-        if (grid?.NeedReload == true)
-          await ThumbsGridReloadItems();
-        App.Ui.MarkUsedKeywordsAndPeople();
-      };
+      if (_coreVM.AppInfo.AppMode != AppMode.Viewer) return;
+      // TODO remove App.WMain
+      App.WMain.MediaViewer.SetMediaItemSource(Current);
     }
 
-    public void SetInfoBox(MediaItemM mi) => ToViewModel(mi)?.SetInfoBox();
+    private async void Rename() {
+      var inputDialog = new InputDialog {
+        Owner = App.WMain,
+        IconName = IconName.Notification,
+        Title = "Rename",
+        Question = "Add a new name.",
+        Answer = Path.GetFileNameWithoutExtension(Model.Current.FileName)
+      };
 
-    public void ScrollToCurrent() {
-      if (Model.ThumbsGrid == null) return;
+      inputDialog.BtnDialogOk.Click += delegate {
+        var newFileName = inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName);
 
-      if (Model.ThumbsGrid.Current == null)
-        ScrollToTop();
-      else {
-        var miBaseVM = ToViewModel(Model.ThumbsGrid.Current);
-        if (miBaseVM != null)
-          ScrollTo(miBaseVM);
+        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1)) {
+          inputDialog.ShowErrorMessage("New file name contains invalid character!");
+          return;
+        }
+
+        if (File.Exists(IOExtensions.PathCombine(Model.Current.Folder.FullPath, newFileName))) {
+          inputDialog.ShowErrorMessage("New file name already exists!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+
+      try {
+        Model.Rename(Model.Current, inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName));
+        _core.ThumbnailsGridsM.Current?.FilteredItemsSetInPlace(Model.Current);
+        await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
+        // TODO
+        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
+        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
+      }
+      catch (Exception ex) {
+        _core.LogError(ex);
       }
     }
 
-    public void ScrollToTop() {
-      _currentThumbsGridPanel?.ScrollToTop();
-      // TODO
-      App.WMain.UpdateLayout();
-    }
-
-    public void ScrollTo(MediaItemBaseVM mi) => _currentThumbsGridPanel?.ScrollTo(mi);
+    public void SetInfoBox(MediaItemM mi) => ToViewModel(mi)?.SetInfoBox();
 
     public void Delete(MediaItemM[] items) {
       if (items.Length == 0) return;
@@ -122,33 +167,39 @@ namespace PictureManager.ViewModels {
       progress.StartDialog();
     }
 
-    // TODO rethink
-    public void AddThumbsTabIfNotActive() {
-      if (App.WMain.MainTabs.IsThisContentSet(typeof(MediaItemsThumbsGrid))) return;
-      AddThumbsTab();
-    }
+    private async void Delete() {
+      // TODO remove App.WMain
+      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
+      var items = _coreVM.AppInfo.AppMode == AppMode.Viewer
+        ? new() { Model.Current }
+        : currentThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
+      var count = items.Count;
 
-    // TODO rethink
-    public void AddThumbsTab() {
-      var content = new MediaItemsThumbsGrid();
-      var contextMenu = (ContextMenu)content.FindResource("ThumbsGridContextMenu");
-      var dataContext = Model.AddThumbnailsGridModel();
+      if (!MessageDialog.Show("Delete Confirmation",
+        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
 
-      content.DataContext = dataContext;
-      contextMenu.DataContext = dataContext;
+      Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
+          ? currentThumbsGrid.LoadedItems
+          : App.WMain.MediaViewer.MediaItems.Select(x => x.Model).ToList(),
+        items);
 
-      var tab = App.WMain.MainTabs.AddTab(IconName.Folder, content);
-      tab.DataContext = dataContext;
-      tab.IsSelected = true;
-      tab.UpdateLayout();
-      if (tab.FindChild<StackPanel>("TabHeader") is { } tabHeader)
-        tabHeader.ContextMenu = contextMenu;
+      Model.Delete(items, AppCore.FileOperationDelete);
+      await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
 
-      _currentThumbsGridPanel = content.ThumbsGrid;
+      if (_coreVM.MainTabsVM.Selected is SegmentMatchingControl smc)
+        _ = smc.SortAndReload();
+
+      if (_coreVM.AppInfo.AppMode == AppMode.Viewer) {
+        _ = App.WMain.MediaViewer.MediaItems.Remove(ToViewModel(items[0]));
+        if (Model.Current != null)
+          App.WMain.MediaViewer.SetMediaItemSource(ToViewModel(Model.Current));
+        else
+          WindowCommands.SwitchToBrowser();
+      }
     }
 
     public void SetMetadata(ICatTreeViewTagItem item) {
-      foreach (var mi in Model.ThumbsGrid.SelectedItems) {
+      foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
         Model.SetModified(mi, true);
 
         switch (item) {
@@ -171,182 +222,6 @@ namespace PictureManager.ViewModels {
 
         SetInfoBox(mi);
       }
-    }
-
-    public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      var items = item switch {
-        RatingTreeVM rating => Model.All.Where(x => x.Rating == rating.Value).ToList(),
-        PersonTreeVM person => _core.PeopleM.GetMediaItems(person.BaseVM.Model),
-        KeywordTreeVM keyword => _core.KeywordsM.GetMediaItems(keyword.BaseVM.Model, recursive),
-        GeoNameTreeVM geoName => _core.GeoNamesM.GetMediaItems(geoName.Model, recursive).OrderBy(x => x.FileName).ToList(),
-        _ => new()
-      };
-
-      var tabTitle = and || hide
-        ? Model.ThumbsGrid.Title
-        : item switch {
-          RatingTreeVM rating => rating.Value.ToString(),
-          PersonTreeVM person => person.BaseVM.Model.Name,
-          KeywordTreeVM keyword => keyword.BaseVM.Model.Name,
-          GeoNameTreeVM geoName => geoName.Model.Name,
-          _ => string.Empty
-        };
-
-      await LoadMediaItems(items, and, hide, tabTitle);
-    }
-
-    public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      if (item is FolderTreeVM folder && !folder.Model.IsAccessible) return;
-
-      item.IsSelected = true;
-
-      if (_coreVM.AppInfo.AppMode == AppMode.Viewer)
-        Commands.WindowCommands.SwitchToBrowser();
-
-      var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<FolderM> { ((FolderTreeVM)item).Model };
-      var folders = FoldersM.GetFolders(roots, recursive).Where(f => !_coreVM.FoldersTreeVM.All[f.Id].IsHidden).ToList();
-
-      if (and || hide) {
-        var items = folders.SelectMany(x => x.MediaItems).ToList();
-        await LoadMediaItems(items, and, hide, Model.ThumbsGrid.Title);
-        return;
-      }
-
-      await LoadAsync(null, folders, folders[0].Name);
-      // TODO move this up, check for changes before update
-      App.Ui.MarkUsedKeywordsAndPeople();
-    }
-
-    private async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide, string tabTitle) {
-      // if CTRL is pressed, add new items to already loaded items
-      if (and)
-        items = Model.ThumbsGrid.LoadedItems.Union(items).ToList();
-
-      // if ALT is pressed, remove new items from already loaded items
-      if (hide)
-        items = Model.ThumbsGrid.LoadedItems.Except(items).ToList();
-
-      await LoadAsync(items, null, tabTitle);
-      // TODO move this up, check for changes before update
-      App.Ui.MarkUsedKeywordsAndPeople();
-    }
-
-    private async Task LoadAsync(List<MediaItemM> mediaItems, List<FolderM> folders, string tabTitle) {
-      await _workTask.Cancel();
-      ScrollToTop();
-      Model.ThumbsGrid.Title = tabTitle;
-
-      // Clear before new load
-      Model.ThumbsGrid.ClearItBeforeLoad();
-      // TODO move this elsewhere
-      App.WMain.ImageComparerTool.Close();
-      // TODO set this to false when finished
-      _coreVM.AppInfo.ProgressBarIsIndeterminate = true;
-
-      await _workTask.Start(Task.Run(async () => {
-        var items = new List<MediaItemM>();
-
-        if (mediaItems != null)
-          // filter out items if directory or file not exists or Viewer can not see items
-          items = await Model.VerifyAccessibilityOfMediaItemsAsync(mediaItems, _workTask.Token);
-
-        if (folders != null)
-          items = await Model.GetMediaItemsFromFoldersAsync(folders, _workTask.Token);
-
-        // set thumb size and add Media Items to LoadedItems
-        foreach (var mi in items) {
-          mi.SetThumbSize();
-          Model.ThumbsGrid.LoadedItems.Add(mi);
-        }
-
-        await Model.ThumbsGrid.ReloadFilteredItems(Filter(Model.ThumbsGrid.LoadedItems));
-        await LoadThumbnailsAsync(Model.ThumbsGrid.FilteredItems.ToArray(), _workTask.Token);
-        SetMediaItemSizesLoadedRange();
-      }));
-    }
-
-    public async Task ThumbsGridReloadItems() {
-      if (!await _workTask.Cancel()) return;
-
-      ScrollToTop();
-      _currentThumbsGridPanel?.ClearRows();
-
-      if (Model.ThumbsGrid == null || Model.ThumbsGrid.FilteredItems.Count == 0) return;
-
-      await _workTask.Start(Task.Run(async () =>
-        await LoadThumbnailsAsync(Model.ThumbsGrid.FilteredItems.ToArray(), _workTask.Token)));
-
-      Model.ThumbsGrid.NeedReload = false;
-      ScrollToCurrent();
-    }
-
-    private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
-      _coreVM.AppInfo.ProgressBarIsIndeterminate = false;
-      _coreVM.AppInfo.ResetProgressBars(100);
-
-      await Task.Run(async () => {
-        // read metadata for new items and add thumbnails to grid
-        var metadata = ReadMetadataAndListThumbsAsync(items, token);
-        // create thumbnails
-        var progress = new Progress<int>(x => App.Ui.AppInfo.ProgressBarValueB = x);
-        var thumbs = Imaging.CreateThumbnailsAsync(items, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress, token);
-        
-        await Task.WhenAll(metadata, thumbs);
-
-        if (token.IsCancellationRequested)
-          await _core.RunOnUiThread(() => Delete(Model.All.Where(x => x.IsNew).ToArray()));
-      }, token);
-
-      // TODO: is this necessary?
-      if (Model.ThumbsGrid?.Current != null) {
-        Model.ThumbsGrid.SetSelected(Model.ThumbsGrid.Current, false);
-        Model.ThumbsGrid.SetSelected(Model.ThumbsGrid.Current, true);
-      }
-
-      _coreVM.AppInfo.ProgressBarValueA = 100;
-      _coreVM.AppInfo.ProgressBarValueB = 100;
-
-      GC.Collect();
-    }
-
-    private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
-      await _core.RunOnUiThread(() => _currentThumbsGridPanel.ClearRows());
-
-      await Task.Run(async () => {
-        var count = items.Count;
-        var workingOn = 0;
-
-        foreach (var mi in items) {
-          if (token.IsCancellationRequested) break;
-
-          workingOn++;
-          var percent = Convert.ToInt32((double)workingOn / count * 100);
-
-          if (mi.IsNew) {
-            mi.IsNew = false;
-
-            var success = await ReadMetadata(mi);
-            if (!success) {
-              // delete corrupted MediaItems
-              await _core.RunOnUiThread(() => {
-                Model.ThumbsGrid.LoadedItems.Remove(mi);
-                Model.ThumbsGrid.FilteredItems.Remove(mi);
-                Model.Delete(mi);
-                _coreVM.AppInfo.ProgressBarValueA = percent;
-              });
-
-              continue;
-            }
-          }
-
-          await AddMediaItemToGrid(mi);
-
-          await _core.RunOnUiThread(() => {
-            SetInfoBox(mi);
-            _coreVM.AppInfo.ProgressBarValueA = percent;
-          });
-        }
-      }, token);
     }
 
     public async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
@@ -472,63 +347,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    private async Task AddMediaItemToGrid(MediaItemM mi) {
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
-      var groupItems = new List<VirtualizingWrapPanelGroupItem>();
-
-      if (Model.ThumbsGrid.GroupByFolders) {
-        var folderName = mi.Folder.Name;
-        var iOfL = folderName.FirstIndexOfLetter();
-        var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName[iOfL..];
-        var toolTip = mi.Folder.FolderKeyword != null
-          ? mi.Folder.FolderKeyword.FullPath
-          : mi.Folder.FullPath;
-        groupItems.Add(new() { Icon = IconName.Folder, Title = title, ToolTip = toolTip });
-      }
-
-      if (Model.ThumbsGrid.GroupByDate) {
-        var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
-        if (!string.IsNullOrEmpty(title))
-          groupItems.Add(new() { Icon = IconName.Calendar, Title = title });
-      }
-
-      await _core.RunOnUiThread(() => {
-        var miBaseVM = ToViewModel(mi);
-        _currentThumbsGridPanel.AddGroupIfNew(groupItems.ToArray());
-        _currentThumbsGridPanel.AddItem(miBaseVM, mi.ThumbWidth + itemOffset);
-      });
-    }
-
-    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
-      Model.ThumbsGrid?.SetDisplayFilter(item, displayFilter);
-      await ReapplyFilter();
-    }
-
-    public async Task ReapplyFilter() {
-      if (Model.ThumbsGrid != null)
-        await Model.ThumbsGrid.ReloadFilteredItems(Filter(Model.ThumbsGrid.LoadedItems));
-      _coreVM.MarkUsedKeywordsAndPeople();
-      await ThumbsGridReloadItems();
-    }
-
-    private async Task ClearFilters() {
-      Model.ThumbsGrid?.ClearFilters();
-      await ReapplyFilter();
-    }
-
-    public IEnumerable<MediaItemM> Filter(List<MediaItemM> mediaItems) =>
-      Model.ThumbsGrid.Filter(mediaItems,
-        _coreVM.MediaItemSizesTreeVM.Size.AllSizes()
-          ? null
-          : _coreVM.MediaItemSizesTreeVM.Size.Fits);
-
-    private void SetMediaItemSizesLoadedRange() {
-      var zeroItems = Model.ThumbsGrid == null || Model.ThumbsGrid.FilteredItems.Count == 0;
-      var min = zeroItems ? 0 : Model.ThumbsGrid.FilteredItems.Min(x => x.Width * x.Height);
-      var max = zeroItems ? 0 : Model.ThumbsGrid.FilteredItems.Max(x => x.Width * x.Height);
-      _coreVM.MediaItemSizesTreeVM.Size.SetLoadedRange(min, max);
-    }
-
     public void SetOrientation(MediaItemM[] mediaItems, Rotation rotation) {
       // TODO ProgressBarDialog(App.WMain
       var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
@@ -573,7 +391,7 @@ namespace PictureManager.ViewModels {
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => _ = ThumbsGridReloadItems());
+        (o, e) => _ = _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems());
 
       progress.StartDialog();
     }
@@ -730,9 +548,111 @@ namespace PictureManager.ViewModels {
       _ = fop.ShowDialog();
 
       if (mode == FileOperationMode.Move) {
-        Model.ThumbsGrid.RemoveSelected();
-        _ = ThumbsGridReloadItems();
+        _core.ThumbnailsGridsM.Current.RemoveSelected();
+        _ = _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
       }
+    }
+
+    public void SaveEdit() {
+      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
+      progress.AddEvents(
+        Model.ModifiedItems.ToArray(),
+        null,
+        // action
+        async mi => {
+          TryWriteMetadata(mi);
+          await _core.RunOnUiThread(() => Model.SetModified(mi, false));
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (o, e) => {
+          if (e.Cancelled)
+            CancelEdit();
+          else
+            Model.IsEditModeOn = false;
+
+          // TODO changing current on MediaItemsM should change current in ThumbnailsGridsM
+          _core.ThumbnailsGridsM.Current.OnPropertyChanged(nameof(_core.ThumbnailsGridsM.Current.ActiveFileSize));
+        });
+
+      progress.StartDialog();
+    }
+
+    private void CancelEdit() {
+      var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
+      progress.AddEvents(
+        Model.ModifiedItems.ToArray(),
+        null,
+        // action
+        async mi => {
+          await ReadMetadata(mi);
+
+          await _core.RunOnUiThread(() => {
+            Model.SetModified(mi, false);
+            SetInfoBox(mi);
+          });
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (o, e) => {
+          _coreVM.MarkUsedKeywordsAndPeople();
+          Model.IsEditModeOn = false;
+        });
+
+      progress.StartDialog();
+    }
+
+    private void Comment() {
+      var inputDialog = new InputDialog {
+        Owner = App.WMain,
+        IconName = IconName.Notification,
+        Title = "Comment",
+        Question = "Add a comment.",
+        Answer = Model.Current.Comment
+      };
+
+      inputDialog.BtnDialogOk.Click += delegate {
+        if (inputDialog.TxtAnswer.Text.Length > 256) {
+          inputDialog.ShowErrorMessage("Comment is too long!");
+          return;
+        }
+
+        inputDialog.DialogResult = true;
+      };
+
+      inputDialog.TxtAnswer.SelectAll();
+
+      if (!(inputDialog.ShowDialog() ?? true)) return;
+      Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
+      SetInfoBox(Model.Current);
+      Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
+      TryWriteMetadata(Model.Current);
+      Model.DataAdapter.IsModified = true;
+    }
+
+    private void ReloadMetadataInFolder(FolderTreeVM folder) {
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      ReloadMetadata(folder.Model.GetMediaItems(recursive), true);
+    }
+
+    private void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
+      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        // action
+        async (mi) => {
+          await ReadMetadata(mi);
+
+          // set info box just for loaded media items
+          if (updateInfoBox)
+            await _core.RunOnUiThread(() => SetInfoBox(mi));
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (_, _) => _coreVM.MarkUsedKeywordsAndPeople());
+
+      progress.Start();
     }
   }
 }

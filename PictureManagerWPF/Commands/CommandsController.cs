@@ -7,12 +7,7 @@ namespace PictureManager.Commands {
   public static class CommandsController {
     public static void AddCommandBindings(CommandBindingCollection cbc) {
       MediaItemsCommands.AddCommandBindings(cbc);
-      MetadataCommands.AddCommandBindings(cbc);
       WindowCommands.AddCommandBindings(cbc);
-    }
-
-    public static void AddInputBindings() {
-      SetTargetToCommand(MediaItemsCommands.SelectAllCommand, App.WMain.MainTabs);
     }
 
     public static void SetTargetToCommand(RoutedCommand command, IInputElement commandTarget) {
