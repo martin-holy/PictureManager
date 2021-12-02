@@ -5,7 +5,7 @@
     <ResourceDictionary Source="../Converters.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <Style TargetType="{x:Type cc:VirtualizingWrapPanel}">
+  <Style x:Key="CustomControls.VirtualizingWrapPanel" TargetType="{x:Type cc:VirtualizingWrapPanel}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type cc:VirtualizingWrapPanel}">
