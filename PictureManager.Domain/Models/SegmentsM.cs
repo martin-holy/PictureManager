@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -9,13 +9,12 @@ using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Segments : ObservableObject, ITable {
+  public sealed class SegmentsM : ObservableObject {
     private readonly Core _core;
     private int _segmentSize = 100;
     private int _compareSegmentSize = 32;
@@ -23,16 +22,16 @@ namespace PictureManager.Domain.Models {
     private int _similarityLimitMin = 80;
     private bool _groupSegments;
     private bool _groupConfirmedSegments;
-    private List<Segment> _selected = new();
+    private List<SegmentM> _selected = new();
 
     public DataAdapter DataAdapter { get; }
-    public List<IRecord> All { get; } = new();
-    public Dictionary<int, Segment> AllDic { get; set; }
-    public List<Segment> Loaded { get; } = new();
-    public List<List<Segment>> LoadedGroupedByPerson { get; } = new();
-    public List<Segment> Selected => _selected;
-    public ObservableCollection<Segment> SegmentsDrawer { get; } = new();
-    public List<(int personId, Segment segment, List<(int personId, Segment segment, double sim)> similar)> ConfirmedSegments { get; } = new();
+    public List<SegmentM> All { get; } = new();
+    public Dictionary<int, SegmentM> AllDic { get; set; }
+    public List<SegmentM> Loaded { get; } = new();
+    public List<List<SegmentM>> LoadedGroupedByPerson { get; } = new();
+    public List<SegmentM> Selected => _selected;
+    public ObservableCollection<SegmentM> SegmentsDrawer { get; } = new();
+    public List<(int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar)> ConfirmedSegments { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
@@ -43,19 +42,21 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<SegmentPersonChangedEventArgs> SegmentPersonChangedEvent = delegate { };
 
-    public Segments(Core core) {
+    public SegmentsM(Core core) {
       _core = core;
       DataAdapter = new SegmentsDataAdapter(core, this);
     }
 
-    public void Select(List<Segment> list, Segment segment, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select<Segment>(_selected, list, (ISelectable)segment, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
+    public void Select(List<SegmentM> list, SegmentM segment, bool isCtrlOn, bool isShiftOn) =>
+      Selecting.Select(_selected, list, segment, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
 
-    public void DeselectAll() => Selecting.DeselectAll<Segment>(_selected, () => OnPropertyChanged(nameof(SelectedCount)));
+    public void DeselectAll() =>
+      Selecting.DeselectAll(_selected, () => OnPropertyChanged(nameof(SelectedCount)));
 
-    public void SetSelected(Segment segment, bool value) => Selecting.SetSelected<Segment>(_selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
+    public void SetSelected(SegmentM segment, bool value) =>
+      Selecting.SetSelected(_selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
 
-    public bool SegmentsDrawerToggle(Segment segment) {
+    public bool SegmentsDrawerToggle(SegmentM segment) {
       if (segment == null) return false;
       SegmentsDrawer.Toggle(segment);
       DataAdapter.AreTablePropsModified = true;
@@ -69,20 +70,21 @@ namespace PictureManager.Domain.Models {
       LoadedGroupedByPerson.Clear();
     }
 
-    public Segment[] GetOneOrSelected(Segment one) => Selected.Contains(one) ? Selected.ToArray() : new Segment[] { one };
+    public SegmentM[] GetOneOrSelected(SegmentM one) =>
+      Selected.Contains(one) ? Selected.ToArray() : new[] { one };
 
-    public Segment[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
+    public SegmentM[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
       if (withPersonOnly) {
-        var people = mediaItems.Where(mi => mi.Segments != null).SelectMany(mi => mi.Segments.Select(s => s.PersonId)).Distinct().ToHashSet();
+        var people = mediaItems.Where(mi => mi.Segments != null)
+          .SelectMany(mi => mi.Segments.Select(s => s.PersonId)).Distinct().ToHashSet();
         people.Remove(0);
-        return All.Cast<Segment>().Where(s => people.Contains(s.PersonId)).OrderBy(s => s.MediaItem.FileName).ToArray();
+        return All.Where(s => people.Contains(s.PersonId)).OrderBy(s => s.MediaItem.FileName).ToArray();
       }
-      else {
-        return mediaItems.Where(x => x.Segments != null).SelectMany(x => x.Segments).ToArray();
-      }
+
+      return mediaItems.Where(x => x.Segments != null).SelectMany(x => x.Segments).ToArray();
     }
 
-    public async IAsyncEnumerable<Segment> LoadSegmentsAsync(Segment[] segments, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
+    public async IAsyncEnumerable<SegmentM> LoadSegmentsAsync(SegmentM[] segments, IProgress<int> progress, [EnumeratorCancellation] CancellationToken token = default) {
       ResetBeforeNewLoad();
       var done = 0;
 
@@ -98,8 +100,8 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public Segment AddNewSegment(int x, int y, int radius, MediaItemM mediaItem) {
-      var newSegment = new Segment(DataAdapter.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
+    public SegmentM AddNewSegment(int x, int y, int radius, MediaItemM mediaItem) {
+      var newSegment = new SegmentM(DataAdapter.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
       _ = newSegment.SetPictureAsync(SegmentSize);
       mediaItem.Segments ??= new();
       mediaItem.Segments.Add(newSegment);
@@ -109,8 +111,8 @@ namespace PictureManager.Domain.Models {
       return newSegment;
     }
 
-    public Segment GetCopy(Segment s) =>
-      new Segment(DataAdapter.GetNextId(), s.PersonId, s.X, s.Y, s.Radius) {
+    public SegmentM GetCopy(SegmentM s) =>
+      new(DataAdapter.GetNextId(), s.PersonId, s.X, s.Y, s.Radius) {
         MediaItem = s.MediaItem,
         Person = s.Person,
         Keywords = s.Keywords?.ToList()
@@ -119,7 +121,7 @@ namespace PictureManager.Domain.Models {
     public async Task AddSegmentsForComparison() {
       var people = Loaded.Select(s => s.PersonId).Distinct().ToHashSet();
       people.Remove(0);
-      var newSegments = All.Cast<Segment>().Where(s => people.Contains(s.PersonId)).Except(Loaded);
+      var newSegments = All.Where(s => people.Contains(s.PersonId)).Except(Loaded);
 
       foreach (var segment in newSegments) {
         await segment.SetPictureAsync(SegmentSize);
@@ -128,7 +130,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public Task FindSimilaritiesAsync(IEnumerable<Segment> segments, IProgress<int> progress, CancellationToken token) {
+    public Task FindSimilaritiesAsync(List<SegmentM> segments, IProgress<int> progress, CancellationToken token) {
       return Task.Run(async () => {
         // clear previous loaded similar
         // clear needs to be for Loaded!
@@ -187,12 +189,12 @@ namespace PictureManager.Domain.Models {
     public async Task ReloadConfirmedSegments() {
       var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
       var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
-      var groups = groupsA.Concat(groupsB);
+      var groups = groupsA.Concat(groupsB).ToArray();
       var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
 
-      async Task<Segment> GetRandomSegment(IEnumerable<Segment> segments) {
-        var _segments = segments.First().Person?.Segments ?? segments;
-        var segment = _segments.ToArray()[random.Next(_segments.Count() - 1)];
+      async Task<SegmentM> GetRandomSegment(IEnumerable<SegmentM> segments) {
+        var tmpSegments = (segments.First().Person?.Segments ?? segments).ToArray();
+        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Count() - 1)];
         await segment.SetPictureAsync(SegmentSize);
         segment.MediaItem.SetThumbSize();
         return segment;
@@ -201,14 +203,14 @@ namespace PictureManager.Domain.Models {
       ConfirmedSegments.Clear();
 
       foreach (var gA in groups) {
-        (int personId, Segment segment, List<(int personId, Segment segment, double sim)> similar) confirmedSegment = new() {
+        (int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar) confirmedSegment = new() {
           personId = gA.Key,
           segment = await GetRandomSegment(gA),
           similar = new()
         };
 
         ConfirmedSegments.Add(confirmedSegment);
-        if (!gA.Any(x => x.Similar != null)) continue;
+        if (gA.All(x => x.Similar == null)) continue;
 
         foreach (var gB in groups) {
           if (gA.Key == gB.Key) continue;
@@ -235,14 +237,14 @@ namespace PictureManager.Domain.Models {
           group.Clear();
         LoadedGroupedByPerson.Clear();
 
-        List<Segment> segmentsGroup;
+        List<SegmentM> segmentsGroup;
 
         // add segments with PersonId != 0 with all similar segments with PersonId == 0
         var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
         var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
         var samePerson = groupsA.Concat(groupsB);
         foreach (var segments in samePerson) {
-          var sims = new List<(Segment segment, double sim)>();
+          var sims = new List<(SegmentM segment, double sim)>();
           segmentsGroup = new();
 
           foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
@@ -262,7 +264,7 @@ namespace PictureManager.Domain.Models {
         }
 
         // add segments with PersonId == 0 ordered by similar
-        var unknown = Loaded.Where(x => x.PersonId == 0);
+        var unknown = Loaded.Where(x => x.PersonId == 0).ToArray();
         var withSimilar = unknown.Where(x => x.Similar != null).OrderByDescending(x => x.SimMax);
         var set = new HashSet<int>();
         segmentsGroup = new();
@@ -285,12 +287,12 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    /// Sets new Person to all Segments that are selected or that have the same PersonId (< 0) as some of the selected.
+    /// Sets new Person to all Segments that are selected or that have the same PersonId (less than 0) as some of the selected.
     /// </summary>
     /// <param name="person"></param>
     public void SetSelectedAsPerson(PersonM person) {
       var unknownPeople = Selected.Select(x => x.PersonId).Distinct().Where(x => x < 0).ToDictionary(x => x);
-      var segments = Selected.Where(x => x.PersonId >= 0).Concat(All.Cast<Segment>().Where(x => unknownPeople.ContainsKey(x.PersonId)));
+      var segments = Selected.Where(x => x.PersonId >= 0).Concat(All.Where(x => unknownPeople.ContainsKey(x.PersonId)));
 
       foreach (var segment in segments)
         ChangePerson(segment, person);
@@ -311,7 +313,7 @@ namespace PictureManager.Domain.Models {
       var newId = personsIds[0] != 0 ? personsIds[0] : personsIds.Length > 1 ? personsIds[1] : 0;
 
       if (newId == 0) { // get unused min ID
-        var usedIds = All.Cast<Segment>().Where(x => x.PersonId < 0).
+        var usedIds = All.Where(x => x.PersonId < 0).
           Select(x => x.PersonId).Distinct().OrderByDescending(x => x).ToArray();
         for (var i = -1; i > usedIds.Min() - 2; i--) {
           if (usedIds.Contains(i)) continue;
@@ -320,14 +322,13 @@ namespace PictureManager.Domain.Models {
         }
       }
 
-      Segment[] toUpdate;
+      SegmentM[] toUpdate;
 
       if (personsIds.Length == 1 && personsIds[0] == 0)
         toUpdate = Selected.ToArray();
       else {
         // take just segments with unknown people
-        var allWithSameId = All.Cast<Segment>().
-          Where(x => x.PersonId != 0 && x.PersonId != newId && personsIds.Contains(x.PersonId));
+        var allWithSameId = All.Where(x => x.PersonId != 0 && x.PersonId != newId && personsIds.Contains(x.PersonId));
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
@@ -355,14 +356,14 @@ namespace PictureManager.Domain.Models {
         ToggleKeyword(segment, keyword);
     }
 
-    public void ToggleKeyword(Segment segment, KeywordM keyword) {
+    public void ToggleKeyword(SegmentM segment, KeywordM keyword) {
       segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
       DataAdapter.IsModified = true;
     }
 
     public void RemoveKeywordsFromSegments(IEnumerable<KeywordM> keywords) {
       var set = new HashSet<KeywordM>(keywords);
-      foreach (var segment in All.Cast<Segment>().Where(s => s.Keywords != null)) {
+      foreach (var segment in All.Where(s => s.Keywords != null)) {
         foreach (var keyword in segment.Keywords.Where(set.Contains)) {
           segment.Keywords = ListExtensions.Toggle(segment.Keywords, keyword, true);
           DataAdapter.IsModified = true;
@@ -371,41 +372,41 @@ namespace PictureManager.Domain.Models {
     }
 
     public void RemovePersonFromSegments(PersonM person) {
-      foreach (var segment in All.Cast<Segment>().Where(s => s.Person?.Equals(person) == true)) {
+      foreach (var segment in All.Where(s => s.Person?.Equals(person) == true)) {
         segment.Person = null;
         segment.PersonId = 0;
         DataAdapter.IsModified = true;
       }
     }
 
-    private static void RemovePersonFromSegment(Segment segment) {
+    private void RemovePersonFromSegment(SegmentM segment) {
       if (segment?.Person == null) return;
       if (segment.Person.Segment == segment)
         segment.Person.Segment = null;
       if (segment.Person.Segments?.Remove(segment) == true) {
         if (!segment.Person.Segments.Any())
           segment.Person.Segments = null;
-        Core.Instance.PeopleM.DataAdapter.IsModified = true;
+        _core.PeopleM.DataAdapter.IsModified = true;
       }
       segment.Person = null;
     }
 
     public void ChangePerson(int personId, PersonM person) {
-      foreach (var segment in All.Cast<Segment>().Where(x => x.PersonId == personId))
+      foreach (var segment in All.Where(x => x.PersonId == personId))
         ChangePerson(segment, person);
     }
 
-    private void ChangePerson(Segment segment, PersonM person) {
+    private void ChangePerson(SegmentM segment, PersonM person) {
       RemovePersonFromSegment(segment);
       segment.PersonId = person.Id;
       segment.Person = person;
       person.Segment ??= segment;
       SegmentPersonChangedEvent.Invoke(this, new(segment));
 
-      Core.Instance.Segments.DataAdapter.IsModified = true;
+      DataAdapter.IsModified = true;
     }
 
-    public void Delete(Segment segment) {
+    public void Delete(SegmentM segment) {
       SetSelected(segment, false);
       RemovePersonFromSegment(segment);
 
@@ -417,11 +418,11 @@ namespace PictureManager.Domain.Models {
       segment.Picture = null;
       segment.ComparePicture = null;
 
-      _ = All.Remove(segment);
-      _ = Loaded.Remove(segment);
+      All.Remove(segment);
+      Loaded.Remove(segment);
 
       foreach (var simSegment in Loaded)
-        _ = simSegment.Similar?.Remove(segment);
+        simSegment.Similar?.Remove(segment);
 
       DataAdapter.IsModified = true;
 

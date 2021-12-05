@@ -3,12 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
+             xmlns:views="clr-namespace:PictureManager.Views">
   
-  <Grid Background="{StaticResource ColorBrushBackground}">
+  <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:PersonSegmentsControl}}}"
+        Background="{StaticResource ColorBrushBackground}">
     <Grid.Resources>
       <DataTemplate x:Key="_segmentTemplate">
-        <cc:SegmentControl DataContext="{Binding}" Selected="OnSegmentSelected" />
+        <views:SegmentV Segment="{Binding}"
+                        SelectedEventHandler="OnSegmentSelected" />
       </DataTemplate>
     </Grid.Resources>
     
@@ -18,6 +21,7 @@
     </Grid.RowDefinitions>
 
     <StackPanel Grid.Row="0">
+      <!-- Heather -->
       <Grid Background="#88000000" Margin="0,0,0,5">
         <TextBlock Text="{Binding Person.Model.Name}"
                    FontSize="20"
@@ -38,7 +42,10 @@
       </Grid>
         
       <!-- Keywords -->
-      <Border Style="{StaticResource SBorderGroup}" Margin="4,0" Background="Transparent" BorderThickness="0"
+      <Border Style="{StaticResource SBorderGroup}"
+              Margin="4,0"
+              Background="Transparent"
+              BorderThickness="0"
               Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <mhc:Icon Source="{StaticResource IconTag}"
@@ -54,7 +61,8 @@
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <Border Style="{StaticResource SBorderText}">
-                  <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}" />
+                  <TextBlock Text="{Binding Name}"
+                             Style="{StaticResource STextBlock}" />
                 </Border>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
@@ -63,17 +71,25 @@
       </Border>
         
       <!-- Top Segments -->
-      <TextBlock Text="Top Segments:" Margin="5" />
-      <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
-                                ScrollViewerSpeedFactor="1" MinHeight="106" Margin="2,0,0,0" />
+      <TextBlock Text="Top Segments:"
+                 Margin="5" />
+      <cc:VirtualizingWrapPanel x:Name="TopSegmentsGrid"
+                                ItemDataTemplate="{StaticResource _segmentTemplate}"
+                                ScrollViewerSpeedFactor="1"
+                                MinHeight="106"
+                                Margin="2,0,0,0" />
       
       <!-- All Segments -->
-      <TextBlock Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}" Margin="5" />
+      <TextBlock Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}"
+                 Margin="5" />
     </StackPanel>
     
     <!-- All Segments -->
-    <cc:VirtualizingWrapPanel x:Name="AllSegmentsGrid" ItemDataTemplate="{StaticResource _segmentTemplate}"
-                              ScrollViewerSpeedFactor="1" Grid.Row="1" Margin="2,0,0,0" />
+    <cc:VirtualizingWrapPanel x:Name="AllSegmentsGrid"
+                              ItemDataTemplate="{StaticResource _segmentTemplate}"
+                              ScrollViewerSpeedFactor="1"
+                              Grid.Row="1"
+                              Margin="2,0,0,0" />
   </Grid>
 
 </UserControl>

@@ -6,14 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using MahApps.Metro.Controls;
+using MH.UI.WPF.Converters;
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.CustomControls;
 using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
 using PictureManager.Utils;
+using PictureManager.Views;
 
 namespace PictureManager.UserControls {
   public partial class SegmentMatchingControl : INotifyPropertyChanged, IMainTabsItem {
@@ -35,7 +36,6 @@ namespace PictureManager.UserControls {
 
     public SegmentMatchingControl() {
       InitializeComponent();
-      DataContext = this;
       Title = "Segment Matching";
       IconName = "IconEquals";
 
@@ -52,8 +52,8 @@ namespace PictureManager.UserControls {
 
     private void AttachEvents() {
       BtnUnknown.Click += (o, e) => {
-        App.Core.Segments.SetSelectedAsUnknown();
-        App.Core.Segments.DeselectAll();
+        App.Core.SegmentsM.SetSelectedAsUnknown();
+        App.Core.SegmentsM.DeselectAll();
         AppCore.OnSetPerson?.Invoke(null, EventArgs.Empty);
       };
 
@@ -83,7 +83,7 @@ namespace PictureManager.UserControls {
       if (AppCore.OnSetPerson?.IsRegistered(this) != true)
         AppCore.OnSetPerson += (o, e) => _ = SortAndReload();
 
-      DragDropFactory.SetDrag(this, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as Segment);
+      DragDropFactory.SetDrag(this, (e) => (e.OriginalSource as FrameworkElement)?.DataContext as SegmentV);
     }
 
     public async Task LoadSegmentsAsync(bool withPersonOnly) {
@@ -93,27 +93,27 @@ namespace PictureManager.UserControls {
       SegmentsGrid.ClearRows();
       SegmentsGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = Domain.IconName.People, Title = "?" } });
       ConfirmedSegmentsGrid.ClearRows();
-      App.Core.Segments.GroupSegments = false;
-      var segments = App.Core.Segments.GetSegments(_mediaItems, withPersonOnly);
+      App.Core.SegmentsM.GroupSegments = false;
+      var segments = App.Core.SegmentsM.GetSegments(_mediaItems, withPersonOnly);
 
       App.Ui.AppInfo.ResetProgressBars(segments.Length);
 
       await _workTask.Start(Task.Run(async () => {
-        await foreach (var segment in App.Core.Segments.LoadSegmentsAsync(segments, _progress, _workTask.Token))
+        await foreach (var segment in App.Core.SegmentsM.LoadSegmentsAsync(segments, _progress, _workTask.Token))
           await App.Core.RunOnUiThread(() => SegmentsGrid.AddItem(segment, _segmentGridWidth));
       }));
 
       _loading = false;
-      _ = SortAndReload(App.Core.Segments.GroupSegments, true);
+      _ = SortAndReload(App.Core.SegmentsM.GroupSegments, true);
     }
 
     public void SetMediaItems(List<MediaItemM> mediaItems) => _mediaItems = mediaItems;
 
     public async Task CompareAsync() {
       await _workTask.Cancel();
-      await App.Core.Segments.AddSegmentsForComparison();
-      App.Ui.AppInfo.ResetProgressBars(App.Core.Segments.Loaded.Count);
-      await _workTask.Start(App.Core.Segments.FindSimilaritiesAsync(App.Core.Segments.Loaded, _progress, _workTask.Token));
+      await App.Core.SegmentsM.AddSegmentsForComparison();
+      App.Ui.AppInfo.ResetProgressBars(App.Core.SegmentsM.Loaded.Count);
+      await _workTask.Start(App.Core.SegmentsM.FindSimilaritiesAsync(App.Core.SegmentsM.Loaded, _progress, _workTask.Token));
     }
 
     public async Task SortAndReload() => await SortAndReload(ChbAutoSort.IsChecked == true, ChbAutoSort.IsChecked == true);
@@ -124,8 +124,8 @@ namespace PictureManager.UserControls {
     }
 
     private static async Task Sort(bool segments, bool confirmedSegments) {
-      if (segments) await App.Core.Segments.ReloadLoadedGroupedByPersonAsync();
-      if (confirmedSegments) await App.Core.Segments.ReloadConfirmedSegments();
+      if (segments) await App.Core.SegmentsM.ReloadLoadedGroupedByPersonAsync();
+      if (confirmedSegments) await App.Core.SegmentsM.ReloadConfirmedSegments();
     }
 
     private async Task Reload(bool segments, bool confirmedSegments) {
@@ -140,11 +140,11 @@ namespace PictureManager.UserControls {
       SegmentsGrid.ClearRows();
       SegmentsGrid.UpdateMaxRowWidth();
 
-      if (App.Core.Segments.GroupSegments) {
-        if (App.Core.Segments.LoadedGroupedByPerson.Count == 0)
-          await App.Core.Segments.ReloadLoadedGroupedByPersonAsync();
+      if (App.Core.SegmentsM.GroupSegments) {
+        if (App.Core.SegmentsM.LoadedGroupedByPerson.Count == 0)
+          await App.Core.SegmentsM.ReloadLoadedGroupedByPersonAsync();
 
-        foreach (var group in App.Core.Segments.LoadedGroupedByPerson) {
+        foreach (var group in App.Core.SegmentsM.LoadedGroupedByPerson) {
           var groupTitle = group[0].Person != null ? group[0].Person.Name : group[0].PersonId.ToString();
           SegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
 
@@ -154,7 +154,7 @@ namespace PictureManager.UserControls {
       }
       else {
         SegmentsGrid.AddGroup(Domain.IconName.People, "?");
-        foreach (var segment in App.Core.Segments.Loaded)
+        foreach (var segment in App.Core.SegmentsM.Loaded)
           SegmentsGrid.AddItem(segment, _segmentGridWidth);
       }
 
@@ -168,8 +168,8 @@ namespace PictureManager.UserControls {
       ConfirmedSegmentsGrid.ClearRows();
       ConfirmedSegmentsGrid.UpdateMaxRowWidth();
 
-      if (App.Core.Segments.GroupConfirmedSegments) {
-        foreach (var (personId, segment, similar) in App.Core.Segments.ConfirmedSegments) {
+      if (App.Core.SegmentsM.GroupConfirmedSegments) {
+        foreach (var (personId, segment, similar) in App.Core.SegmentsM.ConfirmedSegments) {
           var groupTitle = segment.Person != null ? segment.Person.Name : personId.ToString();
           ConfirmedSegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
           ConfirmedSegmentsGrid.AddItem(segment, _segmentGridWidth);
@@ -179,7 +179,7 @@ namespace PictureManager.UserControls {
         }
       }
       else {
-        foreach (var group in App.Core.Segments.ConfirmedSegments
+        foreach (var group in App.Core.SegmentsM.ConfirmedSegments
           .GroupBy(x => {
             if (x.segment.Person == null) return "Unknown";
             if (x.segment.Person.Keywords == null) return string.Empty;
@@ -202,13 +202,13 @@ namespace PictureManager.UserControls {
       ConfirmedSegmentsGrid.ScrollTo(itemToScrollTo);
     }
 
-    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
-      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-      var segment = (Segment)((FrameworkElement)sender).DataContext;
-      var list = ((FrameworkElement)sender).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow row && row.Group != null
-        ? row.Group.Items.Cast<Segment>().ToList()
-        : new List<Segment>() { segment };
-      App.Core.Segments.Select(list, segment, isCtrlOn, isShiftOn);
+    private void OnSegmentSelected(object o, ClickEventArgs e) {
+      if (e.DataContext is SegmentV segmentV) {
+        var list = ((FrameworkElement)e.Source).TryFindParent<StackPanel>()?.DataContext is VirtualizingWrapPanelRow { Group: { } } row
+          ? row.Group.Items.Cast<SegmentM>().ToList()
+          : new() { segmentV.Segment };
+        App.Core.SegmentsM.Select(list, segmentV.Segment, e.IsCtrlOn, e.IsShiftOn);
+      }
     }
 
     private async void ControlSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -221,8 +221,8 @@ namespace PictureManager.UserControls {
     private static async Task OpenSegmentsDrawer() {
       App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabSegments, true);
       App.WMain.RightSlidePanel.IsOpen = true;
-      foreach (var segment in App.Core.Segments.SegmentsDrawer) {
-        await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+      foreach (var segment in App.Core.SegmentsM.SegmentsDrawer) {
+        await segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
         segment.MediaItem.SetThumbSize();
         App.Ui.MediaItemsBaseVM.SetInfoBox(segment.MediaItem);
       }

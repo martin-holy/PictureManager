@@ -82,7 +82,7 @@ namespace PictureManager.Domain.Models {
       if (mi.Segments != null) {
         copy.Segments = new();
         foreach (var segment in mi.Segments) {
-          var sCopy = _core.Segments.GetCopy(segment);
+          var sCopy = _core.SegmentsM.GetCopy(segment);
           sCopy.MediaItem = copy;
           copy.Segments.Add(sCopy);
         }
@@ -125,7 +125,7 @@ namespace PictureManager.Domain.Models {
           // removing segment here prevents removing segment from Segments.Delete
           // and setting DB table as modified multiple times
           item.Segments.Remove(segment);
-          _core.Segments.Delete(segment);
+          _core.SegmentsM.Delete(segment);
         }
         item.Segments = null;
       }
@@ -240,7 +240,7 @@ namespace PictureManager.Domain.Models {
             File.Delete(mi.FilePathCache);
             File.Move(srcFilePathCache, mi.FilePathCache);
             // Segments
-            foreach (var segment in mi.Segments ?? Enumerable.Empty<Segment>()) {
+            foreach (var segment in mi.Segments ?? Enumerable.Empty<SegmentM>()) {
               File.Delete(segment.CacheFilePath);
               File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.CacheFilePath);
             }

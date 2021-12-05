@@ -2,11 +2,12 @@
 using PictureManager.Utils;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using MH.UI.WPF.Converters;
+using PictureManager.Views;
 
 namespace PictureManager.UserControls {
-  public partial class SegmentsDrawerControl : UserControl {
+  public partial class SegmentsDrawerControl {
     public SegmentsDrawerControl() {
       InitializeComponent();
 
@@ -15,25 +16,24 @@ namespace PictureManager.UserControls {
     }
 
     private object CanDrag(MouseEventArgs e) =>
-      (e.OriginalSource as FrameworkElement)?.DataContext is Segment segment ? App.Core.Segments.GetOneOrSelected(segment) : null;
+      (e.OriginalSource as FrameworkElement)?.DataContext is SegmentV segmentV ? App.Core.SegmentsM.GetOneOrSelected(segmentV.Segment) : null;
 
     private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
-      if (source != SegmentsGrid && !App.Core.Segments.SegmentsDrawer.Contains(data))
+      if (!SegmentsGrid.Equals(source) && !App.Core.SegmentsM.SegmentsDrawer.Contains(data))
         return DragDropEffects.Copy;
-      if (source == SegmentsGrid && (data as Segment[])?.Contains((e.OriginalSource as FrameworkElement)?.DataContext) == false)
+      if (SegmentsGrid.Equals(source) && (data as SegmentM[])?.Contains(((e.OriginalSource as FrameworkElement)?.DataContext as SegmentV)?.Segment) == false)
         return DragDropEffects.Move;
       return DragDropEffects.None;
     }
 
     private void DoDrop(DragEventArgs e, object source, object data) {
-      foreach (var segment in data as Segment[] ?? new Segment[] { data as Segment })
-        App.Core.Segments.SegmentsDrawerToggle(segment);
+      foreach (var segment in data as SegmentM[] ?? new[] { (data as SegmentV)?.Segment })
+        App.Core.SegmentsM.SegmentsDrawerToggle(segment);
     }
 
-    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
-      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-      var segment = (Segment)((FrameworkElement)sender).DataContext;
-      App.Core.Segments.Select(App.Core.Segments.SegmentsDrawer.ToList(), segment, isCtrlOn, isShiftOn);
+    private void OnSegmentSelected(object o, ClickEventArgs e) {
+      if (e.DataContext is SegmentV segmentV)
+        App.Core.SegmentsM.Select(App.Core.SegmentsM.SegmentsDrawer.ToList(), segmentV.Segment, e.IsCtrlOn, e.IsShiftOn);
     }
   }
 }

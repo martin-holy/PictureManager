@@ -77,7 +77,7 @@ namespace PictureManager {
 
     private async static void TestFaceCompare() {
       var facesA = (App.Core.PeopleM.All.Single(x => x.Id == 479)).Segments.ToArray();
-      var facesB = App.Core.Segments.All.Cast<Segment>().Where(x => x.PersonId == -44).ToArray();
+      var facesB = App.Core.SegmentsM.All.Where(x => x.PersonId == -44).ToArray();
       var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
 
       foreach (var face in facesA) {

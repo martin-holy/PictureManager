@@ -5,14 +5,13 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
+using MH.UI.WPF.Converters;
 using MH.Utils;
 using PictureManager.CustomControls;
-using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
-using PictureManager.Utils;
 using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
+using PictureManager.Views;
 
 namespace PictureManager.UserControls {
   public partial class PeopleControl : INotifyPropertyChanged, IMainTabsItem {
@@ -32,10 +31,10 @@ namespace PictureManager.UserControls {
 
     public PeopleControl() {
       InitializeComponent();
-      DataContext = this;
       Title = "People";
       IconName = "IconPeople";
 
+      // TODO do it just for loaded
       foreach (var person in App.Ui.PeopleBaseVM.All.Values)
         person.UpdateDisplayKeywords();
     }
@@ -61,7 +60,7 @@ namespace PictureManager.UserControls {
           foreach (var person in group.OrderBy(p => p.Model.Name)) {
             if (token.IsCancellationRequested) break;
             if (person.Model.Segment != null) {
-              await person.Model.Segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+              await person.Model.Segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
               person.Model.Segment.MediaItem.SetThumbSize();
             }
             await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
@@ -99,11 +98,11 @@ namespace PictureManager.UserControls {
       await Reload();
     }
 
-    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
-      if (((FrameworkElement)sender).DataContext is Segment segment) {
-        var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-        App.Core.Segments.DeselectAll();
-        App.Ui.PeopleBaseVM.Select(null, App.Ui.PeopleBaseVM.All[segment.Person.Id], isCtrlOn, isShiftOn);
+    public void OnSelected(object o, ClickEventArgs e) {
+      if (e.DataContext is PersonThumbnailV personThumbnailV) {
+        // TODO why deselect all?
+        App.Core.SegmentsM.DeselectAll();
+        App.Ui.PeopleBaseVM.Select(null, personThumbnailV.Person, e.IsCtrlOn, e.IsShiftOn);
       }
     }
   }

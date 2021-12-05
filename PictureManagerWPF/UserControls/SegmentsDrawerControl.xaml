@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.SegmentsDrawerControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls"
-             xmlns:pm="clr-namespace:PictureManager">
+             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:views="clr-namespace:PictureManager.Views">
   
     <ItemsControl x:Name="SegmentsGrid" Margin="2,0,0,0"
-                  ItemsSource="{Binding Segments.SegmentsDrawer, Source={x:Static pm:App.Core}}">
+                  ItemsSource="{Binding SegmentsM.SegmentsDrawer, Source={x:Static pm:App.Core}}">
       <ItemsControl.Template>
         <ControlTemplate>
           <ScrollViewer>
@@ -22,7 +22,8 @@
       
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <cc:SegmentControl DataContext="{Binding}" Selected="OnSegmentSelected" />
+          <views:SegmentV Segment="{Binding}"
+                          SelectedEventHandler="OnSegmentSelected" />
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>

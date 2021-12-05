@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MH.UI.WPF.BaseClasses;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
@@ -20,6 +21,7 @@ namespace PictureManager.ViewModels {
     public Dictionary<int, PersonBaseVM> All { get; } = new();
     public PersonBaseVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public List<PersonBaseVM> Selected { get; } = new();
+    public RelayCommand<PersonM> SetCurrentCommand { get; }
 
     public PeopleBaseVM(AppCore coreVM, PeopleM model) {
       _coreVM = coreVM;
@@ -27,6 +29,7 @@ namespace PictureManager.ViewModels {
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.PersonDeletedEvent += (_, e) => All.Remove(e.Person.Id);
+      SetCurrentCommand = new(person => Current = All[person.Id], person => person != null);
 
       // load items
       ModelItems_CollectionChanged(Model.Items, null);

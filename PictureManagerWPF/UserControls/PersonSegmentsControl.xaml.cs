@@ -5,11 +5,13 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MH.UI.WPF.Converters;
 using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using PictureManager.ViewModels;
+using PictureManager.Views;
 
 namespace PictureManager.UserControls {
   public partial class PersonSegmentsControl : INotifyPropertyChanged {
@@ -19,7 +21,7 @@ namespace PictureManager.UserControls {
     private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private PersonBaseVM _person;
 
-    public List<Segment> AllSegments { get; } = new();
+    public List<SegmentM> AllSegments { get; } = new();
     public PersonBaseVM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
 
     public PersonSegmentsControl() {
@@ -41,21 +43,21 @@ namespace PictureManager.UserControls {
         AppCore.OnSetPerson += (o, e) => _ = ReloadPersonSegmentsAsync(Person);
     }
 
-    private object CanDrag(MouseEventArgs e) => (e.OriginalSource as FrameworkElement)?.DataContext as Segment;
+    private object CanDrag(MouseEventArgs e) => (e.OriginalSource as FrameworkElement)?.DataContext as SegmentV;
 
     private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
-      if (source == AllSegmentsGrid && Person.Model.Segments?.Contains(data) != true)
+      if (AllSegmentsGrid.Equals(source) && Person.Model.Segments?.Contains((data as SegmentV)?.Segment) != true)
         return DragDropEffects.Copy;
-      if (source == TopSegmentsGrid && data != (e.OriginalSource as FrameworkElement)?.DataContext)
+      if (TopSegmentsGrid.Equals(source) && data != (e.OriginalSource as FrameworkElement)?.DataContext)
         return DragDropEffects.Move;
 
       return DragDropEffects.None;
     }
 
     private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
-      if (data is not Segment segment) return;
+      if (data is not SegmentV segmentV) return;
 
-      Person.Model.Segments = ListExtensions.Toggle(Person.Model.Segments, segment, true);
+      Person.Model.Segments = ListExtensions.Toggle(Person.Model.Segments, segmentV.Segment, true);
       Person.OnPropertyChanged(nameof(Person.Model.Segments));
 
       if (Person.Model.Segments?.Count > 0)
@@ -89,7 +91,7 @@ namespace PictureManager.UserControls {
       ReloadTopSegments();
 
       await Task.Run(async () => {
-        foreach (var group in App.Core.Segments.All.Cast<Segment>()
+        foreach (var group in App.Core.SegmentsM.All
           .Where(x => x.PersonId == person.Model.Id)
           .GroupBy(x => x.Keywords == null
             ? string.Empty
@@ -102,7 +104,7 @@ namespace PictureManager.UserControls {
 
           // add segments
           foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
-            await segment.SetPictureAsync(App.Core.Segments.SegmentSize);
+            await segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
             segment.MediaItem.SetThumbSize();
             await App.Core.RunOnUiThread(() => {
               App.Ui.MediaItemsBaseVM.SetInfoBox(segment.MediaItem);
@@ -117,10 +119,9 @@ namespace PictureManager.UserControls {
       AllSegmentsGrid.ScrollToTop();
     }
 
-    private void OnSegmentSelected(object sender, MouseButtonEventArgs e) {
-      var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-      var segment = (Segment)((FrameworkElement)sender).DataContext;
-      App.Core.Segments.Select(AllSegments, segment, isCtrlOn, isShiftOn);
+    private void OnSegmentSelected(object o, ClickEventArgs e) {
+      if (e.DataContext is SegmentV segmentV)
+        App.Core.SegmentsM.Select(AllSegments, segmentV.Segment, e.IsCtrlOn, e.IsShiftOn);
     }
   }
 }

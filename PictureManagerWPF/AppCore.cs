@@ -67,7 +67,7 @@ namespace PictureManager {
       PeopleBaseVM = new(this, App.Core.PeopleM);
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
       ViewersBaseVM = new(this, App.Core.ViewersM);
-      SegmentsBaseVM = new(App.Core);
+      SegmentsBaseVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
 
@@ -88,7 +88,7 @@ namespace PictureManager {
     }
 
     private static void ToggleKeyword(KeywordTreeVM keyword) {
-      var sCount = App.Core.Segments.Selected.Count;
+      var sCount = App.Core.SegmentsM.Selected.Count;
       var pCount = App.Ui.PeopleBaseVM.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
 
@@ -108,7 +108,7 @@ namespace PictureManager {
 
       if (result == null) return;
       if (result == true)
-        App.Core.Segments.ToggleKeywordOnSelected(keyword.BaseVM.Model);
+        App.Core.SegmentsM.ToggleKeywordOnSelected(keyword.BaseVM.Model);
       else
         App.Ui.PeopleBaseVM.ToggleKeywordOnSelected(keyword.BaseVM.Model);
 
@@ -116,14 +116,14 @@ namespace PictureManager {
     }
 
     private static void SetPerson(PersonBaseVM person) {
-      var sCount = App.Core.Segments.Selected.Count;
+      var sCount = App.Core.SegmentsM.Selected.Count;
       if (sCount == 0) return;
 
       var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
       var msg = $"Do you want to set ({person.Model.Name}) to selected segment{msgCount}??";
 
       if (!MessageDialog.Show("Set Person", msg, true)) return;
-      App.Core.Segments.SetSelectedAsPerson(person.Model);
+      App.Core.SegmentsM.SetSelectedAsPerson(person.Model);
       OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 

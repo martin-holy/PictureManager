@@ -44,7 +44,7 @@ namespace PictureManager.UserControls {
       if (MediaItem?.Segments == null) return;
       _scale = Zoom / 100;
 
-      App.Core.Segments.DeselectAll();
+      App.Core.SegmentsM.DeselectAll();
 
       foreach (var segment in MediaItem.Segments)
         MediaItemSegmentsRects.Add(new SegmentRect(segment, _scale));
@@ -57,7 +57,7 @@ namespace PictureManager.UserControls {
     }
 
     private void CreateNew(Point mpos) {
-      var segment = App.Core.Segments.AddNewSegment((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
+      var segment = App.Core.SegmentsM.AddNewSegment((int)(mpos.X / _scale), (int)(mpos.Y / _scale), 0, MediaItem);
       _isEditModeMove = false;
       _isCurrentModified = true;
       _current = new SegmentRect(segment, _scale);
@@ -81,13 +81,13 @@ namespace PictureManager.UserControls {
 
     private void EndEdit() {
       if (_current == null) {
-        App.Core.Segments.DeselectAll();
+        App.Core.SegmentsM.DeselectAll();
         return;
       }
 
       if (_isCurrentModified) {
-        App.Core.Segments.DataAdapter.IsModified = true;
-        _ = _current.Segment.SetPictureAsync(App.Core.Segments.SegmentSize, true);
+        App.Core.SegmentsM.DataAdapter.IsModified = true;
+        _ = _current.Segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize, true);
         _isCurrentModified = false;
         IsEditOn = false;
       }
@@ -99,8 +99,8 @@ namespace PictureManager.UserControls {
       if (e.Source is FrameworkElement fe && (fe.Name.Equals("MovePoint") || fe.Name.Equals("ResizeBorder"))) {
         _isEditModeMove = fe.Name.Equals("MovePoint");
         _current = (SegmentRect)fe.DataContext;
-        App.Core.Segments.DeselectAll();
-        App.Core.Segments.SetSelected(_current.Segment, true);
+        App.Core.SegmentsM.DeselectAll();
+        App.Core.SegmentsM.SetSelected(_current.Segment, true);
       }
     }
 
@@ -127,7 +127,7 @@ namespace PictureManager.UserControls {
     private void BtnDelete_Click(object sender, RoutedEventArgs e) {
       if (((FrameworkElement)sender).DataContext is not SegmentRect segmentRect) return;
       if (!MessageDialog.Show("Delete Segment", "Do you really want to delete this segment?", true)) return;
-      App.Core.Segments.Delete(segmentRect.Segment);
+      App.Core.SegmentsM.Delete(segmentRect.Segment);
       _ = MediaItemSegmentsRects.Remove(segmentRect);
     }
   }
@@ -179,9 +179,9 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public Segment Segment { get; set; }
+    public SegmentM Segment { get; set; }
 
-    public SegmentRect(Segment segment, double scale) {
+    public SegmentRect(SegmentM segment, double scale) {
       Segment = segment;
       Scale = scale;
     }

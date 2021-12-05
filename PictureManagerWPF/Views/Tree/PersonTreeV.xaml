@@ -36,7 +36,7 @@
                   <ToolTip BorderThickness="0" Padding="0">
                     <Border BorderThickness="1" BorderBrush="Black">
                       <Image Source="{Binding BaseVM.Model.Segment.Picture}"
-                             Width="{Binding Segments.SegmentSize, Source={x:Static pm:App.Core}}" />
+                             Width="{Binding SegmentsM.SegmentSize, Source={x:Static pm:App.Core}}" />
                     </Border>
                   </ToolTip>
                 </Setter.Value>

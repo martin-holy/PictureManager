@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -12,7 +12,7 @@ using PictureManager.Domain.Utils;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class Segment : ObservableObject, IRecord, IEquatable<Segment>, ISelectable {
+  public sealed class SegmentM : ObservableObject, IRecord, IEquatable<SegmentM>, ISelectable {
     private BitmapSource _picture;
     private bool _isSelected;
 
@@ -90,13 +90,13 @@ namespace PictureManager.Domain.Models {
     public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsNotUnknown => PersonId != 0;
-    public Dictionary<Segment, double> Similar { get; set; }
+    public Dictionary<SegmentM, double> Similar { get; set; }
     public double SimMax { get; set; }
     public string CacheFilePath => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
-    public Segment() { }
+    public SegmentM() { }
 
-    public Segment(int id, int personId, int x, int y, int radius) {
+    public SegmentM(int id, int personId, int x, int y, int radius) {
       Id = id;
       PersonId = personId;
       X = x;
@@ -105,11 +105,11 @@ namespace PictureManager.Domain.Models {
     }
 
     #region IEquatable implementation
-    public bool Equals(Segment other) => Id == other?.Id;
-    public override bool Equals(object obj) => Equals(obj as Segment);
+    public bool Equals(SegmentM other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as SegmentM);
     public override int GetHashCode() => Id;
-    public static bool operator ==(Segment a, Segment b) => a?.Equals(b) ?? b is null;
-    public static bool operator !=(Segment a, Segment b) => !(a == b);
+    public static bool operator ==(SegmentM a, SegmentM b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
     #endregion IEquatable implementation
 
     public async Task SetPictureAsync(int size, bool reload = false) {
