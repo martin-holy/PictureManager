@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+  <sys:String x:Key="SignEquals">eq</sys:String>
+  <sys:String x:Key="SignNotEquals">ne</sys:String>
+  <sys:String x:Key="SignGreaterThan">gt</sys:String>
+  <sys:String x:Key="SignGreaterOrEquals">ge</sys:String>
+  <sys:String x:Key="SignLessThan">lt</sys:String>
+  <sys:String x:Key="SignLessOrEquals">le</sys:String>
+
+</ResourceDictionary>
