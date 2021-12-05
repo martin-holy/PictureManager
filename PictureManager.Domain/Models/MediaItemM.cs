@@ -51,7 +51,7 @@ namespace PictureManager.Domain.Models {
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
-    public ObservableCollection<Segment> Segments { get; set; }
+    public ObservableCollection<SegmentM> Segments { get; set; }
     public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");

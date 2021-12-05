@@ -89,7 +89,7 @@ namespace PictureManager.ViewModels {
         x => x != null);
       #endregion
 
-      _core.Segments.SegmentPersonChangedEvent += (_, e) => SetInfoBox(e.Segment.MediaItem);
+      _core.SegmentsM.SegmentPersonChangedEvent += (_, e) => SetInfoBox(e.Segment.MediaItem);
     }
 
     public IEnumerable<MediaItemBaseVM> ToViewModel(IEnumerable<MediaItemM> items, bool create = true) =>

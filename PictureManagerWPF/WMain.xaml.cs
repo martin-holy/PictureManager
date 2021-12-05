@@ -29,6 +29,9 @@ namespace PictureManager {
       CommandsController.AddCommandBindings(CommandBindings);
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       MenuViewers.Header = App.Core.CurrentViewer?.Name ?? "Viewer";
+
+      // TODO temporary until I fix the bug
+      App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(App.Core.CurrentViewer);
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {

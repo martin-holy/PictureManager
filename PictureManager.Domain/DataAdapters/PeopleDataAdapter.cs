@@ -46,7 +46,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = person.Csv[2].Split(',');
           person.Segments = new(ids.Length);
           foreach (var segmentId in ids)
-            person.Segments.Add(_core.Segments.AllDic[int.Parse(segmentId)]);
+            person.Segments.Add(_core.SegmentsM.AllDic[int.Parse(segmentId)]);
           person.Segment = person.Segments[0];
         }
 

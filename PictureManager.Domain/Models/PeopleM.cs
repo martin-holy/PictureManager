@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
 
     public void ItemDelete(PersonM person) {
       _core.MediaItemsM.RemovePersonFromMediaItems(person);
-      _core.Segments.RemovePersonFromSegments(person);
+      _core.SegmentsM.RemovePersonFromSegments(person);
       person.Parent.Items.Remove(person);
       person.Parent = null;
       person.Segment = null;

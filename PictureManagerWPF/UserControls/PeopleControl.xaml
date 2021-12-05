@@ -1,42 +1,24 @@
 ﻿<UserControl x:Class="PictureManager.UserControls.PeopleControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls">
+             xmlns:cc="clr-namespace:PictureManager.CustomControls"
+             xmlns:vm="clr-namespace:PictureManager.ViewModels"
+             xmlns:views="clr-namespace:PictureManager.Views">
+
   <Grid>
-    <cc:VirtualizingWrapPanel x:Name="PeopleGrid" ScrollViewerSpeedFactor="1"
-      ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" SizeChanged="ControlSizeChanged">
+    <cc:VirtualizingWrapPanel x:Name="PeopleGrid"
+                              ScrollViewerSpeedFactor="1"
+                              ShowGroupItemsCount="True"
+                              GroupItemsCountIcon="ImageMultiple"
+                              SizeChanged="ControlSizeChanged">
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
-        <DataTemplate>
-          <Grid>
-            <cc:SegmentControl DataContext="{Binding Model.Segment}" Selected="OnSegmentSelected">
-              <cc:SegmentControl.Style>
-                <Style TargetType="{x:Type cc:SegmentControl}">
-                  <Setter Property="IsCheckmarkVisible" Value="False" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding Person.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
-                      <Setter Property="IsCheckmarkVisible" Value="True" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </cc:SegmentControl.Style>
-            </cc:SegmentControl>
-          
-            <Border BorderThickness="2">
-              <Border.Style>
-                <Style TargetType="{x:Type Border}">
-                  <Setter Property="BorderBrush" Value="Transparent" />
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                      <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Border.Style>
-             </Border>
-           </Grid>
+        <DataTemplate DataType="{x:Type vm:PersonBaseVM}">
+          <views:PersonThumbnailV Person="{Binding}"
+                                  SelectedEventHandler="OnSelected" />
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
     </cc:VirtualizingWrapPanel>
   </Grid>
+  
 </UserControl>

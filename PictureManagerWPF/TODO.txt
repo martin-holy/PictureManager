@@ -25,6 +25,7 @@
   - when scrolled back and than delete => position is 0/xxx
 - 15% CPU usage on media item delete from full screen
 - when thumbnail is selected in grid => click on folder in tree view just select item, but not trigger command
+- App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(viewer) and other things on app load
 
 
 #Update
@@ -124,6 +125,12 @@
 - IListBoxItem as ancestor of ICatTreeViewItem
 
 
+
+Domain WPF references:
+ - PresentationCore
+ - PresentationFramework
+ - System.Xaml
+ - WindowsBase
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)

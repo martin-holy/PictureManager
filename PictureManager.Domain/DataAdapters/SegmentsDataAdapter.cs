@@ -10,26 +10,26 @@ namespace PictureManager.Domain.DataAdapters {
   /// </summary>
   public class SegmentsDataAdapter : DataAdapter {
     private readonly Core _core;
-    private readonly Segments _model;
+    private readonly SegmentsM _model;
 
-    public SegmentsDataAdapter(Core core, Segments model) : base("Segments", core.Sdb) {
+    public SegmentsDataAdapter(Core core, SegmentsM model) : base("Segments", core.Sdb) {
       _core = core;
       _model = model;
     }
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new Dictionary<int, Segment>();
+      _model.AllDic = new();
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<Segment>(), ToCsv);
+    public override void Save() => SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[3].Split(',');
-      var segment = new Segment(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
+      var segment = new SegmentM(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
         Csv = props
       };
 
@@ -37,7 +37,7 @@ namespace PictureManager.Domain.DataAdapters {
       _model.AllDic.Add(segment.Id, segment);
     }
 
-    public static string ToCsv(Segment segment) =>
+    public static string ToCsv(SegmentM segment) =>
       string.Join("|",
         segment.Id.ToString(),
         segment.MediaItem.Id.ToString(),
@@ -55,9 +55,9 @@ namespace PictureManager.Domain.DataAdapters {
     }
 
     public override void LinkReferences() {
-      var withoutMediaItem = new List<Segment>();
+      var withoutMediaItem = new List<SegmentM>();
 
-      foreach (var segment in _model.All.Cast<Segment>()) {
+      foreach (var segment in _model.All) {
         if (_core.MediaItemsM.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
@@ -94,8 +94,8 @@ namespace PictureManager.Domain.DataAdapters {
       if (TableProps == null) return;
       if (TableProps.TryGetValue(nameof(_model.SegmentSize), out var segmentSize))
         _model.SegmentSize = int.Parse(segmentSize);
-      if (TableProps.TryGetValue(nameof(_model.CompareSegmentSize), out var fompareSegmentSize))
-        _model.CompareSegmentSize = int.Parse(fompareSegmentSize);
+      if (TableProps.TryGetValue(nameof(_model.CompareSegmentSize), out var compareSegmentSize))
+        _model.CompareSegmentSize = int.Parse(compareSegmentSize);
       if (TableProps.TryGetValue(nameof(_model.SimilarityLimit), out var similarityLimit))
         _model.SimilarityLimit = int.Parse(similarityLimit);
       if (TableProps.TryGetValue(nameof(_model.SimilarityLimitMin), out var similarityLimitMin))

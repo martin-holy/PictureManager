@@ -83,7 +83,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(item, ref keywords);
 
       _core.PeopleM.RemoveKeywordsFromPeople(keywords);
-      _core.Segments.RemoveKeywordsFromSegments(keywords);
+      _core.SegmentsM.RemoveKeywordsFromSegments(keywords);
       _core.MediaItemsM.RemoveKeywordsFromMediaItems(keywords);
 
       item.Parent.Items.Remove(item);

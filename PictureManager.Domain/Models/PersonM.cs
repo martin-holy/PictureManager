@@ -27,11 +27,11 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     private string _name;
-    private Segment _segment;
+    private SegmentM _segment;
 
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
-    public Segment Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
-    public List<Segment> Segments { get; set; } // Top Segments only
+    public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
+    public List<SegmentM> Segments { get; set; } // Top Segments only
     public List<KeywordM> Keywords { get; set; }
 
     public PersonM() { }

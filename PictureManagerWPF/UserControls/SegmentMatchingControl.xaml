@@ -4,13 +4,16 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:pm="clr-namespace:PictureManager"
              xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}"
+             xmlns:views="clr-namespace:PictureManager.Views"
+             xmlns:uc="clr-namespace:PictureManager.UserControls"
              SizeChanged="ControlSizeChanged">
 
-  <Grid>
+  <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:SegmentMatchingControl}}}">
     <Grid.Resources>
       <DataTemplate x:Key="SegmentDataTemplate">
-        <cc:SegmentControl DataContext="{Binding}" IsCheckmarkVisible="{Binding IsNotUnknown}" Selected="OnSegmentSelected" />
+        <views:SegmentV Segment="{Binding}"
+                        IsCheckMarkVisible="{Binding Segment.IsNotUnknown}"
+                        SelectedEventHandler="OnSegmentSelected" />
       </DataTemplate>
     </Grid.Resources>
     
@@ -34,40 +37,72 @@
       </Grid.ColumnDefinitions>
       
       <Grid Grid.Column="0">
-        <cc:VirtualizingWrapPanel x:Name="ConfirmedSegmentsGrid" ScrollViewerSpeedFactor="1"
+        <cc:VirtualizingWrapPanel x:Name="ConfirmedSegmentsGrid"
+                                  ScrollViewerSpeedFactor="1"
                                   ItemDataTemplate="{StaticResource SegmentDataTemplate}"
                                   SizeChanged="ControlSizeChanged" />
         
-        <mhc:IconToggleButton x:Name="BtnGroupConfirmed" ToolTip="Groups with similarities" IsThreeState="False"
+        <mhc:IconToggleButton x:Name="BtnGroupConfirmed"
+                              ToolTip="Groups with similarities"
+                              IsThreeState="False"
                               Source="{StaticResource IconPeopleMultiple}"
                               Visibility="{Binding ElementName=ConfirmedSegmentsGrid, Path=Rows.Count, Converter={StaticResource AllToVisibilityConverter}}"
-                              IsChecked="{Binding Segments.GroupConfirmedSegments, Source={x:Static pm:App.Core}}" />
+                              IsChecked="{Binding SegmentsM.GroupConfirmedSegments, Source={x:Static pm:App.Core}}" />
       </Grid>
 
-      <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Width="3" Background="Transparent" />
+      <GridSplitter Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    Width="3"
+                    Background="Transparent" />
 
-      <cc:VirtualizingWrapPanel x:Name="SegmentsGrid" Grid.Column="2" ScrollViewerSpeedFactor="1"
+      <cc:VirtualizingWrapPanel x:Name="SegmentsGrid"
+                                Grid.Column="2"
+                                ScrollViewerSpeedFactor="1"
                                 ItemDataTemplate="{StaticResource SegmentDataTemplate}"
-                                ShowGroupItemsCount="True" GroupItemsCountIcon="ImageMultiple" />
+                                ShowGroupItemsCount="True"
+                                GroupItemsCountIcon="ImageMultiple" />
     </Grid>
 
     <!-- Control Buttons -->
-    <StackPanel Orientation="Horizontal" Height="30" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,10,0">
-      <mhc:IconToggleButton x:Name="BtnGroupSegments" ToolTip="Group by Person or sort by file name" IsThreeState="False"
+    <StackPanel Orientation="Horizontal"
+                Height="30"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Right"
+                Margin="0,0,10,0">
+
+      <mhc:IconToggleButton x:Name="BtnGroupSegments"
+                            ToolTip="Group by Person or sort by file name"
+                            IsThreeState="False"
                             Source="{StaticResource IconPeopleMultiple}"
-                            IsChecked="{Binding Segments.GroupSegments, Source={x:Static pm:App.Core}}" />
+                            IsChecked="{Binding SegmentsM.GroupSegments, Source={x:Static pm:App.Core}}" />
 
-      <mhc:IconButton x:Name="BtnUnknown" ToolTip="Set selected as Unknown" Source="{StaticResource IconQuestion}" />
-      <mhc:IconButton x:Name="BtnOpenSegmentsDrawer" ToolTip="Open Segments drawer" Source="{StaticResource IconDrawer}" />
-      <mhc:IconButton x:Name="BtnCompareAllGroups" ToolTip="Compare all groups of segments" Source="{StaticResource IconCompare}" />
-      <mhc:IconButton x:Name="BtnCompare" ToolTip="Compare" Source="{StaticResource IconCompare}" />
-      <mhc:IconButton x:Name="BtnSort" ToolTip="Sort" Source="{StaticResource IconSort}" />
+      <mhc:IconButton x:Name="BtnUnknown"
+                      ToolTip="Set selected as Unknown"
+                      Source="{StaticResource IconQuestion}" />
+      <mhc:IconButton x:Name="BtnOpenSegmentsDrawer"
+                      ToolTip="Open Segments drawer"
+                      Source="{StaticResource IconDrawer}" />
+      <mhc:IconButton x:Name="BtnCompareAllGroups"
+                      ToolTip="Compare all groups of segments"
+                      Source="{StaticResource IconCompare}" />
+      <mhc:IconButton x:Name="BtnCompare"
+                      ToolTip="Compare"
+                      Source="{StaticResource IconCompare}" />
+      <mhc:IconButton x:Name="BtnSort"
+                      ToolTip="Sort"
+                      Source="{StaticResource IconSort}" />
 
-      <CheckBox x:Name="ChbAutoSort" IsChecked="False" Content="Auto Sort" IsThreeState="False" />
+      <CheckBox x:Name="ChbAutoSort"
+                IsChecked="False"
+                Content="Auto Sort"
+                IsThreeState="False" />
       
-      <Slider Value="{Binding Segments.SimilarityLimit, Source={x:Static pm:App.Core}}" 
-              Minimum="{Binding Segments.SimilarityLimitMin, Source={x:Static pm:App.Core}}" 
-              Maximum="100" Width="100" AutoToolTipPlacement="BottomRight" Margin="8,0" />
+      <Slider Value="{Binding SegmentsM.SimilarityLimit, Source={x:Static pm:App.Core}}" 
+              Minimum="{Binding SegmentsM.SimilarityLimitMin, Source={x:Static pm:App.Core}}" 
+              Maximum="100"
+              Width="100"
+              AutoToolTipPlacement="BottomRight"
+              Margin="8,0" />
     </StackPanel>
 
   </Grid>

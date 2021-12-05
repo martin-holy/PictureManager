@@ -27,7 +27,7 @@ namespace PictureManager.Domain {
     #endregion
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
-    public Segments Segments { get; }
+    public SegmentsM SegmentsM { get; }
     public ViewerM CurrentViewer { get; set; }
     public ThumbnailsGridsM ThumbnailsGridsM { get; }
 
@@ -53,7 +53,7 @@ namespace PictureManager.Domain {
       MediaItemsM = new(this);
       VideoClipsM = new(this);
       VideoClipsGroupsM = new(this);
-      Segments = new(this);
+      SegmentsM = new(this);
       ThumbnailsGridsM = new(this);
     }
 
@@ -69,7 +69,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(VideoClipsGroupsM.DataAdapter); // needs to be before VideoClips
         Sdb.AddDataAdapter(VideoClipsM.DataAdapter);
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
-        Sdb.AddDataAdapter(Segments.DataAdapter);
+        Sdb.AddDataAdapter(SegmentsM.DataAdapter);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
@@ -93,8 +93,8 @@ namespace PictureManager.Domain {
         PeopleM.AllDic = null;
         VideoClipsM.AllDic.Clear();
         VideoClipsM.AllDic = null;
-        Segments.AllDic.Clear();
-        Segments.AllDic = null;
+        SegmentsM.AllDic.Clear();
+        SegmentsM.AllDic = null;
       });
     }
 

@@ -3,9 +3,9 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.Domain.EventsArgs {
   public class SegmentPersonChangedEventArgs : EventArgs {
-    public Segment Segment { get; }
+    public SegmentM Segment { get; }
 
-    public SegmentPersonChangedEventArgs(Segment segment) {
+    public SegmentPersonChangedEventArgs(SegmentM segment) {
       Segment = segment;
     }
   }
