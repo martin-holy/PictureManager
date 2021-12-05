@@ -10,10 +10,10 @@
     <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/Icons.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
   <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
-  <sys:String x:Key="SignLessThan">lt</sys:String>
 
   <DataTemplate x:Key="MediaItemThumbnailV" DataType="{x:Type vm:MediaItemBaseVM}">
     <Border x:Name="PART_Border"
