@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
@@ -10,17 +11,20 @@ using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class PeopleM : ITreeBranch {
+  public sealed class PeopleM : ObservableObject, ITreeBranch {
     #region ITreeBranch implementation
     public ITreeBranch Parent { get; set; }
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
     private readonly Core _core;
+    private PersonM _current;
 
     public DataAdapter DataAdapter { get; }
     public List<PersonM> All { get; } = new();
+    public List<PersonM> Selected { get; } = new();
     public Dictionary<int, PersonM> AllDic { get; set; }
+    public PersonM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public event EventHandler<PersonDeletedEventArgs> PersonDeletedEvent = delegate { };
 
@@ -118,5 +122,21 @@ namespace PictureManager.Domain.Models {
         }
       }
     }
+
+    public void ToggleKeywordOnSelected(KeywordM keyword) {
+      foreach (var person in Selected) {
+        ToggleKeyword(person, keyword);
+        person.UpdateDisplayKeywords();
+      }
+    }
+
+    public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>
+      Selecting.Select(Selected, list, p, isCtrlOn, isShiftOn, null);
+
+    public void DeselectAll() =>
+      Selecting.DeselectAll(Selected, null);
+
+    public void SetSelected(PersonM p, bool value) =>
+      Selecting.SetSelected(Selected, p, value, null);
   }
 }

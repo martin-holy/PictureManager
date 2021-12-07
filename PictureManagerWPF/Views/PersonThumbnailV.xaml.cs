@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Windows;
 using MH.UI.WPF.Converters;
-using PictureManager.ViewModels;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.Views {
   public partial class PersonThumbnailV {
     public static readonly DependencyProperty PersonProperty = 
-      DependencyProperty.Register(nameof(Person), typeof(PersonBaseVM), typeof(PersonThumbnailV));
+      DependencyProperty.Register(nameof(Person), typeof(PersonM), typeof(PersonThumbnailV));
 
-    public PersonBaseVM Person {
-      get => (PersonBaseVM)GetValue(PersonProperty);
+    public PersonM Person {
+      get => (PersonM)GetValue(PersonProperty);
       set => SetValue(PersonProperty, value);
     }
 
@@ -21,7 +21,7 @@ namespace PictureManager.Views {
 
     public void OnSelected(object o, ClickEventArgs e) {
       e.DataContext = this;
-      SelectedEventHandler.Invoke(this, e);
+      SelectedEventHandler(this, e);
     }
   }
 }

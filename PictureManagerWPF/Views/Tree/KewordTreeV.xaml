@@ -42,7 +42,7 @@
       <StackPanel Orientation="Horizontal"
                   Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
         <mhc:Icon Source="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}" />
-        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
         <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>
     </Grid>

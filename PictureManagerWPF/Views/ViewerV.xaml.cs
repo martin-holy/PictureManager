@@ -112,7 +112,7 @@ namespace PictureManager.Views {
 
     private static KeywordM ItemToModel(object item) =>
       item switch {
-        KeywordTreeVM x => x.BaseVM.Model,
+        KeywordTreeVM x => x.Model,
         KeywordM x => x,
         _ => null
       };

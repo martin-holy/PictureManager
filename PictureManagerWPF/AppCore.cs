@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
+using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
 using MH.Utils.Extensions;
 using PictureManager.CustomControls;
@@ -20,10 +21,7 @@ using PictureManager.Views;
 
 namespace PictureManager {
   public sealed class AppCore {
-    public CategoryGroupsBaseVM CategoryGroupsBaseVM { get; }
     public DrivesTreeVM DrivesTreeVM { get; }
-    public PeopleBaseVM PeopleBaseVM { get; }
-    public KeywordsBaseVM KeywordsBaseVM { get; }
     public SegmentsBaseVM SegmentsBaseVM { get; }
     public MediaItemsBaseVM MediaItemsBaseVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
@@ -50,6 +48,10 @@ namespace PictureManager {
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
 
+    #region Commands
+    public RelayCommand<PersonM> SetCurrentPersonCommand { get; }
+    #endregion
+
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
@@ -61,10 +63,7 @@ namespace PictureManager {
 
       VideoClipsTreeVM = new(App.Core, App.Core.VideoClipsM);
 
-      CategoryGroupsBaseVM = new();
       DrivesTreeVM = new(this);
-      PeopleBaseVM = new(this, App.Core.PeopleM);
-      KeywordsBaseVM = new(this, App.Core.KeywordsM);
       SegmentsBaseVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
@@ -74,23 +73,29 @@ namespace PictureManager {
       FoldersTreeVM = new(App.Core, this, App.Core.FoldersM);
       RatingsTreeVM = new();
       MediaItemSizesTreeVM = new(ThumbnailsGridsVM);
-      PeopleTreeVM = new(App.Core, this, PeopleBaseVM);
+      PeopleTreeVM = new(App.Core, this, App.Core.PeopleM);
       FolderKeywordsTreeVM = new(App.Core, App.Core.FolderKeywordsM);
-      KeywordsTreeVM = new(App.Core, this, KeywordsBaseVM);
+      KeywordsTreeVM = new(App.Core, this, App.Core.KeywordsM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
       ViewersTreeVM = new(App.Core.ViewersM);
 
       TreeViewCategories = new() { FavoriteFoldersTreeVM, FoldersTreeVM, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
 
       FoldersTreeVM.Load();
+
+      #region Commands
+      SetCurrentPersonCommand = new(
+        person => App.Core.PeopleM.Current = App.Core.PeopleM.All[person.Id],
+        person => person != null);
+      #endregion
     }
 
     private static void ToggleKeyword(KeywordTreeVM keyword) {
       var sCount = App.Core.SegmentsM.Selected.Count;
-      var pCount = App.Ui.PeopleBaseVM.Selected.Count;
+      var pCount = App.Core.PeopleM.Selected.Count;
       if (sCount == 0 && pCount == 0) return;
 
-      var msgA = $"Do you want to toggle #{keyword.BaseVM.Model.FullName} on selected";
+      var msgA = $"Do you want to toggle #{keyword.Model.FullName} on selected";
       var msgS = sCount > 1 ? "Segments" : "Segment";
       var msgP = pCount > 1 ? "People" : "Person";
       var msgSCount = sCount > 1 ? $" ({sCount})" : string.Empty;
@@ -106,22 +111,22 @@ namespace PictureManager {
 
       if (result == null) return;
       if (result == true)
-        App.Core.SegmentsM.ToggleKeywordOnSelected(keyword.BaseVM.Model);
+        App.Core.SegmentsM.ToggleKeywordOnSelected(keyword.Model);
       else
-        App.Ui.PeopleBaseVM.ToggleKeywordOnSelected(keyword.BaseVM.Model);
+        App.Core.PeopleM.ToggleKeywordOnSelected(keyword.Model);
 
       OnToggleKeyword?.Invoke(null, EventArgs.Empty);
     }
 
-    private static void SetPerson(PersonBaseVM person) {
+    private static void SetPerson(PersonM person) {
       var sCount = App.Core.SegmentsM.Selected.Count;
       if (sCount == 0) return;
 
       var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
-      var msg = $"Do you want to set ({person.Model.Name}) to selected segment{msgCount}??";
+      var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}??";
 
       if (!MessageDialog.Show("Set Person", msg, true)) return;
-      App.Core.SegmentsM.SetSelectedAsPerson(person.Model);
+      App.Core.SegmentsM.SetSelectedAsPerson(person);
       OnSetPerson?.Invoke(null, EventArgs.Empty);
     }
 
@@ -148,7 +153,7 @@ namespace PictureManager {
           break;
 
         case PersonTreeVM p:
-          SetPerson(p.BaseVM);
+          SetPerson(p.Model);
           break;
 
         case FavoriteFolderTreeVM ff:

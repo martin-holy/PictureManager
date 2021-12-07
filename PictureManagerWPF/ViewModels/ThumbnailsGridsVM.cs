@@ -146,8 +146,8 @@ namespace PictureManager.ViewModels {
       // TODO move getting items and tabTitle to model
       var items = item switch {
         RatingTreeVM rating => _core.MediaItemsM.All.Where(x => x.Rating == rating.Value).ToList(),
-        PersonTreeVM person => _core.PeopleM.GetMediaItems(person.BaseVM.Model),
-        KeywordTreeVM keyword => _core.KeywordsM.GetMediaItems(keyword.BaseVM.Model, recursive),
+        PersonTreeVM person => _core.PeopleM.GetMediaItems(person.Model),
+        KeywordTreeVM keyword => _core.KeywordsM.GetMediaItems(keyword.Model, recursive),
         GeoNameTreeVM geoName => _core.GeoNamesM.GetMediaItems(geoName.Model, recursive).OrderBy(x => x.FileName).ToList(),
         _ => new()
       };
@@ -156,8 +156,8 @@ namespace PictureManager.ViewModels {
         ? null
         : item switch {
           RatingTreeVM rating => rating.Value.ToString(),
-          PersonTreeVM person => person.BaseVM.Model.Name,
-          KeywordTreeVM keyword => keyword.BaseVM.Model.Name,
+          PersonTreeVM person => person.Model.Name,
+          KeywordTreeVM keyword => keyword.Model.Name,
           GeoNameTreeVM geoName => geoName.Model.Name,
           _ => string.Empty
         };

@@ -19,11 +19,11 @@ namespace PictureManager.Commands {
 
       switch (cat.Category) {
         case Category.People: 
-          App.Core.PeopleM.DeleteNotUsed(root.Items.OfType<PersonTreeVM>().Select(x => x.BaseVM.Model));
+          App.Core.PeopleM.DeleteNotUsed(root.Items.OfType<PersonTreeVM>().Select(x => x.Model));
           break;
 
         case Category.Keywords:
-          App.Core.KeywordsM.DeleteNotUsed(root.Items.OfType<KeywordTreeVM>().Select(x => x.BaseVM.Model));
+          App.Core.KeywordsM.DeleteNotUsed(root.Items.OfType<KeywordTreeVM>().Select(x => x.Model));
           break;
       }
     }

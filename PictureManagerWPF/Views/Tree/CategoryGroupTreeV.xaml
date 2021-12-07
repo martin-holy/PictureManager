@@ -38,9 +38,9 @@
 
       <StackPanel Orientation="Horizontal"
                   Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-        <mhc:Icon Source="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                  Fill="{Binding BaseVM.Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
-        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
+        <mhc:Icon Source="{Binding Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
+                  Fill="{Binding Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>

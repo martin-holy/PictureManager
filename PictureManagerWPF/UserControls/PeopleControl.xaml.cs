@@ -8,8 +8,8 @@ using System.Windows;
 using MH.UI.WPF.Converters;
 using MH.Utils;
 using PictureManager.CustomControls;
+using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
-using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
 
@@ -35,17 +35,17 @@ namespace PictureManager.UserControls {
       IconName = "IconPeople";
 
       // TODO do it just for loaded
-      foreach (var person in App.Ui.PeopleBaseVM.All.Values)
-        person.Model.UpdateDisplayKeywords();
+      foreach (var person in App.Core.PeopleM.All)
+        person.UpdateDisplayKeywords();
     }
 
     public async Task Reload() {
-      async Task AddPeopleAsync(string groupTitle, IEnumerable<PersonBaseVM> people, CancellationToken token) {
+      async Task AddPeopleAsync(string groupTitle, IEnumerable<PersonM> people, CancellationToken token) {
         // group people by keywords
         foreach (var group in people
-          .GroupBy(p => p.Model.DisplayKeywords == null
+          .GroupBy(p => p.DisplayKeywords == null
             ? string.Empty
-            : string.Join(", ", p.Model.DisplayKeywords.Select(dk => dk.FullName)))
+            : string.Join(", ", p.DisplayKeywords.Select(dk => dk.FullName)))
           .OrderBy(g => g.Key)) {
 
           // add group
@@ -57,11 +57,11 @@ namespace PictureManager.UserControls {
           }
 
           // add people
-          foreach (var person in group.OrderBy(p => p.Model.Name)) {
+          foreach (var person in group.OrderBy(p => p.Name)) {
             if (token.IsCancellationRequested) break;
-            if (person.Model.Segment != null) {
-              await person.Model.Segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
-              person.Model.Segment.MediaItem.SetThumbSize();
+            if (person.Segment != null) {
+              await person.Segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
+              person.Segment.MediaItem.SetThumbSize();
             }
             await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
           }
@@ -78,14 +78,14 @@ namespace PictureManager.UserControls {
       await _workTask.Start(Task.Run(async () => {
         foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<CategoryGroupTreeVM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.BaseVM.Model.Name));
-          await AddPeopleAsync(group.BaseVM.Model.Name, group.Items.Cast<PersonTreeVM>().Select(x => x.BaseVM), _workTask.Token);
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.Model.Name));
+          await AddPeopleAsync(group.Model.Name, group.Items.Cast<PersonTreeVM>().Select(x => x.Model), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Ui.PeopleTreeVM.Items.OfType<PersonTreeVM>().ToArray();
         if (peopleWithoutGroup.Length > 0) {
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, string.Empty));
-          await AddPeopleAsync(string.Empty, peopleWithoutGroup.Select(x => x.BaseVM), _workTask.Token);
+          await AddPeopleAsync(string.Empty, peopleWithoutGroup.Select(x => x.Model), _workTask.Token);
         }
       }));
 
@@ -102,7 +102,7 @@ namespace PictureManager.UserControls {
       if (e.DataContext is PersonThumbnailV personThumbnailV) {
         // TODO why deselect all?
         App.Core.SegmentsM.DeselectAll();
-        App.Ui.PeopleBaseVM.Select(null, personThumbnailV.Person.Model, e.IsCtrlOn, e.IsShiftOn);
+        App.Core.PeopleM.Select(null, personThumbnailV.Person, e.IsCtrlOn, e.IsShiftOn);
       }
     }
   }
