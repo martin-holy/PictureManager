@@ -19,8 +19,10 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     private string _name;
+    private bool _isHidden;
 
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+    public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
     public Category Category { get; }
 
     public CategoryGroupM(int id, string name, Category category) {
