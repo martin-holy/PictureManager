@@ -24,7 +24,6 @@ namespace PictureManager {
     public DrivesTreeVM DrivesTreeVM { get; }
     public PeopleBaseVM PeopleBaseVM { get; }
     public KeywordsBaseVM KeywordsBaseVM { get; }
-    public ViewersBaseVM ViewersBaseVM { get; }
     public SegmentsBaseVM SegmentsBaseVM { get; }
     public MediaItemsBaseVM MediaItemsBaseVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
@@ -66,7 +65,6 @@ namespace PictureManager {
       DrivesTreeVM = new(this);
       PeopleBaseVM = new(this, App.Core.PeopleM);
       KeywordsBaseVM = new(this, App.Core.KeywordsM);
-      ViewersBaseVM = new(this, App.Core.ViewersM);
       SegmentsBaseVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
@@ -80,7 +78,7 @@ namespace PictureManager {
       FolderKeywordsTreeVM = new(App.Core, App.Core.FolderKeywordsM);
       KeywordsTreeVM = new(App.Core, this, KeywordsBaseVM);
       GeoNamesTreeVM = new(App.Core.GeoNamesM);
-      ViewersTreeVM = new(ViewersBaseVM);
+      ViewersTreeVM = new(App.Core.ViewersM);
 
       TreeViewCategories = new() { FavoriteFoldersTreeVM, FoldersTreeVM, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
 
