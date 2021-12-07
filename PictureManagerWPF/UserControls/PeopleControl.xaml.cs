@@ -36,16 +36,16 @@ namespace PictureManager.UserControls {
 
       // TODO do it just for loaded
       foreach (var person in App.Ui.PeopleBaseVM.All.Values)
-        person.UpdateDisplayKeywords();
+        person.Model.UpdateDisplayKeywords();
     }
 
     public async Task Reload() {
       async Task AddPeopleAsync(string groupTitle, IEnumerable<PersonBaseVM> people, CancellationToken token) {
         // group people by keywords
         foreach (var group in people
-          .GroupBy(p => p.DisplayKeywords == null
+          .GroupBy(p => p.Model.DisplayKeywords == null
             ? string.Empty
-            : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Name)))
+            : string.Join(", ", p.Model.DisplayKeywords.Select(dk => dk.FullName)))
           .OrderBy(g => g.Key)) {
 
           // add group
