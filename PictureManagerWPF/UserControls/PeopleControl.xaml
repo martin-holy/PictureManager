@@ -3,7 +3,29 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:vm="clr-namespace:PictureManager.ViewModels"
-             xmlns:views="clr-namespace:PictureManager.Views">
+             xmlns:views="clr-namespace:PictureManager.Views"
+             xmlns:pm="clr-namespace:PictureManager"
+             xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+
+  <!--<UserControl.Resources>
+    <CollectionViewSource x:Key="MySource" Source="{Binding PeopleM.All, Source={x:Static pm:App.Core}}">
+      <CollectionViewSource.GroupDescriptions>
+        <PropertyGroupDescription PropertyName="Parent" />
+      </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+
+    <ControlTemplate x:Key="GroupControlTemplate" TargetType="{x:Type GroupItem}">
+      <Expander Header="{Binding Name.Name}" IsExpanded="False">
+        <ItemsPresenter />
+      </Expander>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="CategoryControlTemplate" TargetType="{x:Type GroupItem}">
+      <Expander Header="People" IsExpanded="False">
+        <ItemsPresenter />
+      </Expander>
+    </ControlTemplate>
+  </UserControl.Resources>-->
 
   <Grid>
     <cc:VirtualizingWrapPanel x:Name="PeopleGrid"
@@ -19,6 +41,42 @@
         </DataTemplate>
       </cc:VirtualizingWrapPanel.ItemDataTemplate>
     </cc:VirtualizingWrapPanel>
+
+    <!--<ItemsControl ItemsSource="{Binding Source={StaticResource MySource}}" Visibility="Collapsed">
+      <ItemsControl.GroupStyle>
+        <GroupStyle>
+          <GroupStyle.ContainerStyle>
+            <Style TargetType="{x:Type GroupItem}">
+              <Style.Triggers>
+                --><!-- CategoryGroupM --><!--
+                <DataTrigger Binding="{Binding Name, Converter={StaticResource DataTypeConverter}}"
+                             Value="{x:Type models:CategoryGroupM}">
+                  <Setter Property="Template" Value="{StaticResource GroupControlTemplate}" />
+                </DataTrigger>
+
+                --><!-- PeopleM --><!--
+                <DataTrigger Binding="{Binding Name, Converter={StaticResource DataTypeConverter}}"
+                             Value="{x:Type models:PeopleM}">
+                  <Setter Property="Template" Value="{StaticResource CategoryControlTemplate}" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </GroupStyle.ContainerStyle>
+        </GroupStyle>
+      </ItemsControl.GroupStyle>
+
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="{x:Type models:PersonM}">
+          <Button Width="50" Height="50" Content="{Binding Name}" />
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Columns="3" Width="200"></UniformGrid>
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+    </ItemsControl>-->
   </Grid>
   
 </UserControl>
