@@ -30,12 +30,12 @@
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">
           <Style.Triggers>
-            <DataTrigger Binding="{Binding BaseVM.Model.Segment, Converter={StaticResource AllToBoolConverter}}" Value="True">
+            <DataTrigger Binding="{Binding Model.Segment, Converter={StaticResource AllToBoolConverter}}" Value="True">
               <Setter Property="ToolTip">
                 <Setter.Value>
                   <ToolTip BorderThickness="0" Padding="0">
                     <Border BorderThickness="1" BorderBrush="Black">
-                      <Image Source="{Binding BaseVM.Model.Segment.Picture}"
+                      <Image Source="{Binding Model.Segment.Picture}"
                              Width="{Binding SegmentsM.SegmentSize, Source={x:Static pm:App.Core}}" />
                     </Border>
                   </ToolTip>
@@ -50,7 +50,7 @@
         <!-- Load Person Segment -->
         <b:EventTrigger EventName="MouseEnter">
           <b:InvokeCommandAction Command="{Binding SegmentsBaseVM.SetSegmentPictureCommand, Source={x:Static pm:App.Ui}}"
-                                 CommandParameter="{Binding BaseVM.Model.Segment}"/>
+                                 CommandParameter="{Binding Model.Segment}"/>
         </b:EventTrigger>
 
         <!-- Attach ContextMenu -->
@@ -62,7 +62,7 @@
       <StackPanel Orientation="Horizontal"
                   Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
         <mhc:Icon Source="{StaticResource IconPeople}" Fill="{StaticResource ColorBrushPeople}" />
-        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding BaseVM.Model.Name}" />
+        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
         <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>
     </Grid>

@@ -6,13 +6,13 @@
   <!--TODO why is not border around SegmentV?-->
   <Grid DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:PersonThumbnailV}}}">
     <!-- Segment Image -->
-    <views:SegmentV Segment="{Binding Person.Model.Segment}" SelectedEventHandler="OnSelected">
+    <views:SegmentV Segment="{Binding Person.Segment}" SelectedEventHandler="OnSelected">
       <!-- TODO find the way how to use InvokeCommandAction on Selected event. SegmentV.SelectedEventHandler doesn't have target -->
       <views:SegmentV.Style>
         <Style TargetType="{x:Type views:SegmentV}">
           <Setter Property="IsCheckMarkVisible" Value="False" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding Person.Model.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
+            <DataTrigger Binding="{Binding Person.Segments, Converter={StaticResource AllToBoolConverter}}" Value="True">
               <Setter Property="IsCheckMarkVisible" Value="True" />
             </DataTrigger>
           </Style.Triggers>
@@ -26,7 +26,7 @@
         <Style TargetType="{x:Type Border}">
           <Setter Property="BorderBrush" Value="Transparent" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding Person.Model.IsSelected}" Value="True">
+            <DataTrigger Binding="{Binding Person.IsSelected}" Value="True">
               <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
             </DataTrigger>
           </Style.Triggers>

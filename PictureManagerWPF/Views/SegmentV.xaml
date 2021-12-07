@@ -189,7 +189,7 @@
           <!-- Open Person Detail Control -->
           <mhc:IconButton Source="{StaticResource IconInformation}"
                           Size="14"
-                          Command="{Binding PeopleBaseVM.SetCurrentCommand, Source={x:Static pm:App.Ui}}"
+                          Command="{Binding SetCurrentPersonCommand, Source={x:Static pm:App.Ui}}"
                           CommandParameter="{Binding Segment.Person}" />
         </StackPanel>
 

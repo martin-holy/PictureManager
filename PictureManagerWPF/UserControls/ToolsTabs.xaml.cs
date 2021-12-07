@@ -10,9 +10,10 @@ namespace PictureManager.UserControls {
     }
 
     private void AttachEvents() {
-      App.Ui.PeopleBaseVM.PropertyChanged += (o, e) => {
-        if (e.PropertyName.Equals(nameof(App.Ui.PeopleBaseVM.Current))) {
-          var current = App.Ui.PeopleBaseVM.Current;
+      // TODO move elsewhere
+      App.Core.PeopleM.PropertyChanged += (o, e) => {
+        if (nameof(App.Core.PeopleM.Current).Equals(e.PropertyName)) {
+          var current = App.Core.PeopleM.Current;
           Activate(TabPerson, current != null);
           _ = PersonControl.ReloadPersonSegmentsAsync(current);
 
@@ -25,8 +26,9 @@ namespace PictureManager.UserControls {
     private void BtnCloseTab_Click(object sender, RoutedEventArgs e) {
       if (Tabs.SelectedItem is TabItem tab) {
         if (tab == TabPerson) {
-          App.Ui.PeopleBaseVM.Current = null;
-          App.Ui.PeopleBaseVM.DeselectAll();
+          // TODO move elsewhere
+          App.Core.PeopleM.Current = null;
+          App.Core.PeopleM.DeselectAll();
         }
         else
           tab.Visibility = Visibility.Collapsed;

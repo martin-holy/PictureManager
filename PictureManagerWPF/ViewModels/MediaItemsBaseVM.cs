@@ -204,11 +204,11 @@ namespace PictureManager.ViewModels {
 
         switch (item) {
           case PersonTreeVM p:
-            mi.People = ListExtensions.Toggle(mi.People, p.BaseVM.Model, true);
+            mi.People = ListExtensions.Toggle(mi.People, p.Model, true);
             break;
 
           case KeywordTreeVM k:
-            mi.Keywords = KeywordsM.Toggle(mi.Keywords, k.BaseVM.Model);
+            mi.Keywords = KeywordsM.Toggle(mi.Keywords, k.Model);
             break;
 
           case RatingTreeVM r:

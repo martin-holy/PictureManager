@@ -11,23 +11,23 @@ namespace PictureManager.ViewModels.Tree {
     private readonly Core _core;
     private readonly AppCore _coreVM;
 
-    public PeopleBaseVM BaseVM { get; }
+    public PeopleM Model { get; }
     public readonly Dictionary<int, PersonTreeVM> All = new();
 
-    public PeopleTreeVM(Core core, AppCore coreVM, PeopleBaseVM baseVM) : base(Category.People, "People") {
+    public PeopleTreeVM(Core core, AppCore coreVM, PeopleM model) : base(Category.People, "People") {
       _core = core;
       _coreVM = coreVM;
-      BaseVM = baseVM;
+      Model = model;
       CanMoveItem = true;
 
-      BaseVM.Items.CollectionChanged += BaseVMItems_CollectionChanged;
-      BaseVM.Model.PersonDeletedEvent += (_, e) => All.Remove(e.Person.Id);
+      Model.Items.CollectionChanged += ModelItems_CollectionChanged;
+      Model.PersonDeletedEvent += (_, e) => All.Remove(e.Person.Id);
 
       // load items
-      BaseVMItems_CollectionChanged(BaseVM.Items, null);
+      ModelItems_CollectionChanged(Model.Items, null);
     }
 
-    private void BaseVMItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+    private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
       // sync Category Groups
       _coreVM.CategoryGroupsTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       // sync Items
@@ -35,25 +35,25 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
-      MH.Utils.Tree.SyncCollection<PersonBaseVM, PersonTreeVM>(src, dest, parent,
-        (baseVM, treeVM) => treeVM.BaseVM.Equals(baseVM),
-        baseVM => MH.Utils.Tree.GetDestItem(baseVM, baseVM.Model.Id, All, () => new(baseVM, parent), null));
+      MH.Utils.Tree.SyncCollection<PersonM, PersonTreeVM>(src, dest, parent,
+        (model, treeVM) => treeVM.Model.Equals(model),
+        model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), null));
     }
 
     protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
-      All[BaseVM.Model.ItemCreate((ITreeBranch)ToModel(root), name).Id];
+      All[Model.ItemCreate((ITreeBranch)ToModel(root), name).Id];
 
     protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
-      BaseVM.Model.ItemRename((PersonM)ToModel(item), name);
+      Model.ItemRename((PersonM)ToModel(item), name);
 
     protected override void ModelItemDelete(ICatTreeViewItem item) =>
-      BaseVM.Model.ItemDelete((PersonM)ToModel(item));
+      Model.ItemDelete((PersonM)ToModel(item));
 
     public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
-      BaseVM.Model.ItemMove((PersonM)ToModel(item), (ITreeLeaf)ToModel(dest), aboveDest);
+      Model.ItemMove((PersonM)ToModel(item), (ITreeLeaf)ToModel(dest), aboveDest);
 
     protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
-      BaseVM.Model.ItemCanRename(name) ? null : $"{name} item already exists!";
+      Model.ItemCanRename(name) ? null : $"{name} item already exists!";
 
     protected override void ModelGroupCreate(ICatTreeViewItem root, string name) =>
       _core.CategoryGroupsM.GroupCreate(name, Category);
@@ -79,9 +79,9 @@ namespace PictureManager.ViewModels.Tree {
 
     private static object ToModel(object item) =>
       item switch {
-        PersonTreeVM x => x.BaseVM.Model,
-        PeopleTreeVM x => x.BaseVM.Model,
-        CategoryGroupTreeVM x => x.BaseVM.Model,
+        PersonTreeVM x => x.Model,
+        PeopleTreeVM x => x.Model,
+        CategoryGroupTreeVM x => x.Model,
         _ => null
       };
   }

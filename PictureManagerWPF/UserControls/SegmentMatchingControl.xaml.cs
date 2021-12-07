@@ -46,8 +46,8 @@ namespace PictureManager.UserControls {
 
       AttachEvents();
 
-      foreach (var person in App.Ui.PeopleBaseVM.All.Values)
-        person.Model.UpdateDisplayKeywords();
+      foreach (var person in App.Core.PeopleM.All)
+        person.UpdateDisplayKeywords();
     }
 
     private void AttachEvents() {

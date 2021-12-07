@@ -35,7 +35,7 @@
                               SizeChanged="ControlSizeChanged">
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>
-        <DataTemplate DataType="{x:Type vm:PersonBaseVM}">
+        <DataTemplate DataType="{x:Type models:PersonM}">
           <views:PersonThumbnailV Person="{Binding}"
                                   SelectedEventHandler="OnSelected" />
         </DataTemplate>

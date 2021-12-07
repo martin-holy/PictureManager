@@ -23,7 +23,7 @@
     <StackPanel Grid.Row="0">
       <!-- Heather -->
       <Grid Background="#88000000" Margin="0,0,0,5">
-        <TextBlock Text="{Binding Person.Model.Name}"
+        <TextBlock Text="{Binding Person.Name}"
                    FontSize="20"
                    Padding="8"
                    HorizontalAlignment="Center"
@@ -46,13 +46,13 @@
               Margin="4,0"
               Background="Transparent"
               BorderThickness="0"
-              Visibility="{Binding Person.Model.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
+              Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <mhc:Icon Source="{StaticResource IconTag}"
                     Fill="{StaticResource ColorBrushTag}"
                     Margin="0,0,4,0" />
             
-          <ItemsControl ItemsSource="{Binding Person.Model.DisplayKeywords}">
+          <ItemsControl ItemsSource="{Binding Person.DisplayKeywords}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <WrapPanel Orientation="Horizontal" />

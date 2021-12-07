@@ -2,7 +2,6 @@
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Interfaces;
 
 namespace PictureManager.ViewModels.Tree {
   public class KeywordTreeVM : CatTreeViewTagItemBase, IFilterItem, IViewModel<KeywordM> {
@@ -12,13 +11,13 @@ namespace PictureManager.ViewModels.Tree {
     #endregion
 
     #region IViewModel<T> implementation
-    public KeywordM ToModel() => BaseVM.Model;
+    public KeywordM ToModel() => Model;
     #endregion
 
-    public KeywordBaseVM BaseVM { get; }
+    public KeywordM Model { get; }
 
-    public KeywordTreeVM(KeywordBaseVM baseVM, ITreeBranch parent) {
-      BaseVM = baseVM;
+    public KeywordTreeVM(KeywordM model, ITreeBranch parent) {
+      Model = model;
       Parent = parent;
     }
   }
