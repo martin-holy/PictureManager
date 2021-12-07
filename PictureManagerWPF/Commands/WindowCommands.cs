@@ -150,7 +150,7 @@ namespace PictureManager.Commands {
       App.Core.FoldersM.AddDrives();
       App.Core.FolderKeywordsM.Load();
       App.Ui.FoldersTreeVM.UpdateDrivesVisibility();
-      App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(viewer);
+      App.Core.CategoryGroupsM.UpdateVisibility(viewer);
     }
 
     private static void OpenLog() {

@@ -31,7 +31,7 @@ namespace PictureManager {
       MenuViewers.Header = App.Core.CurrentViewer?.Name ?? "Viewer";
 
       // TODO temporary until I fix the bug
-      App.Ui.ViewersBaseVM.UpdateCategoryGroupsVisibility(App.Core.CurrentViewer);
+      App.Core.CategoryGroupsM.UpdateVisibility(App.Core.CurrentViewer);
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
