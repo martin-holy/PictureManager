@@ -102,7 +102,7 @@ namespace PictureManager.UserControls {
       if (e.DataContext is PersonThumbnailV personThumbnailV) {
         // TODO why deselect all?
         App.Core.SegmentsM.DeselectAll();
-        App.Ui.PeopleBaseVM.Select(null, personThumbnailV.Person, e.IsCtrlOn, e.IsShiftOn);
+        App.Ui.PeopleBaseVM.Select(null, personThumbnailV.Person.Model, e.IsCtrlOn, e.IsShiftOn);
       }
     }
   }

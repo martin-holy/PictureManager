@@ -20,7 +20,7 @@ namespace PictureManager.ViewModels {
     public PeopleM Model { get; }
     public Dictionary<int, PersonBaseVM> All { get; } = new();
     public PersonBaseVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
-    public List<PersonBaseVM> Selected { get; } = new();
+    public List<PersonM> Selected { get; } = new();
     public RelayCommand<PersonM> SetCurrentCommand { get; }
 
     public PeopleBaseVM(AppCore coreVM, PeopleM model) {
@@ -50,16 +50,16 @@ namespace PictureManager.ViewModels {
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {
       foreach (var person in Selected) {
-        Model.ToggleKeyword(person.Model, keyword);
-        person.Model.UpdateDisplayKeywords();
+        Model.ToggleKeyword(person, keyword);
+        person.UpdateDisplayKeywords();
       }
     }
 
-    public void Select(List<PersonBaseVM> list, PersonBaseVM p, bool isCtrlOn, bool isShiftOn) =>
+    public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>
       Selecting.Select(Selected, list, p, isCtrlOn, isShiftOn, null);
 
     public void DeselectAll() => Selecting.DeselectAll(Selected, null);
 
-    public void SetSelected(PersonBaseVM p, bool value) => Selecting.SetSelected(Selected, p, value, null);
+    public void SetSelected(PersonM p, bool value) => Selecting.SetSelected(Selected, p, value, null);
   }
 }
