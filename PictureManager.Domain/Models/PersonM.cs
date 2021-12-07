@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using SimpleDB;
@@ -28,17 +30,39 @@ namespace PictureManager.Domain.Models {
 
     private string _name;
     private SegmentM _segment;
+    private ObservableCollection<KeywordM> _displayKeywords;
 
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
     public List<SegmentM> Segments { get; set; } // Top Segments only
     public List<KeywordM> Keywords { get; set; }
+    public ObservableCollection<KeywordM> DisplayKeywords { get => _displayKeywords; set { _displayKeywords = value; OnPropertyChanged(); } }
 
     public PersonM() { }
 
     public PersonM(int id, string name) {
       Id = id;
       Name = name;
+    }
+
+    public void UpdateDisplayKeywords() {
+      DisplayKeywords?.Clear();
+
+      if (Keywords == null) {
+        if (DisplayKeywords != null)
+          DisplayKeywords = null;
+
+        return;
+      }
+
+      DisplayKeywords ??= new();
+      var allKeywords = new List<KeywordM>();
+
+      foreach (var keyword in Keywords)
+        MH.Utils.Tree.GetThisAndItemsRecursive(keyword, ref allKeywords);
+
+      foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName))
+        DisplayKeywords.Add(keyword);
     }
   }
 }

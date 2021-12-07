@@ -47,7 +47,7 @@ namespace PictureManager.UserControls {
       AttachEvents();
 
       foreach (var person in App.Ui.PeopleBaseVM.All.Values)
-        person.UpdateDisplayKeywords();
+        person.Model.UpdateDisplayKeywords();
     }
 
     private void AttachEvents() {
@@ -183,7 +183,7 @@ namespace PictureManager.UserControls {
           .GroupBy(x => {
             if (x.segment.Person == null) return "Unknown";
             if (x.segment.Person.Keywords == null) return string.Empty;
-            return string.Join(", ", App.Ui.PeopleBaseVM.All[x.segment.Person.Id].DisplayKeywords.Select(k => k.Name));
+            return string.Join(", ", App.Core.PeopleM.All[x.segment.Person.Id].DisplayKeywords.Select(k => k.Name));
           })
           .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
 

@@ -46,13 +46,13 @@
               Margin="4,0"
               Background="Transparent"
               BorderThickness="0"
-              Visibility="{Binding Person.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
+              Visibility="{Binding Person.Model.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
         <StackPanel Orientation="Horizontal">
           <mhc:Icon Source="{StaticResource IconTag}"
                     Fill="{StaticResource ColorBrushTag}"
                     Margin="0,0,4,0" />
             
-          <ItemsControl ItemsSource="{Binding Person.DisplayKeywords}">
+          <ItemsControl ItemsSource="{Binding Person.Model.DisplayKeywords}">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <WrapPanel Orientation="Horizontal" />

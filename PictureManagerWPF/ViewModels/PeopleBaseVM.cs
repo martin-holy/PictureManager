@@ -51,7 +51,7 @@ namespace PictureManager.ViewModels {
     public void ToggleKeywordOnSelected(KeywordM keyword) {
       foreach (var person in Selected) {
         Model.ToggleKeyword(person.Model, keyword);
-        person.UpdateDisplayKeywords();
+        person.Model.UpdateDisplayKeywords();
       }
     }
 
