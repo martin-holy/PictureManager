@@ -8,17 +8,17 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class ViewersTreeVM : CatTreeViewCategoryBase {
-    public ViewersBaseVM BaseVM { get; }
+    public ViewersM Model { get; }
     public readonly Dictionary<int, ViewerTreeVM> All = new();
 
-    public ViewersTreeVM(ViewersBaseVM baseVM) : base(Category.Viewers, "Viewers") {
-      BaseVM = baseVM;
+    public ViewersTreeVM(ViewersM model) : base(Category.Viewers, "Viewers") {
+      Model = model;
 
-      BaseVM.Model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      BaseVM.Model.ViewerDeletedEvent += (_, e) => All.Remove(e.Viewer.Id);
+      Model.Items.CollectionChanged += ModelItems_CollectionChanged;
+      Model.ViewerDeletedEvent += (_, e) => All.Remove(e.Viewer.Id);
 
       // load items
-      ModelItems_CollectionChanged(BaseVM.Model.Items, null);
+      ModelItems_CollectionChanged(Model.Items, null);
     }
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
@@ -32,16 +32,16 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
-      All[BaseVM.Model.ItemCreate(root, name).Id];
+      All[Model.ItemCreate(root, name).Id];
 
     protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
-      BaseVM.Model.ItemRename(((ViewerTreeVM)item).Model, name);
+      Model.ItemRename(((ViewerTreeVM)item).Model, name);
 
     protected override void ModelItemDelete(ICatTreeViewItem item) =>
-      BaseVM.Model.ItemDelete(((ViewerTreeVM)item).Model);
+      Model.ItemDelete(((ViewerTreeVM)item).Model);
 
     protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
-      BaseVM.Model.ItemCanRename(name) ? null : $"{name} item already exists!";
+      Model.ItemCanRename(name) ? null : $"{name} item already exists!";
 
     public override string GetTitle(object item) =>
       (item as ViewerTreeVM)?.Model.Name;
