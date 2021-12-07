@@ -65,5 +65,10 @@ namespace PictureManager.Domain.Models {
       All.Remove(group);
       DataAdapter.IsModified = true;
     }
+
+    public void UpdateVisibility(ViewerM viewer) {
+      foreach (var group in All)
+        group.IsHidden = viewer?.ExcCatGroupsIds.Contains(group.Id) == true;
+    }
   }
 }
