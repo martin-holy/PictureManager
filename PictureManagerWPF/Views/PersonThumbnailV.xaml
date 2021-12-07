@@ -26,7 +26,7 @@
         <Style TargetType="{x:Type Border}">
           <Setter Property="BorderBrush" Value="Transparent" />
           <Style.Triggers>
-            <DataTrigger Binding="{Binding Person.IsSelected}" Value="True">
+            <DataTrigger Binding="{Binding Person.Model.IsSelected}" Value="True">
               <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
             </DataTrigger>
           </Style.Triggers>

@@ -10,7 +10,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
-  public sealed class PersonM : ObservableObject, IEquatable<PersonM>, IRecord, ITreeLeaf {
+  public sealed class PersonM : ObservableObject, IEquatable<PersonM>, IRecord, ITreeLeaf, ISelectable {
     #region IEquatable implementation
     public bool Equals(PersonM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as PersonM);
@@ -26,6 +26,11 @@ namespace PictureManager.Domain.Models {
 
     #region ITreeLeaf implementation
     public ITreeBranch Parent { get; set; }
+    #endregion
+
+    #region ISelectable implementation
+    private bool _isSelected;
+    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     #endregion
 
     private string _name;
