@@ -76,16 +76,16 @@ namespace PictureManager.UserControls {
       PeopleGrid.UpdateMaxRowWidth();
 
       await _workTask.Start(Task.Run(async () => {
-        foreach (var group in App.Ui.PeopleTreeVM.Items.OfType<CategoryGroupTreeVM>().Where(x => !x.IsHidden)) {
+        foreach (var group in App.Core.PeopleM.Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.Model.Name));
-          await AddPeopleAsync(group.Model.Name, group.Items.Cast<PersonTreeVM>().Select(x => x.Model), _workTask.Token);
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.Name));
+          await AddPeopleAsync(group.Name, group.Items.Cast<PersonM>(), _workTask.Token);
         }
 
-        var peopleWithoutGroup = App.Ui.PeopleTreeVM.Items.OfType<PersonTreeVM>().ToArray();
-        if (peopleWithoutGroup.Length > 0) {
+        var peopleWithoutGroup = App.Core.PeopleM.Items.OfType<PersonM>().ToArray();
+        if (peopleWithoutGroup.Any()) {
           await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, string.Empty));
-          await AddPeopleAsync(string.Empty, peopleWithoutGroup.Select(x => x.Model), _workTask.Token);
+          await AddPeopleAsync(string.Empty, peopleWithoutGroup, _workTask.Token);
         }
       }));
 
