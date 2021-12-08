@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.ViewModels;
 
 namespace PictureManager.Dialogs {
   public partial class FileOperationCollisionDialog : INotifyPropertyChanged {
@@ -21,15 +21,15 @@ namespace PictureManager.Dialogs {
     private string _fileName;
     private FileInfo _srcFileInfo;
     private FileInfo _destFileInfo;
-    private MediaItemBaseVM _srcMediaItem;
-    private MediaItemBaseVM _destMediaItem;
+    private MediaItemM _srcMediaItem;
+    private MediaItemM _destMediaItem;
 
     public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
     public FileInfo SrcFileInfo { get => _srcFileInfo; set { _srcFileInfo = value; OnPropertyChanged(); } }
     public FileInfo DestFileInfo { get => _destFileInfo; set { _destFileInfo = value; OnPropertyChanged(); } }
-    public MediaItemBaseVM SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
-    public MediaItemBaseVM DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
+    public MediaItemM SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
+    public MediaItemM DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
     public string SrcFilePathCache => GetThumbFilePath(SrcFileInfo.FullName).Result;
     public string DestFilePathCache => GetThumbFilePath(DestFileInfo.FullName).Result;
     public string SrcFileSize => $"File size: {SrcFileInfo.Length} B";
@@ -46,7 +46,7 @@ namespace PictureManager.Dialogs {
 
     public CollisionResult Result { get; set; }
 
-    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, MediaItemBaseVM srcMediaItem, MediaItemBaseVM destMediaItem, Window owner) {
+    public FileOperationCollisionDialog(string srcFilePath, string destFilePath, MediaItemM srcMediaItem, MediaItemM destMediaItem, Window owner) {
       SrcFileInfo = new(srcFilePath);
       DestFileInfo = new(destFilePath);
       SrcMediaItem = srcMediaItem;

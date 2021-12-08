@@ -110,10 +110,10 @@ namespace PictureManager.ViewModels {
     }
 
     public void ScrollToCurrentMediaItem() {
-      if (_coreVM.MediaItemsBaseVM.Current == null)
+      if (_core.MediaItemsM.Current == null)
         ScrollToTop();
       else
-        ScrollTo(_coreVM.MediaItemsBaseVM.Current);
+        ScrollTo(_core.MediaItemsM.Current);
     }
 
     public void ScrollToTop() {
@@ -122,7 +122,7 @@ namespace PictureManager.ViewModels {
       App.WMain.UpdateLayout();
     }
 
-    public void ScrollTo(MediaItemBaseVM mi) => Current?.Panel.ScrollTo(mi);
+    public void ScrollTo(MediaItemM mi) => Current?.Panel.ScrollTo(mi);
 
     private void AddThumbnailsGridIfNotActive(string tabTitle) {
       if (_coreVM.MainTabsVM.Selected is ThumbnailsGridVM thumbsGridVM) {
@@ -252,7 +252,7 @@ namespace PictureManager.ViewModels {
         await Task.WhenAll(metadata, thumbs);
 
         if (token.IsCancellationRequested)
-          await _core.RunOnUiThread(() => _coreVM.MediaItemsBaseVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
+          await _core.RunOnUiThread(() => _coreVM.MediaItemsVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
       }, token);
 
       // TODO: is this necessary?
@@ -283,7 +283,7 @@ namespace PictureManager.ViewModels {
           if (mi.IsNew) {
             mi.IsNew = false;
 
-            var success = await _coreVM.MediaItemsBaseVM.ReadMetadata(mi);
+            var success = await _coreVM.MediaItemsVM.ReadMetadata(mi);
             if (!success) {
               // delete corrupted MediaItems
               await _core.RunOnUiThread(() => {
@@ -300,7 +300,7 @@ namespace PictureManager.ViewModels {
           await AddMediaItemToGrid(mi);
 
           await _core.RunOnUiThread(() => {
-            _coreVM.MediaItemsBaseVM.SetInfoBox(mi);
+            mi.SetInfoBox();
             _coreVM.AppInfo.ProgressBarValueA = percent;
           });
         }
@@ -328,9 +328,8 @@ namespace PictureManager.ViewModels {
       }
 
       await _core.RunOnUiThread(() => {
-        var miBaseVM = _coreVM.MediaItemsBaseVM.ToViewModel(mi);
         Current.Panel.AddGroupIfNew(groupItems.ToArray());
-        Current.Panel.AddItem(miBaseVM, mi.ThumbWidth + itemOffset);
+        Current.Panel.AddItem(mi, mi.ThumbWidth + itemOffset);
       });
     }
 
@@ -361,7 +360,7 @@ namespace PictureManager.ViewModels {
           _core.MediaItemsM.All.Add(mi);
           _core.MediaItemsM.OnPropertyChanged(nameof(_core.MediaItemsM.MediaItemsCount));
           folder.MediaItems.Add(mi);
-          await _coreVM.MediaItemsBaseVM.ReadMetadata(mi);
+          await _coreVM.MediaItemsVM.ReadMetadata(mi);
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
 
@@ -369,7 +368,7 @@ namespace PictureManager.ViewModels {
           Current.Model.LoadedItems.AddInOrder(mi,
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
           await ReapplyFilter();
-          ScrollTo(_coreVM.MediaItemsBaseVM.ToViewModel(mi));
+          ScrollTo(mi);
         }
       );
     }

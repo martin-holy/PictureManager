@@ -23,7 +23,7 @@ namespace PictureManager {
   public sealed class AppCore {
     public DrivesTreeVM DrivesTreeVM { get; }
     public SegmentsBaseVM SegmentsBaseVM { get; }
-    public MediaItemsBaseVM MediaItemsBaseVM { get; }
+    public MediaItemsVM MediaItemsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
 
     #region TreeView Roots and Categories
@@ -65,7 +65,7 @@ namespace PictureManager {
 
       DrivesTreeVM = new(this);
       SegmentsBaseVM = new(App.Core, this, App.Core.SegmentsM);
-      MediaItemsBaseVM = new(App.Core, this, App.Core.MediaItemsM);
+      MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
 
       CategoryGroupsTreeVM = new();
@@ -138,7 +138,7 @@ namespace PictureManager {
           if (!MarkedTags.Toggle(tagItem))
             tagItem.PicCount = 0;
 
-          MediaItemsBaseVM.SetMetadata(tagItem);
+          MediaItemsVM.SetMetadata(tagItem);
 
           MarkUsedKeywordsAndPeople();
           App.WMain.StatusPanel.UpdateRating();
@@ -263,13 +263,11 @@ namespace PictureManager {
 
       App.Core.RunOnUiThread(() => {
         srcMi?.SetThumbSize();
+        srcMi?.SetInfoBox();
         destMi?.SetThumbSize();
-        var srcMiVM = App.Ui.MediaItemsBaseVM.ToViewModel(srcMi);
-        var destMiVM = App.Ui.MediaItemsBaseVM.ToViewModel(destMi);
-        srcMiVM?.SetInfoBox();
-        destMiVM?.SetInfoBox();
+        destMi?.SetInfoBox();
 
-        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMiVM, destMiVM, owner);
+        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
         cd.ShowDialog();
         result = cd.Result;
         outFileName = cd.FileName;

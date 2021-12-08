@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using PictureManager.ViewModels;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.CustomControls {
   public sealed class ZoomImageBox : Border, INotifyPropertyChanged {
@@ -26,7 +26,7 @@ namespace PictureManager.CustomControls {
     private double _zoomActual;
     private readonly ScaleTransform _scaleTransform;
     public TranslateTransform TranslateTransform { get; }
-    private MediaItemBaseVM _currentMediaItem;
+    private MediaItemM _currentMediaItem;
 
     public Image Image { get; set; }
     public bool IsAnimationOn { get; set; }
@@ -124,7 +124,7 @@ namespace PictureManager.CustomControls {
       ZoomActual = Image.ActualWidth * zoom / ((BitmapImage)Image.Source).PixelWidth * 100;
     }
 
-    public void SetSource(MediaItemBaseVM currentMediaItem, bool decoded = false) {
+    public void SetSource(MediaItemM currentMediaItem, bool decoded = false) {
       _currentMediaItem = currentMediaItem;
       SetSource(decoded);
     }
@@ -137,14 +137,14 @@ namespace PictureManager.CustomControls {
         return;
       }
 
-      var rotated = _currentMediaItem.Model.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
-      var imgWidth = rotated ? _currentMediaItem.Model.Height : _currentMediaItem.Model.Width;
-      var imgHeight = rotated ? _currentMediaItem.Model.Width : _currentMediaItem.Model.Height;
+      var rotated = _currentMediaItem.Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
+      var imgWidth = rotated ? _currentMediaItem.Height : _currentMediaItem.Width;
+      var imgHeight = rotated ? _currentMediaItem.Width : _currentMediaItem.Height;
       _isBigger = ActualWidth < imgWidth || ActualHeight < imgHeight;
 
       var src = new BitmapImage();
       src.BeginInit();
-      src.UriSource = new(_currentMediaItem.Model.FilePath);
+      src.UriSource = new(_currentMediaItem.FilePath);
       src.CacheOption = BitmapCacheOption.OnLoad;
       src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
 
@@ -162,7 +162,7 @@ namespace PictureManager.CustomControls {
             src.DecodePixelWidth = (int) ActualWidth;
       }*/
 
-      switch (_currentMediaItem.Model.Orientation) {
+      switch (_currentMediaItem.Orientation) {
         case (int)MediaOrientation.Rotate90: { src.Rotation = Rotation.Rotate270; break; }
         case (int)MediaOrientation.Rotate180: { src.Rotation = Rotation.Rotate180; break; }
         case (int)MediaOrientation.Rotate270: { src.Rotation = Rotation.Rotate90; break; }

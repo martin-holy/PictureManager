@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -50,8 +51,12 @@ namespace PictureManager.Domain.Models {
     public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
+    public string Dimensions => $"{Width}x{Height}";
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
     public ObservableCollection<SegmentM> Segments { get; set; }
+    public ObservableCollection<string> InfoBoxThumb { get; set; }
+    public ObservableCollection<string> InfoBoxPeople { get; set; }
+    public ObservableCollection<string> InfoBoxKeywords { get; set; }
     public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");
@@ -76,7 +81,6 @@ namespace PictureManager.Domain.Models {
     // TODO maybe not needed
     public bool IsNew { get; set; }
 
-    // TODO move it to VM
     public bool IsPanoramic { get; set; }
 
     public MediaItemM(int id, FolderM folder, string fileName, bool isNew = false) {
@@ -113,6 +117,65 @@ namespace PictureManager.Domain.Models {
       ThumbWidth = w;
       ThumbHeight = h;
       ThumbSize = (int)((w > h ? w : h) * core.WindowsDisplayScale / 100 / thumbScale);
+    }
+
+    // TODO update just when needed
+    public void SetInfoBox() {
+      InfoBoxPeople?.Clear();
+      InfoBoxPeople = null;
+      InfoBoxKeywords?.Clear();
+      InfoBoxKeywords = null;
+      InfoBoxThumb?.Clear();
+      InfoBoxThumb = new();
+
+      if (Rating != 0)
+        InfoBoxThumb.Add(Rating.ToString());
+
+      if (!string.IsNullOrEmpty(Comment))
+        InfoBoxThumb.Add(Comment);
+
+      if (GeoName != null)
+        InfoBoxThumb.Add(GeoName.Name);
+
+      if (People != null || Segments != null) {
+        var people = (
+            People == null
+              ? Array.Empty<string>()
+              : People.Select(x => x.Name))
+          .Concat(
+            Segments == null
+              ? Array.Empty<string>()
+              : Segments.Where(x => x.Person != null).Select(x => x.Person.Name)).ToArray();
+
+        if (people.Any()) {
+          InfoBoxPeople = new();
+
+          foreach (var p in people.Distinct().OrderBy(x => x)) {
+            InfoBoxPeople.Add(p);
+            InfoBoxThumb.Add(p);
+          }
+        }
+      }
+
+      if (Keywords != null) {
+        InfoBoxKeywords = new();
+        var allKeywords = new List<KeywordM>();
+
+        foreach (var keyword in Keywords)
+          MH.Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
+
+        foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName)) {
+          InfoBoxKeywords.Add(keyword.Name);
+          InfoBoxThumb.Add(keyword.Name);
+        }
+      }
+
+      if (InfoBoxThumb.Count == 0)
+        InfoBoxThumb = null;
+
+      OnPropertyChanged(nameof(InfoBoxThumb));
+      OnPropertyChanged(nameof(InfoBoxPeople));
+      OnPropertyChanged(nameof(InfoBoxKeywords));
     }
 
     public void ReloadThumbnail() => OnPropertyChanged(nameof(FilePathCache));

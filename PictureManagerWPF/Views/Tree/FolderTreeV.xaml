@@ -27,7 +27,7 @@
               Command="tree:FoldersTreeVM.SetAsFolderKeywordCommand"
               CommandParameter="{Binding}" />
     <MenuItem Header="Reload metadata"
-              Command="{Binding MediaItemsBaseVM.ReloadMetadataInFolderCommand, Source={x:Static pm:App.Ui}}"
+              Command="{Binding MediaItemsVM.ReloadMetadataInFolderCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
 
     <!--TODO: rebuild thumbnails-->

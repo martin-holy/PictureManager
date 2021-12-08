@@ -34,7 +34,7 @@ namespace PictureManager.ViewModels {
     public ThumbnailsGridM Model { get; }
 
     public RelayCommand<object> ShowVideoPreviewCommand { get; }
-    public RelayCommand<MediaItemBaseVM> HideVideoPreviewCommand { get; }
+    public RelayCommand<MediaItemM> HideVideoPreviewCommand { get; }
     public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
     public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
@@ -58,13 +58,13 @@ namespace PictureManager.ViewModels {
       SelectAllCommand = new(() => Model.SelectAll());
 
       SelectMediaItemCommand = new(e => {
-        if ((e.Source as FrameworkElement)?.DataContext is not MediaItemBaseVM mi) return;
+        if ((e.Source as FrameworkElement)?.DataContext is not MediaItemM mi) return;
         var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-        Model.Select(mi.Model, isCtrlOn, isShiftOn);
+        Model.Select(mi, isCtrlOn, isShiftOn);
       });
 
       OpenMediaItemCommand = new(
-        e => OpenMediaItem((e.Source as FrameworkElement)?.DataContext as MediaItemBaseVM),
+        e => OpenMediaItem((e.Source as FrameworkElement)?.DataContext as MediaItemM),
         e => e.ClickCount == 2);
 
       ZoomCommand = new(
@@ -95,38 +95,38 @@ namespace PictureManager.ViewModels {
 
     private void ShowVideoPreview(object o) {
       var grid = (o as DependencyObject)?.FindChild<Grid>("PART_Grid");
-      if (grid?.DataContext is not MediaItemBaseVM mi || mi.Model.MediaType != MediaType.Video) return;
+      if (grid?.DataContext is not MediaItemM mi || mi.MediaType != MediaType.Video) return;
 
       var rotation = new TransformGroup();
-      rotation.Children.Add(new RotateTransform(mi.Model.RotationAngle));
+      rotation.Children.Add(new RotateTransform(mi.RotationAngle));
       (_videoPreview.Parent as Grid)?.Children.Remove(_videoPreview);
       _videoPreview.LayoutTransform = rotation;
-      _videoPreview.Source = new(mi.Model.FilePath);
+      _videoPreview.Source = new(mi.FilePath);
       grid.Children.Insert(2, _videoPreview);
       _videoPreview.Play();
     }
 
-    private void HideVideoPreview(MediaItemBaseVM mi) {
-      if (mi?.Model.MediaType != MediaType.Video) return;
+    private void HideVideoPreview(MediaItemM mi) {
+      if (mi?.MediaType != MediaType.Video) return;
 
       (_videoPreview.Parent as Grid)?.Children.Remove(_videoPreview);
       _videoPreview.Source = null;
     }
 
-    private void OpenMediaItem(MediaItemBaseVM mi) {
+    private void OpenMediaItem(MediaItemM mi) {
       if (mi == null) return;
 
       Model.DeselectAll();
-      Model.CurrentMediaItem = mi.Model;
+      Model.CurrentMediaItem = mi;
 
-      if (mi.Model.MediaType == MediaType.Video) {
+      if (mi.MediaType == MediaType.Video) {
         (_videoPreview.Parent as Grid)?.Children.Remove(_videoPreview);
         _videoPreview.Source = null;
       }
 
       WindowCommands.SwitchToFullScreen();
       // TODO add command with SwitchToFullScreen and setting MediaViewer
-      App.WMain.MediaViewer.SetMediaItems(_coreVM.MediaItemsBaseVM.ToViewModel(Model.FilteredItems).ToList());
+      App.WMain.MediaViewer.SetMediaItems(Model.FilteredItems);
       App.WMain.MediaViewer.SetMediaItemSource(mi);
     }
 

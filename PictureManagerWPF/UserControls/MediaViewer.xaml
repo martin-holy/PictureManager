@@ -9,7 +9,7 @@
   
   <Grid Background="Transparent">
     <!-- Full Media Image -->
-    <Grid Visibility="{Binding Current.Model.MediaType,
+    <Grid Visibility="{Binding Current.MediaType,
       Converter={StaticResource AllToVisibilityConverter},
       ConverterParameter={x:Static pmd:MediaType.Image}}" Focusable="True">
 
@@ -21,13 +21,13 @@
 
     <!-- Full Media Video -->
     <cc:VideoPlayer x:Name="FullVideo"
-      Visibility="{Binding Current.Model.MediaType,
+      Visibility="{Binding Current.MediaType,
       Converter={StaticResource AllToVisibilityConverter}, 
       ConverterParameter={x:Static pmd:MediaType.Video}}" />
     
     <!-- Segment Rects -->
     <uc:SegmentRectsControl x:Name="SegmentRects"
-                         MediaItem="{Binding Current.Model}"
+                         MediaItem="{Binding Current}"
                          Zoom="{Binding ZoomActual, ElementName=FullImage}"
                          Width="{Binding Image.ActualWidth, ElementName=FullImage}"
                          Height="{Binding Image.ActualHeight, ElementName=FullImage}"

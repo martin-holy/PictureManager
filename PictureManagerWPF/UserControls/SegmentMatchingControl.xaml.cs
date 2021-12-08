@@ -224,7 +224,7 @@ namespace PictureManager.UserControls {
       foreach (var segment in App.Core.SegmentsM.SegmentsDrawer) {
         await segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
         segment.MediaItem.SetThumbSize();
-        App.Ui.MediaItemsBaseVM.SetInfoBox(segment.MediaItem);
+        segment.MediaItem.SetInfoBox();
       }
     }
   }

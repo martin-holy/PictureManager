@@ -83,11 +83,9 @@ namespace PictureManager.ViewModels {
           .Select(x => x.MediaItem).Distinct().OrderBy(x => x.FileName).ToList();
       }
 
-      var itemsVM = _coreVM.MediaItemsBaseVM.ToViewModel(items).ToList();
-
       // TODO
-      App.WMain.MediaViewer.SetMediaItems(itemsVM);
-      App.WMain.MediaViewer.SetMediaItemSource(_coreVM.MediaItemsBaseVM.ToViewModel(segmentM.MediaItem));
+      App.WMain.MediaViewer.SetMediaItems(items);
+      App.WMain.MediaViewer.SetMediaItemSource(segmentM.MediaItem);
     }
 
     private void SegmentMatching() {
