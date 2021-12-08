@@ -22,13 +22,11 @@ using PictureManager.ViewModels.Tree;
 using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
-  public class MediaItemsBaseVM : ObservableObject {
+  public class MediaItemsVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
 
     public MediaItemsM Model { get; }
-    public Dictionary<int, MediaItemBaseVM> All { get; } = new();
-    public MediaItemBaseVM Current => ToViewModel(Model.Current);
 
     public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> RenameCommand { get; }
@@ -40,15 +38,10 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> ReloadMetadataCommand { get; }
     public RelayCommand<FolderTreeVM> ReloadMetadataInFolderCommand { get; }
 
-    public MediaItemsBaseVM(Core core, AppCore coreVM, MediaItemsM model) {
+    public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
       _coreVM = coreVM;
       Model = model;
-
-      Model.PropertyChanged += (_, e) => {
-        if (nameof(Model.Current).Equals(e.PropertyName))
-          OnPropertyChanged(nameof(Current));
-      };
 
       #region Commands
       RotateCommand = new(
@@ -89,21 +82,7 @@ namespace PictureManager.ViewModels {
         x => x != null);
       #endregion
 
-      _core.SegmentsM.SegmentPersonChangedEvent += (_, e) => SetInfoBox(e.Segment.MediaItem);
-    }
-
-    public IEnumerable<MediaItemBaseVM> ToViewModel(IEnumerable<MediaItemM> items, bool create = true) =>
-      items.Select(mi => ToViewModel(mi, create));
-
-    public MediaItemBaseVM ToViewModel(MediaItemM mi, bool create = true) {
-      if (mi == null) return null;
-      if (All.TryGetValue(mi.Id, out var miBaseVM)) return miBaseVM;
-      if (!create) return null;
-
-      miBaseVM = new(mi);
-      All.Add(mi.Id, miBaseVM);
-
-      return miBaseVM;
+      _core.SegmentsM.SegmentPersonChangedEvent += (_, e) => e.Segment.MediaItem.SetInfoBox();
     }
 
     private void Rotate() {
@@ -113,7 +92,7 @@ namespace PictureManager.ViewModels {
 
       if (_coreVM.AppInfo.AppMode != AppMode.Viewer) return;
       // TODO remove App.WMain
-      App.WMain.MediaViewer.SetMediaItemSource(Current);
+      App.WMain.MediaViewer.SetMediaItemSource(Model.Current);
     }
 
     private async void Rename() {
@@ -158,8 +137,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public void SetInfoBox(MediaItemM mi) => ToViewModel(mi)?.SetInfoBox();
-
     public void Delete(MediaItemM[] items) {
       if (items.Length == 0) return;
       var progress = new ProgressBarDialog(App.WMain, false, 1, "Removing Media Items from database ...");
@@ -180,7 +157,7 @@ namespace PictureManager.ViewModels {
 
       Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
           ? currentThumbsGrid.LoadedItems
-          : App.WMain.MediaViewer.MediaItems.Select(x => x.Model).ToList(),
+          : App.WMain.MediaViewer.MediaItems,
         items);
 
       Model.Delete(items, AppCore.FileOperationDelete);
@@ -190,9 +167,9 @@ namespace PictureManager.ViewModels {
         _ = smc.SortAndReload();
 
       if (_coreVM.AppInfo.AppMode == AppMode.Viewer) {
-        _ = App.WMain.MediaViewer.MediaItems.Remove(ToViewModel(items[0]));
+        _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
         if (Model.Current != null)
-          App.WMain.MediaViewer.SetMediaItemSource(ToViewModel(Model.Current));
+          App.WMain.MediaViewer.SetMediaItemSource(Model.Current);
         else
           WindowCommands.SwitchToBrowser();
       }
@@ -220,7 +197,7 @@ namespace PictureManager.ViewModels {
             break;
         }
 
-        SetInfoBox(mi);
+        mi.SetInfoBox();
       }
     }
 
@@ -589,7 +566,7 @@ namespace PictureManager.ViewModels {
 
           await _core.RunOnUiThread(() => {
             Model.SetModified(mi, false);
-            SetInfoBox(mi);
+            mi.SetInfoBox();
           });
         },
         mi => mi.FilePath,
@@ -624,7 +601,7 @@ namespace PictureManager.ViewModels {
 
       if (!(inputDialog.ShowDialog() ?? true)) return;
       Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
-      SetInfoBox(Model.Current);
+      Model.Current.SetInfoBox();
       Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
       TryWriteMetadata(Model.Current);
       Model.DataAdapter.IsModified = true;
@@ -646,7 +623,7 @@ namespace PictureManager.ViewModels {
 
           // set info box just for loaded media items
           if (updateInfoBox)
-            await _core.RunOnUiThread(() => SetInfoBox(mi));
+            await _core.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

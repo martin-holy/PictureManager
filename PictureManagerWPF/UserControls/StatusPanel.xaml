@@ -87,7 +87,7 @@
                                  Converter={StaticResource AllToVisibilityConverter}}"
                     IconSource="{StaticResource IconRuler}"
                     IconFill="{StaticResource ColorBrushWhite}"
-                    Item="{Binding MediaItemsBaseVM.Current.Dimensions, Source={x:Static pm:App.Ui}}" />
+                    Item="{Binding MediaItemsM.Current.Dimensions, Source={x:Static pm:App.Core}}" />
 
       <!-- File Size -->
       <uc:InfoPanel Visibility="{Binding ThumbnailsGridsM.Current.ActiveFileSize, Source={x:Static pm:App.Core},
@@ -172,19 +172,19 @@
                     Item="{Binding DateAndTime}" />
 
       <!-- People -->
-      <uc:InfoPanel DataContext="{x:Static pm:App.Ui}"
+      <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
                     IconSource="{StaticResource IconPeople}"
                     IconFill="{StaticResource ColorBrushPeople}"
-                    Items="{Binding MediaItemsBaseVM.Current.InfoBoxPeople}">
+                    Items="{Binding MediaItemsM.Current.InfoBoxPeople}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                  <Condition Binding="{Binding AppInfo.AppMode}"
+                  <Condition Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui}}"
                              Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding MediaItemsBaseVM.Current.InfoBoxPeople,
+                  <Condition Binding="{Binding MediaItemsM.Current.InfoBoxPeople,
                                        Converter={StaticResource AllToBoolConverter}}"
                              Value="True" />
                 </MultiDataTrigger.Conditions>
@@ -196,19 +196,19 @@
       </uc:InfoPanel>
 
       <!-- Keywords -->
-      <uc:InfoPanel DataContext="{x:Static pm:App.Ui}"
+      <uc:InfoPanel DataContext="{x:Static pm:App.Core}"
                     IconSource="{StaticResource IconTag}"
                     IconFill="{StaticResource ColorBrushTag}"
-                    Items="{Binding MediaItemsBaseVM.Current.InfoBoxKeywords}">
+                    Items="{Binding MediaItemsM.Current.InfoBoxKeywords}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Style.Triggers>
               <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                  <Condition Binding="{Binding AppInfo.AppMode}"
+                  <Condition Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui}}"
                              Value="{x:Static pm:AppMode.Viewer}" />
-                  <Condition Binding="{Binding MediaItemsBaseVM.Current.InfoBoxKeywords, 
+                  <Condition Binding="{Binding MediaItemsM.Current.InfoBoxKeywords, 
                                        Converter={StaticResource AllToBoolConverter}}"
                              Value="True" />
                 </MultiDataTrigger.Conditions>

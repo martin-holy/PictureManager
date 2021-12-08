@@ -106,7 +106,7 @@ namespace PictureManager.UserControls {
             await segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
             segment.MediaItem.SetThumbSize();
             await App.Core.RunOnUiThread(() => {
-              App.Ui.MediaItemsBaseVM.SetInfoBox(segment.MediaItem);
+              segment.MediaItem.SetInfoBox();
               AllSegments.Add(segment);
               AllSegmentsGrid.AddItem(segment, _segmentGridWidth);
               OnPropertyChanged(nameof(AllSegments));

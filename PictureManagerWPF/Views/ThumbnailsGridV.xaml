@@ -4,7 +4,7 @@
                     xmlns:pm="clr-namespace:PictureManager"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
-                    xmlns:commands="clr-namespace:PictureManager.Commands">
+                    xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
@@ -27,7 +27,7 @@
               Command="{Binding RefreshCommand}" />
   </ContextMenu>
 
-  <DataTemplate x:Key="MiThumbWithCommands" DataType="{x:Type vm:MediaItemBaseVM}">
+  <DataTemplate x:Key="MiThumbWithCommands" DataType="{x:Type models:MediaItemM}">
     <ContentPresenter ContentTemplate="{StaticResource MediaItemThumbnailV}"
                       DataContext="{Binding}">
 
@@ -80,13 +80,13 @@
         <KeyBinding Modifiers="Control" Key="A"
                     Command="{Binding SelectAllCommand}" />
         <KeyBinding Modifiers="Control" Key="R"
-                    Command="{Binding MediaItemsBaseVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+                    Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
         <KeyBinding Key="F2"
-                    Command="{Binding MediaItemsBaseVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+                    Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
         <KeyBinding Key="Delete"
-                    Command="{Binding MediaItemsBaseVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+                    Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
         <KeyBinding Modifiers="Control" Key="K"
-                    Command="{Binding MediaItemsBaseVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+                    Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
       </ContentPresenter.InputBindings>
 
       <b:Interaction.Triggers>

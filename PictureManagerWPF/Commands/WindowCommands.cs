@@ -114,16 +114,16 @@ namespace PictureManager.Commands {
         null,
         // action
         async mi => {
-          if (mi.Lat == null || mi.Lng == null) _ = await App.Ui.MediaItemsBaseVM.ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) _ = await App.Ui.MediaItemsVM.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = App.Core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
-          App.Ui.MediaItemsBaseVM.TryWriteMetadata(mi);
+          App.Ui.MediaItemsVM.TryWriteMetadata(mi);
           await App.Core.RunOnUiThread(() => {
-            App.Ui.MediaItemsBaseVM.SetInfoBox(mi);
+            mi.SetInfoBox();
             App.Core.MediaItemsM.DataAdapter.IsModified = true;
           });
         },

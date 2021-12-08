@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using PictureManager.ViewModels;
+using PictureManager.Domain.Models;
 
 namespace PictureManager.UserControls {
   public partial class MediaViewer : INotifyPropertyChanged {
@@ -15,24 +15,24 @@ namespace PictureManager.UserControls {
     // local props
     private int _indexOfCurrent;
 
-    private MediaItemBaseVM _current;
+    private MediaItemM _current;
 
     // public props
-    public MediaItemBaseVM Current {
+    public MediaItemM Current {
       get => _current;
       set {
         if (_current != null)
-          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current.Model, false);
+          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current, false);
         _current = value;
         if (_current != null)
-          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current.Model, true);
-        if (App.Core.MediaItemsM.Current != value.Model)
-          App.Core.MediaItemsM.Current = value.Model;
+          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current, true);
+        if (App.Core.MediaItemsM.Current != value)
+          App.Core.MediaItemsM.Current = value;
         OnPropertyChanged();
         UpdatePositionSlashCount();
       }
     }
-    public List<MediaItemBaseVM> MediaItems { get; private set; }
+    public List<MediaItemM> MediaItems { get; private set; }
 
     // commands
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
@@ -99,7 +99,7 @@ namespace PictureManager.UserControls {
       MediaItems.Clear();
     }
 
-    public void SetMediaItems(List<MediaItemBaseVM> mediaItems) {
+    public void SetMediaItems(List<MediaItemM> mediaItems) {
       if (mediaItems == null || mediaItems.Count == 0) {
         MediaItems.Clear();
         Current = null;
@@ -116,13 +116,13 @@ namespace PictureManager.UserControls {
       UpdatePositionSlashCount();
     }
 
-    public void SetMediaItemSource(MediaItemBaseVM mediaItem, bool decoded = false) {
+    public void SetMediaItemSource(MediaItemM mediaItem, bool decoded = false) {
       var index = MediaItems.IndexOf(mediaItem);
       if (index < 0) return;
       _indexOfCurrent = index;
       Current = mediaItem;
 
-      switch (mediaItem.Model.MediaType) {
+      switch (mediaItem.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(mediaItem, decoded);
           App.Ui.VideoClipsTreeVM.SetMediaItem(null);
@@ -130,8 +130,8 @@ namespace PictureManager.UserControls {
           break;
         }
         case MediaType.Video: {
-          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem.Model);
-          FullVideo.SetSource(mediaItem.Model);
+          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem);
+          FullVideo.SetSource(mediaItem);
           break;
         }
       }
@@ -147,15 +147,15 @@ namespace PictureManager.UserControls {
     public void Next() {
       Current = MediaItems[++_indexOfCurrent];
 
-      var decoded = PresentationPanel.IsRunning && Current.Model.MediaType == MediaType.Image && Current.Model.IsPanoramic;
+      var decoded = PresentationPanel.IsRunning && Current.MediaType == MediaType.Image && Current.IsPanoramic;
       SetMediaItemSource(Current, decoded);
 
-      if (PresentationPanel.IsRunning && (Current.Model.MediaType == MediaType.Video ||
-        (Current.Model.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
+      if (PresentationPanel.IsRunning && (Current.MediaType == MediaType.Video ||
+        (Current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
 
         PresentationPanel.Pause();
 
-        if (Current.Model.MediaType == MediaType.Image && Current.Model.IsPanoramic)
+        if (Current.MediaType == MediaType.Image && Current.IsPanoramic)
           PresentationPanel.Start(true);
       }
 

@@ -18,7 +18,6 @@
   <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
   <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
-  <converters:MediaItemM2VMConverter x:Key="MediaItemM2VmConverter" />
   <converters:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
   <converters:IconNameToPathGeometryConverter x:Key="IconNameToPathGeometryConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />

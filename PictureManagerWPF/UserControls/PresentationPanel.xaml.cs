@@ -55,7 +55,7 @@ namespace PictureManager.UserControls {
 
     public void Start(bool delay) {
       var current = App.WMain.MediaViewer.Current;
-      if (delay && current.Model.MediaType == MediaType.Image && current.Model.IsPanoramic && PlayPanoramicImages) {
+      if (delay && current.MediaType == MediaType.Image && current.IsPanoramic && PlayPanoramicImages) {
         Pause();
         App.WMain.MediaViewer.FullImage.Play(Interval * 1000, delegate { Start(false); });
         return;

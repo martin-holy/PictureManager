@@ -135,7 +135,7 @@ namespace PictureManager.ViewModels.Tree {
           break;
 
         case string[]: // MediaItems
-          _coreVM.MediaItemsBaseVM.CopyMove(foMode,
+          _coreVM.MediaItemsVM.CopyMove(foMode,
             _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
             destFolder.Model);
           _core.MediaItemsM.DataAdapter.IsModified = true;

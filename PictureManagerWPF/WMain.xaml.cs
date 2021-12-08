@@ -37,7 +37,7 @@ namespace PictureManager {
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
       if (App.Core.MediaItemsM.ModifiedItems.Count > 0 &&
           MessageDialog.Show("Metadata Edit", "Some Media Items are modified, do you want to save them?", true)) {
-        App.Ui.MediaItemsBaseVM.SaveEdit();
+        App.Ui.MediaItemsVM.SaveEdit();
       }
 
       if (App.Db.Changes > 0 &&
