@@ -49,7 +49,7 @@
       <b:Interaction.Triggers>
         <!-- Load Person Segment -->
         <b:EventTrigger EventName="MouseEnter">
-          <b:InvokeCommandAction Command="{Binding SegmentsBaseVM.SetSegmentPictureCommand, Source={x:Static pm:App.Ui}}"
+          <b:InvokeCommandAction Command="{Binding SegmentsVM.SetSegmentPictureCommand, Source={x:Static pm:App.Ui}}"
                                  CommandParameter="{Binding Model.Segment}"/>
         </b:EventTrigger>
 

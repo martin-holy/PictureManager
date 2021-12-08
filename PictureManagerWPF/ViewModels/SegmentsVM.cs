@@ -13,7 +13,7 @@ using PictureManager.UserControls;
 using PictureManager.Views;
 
 namespace PictureManager.ViewModels {
-  public class SegmentsBaseVM {
+  public class SegmentsVM {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     
@@ -26,7 +26,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<ClickEventArgs> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
 
-    public SegmentsBaseVM(Core core, AppCore coreVM, SegmentsM model) {
+    public SegmentsVM(Core core, AppCore coreVM, SegmentsM model) {
       _core = core;
       _coreVM = coreVM;
       Model = model;

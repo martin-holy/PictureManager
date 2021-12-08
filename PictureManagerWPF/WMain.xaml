@@ -96,7 +96,7 @@
                     InputGestureText="F2"
                     Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
           <MenuItem Header="Segment Matching"
-                    Command="{Binding SegmentsBaseVM.SegmentMatchingCommand, Source={x:Static pm:App.Ui}}">
+                    Command="{Binding SegmentsVM.SegmentMatchingCommand, Source={x:Static pm:App.Ui}}">
             <MenuItem.Icon>
               <mhc:Icon Source="{StaticResource IconEquals}" />
             </MenuItem.Icon>

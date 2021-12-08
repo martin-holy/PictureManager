@@ -22,7 +22,7 @@ using PictureManager.Views;
 namespace PictureManager {
   public sealed class AppCore {
     public DrivesTreeVM DrivesTreeVM { get; }
-    public SegmentsBaseVM SegmentsBaseVM { get; }
+    public SegmentsVM SegmentsVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
 
@@ -64,7 +64,7 @@ namespace PictureManager {
       VideoClipsTreeVM = new(App.Core, App.Core.VideoClipsM);
 
       DrivesTreeVM = new(this);
-      SegmentsBaseVM = new(App.Core, this, App.Core.SegmentsM);
+      SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
 
@@ -84,9 +84,7 @@ namespace PictureManager {
       FoldersTreeVM.Load();
 
       #region Commands
-      SetCurrentPersonCommand = new(
-        person => App.Core.PeopleM.Current = App.Core.PeopleM.All[person.Id],
-        person => person != null);
+      SetCurrentPersonCommand = new(person => App.Core.PeopleM.Current = person);
       #endregion
     }
 

@@ -16,12 +16,12 @@
 
     <b:Interaction.Triggers>
       <b:EventTrigger EventName="ToolTipOpening">
-        <b:InvokeCommandAction Command="{Binding SegmentsBaseVM.SegmentToolTipRectsReloadCommand, Source={x:Static pm:App.Ui}}"
+        <b:InvokeCommandAction Command="{Binding SegmentsVM.SegmentToolTipRectsReloadCommand, Source={x:Static pm:App.Ui}}"
                                CommandParameter="{Binding Segment}" />
       </b:EventTrigger>
 
       <b:EventTrigger EventName="MouseDown">
-        <b:InvokeCommandAction Command="{Binding SegmentsBaseVM.ViewMediaItemsWithSegmentCommand, Source={x:Static pm:App.Ui}}"
+        <b:InvokeCommandAction Command="{Binding SegmentsVM.ViewMediaItemsWithSegmentCommand, Source={x:Static pm:App.Ui}}"
                                EventArgsConverter="{StaticResource ClickConverter}"/>
       </b:EventTrigger>
     </b:Interaction.Triggers>
@@ -46,7 +46,7 @@
                               ContentTemplate="{StaticResource MediaItemThumbnailV}" />
             
             <!-- Segments Rects -->
-            <ItemsControl ItemsSource="{Binding SegmentsBaseVM.SegmentToolTipRects, Source={x:Static pm:App.Ui}}">
+            <ItemsControl ItemsSource="{Binding SegmentsVM.SegmentToolTipRects, Source={x:Static pm:App.Ui}}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <Canvas />
@@ -183,7 +183,7 @@
             <mhc:IconButton Source="{StaticResource IconEquals}"
                             Size="14"
                             ToolTip="Set selected as same person"
-                            Command="{Binding SegmentsBaseVM.SetSelectedAsSamePersonCommand, Source={x:Static pm:App.Ui}}" />
+                            Command="{Binding SegmentsVM.SetSelectedAsSamePersonCommand, Source={x:Static pm:App.Ui}}" />
           </StackPanel>
 
           <!-- Open Person Detail Control -->
