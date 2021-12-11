@@ -1,0 +1,120 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:cmd="clr-namespace:PictureManager.Commands"
+                    xmlns:pm="clr-namespace:PictureManager"
+                    xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+
+  <mhc:Icon x:Key="EyeIcon" x:Shared="False" Source="{StaticResource IconEye}" />
+
+  <DataTemplate x:Key="MainMenu">
+    <Menu Background="Transparent">
+      <!-- Tools -->
+      <MenuItem Header="Tools" Style="{StaticResource StyleMenuItemRoot}">
+        <MenuItem Command="cmd:WindowCommands.OpenSettingsCommand">
+          <MenuItem.Icon>
+            <mhc:Icon Source="{StaticResource IconSettings}" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Command="cmd:WindowCommands.AddGeoNamesFromFilesCommand">
+          <MenuItem.Icon>
+            <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Command="cmd:WindowCommands.TestButtonCommand" />
+      </MenuItem>
+
+      <!-- Media Items -->
+      <MenuItem Header="Media Items" Style="{StaticResource StyleMenuItemRoot}">
+        <MenuItem Header="Compress"
+                  Command="{Binding ThumbnailsGridsVM.CompressCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Command="cmd:MediaItemsCommands.RebuildThumbnailsCommand" />
+        <MenuItem Header="Rotate"
+                  Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Select Not Modified"
+                  Command="{Binding ThumbnailsGridsVM.SelectNotModifiedCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Shuffle"
+                  Command="{Binding ThumbnailsGridsVM.ShuffleCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Resize Images"
+                  Command="{Binding ThumbnailsGridsVM.ResizeImagesCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Images to Video"
+                  Command="{Binding ThumbnailsGridsVM.ImagesToVideoCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Copy Paths"
+                  Command="{Binding ThumbnailsGridsVM.CopyPathsCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Command="cmd:MediaItemsCommands.CompareCommand" />
+        <MenuItem Header="Rename"
+                  InputGestureText="F2"
+                  Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+        <MenuItem Header="Segment Matching"
+                  Command="{Binding SegmentsVM.SegmentMatchingCommand, Source={x:Static pm:App.Ui}}">
+          <MenuItem.Icon>
+            <mhc:Icon Source="{StaticResource IconEquals}" />
+          </MenuItem.Icon>
+        </MenuItem>
+      </MenuItem>
+
+      <!-- Metadata -->
+      <MenuItem Header="Metadata" Style="{StaticResource StyleMenuItemRoot}">
+        <MenuItem Header="Edit"
+                  InputGestureText="Ctrl+E"
+                  Command="{Binding MediaItemsVM.EditCommand, Source={x:Static pm:App.Ui}}">
+          <MenuItem.Icon>
+            <mhc:Icon Source="{StaticResource IconEdit}" />
+          </MenuItem.Icon>
+        </MenuItem>
+          <MenuItem Header="Save"
+                    InputGestureText="Ctrl+S"
+                    Command="{Binding MediaItemsVM.SaveEditCommand, Source={x:Static pm:App.Ui}}">
+            <MenuItem.Icon>
+              <mhc:Icon Source="{StaticResource IconSave}" />
+            </MenuItem.Icon>
+          </MenuItem>
+        <MenuItem Header="Cancel"
+                  InputGestureText="Ctrl+Q"
+                  Command="{Binding MediaItemsVM.CancelEditCommand, Source={x:Static pm:App.Ui}}">
+          <MenuItem.Icon>
+            <mhc:Icon Source="{StaticResource IconCancel}" />
+          </MenuItem.Icon>
+        </MenuItem>
+          <MenuItem Header="Comment"
+                    InputGestureText="Ctrl+K"
+                    Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}">
+            <MenuItem.Icon>
+              <mhc:Icon Source="{StaticResource IconNotification}" />
+            </MenuItem.Icon>
+          </MenuItem>
+        <MenuItem Header="Reload"
+                  Command="{Binding MediaItemsVM.ReloadMetadataCommand, Source={x:Static pm:App.Ui}}" />
+      </MenuItem>
+
+      <!-- Viewers -->
+      <MenuItem Icon="{StaticResource EyeIcon}"
+                ItemsSource="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"
+                Visibility="{Binding ViewersM.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+        
+        <MenuItem.Style>
+          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource StyleMenuItemRoot}">
+            <Setter Property="Header" Value="{Binding ViewersM.Current.Name, Source={x:Static pm:App.Core}}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding ViewersM.Current, Source={x:Static pm:App.Core}}" Value="{x:Null}">
+                <Setter Property="Header" Value="Viewer" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </MenuItem.Style>
+
+        <MenuItem.ItemContainerStyle>
+          <Style TargetType="MenuItem" BasedOn="{StaticResource StyleBaseMenuItem}">
+            <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}" />
+            <Setter Property="Command" Value="{Binding ViewersVM.SetCurrentCommand, Source={x:Static pm:App.Ui}}" />
+            <Setter Property="CommandParameter" Value="{Binding}" />
+            <Setter Property="Icon" Value="{StaticResource EyeIcon}" />
+          </Style>
+        </MenuItem.ItemContainerStyle>
+      </MenuItem>
+
+      <!-- About -->
+      <MenuItem Command="cmd:WindowCommands.OpenAboutCommand" Style="{StaticResource StyleMenuItemRoot}" />
+    </Menu>
+  </DataTemplate>
+</ResourceDictionary>
