@@ -40,7 +40,6 @@ namespace PictureManager.Commands {
       ShowHideTabMain(_mainTreeViewIsPinnedInViewer);
       App.WMain.UseNoneWindowStyle = true;
       App.WMain.IgnoreTaskbarOnMaximize = true;
-      App.WMain.MainMenu.Visibility = Visibility.Hidden;
     }
 
     private static bool CanSwitchToBrowser() => App.Ui.AppInfo.AppMode == AppMode.Viewer;
@@ -49,7 +48,6 @@ namespace PictureManager.Commands {
       App.WMain.UseNoneWindowStyle = false;
       App.WMain.ShowTitleBar = true;
       App.WMain.IgnoreTaskbarOnMaximize = false;
-      App.WMain.MainMenu.Visibility = Visibility.Visible;
 
       App.Ui.AppInfo.AppMode = AppMode.Browser;
       ShowHideTabMain(_mainTreeViewIsPinnedInBrowser);
