@@ -294,7 +294,7 @@ namespace PictureManager.Domain.Models {
               OnPropertyChanged(nameof(MediaItemsCount));
               folder.MediaItems.Add(inDbFile);
             }
-            if (!_core.CanViewerSee(inDbFile)) {
+            if (!_core.ViewersM.CanViewerSee(inDbFile)) {
               hiddenMediaItems.Add(inDbFile);
               continue;
             }
@@ -325,7 +325,7 @@ namespace PictureManager.Domain.Models {
 
         foreach (var folder in folders) {
           if (token.IsCancellationRequested) break;
-          if (!_core.CanViewerSeeContentOfThisFolder(folder)) continue;
+          if (!_core.ViewersM.CanViewerSeeContentOf(folder)) continue;
           if (!Directory.Exists(folder.FullPath)) continue;
           foldersSet.Add(folder.Id);
         }
@@ -333,7 +333,7 @@ namespace PictureManager.Domain.Models {
         foreach (var mi in items) {
           if (token.IsCancellationRequested) break;
           if (!foldersSet.Contains(mi.Folder.Id)) continue;
-          if (!_core.CanViewerSee(mi)) continue;
+          if (!_core.ViewersM.CanViewerSee(mi)) continue;
           if (!File.Exists(mi.FilePath)) continue;
           output.Add(mi);
         }

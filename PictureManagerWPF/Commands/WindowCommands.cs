@@ -1,5 +1,4 @@
 ﻿using PictureManager.Dialogs;
-using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
@@ -15,7 +14,6 @@ namespace PictureManager.Commands {
     public static RoutedUICommand OpenAboutCommand { get; } = new() { Text = "About" };
     public static RoutedUICommand ShowHideTabMainCommand { get; } = CommandsController.CreateCommand("S/H", "ShowHideTabMain", new KeyGesture(Key.T, ModifierKeys.Control));
     public static RoutedUICommand AddGeoNamesFromFilesCommand { get; } = new() { Text = "GeoNames" };
-    public static RoutedUICommand ViewerChangeCommand { get; } = new() { Text = "" };
     public static RoutedUICommand OpenLogCommand { get; } = new() { Text = "Log" };
     public static RoutedUICommand SaveDbCommand { get; } = new() { Text = "DB" };
 
@@ -28,7 +26,6 @@ namespace PictureManager.Commands {
       CommandsController.AddCommandBinding(cbc, TestButtonCommand, TestButton);
       CommandsController.AddCommandBinding(cbc, OpenSettingsCommand, OpenSettings);
       CommandsController.AddCommandBinding(cbc, AddGeoNamesFromFilesCommand, AddGeoNamesFromFiles, CanAddGeoNamesFromFiles);
-      CommandsController.AddCommandBinding(cbc, ViewerChangeCommand, ViewerChange);
       CommandsController.AddCommandBinding(cbc, OpenAboutCommand, OpenAbout);
       CommandsController.AddCommandBinding(cbc, ShowHideTabMainCommand, ShowHideTabMain);
       CommandsController.AddCommandBinding(cbc, OpenLogCommand, OpenLog);
@@ -134,23 +131,6 @@ namespace PictureManager.Commands {
         });
 
       progress.StartDialog();
-    }
-
-    private static void ViewerChange(object parameter) {
-      if (App.Core.CurrentViewer != null)
-        App.Core.CurrentViewer.IsDefault = false;
-
-      var viewer = (ViewerM)parameter;
-      viewer.IsDefault = true;
-      viewer.UpdateHashSets();
-      App.Core.ViewersM.DataAdapter.Save();
-
-      App.WMain.MenuViewers.Header = viewer.Name;
-      App.Core.CurrentViewer = viewer;
-      App.Core.FoldersM.AddDrives();
-      App.Core.FolderKeywordsM.Load();
-      App.Ui.FoldersTreeVM.UpdateDrivesVisibility();
-      App.Core.CategoryGroupsM.UpdateVisibility(viewer);
     }
 
     private static void OpenLog() {

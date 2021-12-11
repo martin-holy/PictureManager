@@ -25,6 +25,7 @@ namespace PictureManager {
     public SegmentsVM SegmentsVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
+    public ViewersVM ViewersVM { get; }
 
     #region TreeView Roots and Categories
     public ObservableCollection<ICatTreeViewCategory> TreeViewCategories { get; }
@@ -67,6 +68,7 @@ namespace PictureManager {
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
+      ViewersVM = new(this, App.Core.ViewersM);
 
       CategoryGroupsTreeVM = new();
       FavoriteFoldersTreeVM = new(App.Core.FavoriteFoldersM);
