@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
@@ -9,18 +10,23 @@ using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class ViewersM : ITreeBranch {
+  public sealed class ViewersM : ObservableObject, ITreeBranch {
     #region ITreeBranch implementation
     public ITreeBranch Parent { get; set; }
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
+    private readonly Core _core;
+    private ViewerM _current;
+
     public DataAdapter DataAdapter { get; }
     public List<ViewerM> All { get; } = new();
+    public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public event EventHandler<ViewerDeletedEventArgs> ViewerDeletedEvent = delegate { };
 
     public ViewersM(Core core) {
+      _core = core;
       DataAdapter = new ViewersDataAdapter(core, this);
     }
 
@@ -77,5 +83,30 @@ namespace PictureManager.Domain.Models {
       viewer.ExcludedKeywords.Remove(keyword);
       DataAdapter.IsModified = true;
     }
+
+    public void SetCurrent(ViewerM viewer) {
+      if (Current != viewer) {
+        if (Current != null)
+          Current.IsDefault = false;
+
+        viewer.IsDefault = true;
+        DataAdapter.Save();
+        Current = viewer;
+      }
+
+      Current.UpdateHashSets();
+      _core.FoldersM.AddDrives();
+      _core.FolderKeywordsM.Load();
+      _core.CategoryGroupsM.UpdateVisibility(Current);
+    }
+
+    public bool CanViewerSee(FolderM folder) =>
+      Current?.CanSee(folder) != false;
+
+    public bool CanViewerSeeContentOf(FolderM folder) =>
+      Current?.CanSeeContentOf(folder) != false;
+
+    public bool CanViewerSee(MediaItemM mediaItem) =>
+      Current?.CanSee(mediaItem) != false;
   }
 }

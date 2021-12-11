@@ -84,7 +84,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public bool IsFolderVisible(FolderM folder) =>
-      Tree.GetTopParent(folder)?.IsAvailable == true && _core.CanViewerSeeThisFolder(folder);
+      Tree.GetTopParent(folder)?.IsAvailable == true && _core.ViewersM.CanViewerSee(folder);
 
     public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
       MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {

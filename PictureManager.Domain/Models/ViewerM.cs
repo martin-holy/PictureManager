@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
         _excKeywordsIds.Add(keyword.Id);
     }
 
-    public bool CanSeeThisFolder(FolderM folder) {
+    public bool CanSee(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
@@ -83,7 +83,7 @@ namespace PictureManager.Domain.Models {
       return incContain && !excContain;
     }
 
-    public bool CanSeeContentOfThisFolder(FolderM folder) {
+    public bool CanSeeContentOf(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
       var testFos = new List<FolderM>();
       Tree.GetThisAndParentRecursive(folder, ref testFos);

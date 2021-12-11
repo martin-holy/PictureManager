@@ -60,12 +60,12 @@ namespace PictureManager.UserControls {
 
       // Folders
       var result = App.Core.FoldersM.All
-        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && App.Core.CanViewerSeeThisFolder(x))
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && App.Core.ViewersM.CanViewerSee(x))
         .Select(x => new SearchItem(IconName.Folder, x.Name, x.FullPath, App.Ui.FoldersTreeVM.All[x.Id])).ToList();
 
       // Folder Keywords
       result.AddRange(App.Core.FolderKeywordsM.All
-        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && x.Folders.All(f => App.Core.CanViewerSeeThisFolder(f)))
+        .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && x.Folders.All(f => App.Core.ViewersM.CanViewerSee(f)))
         .Select(x => new SearchItem(IconName.FolderPuzzle, x.Name, x.FullPath, App.Ui.FolderKeywordsTreeVM.All[x.Id])));
       AddToSearchResult(result);
     }

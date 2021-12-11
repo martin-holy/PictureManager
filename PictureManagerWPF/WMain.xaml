@@ -10,6 +10,7 @@
         xmlns:cmd="clr-namespace:PictureManager.Commands"
         xmlns:cc="clr-namespace:PictureManager.CustomControls"
         xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+        xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
         mc:Ignorable="d"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
         Title="Picture Manager" TitleAlignment="Center" Height="550" Width="930" WindowState="Maximized" 
@@ -134,13 +135,25 @@
           <MenuItem Header="Reload"
                     Command="{Binding MediaItemsVM.ReloadMetadataCommand, Source={x:Static pm:App.Ui}}" />
         </MenuItem>
-        <MenuItem Header="Viewer" x:Name="MenuViewers" Style="{StaticResource StyleMenuItemRoot}" Icon="{StaticResource EyeIcon}"
+        <MenuItem Icon="{StaticResource EyeIcon}"
                   ItemsSource="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"
                   Visibility="{Binding ViewersM.Items.Count, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+          
+          <MenuItem.Style>
+            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource StyleMenuItemRoot}">
+              <Setter Property="Header" Value="{Binding ViewersM.Current.Name, Source={x:Static pm:App.Core}}" />
+              <Style.Triggers>
+                <DataTrigger Binding="{Binding ViewersM.Current, Source={x:Static pm:App.Core}}" Value="{x:Null}">
+                  <Setter Property="Header" Value="Viewer" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </MenuItem.Style>
+
           <MenuItem.ItemContainerStyle>
             <Style TargetType="MenuItem" BasedOn="{StaticResource StyleBaseMenuItem}">
-              <Setter Property="Header" Value="{Binding Name}" />
-              <Setter Property="Command" Value="cmd:WindowCommands.ViewerChangeCommand" />
+              <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}" />
+              <Setter Property="Command" Value="{Binding ViewersVM.SetCurrentCommand, Source={x:Static pm:App.Ui}}" />
               <Setter Property="CommandParameter" Value="{Binding}" />
               <Setter Property="Icon" Value="{StaticResource EyeIcon}" />
             </Style>

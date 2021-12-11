@@ -28,7 +28,6 @@ namespace PictureManager.Domain {
 
     public SimpleDB.SimpleDB Sdb { get; private set; }
     public SegmentsM SegmentsM { get; }
-    public ViewerM CurrentViewer { get; set; }
     public ThumbnailsGridsM ThumbnailsGridsM { get; }
 
     private TaskScheduler UiTaskScheduler { get; }
@@ -97,12 +96,6 @@ namespace PictureManager.Domain {
         SegmentsM.AllDic = null;
       });
     }
-
-    public bool CanViewerSeeThisFolder(FolderM folder) => CurrentViewer?.CanSeeThisFolder(folder) != false;
-
-    public bool CanViewerSeeContentOfThisFolder(FolderM folder) => CurrentViewer?.CanSeeContentOfThisFolder(folder) != false;
-
-    public bool CanViewerSee(MediaItemM mediaItem) => CurrentViewer?.CanSee(mediaItem) != false;
 
     public void LogError(Exception ex) => LogError(ex, string.Empty);
 

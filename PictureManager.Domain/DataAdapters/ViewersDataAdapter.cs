@@ -28,7 +28,7 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
       var viewer = new ViewerM(int.Parse(props[0]), props[1], _model) { Csv = props, IsDefault = props[6] == "1" };
-      if (viewer.IsDefault) _core.CurrentViewer = viewer;
+      if (viewer.IsDefault) _model.Current = viewer;
       _model.All.Add(viewer);
     }
 
