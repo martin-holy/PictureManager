@@ -97,14 +97,24 @@ namespace PictureManager.ViewModels {
         thumbGridVM.Panel.ClearRows();
         thumbGridVM.Model.ClearItBeforeLoad();
         Model.All.Remove(thumbGridVM.Model);
+        Current = null;
+        Model.Current = null;
       };
 
       _coreVM.MainTabsVM.SelectionChanged += async (o, _) => {
         Current = (o as MainTabsVM)?.Selected as ThumbnailsGridVM;
         Model.Current = ThumbnailsGridM.ActivateThumbnailsGrid(Model.Current, Current?.Model);
         Current?.Model.UpdateSelected();
-        if (Current?.Model.NeedReload == true)
+        
+        if (Current?.Model.NeedReload == true) {
           await ThumbsGridReloadItems();
+          Current?.Model.UpdatePositionSlashCount();
+        }
+        else {
+          //TODO this causes error
+          //ScrollToCurrentMediaItem();
+        }
+        
         _coreVM.MarkUsedKeywordsAndPeople();
       };
     }
@@ -289,6 +299,7 @@ namespace PictureManager.ViewModels {
               await _core.RunOnUiThread(() => {
                 Current.Model.LoadedItems.Remove(mi);
                 Current.Model.FilteredItems.Remove(mi);
+                Current.Model.UpdatePositionSlashCount();
                 _core.MediaItemsM.Delete(mi);
                 _coreVM.AppInfo.ProgressBarValueA = percent;
               });

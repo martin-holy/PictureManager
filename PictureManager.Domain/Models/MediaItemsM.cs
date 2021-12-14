@@ -16,7 +16,6 @@ namespace PictureManager.Domain.Models {
 
     private bool _isEditModeOn;
     private MediaItemM _current;
-    private string _positionSlashCount;
 
     public DataAdapter DataAdapter { get; }
     public List<MediaItemM> All { get; } = new();
@@ -36,7 +35,6 @@ namespace PictureManager.Domain.Models {
     public int MediaItemsCount => All.Count;
     public int ModifiedItemsCount => ModifiedItems.Count;
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
-    public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
 
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
@@ -141,8 +139,7 @@ namespace PictureManager.Domain.Models {
       item.GeoName = null;
 
       // remove from ThumbnailsGrids
-      foreach (var thumbnailsGrid in _core.ThumbnailsGridsM.All)
-        thumbnailsGrid.Remove(item);
+      _core.ThumbnailsGridsM.RemoveMediaItem(item);
 
       // remove from DB
       All.Remove(item);

@@ -20,5 +20,10 @@ namespace PictureManager.Domain.Models {
 
       return grid;
     }
+
+    public void RemoveMediaItem(MediaItemM item) {
+      foreach (var grid in All)
+        grid.Remove(item, Current == grid);
+    }
   }
 }
