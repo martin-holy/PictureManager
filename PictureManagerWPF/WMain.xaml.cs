@@ -19,10 +19,6 @@ namespace PictureManager {
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
-
-      StatusPanel.SizeChanged += delegate {
-        SlidePanelMainTreeView.BorderMargin = new(0, 0, 0, StatusPanel.ActualHeight);
-      };
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e) {
