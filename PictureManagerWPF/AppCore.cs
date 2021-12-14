@@ -45,6 +45,7 @@ namespace PictureManager {
     public MainTabsVM MainTabsVM { get; }
 
     public AppInfo AppInfo { get; } = new();
+    public StatusPanelVM StatusPanelVM { get; }
     public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
@@ -83,6 +84,7 @@ namespace PictureManager {
 
       TreeViewCategories = new() { FavoriteFoldersTreeVM, FoldersTreeVM, RatingsTreeVM, MediaItemSizesTreeVM, PeopleTreeVM, FolderKeywordsTreeVM, KeywordsTreeVM, GeoNamesTreeVM, ViewersTreeVM };
 
+      StatusPanelVM = new(App.Core);
       FoldersTreeVM.Load();
 
       #region Commands
@@ -141,7 +143,7 @@ namespace PictureManager {
           MediaItemsVM.SetMetadata(tagItem);
 
           MarkUsedKeywordsAndPeople();
-          App.WMain.StatusPanel.UpdateRating();
+          StatusPanelVM.UpdateRating();
 
           return;
         }

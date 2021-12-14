@@ -24,8 +24,8 @@ namespace PictureManager.ViewModels {
       get => _appMode;
       set {
         _appMode = value;
-        OnPropertyChanged();
-        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
+        OnPropertyChanged(); ;
+        App.Ui.StatusPanelVM.OnPropertyChanged(nameof(App.Ui.StatusPanelVM.FilePath));
       }
     }
 

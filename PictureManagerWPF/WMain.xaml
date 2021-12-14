@@ -22,6 +22,7 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Views/MainTabsV.xaml" />
         <ResourceDictionary Source="Views/MainMenuV.xaml" />
+        <ResourceDictionary Source="Views/StatusPanelV.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </controls:MetroWindow.Resources>
@@ -154,14 +155,34 @@
 
   <Grid>
     <cc:SlidePanelsGrid x:Name="MainSlidePanelsGrid">
+      <!-- Tree View Categories -->
       <cc:SlidePanelsGrid.ContentLeft>
-        <cc:SlidePanel IsOpen="True" IsPinned="True" Position="Left" Width="380" x:Name="SlidePanelMainTreeView">
+        <cc:SlidePanel x:Name="SlidePanelMainTreeView"
+                       IsOpen="True"
+                       IsPinned="True"
+                       Position="Left"
+                       Width="380">
           <cc:SlidePanel.Content>
-            <uc:TreeViewCategories x:Name="TreeViewCategories" Background="{StaticResource ColorBrushBackground}" />
+            <Grid>
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+              </Grid.RowDefinitions>
+
+              <!-- Tree View Categories -->
+              <uc:TreeViewCategories x:Name="TreeViewCategories"
+                                     Grid.Row="0"
+                                     Background="{StaticResource ColorBrushBackground}" />
+
+              <!-- Status Bar Margin -->
+              <Control Grid.Row="1"
+                       Height="{Binding ActualHeight, ElementName=StatusPanel}" />
+            </Grid>
           </cc:SlidePanel.Content>
         </cc:SlidePanel>
       </cc:SlidePanelsGrid.ContentLeft>
 
+      <!-- Main Tabs -->
       <cc:SlidePanelsGrid.ContentMiddle>
         <Grid x:Name="GridMain" Margin="0" DataContext="{x:Static pm:App.Ui}">
           <!-- Main Tabs -->
@@ -200,7 +221,10 @@
     </cc:SlidePanelsGrid>
 
     <!-- Status Panel -->
-    <uc:StatusPanel x:Name="StatusPanel" VerticalContentAlignment="Bottom" />
+    <ContentPresenter x:Name="StatusPanel"
+                      ContentTemplate="{StaticResource StatusPanel}"
+                      Content="{Binding StatusPanelVM, Source={x:Static pm:App.Ui}}"
+                      VerticalAlignment="Bottom" />
   </Grid>
   
 </controls:MetroWindow>

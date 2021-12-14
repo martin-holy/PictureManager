@@ -38,7 +38,7 @@ namespace PictureManager.CustomControls {
         OnPropertyChanged();
         OnPropertyChanged(nameof(ZoomActualFormatted));
         // TODO: find another way to do it
-        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.ZoomActualFormatted));
+        App.Ui.StatusPanelVM.OnPropertyChanged(nameof(App.Ui.StatusPanelVM.ZoomActualFormatted));
       }
     }
 

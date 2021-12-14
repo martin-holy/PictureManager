@@ -128,9 +128,7 @@ namespace PictureManager.ViewModels {
         Model.Rename(Model.Current, inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName));
         _core.ThumbnailsGridsM.Current?.FilteredItemsSetInPlace(Model.Current);
         await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
-        // TODO
-        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.FilePath));
-        App.WMain.StatusPanel.OnPropertyChanged(nameof(App.WMain.StatusPanel.DateAndTime));
+        _coreVM.StatusPanelVM.CurrentMediaItemM = Model.Current;
       }
       catch (Exception ex) {
         _core.LogError(ex);
