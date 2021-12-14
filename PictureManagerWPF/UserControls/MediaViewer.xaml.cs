@@ -29,9 +29,11 @@ namespace PictureManager.UserControls {
         if (App.Core.MediaItemsM.Current != value)
           App.Core.MediaItemsM.Current = value;
         OnPropertyChanged();
-        UpdatePositionSlashCount();
+        OnPropertyChanged(nameof(PositionSlashCount));
       }
     }
+
+    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
     public List<MediaItemM> MediaItems { get; private set; }
 
     // commands
@@ -109,11 +111,9 @@ namespace PictureManager.UserControls {
           mi.SetInfoBox();
 
         MediaItems = mediaItems;
-        Current = mediaItems[0];
         _indexOfCurrent = 0;
+        Current = mediaItems[0];
       }
-
-      UpdatePositionSlashCount();
     }
 
     public void SetMediaItemSource(MediaItemM mediaItem, bool decoded = false) {
@@ -136,9 +136,6 @@ namespace PictureManager.UserControls {
         }
       }
     }
-
-    private void UpdatePositionSlashCount() =>
-      App.Core.MediaItemsM.PositionSlashCount = $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
 
     #region Commands
 
