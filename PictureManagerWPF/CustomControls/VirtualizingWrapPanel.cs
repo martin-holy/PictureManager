@@ -17,6 +17,7 @@ namespace PictureManager.CustomControls {
     private VirtualizingWrapPanelGroup _lastGroup;
     private VirtualizingWrapPanelRow _lastRow;
     private double _maxRowWidth;
+    private int _topRowIndex;
 
     public ObservableCollection<object> Rows { get; } = new();
 
@@ -54,7 +55,7 @@ namespace PictureManager.CustomControls {
 
       _grid = (ItemsControl)Template.FindName("PART_Grid", this);
       _ = _grid.ApplyTemplate();
-      _grid.SizeChanged += (o, e) => _maxRowWidth = ActualWidth;
+      _grid.SizeChanged += (_, _) => _maxRowWidth = ActualWidth;
 
       var itemsPresenter = (ItemsPresenter)_grid.Template.FindName("PART_ItemsPresenter", _grid);
       _ = itemsPresenter.ApplyTemplate();
@@ -62,14 +63,27 @@ namespace PictureManager.CustomControls {
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
       _rowsScrollViewer = (ScrollViewer)_grid.Template.FindName("PART_RowsScrollViewer", _grid);
 
-      LayoutUpdated += (o, e) => {
+      LayoutUpdated += (_, _) => {
         if (_rowToScrollToTop == null) return;
         _rowsScrollViewer?.ScrollToVerticalOffset(_rowsStackPanel.GetItemOffset(_rowToScrollToTop));
         _rowToScrollToTop = null;
       };
+
+      _rowsScrollViewer.ScrollChanged += (_, _) => {
+        if (_grid.Items.Count > 0) {
+          var index = GetTopRowIndex();
+          if (index != 0)
+            _topRowIndex = index;
+        }
+      };
+
+      Loaded += (_, _) => {
+        if (_topRowIndex > 0)
+          ScrollTo(_topRowIndex);
+      };
     }
 
-    public void ScrollTo(int index) {
+    private void ScrollTo(int index) {
       if (Rows.Count - 1 < index) return;
 
       _rowsStackPanel.BringIndexIntoViewPublic(index);
@@ -80,7 +94,7 @@ namespace PictureManager.CustomControls {
 
     public void ScrollTo(object item) => ScrollTo(GetRowIndex(item));
 
-    public int GetRowIndex(object item) {
+    private int GetRowIndex(object item) {
       var rowIndex = 0;
       foreach (var row in Rows) {
         if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item)))
@@ -91,7 +105,7 @@ namespace PictureManager.CustomControls {
       return rowIndex;
     }
 
-    public int GetRowIndex(FrameworkElement element) {
+    private int GetRowIndex(FrameworkElement element) {
       foreach (var row in _rowsStackPanel.Children.Cast<DependencyObject>()) {
         if (element.IsDescendantOf(row))
           return _grid.ItemContainerGenerator.IndexFromContainer(row);
