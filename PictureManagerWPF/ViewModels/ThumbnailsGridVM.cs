@@ -89,6 +89,7 @@ namespace PictureManager.ViewModels {
     }
 
     private object CanDrag(MouseEventArgs e) {
+      if (e.OriginalSource is MetroThumb) return null;
       var data = Model.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
