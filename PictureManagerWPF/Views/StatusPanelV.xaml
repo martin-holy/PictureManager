@@ -75,7 +75,7 @@
                     <DataTrigger Binding="{Binding AppInfo.AppMode, Source={x:Static pm:App.Ui}}"
                                  Value="{x:Static pm:AppMode.Viewer}">
                       <Setter Property="Text"
-                              Value="{Binding MediaViewer.PositionSlashCount, Source={x:Static pm:App.WMain}}" />
+                              Value="{Binding MediaViewer.PositionSlashCount, Source={x:Static pm:App.Ui}}" />
                     </DataTrigger>
                   </Style.Triggers>
                 </Style>

@@ -43,6 +43,8 @@ namespace PictureManager {
     #endregion
 
     public MainTabsVM MainTabsVM { get; }
+    // TODO temporary
+    public MediaViewer MediaViewer { get; set; }
 
     public AppInfo AppInfo { get; } = new();
     public StatusPanelVM StatusPanelVM { get; }
