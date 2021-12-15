@@ -124,10 +124,11 @@ namespace PictureManager.ViewModels {
         _videoPreview.Source = null;
       }
 
-      WindowCommands.SwitchToFullScreen();
       // TODO add command with SwitchToFullScreen and setting MediaViewer
       App.WMain.MediaViewer.SetMediaItems(Model.FilteredItems.ToList());
       App.WMain.MediaViewer.SetMediaItemSource(mi);
+
+      WindowCommands.SwitchToFullScreen();
     }
 
     private async void Refresh() {

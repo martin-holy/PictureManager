@@ -25,6 +25,14 @@ namespace PictureManager {
       CommandsController.AddCommandBindings(CommandBindings);
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       App.Ui.ViewersVM.SetCurrent(App.Core.ViewersM.Current);
+
+      // TODO temporary
+      MediaViewer.ApplyTemplate();
+      MediaViewer.FullVideo.ApplyTemplate();
+      MediaViewer.FullImage.ApplyTemplate();
+      MediaViewer.PresentationPanel.ApplyTemplate();
+      MediaViewer.SegmentRects.ApplyTemplate();
+      App.Ui.MediaViewer = MediaViewer;
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
