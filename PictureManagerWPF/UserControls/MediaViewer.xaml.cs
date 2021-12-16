@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PictureManager.Domain.Models;
+using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class MediaViewer : INotifyPropertyChanged {
@@ -35,6 +36,7 @@ namespace PictureManager.UserControls {
 
     public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
     public List<MediaItemM> MediaItems { get; private set; }
+    public PresentationPanelVM PresentationPanel { get; }
 
     // commands
     public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
@@ -42,6 +44,8 @@ namespace PictureManager.UserControls {
     public static RoutedUICommand PresentationCommand { get; } = CommandsController.CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
 
     public MediaViewer() {
+      PresentationPanel = new(this);
+
       InitializeComponent();
       AttachEvents();
     }
@@ -64,7 +68,7 @@ namespace PictureManager.UserControls {
         }
       };
 
-      PresentationPanel.Elapsed = delegate {
+      PresentationPanel.TimerElapsedEventHandler += (_, _) => {
         App.Core.RunOnUiThread(() => {
           if (PresentationPanel.IsPaused) return;
           if (CanNext())
