@@ -4,10 +4,19 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:pm="clr-namespace:PictureManager"
-             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
-  
-  <Grid Background="Transparent">
+             xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+
+  <Grid Background="Transparent"
+        DataContext="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:MediaViewer}}}">
+
+    <Grid.Resources>
+      <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="../Views/PresentationPanelV.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </Grid.Resources>
+
     <!-- Full Media Image -->
     <Grid Visibility="{Binding Current.MediaType,
       Converter={StaticResource AllToVisibilityConverter},
@@ -16,7 +25,7 @@
       <cc:ZoomImageBox x:Name="FullImage" DataContext="{x:Static pm:App.Ui}" />
 
       <!-- Presentation Panel -->
-      <uc:PresentationPanel x:Name="PresentationPanel" />
+      <ContentPresenter Content="{Binding PresentationPanel}" />
     </Grid>
 
     <!-- Full Media Video -->
@@ -31,7 +40,7 @@
                          Zoom="{Binding ZoomActual, ElementName=FullImage}"
                          Width="{Binding Image.ActualWidth, ElementName=FullImage}"
                          Height="{Binding Image.ActualHeight, ElementName=FullImage}"
-                         Visibility="{Binding SegmentsEditButton.IsChecked, ElementName=PresentationPanel,
+                         Visibility="{Binding PresentationPanel.AreSegmentsRectsOn,
                                       Converter={StaticResource AllToVisibilityConverter}}">
       <uc:SegmentRectsControl.RenderTransform>
         <TranslateTransform X="{Binding TranslateTransform.X, ElementName=FullImage}"

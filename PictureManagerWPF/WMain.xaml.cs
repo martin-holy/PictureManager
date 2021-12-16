@@ -30,7 +30,6 @@ namespace PictureManager {
       MediaViewer.ApplyTemplate();
       MediaViewer.FullVideo.ApplyTemplate();
       MediaViewer.FullImage.ApplyTemplate();
-      MediaViewer.PresentationPanel.ApplyTemplate();
       MediaViewer.SegmentRects.ApplyTemplate();
       App.Ui.MediaViewer = MediaViewer;
     }
