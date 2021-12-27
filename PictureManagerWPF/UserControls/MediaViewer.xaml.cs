@@ -34,7 +34,7 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems.Count}";
+    public string PositionSlashCount => $"{(Current == null ? string.Empty : $"{_indexOfCurrent + 1}/")}{MediaItems?.Count}";
     public List<MediaItemM> MediaItems { get; private set; }
     public PresentationPanelVM PresentationPanel { get; }
 
@@ -120,7 +120,7 @@ namespace PictureManager.UserControls {
       }
     }
 
-    public void SetMediaItemSource(MediaItemM mediaItem, bool decoded = false) {
+    public void SetMediaItemSource(MediaItemM mediaItem) {
       var index = MediaItems.IndexOf(mediaItem);
       if (index < 0) return;
       _indexOfCurrent = index;
@@ -128,7 +128,7 @@ namespace PictureManager.UserControls {
 
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(mediaItem, decoded);
+          FullImage.SetSource(mediaItem);
           App.Ui.VideoClipsTreeVM.SetMediaItem(null);
           FullVideo.SetSource(null);
           break;
@@ -147,9 +147,7 @@ namespace PictureManager.UserControls {
 
     public void Next() {
       Current = MediaItems[++_indexOfCurrent];
-
-      var decoded = PresentationPanel.IsRunning && Current.MediaType == MediaType.Image && Current.IsPanoramic;
-      SetMediaItemSource(Current, decoded);
+      SetMediaItemSource(Current);
 
       if (PresentationPanel.IsRunning && (Current.MediaType == MediaType.Video ||
         (Current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
