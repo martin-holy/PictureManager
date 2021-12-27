@@ -54,8 +54,8 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    // TODO
-    public string ZoomActualFormatted => App.WMain?.MediaViewer.FullImage.ZoomActualFormatted;
+    // TODO this prop is here because binding to App.WMain... doesn't work
+    public double? ActualZoom => App.WMain?.MediaViewer.FullImage.ActualZoom;
     public string DateAndTime => DateTimeExtensions.DateTimeFromString(CurrentMediaItemM?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<IconName> Rating { get; } = new();
 
