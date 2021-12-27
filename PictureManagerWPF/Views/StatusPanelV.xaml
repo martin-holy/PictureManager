@@ -118,7 +118,7 @@
       <!-- ImageActualZoom -->
       <uc:InfoPanel IconSource="{StaticResource IconMagnify}"
                     IconFill="{StaticResource ColorBrushWhite}"
-                    Item="{Binding ZoomActualFormatted}">
+                    Item="{Binding ActualZoom, StringFormat={}{0:####}%}">
         <uc:InfoPanel.Style>
           <Style TargetType="{x:Type uc:InfoPanel}">
             <Setter Property="Visibility" Value="Collapsed" />
