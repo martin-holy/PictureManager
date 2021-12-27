@@ -621,5 +621,13 @@ namespace PictureManager.Domain.Utils {
 
       return diff;
     }
+
+    public static Rotation MediaOrientation2Rotation(MediaOrientation mo) =>
+      mo switch {
+        MediaOrientation.Rotate90 => Rotation.Rotate270,
+        MediaOrientation.Rotate180 => Rotation.Rotate180,
+        MediaOrientation.Rotate270 => Rotation.Rotate90,
+        _ => Rotation.Rotate0
+      };
   }
 }
