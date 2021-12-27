@@ -29,9 +29,13 @@ namespace PictureManager {
       // TODO temporary
       MediaViewer.ApplyTemplate();
       MediaViewer.FullVideo.ApplyTemplate();
-      MediaViewer.FullImage.ApplyTemplate();
       MediaViewer.SegmentRects.ApplyTemplate();
       App.Ui.MediaViewer = MediaViewer;
+
+      MediaViewer.FullImage.PropertyChanged += (_, pce) => {
+        if (nameof(MediaViewer.FullImage.ActualZoom).Equals(pce.PropertyName))
+          App.Ui.StatusPanelVM.OnPropertyChanged(nameof(App.Ui.StatusPanelVM.ActualZoom));
+      };
     }
 
     private void WMain_OnClosing(object sender, CancelEventArgs e) {
