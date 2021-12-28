@@ -27,7 +27,15 @@ namespace PictureManager.Views {
     private double _imageHeight;
     private BitmapImage _imageSource;
 
-    public double ScaleX { get => _scaleX; set { _scaleX = value; OnPropertyChanged(); OnPropertyChanged(nameof(ActualZoom)); } }
+    public double ScaleX {
+      get => _scaleX;
+      set {
+        _scaleX = value;
+        OnPropertyChanged();
+        OnPropertyChanged(nameof(ActualZoom));
+        ScaleChangedEventHandler(this, EventArgs.Empty);
+      }
+    }
     public double ScaleY { get => _scaleY; set { _scaleY = value; OnPropertyChanged(); } }
     public double TransformX { get => _transformX; set { _transformX = value; OnPropertyChanged(); } }
     public double TransformY { get => _transformY; set { _transformY = value; OnPropertyChanged(); } }
@@ -36,6 +44,8 @@ namespace PictureManager.Views {
     public BitmapImage ImageSource { get => _imageSource; set { _imageSource = value; OnPropertyChanged(); } }
     public bool IsAnimationOn { get; set; }
     public double ActualZoom => ScaleX * 100;
+
+    public event EventHandler ScaleChangedEventHandler = delegate { };
 
     public ZoomImageBoxV() {
       InitializeComponent();
