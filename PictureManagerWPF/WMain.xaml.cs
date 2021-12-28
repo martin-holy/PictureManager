@@ -29,7 +29,6 @@ namespace PictureManager {
       // TODO temporary
       MediaViewer.ApplyTemplate();
       MediaViewer.FullVideo.ApplyTemplate();
-      MediaViewer.SegmentRects.ApplyTemplate();
       App.Ui.MediaViewer = MediaViewer;
 
       MediaViewer.FullImage.PropertyChanged += (_, pce) => {

@@ -1,0 +1,130 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:v="clr-namespace:PictureManager.Views"
+                    xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+
+  <DataTemplate DataType="{x:Type m:SegmentRectM}">
+
+    <Border
+      MinWidth="{Binding Size}"
+      MinHeight="{Binding Size}"
+      Background="Transparent"
+      ToolTipService.InitialShowDelay="0"
+      Effect="{StaticResource Res_ShadowEffect}"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top">
+      
+      <Border.Style>
+        <Style TargetType="{x:Type Border}">
+          
+          <Setter Property="RenderTransform">
+            <Setter.Value>
+              <TranslateTransform
+                X="{Binding X}"
+                Y="{Binding Y}" />
+            </Setter.Value>
+          </Setter>
+          
+          <Setter Property="BorderBrush"
+            Value="White" />
+          
+          <Setter Property="BorderThickness"
+            Value="1" />
+          
+          <Setter Property="ToolTip"
+            Value="{Binding Segment.Person.Name}" />
+
+          <Style.Triggers>
+            
+            <DataTrigger Value="True"
+              Binding="{Binding Segment.IsSelected}">
+              <Setter Property="BorderBrush"
+                Value="LimeGreen" />
+            </DataTrigger>
+            
+            <DataTrigger Value="True"
+              Binding="{Binding IsMouseOver, RelativeSource=
+                       {RelativeSource AncestorType={x:Type Border}}}">
+              <Setter Property="BorderThickness"
+                Value="2" />
+            </DataTrigger>
+            
+            <DataTrigger Value="{x:Null}"
+              Binding="{Binding Segment.Person}">
+              <Setter Property="ToolTip"
+                Value="{Binding Segment.PersonId}" />
+            </DataTrigger>
+
+          </Style.Triggers>
+         </Style>
+       </Border.Style>
+      
+      <Grid>
+        <!-- Resize Border -->
+        <Border
+          x:Name="ResizeBorder"
+          BorderThickness="5"
+          BorderBrush="Transparent"
+          Cursor="SizeAll" />
+        
+        <!-- Move Point and Delete -->
+        <Grid Margin="0,2,0,0">
+
+          <Grid.Style>
+            <Style TargetType="{x:Type Grid}">
+              
+              <Setter Property="Visibility"
+                      Value="Collapsed" />
+
+              <Style.Triggers>
+                <MultiDataTrigger>
+
+                  <MultiDataTrigger.Conditions>
+                    <Condition Value="False"
+                      Binding="{Binding SegmentsRectsM.IsEditOn, RelativeSource=
+                               {RelativeSource AncestorType={x:Type v:SegmentsRectsV}}}" />
+                    <Condition Value="True"
+                      Binding="{Binding IsMouseOver, RelativeSource=
+                               {RelativeSource AncestorType={x:Type Border}}}"  />
+                  </MultiDataTrigger.Conditions>
+
+                  <Setter Property="Visibility"
+                    Value="Visible" />
+
+                </MultiDataTrigger>
+              </Style.Triggers>
+
+            </Style>
+          </Grid.Style>
+          
+          <!-- Move Point -->
+          <mhc:Icon
+            x:Name="MovePoint"
+            Size="12"
+            Source="{StaticResource IconDot}"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Cursor="SizeAll" />
+
+          <!-- Delete Segment -->
+          <mhc:IconButton
+            x:Name="BtnDelete"
+            Source="{StaticResource IconXCross}"
+            Size="10"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Right"
+            ToolTip="Delete"
+            Margin="2,0"
+            Command="{Binding DeleteCommand, RelativeSource=
+                     {RelativeSource AncestorType={x:Type v:SegmentsRectsV}}}"
+            CommandParameter="{Binding}"/>
+        </Grid>
+
+      </Grid>
+
+    </Border>
+
+  </DataTemplate>
+
+</ResourceDictionary>

@@ -27,6 +27,7 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; }
     public List<SegmentM> All { get; } = new();
     public Dictionary<int, SegmentM> AllDic { get; set; }
+    public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public List<List<SegmentM>> LoadedGroupedByPerson { get; } = new();
     public List<SegmentM> Selected => _selected;
@@ -45,6 +46,7 @@ namespace PictureManager.Domain.Models {
     public SegmentsM(Core core) {
       _core = core;
       DataAdapter = new SegmentsDataAdapter(core, this);
+      SegmentsRectsM = new(this);
     }
 
     public void Select(List<SegmentM> list, SegmentM segment, bool isCtrlOn, bool isShiftOn) =>
