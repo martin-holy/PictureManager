@@ -5,12 +5,13 @@
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:uc="clr-namespace:PictureManager.UserControls"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:views="clr-namespace:PictureManager.Views">
+  xmlns:v="clr-namespace:PictureManager.Views"
+  xmlns:pm="clr-namespace:PictureManager">
 
   <Grid
     Background="Transparent"
     DataContext="{Binding RelativeSource=
-                 {RelativeSource FindAncestor, AncestorType={x:Type uc:MediaViewer}}}">
+                 {RelativeSource AncestorType={x:Type uc:MediaViewer}}}">
 
     <Grid.Resources>
       <ResourceDictionary>
@@ -27,7 +28,7 @@
                    Converter={StaticResource AllToVisibilityConverter},
                    ConverterParameter={x:Static pmd:MediaType.Image}}" >
 
-      <views:ZoomImageBoxV
+      <v:ZoomImageBoxV
         x:Name="FullImage" />
       
       <!-- Presentation Panel -->
@@ -42,22 +43,21 @@
                    Converter={StaticResource AllToVisibilityConverter}, 
                    ConverterParameter={x:Static pmd:MediaType.Video}}" />
     
-    <!-- Segment Rects -->
-    <uc:SegmentRectsControl
-      x:Name="SegmentRects"
-      MediaItem="{Binding Current}"
-      Zoom="{Binding ActualZoom, ElementName=FullImage}"
+    <!-- Segments Rects -->
+    <v:SegmentsRectsV
+      x:Name="SegmentsRects"
+      SegmentsRectsM="{Binding SegmentsM.SegmentsRectsM, Source={x:Static pm:App.Core}}"
       Width="{Binding ActualWidth, ElementName=FullImage}"
       Height="{Binding ActualHeight, ElementName=FullImage}"
       Visibility="{Binding PresentationPanel.AreSegmentsRectsOn,
                    Converter={StaticResource AllToVisibilityConverter}}">
-      
-      <uc:SegmentRectsControl.RenderTransform>
+
+      <v:SegmentsRectsV.RenderTransform>
         <TranslateTransform
           X="{Binding TransformX, ElementName=FullImage}"
           Y="{Binding TransformY, ElementName=FullImage}" />
-      </uc:SegmentRectsControl.RenderTransform>
-    </uc:SegmentRectsControl>
+      </v:SegmentsRectsV.RenderTransform>
+    </v:SegmentsRectsV>
 
   </Grid>
 </UserControl>

@@ -85,9 +85,12 @@ namespace PictureManager.UserControls {
 
       Loaded += (o, e) => SetUpCommands(App.WMain.CommandBindings);
 
-      PreviewMouseMove += SegmentRects.SegmentRectsControl_PreviewMouseMove;
-      PreviewMouseDown += SegmentRects.SegmentRectsControl_PreviewMouseDown;
-      PreviewMouseUp += SegmentRects.SegmentRectsControl_PreviewMouseUp;
+      PreviewMouseDown += SegmentsRects.OnPreviewMouseDown;
+      PreviewMouseMove += SegmentsRects.OnPreviewMouseMove;
+      PreviewMouseUp += SegmentsRects.OnPreviewMouseUp;
+
+      FullImage.ScaleChangedEventHandler += (_, _) =>
+        App.Core.SegmentsM.SegmentsRectsM.Scale = FullImage.ScaleX;
     }
 
     private void SetUpCommands(CommandBindingCollection cbc) {
@@ -125,6 +128,7 @@ namespace PictureManager.UserControls {
       if (index < 0) return;
       _indexOfCurrent = index;
       Current = mediaItem;
+      App.Core.SegmentsM.SegmentsRectsM.MediaItem = mediaItem;
 
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
