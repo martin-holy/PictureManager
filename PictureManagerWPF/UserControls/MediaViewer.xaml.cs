@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
@@ -102,7 +103,7 @@ namespace PictureManager.UserControls {
     public void Deactivate() {
       PresentationPanel.Stop();
       FullImage.Stop();
-      FullImage.SetSource(null);
+      FullImage.SetSource(null, 0);
       FullVideo.IsPlaying = false;
       FullVideo.SetSource(null);
       MediaItems.Clear();
@@ -132,7 +133,7 @@ namespace PictureManager.UserControls {
 
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
-          FullImage.SetSource(mediaItem);
+          FullImage.SetSource(mediaItem.FilePath, Imaging.MediaOrientation2Rotation((MediaOrientation)mediaItem.Orientation));
           App.Ui.VideoClipsTreeVM.SetMediaItem(null);
           FullVideo.SetSource(null);
           break;

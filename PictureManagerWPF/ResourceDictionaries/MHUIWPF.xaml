@@ -1,25 +1,42 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
-  <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-    <Setter Property="Fill" Value="White" />
+  <Style
+    TargetType="{x:Type mhc:Icon}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+    <Setter Property="Fill"
+      Value="White" />
   </Style>
   
-  <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
-    <Setter Property="Fill" Value="White" />
-    <Setter Property="Background" Value="White" />
+  <Style
+    TargetType="{x:Type mhc:IconButton}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
+    <Setter Property="Fill"
+      Value="White" />
+    <Setter Property="Background"
+      Value="White" />
   </Style>
   
-  <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.UI.WPF.Controls.IconToggleButton}">
-    <Setter Property="Fill" Value="White" />
-    <Setter Property="Background" Value="White" />
+  <Style
+    TargetType="{x:Type mhc:IconToggleButton}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.IconToggleButton}">
+    <Setter Property="Fill"
+      Value="White" />
+    <Setter Property="Background"
+      Value="White" />
   </Style>
+
+  <Style
+    TargetType="{x:Type mhc:ZoomAndPanImage}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
   
 </ResourceDictionary>
