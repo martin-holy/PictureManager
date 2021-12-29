@@ -6,7 +6,8 @@
   xmlns:uc="clr-namespace:PictureManager.UserControls"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:v="clr-namespace:PictureManager.Views"
-  xmlns:pm="clr-namespace:PictureManager">
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <Grid
     Background="Transparent"
@@ -28,7 +29,7 @@
                    Converter={StaticResource AllToVisibilityConverter},
                    ConverterParameter={x:Static pmd:MediaType.Image}}" >
 
-      <v:ZoomImageBoxV
+      <mhc:ZoomAndPanImage
         x:Name="FullImage" />
       
       <!-- Presentation Panel -->
