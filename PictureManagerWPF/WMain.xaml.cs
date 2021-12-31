@@ -25,10 +25,6 @@ namespace PictureManager {
       CommandsController.AddCommandBindings(CommandBindings);
       App.Core.WindowsDisplayScale = PresentationSource.FromVisual(this)?.CompositionTarget?.TransformToDevice.M11 * 100 ?? 100.0;
       App.Ui.ViewersVM.SetCurrent(App.Core.ViewersM.Current);
-
-      // TODO temporary
-      MediaViewer.ApplyTemplate();
-      MediaViewer.FullVideo.ApplyTemplate();
       App.Ui.MediaViewer = MediaViewer;
 
       MediaViewer.FullImage.PropertyChanged += (_, pce) => {
