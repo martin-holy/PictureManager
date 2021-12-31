@@ -2,7 +2,6 @@
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/IconRectStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
     <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />

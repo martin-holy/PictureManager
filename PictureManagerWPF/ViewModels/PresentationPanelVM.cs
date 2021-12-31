@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Timers;
+using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.UserControls;
@@ -70,7 +71,7 @@ namespace PictureManager.ViewModels {
 
       IsPaused = false;
       IsRunning = true;
-      _mediaViewer.FullVideo.PlayType = CustomControls.PlayType.Video;
+      _mediaViewer.FullVideo.PlayType = PlayType.Video;
       _mediaViewer.FullVideo.RepeatForSeconds = Interval;
 
       if (!delay) TimerElapsedEventHandler(this, EventArgs.Empty);

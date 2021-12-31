@@ -44,17 +44,19 @@
               CommandParameter="{StaticResource False}" />
       <Button ToolTip="Split"
               Content="S"
-              Command="{Binding VideoClipSplitCommand}" />
-      <mhc:IconButton Command="cc:VideoPlayer.VideoClipsSaveCommand"
-                      Source="{StaticResource IconSave}"
-                      Size="16" />
+              Command="{Binding SplitCommand}" />
+      <mhc:IconButton
+        ToolTip="Save Video Clips"
+        Command="{Binding SaveCommand}"
+        Source="{StaticResource IconSave}"
+        Size="16" />
       <mhc:IconToggleButton Source="{StaticResource IconSoundMute}"
                             IsChecked="{Binding VideoPlayer.Player.IsMuted}"
                             ToolTip="Mute" />
                 
       <StackPanel Orientation="Horizontal"
                   Margin="4" 
-                  Visibility="{Binding VideoPlayer.ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
+                  Visibility="{Binding ShowRepeatSlider, Converter={StaticResource AllToVisibilityConverter}}">
         <TextBlock Text="Repeat for: "
                    Margin="0,0,4,0" />
         <Slider Value="{Binding VideoPlayer.RepeatForSeconds}"
@@ -70,10 +72,10 @@
     <!-- PlayType -->
     <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="4">
       <TextBlock Text="Play: " />
-      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static cc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Video}}" />
-      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static cc:PlayType.Clip}" Content="Clip" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Clip}}" />
-      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static cc:PlayType.Clips}" Content="Clips" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Clips}}" />
-      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static cc:PlayType.Group}" Content="Group" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static cc:PlayType.Group}}" />
+      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static mhc:PlayType.Video}" Content="Video" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static mhc:PlayType.Video}}" />
+      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static mhc:PlayType.Clip}" Content="Clip" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static mhc:PlayType.Clip}}" />
+      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static mhc:PlayType.Clips}" Content="Clips" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static mhc:PlayType.Clips}}" />
+      <RadioButton Command="{Binding SetPlayTypeCommand}" CommandParameter="{x:Static mhc:PlayType.Group}" Content="Group" Margin="5,0" IsChecked="{Binding VideoPlayer.PlayType, Mode=OneWay, Converter={StaticResource AllToBoolConverter}, ConverterParameter={x:Static mhc:PlayType.Group}}" />
     </StackPanel>
 
     <!-- Clips TreeView -->

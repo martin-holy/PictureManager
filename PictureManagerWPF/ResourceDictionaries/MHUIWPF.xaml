@@ -7,6 +7,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
@@ -34,6 +35,10 @@
     <Setter Property="Background"
       Value="White" />
   </Style>
+
+  <Style
+    TargetType="{x:Type mhc:VideoPlayer}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.VideoPlayer}" />
 
   <Style
     TargetType="{x:Type mhc:ZoomAndPanImage}"

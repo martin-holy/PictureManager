@@ -18,6 +18,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public VideoClipsM Model { get; }
     public MediaItemM CurrentMediaItem { get; private set; }
+    public VideoClipTreeVM CurrentVideoClip { get; set; }
 
     public VideoClipsTreeVM(Core core, VideoClipsM model) : base(Category.VideoClips, "Clips") {
       _core = core;
@@ -62,7 +63,7 @@ namespace PictureManager.ViewModels.Tree {
       }
     }
 
-    public void SelectNext(VideoClipTreeVM current, bool inGroup) {
+    public void SelectNext(bool inGroup, bool selectFirst) {
       var groups = new List<List<ICatTreeViewItem>>();
       groups.AddRange(Items.Where(x => x is ICatTreeViewGroup g && g.Items.Count > 0).Select(g => ((ICatTreeViewItem)g).Items.Cast<ICatTreeViewItem>().ToList()));
 
@@ -72,14 +73,14 @@ namespace PictureManager.ViewModels.Tree {
       if (groups.Count == 0) return;
 
       // select first
-      if (current == null) {
+      if (selectFirst) {
         groups[0][0].IsSelected = true;
         return;
       }
 
       for (var i = 0; i < groups.Count; i++) {
         var group = groups[i];
-        var idx = group.IndexOf(current);
+        var idx = group.IndexOf(CurrentVideoClip);
 
         if (idx < 0) continue;
 
@@ -90,7 +91,7 @@ namespace PictureManager.ViewModels.Tree {
         else
           next = inGroup ? group[0] : groups[i < groups.Count - 1 ? i + 1 : 0][0];
 
-        if (Equals(next, current))
+        if (Equals(next, CurrentVideoClip))
           next.IsSelected = false;
 
         next.IsSelected = true;
@@ -151,7 +152,7 @@ namespace PictureManager.ViewModels.Tree {
       root.Items.Add(vcvm);
 
       var vp = App.WMain.MediaViewer.FullVideo;
-      Model.SetMarker(vcm, true, (int)Math.Round(vp.TimelineSlider.Value), vp.VolumeSlider.Value, vp.SpeedSlider.Value);
+      Model.SetMarker(vcm, true, (int)Math.Round(vp.TimelinePosition), vp.Volume, vp.Speed);
       CreateThumbnail(vcm, vp.Player, true);
 
       App.WMain.ToolsTabs.VideoClips.CtvClips.ScrollTo(vcvm);

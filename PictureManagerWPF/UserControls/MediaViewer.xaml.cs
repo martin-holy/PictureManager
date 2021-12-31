@@ -1,4 +1,5 @@
-﻿using PictureManager.Commands;
+﻿using System;
+using PictureManager.Commands;
 using PictureManager.Domain;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -105,8 +106,9 @@ namespace PictureManager.UserControls {
       FullImage.Stop();
       FullImage.SetSource(null, 0);
       FullVideo.IsPlaying = false;
-      FullVideo.SetSource(null);
+      FullVideo.SetNullSource();
       MediaItems.Clear();
+      App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabClips, false);
     }
 
     public void SetMediaItems(List<MediaItemM> mediaItems) {
@@ -135,12 +137,18 @@ namespace PictureManager.UserControls {
         case MediaType.Image: {
           FullImage.SetSource(mediaItem.FilePath, Imaging.MediaOrientation2Rotation((MediaOrientation)mediaItem.Orientation));
           App.Ui.VideoClipsTreeVM.SetMediaItem(null);
-          FullVideo.SetSource(null);
+          FullVideo.SetNullSource();
+          App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabClips, false);
           break;
         }
         case MediaType.Video: {
+          var data = ShellStuff.FileInformation.GetVideoMetadata(mediaItem.Folder.FullPath, mediaItem.FileName);
+          var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
+          var smallChange = Math.Round(1000 / fps, 0);
+
           App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem);
-          FullVideo.SetSource(mediaItem);
+          FullVideo.SetSource(mediaItem.FilePath, mediaItem.RotationAngle, smallChange);
+          App.WMain.ToolsTabs.Activate(App.WMain.ToolsTabs.TabClips, true);
           break;
         }
       }
