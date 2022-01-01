@@ -1,8 +1,9 @@
-﻿using MH.Utils.Interfaces;
+﻿using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class FolderKeywordTreeVM : CatTreeViewTagItemBase {
+  public sealed class FolderKeywordTreeVM : CatTreeViewItem {
     public FolderKeywordM Model { get; }
 
     public FolderKeywordTreeVM(FolderKeywordM model, ITreeBranch parent) {

@@ -1,9 +1,10 @@
-﻿using MH.UI.WPF.Interfaces;
+﻿using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Interfaces;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
-  public sealed class CategoryGroupTreeVM : CatTreeViewTagItemBase, ICatTreeViewGroup {
+  public sealed class CategoryGroupTreeVM : CatTreeViewItem, ICatTreeViewGroup {
     public CategoryGroupM Model { get; }
     public new bool IsHidden { get => Model.IsHidden; set => Model.IsHidden = value; }
 

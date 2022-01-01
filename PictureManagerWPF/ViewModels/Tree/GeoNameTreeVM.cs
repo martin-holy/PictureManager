@@ -1,11 +1,11 @@
-﻿using MH.Utils.Interfaces;
+﻿using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Interfaces;
 
 namespace PictureManager.ViewModels.Tree {
-  public class GeoNameTreeVM : CatTreeViewTagItemBase, IFilterItem, IViewModel<GeoNameM> {
+  public class GeoNameTreeVM : CatTreeViewItem, IFilterItem, IViewModel<GeoNameM> {
     #region IFilterItem implementation
     private DisplayFilter _displayFilter;
     public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }
