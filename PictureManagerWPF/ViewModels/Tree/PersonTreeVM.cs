@@ -1,10 +1,11 @@
-﻿using MH.Utils.Interfaces;
+﻿using MH.UI.WPF.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
-  public class PersonTreeVM : CatTreeViewTagItemBase, IFilterItem, IViewModel<PersonM> {
+  public class PersonTreeVM : CatTreeViewItem, IFilterItem, IViewModel<PersonM> {
     #region IFilterItem implementation
     private DisplayFilter _displayFilter;
     public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }
