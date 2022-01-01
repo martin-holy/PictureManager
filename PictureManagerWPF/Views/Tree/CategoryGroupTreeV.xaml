@@ -41,6 +41,7 @@
         <mhc:Icon Source="{Binding Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
                   Fill="{Binding Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
         <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
+        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>
