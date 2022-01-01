@@ -14,7 +14,6 @@ using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
-using PictureManager.Interfaces;
 using PictureManager.Properties;
 using PictureManager.UserControls;
 using PictureManager.Utils;
@@ -173,9 +172,11 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public void SetMetadata(ICatTreeViewTagItem item) {
+    public int SetMetadata(object item) {
+      var count = 0;
+
       foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
-        Model.SetModified(mi, true);
+        var modified = true;
 
         switch (item) {
           case PersonTreeVM p:
@@ -193,10 +194,20 @@ namespace PictureManager.ViewModels {
           case GeoNameTreeVM g:
             mi.GeoName = g.Model;
             break;
+
+          default:
+            modified = false;
+            break;
         }
 
+        if (!modified) continue;
+
+        Model.SetModified(mi, true);
         mi.SetInfoBox();
+        count++;
       }
+
+      return count;
     }
 
     public async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
