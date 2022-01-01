@@ -5,12 +5,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
-using MH.Utils.Extensions;
 using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Interfaces;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.UserControls;
@@ -20,7 +18,7 @@ using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
 
 namespace PictureManager {
-  public sealed class AppCore {
+  public sealed class AppCore : MH.Utils.BaseClasses.ObservableObject {
     public DrivesTreeVM DrivesTreeVM { get; }
     public SegmentsVM SegmentsVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
@@ -48,7 +46,7 @@ namespace PictureManager {
 
     public AppInfo AppInfo { get; } = new();
     public StatusPanelVM StatusPanelVM { get; }
-    public HashSet<ICatTreeViewTagItem> MarkedTags { get; } = new();
+    public Dictionary<object, int> MarkedTags { get; } = new();
     public static EventHandler OnToggleKeyword { get; set; }
     public static EventHandler OnSetPerson { get; set; }
 
@@ -138,14 +136,12 @@ namespace PictureManager {
       if (item == null) return;
 
       if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
-        if (App.Core.MediaItemsM.IsEditModeOn && item is ICatTreeViewTagItem tagItem) {
-          if (!MarkedTags.Toggle(tagItem))
-            tagItem.PicCount = 0;
-
-          MediaItemsVM.SetMetadata(tagItem);
+        if (App.Core.MediaItemsM.IsEditModeOn) {
+          if (MediaItemsVM.SetMetadata(item) == 0) return;
 
           MarkUsedKeywordsAndPeople();
-          StatusPanelVM.UpdateRating();
+          if (item is RatingTreeVM)
+            StatusPanelVM.UpdateRating();
 
           return;
         }
@@ -192,19 +188,22 @@ namespace PictureManager {
     public void MarkUsedKeywordsAndPeople() {
       //can be Person, Keyword, FolderKeyword, Rating or GeoName
 
-      void MarkedTagsAddWithIncrease(ICatTreeViewTagItem item) {
-        if (item == null) return;
-        item.PicCount++;
-        if (!MarkedTags.Contains(item))
-          MarkedTags.Add(item);
+      void MarkedTagsAddWithIncrease(object tag) {
+        if (tag == null) return;
+
+        if (MarkedTags.ContainsKey(tag))
+          MarkedTags[tag]++;
+        else
+          MarkedTags.Add(tag, 1);
       }
 
       // clear previous marked tags
-      foreach (var item in MarkedTags)
-        item.PicCount = 0;
       MarkedTags.Clear();
 
-      if (App.Core.ThumbnailsGridsM.Current == null) return;
+      if (App.Core.ThumbnailsGridsM.Current == null) {
+        OnPropertyChanged(nameof(MarkedTags));
+        return;
+      }
 
       var mediaItems = App.Core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
@@ -257,6 +256,8 @@ namespace PictureManager {
         // Ratings
         MarkedTagsAddWithIncrease(App.Ui.RatingsTreeVM.GetRatingByValue(mi.Rating));
       }
+
+      OnPropertyChanged(nameof(MarkedTags));
     }
 
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
