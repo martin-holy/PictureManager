@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:pm="clr-namespace:PictureManager">
 
   <!-- STextBlock -->
   <Style x:Key="STextBlock" TargetType="TextBlock">
@@ -13,16 +14,51 @@
     <Setter Property="FontSize" Value="14" />
   </Style>
 
-  <Style x:Key="TreeItemKeywordsPicCount" TargetType="{x:Type TextBlock}">
-    <Setter Property="Text" Value="{Binding PicCount}" />
-    <Setter Property="Visibility" Value="Collapsed"/>
-    <Setter Property="VerticalAlignment" Value="Center" />
-    <Setter Property="Margin" Value="5,0,0,0" />
-    <Setter Property="Padding" Value="5,0" />
-    <Setter Property="Background" Value="{DynamicResource AccentColorBrush4}" />
+  <Style
+    x:Key="TreeItemKeywordsPicCount"
+    TargetType="{x:Type TextBlock}">
+
+    <Setter
+      Property="DataContext"
+      Value="{Binding}" />
+    <Setter
+      Property="Visibility"
+      Value="Visible" />
+    <Setter
+      Property="VerticalAlignment"
+      Value="Center" />
+    <Setter
+      Property="Margin"
+      Value="5,0,0,0" />
+    <Setter
+      Property="Padding"
+      Value="5,0" />
+    <Setter
+      Property="Background"
+      Value="{DynamicResource AccentColorBrush4}" />
+
+    <Setter Property="Text">
+      <Setter.Value>
+        <MultiBinding Converter="{StaticResource MarkedTagsItemsCountConverter}">
+          <Binding
+            Path="MarkedTags"
+            Source="{x:Static pm:App.Ui}" />
+          <Binding
+            Path="DataContext"
+            RelativeSource="{RelativeSource Self}"/>
+        </MultiBinding>
+      </Setter.Value>
+    </Setter>
+
     <Style.Triggers>
-      <DataTrigger Binding="{Binding PicCount, Converter={StaticResource AllToBoolConverter}}" Value="True">
-        <Setter Property="Visibility" Value="Visible"/>
+      <DataTrigger
+        Binding="{Binding Text,
+                  Converter={StaticResource AllToBoolConverter},
+                  RelativeSource={RelativeSource Self}}"
+        Value="False">
+        <Setter
+          Property="Visibility"
+          Value="Collapsed"/>
       </DataTrigger>
     </Style.Triggers>
   </Style>
