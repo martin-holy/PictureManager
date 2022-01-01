@@ -20,6 +20,7 @@
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
   <converters:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
   <converters:IconNameToPathGeometryConverter x:Key="IconNameToPathGeometryConverter" />
+  <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
   <mhConverters:EqualityConverter x:Key="EqualityConverter" />
   <mhConverters:ClickConverter x:Key="ClickConverter" />
