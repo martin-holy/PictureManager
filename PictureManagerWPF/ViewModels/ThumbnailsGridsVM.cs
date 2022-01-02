@@ -14,7 +14,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
-using PictureManager.Interfaces;
 using PictureManager.Properties;
 using PictureManager.Utils;
 using PictureManager.ViewModels.Tree;
@@ -35,7 +34,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
     public RelayCommand<IFilterItem> ActivateFilterOrCommand { get; }
     public RelayCommand<IFilterItem> ActivateFilterNotCommand { get; }
-    public RelayCommand<ICatTreeViewTagItem> LoadByTagCommand { get; }
+    public RelayCommand<ICatTreeViewItem> LoadByTagCommand { get; }
     public RelayCommand<object> ClearFiltersCommand { get; }
     public RelayCommand<object> SelectNotModifiedCommand { get; }
     public RelayCommand<object> ShuffleCommand { get; }
