@@ -232,6 +232,8 @@ namespace PictureManager.ViewModels {
 
           mi.SetThumbSize(true);
         }
+
+        mi.IsOnlyInDb = false;
       }
       catch (Exception ex) {
         _core.LogError(ex, mi.FilePath);
