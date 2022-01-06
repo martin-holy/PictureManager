@@ -1,26 +1,22 @@
 ﻿using System;
-using PictureManager.Commands;
 using PictureManager.Domain;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using MH.UI.WPF.BaseClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.ViewModels;
 
 namespace PictureManager.UserControls {
   public partial class MediaViewer : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
 
-    // local props
     private int _indexOfCurrent;
-
     private MediaItemM _current;
 
-    // public props
     public MediaItemM Current {
       get => _current;
       set {
@@ -40,25 +36,20 @@ namespace PictureManager.UserControls {
     public List<MediaItemM> MediaItems { get; private set; }
     public PresentationPanelVM PresentationPanel { get; }
 
-    // commands
-    public static RoutedUICommand NextCommand { get; } = CommandsController.CreateCommand("Next", "Next", new KeyGesture(Key.Right));
-    public static RoutedUICommand PreviousCommand { get; } = CommandsController.CreateCommand("Previous", "Previous", new KeyGesture(Key.Left));
-    public static RoutedUICommand PresentationCommand { get; } = CommandsController.CreateCommand("Presentation", "Presentation", new KeyGesture(Key.P, ModifierKeys.Control));
+    public RelayCommand<object> NextCommand { get; }
+    public RelayCommand<object> PreviousCommand { get; }
 
     public MediaViewer() {
       PresentationPanel = new(this);
+      NextCommand = new(Next, CanNext);
+      PreviousCommand = new(Previous, CanPrevious);
 
       InitializeComponent();
       AttachEvents();
     }
 
     private void AttachEvents() {
-      MouseLeftButtonDown += (o, e) => {
-        if (e.ClickCount == 2)
-          WindowCommands.SwitchToBrowser();
-      };
-
-      MouseWheel += (o, e) => {
+      MouseWheel += (_, e) => {
         if ((Keyboard.Modifiers & ModifierKeys.Control) > 0) return;
         if (e.Delta < 0) {
           if (CanNext())
@@ -70,22 +61,10 @@ namespace PictureManager.UserControls {
         }
       };
 
-      PresentationPanel.TimerElapsedEventHandler += (_, _) => {
-        App.Core.RunOnUiThread(() => {
-          if (PresentationPanel.IsPaused) return;
-          if (CanNext())
-            Next();
-          else
-            PresentationPanel.Stop();
-        });
-      };
-
-      FullVideo.RepeatEnded += delegate {
+      FullVideo.RepeatEnded += () => {
         if (!PresentationPanel.IsPaused) return;
         PresentationPanel.Start(false);
       };
-
-      Loaded += (o, e) => SetUpCommands(App.WMain.CommandBindings);
 
       PreviewMouseDown += SegmentsRects.OnPreviewMouseDown;
       PreviewMouseMove += SegmentsRects.OnPreviewMouseMove;
@@ -93,12 +72,6 @@ namespace PictureManager.UserControls {
 
       FullImage.ScaleChangedEventHandler += (_, _) =>
         App.Core.SegmentsM.SegmentsRectsM.Scale = FullImage.ScaleX;
-    }
-
-    private void SetUpCommands(CommandBindingCollection cbc) {
-      CommandsController.AddCommandBinding(cbc, NextCommand, Next, CanNext);
-      CommandsController.AddCommandBinding(cbc, PreviousCommand, Previous, CanPrevious);
-      CommandsController.AddCommandBinding(cbc, PresentationCommand, Presentation, CanPresentation);
     }
 
     public void Deactivate() {
@@ -154,9 +127,8 @@ namespace PictureManager.UserControls {
       }
     }
 
-    #region Commands
-
-    public bool CanNext() => MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
+    public bool CanNext() =>
+      MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
 
     public void Next() {
       Current = MediaItems[++_indexOfCurrent];
@@ -174,7 +146,8 @@ namespace PictureManager.UserControls {
       App.Ui.MarkUsedKeywordsAndPeople();
     }
 
-    public bool CanPrevious() => _indexOfCurrent > 0;
+    public bool CanPrevious() =>
+      _indexOfCurrent > 0;
 
     public void Previous() {
       if (PresentationPanel.IsRunning)
@@ -184,22 +157,5 @@ namespace PictureManager.UserControls {
       SetMediaItemSource(Current);
       App.Ui.MarkUsedKeywordsAndPeople();
     }
-
-    private bool CanPresentation() => Current != null;
-
-    private void Presentation() {
-      if (FullImage.IsAnimationOn) {
-        FullImage.Stop();
-        PresentationPanel.Stop();
-        return;
-      }
-
-      if (PresentationPanel.IsRunning || PresentationPanel.IsPaused)
-        PresentationPanel.Stop();
-      else
-        PresentationPanel.Start(true);
-    }
-
-    #endregion
   }
 }
