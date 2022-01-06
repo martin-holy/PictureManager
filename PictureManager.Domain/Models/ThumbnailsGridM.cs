@@ -64,9 +64,7 @@ namespace PictureManager.Domain.Models {
     public string ActiveFileSize {
       get {
         try {
-          var size = CurrentMediaItem == null
-            ? SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length)
-            : new FileInfo(CurrentMediaItem.FilePath).Length;
+          var size = SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length);
 
           return size == 0 ? string.Empty : IOExtensions.FileSizeToString(size);
         }
