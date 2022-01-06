@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using MH.UI.WPF.Interfaces;
 using PictureManager.CustomControls;
-using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.UserControls {
@@ -46,27 +45,27 @@ namespace PictureManager.UserControls {
       // People
       AddToSearchResult(App.Core.PeopleM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.People, x.Name, (x.Parent as CategoryGroupM)?.Name, App.Ui.PeopleTreeVM.All[x.Id])));
+        .Select(x => new SearchItem("IconPeople", x.Name, (x.Parent as CategoryGroupM)?.Name, App.Ui.PeopleTreeVM.All[x.Id])));
 
       // Keywords
       AddToSearchResult(App.Core.KeywordsM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.Tag, x.Name, x.FullName, App.Ui.KeywordsTreeVM.All[x.Id])));
+        .Select(x => new SearchItem("IconTag", x.Name, x.FullName, App.Ui.KeywordsTreeVM.All[x.Id])));
 
       // GeoNames
       AddToSearchResult(App.Core.GeoNamesM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-        .Select(x => new SearchItem(IconName.LocationCheckin, x.Name, x.FullName, App.Ui.GeoNamesTreeVM.All[x.Id])));
+        .Select(x => new SearchItem("IconLocationCheckin", x.Name, x.FullName, App.Ui.GeoNamesTreeVM.All[x.Id])));
 
       // Folders
       var result = App.Core.FoldersM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && App.Core.ViewersM.CanViewerSee(x))
-        .Select(x => new SearchItem(IconName.Folder, x.Name, x.FullPath, App.Ui.FoldersTreeVM.All[x.Id])).ToList();
+        .Select(x => new SearchItem("IconFolder", x.Name, x.FullPath, App.Ui.FoldersTreeVM.All[x.Id])).ToList();
 
       // Folder Keywords
       result.AddRange(App.Core.FolderKeywordsM.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase) && x.Folders.All(f => App.Core.ViewersM.CanViewerSee(f)))
-        .Select(x => new SearchItem(IconName.FolderPuzzle, x.Name, x.FullPath, App.Ui.FolderKeywordsTreeVM.All[x.Id])));
+        .Select(x => new SearchItem("IconFolderPuzzle", x.Name, x.FullPath, App.Ui.FolderKeywordsTreeVM.All[x.Id])));
       AddToSearchResult(result);
     }
 
@@ -94,12 +93,12 @@ namespace PictureManager.UserControls {
   }
 
   public class SearchItem {
-    public IconName IconName { get; set; }
+    public string IconName { get; set; }
     public string Title { get; set; }
     public string ToolTip { get; set; }
     public ICatTreeViewItem Item { get; set; }
 
-    public SearchItem(IconName iconName, string title, string toolTip, ICatTreeViewItem item) {
+    public SearchItem(string iconName, string title, string toolTip, ICatTreeViewItem item) {
       IconName = iconName;
       Title = title;
       ToolTip = toolTip;
