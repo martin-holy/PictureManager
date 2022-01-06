@@ -6,12 +6,16 @@
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:v="clr-namespace:PictureManager.Views"
   xmlns:pm="clr-namespace:PictureManager"
+  xmlns:cmd="clr-namespace:PictureManager.Commands"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <Grid
+    x:Name="Root"
     Background="Transparent"
-    DataContext="{Binding RelativeSource=
-                 {RelativeSource AncestorType={x:Type uc:MediaViewer}}}">
+    Focusable="True"
+    FocusVisualStyle="{x:Null}"
+    DataContext="{Binding
+                  RelativeSource={RelativeSource AncestorType={x:Type uc:MediaViewer}}}">
     
     <Grid.Resources>
       <ResourceDictionary>
@@ -21,15 +25,58 @@
       </ResourceDictionary>
     </Grid.Resources>
 
+    <Grid.Style>
+      <Style TargetType="{x:Type Grid}">
+        <Style.Triggers>
+          <Trigger
+            Property="IsMouseOver"
+            Value="True">
+            <Setter
+              Property="FocusManager.FocusedElement"
+              Value="{Binding RelativeSource={RelativeSource Self}}" />
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+    </Grid.Style>
+
+    <Grid.InputBindings>
+      <MouseBinding
+        MouseAction="LeftDoubleClick"
+        Command="cmd:WindowCommands.SwitchToBrowserCommand" />
+      <KeyBinding
+        Key="Right"
+        Command="{Binding NextCommand}" />
+      <KeyBinding
+        Key="Left"
+        Command="{Binding PreviousCommand}" />
+      <KeyBinding
+        Modifiers="Control"
+        Key="P"
+        Command="{Binding PresentationPanel.PresentationCommand}" />
+      <KeyBinding
+        Modifiers="Control"
+        Key="R"
+        Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+      <KeyBinding
+        Key="F2"
+        Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+      <KeyBinding
+        Key="Delete"
+        Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+      <KeyBinding
+        Modifiers="Control" Key="K"
+        Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+    </Grid.InputBindings>
+
     <!-- Full Media Image -->
     <Grid
-      Focusable="True"
       Visibility="{Binding Current.MediaType,
                    Converter={StaticResource AllToVisibilityConverter},
                    ConverterParameter={x:Static pmd:MediaType.Image}}" >
 
       <mhc:ZoomAndPanImage
-        x:Name="FullImage" />
+        x:Name="FullImage"
+        Focusable="False" />
       
       <!-- Presentation Panel -->
       <ContentPresenter

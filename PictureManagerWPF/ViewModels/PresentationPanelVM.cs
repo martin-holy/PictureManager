@@ -1,5 +1,5 @@
-﻿using System;
-using System.Timers;
+﻿using System.Timers;
+using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
@@ -49,13 +49,14 @@ namespace PictureManager.ViewModels {
     }
 
     public bool IsPaused { get; private set; }
-    public event EventHandler TimerElapsedEventHandler = delegate { };
+    public RelayCommand<object> PresentationCommand { get; set; }
 
     public PresentationPanelVM(MediaViewer mediaViewer) {
       _mediaViewer = mediaViewer;
+      PresentationCommand = new(Presentation);
 
       _timer.Interval = Interval * 1000;
-      _timer.Elapsed += (o, e) => TimerElapsedEventHandler(o, e);
+      _timer.Elapsed += (_, _) => Next();
     }
 
     ~PresentationPanelVM() {
@@ -65,7 +66,7 @@ namespace PictureManager.ViewModels {
     public void Start(bool delay) {
       if (delay && _mediaViewer.Current.MediaType == MediaType.Image && _mediaViewer.Current.IsPanoramic && PlayPanoramicImages) {
         Pause();
-        _mediaViewer.FullImage.Play(Interval * 1000, delegate { Start(false); });
+        _mediaViewer.FullImage.Play(Interval * 1000, () => Start(false));
         return;
       }
 
@@ -74,7 +75,7 @@ namespace PictureManager.ViewModels {
       _mediaViewer.FullVideo.PlayType = PlayType.Video;
       _mediaViewer.FullVideo.RepeatForSeconds = Interval;
 
-      if (!delay) TimerElapsedEventHandler(this, EventArgs.Empty);
+      if (!delay) Next();
     }
 
     public void Stop() {
@@ -86,6 +87,29 @@ namespace PictureManager.ViewModels {
     public void Pause() {
       IsPaused = true;
       IsRunning = false;
+    }
+
+    private void Presentation() {
+      if (_mediaViewer.FullImage.IsAnimationOn) {
+        _mediaViewer.FullImage.Stop();
+        Stop();
+        return;
+      }
+
+      if (IsRunning || IsPaused)
+        Stop();
+      else
+        Start(true);
+    }
+
+    private void Next() {
+      App.Core.RunOnUiThread(() => {
+        if (IsPaused) return;
+        if (_mediaViewer.CanNext())
+          _mediaViewer.Next();
+        else
+          Stop();
+      });
     }
   }
 }
