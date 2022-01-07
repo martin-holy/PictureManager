@@ -3,7 +3,8 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
                     xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <HierarchicalDataTemplate DataType="{x:Type tree:CatTreeViewCategoryBase}"
                             ItemsSource="{Binding Items}">
@@ -20,9 +21,14 @@
       <Border Height="40">
         <StackPanel Orientation="Horizontal"
                     Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-          <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                    Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
-                    Size="24" />
+          <mhc:Icon
+            Source="{Binding Category,
+                      Converter={StaticResource CategoryToPathGeometryConverter}}"
+            Fill="{Binding Category,
+                    Converter={StaticResource DictionaryConverter},
+                    ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                    FallbackValue={StaticResource ColorBrushWhite}}"
+            Size="24" />
           <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}" FontSize="18" />
         </StackPanel>
       </Border>

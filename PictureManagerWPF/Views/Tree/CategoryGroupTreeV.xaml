@@ -5,7 +5,8 @@
                     xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
-                    xmlns:commands="clr-namespace:PictureManager.Commands">
+                    xmlns:commands="clr-namespace:PictureManager.Commands"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <ContextMenu x:Key="CatGroupTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
@@ -38,8 +39,13 @@
 
       <StackPanel Orientation="Horizontal"
                   Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-        <mhc:Icon Source="{Binding Model.Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                  Fill="{Binding Model.Category, Converter={StaticResource CategoryToBrushConverter}}" />
+        <mhc:Icon
+          Source="{Binding Model.Category,
+                    Converter={StaticResource CategoryToPathGeometryConverter}}"
+          Fill="{Binding Model.Category,
+                  Converter={StaticResource DictionaryConverter},
+                  ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                  FallbackValue={StaticResource ColorBrushWhite}}" />
         <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
         <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>

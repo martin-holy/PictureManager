@@ -5,7 +5,8 @@
              xmlns:cc="clr-namespace:PictureManager.CustomControls"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
              xmlns:cmd="clr-namespace:PictureManager.Commands"
-             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+             xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
   
   <UserControl.Resources>
     <ResourceDictionary>
@@ -44,12 +45,17 @@
 
           <ItemsControl.ItemTemplate>
             <DataTemplate>
-              <mhc:IconButton Size="22"
-                              ShowShadow="False"
-                              ToolTip="{Binding Name}"
-                              Click="BtnNavCategory_OnClick"
-                              Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}"
-                              Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}" />
+              <mhc:IconButton
+                Size="22"
+                ShowShadow="False"
+                ToolTip="{Binding Name}"
+                Click="BtnNavCategory_OnClick"
+                Source="{Binding Category,
+                          Converter={StaticResource CategoryToPathGeometryConverter}}"
+                Fill="{Binding Category,
+                        Converter={StaticResource DictionaryConverter},
+                        ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                        FallbackValue={StaticResource ColorBrushWhite}}" />
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
