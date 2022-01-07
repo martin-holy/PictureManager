@@ -31,7 +31,7 @@
     <cc:VirtualizingWrapPanel x:Name="PeopleGrid"
                               ScrollViewerSpeedFactor="1"
                               ShowGroupItemsCount="True"
-                              GroupItemsCountIcon="ImageMultiple"
+                              GroupItemsCountIcon="IconImageMultiple"
                               SizeChanged="ControlSizeChanged">
       
       <cc:VirtualizingWrapPanel.ItemDataTemplate>

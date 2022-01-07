@@ -71,9 +71,6 @@
       <StackPanel Orientation="Vertical">
         <Button>Text button</Button>
         <Button>Text</Button>
-        <Button>
-          <cc:IconRect IconName="{x:Static pmd:IconName.People}" />
-        </Button>
       </StackPanel>
 
       <StackPanel Orientation="Vertical">
@@ -82,9 +79,6 @@
         </StackPanel.Resources>
         <Button>TEXT button</Button>
         <Button IsEnabled="False">Text</Button>
-        <Button>
-          <cc:IconRect IconName="{x:Static pmd:IconName.People}" />
-        </Button>
         <Button Style="{StaticResource StyleButtonDialog}">DONE</Button>
       </StackPanel>
       

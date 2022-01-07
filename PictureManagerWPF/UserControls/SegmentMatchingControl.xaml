@@ -60,7 +60,7 @@
                                 ScrollViewerSpeedFactor="1"
                                 ItemDataTemplate="{StaticResource SegmentDataTemplate}"
                                 ShowGroupItemsCount="True"
-                                GroupItemsCountIcon="ImageMultiple" />
+                                GroupItemsCountIcon="IconImageMultiple" />
     </Grid>
 
     <!-- Control Buttons -->

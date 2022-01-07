@@ -8,7 +8,6 @@ using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
 using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
@@ -57,10 +56,10 @@ namespace PictureManager.Dialogs {
   }
 
   public class FolderTreeViewItem : CatTreeViewItem {
-    private IconName _iconName;
+    private string _iconName;
 
     public string Title { get; }
-    public IconName IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Title);
 
     public FolderTreeViewItem(ITreeBranch parent, string title) {
@@ -76,7 +75,7 @@ namespace PictureManager.Dialogs {
 
     private void UpdateIconName() {
       if (Parent != null) // not Drive Folder
-        IconName = IsExpanded ? IconName.FolderOpen : IconName.Folder;
+        IconName = IsExpanded ? "IconFolderOpen" : "IconFolder";
     }
 
     public void LoadSubFolders() {
@@ -86,7 +85,7 @@ namespace PictureManager.Dialogs {
       var fullPath = FullPath + Path.DirectorySeparatorChar;
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
-        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]) { IconName = IconName.Folder };
+        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]) { IconName = "IconFolder" };
 
         try {
           // add placeholder so the folder can be expanded

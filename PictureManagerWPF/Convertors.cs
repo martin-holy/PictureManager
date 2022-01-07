@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
 using MH.UI.WPF.Interfaces;
-using PictureManager.Domain;
 
 namespace PictureManager {
   public static class Convertors {
@@ -33,51 +31,6 @@ namespace PictureManager {
   public class StaticResourceConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
       value == null ? throw new ArgumentNullException(nameof(value)) : Application.Current.FindResource((string)value);
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
-
-  public class IconNameToStaticResourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null)
-        value = IconName.Bug;
-
-      // transition to new icon resources
-      if (targetType == typeof(PathGeometry) && Application.Current.TryFindResource($"Icon{(IconName)value}") is { } res)
-        return res;
-
-      var resourceName = $"appbar{Regex.Replace(((IconName)value).ToString(), @"([A-Z])", "_$1").ToLower(CultureInfo.CurrentCulture)}";
-
-      return Application.Current.FindResource(resourceName);
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
-
-  public class IconNameToBrushConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value == null) throw new ArgumentNullException(nameof(value));
-      var resName = "ColorBrushWhite";
-
-      switch ((IconName)value) {
-        case IconName.Folder:
-        case IconName.FolderStar:
-        case IconName.FolderLock:
-        case IconName.FolderPuzzle:
-        case IconName.FolderOpen: resName = "ColorBrushFolder"; break;
-        case IconName.Tag:
-        case IconName.TagLabel: resName = "ColorBrushTag"; break;
-        case IconName.People:
-        case IconName.PeopleMultiple: resName = "ColorBrushPeople"; break;
-        case IconName.Drive:
-        case IconName.DriveError:
-        case IconName.Cd: resName = "ColorBrushDrive"; break;
-      }
-
-      return App.WMain.FindResource(resName);
-    }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();

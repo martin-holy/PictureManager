@@ -96,7 +96,7 @@ namespace PictureManager.ViewModels.Tree {
       ModelGroupDelete(group);
     }
 
-    private static bool GetNewName(bool forItem, string oldName, out string newName, ICatTreeViewItem item, Func<ICatTreeViewItem, string, string> validator, IconName icon) {
+    private static bool GetNewName(bool forItem, string oldName, out string newName, ICatTreeViewItem item, Func<ICatTreeViewItem, string, string> validator, string icon) {
       var action = string.IsNullOrEmpty(oldName) ? "New" : "Rename";
       var target = forItem ? "Item" : "Group";
       var question = string.IsNullOrEmpty(oldName)
@@ -119,19 +119,17 @@ namespace PictureManager.ViewModels.Tree {
         $"Do you really want to delete '{name}'?",
         true);
 
-    private static IconName CategoryToIconName(Category category) {
+    private static string CategoryToIconName(Category category) {
       return category switch {
-        Category.FavoriteFolders => IconName.FolderStar,
-        Category.Folders => IconName.Folder,
-        Category.Ratings => IconName.Star,
-        Category.People => IconName.PeopleMultiple,
-        Category.FolderKeywords => IconName.Folder,
-        Category.Keywords => IconName.TagLabel,
-        Category.Filters => IconName.Filter,
-        Category.Viewers => IconName.Eye,
-        Category.SqlQueries => IconName.DatabaseSql,
-        Category.VideoClips => IconName.MovieClapper,
-        _ => IconName.Bug
+        Category.FavoriteFolders => "IconFolderStar",
+        Category.Folders => "IconFolder",
+        Category.Ratings => "IconStar",
+        Category.People => "IconPeopleMultiple",
+        Category.FolderKeywords => "IconFolder",
+        Category.Keywords => "IconTagLabel",
+        Category.Viewers => "IconEye",
+        Category.VideoClips => "IconMovieClapper",
+        _ => "IconNBug"
       };
     }
   }

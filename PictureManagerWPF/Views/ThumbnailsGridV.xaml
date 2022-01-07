@@ -70,7 +70,7 @@
       <ContentPresenter.Resources>
         <Style TargetType="{x:Type cc:VirtualizingWrapPanel}" BasedOn="{StaticResource CustomControls.VirtualizingWrapPanel}">
           <Setter Property="ShowGroupItemsCount" Value="True" />
-          <Setter Property="GroupItemsCountIcon" Value="ImageMultiple" />
+          <Setter Property="GroupItemsCountIcon" Value="IconImageMultiple" />
           <Setter Property="ItemDataTemplate" Value="{StaticResource MiThumbWithCommands}" />
           <Setter Property="Tag" Value="{Binding}" />
         </Style>

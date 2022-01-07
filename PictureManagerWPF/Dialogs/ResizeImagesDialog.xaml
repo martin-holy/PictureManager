@@ -4,8 +4,7 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   mc:Ignorable="d"
   Title="Resize Images" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -53,10 +52,13 @@
       <!-- Resize to -->
       <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0" />
       <DockPanel Grid.Row="1" Grid.Column="1">
-        <Button x:Name="BtnOpenDirectoryPicker" Width="30" Height="30" DockPanel.Dock="Right" 
-                Margin="5,0,0,0" Click="BtnOpenDirectoryPicker_OnClick">
-          <cc:IconRect IconName="{x:Static pmd:IconName.Folder}" />
-        </Button>
+        <mhc:IconButton
+          x:Name="BtnOpenDirectoryPicker"
+          Source="{StaticResource IconFolder}"
+          Fill="{StaticResource ColorBrushFolder}"
+          VerticalAlignment="Center"
+          DockPanel.Dock="Right"
+          Click="BtnOpenDirectoryPicker_OnClick" />
         <ComboBox ItemsSource="{Binding DirPaths}" x:Name="CmbDirPaths" Style="{StaticResource ErrorStyle}" 
                   SelectionChanged="CmbDirPaths_OnSelectionChanged" Height="30" />
       </DockPanel>

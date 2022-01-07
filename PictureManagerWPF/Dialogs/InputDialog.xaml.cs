@@ -1,5 +1,4 @@
-﻿using PictureManager.Domain;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -10,12 +9,12 @@ namespace PictureManager.Dialogs {
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
-    private IconName _iconName = IconName.Bug;
+    private string _iconName = "IconBug";
     private string _question;
     private string _answer;
     private bool _error;
 
-    public IconName IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string Question { get => _question; set { _question = value; OnPropertyChanged(); } }
     public string Answer { get => _answer; set { _answer = value; OnPropertyChanged(); } }
     public bool Error { get => _error; set { _error = value; OnPropertyChanged(); } }
@@ -32,7 +31,7 @@ namespace PictureManager.Dialogs {
 
     private void TxtAnswer_OnKeyUp(object sender, KeyEventArgs e) => Answer = TxtAnswer.Text;
 
-    public static bool Open(IconName iconName, string title, string question, string answer, Func<string, string> validator, out string output) {
+    public static bool Open(string iconName, string title, string question, string answer, Func<string, string> validator, out string output) {
       var inputDialog = new InputDialog {
         Owner = App.WMain,
         IconName = iconName,

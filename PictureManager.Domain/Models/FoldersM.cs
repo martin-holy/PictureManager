@@ -60,12 +60,12 @@ namespace PictureManager.Domain.Models {
         item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.OrdinalIgnoreCase));
     }
 
-    public static IconName GetDriveIconName(DriveType type) =>
+    public static string GetDriveIconName(DriveType type) =>
       type switch {
-        DriveType.CDRom => IconName.Cd,
-        DriveType.Network => IconName.Drive,
-        DriveType.NoRootDirectory or DriveType.Unknown => IconName.DriveError,
-        _ => IconName.Drive,
+        DriveType.CDRom => "IconCd",
+        DriveType.Network => "IconDrive",
+        DriveType.NoRootDirectory or DriveType.Unknown => "IconDriveError",
+        _ => "IconDrive",
       };
 
     public MediaItemM GetMediaItemByPath(string path) {
