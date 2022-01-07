@@ -49,8 +49,13 @@
 
       <DataTemplate DataType="{x:Type models:CategoryGroupM}">
         <StackPanel Orientation="Horizontal">
-          <mhc:Icon Source="{Binding Category, Converter={StaticResource CategoryToPathGeometryConverter}}"
-                    Fill="{Binding Category, Converter={StaticResource CategoryToBrushConverter}}" />
+          <mhc:Icon
+            Source="{Binding Category,
+                      Converter={StaticResource CategoryToPathGeometryConverter}}"
+            Fill="{Binding Category,
+                    Converter={StaticResource DictionaryConverter},
+                    ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                    FallbackValue={StaticResource ColorBrushWhite}}" />
           <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
         </StackPanel>
       </DataTemplate>

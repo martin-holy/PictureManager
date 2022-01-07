@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using PictureManager.Domain;
 
 namespace PictureManager.ResourceDictionaries {
   public static class Dictionaries {
@@ -15,6 +16,14 @@ namespace PictureManager.ResourceDictionaries {
       { "IconDrive", "ColorBrushDrive" },
       { "IconDriveError", "ColorBrushDrive" },
       { "IconCd", "ColorBrushDrive" }
+    };
+
+    public static Dictionary<object, object> CategoryToBrush = new() {
+      { Category.Folders, "ColorBrushFolder" },
+      { Category.FavoriteFolders, "ColorBrushFolder" },
+      { Category.FolderKeywords, "ColorBrushFolder" },
+      { Category.People, "ColorBrushPeople" },
+      { Category.Keywords, "ColorBrushTag" }
     };
   }
 }
