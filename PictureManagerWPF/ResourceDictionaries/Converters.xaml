@@ -5,8 +5,6 @@
                     xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
-  <pm:IconNameToBrushConverter x:Key="IconNameToBrushConverterOld" />
-  <pm:IconNameToStaticResourceConverter x:Key="IconNameToStaticResourceConverter" />
   <pm:RatingConverter x:Key="RatingConverter" />
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
@@ -18,10 +16,10 @@
   <converters:CategoryToBrushConverter x:Key="CategoryToBrushConverter" />
   <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
-  <converters:IconNameToBrushConverter x:Key="IconNameToBrushConverter" />
-  <converters:IconNameToPathGeometryConverter x:Key="IconNameToPathGeometryConverter" />
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
-  <mhConverters:DebugConverter x:Key="DebugConverter" />
-  <mhConverters:EqualityConverter x:Key="EqualityConverter" />
   <mhConverters:ClickConverter x:Key="ClickConverter" />
+  <mhConverters:DebugConverter x:Key="DebugConverter" />
+  <mhConverters:DictionaryConverter x:Key="DictionaryConverter" />
+  <mhConverters:EqualityConverter x:Key="EqualityConverter" />
+  <mhConverters:ResourceConverter x:Key="ResourceConverter" />
 </ResourceDictionary>

@@ -57,7 +57,7 @@ namespace PictureManager.ViewModels {
     // TODO this prop is here because binding to App.WMain... doesn't work
     public double? ActualZoom => App.WMain?.MediaViewer.FullImage.ActualZoom;
     public string DateAndTime => DateTimeExtensions.DateTimeFromString(CurrentMediaItemM?.FileName, _dateFormats, "H:mm:ss");
-    public ObservableCollection<IconName> Rating { get; } = new();
+    public ObservableCollection<int> Rating { get; } = new();
 
     public RelayCommand<object> PinCommand { get; }
 
@@ -75,7 +75,7 @@ namespace PictureManager.ViewModels {
     public void UpdateRating() {
       Rating.Clear();
       for (var i = 0; i < CurrentMediaItemM?.Rating; i++)
-        Rating.Add(IconName.Star);
+        Rating.Add(0);
     }
   }
 }

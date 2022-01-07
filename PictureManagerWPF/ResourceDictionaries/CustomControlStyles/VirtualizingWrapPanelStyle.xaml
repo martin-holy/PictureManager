@@ -1,6 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:cc="clr-namespace:PictureManager.CustomControls">
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../Converters.xaml" />
   </ResourceDictionary.MergedDictionaries>
@@ -36,7 +38,15 @@
               <!-- GroupItem -->
               <DataTemplate DataType="{x:Type cc:VirtualizingWrapPanelGroupItem}" x:Key="GroupItemDataTemplate">
                 <StackPanel Orientation="Horizontal" ToolTip="{Binding ToolTip}">
-                  <cc:IconRect IconName="{Binding Icon}" Margin="8,8,0,8" />
+                  <mhc:Icon
+                    Source="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+                    Fill="{Binding Icon,
+                            Converter={StaticResource DictionaryConverter},
+                            ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                            FallbackValue={StaticResource ColorBrushWhite}}"
+                    ShowShadow="False"
+                    HorizontalAlignment="Center"
+                    Margin="8,8,0,8"/>
                   <TextBlock Text="{Binding Title}" FontSize="20" Padding="8" />
                 </StackPanel>
               </DataTemplate>
@@ -55,7 +65,17 @@
 
                     <!-- Group Items Count -->
                     <StackPanel Orientation="Horizontal" Visibility="{Binding ShowGroupItemsCount, Converter={StaticResource AllToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}">
-                      <cc:IconRect Margin="8,8,0,8" IconName="{Binding GroupItemsCountIcon, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type cc:VirtualizingWrapPanel}}}" />
+                      <mhc:Icon
+                        Source="{Binding GroupItemsCountIcon, 
+                                  RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}},
+                                  Converter={StaticResource ResourceConverter}}"
+                        Fill="{Binding GroupItemsCountIcon,
+                                RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}},
+                                Converter={StaticResource DictionaryConverter},
+                                ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                                FallbackValue={StaticResource ColorBrushWhite}}"
+                        ShowShadow="False"
+                        HorizontalAlignment="Center" />
                       <TextBlock Text="{Binding ItemsCount}" FontSize="20" Padding="8" />
                     </StackPanel>
                   </StackPanel>

@@ -1,5 +1,4 @@
-﻿using PictureManager.Domain;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace PictureManager.CustomControls {
 
     public static readonly DependencyProperty ItemDataTemplateProperty = DependencyProperty.Register(nameof(ItemDataTemplate), typeof(DataTemplate), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty ShowGroupItemsCountProperty = DependencyProperty.Register(nameof(ShowGroupItemsCount), typeof(bool), typeof(VirtualizingWrapPanel));
-    public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(nameof(GroupItemsCountIcon), typeof(IconName), typeof(VirtualizingWrapPanel));
+    public static readonly DependencyProperty GroupItemsCountIconProperty = DependencyProperty.Register(nameof(GroupItemsCountIcon), typeof(string), typeof(VirtualizingWrapPanel));
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(nameof(ScrollViewerSpeedFactor), typeof(double), typeof(VirtualizingWrapPanel), new PropertyMetadata(2.5));
 
     public DataTemplate ItemDataTemplate {
@@ -36,8 +35,8 @@ namespace PictureManager.CustomControls {
       set => SetValue(ShowGroupItemsCountProperty, value);
     }
 
-    public IconName GroupItemsCountIcon {
-      get => (IconName)GetValue(GroupItemsCountIconProperty);
+    public string GroupItemsCountIcon {
+      get => (string)GetValue(GroupItemsCountIconProperty);
       set => SetValue(GroupItemsCountIconProperty, value);
     }
 
@@ -157,7 +156,7 @@ namespace PictureManager.CustomControls {
       _lastRow = null;
     }
 
-    public void AddGroup(IconName icon, string title) =>
+    public void AddGroup(string icon, string title) =>
       AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = icon, Title = title } });
 
     public void AddGroup(VirtualizingWrapPanelGroupItem[] groupItems) {
@@ -224,11 +223,11 @@ namespace PictureManager.CustomControls {
   }
 
   public class VirtualizingWrapPanelGroupItem : ObservableObject {
-    private IconName _icon;
+    private string _icon;
     private string _title;
     private string _toolTip;
 
-    public IconName Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
+    public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string ToolTip { get => _toolTip; set { _toolTip = value; OnPropertyChanged(); } }
   }

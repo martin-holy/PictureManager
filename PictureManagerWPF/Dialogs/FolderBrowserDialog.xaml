@@ -5,7 +5,8 @@
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:dialogs="clr-namespace:PictureManager.Dialogs"
-                      xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                      xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                      xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
                       mc:Ignorable="d"
                       Title="Browse For Folder" Width="300" Height="500"
                       BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -36,7 +37,14 @@
       <TreeView.ItemTemplate>
         <HierarchicalDataTemplate DataType="{x:Type dialogs:FolderTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent">
-            <cc:IconRect IconName="{Binding IconName}" />
+            <mhc:Icon
+              Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+              Fill="{Binding IconName,
+                      Converter={StaticResource DictionaryConverter},
+                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                      FallbackValue={StaticResource ColorBrushWhite}}"
+              ShowShadow="False"
+              HorizontalAlignment="Center" />
             <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
           </StackPanel>
         </HierarchicalDataTemplate>

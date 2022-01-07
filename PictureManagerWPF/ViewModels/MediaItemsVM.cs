@@ -97,7 +97,7 @@ namespace PictureManager.ViewModels {
     private async void Rename() {
       var inputDialog = new InputDialog {
         Owner = App.WMain,
-        IconName = IconName.Notification,
+        IconName = "IconNotification",
         Title = "Rename",
         Question = "Add a new name.",
         Answer = Path.GetFileNameWithoutExtension(Model.Current.FileName)
@@ -593,7 +593,7 @@ namespace PictureManager.ViewModels {
     private void Comment() {
       var inputDialog = new InputDialog {
         Owner = App.WMain,
-        IconName = IconName.Notification,
+        IconName = "IconNotification",
         Title = "Comment",
         Question = "Add a comment.",
         Answer = Model.Current.Comment

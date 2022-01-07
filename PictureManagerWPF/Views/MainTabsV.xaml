@@ -3,7 +3,8 @@
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:pm="clr-namespace:PictureManager"
                     xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <DataTemplate DataType="{x:Type vm:MainTabsVM}">
     <TabControl x:Name="Tabs"
@@ -94,8 +95,11 @@
                                                  Converter={StaticResource AllToVisibilityConverter}}"/>
                     
                     <!-- Tab Icon -->
-                    <mhc:Icon Source="{Binding IconName, Converter={StaticResource IconNameToPathGeometryConverter}}"
-                              Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}"
+                    <mhc:Icon Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+                              Fill="{Binding IconName,
+                                      Converter={StaticResource DictionaryConverter},
+                                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                                      FallbackValue={StaticResource ColorBrushWhite}}"
                               Size="16"
                               ShowShadow="False"
                               HorizontalAlignment="Center">

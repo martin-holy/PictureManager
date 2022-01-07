@@ -328,13 +328,13 @@ namespace PictureManager.ViewModels {
         var toolTip = mi.Folder.FolderKeyword != null
           ? mi.Folder.FolderKeyword.FullPath
           : mi.Folder.FullPath;
-        groupItems.Add(new() { Icon = IconName.Folder, Title = title, ToolTip = toolTip });
+        groupItems.Add(new() { Icon = "IconFolder", Title = title, ToolTip = toolTip });
       }
 
       if (Current.Model.GroupByDate) {
         var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
         if (!string.IsNullOrEmpty(title))
-          groupItems.Add(new() { Icon = IconName.Calendar, Title = title });
+          groupItems.Add(new() { Icon = "IconCalendar", Title = title });
       }
 
       await _core.RunOnUiThread(() => {

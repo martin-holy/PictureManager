@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:uc="clr-namespace:PictureManager.UserControls"
-             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+             xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <UserControl.Resources>
     <!-- CloseButton Style -->
@@ -34,8 +35,11 @@
         <DataTemplate>
           <StackPanel Orientation="Horizontal" ToolTip="{Binding ToolTip}">
             <mhc:Icon
-              Source="{Binding IconName, Converter={StaticResource IconNameToPathGeometryConverter}}"
-              Fill="{Binding IconName, Converter={StaticResource IconNameToBrushConverter}}" />
+              Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+              Fill="{Binding IconName,
+                      Converter={StaticResource DictionaryConverter},
+                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                      FallbackValue={StaticResource ColorBrushWhite}}" />
             <TextBlock Text="{Binding Title}" Margin="4" />
           </StackPanel>
         </DataTemplate>

@@ -91,7 +91,7 @@ namespace PictureManager.UserControls {
       await _workTask.Cancel();
 
       SegmentsGrid.ClearRows();
-      SegmentsGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = Domain.IconName.People, Title = "?" } });
+      SegmentsGrid.AddGroup(new VirtualizingWrapPanelGroupItem[] { new() { Icon = "IconPeople", Title = "?" } });
       ConfirmedSegmentsGrid.ClearRows();
       App.Core.SegmentsM.GroupSegments = false;
       var segments = App.Core.SegmentsM.GetSegments(_mediaItems, withPersonOnly);
@@ -146,14 +146,14 @@ namespace PictureManager.UserControls {
 
         foreach (var group in App.Core.SegmentsM.LoadedGroupedByPerson) {
           var groupTitle = group[0].Person != null ? group[0].Person.Name : group[0].PersonId.ToString();
-          SegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
+          SegmentsGrid.AddGroup("IconPeople", groupTitle);
 
           foreach (var segment in group)
             SegmentsGrid.AddItem(segment, _segmentGridWidth);
         }
       }
       else {
-        SegmentsGrid.AddGroup(Domain.IconName.People, "?");
+        SegmentsGrid.AddGroup("IconPeople", "?");
         foreach (var segment in App.Core.SegmentsM.Loaded)
           SegmentsGrid.AddItem(segment, _segmentGridWidth);
       }
@@ -171,7 +171,7 @@ namespace PictureManager.UserControls {
       if (App.Core.SegmentsM.GroupConfirmedSegments) {
         foreach (var (personId, segment, similar) in App.Core.SegmentsM.ConfirmedSegments) {
           var groupTitle = segment.Person != null ? segment.Person.Name : personId.ToString();
-          ConfirmedSegmentsGrid.AddGroup(Domain.IconName.People, groupTitle);
+          ConfirmedSegmentsGrid.AddGroup("IconPeople", groupTitle);
           ConfirmedSegmentsGrid.AddItem(segment, _segmentGridWidth);
 
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
@@ -189,9 +189,9 @@ namespace PictureManager.UserControls {
 
           // add group
           if (!string.IsNullOrEmpty(group.Key) && !group.Key.Equals("Unknown"))
-            ConfirmedSegmentsGrid.AddGroup(Domain.IconName.Tag, group.Key);
+            ConfirmedSegmentsGrid.AddGroup("IconTag", group.Key);
           if (group.Key.Equals("Unknown"))
-            ConfirmedSegmentsGrid.AddGroup(Domain.IconName.People, group.Key);
+            ConfirmedSegmentsGrid.AddGroup("IconPeople", group.Key);
 
           // add people
           foreach (var (_, segment, _) in group)

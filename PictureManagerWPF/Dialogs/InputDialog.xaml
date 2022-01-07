@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-        xmlns:cc="clr-namespace:PictureManager.CustomControls"
+        xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+        xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
         mc:Ignorable="d"
         Title="InputDialog" SizeToContent="WidthAndHeight" 
         BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -25,7 +26,15 @@
 
   <StackPanel>
     <StackPanel Orientation="Horizontal">
-      <cc:IconRect Width="32" Height="32" Margin="10" IconName="{Binding IconName}" Size="32" />
+      <mhc:Icon
+        Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+        Fill="{Binding IconName,
+                Converter={StaticResource DictionaryConverter},
+                ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                FallbackValue={StaticResource ColorBrushWhite}}"
+        Size="32"
+        HorizontalAlignment="Center"
+        Margin="10" />
       <StackPanel Orientation="Vertical">
         <Label Name="LblQuestion" Content="{Binding Path=Question}"/>
         <TextBox Name="TxtAnswer" MinWidth="300" Margin="5" Text="{Binding Path=Answer}" Style="{StaticResource ErrorStyle}" KeyUp="TxtAnswer_OnKeyUp" />

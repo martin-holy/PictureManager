@@ -10,7 +10,6 @@ using MH.Utils;
 using PictureManager.CustomControls;
 using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
-using PictureManager.ViewModels.Tree;
 using PictureManager.Views;
 
 namespace PictureManager.UserControls {
@@ -50,9 +49,9 @@ namespace PictureManager.UserControls {
 
           // add group
           if (!group.Key.Equals(string.Empty)) {
-            var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = Domain.IconName.Tag, Title = group.Key } };
+            var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = "IconTag", Title = group.Key } };
             if (!string.IsNullOrEmpty(groupTitle))
-              groupItems.Insert(0, new() { Icon = Domain.IconName.People, Title = groupTitle });
+              groupItems.Insert(0, new() { Icon = "IconPeople", Title = groupTitle });
             await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(groupItems.ToArray()));
           }
 
@@ -78,13 +77,13 @@ namespace PictureManager.UserControls {
       await _workTask.Start(Task.Run(async () => {
         foreach (var group in App.Core.PeopleM.Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, group.Name));
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", group.Name));
           await AddPeopleAsync(group.Name, group.Items.Cast<PersonM>(), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Core.PeopleM.Items.OfType<PersonM>().ToArray();
         if (peopleWithoutGroup.Any()) {
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(Domain.IconName.People, string.Empty));
+          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", string.Empty));
           await AddPeopleAsync(string.Empty, peopleWithoutGroup, _workTask.Token);
         }
       }));

@@ -37,7 +37,7 @@ namespace PictureManager.ViewModels.Tree {
       if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
 
       var result = InputDialog.Open(
-        IconName.LocationCheckin,
+        "IconLocationCheckin",
         "GeoName latitude and longitude",
         "Enter in format: N36.75847,W3.84609",
         string.Empty,

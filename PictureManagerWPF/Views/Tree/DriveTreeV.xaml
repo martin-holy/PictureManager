@@ -2,7 +2,6 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
                     xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
@@ -33,11 +32,11 @@
               <Setter Property="Fill" Value="{StaticResource ColorBrushDrive}" />
 
               <Style.Triggers>
-                <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.DriveError}">
+                <DataTrigger Binding="{Binding Model.IconName}" Value="IconDriveError">
                   <Setter Property="Source" Value="{StaticResource IconDriveError}" />
                 </DataTrigger>
 
-                <DataTrigger Binding="{Binding Model.IconName}" Value="{x:Static pmd:IconName.Cd}">
+                <DataTrigger Binding="{Binding Model.IconName}" Value="IconCd">
                   <Setter Property="Source" Value="{StaticResource IconCd}" />
                 </DataTrigger>
               </Style.Triggers>
