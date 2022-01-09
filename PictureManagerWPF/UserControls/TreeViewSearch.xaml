@@ -37,7 +37,7 @@
             <mhc:Icon
               Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
               Fill="{Binding IconName,
-                      Converter={StaticResource DictionaryConverter},
+                      Converter={StaticResource ResourceConverter},
                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
                       FallbackValue={StaticResource ColorBrushWhite}}" />
             <TextBlock Text="{Binding Title}" Margin="4" />

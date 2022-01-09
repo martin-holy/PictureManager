@@ -18,7 +18,6 @@
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <mhConverters:ClickConverter x:Key="ClickConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
-  <mhConverters:DictionaryConverter x:Key="DictionaryConverter" />
   <mhConverters:EqualityConverter x:Key="EqualityConverter" />
   <mhConverters:ResourceConverter x:Key="ResourceConverter" />
 </ResourceDictionary>

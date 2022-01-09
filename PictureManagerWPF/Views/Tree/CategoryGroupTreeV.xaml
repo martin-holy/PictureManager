@@ -43,7 +43,7 @@
           Source="{Binding Model.Category,
                     Converter={StaticResource CategoryToPathGeometryConverter}}"
           Fill="{Binding Model.Category,
-                  Converter={StaticResource DictionaryConverter},
+                  Converter={StaticResource ResourceConverter},
                   ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
                   FallbackValue={StaticResource ColorBrushWhite}}" />
         <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
