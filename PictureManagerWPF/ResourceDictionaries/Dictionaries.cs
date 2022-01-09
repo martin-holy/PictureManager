@@ -47,5 +47,11 @@ namespace PictureManager.ResourceDictionaries {
       { Category.Viewers, "IconEye" },
       { Category.VideoClips, "IconMovieClapper" }
     };
+
+    public static Dictionary<object, object> DisplayFilterToBrush = new() {
+      { DisplayFilter.And, "DisplayFilterAndBrush" },
+      { DisplayFilter.Or, "DisplayFilterOrBrush" },
+      { DisplayFilter.Not, "DisplayFilterNotBrush" }
+    };
   }
 }

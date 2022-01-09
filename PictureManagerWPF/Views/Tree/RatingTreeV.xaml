@@ -3,7 +3,8 @@
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <ContextMenu x:Key="RatingTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
@@ -11,7 +12,10 @@
                ItemsSource="{StaticResource TagItemTreeContextMenu}" />
 
   <HierarchicalDataTemplate DataType="{x:Type tree:RatingTreeVM}">
-    <Grid Background="{Binding DisplayFilter, Converter={StaticResource DisplayFilterToBrushConverter}}">
+    <Grid Background="{Binding DisplayFilter,
+                        Converter={StaticResource ResourceConverter},
+                        ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
+                        FallbackValue={StaticResource TransparentBrush}}">
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
