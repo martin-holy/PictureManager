@@ -18,8 +18,8 @@
           <mhu:SetterAction
             PropertyName="ContextMenu"
             Value="{Binding Category,
-                    Converter={StaticResource ResourceConverter},
-                    ConverterParameter={x:Static rd:Dictionaries.CategoryToContextMenu}}" />
+                     Converter={StaticResource ResourceConverter},
+                     ConverterParameter={x:Static rd:Dictionaries.CategoryToContextMenu}}" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -30,11 +30,12 @@
           
           <mhc:Icon
             Source="{Binding Category,
-                     Converter={StaticResource CategoryToPathGeometryConverter}}"
+                      Converter={StaticResource ResourceConverter},
+                      ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
             Fill="{Binding Category,
-                   Converter={StaticResource ResourceConverter},
-                   ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
-                   FallbackValue={StaticResource ColorBrushWhite}}"
+                    Converter={StaticResource ResourceConverter},
+                    ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                    FallbackValue={StaticResource ColorBrushWhite}}"
             Size="24" />
 
           <TextBlock
