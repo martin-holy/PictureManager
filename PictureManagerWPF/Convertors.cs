@@ -28,14 +28,6 @@ namespace PictureManager {
     }
   }
 
-  public class StaticResourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-      value == null ? throw new ArgumentNullException(nameof(value)) : Application.Current.FindResource((string)value);
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
-
   public class RatingConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
       if (value == null) throw new ArgumentNullException(nameof(value));
