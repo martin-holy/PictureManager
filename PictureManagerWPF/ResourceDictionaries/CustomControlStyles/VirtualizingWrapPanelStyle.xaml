@@ -41,7 +41,7 @@
                   <mhc:Icon
                     Source="{Binding Icon, Converter={StaticResource ResourceConverter}}"
                     Fill="{Binding Icon,
-                            Converter={StaticResource DictionaryConverter},
+                            Converter={StaticResource ResourceConverter},
                             ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
                             FallbackValue={StaticResource ColorBrushWhite}}"
                     ShowShadow="False"
@@ -71,7 +71,7 @@
                                   Converter={StaticResource ResourceConverter}}"
                         Fill="{Binding GroupItemsCountIcon,
                                 RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}},
-                                Converter={StaticResource DictionaryConverter},
+                                Converter={StaticResource ResourceConverter},
                                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
                                 FallbackValue={StaticResource ColorBrushWhite}}"
                         ShowShadow="False"
