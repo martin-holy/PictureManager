@@ -4,7 +4,6 @@
                     xmlns:converters="clr-namespace:PictureManager.Converters"
                     xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <pm:StaticResourceConverter x:Key="StaticResourceConverter" />
   <pm:RatingConverter x:Key="RatingConverter" />
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
