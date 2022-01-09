@@ -41,7 +41,8 @@
                   Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
         <mhc:Icon
           Source="{Binding Model.Category,
-                    Converter={StaticResource CategoryToPathGeometryConverter}}"
+                    Converter={StaticResource ResourceConverter},
+                    ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
           Fill="{Binding Model.Category,
                   Converter={StaticResource ResourceConverter},
                   ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},

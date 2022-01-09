@@ -34,5 +34,18 @@ namespace PictureManager.ResourceDictionaries {
       { Category.Viewers, "CatViewersContextMenu" },
       { Category.VideoClips, "CatVideoClipsContextMenu" }
     };
+
+    public static Dictionary<object, object> CategoryToIconName = new() {
+      { Category.FavoriteFolders, "IconFolderStar" },
+      { Category.Folders, "IconFolder" },
+      { Category.Ratings, "IconStar" },
+      { Category.MediaItemSizes, "IconRuler" },
+      { Category.People, "IconPeopleMultiple" },
+      { Category.FolderKeywords, "IconFolderPuzzle" },
+      { Category.Keywords, "IconTagLabel" },
+      { Category.GeoNames, "IconLocationCheckin" },
+      { Category.Viewers, "IconEye" },
+      { Category.VideoClips, "IconMovieClapper" }
+    };
   }
 }

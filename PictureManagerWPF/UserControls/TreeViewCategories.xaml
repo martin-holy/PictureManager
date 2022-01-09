@@ -51,7 +51,8 @@
                 ToolTip="{Binding Name}"
                 Click="BtnNavCategory_OnClick"
                 Source="{Binding Category,
-                          Converter={StaticResource CategoryToPathGeometryConverter}}"
+                          Converter={StaticResource ResourceConverter},
+                          ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
                 Fill="{Binding Category,
                         Converter={StaticResource ResourceConverter},
                         ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
