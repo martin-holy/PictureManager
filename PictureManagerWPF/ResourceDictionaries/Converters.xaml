@@ -13,7 +13,6 @@
   <pm:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
   <pm:DataTypeConverter x:Key="DataTypeConverter" />
   <converters:CategoryToPathGeometryConverter x:Key="CategoryToPathGeometryConverter" />
-  <converters:CategoryToContextMenuConverter x:Key="CategoryToContextMenuConverter" />
   <converters:DisplayFilterToBrushConverter x:Key="DisplayFilterToBrushConverter" />
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <mhConverters:ClickConverter x:Key="ClickConverter" />
