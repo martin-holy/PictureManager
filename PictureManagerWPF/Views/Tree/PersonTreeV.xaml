@@ -5,7 +5,8 @@
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
                     xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
                     xmlns:pm="clr-namespace:PictureManager"
-                    xmlns:cc="clr-namespace:PictureManager.CustomControls">
+                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
   <ContextMenu x:Key="PersonTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
@@ -25,7 +26,10 @@
   </ContextMenu>
   
   <HierarchicalDataTemplate DataType="{x:Type tree:PersonTreeVM}">
-    <Grid Background="{Binding DisplayFilter, Converter={StaticResource DisplayFilterToBrushConverter}}">
+    <Grid Background="{Binding DisplayFilter,
+                        Converter={StaticResource ResourceConverter},
+                        ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
+                        FallbackValue={StaticResource TransparentBrush}}">
       <!-- ToolTip -->
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">
