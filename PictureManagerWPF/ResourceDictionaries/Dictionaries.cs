@@ -25,5 +25,14 @@ namespace PictureManager.ResourceDictionaries {
       { Category.People, "ColorBrushPeople" },
       { Category.Keywords, "ColorBrushTag" }
     };
+
+    public static Dictionary<object, object> CategoryToContextMenu = new() {
+      { Category.People, "CatPeopleContextMenu" },
+      { Category.FolderKeywords, "CatFolderKeywordsContextMenu" },
+      { Category.Keywords, "CatKeywordsContextMenu" },
+      { Category.GeoNames, "CatGeoNamesContextMenu" },
+      { Category.Viewers, "CatViewersContextMenu" },
+      { Category.VideoClips, "CatVideoClipsContextMenu" }
+    };
   }
 }
