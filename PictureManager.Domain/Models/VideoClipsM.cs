@@ -1,33 +1,59 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using MH.Utils.Extensions;
+using System.Linq;
+using MH.Utils;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipsM : ITable {
-    private readonly Core _core;
+  public sealed class VideoClipsM : ITreeBranch {
+    #region ITreeBranch implementation
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
+    #endregion
 
     public DataAdapter DataAdapter { get; }
-    public List<IRecord> All { get; } = new();
+    public List<VideoClipM> All { get; } = new();
     public Dictionary<int, VideoClipM> AllDic { get; set; }
+    public MediaItemM CurrentMediaItem { get; set; }
+    public VideoClipM CurrentVideoClip { get; set; }
+    public VideoClipsGroupsM GroupsM { get; }
 
-    public VideoClipsM(Core core) {
-      _core = core;
-      DataAdapter = new VideoClipsDataAdapter(core, this);
+    public event EventHandler<VideoClipDeletedEventArgs> VideoClipDeletedEvent = delegate { };
+
+    public VideoClipsM(SimpleDB.SimpleDB db, MediaItemsM mi, KeywordsM k, PeopleM p) {
+      GroupsM = new(db, this, mi);
+      DataAdapter = new VideoClipsDataAdapter(db, this, mi, k, p);
     }
+
+    private static string GetItemName(object item) =>
+      item is VideoClipM vc
+        ? vc.Name
+        : string.Empty;
 
     public void SetMarker(VideoClipM clip, bool start, int ms, double volume, double speed) {
       clip.SetMarker(start, ms, volume, speed);
       DataAdapter.IsModified = true;
     }
 
-    public VideoClipM ItemCreate(string name, MediaItemM mediaItem, VideoClipsGroupM group) {
-      var vc = new VideoClipM(DataAdapter.GetNextId(), mediaItem) { Name = name };
-      VideoClipAdd(vc.MediaItem, vc, group);
-      All.Add(vc);
+    public VideoClipM ItemCreate(ITreeBranch group, MediaItemM mi, string name) {
+      var root = group ?? this;
+      var item = new VideoClipM(DataAdapter.GetNextId(), mi) {
+        Parent = root,
+        Name = name
+      };
 
-      return vc;
+      root.Items.Add(item);
+      CurrentVideoClip = item;
+      mi.HasVideoClips = true;
+      All.Add(item);
+      DataAdapter.IsModified = true;
+
+      return item;
     }
 
     public void ItemRename(VideoClipM vc, string name) {
@@ -36,64 +62,69 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(VideoClipM vc) {
-      vc.MediaItem.VideoClips?.Remove(vc);
-      vc.MediaItem.OnPropertyChanged(nameof(MediaItemM.HasVideoClips));
+      vc.MediaItem.HasVideoClips = Items.Count != 0;
       vc.MediaItem = null;
-
-      if (vc.Group != null) {
-        vc.Group.Clips.Remove(vc);
-        vc.Group = null;
-        _core.VideoClipsGroupsM.DataAdapter.IsModified = true;
-      }
-
+      vc.Parent.Items.Remove(vc);
+      vc.Parent = null;
       vc.People = null;
       vc.Keywords = null;
 
       File.Delete(vc.ThumbPath);
 
       All.Remove(vc);
+      VideoClipDeletedEvent(this, new(vc));
       DataAdapter.IsModified = true;
     }
 
-    // TODO
-    public void ItemMove(VideoClipM vc, VideoClipM dest, bool aboveDest) {
-      All.Move(vc, dest, aboveDest);
-
-      if (vc.Group == null)
-        vc.MediaItem.VideoClips.Move(vc, dest, aboveDest);
-      else
-        vc.Group.Clips.Move(vc, dest, aboveDest);
-
+    public void ItemMove(VideoClipM item, ITreeLeaf dest, bool aboveDest) {
+      Tree.ItemMove(item, dest, aboveDest, GetItemName);
       DataAdapter.IsModified = true;
     }
 
-    // TODO
-    public void ItemMove(VideoClipM vc, VideoClipsGroupM dest) {
-      if (vc.Group == null)
-        vc.MediaItem.VideoClips.Remove(vc);
+    public void SetCurrentMediaItem(MediaItemM mi) {
+      CurrentMediaItem = mi;
+      Items.Clear();
+      if (mi == null) return;
 
-      vc.Group?.Clips.Remove(vc);
-      vc.Group = dest;
+      foreach (var group in GroupsM.All.Where(x => x.MediaItem.Equals(mi)))
+        Items.Add(group);
 
-      if (dest == null)
-        VideoClipAdd(vc.MediaItem, vc);
-      else
-        dest.Clips.Add(vc);
-
-      _core.VideoClipsGroupsM.DataAdapter.IsModified = true;
-      DataAdapter.IsModified = true;
+      foreach (var clip in All.Where(x => Equals(x.Parent, this) && x.MediaItem.Equals(mi)))
+        Items.Add(clip);
     }
 
-    public static void VideoClipAdd(MediaItemM mi, VideoClipM vc) {
-      mi.VideoClips ??= new();
-      mi.VideoClips.Add(vc);
-      mi.OnPropertyChanged(nameof(mi.HasVideoClips));
-    }
+    public VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
+      var groups = new List<List<VideoClipM>>();
 
-    public static void VideoClipAdd(MediaItemM mi, VideoClipM vc, VideoClipsGroupM group) {
-      group.Clips.Add(vc);
-      vc.Group = group;
-      mi.OnPropertyChanged(nameof(mi.HasVideoClips));
+      groups.AddRange(Items.OfType<VideoClipsGroupM>()
+        .Where(g => g.Items.Count > 0)
+        .Select(g => g.Items.Cast<VideoClipM>().ToList()));
+
+      var clips = Items.OfType<VideoClipM>().ToList();
+      if (clips.Count != 0) 
+        groups.Add(clips);
+
+      if (groups.Count == 0)
+        return null;
+
+      if (selectFirst)
+        return groups[0][0];
+
+      for (var i = 0; i < groups.Count; i++) {
+        var group = groups[i];
+        var idx = group.IndexOf(CurrentVideoClip);
+
+        if (idx < 0) continue;
+
+        if (idx < group.Count - 1)
+          return group[idx + 1];
+
+        return inGroup
+          ? group[0]
+          : groups[i < groups.Count - 1 ? i + 1 : 0][0];
+      }
+
+      return null;
     }
   }
 }

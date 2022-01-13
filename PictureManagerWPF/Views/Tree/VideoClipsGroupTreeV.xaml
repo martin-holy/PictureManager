@@ -9,6 +9,9 @@
   <ContextMenu x:Key="VideoClipsGroupTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
                              RelativeSource={RelativeSource Self}}">
+    <MenuItem Header="New"
+              Command="cc:CatTreeView.ItemCreateCommand"
+              CommandParameter="{Binding}" />
     <MenuItem Header="Rename Group"
               Command="cc:CatTreeView.GroupRenameCommand"
               CommandParameter="{Binding}" />

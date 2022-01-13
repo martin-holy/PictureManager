@@ -3,9 +3,9 @@
                     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
-                    xmlns:uc="clr-namespace:PictureManager.UserControls"
                     xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+                    xmlns:pm="clr-namespace:PictureManager">
 
   <ContextMenu x:Key="VideoClipTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
@@ -56,7 +56,7 @@
             <TextBlock Text="A [ " Cursor="Hand" Name="TbMarkerA" ToolTip="Seek to start">
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
-                  <b:InvokeCommandAction Command="{Binding SeekToPositionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:VideoClipsControl}}}"
+                  <b:InvokeCommandAction Command="{Binding VideoClipsVM.SeekToPositionCommand, Source={x:Static pm:App.Ui}}"
                                          CommandParameter="{Binding Model.TimeStart}"/>
                 </b:EventTrigger>
               </b:Interaction.Triggers>
@@ -67,7 +67,7 @@
             <TextBlock Text=" ] B" Cursor="Hand" Name="TbMarkerB" ToolTip="Seek to end">
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
-                  <b:InvokeCommandAction Command="{Binding SeekToPositionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type uc:VideoClipsControl}}}"
+                  <b:InvokeCommandAction Command="{Binding VideoClipsVM.SeekToPositionCommand, Source={x:Static pm:App.Ui}}"
                                          CommandParameter="{Binding Model.TimeEnd}"/>
                 </b:EventTrigger>
               </b:Interaction.Triggers>

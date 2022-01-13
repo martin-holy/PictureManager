@@ -47,12 +47,14 @@ namespace PictureManager.Domain.Models {
     private int _thumbWidth;
     private int _thumbHeight;
     private MediaType _mediaType;
+    private bool _hasVideoClips;
 
     public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
     public string Dimensions => $"{Width}x{Height}";
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
+    public bool HasVideoClips { get => _hasVideoClips; set { _hasVideoClips = value; OnPropertyChanged(); } }
     public ObservableCollection<SegmentM> Segments { get; set; }
     public ObservableCollection<string> InfoBoxThumb { get; set; }
     public ObservableCollection<string> InfoBoxPeople { get; set; }
@@ -67,12 +69,6 @@ namespace PictureManager.Domain.Models {
         MediaOrientation.Rotate270 => 270,
         _ => 0,
       };
-
-
-    // TODO move this to VideoClips
-    public ObservableCollection<VideoClipM> VideoClips { get; set; }
-    public ObservableCollection<VideoClipsGroupM> VideoClipsGroups { get; set; }
-    public bool HasVideoClips => VideoClips?.Count > 0 || VideoClipsGroups?.Count > 0;
 
     // TODO rethink
     public double? Lat { get; set; }

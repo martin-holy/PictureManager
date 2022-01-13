@@ -15,7 +15,7 @@ namespace PictureManager {
 
       MainSlidePanelsGrid.OnContentLeftWidthChanged += async () => await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
       RightSlidePanel.CanOpen = () => ToolsTabs.Tabs.Items.Cast<TabItem>().Any(x => x.Visibility == Visibility.Visible);
-      ToolsTabs.VideoClips.VideoPlayer = MediaViewer.FullVideo;
+      App.Ui.VideoClipsVM.VideoPlayer = MediaViewer.FullVideo;
 
       BindingOperations.SetBinding(TreeViewCategories.BtnPinPanel, ToggleButton.IsCheckedProperty,
         new Binding(nameof(SlidePanel.IsPinned)) { Source = SlidePanelMainTreeView });
