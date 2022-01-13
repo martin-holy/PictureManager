@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
@@ -10,21 +9,27 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|MediaItem|TimeStart|TimeEnd|Name|Volume|Speed|Rating|Comment|People|Keywords
   /// </summary>
   public class VideoClipsDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly VideoClipsM _model;
+    private readonly MediaItemsM _mediaItemsM;
+    private readonly KeywordsM _keywordsM;
+    private readonly PeopleM _peopleM;
 
-    public VideoClipsDataAdapter(Core core, VideoClipsM model) : base("VideoClips", core.Sdb) {
-      _core = core;
+    public VideoClipsDataAdapter(SimpleDB.SimpleDB db, VideoClipsM model, MediaItemsM mi, KeywordsM k, PeopleM p)
+      : base("VideoClips", db) {
       _model = model;
+      _mediaItemsM = mi;
+      _keywordsM = k;
+      _peopleM = p;
     }
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new Dictionary<int, VideoClipM>();
+      _model.AllDic = new();
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All.Cast<VideoClipM>(), ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
@@ -44,33 +49,41 @@ namespace PictureManager.Domain.DataAdapters {
       _model.AllDic.Add(vc.Id, vc);
     }
 
-    public static string ToCsv(VideoClipM videoClip) =>
+    public static string ToCsv(VideoClipM vc) =>
       string.Join("|",
-        videoClip.Id.ToString(),
-        videoClip.MediaItem.Id.ToString(),
-        videoClip.TimeStart.ToString(),
-        videoClip.TimeEnd.ToString(),
-        videoClip.Name ?? string.Empty,
-        ((int)(videoClip.Volume * 100)).ToString(),
-        ((int)(videoClip.Speed * 10)).ToString(),
-        videoClip.Rating == 0 ? string.Empty : videoClip.Rating.ToString(),
-        videoClip.Comment ?? string.Empty,
-        videoClip.People == null ? string.Empty : string.Join(",", videoClip.People.Select(x => x.Id)),
-        videoClip.Keywords == null ? string.Empty : string.Join(",", videoClip.Keywords.Select(x => x.Id)));
+        vc.Id.ToString(),
+        vc.MediaItem.Id.ToString(),
+        vc.TimeStart.ToString(),
+        vc.TimeEnd.ToString(),
+        vc.Name ?? string.Empty,
+        ((int)(vc.Volume * 100)).ToString(),
+        ((int)(vc.Speed * 10)).ToString(),
+        vc.Rating == 0
+          ? string.Empty
+          : vc.Rating.ToString(),
+        vc.Comment ?? string.Empty,
+        vc.People == null
+          ? string.Empty
+          : string.Join(",", vc.People.Select(x => x.Id)),
+        vc.Keywords == null
+          ? string.Empty
+          : string.Join(",", vc.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
-      foreach (var vc in _model.All.Cast<VideoClipM>()) {
-        // reference to MediaItem and back reference from MediaItem to VideoClip without group
-        vc.MediaItem = _core.MediaItemsM.AllDic[int.Parse(vc.Csv[1])];
-        if (vc.Group == null)
-          VideoClipsM.VideoClipAdd(vc.MediaItem, vc);
+      foreach (var vc in _model.All) {
+        // reference to MediaItem
+        vc.MediaItem = _mediaItemsM.AllDic[int.Parse(vc.Csv[1])];
+        vc.MediaItem.HasVideoClips = true;
 
-        // reference to People and back reference from Person to VideoClip
+        // set parent for clips not in an group
+        vc.Parent ??= _model;
+
+        // reference to People
         if (!string.IsNullOrEmpty(vc.Csv[9])) {
           var ids = vc.Csv[9].Split(',');
           vc.People = new(ids.Length);
           foreach (var personId in ids) 
-            vc.People.Add(_core.PeopleM.AllDic[int.Parse(personId)]);
+            vc.People.Add(_peopleM.AllDic[int.Parse(personId)]);
         }
 
         // reference to Keywords
@@ -78,7 +91,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = vc.Csv[10].Split(',');
           vc.Keywords = new(ids.Length);
           foreach (var keywordId in ids)
-            vc.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
+            vc.Keywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
         }
 
         // csv array is not needed any more

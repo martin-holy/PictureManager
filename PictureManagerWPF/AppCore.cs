@@ -20,9 +20,10 @@ using PictureManager.Views;
 namespace PictureManager {
   public sealed class AppCore : MH.Utils.BaseClasses.ObservableObject {
     public DrivesTreeVM DrivesTreeVM { get; }
-    public SegmentsVM SegmentsVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
+    public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
+    public VideoClipsVM VideoClipsVM { get; }
     public ViewersVM ViewersVM { get; }
 
     #region TreeView Roots and Categories
@@ -63,12 +64,12 @@ namespace PictureManager {
       AppInfo.ProgressBarValueA = 100;
       AppInfo.ProgressBarValueB = 100;
 
-      VideoClipsTreeVM = new(App.Core, App.Core.VideoClipsM);
-
       DrivesTreeVM = new(this);
-      SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
+      SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
+      VideoClipsTreeVM = new(App.Core.VideoClipsM);
+      VideoClipsVM = new(App.Core.VideoClipsM, VideoClipsTreeVM);
       ViewersVM = new(this, App.Core.ViewersM);
 
       CategoryGroupsTreeVM = new();

@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipM : ObservableObject, IRecord {
+  public sealed class VideoClipM : ObservableObject, IRecord, ITreeLeaf {
+    #region ITreeLeaf implementation
+    public ITreeBranch Parent { get; set; }
+    #endregion
+
     private string _name;
     private int _timeStart;
     private int _timeEnd;
@@ -25,11 +30,10 @@ namespace PictureManager.Domain.Models {
     public string Comment { get; set; }
     public List<PersonM> People { get; set; }
     public List<KeywordM> Keywords { get; set; }
-    public VideoClipsGroupM Group { get; set; }
 
-    public string TimeStartStr => FormatTimeSpan(TimeStart);
-    public string TimeEndStr => FormatTimeSpan(TimeEnd);
-    public string DurationStr => GetDuration(TimeStart, TimeEnd);
+    public string TimeStartStr => FormatPosition(TimeStart);
+    public string TimeEndStr => FormatPosition(TimeEnd);
+    public string DurationStr => FormatDuration(TimeEnd - TimeStart);
     public string VolumeStr => $"{(int)(Volume * 100)}%";
     public string SpeedStr => $"{Speed}x";
     public string ThumbPath => GetThumbPath();
@@ -39,42 +43,40 @@ namespace PictureManager.Domain.Models {
       MediaItem = mediaItem;
     }
 
-    private static string FormatTimeSpan(int ms) {
-      var format = ms >= 60 * 60 * 1000 ? @"h\:mm\:ss\.fff" : @"m\:ss\.fff";
+    private static string FormatPosition(int ms) =>
+      TimeSpan.FromMilliseconds(ms).ToString(
+        ms >= 60 * 60 * 1000
+          ? @"h\:mm\:ss\.fff"
+          : @"m\:ss\.fff");
 
-      return TimeSpan.FromMilliseconds(ms).ToString(format);
-    }
-
-    private static string GetDuration(int start, int end) {
-      if (end == 0) return string.Empty;
-
-      string format;
-      var ms = end - start;
-      if (ms >= 60 * 60 * 1000) format = @"h\:mm\:ss\.f";
-      else if (ms >= 60 * 1000) format = @"m\:ss\.f";
-      else format = @"s\.f\s";
-
-      return TimeSpan.FromMilliseconds(ms).ToString(format);
-    }
+    private static string FormatDuration(int ms) =>
+      ms < 0
+        ? string.Empty
+        : TimeSpan.FromMilliseconds(ms).ToString(
+          ms >= 60 * 60 * 1000
+            ? @"h\:mm\:ss\.f"
+            : ms >= 60 * 1000
+              ? @"m\:ss\.f"
+              : @"s\.f\s");
 
     private string GetThumbPath() {
       var fpc = MediaItem.FilePathCache;
-      return $"{fpc[..fpc.LastIndexOf('.')]}_{Id}.jpg";
+      return $"{fpc[..fpc.LastIndexOf('.')]}_clip_{Id}.jpg";
     }
 
     public void SetMarker(bool start, int ms, double volume, double speed) {
       if (start) {
         TimeStart = ms;
-        if (ms > TimeEnd) TimeEnd = 0;
+        if (ms > TimeEnd)
+          TimeEnd = 0;
       }
       else {
         if (ms < TimeStart) {
           TimeEnd = TimeStart;
           TimeStart = ms;
         }
-        else {
+        else
           TimeEnd = ms;
-        }
       }
 
       Volume = volume;

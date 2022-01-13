@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils.Extensions;
 using PictureManager.Domain.DataAdapters;
@@ -7,11 +8,14 @@ using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroupsM {
+    private readonly VideoClipsM _videoClips;
+
     public DataAdapter DataAdapter { get; }
     public List<VideoClipsGroupM> All { get; } = new();
 
-    public VideoClipsGroupsM(Core core) {
-      DataAdapter = new VideoClipsGroupsDataAdapter(core, this);
+    public VideoClipsGroupsM(SimpleDB.SimpleDB db, VideoClipsM vc, MediaItemsM mi) {
+      _videoClips = vc;
+      DataAdapter = new VideoClipsGroupsDataAdapter(db, this, vc, mi);
     }
 
     public bool ItemCanRename(string name, MediaItemM mi) =>
@@ -19,10 +23,18 @@ namespace PictureManager.Domain.Models {
 
     public VideoClipsGroupM ItemCreate(string name, MediaItemM mi) {
       var group = new VideoClipsGroupM(DataAdapter.GetNextId(), name);
-      SetMediaItem(group, mi);
+      group.Items.CollectionChanged += GroupItems_CollectionChanged;
+      group.MediaItem = mi;
+      group.MediaItem.HasVideoClips = true;
+      _videoClips.Items.SetInOrder(group, x => x is VideoClipsGroupM g ? g.Name : string.Empty);
       All.Add(group);
+      DataAdapter.IsModified = true;
 
       return group;
+    }
+
+    public void GroupItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+      DataAdapter.IsModified = true;
     }
 
     public void ItemRename(VideoClipsGroupM group, string name) {
@@ -31,22 +43,19 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(VideoClipsGroupM group) {
-      group.MediaItem.VideoClipsGroups.Remove(group);
+      // move all group items to root
+      foreach (var item in group.Items.Cast<VideoClipM>().ToArray())
+        _videoClips.ItemMove(item, _videoClips, false);
+
+      group.Parent.Items.Remove(group);
+      group.MediaItem.HasVideoClips = _videoClips.Items.Count != 0;
       All.Remove(group);
       DataAdapter.IsModified = true;
     }
 
-    // TODO
     public void GroupMove(VideoClipsGroupM group, VideoClipsGroupM dest, bool aboveDest) {
-      All.Move(group, dest, aboveDest);
-      group.MediaItem.VideoClipsGroups.Move(group, dest, aboveDest);
+      group.Parent.Items.Move(group, dest, aboveDest);
       DataAdapter.IsModified = true;
-    }
-
-    public static void SetMediaItem(VideoClipsGroupM group, MediaItemM mi) {
-      group.MediaItem = mi;
-      mi.VideoClipsGroups ??= new();
-      mi.VideoClipsGroups.Add(group);
     }
   }
 }

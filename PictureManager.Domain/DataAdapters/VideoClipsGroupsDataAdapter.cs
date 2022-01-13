@@ -8,12 +8,15 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|Name|MediaItem|Clips
   /// </summary>
   public class VideoClipsGroupsDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly VideoClipsGroupsM _model;
+    private readonly VideoClipsM _videoClipsM;
+    private readonly MediaItemsM _mediaItemsM;
 
-    public VideoClipsGroupsDataAdapter(Core core, VideoClipsGroupsM model) : base("VideoClipsGroups", core.Sdb) {
-      _core = core;
+    public VideoClipsGroupsDataAdapter(SimpleDB.SimpleDB db, VideoClipsGroupsM model, VideoClipsM vc, MediaItemsM mi)
+      : base("VideoClipsGroups", db) {
       _model = model;
+      _videoClipsM = vc;
+      _mediaItemsM = mi;
     }
 
     public override void Load() {
@@ -21,7 +24,8 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
@@ -29,25 +33,32 @@ namespace PictureManager.Domain.DataAdapters {
       _model.All.Add(new(int.Parse(props[0]), props[1]) { Csv = props });
     }
 
-    private static string ToCsv(VideoClipsGroupM videoClipsGroup) =>
+    private static string ToCsv(VideoClipsGroupM vcg) =>
       string.Join("|",
-        videoClipsGroup.Id.ToString(),
-        videoClipsGroup.Name ?? string.Empty,
-        videoClipsGroup.MediaItem.Id.ToString(),
-        videoClipsGroup.Clips == null ? string.Empty : string.Join(",", videoClipsGroup.Clips.Select(x => x.Id)));
+        vcg.Id.ToString(),
+        vcg.Name ?? string.Empty,
+        vcg.MediaItem.Id.ToString(),
+        vcg.Items.Count == 0
+          ? string.Empty
+          : string.Join(",", vcg.Items.Cast<VideoClipM>().Select(x => x.Id)));
 
     public override void LinkReferences() {
-      foreach (var group in _model.All.Cast<VideoClipsGroupM>()) {
-        // reference to MediaItem and back reference from MediaItem to VideoClipsGroup
-        VideoClipsGroupsM.SetMediaItem(group, _core.MediaItemsM.AllDic[int.Parse(group.Csv[2])]);
+      foreach (var group in _model.All) {
+        group.MediaItem = _mediaItemsM.AllDic[int.Parse(group.Csv[2])];
+        group.MediaItem.HasVideoClips = true;
+        group.Parent = _videoClipsM;
 
-        // reference to VideoClip and back reference from VideoClip to VideoClipsGroup
         if (!string.IsNullOrEmpty(group.Csv[3])) {
           var ids = group.Csv[3].Split(',');
-          group.Clips = new(ids.Length);
-          foreach (var vcId in ids)
-            VideoClipsM.VideoClipAdd(group.MediaItem, _core.VideoClipsM.AllDic[int.Parse(vcId)], group);
+
+          foreach (var vcId in ids) {
+            var vc = _videoClipsM.AllDic[int.Parse(vcId)];
+            vc.Parent = group;
+            group.Items.Add(vc);
+          }
         }
+
+        group.Items.CollectionChanged += _model.GroupItems_CollectionChanged;
 
         // csv array is not needed any more
         group.Csv = null;

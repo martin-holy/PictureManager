@@ -87,6 +87,9 @@
   <ContextMenu x:Key="CatVideoClipsContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
                              RelativeSource={RelativeSource Self}}">
+    <MenuItem Header="New"
+              Command="cc:CatTreeView.ItemCreateCommand"
+              CommandParameter="{Binding}" />
     <MenuItem Header="New Group"
               Command="cc:CatTreeView.GroupCreateCommand"
               CommandParameter="{Binding}" />
