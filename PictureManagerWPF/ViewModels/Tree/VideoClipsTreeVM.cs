@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.UI.WPF.Interfaces;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.EventsArgs;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class VideoClipsTreeVM : CatTreeViewCategoryBase {
