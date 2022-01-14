@@ -21,7 +21,7 @@
               CommandParameter="{Binding}" />
     <Separator />
     <MenuItem Header="Add to Favorites"
-              Command="tree:FavoriteFoldersTreeVM.AddToFavoritesCommand"
+              Command="{Binding FavoriteFoldersTreeVM.AddToFavoritesCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Set as Folder Keyword"
               Command="tree:FoldersTreeVM.SetAsFolderKeywordCommand"
