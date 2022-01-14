@@ -14,8 +14,8 @@ namespace PictureManager.Domain {
 
     #region DB Models
     public CategoryGroupsM CategoryGroupsM { get; }
-    public FavoriteFoldersM FavoriteFoldersM { get; }
     public FoldersM FoldersM { get; }
+    public FavoriteFoldersM FavoriteFoldersM { get; }
     public PeopleM PeopleM { get; }
     public FolderKeywordsM FolderKeywordsM { get; }
     public KeywordsM KeywordsM { get; }
@@ -36,8 +36,8 @@ namespace PictureManager.Domain {
 
       Sdb = new(this);
 
-      FavoriteFoldersM = new(this);
       FoldersM = new(this);
+      FavoriteFoldersM = new(Sdb, FoldersM);
       PeopleM = new(this);
       FolderKeywordsM = new(this);
       KeywordsM = new(this);
@@ -58,7 +58,7 @@ namespace PictureManager.Domain {
       return Task.Run(() => {
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
-        Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers
+        Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers and FavoriteFolders
         Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);

@@ -1,8 +1,13 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFolderM : ObservableObject, IRecord {
+  public sealed class FavoriteFolderM : ObservableObject, IRecord, ITreeLeaf {
+    #region ITreeLeaf implementation
+    public ITreeBranch Parent { get; set; }
+    #endregion
+
     private FolderM _folder;
     private string _title;
 

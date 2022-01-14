@@ -4,15 +4,16 @@ using SimpleDB;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
-  /// DB fields: ID|FolderId|Title
+  /// DB fields: ID|Folder|Title
   /// </summary>
   public class FavoriteFoldersDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly FavoriteFoldersM _model;
+    private readonly FoldersM _foldersM;
 
-    public FavoriteFoldersDataAdapter(Core core, FavoriteFoldersM model) : base("FavoriteFolders", core.Sdb) {
-      _core = core;
+    public FavoriteFoldersDataAdapter(SimpleDB.SimpleDB db, FavoriteFoldersM model, FoldersM foldersM)
+      : base("FavoriteFolders", db) {
       _model = model;
+      _foldersM = foldersM;
     }
 
     public override void Load() {
@@ -20,12 +21,13 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      _model.All.Add(new FavoriteFolderM(int.Parse(props[0])) { Title = props[2], Csv = props });
+      _model.All.Add(new(int.Parse(props[0])) { Title = props[2], Csv = props });
     }
 
     private static string ToCsv(FavoriteFolderM ff) =>
@@ -35,8 +37,12 @@ namespace PictureManager.Domain.DataAdapters {
         ff.Title);
 
     public override void LinkReferences() {
+      _model.Items.Clear();
+
       foreach (var item in _model.All) {
-        item.Folder = _core.FoldersM.AllDic[int.Parse(item.Csv[1])];
+        item.Folder = _foldersM.AllDic[int.Parse(item.Csv[1])];
+        item.Parent = _model;
+        _model.Items.Add(item);
 
         // csv array is not needed any more
         item.Csv = null;

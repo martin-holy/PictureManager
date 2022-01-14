@@ -1,31 +1,46 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFoldersM {
+  public sealed class FavoriteFoldersM : ITreeBranch {
+    #region ITreeBranch implementation
+    public ITreeBranch Parent { get; set; }
+    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
+    #endregion
+
     public DataAdapter DataAdapter { get; }
     public ObservableCollection<FavoriteFolderM> All { get; } = new();
+    public event EventHandler<ObjectEventArgs> FavoriteFolderDeletedEvent = delegate { };
 
-    public FavoriteFoldersM(Core core) {
-      DataAdapter = new FavoriteFoldersDataAdapter(core, this);
+    public FavoriteFoldersM(SimpleDB.SimpleDB db, FoldersM foldersM) {
+      DataAdapter = new FavoriteFoldersDataAdapter(db, this, foldersM);
     }
 
-    public void ItemCreate(FolderM folder) {
+    private static string GetItemName(object item) =>
+      item is FavoriteFolderM x
+        ? x.Title
+        : string.Empty;
+
+    public void ItemCreate(ITreeBranch root, FolderM folder) {
       var ff = new FavoriteFolderM(DataAdapter.GetNextId()) {
+        Parent = root,
         Title = folder.Name,
         Folder = folder
       };
 
-      All.SetInOrder(ff, (x) => x.Title);
-      DataAdapter.IsModified = true;
+      Items.SetInOrder(ff, GetItemName);
+      All.Add(ff);
     }
 
-    public void ItemMove(FavoriteFolderM item, FavoriteFolderM dest, bool aboveDest) {
-      All.Move(item, dest, aboveDest);
+    public void ItemMove(FavoriteFolderM item, ITreeLeaf dest, bool aboveDest) {
+      Tree.ItemMove(item, dest, aboveDest, GetItemName);
       DataAdapter.IsModified = true;
     }
 
@@ -34,13 +49,15 @@ namespace PictureManager.Domain.Models {
 
     public void ItemRename(FavoriteFolderM item, string name) {
       item.Title = name;
-      All.SetInOrder(item, (x) => x.Title);
+      item.Parent.Items.SetInOrder(item, GetItemName);
       DataAdapter.IsModified = true;
     }
 
     public void ItemDelete(FavoriteFolderM item) {
-      All.Remove(item);
+      item.Parent.Items.Remove(item);
       item.Folder = null;
+      All.Remove(item);
+      FavoriteFolderDeletedEvent(this, new(item));
       DataAdapter.IsModified = true;
     }
   }
