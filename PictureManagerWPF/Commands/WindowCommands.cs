@@ -2,8 +2,8 @@
 using PictureManager.Properties;
 using PictureManager.ViewModels;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
+using PictureManager.Domain;
 
 namespace PictureManager.Commands {
   public static class WindowCommands {
@@ -117,7 +117,7 @@ namespace PictureManager.Commands {
 
           mi.GeoName = lastGeoName;
           App.Ui.MediaItemsVM.TryWriteMetadata(mi);
-          await App.Core.RunOnUiThread(() => {
+          await Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             App.Core.MediaItemsM.DataAdapter.IsModified = true;
           });

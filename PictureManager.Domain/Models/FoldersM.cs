@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
       // update objects with skipped and renamed files in mind
       switch (mode) {
         case FileOperationMode.Copy: {
-          core.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
+          Core.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
           break;
         }
         case FileOperationMode.Move: {
@@ -111,7 +111,7 @@ namespace PictureManager.Domain.Models {
             mi.FileName = newFileName;
           }
 
-          core.RunOnUiThread(() => MoveFolder(srcFolder, destFolder, ref skippedFiles));
+          Core.RunOnUiThread(() => MoveFolder(srcFolder, destFolder, ref skippedFiles));
           break;
         }
       }
@@ -213,7 +213,7 @@ namespace PictureManager.Domain.Models {
       // Delete empty directory
       if (mode == FileOperationMode.Move) {
         // if this is done on worker thread => directory is not deleted until worker is finished
-        Core.Instance.RunOnUiThread(() => {
+        Core.RunOnUiThread(() => {
           IOExtensions.DeleteDirectoryIfEmpty(srcDirPath);
           IOExtensions.DeleteDirectoryIfEmpty(srcDirPathCache);
         });

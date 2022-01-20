@@ -27,7 +27,7 @@ namespace PictureManager.Domain {
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
 
-    private TaskScheduler UiTaskScheduler { get; }
+    private static TaskScheduler UiTaskScheduler { get; set; }
 
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -40,11 +40,11 @@ namespace PictureManager.Domain {
       FavoriteFoldersM = new();
       FolderKeywordsM = new();
       FoldersM = new(this, ViewersM); // FolderKeywordsM, MediaItemsM
-      GeoNamesM = new(this); // RunOnUiThread
+      GeoNamesM = new();
       KeywordsM = new();
-      MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM, RunOnUiThread
+      MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       PeopleM = new();
-      ThumbnailsGridsM = new(this); // MediaItemsM, RunOnUiThread
+      ThumbnailsGridsM = new(this); // MediaItemsM
       VideoClipsM = new();
 
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
@@ -174,13 +174,13 @@ namespace PictureManager.Domain {
       }
     }
 
-    public Task RunOnUiThread(Action action) {
+    public static Task RunOnUiThread(Action action) {
       var task = new Task(action);
       task.Start(UiTaskScheduler);
       return task;
     }
 
-    public Task<T> RunOnUiThread<T>(Func<T> func) {
+    public static Task<T> RunOnUiThread<T>(Func<T> func) {
       var task = new Task<T>(func);
       task.Start(UiTaskScheduler);
       return task;

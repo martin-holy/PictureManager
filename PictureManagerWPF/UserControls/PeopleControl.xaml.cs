@@ -8,6 +8,7 @@ using System.Windows;
 using MH.UI.WPF.Converters;
 using MH.Utils;
 using PictureManager.CustomControls;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
 using PictureManager.Views;
@@ -52,7 +53,7 @@ namespace PictureManager.UserControls {
             var groupItems = new List<VirtualizingWrapPanelGroupItem>() { new() { Icon = "IconTag", Title = group.Key } };
             if (!string.IsNullOrEmpty(groupTitle))
               groupItems.Insert(0, new() { Icon = "IconPeople", Title = groupTitle });
-            await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup(groupItems.ToArray()));
+            await Core.RunOnUiThread(() => PeopleGrid.AddGroup(groupItems.ToArray()));
           }
 
           // add people
@@ -62,7 +63,7 @@ namespace PictureManager.UserControls {
               await person.Segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
               person.Segment.MediaItem.SetThumbSize();
             }
-            await App.Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
+            await Core.RunOnUiThread(() => PeopleGrid.AddItem(person, _segmentGridWidth));
           }
         }
       }
@@ -77,13 +78,13 @@ namespace PictureManager.UserControls {
       await _workTask.Start(Task.Run(async () => {
         foreach (var group in App.Core.PeopleM.Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden)) {
           if (_workTask.Token.IsCancellationRequested) break;
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", group.Name));
+          await Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", group.Name));
           await AddPeopleAsync(group.Name, group.Items.Cast<PersonM>(), _workTask.Token);
         }
 
         var peopleWithoutGroup = App.Core.PeopleM.Items.OfType<PersonM>().ToArray();
         if (peopleWithoutGroup.Any()) {
-          await App.Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", string.Empty));
+          await Core.RunOnUiThread(() => PeopleGrid.AddGroup("IconPeople", string.Empty));
           await AddPeopleAsync(string.Empty, peopleWithoutGroup, _workTask.Token);
         }
       }));

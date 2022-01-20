@@ -170,7 +170,7 @@ namespace PictureManager.Domain.Utils {
                 workingOn++;
                 var workingOnInt = workingOn;
 
-                await Core.Instance.RunOnUiThread(() => progress.Report(Convert.ToInt32((double)workingOnInt / count * 100)));
+                await Core.RunOnUiThread(() => progress.Report(Convert.ToInt32((double)workingOnInt / count * 100)));
 
                 var mi = partition.Current;
                 // Folder can by null if the mediaItem is corrupted and is deleted in loading metadata process

@@ -211,7 +211,7 @@ namespace PictureManager.ViewModels {
     public async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
-          await _core.RunOnUiThread(() => ReadVideoMetadata(mi));
+          await Core.RunOnUiThread(() => ReadVideoMetadata(mi));
         }
         else {
           using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -295,7 +295,7 @@ namespace PictureManager.ViewModels {
         foreach (var region in regions) {
           var personDisplayName = bm.GetQuery(microsoftRegions + region + microsoftPersonDisplayName);
           if (personDisplayName != null)
-            mi.People.Add(await _core.RunOnUiThread(() =>
+            mi.People.Add(await Core.RunOnUiThread(() =>
               _core.PeopleM.GetPerson(personDisplayName.ToString(), true)));
         }
       }
@@ -316,7 +316,7 @@ namespace PictureManager.ViewModels {
         // Filter out duplicities
         foreach (var k in bm.Keywords.OrderByDescending(x => x)) {
           if (mi.Keywords.SingleOrDefault(x => x.FullName.Equals(k)) != null) continue;
-          await _core.RunOnUiThread(() => {
+          await Core.RunOnUiThread(() => {
             var keyword = _core.KeywordsM.GetByFullPath(k);
             if (keyword != null)
               mi.Keywords.Add(keyword);
@@ -373,7 +373,7 @@ namespace PictureManager.ViewModels {
           mi.SetThumbSize(true);
           await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle, Settings.Default.JpegQualityLevel);
           mi.ReloadThumbnail();
-          await _core.RunOnUiThread(() => Model.DataAdapter.IsModified = true);
+          await Core.RunOnUiThread(() => Model.DataAdapter.IsModified = true);
         },
         mi => mi.FilePath,
         // onCompleted
@@ -529,7 +529,7 @@ namespace PictureManager.ViewModels {
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(_ => _core.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Close()));
 
       _ = fop.ShowDialog();
 
@@ -547,7 +547,7 @@ namespace PictureManager.ViewModels {
         // action
         async mi => {
           TryWriteMetadata(mi);
-          await _core.RunOnUiThread(() => Model.SetModified(mi, false));
+          await Core.RunOnUiThread(() => Model.SetModified(mi, false));
         },
         mi => mi.FilePath,
         // onCompleted
@@ -573,7 +573,7 @@ namespace PictureManager.ViewModels {
         async mi => {
           await ReadMetadata(mi);
 
-          await _core.RunOnUiThread(() => {
+          await Core.RunOnUiThread(() => {
             Model.SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -632,7 +632,7 @@ namespace PictureManager.ViewModels {
 
           // set info box just for loaded media items
           if (updateInfoBox)
-            await _core.RunOnUiThread(mi.SetInfoBox);
+            await Core.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

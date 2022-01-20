@@ -103,7 +103,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void Next() {
-      App.Core.RunOnUiThread(() => {
+      Core.RunOnUiThread(() => {
         if (IsPaused) return;
         if (_mediaViewer.CanNext())
           _mediaViewer.Next();
