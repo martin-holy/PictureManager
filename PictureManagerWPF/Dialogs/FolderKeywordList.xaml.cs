@@ -36,7 +36,7 @@ namespace PictureManager.Dialogs {
       }
 
       App.Core.FoldersM.DataAdapter.IsModified = true;
-      App.Core.FolderKeywordsM.Load();
+      App.Core.FolderKeywordsM.Load(App.Core.FoldersM.All);
     }
   }
 }

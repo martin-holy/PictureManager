@@ -7,7 +7,6 @@ using System.Threading;
 using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -19,16 +18,17 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     private readonly Core _core;
+    private readonly ViewersM _viewersM;
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<FolderM> All { get; } = new();
     public Dictionary<int, FolderM> AllDic { get; set; }
     public event EventHandler<FolderDeletedEventArgs> FolderDeletedEvent = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
 
-    public FoldersM(Core core) {
+    public FoldersM(Core core, ViewersM viewersM) {
       _core = core;
-      DataAdapter = new FoldersDataAdapter(core, this);
+      _viewersM = viewersM;
     }
 
     public void AddDrives() {
@@ -84,10 +84,10 @@ namespace PictureManager.Domain.Models {
     }
 
     public bool IsFolderVisible(FolderM folder) =>
-      Tree.GetTopParent(folder)?.IsAvailable == true && _core.ViewersM.CanViewerSee(folder);
+      Tree.GetTopParent(folder)?.IsAvailable == true && _viewersM.CanViewerSee(folder);
 
     public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
-      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
+      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token, Core core) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
 
@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
       // update objects with skipped and renamed files in mind
       switch (mode) {
         case FileOperationMode.Copy: {
-          _core.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
+          core.RunOnUiThread(() => CopyFolder(srcFolder, destFolder, ref skippedFiles, ref renamedFiles));
           break;
         }
         case FileOperationMode.Move: {
@@ -111,14 +111,12 @@ namespace PictureManager.Domain.Models {
             mi.FileName = newFileName;
           }
 
-          _core.RunOnUiThread(() => MoveFolder(srcFolder, destFolder, ref skippedFiles));
+          core.RunOnUiThread(() => MoveFolder(srcFolder, destFolder, ref skippedFiles));
           break;
         }
       }
 
-      DataAdapter.IsModified = true;
-      _core.MediaItemsM.DataAdapter.IsModified = true;
-      _core.FolderKeywordsM.Load();
+      _core.FolderKeywordsM.Load(All);
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
@@ -266,6 +264,7 @@ namespace PictureManager.Domain.Models {
       if (!srcExists && targetFolder == null) {
         src.Parent.Items.Remove(src);
         src.Parent = dest;
+        DataAdapter.IsModified = true;
 
         // add folder to the tree if destination is empty
         if (dest.Items.Count == 1 && FolderPlaceHolder.Equals(dest.Items[0])) {
@@ -323,7 +322,7 @@ namespace PictureManager.Domain.Models {
 
       // reload FolderKeywords
       if (((FolderM)root).IsFolderKeyword || ((FolderM)root).FolderKeyword != null)
-        _core.FolderKeywordsM.Load();
+        _core.FolderKeywordsM.Load(All);
 
       return item;
     }
@@ -342,11 +341,10 @@ namespace PictureManager.Domain.Models {
 
       // reload FolderKeywords
       if (item.IsFolderKeyword || item.FolderKeyword != null)
-        _core.FolderKeywordsM.Load();
+        _core.FolderKeywordsM.Load(All);
     }
 
     public void ItemDelete(FolderM item) {
-      // remove Folder from the Tree
       item.Parent.Items.Remove(item);
 
       // get all folders recursive
@@ -354,32 +352,15 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(item, ref folders);
 
       foreach (var f in folders) {
-        // remove Folder from DB
         All.Remove(f);
         FolderDeletedEvent(this, new(f));
 
-        // remove MediaItems
-        foreach (var mi in f.MediaItems.ToList())
-          _core.MediaItemsM.Delete(mi);
-
-        // MediaItems should by empty from calling App.Core.MediaItems.Delete(mi)
-        f.MediaItems.Clear();
-
-        // remove Parent
         f.Parent = null;
-
-        // clear subFolders
         f.Items.Clear();
-
-        // remove FavoriteFolder
-        if (_core.FavoriteFoldersM.All.SingleOrDefault(x => x.Folder.Equals(f)) is { } ff)
-          _core.FavoriteFoldersM.ItemDelete(ff);
-
-        // set Folders table as modified
         DataAdapter.IsModified = true;
       }
 
-      _core.FolderKeywordsM.Load();
+      _core.FolderKeywordsM.Load(All);
 
       // delete folder, sub folders and mediaItems from cache
       if (Directory.Exists(item.FullPathCache))
@@ -405,7 +386,7 @@ namespace PictureManager.Domain.Models {
     public void SetAsFolderKeyword(FolderM folder) {
       folder.IsFolderKeyword = true;
       DataAdapter.IsModified = true;
-      _core.FolderKeywordsM.Load();
+      _core.FolderKeywordsM.Load(All);
     }
   }
 }

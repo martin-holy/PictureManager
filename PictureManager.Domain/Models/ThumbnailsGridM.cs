@@ -174,9 +174,9 @@ namespace PictureManager.Domain.Models {
 
     public List<MediaItemM> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
 
-    public void SelectNotModified() {
+    public void SelectNotModified(HashSet<MediaItemM> modifiedItems) {
       foreach (var mi in FilteredItems)
-        SetSelected(mi, !_core.MediaItemsM.ModifiedItems.Contains(mi));
+        SetSelected(mi, !modifiedItems.Contains(mi));
 
       CurrentMediaItem = null;
     }

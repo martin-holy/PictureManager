@@ -9,12 +9,19 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
   /// </summary>
   public class MediaItemsDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly MediaItemsM _model;
+    private readonly FoldersM _foldersM;
+    private readonly PeopleM _peopleM;
+    private readonly KeywordsM _keywordsM;
+    private readonly GeoNamesM _geoNamesM;
 
-    public MediaItemsDataAdapter(Core core, MediaItemsM model) : base("MediaItems", core.Sdb) {
-      _core = core;
+    public MediaItemsDataAdapter(SimpleDB.SimpleDB db, MediaItemsM model, FoldersM f, PeopleM p, KeywordsM k, GeoNamesM g)
+      : base("MediaItems", db) {
       _model = model;
+      _foldersM = f;
+      _peopleM = p;
+      _keywordsM = k;
+      _geoNamesM = g;
     }
 
     public override void Load() {
@@ -24,7 +31,8 @@ namespace PictureManager.Domain.DataAdapters {
       _model.OnPropertyChanged(nameof(_model.MediaItemsCount));
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
@@ -53,14 +61,20 @@ namespace PictureManager.Domain.DataAdapters {
         mediaItem.Rating.ToString(),
         mediaItem.Comment ?? string.Empty,
         mediaItem.GeoName?.Id.ToString(),
-        mediaItem.People == null ? string.Empty : string.Join(",", mediaItem.People.Select(x => x.Id)),
-        mediaItem.Keywords == null ? string.Empty : string.Join(",", mediaItem.Keywords.Select(x => x.Id)),
-        mediaItem.IsOnlyInDb ? "1" : string.Empty);
+        mediaItem.People == null
+          ? string.Empty
+          : string.Join(",", mediaItem.People.Select(x => x.Id)),
+        mediaItem.Keywords == null
+          ? string.Empty
+          : string.Join(",", mediaItem.Keywords.Select(x => x.Id)),
+        mediaItem.IsOnlyInDb
+          ? "1"
+          : string.Empty);
 
     public override void LinkReferences() {
       foreach (var mi in _model.All.Cast<MediaItemM>()) {
         // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = _core.FoldersM.AllDic[int.Parse(mi.Csv[1])];
+        mi.Folder = _foldersM.AllDic[int.Parse(mi.Csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
         // reference to People
@@ -68,7 +82,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = mi.Csv[9].Split(',');
           mi.People = new(ids.Length);
           foreach (var id in ids)
-            mi.People.Add(_core.PeopleM.AllDic[int.Parse(id)]);
+            mi.People.Add(_peopleM.AllDic[int.Parse(id)]);
         }
 
         // reference to Keywords
@@ -76,12 +90,12 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = mi.Csv[10].Split(',');
           mi.Keywords = new(ids.Length);
           foreach (var id in ids)
-            mi.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(id)]);
+            mi.Keywords.Add(_keywordsM.AllDic[int.Parse(id)]);
         }
 
         // reference to GeoName
         if (!string.IsNullOrEmpty(mi.Csv[8]))
-          mi.GeoName = _core.GeoNamesM.AllDic[int.Parse(mi.Csv[8])];
+          mi.GeoName = _geoNamesM.AllDic[int.Parse(mi.Csv[8])];
 
         // CSV array is not needed any more
         mi.Csv = null;

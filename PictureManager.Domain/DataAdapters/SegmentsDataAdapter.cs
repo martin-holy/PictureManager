@@ -9,12 +9,17 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
   /// </summary>
   public class SegmentsDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly SegmentsM _model;
+    private readonly MediaItemsM _mediaItemsM;
+    private readonly PeopleM _peopleM;
+    private readonly KeywordsM _keywordsM;
 
-    public SegmentsDataAdapter(Core core, SegmentsM model) : base("Segments", core.Sdb) {
-      _core = core;
+    public SegmentsDataAdapter(SimpleDB.SimpleDB db, SegmentsM model, MediaItemsM mi, PeopleM p, KeywordsM k)
+      : base("Segments", db) {
       _model = model;
+      _mediaItemsM = mi;
+      _peopleM = p;
+      _keywordsM = k;
     }
 
     public override void Load() {
@@ -23,7 +28,8 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
@@ -43,7 +49,9 @@ namespace PictureManager.Domain.DataAdapters {
         segment.MediaItem.Id.ToString(),
         segment.PersonId.ToString(),
         string.Join(",", segment.X, segment.Y, segment.Radius),
-        segment.Keywords == null ? string.Empty : string.Join(",", segment.Keywords.Select(x => x.Id)));
+        segment.Keywords == null
+          ? string.Empty
+          : string.Join(",", segment.Keywords.Select(x => x.Id)));
 
     public override void PropsToCsv() {
       TableProps.Clear();
@@ -58,12 +66,12 @@ namespace PictureManager.Domain.DataAdapters {
       var withoutMediaItem = new List<SegmentM>();
 
       foreach (var segment in _model.All) {
-        if (_core.MediaItemsM.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
+        if (_mediaItemsM.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
           mi.Segments.Add(segment);
 
-          if (segment.PersonId > 0 && _core.PeopleM.AllDic.TryGetValue(segment.PersonId, out var person)) {
+          if (segment.PersonId > 0 && _peopleM.AllDic.TryGetValue(segment.PersonId, out var person)) {
             segment.Person = person;
             person.Segment ??= segment;
           }
@@ -77,7 +85,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = segment.Csv[4].Split(',');
           segment.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
-            var k = _core.KeywordsM.AllDic[int.Parse(keywordId)];
+            var k = _keywordsM.AllDic[int.Parse(keywordId)];
             segment.Keywords.Add(k);
           }
         }

@@ -12,18 +12,13 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private readonly Core _core;
     private int _maxId;
 
     public List<FolderKeywordM> All { get; } = new();
     public event EventHandler ReloadEvent = delegate { };
     public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(0, string.Empty, null);
 
-    public FolderKeywordsM(Core core) {
-      _core = core;
-    }
-
-    public void Load() {
+    public void Load(List<FolderM> folders) {
       _maxId = 0;
 
       foreach (var fk in All) {
@@ -34,7 +29,7 @@ namespace PictureManager.Domain.Models {
       Items.Clear();
       All.Clear();
 
-      foreach (var folder in _core.FoldersM.All.Where(x => x.IsFolderKeyword))
+      foreach (var folder in folders.Where(x => x.IsFolderKeyword))
         LoadRecursive(folder, this);
 
       ReloadEvent(this, EventArgs.Empty);

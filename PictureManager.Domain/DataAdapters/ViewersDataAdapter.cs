@@ -9,12 +9,14 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
   /// </summary>
   public class ViewersDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly ViewersM _model;
+    private readonly FoldersM _foldersM;
+    private readonly KeywordsM _keywordsM;
 
-    public ViewersDataAdapter(Core core, ViewersM model) : base("Viewers", core.Sdb) {
-      _core = core;
+    public ViewersDataAdapter(SimpleDB.SimpleDB db, ViewersM model, FoldersM f, KeywordsM k) : base("Viewers", db) {
       _model = model;
+      _foldersM = f;
+      _keywordsM = k;
     }
 
     public override void Load() {
@@ -22,13 +24,18 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
-      var viewer = new ViewerM(int.Parse(props[0]), props[1], _model) { Csv = props, IsDefault = props[6] == "1" };
-      if (viewer.IsDefault) _model.Current = viewer;
+      var viewer = new ViewerM(int.Parse(props[0]), props[1], _model) {
+        Csv = props,
+        IsDefault = props[6] == "1"
+      };
+      if (viewer.IsDefault)
+        _model.Current = viewer;
       _model.All.Add(viewer);
     }
 
@@ -40,7 +47,9 @@ namespace PictureManager.Domain.DataAdapters {
         string.Join(",", viewer.ExcludedFolders.Select(x => x.Id)),
         string.Join(",", viewer.ExcCatGroupsIds),
         string.Join(",", viewer.ExcludedKeywords.Select(x => x.Id)),
-        viewer.IsDefault ? "1" : string.Empty);
+        viewer.IsDefault
+          ? "1"
+          : string.Empty);
 
     public override void LinkReferences() {
       _model.Items.Clear();
@@ -49,14 +58,14 @@ namespace PictureManager.Domain.DataAdapters {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[2]))
           foreach (var folderId in viewer.Csv[2].Split(',')) {
-            var f = _core.FoldersM.AllDic[int.Parse(folderId)];
+            var f = _foldersM.AllDic[int.Parse(folderId)];
             viewer.IncludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
         // reference to ExcludedFolders
         if (!string.IsNullOrEmpty(viewer.Csv[3]))
           foreach (var folderId in viewer.Csv[3].Split(',')) {
-            var f = _core.FoldersM.AllDic[int.Parse(folderId)];
+            var f = _foldersM.AllDic[int.Parse(folderId)];
             viewer.ExcludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
@@ -68,7 +77,7 @@ namespace PictureManager.Domain.DataAdapters {
         // ExcKeywords
         if (!string.IsNullOrEmpty(viewer.Csv[5]))
           foreach (var keywordId in viewer.Csv[5].Split(','))
-            viewer.ExcludedKeywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
+            viewer.ExcludedKeywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
 
         if (viewer.IsDefault)
           viewer.UpdateHashSets();
