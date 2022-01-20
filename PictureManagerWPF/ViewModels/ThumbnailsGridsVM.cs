@@ -64,7 +64,7 @@ namespace PictureManager.ViewModels {
         item => item != null);
       
       SelectNotModifiedCommand = new(
-        () => Model.Current?.SelectNotModified(),
+        () => Model.Current?.SelectNotModified(_core.MediaItemsM.ModifiedItems),
         () => Model.Current?.FilteredItems.Count > 0);
       
       ShuffleCommand = new(
@@ -155,9 +155,9 @@ namespace PictureManager.ViewModels {
       // TODO move getting items and tabTitle to model
       var items = item switch {
         RatingTreeVM rating => _core.MediaItemsM.All.Where(x => x.Rating == rating.Value).ToList(),
-        PersonTreeVM person => _core.PeopleM.GetMediaItems(person.Model),
-        KeywordTreeVM keyword => _core.KeywordsM.GetMediaItems(keyword.Model, recursive),
-        GeoNameTreeVM geoName => _core.GeoNamesM.GetMediaItems(geoName.Model, recursive).OrderBy(x => x.FileName).ToList(),
+        PersonTreeVM person => _core.MediaItemsM.GetMediaItems(person.Model),
+        KeywordTreeVM keyword => _core.MediaItemsM.GetMediaItems(keyword.Model, recursive),
+        GeoNameTreeVM geoName => _core.MediaItemsM.GetMediaItems(geoName.Model, recursive),
         _ => new()
       };
 

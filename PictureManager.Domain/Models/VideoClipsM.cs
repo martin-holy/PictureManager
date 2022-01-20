@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -16,7 +15,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<VideoClipM> All { get; } = new();
     public Dictionary<int, VideoClipM> AllDic { get; set; }
     public MediaItemM CurrentMediaItem { get; set; }
@@ -25,9 +24,8 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<VideoClipDeletedEventArgs> VideoClipDeletedEvent = delegate { };
 
-    public VideoClipsM(SimpleDB.SimpleDB db, MediaItemsM mi, KeywordsM k, PeopleM p) {
-      GroupsM = new(db, this, mi);
-      DataAdapter = new VideoClipsDataAdapter(db, this, mi, k, p);
+    public VideoClipsM() {
+      GroupsM = new(this);
     }
 
     private static string GetItemName(object item) =>

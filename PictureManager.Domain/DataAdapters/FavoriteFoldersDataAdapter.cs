@@ -10,10 +10,10 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly FavoriteFoldersM _model;
     private readonly FoldersM _foldersM;
 
-    public FavoriteFoldersDataAdapter(SimpleDB.SimpleDB db, FavoriteFoldersM model, FoldersM foldersM)
+    public FavoriteFoldersDataAdapter(SimpleDB.SimpleDB db, FavoriteFoldersM model, FoldersM f)
       : base("FavoriteFolders", db) {
       _model = model;
-      _foldersM = foldersM;
+      _foldersM = f;
     }
 
     public override void Load() {
@@ -27,7 +27,11 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      _model.All.Add(new(int.Parse(props[0])) { Title = props[2], Csv = props });
+      _model.All.Add(
+        new(int.Parse(props[0])) {
+          Title = props[2],
+          Csv = props
+        });
     }
 
     private static string ToCsv(FavoriteFolderM ff) =>

@@ -146,6 +146,7 @@ namespace PictureManager.ViewModels.Tree {
       _coreVM.MarkUsedKeywordsAndPeople();
     }
 
+    // TODO try to remove dependency to _core
     private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
       var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = true } };
       fop.RunTask = Task.Run(() => {
@@ -155,7 +156,7 @@ namespace PictureManager.ViewModels.Tree {
         try {
           Model.CopyMove(mode, srcFolder, destFolder, fop.Progress,
             (string srcFilePath, string destFilePath, ref string destFileName) =>
-              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
+              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token, _core);
         }
         catch (Exception ex) {
           ErrorDialog.Show(ex);

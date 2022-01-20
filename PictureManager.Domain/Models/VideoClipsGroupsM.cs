@@ -3,19 +3,17 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils.Extensions;
-using PictureManager.Domain.DataAdapters;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroupsM {
     private readonly VideoClipsM _videoClips;
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<VideoClipsGroupM> All { get; } = new();
 
-    public VideoClipsGroupsM(SimpleDB.SimpleDB db, VideoClipsM vc, MediaItemsM mi) {
+    public VideoClipsGroupsM(VideoClipsM vc) {
       _videoClips = vc;
-      DataAdapter = new VideoClipsGroupsDataAdapter(db, this, vc, mi);
     }
 
     public bool ItemCanRename(string name, MediaItemM mi) =>

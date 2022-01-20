@@ -80,8 +80,6 @@ namespace PictureManager.ViewModels {
         ReloadMetadataInFolder,
         x => x != null);
       #endregion
-
-      _core.SegmentsM.SegmentPersonChangedEvent += (_, e) => e.Segment.MediaItem.SetInfoBox();
     }
 
     private void Rotate() {

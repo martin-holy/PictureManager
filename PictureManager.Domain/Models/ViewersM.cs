@@ -5,7 +5,6 @@ using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -16,19 +15,13 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private readonly Core _core;
     private ViewerM _current;
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<ViewerM> All { get; } = new();
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public event EventHandler<ViewerDeletedEventArgs> ViewerDeletedEvent = delegate { };
-
-    public ViewersM(Core core) {
-      _core = core;
-      DataAdapter = new ViewersDataAdapter(core, this);
-    }
 
     public ViewerM ItemCreate(ITreeBranch root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
@@ -85,19 +78,15 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetCurrent(ViewerM viewer) {
-      if (Current != viewer) {
-        if (Current != null)
-          Current.IsDefault = false;
+      if (Current == viewer) return;
 
-        viewer.IsDefault = true;
-        DataAdapter.Save();
-        Current = viewer;
-      }
+      if (Current != null)
+        Current.IsDefault = false;
 
-      Current.UpdateHashSets();
-      _core.FoldersM.AddDrives();
-      _core.FolderKeywordsM.Load();
-      _core.CategoryGroupsM.UpdateVisibility(Current);
+      viewer.IsDefault = true;
+      viewer.UpdateHashSets();
+      DataAdapter.Save();
+      Current = viewer;
     }
 
     public bool CanViewerSee(FolderM folder) =>

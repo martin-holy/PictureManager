@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -24,7 +23,7 @@ namespace PictureManager.Domain.Models {
     private bool _groupConfirmedSegments;
     private List<SegmentM> _selected = new();
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
     public Dictionary<int, SegmentM> AllDic { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
@@ -45,7 +44,7 @@ namespace PictureManager.Domain.Models {
 
     public SegmentsM(Core core) {
       _core = core;
-      DataAdapter = new SegmentsDataAdapter(core, this);
+
       SegmentsRectsM = new(this);
     }
 
@@ -339,7 +338,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in toUpdate) {
         segment.PersonId = newId;
         segment.Person = person;
-        SegmentPersonChangedEvent.Invoke(this, new(segment));
+        SegmentPersonChangedEvent(this, new(segment));
         DataAdapter.IsModified = true;
       }
     }
@@ -348,7 +347,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in Selected) {
         RemovePersonFromSegment(segment);
         segment.PersonId = 0;
-        SegmentPersonChangedEvent.Invoke(this, new(segment));
+        SegmentPersonChangedEvent(this, new(segment));
         DataAdapter.IsModified = true;
       }
     }
@@ -363,14 +362,9 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void RemoveKeywordsFromSegments(IEnumerable<KeywordM> keywords) {
-      var set = new HashSet<KeywordM>(keywords);
-      foreach (var segment in All.Where(s => s.Keywords != null)) {
-        foreach (var keyword in segment.Keywords.Where(set.Contains)) {
-          segment.Keywords = ListExtensions.Toggle(segment.Keywords, keyword, true);
-          DataAdapter.IsModified = true;
-        }
-      }
+    public void RemoveKeywordFromSegments(KeywordM keyword) {
+      foreach (var segment in All.Where(x => x.Keywords?.Contains(keyword) == true))
+        ToggleKeyword(segment, keyword);
     }
 
     public void RemovePersonFromSegments(PersonM person) {
@@ -403,9 +397,15 @@ namespace PictureManager.Domain.Models {
       segment.PersonId = person.Id;
       segment.Person = person;
       person.Segment ??= segment;
-      SegmentPersonChangedEvent.Invoke(this, new(segment));
+      SegmentPersonChangedEvent(this, new(segment));
 
       DataAdapter.IsModified = true;
+    }
+
+    public void Delete(IEnumerable<SegmentM> segments) {
+      if (segments == null) return;
+      foreach (var segment in segments.ToArray())
+        Delete(segment);
     }
 
     public void Delete(SegmentM segment) {

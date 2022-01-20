@@ -9,12 +9,15 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|Name|Category|GroupItems
   /// </summary>
   public class CategoryGroupsDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly CategoryGroupsM _model;
+    private readonly KeywordsM _keywordsM;
+    private readonly PeopleM _peopleM;
 
-    public CategoryGroupsDataAdapter(Core core, CategoryGroupsM model) : base("CategoryGroups", core.Sdb) {
-      _core = core;
+    public CategoryGroupsDataAdapter(SimpleDB.SimpleDB db, CategoryGroupsM model, KeywordsM k, PeopleM p)
+      : base("CategoryGroups", db) {
       _model = model;
+      _keywordsM = k;
+      _peopleM = p;
     }
 
     public override void Load() {
@@ -22,12 +25,16 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.All, ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.All, ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      _model.All.Add(new(int.Parse(props[0]), props[1], (Category)int.Parse(props[2])) { Csv = props });
+      _model.All.Add(
+        new(int.Parse(props[0]), props[1], (Category)int.Parse(props[2])) {
+          Csv = props
+        });
     }
 
     private static string ToCsv(CategoryGroupM categoryGroup) =>
@@ -46,9 +53,9 @@ namespace PictureManager.Domain.DataAdapters {
 
         switch (cg.Category) {
           case Category.People:
-            cg.Parent = _core.PeopleM;
-            _core.PeopleM.Items.Add(cg);
-            foreach (var item in items.Select(id => _core.PeopleM.AllDic[id])) {
+            cg.Parent = _peopleM;
+            _peopleM.Items.Add(cg);
+            foreach (var item in items.Select(id => _peopleM.AllDic[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }
@@ -56,9 +63,9 @@ namespace PictureManager.Domain.DataAdapters {
             break;
 
           case Category.Keywords:
-            cg.Parent = _core.KeywordsM;
-            _core.KeywordsM.Items.Add(cg);
-            foreach (var item in items.Select(id => _core.KeywordsM.AllDic[id])) {
+            cg.Parent = _keywordsM;
+            _keywordsM.Items.Add(cg);
+            foreach (var item in items.Select(id => _keywordsM.AllDic[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }

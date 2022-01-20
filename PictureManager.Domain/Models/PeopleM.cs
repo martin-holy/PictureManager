@@ -6,7 +6,6 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -17,21 +16,15 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private readonly Core _core;
     private PersonM _current;
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<PersonM> All { get; } = new();
     public List<PersonM> Selected { get; } = new();
     public Dictionary<int, PersonM> AllDic { get; set; }
     public PersonM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public event EventHandler<PersonDeletedEventArgs> PersonDeletedEvent = delegate { };
-
-    public PeopleM(Core core) {
-      _core = core;
-      DataAdapter = new PeopleDataAdapter(core, this);
-    }
 
     private static string GetItemName(object item) => item is PersonM p ? p.Name : string.Empty;
 
@@ -44,11 +37,6 @@ namespace PictureManager.Domain.Models {
         yield return personM;
     }
 
-    public void ToggleKeyword(PersonM person, KeywordM keyword) {
-      person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
-      DataAdapter.IsModified = true;
-    }
-
     public PersonM ItemCreate(ITreeBranch root, string name) {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
       root.Items.SetInOrder(item, GetItemName);
@@ -58,7 +46,7 @@ namespace PictureManager.Domain.Models {
       return item;
     }
 
-    public void ItemMove(PersonM item, ITreeLeaf dest, bool aboveDest) {
+    public void ItemMove(ITreeLeaf item, ITreeLeaf dest, bool aboveDest) {
       Tree.ItemMove(item, dest, aboveDest, GetItemName);
       DataAdapter.IsModified = true;
     }
@@ -73,8 +61,6 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(PersonM person) {
-      _core.MediaItemsM.RemovePersonFromMediaItems(person);
-      _core.SegmentsM.RemovePersonFromSegments(person);
       person.Parent.Items.Remove(person);
       person.Parent = null;
       person.Segment = null;
@@ -89,9 +75,9 @@ namespace PictureManager.Domain.Models {
       All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) ??
       (create ? ItemCreate(this, name) : null);
 
-    public void DeleteNotUsed(IEnumerable<PersonM> list) {
+    public void DeleteNotUsed(IEnumerable<PersonM> list, IEnumerable<MediaItemM> mediaItems) {
       var people = new HashSet<PersonM>(list);
-      foreach (var mi in _core.MediaItemsM.All.Cast<MediaItemM>()) {
+      foreach (var mi in mediaItems) {
         if (mi.People != null)
           foreach (var personM in mi.People.Where(x => people.Contains(x)))
             people.Remove(personM);
@@ -107,20 +93,52 @@ namespace PictureManager.Domain.Models {
         ItemDelete(person);
     }
 
-    public List<MediaItemM> GetMediaItems(PersonM person) =>
-      _core.MediaItemsM.All.Where(mi =>
-          mi.People?.Contains(person) == true ||
-          mi.Segments?.Any(s => s.Person == person) == true)
-        .OrderBy(mi => mi.FileName).ToList();
+    public void RemoveSegmentFromPerson(SegmentM segment, PersonM person) {
+      if (segment == null || person == null) return;
+      
+      if (person.Segment == segment)
+        person.Segment = null;
 
-    public void RemoveKeywordsFromPeople(IEnumerable<KeywordM> keywords) {
-      var set = new HashSet<KeywordM>(keywords);
-      foreach (var person in All.Where(p => p.Keywords != null)) {
-        foreach (var keyword in person.Keywords.Where(set.Contains)) {
-          person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
-          DataAdapter.IsModified = true;
-        }
+      if (!person.Segments.Contains(segment)) return;
+
+      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
+      DataAdapter.IsModified = true;
+    }
+
+    public void UpdateSegmentOnPerson(PersonM person, SegmentM segment, bool add) {
+      if (segment == null || person == null) return;
+
+      if (add) {
+
       }
+    }
+
+    public void ToggleSegment(PersonM person, SegmentM segment) {
+      if (segment == null || person == null) return;
+
+      var count = person.Segments?.Count;
+      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
+
+      if (count != person.Segments?.Count) {
+        person.OnPropertyChanged(nameof(person.Segments));
+        DataAdapter.IsModified = true;
+      }
+
+      if (person.Segment == segment && person.Segments?.Contains(segment) != true)
+        person.Segment = null;
+
+      if (person.Segments?.Contains(segment) == true)
+        person.Segment = segment;
+    }
+
+    public void ToggleKeyword(PersonM person, KeywordM keyword) {
+      person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
+      DataAdapter.IsModified = true;
+    }
+
+    public void RemoveKeywordFromPeople(KeywordM keyword) {
+      foreach (var person in All.Where(x => x.Keywords?.Contains(keyword) == true))
+        ToggleKeyword(person, keyword);
     }
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {

@@ -5,7 +5,6 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -15,13 +14,9 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public ObservableCollection<FavoriteFolderM> All { get; } = new();
     public event EventHandler<ObjectEventArgs> FavoriteFolderDeletedEvent = delegate { };
-
-    public FavoriteFoldersM(SimpleDB.SimpleDB db, FoldersM foldersM) {
-      DataAdapter = new FavoriteFoldersDataAdapter(db, this, foldersM);
-    }
 
     private static string GetItemName(object item) =>
       item is FavoriteFolderM x
@@ -59,6 +54,11 @@ namespace PictureManager.Domain.Models {
       All.Remove(item);
       FavoriteFolderDeletedEvent(this, new(item));
       DataAdapter.IsModified = true;
+    }
+
+    public void ItemDelete(FolderM folder) {
+      if (All.SingleOrDefault(x => x.Folder.Equals(folder)) is { } ff)
+        ItemDelete(ff);
     }
   }
 }

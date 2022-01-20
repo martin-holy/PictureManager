@@ -5,7 +5,6 @@ using System.Linq;
 using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
@@ -16,19 +15,12 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private readonly Core _core;
-    
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<KeywordM> All { get; } = new();
     public Dictionary<int, KeywordM> AllDic { get; set; }
     public CategoryGroupM AutoAddedGroup { get; set; }
 
     public event EventHandler<KeywordDeletedEventArgs> KeywordDeletedEvent = delegate { };
-
-    public KeywordsM(Core core) {
-      _core = core;
-      DataAdapter = new KeywordsDataAdapter(core, this);
-    }
 
     private static string GetItemName(object item) => item is KeywordM k ? k.Name : string.Empty;
 
@@ -64,7 +56,7 @@ namespace PictureManager.Domain.Models {
       return item;
     }
 
-    public void ItemMove(KeywordM item, ITreeLeaf dest, bool aboveDest) {
+    public void ItemMove(ITreeLeaf item, ITreeLeaf dest, bool aboveDest) {
       Tree.ItemMove(item, dest, aboveDest, GetItemName);
       DataAdapter.IsModified = true;
     }
@@ -81,11 +73,6 @@ namespace PictureManager.Domain.Models {
     public void ItemDelete(KeywordM item) {
       var keywords = new List<KeywordM>();
       Tree.GetThisAndItemsRecursive(item, ref keywords);
-
-      _core.PeopleM.RemoveKeywordsFromPeople(keywords);
-      _core.SegmentsM.RemoveKeywordsFromSegments(keywords);
-      _core.MediaItemsM.RemoveKeywordsFromMediaItems(keywords);
-
       item.Parent.Items.Remove(item);
 
       foreach (var keyword in keywords) {
@@ -136,9 +123,9 @@ namespace PictureManager.Domain.Models {
       return outKeywords;
     }
 
-    public void DeleteNotUsed(IEnumerable<KeywordM> list) {
+    public void DeleteNotUsed(IEnumerable<KeywordM> list, List<MediaItemM> mediaItems, List<PersonM> people) {
       var keywords = new HashSet<KeywordM>(list);
-      foreach (var mi in _core.MediaItemsM.All.Cast<MediaItemM>()) {
+      foreach (var mi in mediaItems) {
         if (mi.Keywords != null)
           foreach (var keyword in mi.Keywords.Where(x => keywords.Contains(x)))
             keywords.Remove(keyword);
@@ -153,20 +140,12 @@ namespace PictureManager.Domain.Models {
 
       if (keywords.Count == 0) return;
 
-      foreach (var person in _core.PeopleM.All.Where(p => p.Keywords != null))
+      foreach (var person in people.Where(p => p.Keywords != null))
         foreach (var keyword in person.Keywords)
           keywords.Remove(keyword);
 
       foreach (var keywordM in keywords)
         ItemDelete(keywordM);
-    }
-
-    public List<MediaItemM> GetMediaItems(KeywordM keyword, bool recursive) {
-      var keywords = new List<KeywordM> { keyword };
-      if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
-      var set = new HashSet<KeywordM>(keywords);
-
-      return _core.MediaItemsM.All.Where(mi => mi.Keywords != null && mi.Keywords.Any(k => set.Contains(k))).ToList();
     }
   }
 }

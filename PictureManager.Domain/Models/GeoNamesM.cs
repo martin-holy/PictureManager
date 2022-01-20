@@ -3,9 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
-using MH.Utils;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -17,13 +15,12 @@ namespace PictureManager.Domain.Models {
 
     private readonly Core _core;
 
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public List<GeoNameM> All { get; } = new();
     public Dictionary<int, GeoNameM> AllDic { get; set; }
 
     public GeoNamesM(Core core) {
       _core = core;
-      DataAdapter = new GeoNamesDataAdapter(core, this);
     }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
@@ -62,14 +59,6 @@ namespace PictureManager.Domain.Models {
       var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
 
       InsertGeoNameHierarchy(lat, lng, userName);
-    }
-
-    public IEnumerable<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
-      var geoNames = new List<GeoNameM> { geoName };
-      if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
-      var set = new HashSet<GeoNameM>(geoNames);
-
-      return _core.MediaItemsM.All.Where(mi => set.Contains(mi.GeoName));
     }
   }
 }

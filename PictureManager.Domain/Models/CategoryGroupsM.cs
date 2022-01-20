@@ -5,24 +5,18 @@ using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class CategoryGroupsM {
-    private readonly Core _core;
-    public DataAdapter DataAdapter { get; }
+    public DataAdapter DataAdapter { get; set; }
     public ObservableCollection<CategoryGroupM> All { get; } = new();
     public Dictionary<Category, ITreeBranch> Categories { get; } = new();
-
-    public CategoryGroupsM(Core core) {
-      _core = core;
-      DataAdapter = new CategoryGroupsDataAdapter(core, this);
-    }
+    public event EventHandler<CategoryGroupDeletedEventArgs> CategoryGroupDeletedEvent = delegate { };
 
     public CategoryGroupM GroupCreate(string name, Category category) {
       ITreeBranch parent = Categories[category];
-
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       parent.Items.SetInOrder(group, x => x is CategoryGroupM cg ? cg.Name : string.Empty);
@@ -49,20 +43,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void GroupDelete(CategoryGroupM group) {
-      // move all group items to root
-      switch (group.Category) {
-        case Category.Keywords:
-          foreach (var item in group.Items.Cast<KeywordM>().ToArray())
-            _core.KeywordsM.ItemMove(item, _core.KeywordsM, false);
-          break;
-        case Category.People:
-          foreach (var item in group.Items.Cast<PersonM>().ToArray())
-            _core.PeopleM.ItemMove(item, _core.PeopleM, false);
-          break;
-      }
-
       group.Parent.Items.Remove(group);
       All.Remove(group);
+      CategoryGroupDeletedEvent(this, new(group));
       DataAdapter.IsModified = true;
     }
 

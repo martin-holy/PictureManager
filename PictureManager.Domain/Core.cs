@@ -1,6 +1,8 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -9,25 +11,21 @@ namespace PictureManager.Domain {
     public string CachePath { get; set; }
     public int ThumbnailSize { get; set; }
     public double WindowsDisplayScale { get; set; }
-    public ObservableCollection<LogItem> Log { get; set; } = new();
-    public ILogger Logger { get; set; }
+    public ObservableCollection<LogItem> Log { get; } = new();
+    public SimpleDB.SimpleDB Sdb { get; }
 
-    #region DB Models
     public CategoryGroupsM CategoryGroupsM { get; }
-    public FoldersM FoldersM { get; }
     public FavoriteFoldersM FavoriteFoldersM { get; }
-    public PeopleM PeopleM { get; }
     public FolderKeywordsM FolderKeywordsM { get; }
-    public KeywordsM KeywordsM { get; }
+    public FoldersM FoldersM { get; }
     public GeoNamesM GeoNamesM { get; }
-    public ViewersM ViewersM { get; }
+    public KeywordsM KeywordsM { get; }
     public MediaItemsM MediaItemsM { get; }
-    public VideoClipsM VideoClipsM { get; }
-    #endregion
-
-    public SimpleDB.SimpleDB Sdb { get; private set; }
+    public PeopleM PeopleM { get; }
     public SegmentsM SegmentsM { get; }
     public ThumbnailsGridsM ThumbnailsGridsM { get; }
+    public VideoClipsM VideoClipsM { get; }
+    public ViewersM ViewersM { get; }
 
     private TaskScheduler UiTaskScheduler { get; }
 
@@ -36,22 +34,33 @@ namespace PictureManager.Domain {
 
       Sdb = new(this);
 
-      FoldersM = new(this);
-      FavoriteFoldersM = new(Sdb, FoldersM);
-      PeopleM = new(this);
-      FolderKeywordsM = new(this);
-      KeywordsM = new(this);
-      GeoNamesM = new(this);
-      ViewersM = new(this);
+      ViewersM = new();
+      SegmentsM = new(this); // Logger, PeopleM
+      CategoryGroupsM = new();
+      FavoriteFoldersM = new();
+      FolderKeywordsM = new();
+      FoldersM = new(this, ViewersM); // FolderKeywordsM, MediaItemsM
+      GeoNamesM = new(this); // RunOnUiThread
+      KeywordsM = new();
+      MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM, RunOnUiThread
+      PeopleM = new();
+      ThumbnailsGridsM = new(this); // MediaItemsM, RunOnUiThread
+      VideoClipsM = new();
 
-      CategoryGroupsM = new(this);
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
 
-      MediaItemsM = new(this);
-      VideoClipsM = new(Sdb, MediaItemsM, KeywordsM, PeopleM);
-      SegmentsM = new(this);
-      ThumbnailsGridsM = new(this);
+      CategoryGroupsM.DataAdapter = new CategoryGroupsDataAdapter(Sdb, CategoryGroupsM, KeywordsM, PeopleM);
+      FavoriteFoldersM.DataAdapter = new FavoriteFoldersDataAdapter(Sdb, FavoriteFoldersM, FoldersM);
+      FoldersM.DataAdapter = new FoldersDataAdapter(Sdb, FoldersM);
+      GeoNamesM.DataAdapter = new GeoNamesDataAdapter(Sdb, GeoNamesM);
+      KeywordsM.DataAdapter = new KeywordsDataAdapter(Sdb, KeywordsM, CategoryGroupsM);
+      MediaItemsM.DataAdapter = new MediaItemsDataAdapter(Sdb, MediaItemsM, FoldersM, PeopleM, KeywordsM, GeoNamesM);
+      PeopleM.DataAdapter = new PeopleDataAdapter(Sdb, PeopleM, SegmentsM, KeywordsM);
+      SegmentsM.DataAdapter = new SegmentsDataAdapter(Sdb, SegmentsM, MediaItemsM, PeopleM, KeywordsM);
+      VideoClipsM.DataAdapter = new VideoClipsDataAdapter(Sdb, VideoClipsM, MediaItemsM, KeywordsM, PeopleM);
+      VideoClipsM.GroupsM.DataAdapter = new VideoClipsGroupsDataAdapter(Sdb, VideoClipsM.GroupsM, VideoClipsM, MediaItemsM);
+      ViewersM.DataAdapter = new ViewersDataAdapter(Sdb, ViewersM, FoldersM, KeywordsM);
     }
 
     public Task InitAsync(IProgress<string> progress) {
@@ -74,7 +83,9 @@ namespace PictureManager.Domain {
         progress.Report("Loading Drives");
         FoldersM.AddDrives();
         progress.Report("Loading Folder Keywords");
-        FolderKeywordsM.Load();
+        FolderKeywordsM.Load(FoldersM.All);
+
+        AttachEvents();
 
         // TODO better
         // cleanup
@@ -95,11 +106,63 @@ namespace PictureManager.Domain {
       });
     }
 
-    public void LogError(Exception ex) => LogError(ex, string.Empty);
+    private void AttachEvents() {
+      FoldersM.FolderDeletedEvent += (_, e) => {
+        FavoriteFoldersM.ItemDelete(e.Folder);
+        MediaItemsM.Delete(e.Folder.MediaItems.ToList());
+      };
+
+      PeopleM.PersonDeletedEvent += (_, e) => {
+        MediaItemsM.RemovePersonFromMediaItems(e.Person);
+        SegmentsM.RemovePersonFromSegments(e.Person);
+      };
+
+      KeywordsM.KeywordDeletedEvent += (_, e) => {
+        PeopleM.RemoveKeywordFromPeople(e.Keyword);
+        SegmentsM.RemoveKeywordFromSegments(e.Keyword);
+        MediaItemsM.RemoveKeywordFromMediaItems(e.Keyword);
+      };
+
+      MediaItemsM.MediaItemDeletedEvent += (_, e) => {
+        SegmentsM.Delete(e.MediaItem.Segments);
+      };
+
+      CategoryGroupsM.CategoryGroupDeletedEvent += (_, e) => {
+        // move all group items to root
+        foreach (var item in e.Group.Items.ToArray()) {
+          switch (e.Group.Category) {
+            case Category.Keywords:
+              KeywordsM.ItemMove(item, KeywordsM, false);
+              break;
+            case Category.People:
+              PeopleM.ItemMove(item, PeopleM, false);
+              break;
+          }
+        }
+      };
+
+      SegmentsM.SegmentPersonChangedEvent += (_, e) =>
+        e.Segment.MediaItem.SetInfoBox();
+
+      ViewersM.PropertyChanged += (_, e) => {
+        if (nameof(ViewersM.Current).Equals(e.PropertyName)) {
+          FoldersM.AddDrives();
+          FolderKeywordsM.Load(FoldersM.All);
+          CategoryGroupsM.UpdateVisibility(ViewersM.Current);
+        }
+      };
+    }
+
+    public void LogError(Exception ex) =>
+      LogError(ex, string.Empty);
 
     public void LogError(Exception ex, string msg) =>
       RunOnUiThread(() =>
-        Log.Add(new LogItem(string.IsNullOrEmpty(msg) ? ex.Message : msg, $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
+        Log.Add(new(
+          string.IsNullOrEmpty(msg)
+            ? ex.Message
+            : msg,
+          $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
 
     private static Core _instance;
     private static readonly object Lock = new();

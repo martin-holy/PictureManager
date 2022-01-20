@@ -8,12 +8,15 @@ namespace PictureManager.Domain.DataAdapters {
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
   public class PeopleDataAdapter : DataAdapter {
-    private readonly Core _core;
     private readonly PeopleM _model;
+    private readonly SegmentsM _segmentsM;
+    private readonly KeywordsM _keywordsM;
 
-    public PeopleDataAdapter(Core core, PeopleM model) : base("People", core.Sdb) {
-      _core = core;
+    public PeopleDataAdapter(SimpleDB.SimpleDB db, PeopleM model, SegmentsM s, KeywordsM k)
+      : base("People", db) {
       _model = model;
+      _segmentsM = s;
+      _keywordsM = k;
     }
 
     public override void Load() {
@@ -22,7 +25,8 @@ namespace PictureManager.Domain.DataAdapters {
       LoadFromFile();
     }
 
-    public override void Save() => SaveToFile(_model.GetAll(), ToCsv);
+    public override void Save() =>
+      SaveToFile(_model.GetAll(), ToCsv);
 
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
@@ -36,8 +40,12 @@ namespace PictureManager.Domain.DataAdapters {
       string.Join("|",
         person.Id.ToString(),
         person.Name,
-        person.Segments == null ? string.Empty : string.Join(",", person.Segments.Select(x => x.Id)),
-        person.Keywords == null ? string.Empty : string.Join(",", person.Keywords.Select(x => x.Id)));
+        person.Segments == null
+          ? string.Empty
+          : string.Join(",", person.Segments.Select(x => x.Id)),
+        person.Keywords == null
+          ? string.Empty
+          : string.Join(",", person.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
       foreach (var person in _model.All) {
@@ -46,7 +54,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = person.Csv[2].Split(',');
           person.Segments = new(ids.Length);
           foreach (var segmentId in ids)
-            person.Segments.Add(_core.SegmentsM.AllDic[int.Parse(segmentId)]);
+            person.Segments.Add(_segmentsM.AllDic[int.Parse(segmentId)]);
           person.Segment = person.Segments[0];
         }
 
@@ -55,7 +63,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = person.Csv[3].Split(',');
           person.Keywords = new(ids.Length);
           foreach (var keywordId in ids)
-            person.Keywords.Add(_core.KeywordsM.AllDic[int.Parse(keywordId)]);
+            person.Keywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
         }
 
         // add loose people
