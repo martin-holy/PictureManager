@@ -44,7 +44,7 @@ namespace PictureManager.Domain {
       KeywordsM = new();
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       PeopleM = new();
-      ThumbnailsGridsM = new(this); // MediaItemsM
+      ThumbnailsGridsM = new();
       VideoClipsM = new();
 
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
@@ -125,6 +125,7 @@ namespace PictureManager.Domain {
 
       MediaItemsM.MediaItemDeletedEvent += (_, e) => {
         SegmentsM.Delete(e.MediaItem.Segments);
+        ThumbnailsGridsM.RemoveMediaItem(e.MediaItem);
       };
 
       CategoryGroupsM.CategoryGroupDeletedEvent += (_, e) => {

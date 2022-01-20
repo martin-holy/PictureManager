@@ -155,9 +155,6 @@ namespace PictureManager.Domain.Models {
       item.Folder.MediaItems.Remove(item);
       item.Folder = null;
 
-      // remove from ThumbnailsGrids
-      _core.ThumbnailsGridsM.RemoveMediaItem(item);
-
       // remove from DB
       All.Remove(item);
 

@@ -10,7 +10,6 @@ using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
-    private readonly Core _core;
     private readonly List<MediaItemM> _selectedItems = new();
     private readonly List<object> _filterAnd = new();
     private readonly List<object> _filterOr = new();
@@ -53,8 +52,8 @@ namespace PictureManager.Domain.Models {
         _currentMediaItem = value;
 
         // TODO temporary
-        if (_core.MediaItemsM.Current != value)
-          _core.MediaItemsM.Current = value;
+        if (Core.Instance.MediaItemsM.Current != value)
+          Core.Instance.MediaItemsM.Current = value;
 
         OnPropertyChanged();
         UpdatePositionSlashCount();
@@ -72,10 +71,6 @@ namespace PictureManager.Domain.Models {
           return string.Empty;
         }
       }
-    }
-
-    public ThumbnailsGridM(Core core) {
-      _core = core;
     }
 
     public void UpdatePositionSlashCount() =>
