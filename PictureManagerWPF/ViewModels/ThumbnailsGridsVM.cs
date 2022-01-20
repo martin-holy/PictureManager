@@ -261,7 +261,7 @@ namespace PictureManager.ViewModels {
         await Task.WhenAll(metadata, thumbs);
 
         if (token.IsCancellationRequested)
-          await _core.RunOnUiThread(() => _coreVM.MediaItemsVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
+          await Core.RunOnUiThread(() => _coreVM.MediaItemsVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
       }, token);
 
       // TODO: is this necessary?
@@ -277,7 +277,7 @@ namespace PictureManager.ViewModels {
     }
 
     private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
-      await _core.RunOnUiThread(() => Current.Panel.ClearRows());
+      await Core.RunOnUiThread(() => Current.Panel.ClearRows());
 
       await Task.Run(async () => {
         var count = items.Count;
@@ -295,7 +295,7 @@ namespace PictureManager.ViewModels {
             var success = await _coreVM.MediaItemsVM.ReadMetadata(mi);
             if (!success) {
               // delete corrupted MediaItems
-              await _core.RunOnUiThread(() => {
+              await Core.RunOnUiThread(() => {
                 Current.Model.LoadedItems.Remove(mi);
                 Current.Model.FilteredItems.Remove(mi);
                 Current.Model.UpdatePositionSlashCount();
@@ -309,7 +309,7 @@ namespace PictureManager.ViewModels {
 
           await AddMediaItemToGrid(mi);
 
-          await _core.RunOnUiThread(() => {
+          await Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             _coreVM.AppInfo.ProgressBarValueA = percent;
           });
@@ -337,7 +337,7 @@ namespace PictureManager.ViewModels {
           groupItems.Add(new() { Icon = "IconCalendar", Title = title });
       }
 
-      await _core.RunOnUiThread(() => {
+      await Core.RunOnUiThread(() => {
         Current.Panel.AddGroupIfNew(groupItems.ToArray());
         Current.Panel.AddItem(mi, mi.ThumbWidth + itemOffset);
       });

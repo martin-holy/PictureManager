@@ -72,7 +72,7 @@ namespace PictureManager.Dialogs {
 
           Parallel.ForEach(_items, po, mi => {
             index++;
-            App.Core.RunOnUiThread(() => {
+            Core.RunOnUiThread(() => {
               PbProgress.Value = index;
               FileName = mi.FileName;
             });

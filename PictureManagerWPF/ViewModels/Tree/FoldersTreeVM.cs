@@ -161,7 +161,7 @@ namespace PictureManager.ViewModels.Tree {
         catch (Exception ex) {
           ErrorDialog.Show(ex);
         }
-      }).ContinueWith(_ => _core.RunOnUiThread(() => fop.Close()));
+      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Close()));
 
       fop.ShowDialog();
     }

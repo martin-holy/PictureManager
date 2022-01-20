@@ -217,7 +217,7 @@ namespace PictureManager.Domain.Models {
         FilteredItems.Add(mi);
 
       if (FilteredItems.IndexOf(CurrentMediaItem) < 0)
-        await _core.RunOnUiThread(() => CurrentMediaItem = null);
+        await Core.RunOnUiThread(() => CurrentMediaItem = null);
 
       UpdatePositionSlashCount();
     }

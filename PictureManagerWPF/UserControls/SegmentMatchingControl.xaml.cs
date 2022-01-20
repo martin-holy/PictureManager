@@ -11,6 +11,7 @@ using MH.UI.WPF.Converters;
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.CustomControls;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Interfaces;
 using PictureManager.Utils;
@@ -100,7 +101,7 @@ namespace PictureManager.UserControls {
 
       await _workTask.Start(Task.Run(async () => {
         await foreach (var segment in App.Core.SegmentsM.LoadSegmentsAsync(segments, _progress, _workTask.Token))
-          await App.Core.RunOnUiThread(() => SegmentsGrid.AddItem(segment, _segmentGridWidth));
+          await Core.RunOnUiThread(() => SegmentsGrid.AddItem(segment, _segmentGridWidth));
       }));
 
       _loading = false;

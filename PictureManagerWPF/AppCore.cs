@@ -267,7 +267,7 @@ namespace PictureManager {
       var srcMi = App.Core.FoldersM.GetMediaItemByPath(srcFilePath);
       var destMi = App.Core.FoldersM.GetMediaItemByPath(destFilePath);
 
-      App.Core.RunOnUiThread(() => {
+      Core.RunOnUiThread(() => {
         srcMi?.SetThumbSize();
         srcMi?.SetInfoBox();
         destMi?.SetThumbSize();

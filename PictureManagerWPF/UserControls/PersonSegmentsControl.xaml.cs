@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using MH.UI.WPF.Converters;
 using MH.Utils.Extensions;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using PictureManager.Views;
@@ -98,13 +99,13 @@ namespace PictureManager.UserControls {
 
           // add group
           if (!string.IsNullOrEmpty(group.Key))
-            await App.Core.RunOnUiThread(() => AllSegmentsGrid.AddGroup("IconTag", group.Key));
+            await Core.RunOnUiThread(() => AllSegmentsGrid.AddGroup("IconTag", group.Key));
 
           // add segments
           foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
             await segment.SetPictureAsync(App.Core.SegmentsM.SegmentSize);
             segment.MediaItem.SetThumbSize();
-            await App.Core.RunOnUiThread(() => {
+            await Core.RunOnUiThread(() => {
               segment.MediaItem.SetInfoBox();
               AllSegments.Add(segment);
               AllSegmentsGrid.AddItem(segment, _segmentGridWidth);

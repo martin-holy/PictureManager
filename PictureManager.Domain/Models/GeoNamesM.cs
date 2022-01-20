@@ -13,15 +13,9 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private readonly Core _core;
-
     public DataAdapter DataAdapter { get; set; }
     public List<GeoNameM> All { get; } = new();
     public Dictionary<int, GeoNameM> AllDic { get; set; }
-
-    public GeoNamesM(Core core) {
-      _core = core;
-    }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
       var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={userName}".Replace(",", ".");
@@ -45,7 +39,7 @@ namespace PictureManager.Domain.Models {
 
           All.Add(dbGeoName);
           parentGeoName?.Items.Add(dbGeoName);
-          _core.RunOnUiThread(() => DataAdapter.IsModified = true);
+          Core.RunOnUiThread(() => DataAdapter.IsModified = true);
         }
 
         parentGeoName = dbGeoName;

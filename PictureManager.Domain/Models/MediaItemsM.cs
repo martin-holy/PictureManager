@@ -223,7 +223,7 @@ namespace PictureManager.Domain.Models {
           var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            _core.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
+            Core.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
             continue;
           }
         }
