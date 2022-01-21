@@ -183,8 +183,9 @@ namespace PictureManager.UserControls {
         foreach (var group in App.Core.SegmentsM.ConfirmedSegments
           .GroupBy(x => {
             if (x.segment.Person == null) return "Unknown";
-            if (x.segment.Person.Keywords == null) return string.Empty;
-            return string.Join(", ", App.Core.PeopleM.All[x.segment.Person.Id].DisplayKeywords.Select(k => k.Name));
+            return x.segment.Person.DisplayKeywords == null
+              ? string.Empty
+              : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name));
           })
           .OrderBy(g => g.First().personId < 0).ThenBy(g => g.Key)) {
 

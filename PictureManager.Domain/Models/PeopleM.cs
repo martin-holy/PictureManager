@@ -93,42 +93,20 @@ namespace PictureManager.Domain.Models {
         ItemDelete(person);
     }
 
-    public void RemoveSegmentFromPerson(SegmentM segment, PersonM person) {
-      if (segment == null || person == null) return;
-      
-      if (person.Segment == segment)
-        person.Segment = null;
+    public void SegmentPersonChange(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
+      if (newPerson != null)
+        newPerson.Segment ??= segment;
 
-      if (!person.Segments.Contains(segment)) return;
+      if (oldPerson == null) return;
 
-      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
+      if (oldPerson.Segment == segment)
+        oldPerson.Segment = null;
+
+      if (oldPerson.Segments?.Contains(segment) != true) return;
+
+      oldPerson.Segments = ListExtensions.Toggle(oldPerson.Segments, segment, true);
+      oldPerson.OnPropertyChanged(nameof(oldPerson.Segments));
       DataAdapter.IsModified = true;
-    }
-
-    public void UpdateSegmentOnPerson(PersonM person, SegmentM segment, bool add) {
-      if (segment == null || person == null) return;
-
-      if (add) {
-
-      }
-    }
-
-    public void ToggleSegment(PersonM person, SegmentM segment) {
-      if (segment == null || person == null) return;
-
-      var count = person.Segments?.Count;
-      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
-
-      if (count != person.Segments?.Count) {
-        person.OnPropertyChanged(nameof(person.Segments));
-        DataAdapter.IsModified = true;
-      }
-
-      if (person.Segment == segment && person.Segments?.Contains(segment) != true)
-        person.Segment = null;
-
-      if (person.Segments?.Contains(segment) == true)
-        person.Segment = segment;
     }
 
     public void ToggleKeyword(PersonM person, KeywordM keyword) {
