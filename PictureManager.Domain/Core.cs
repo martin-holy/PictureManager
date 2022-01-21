@@ -35,7 +35,7 @@ namespace PictureManager.Domain {
       Sdb = new(this);
 
       ViewersM = new();
-      SegmentsM = new(this); // Logger, PeopleM
+      SegmentsM = new();
       CategoryGroupsM = new();
       FavoriteFoldersM = new();
       FolderKeywordsM = new();
@@ -142,8 +142,10 @@ namespace PictureManager.Domain {
         }
       };
 
-      SegmentsM.SegmentPersonChangedEvent += (_, e) =>
+      SegmentsM.SegmentPersonChangeEvent += (_, e) => {
+        PeopleM.SegmentPersonChange(e.Segment, e.OldPerson, e.NewPerson);
         e.Segment.MediaItem.SetInfoBox();
+      };
 
       ViewersM.PropertyChanged += (_, e) => {
         if (nameof(ViewersM.Current).Equals(e.PropertyName)) {

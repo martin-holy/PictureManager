@@ -14,7 +14,6 @@ using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
-    private readonly Core _core;
     private int _segmentSize = 100;
     private int _compareSegmentSize = 32;
     private int _similarityLimit = 90;
@@ -40,11 +39,9 @@ namespace PictureManager.Domain.Models {
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
 
-    public event EventHandler<SegmentPersonChangedEventArgs> SegmentPersonChangedEvent = delegate { };
+    public event EventHandler<SegmentPersonChangeEventArgs> SegmentPersonChangeEvent = delegate { };
 
-    public SegmentsM(Core core) {
-      _core = core;
-
+    public SegmentsM() {
       SegmentsRectsM = new(this);
     }
 
@@ -149,7 +146,7 @@ namespace PictureManager.Domain.Models {
           await segmentA.SetComparePictureAsync(CompareSegmentSize);
           if (segmentA.ComparePicture == null) {
             progress.Report(++done);
-            _core.LogError(new Exception($"Picture with unsupported pixel format.\n{segmentA.MediaItem.FilePath}"));
+            Core.Instance.LogError(new Exception($"Picture with unsupported pixel format.\n{segmentA.MediaItem.FilePath}"));
             continue;
           }
 
@@ -296,7 +293,7 @@ namespace PictureManager.Domain.Models {
       var segments = Selected.Where(x => x.PersonId >= 0).Concat(All.Where(x => unknownPeople.ContainsKey(x.PersonId)));
 
       foreach (var segment in segments)
-        ChangePerson(segment, person);
+        ChangePerson(segment, person, person.Id);
 
       DeselectAll();
     }
@@ -311,7 +308,11 @@ namespace PictureManager.Domain.Models {
 
       var personsIds = Selected.Select(x => x.PersonId).Distinct().OrderByDescending(x => x).ToArray();
       // prefer known person id (id > 0)
-      var newId = personsIds[0] != 0 ? personsIds[0] : personsIds.Length > 1 ? personsIds[1] : 0;
+      var newId = personsIds[0] != 0
+        ? personsIds[0]
+        : personsIds.Length > 1
+          ? personsIds[1]
+          : 0;
 
       if (newId == 0) { // get unused min ID
         var usedIds = All.Where(x => x.PersonId < 0).
@@ -333,23 +334,17 @@ namespace PictureManager.Domain.Models {
         toUpdate = allWithSameId.Concat(Selected.Where(x => x.PersonId == 0)).ToArray();
       }
 
-      var person = newId < 1 ? null : _core.PeopleM.All.Find(x => x.Id == newId);
+      var person = newId < 1
+        ? null
+        : Selected.Find(x => x.PersonId == newId)?.Person;
 
-      foreach (var segment in toUpdate) {
-        segment.PersonId = newId;
-        segment.Person = person;
-        SegmentPersonChangedEvent(this, new(segment));
-        DataAdapter.IsModified = true;
-      }
+      foreach (var segment in toUpdate)
+        ChangePerson(segment, person, newId);
     }
 
     public void SetSelectedAsUnknown() {
-      foreach (var segment in Selected) {
-        RemovePersonFromSegment(segment);
-        segment.PersonId = 0;
-        SegmentPersonChangedEvent(this, new(segment));
-        DataAdapter.IsModified = true;
-      }
+      foreach (var segment in Selected)
+        ChangePerson(segment, null, 0);
     }
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {
@@ -375,30 +370,10 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private void RemovePersonFromSegment(SegmentM segment) {
-      if (segment?.Person == null) return;
-      if (segment.Person.Segment == segment)
-        segment.Person.Segment = null;
-      if (segment.Person.Segments?.Remove(segment) == true) {
-        if (!segment.Person.Segments.Any())
-          segment.Person.Segments = null;
-        _core.PeopleM.DataAdapter.IsModified = true;
-      }
-      segment.Person = null;
-    }
-
-    public void ChangePerson(int personId, PersonM person) {
-      foreach (var segment in All.Where(x => x.PersonId == personId))
-        ChangePerson(segment, person);
-    }
-
-    private void ChangePerson(SegmentM segment, PersonM person) {
-      RemovePersonFromSegment(segment);
-      segment.PersonId = person.Id;
+    private void ChangePerson(SegmentM segment, PersonM person, int personId) {
+      SegmentPersonChangeEvent(this, new(segment, segment.Person, person));
       segment.Person = person;
-      person.Segment ??= segment;
-      SegmentPersonChangedEvent(this, new(segment));
-
+      segment.PersonId = personId;
       DataAdapter.IsModified = true;
     }
 
@@ -410,12 +385,13 @@ namespace PictureManager.Domain.Models {
 
     public void Delete(SegmentM segment) {
       SetSelected(segment, false);
-      RemovePersonFromSegment(segment);
+      ChangePerson(segment, null, 0);
 
       // remove Segment from MediaItem
       if (segment.MediaItem.Segments.Remove(segment) && !segment.MediaItem.Segments.Any())
         segment.MediaItem.Segments = null;
 
+      segment.MediaItem = null;
       segment.Similar?.Clear();
       segment.Picture = null;
       segment.ComparePicture = null;
@@ -426,14 +402,12 @@ namespace PictureManager.Domain.Models {
       foreach (var simSegment in Loaded)
         simSegment.Similar?.Remove(segment);
 
-      DataAdapter.IsModified = true;
-
       try {
         File.Delete(segment.CacheFilePath);
         segment.MediaItem = null;
       }
       catch (Exception ex) {
-        _core.LogError(ex);
+        Core.Instance.LogError(ex);
       }
     }
   }
