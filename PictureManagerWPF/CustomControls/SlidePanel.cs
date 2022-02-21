@@ -1,26 +1,25 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace PictureManager.CustomControls {
-  public class SlidePanel : Control, INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-    public static readonly DependencyProperty BorderMarginProperty = DependencyProperty.Register(nameof(BorderMargin), typeof(Thickness), typeof(SlidePanel));
-    public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(nameof(Content), typeof(FrameworkElement), typeof(SlidePanel));
-    public static readonly DependencyProperty PositionProperty = DependencyProperty.Register(nameof(Position), typeof(Dock), typeof(SlidePanel));
-
-    private bool _isOpen;
-    private bool _isPinned;
+  public class SlidePanel : Control {
     private ThicknessAnimation _openAnimation;
     private ThicknessAnimation _closeAnimation;
-    private Storyboard _sbOpen;
-    private Storyboard _sbClose;
+    public Storyboard SbOpen;
+    public Storyboard SbClose;
+
+    public static readonly DependencyProperty BorderMarginProperty =
+      DependencyProperty.Register(nameof(BorderMargin), typeof(Thickness), typeof(SlidePanel));
+    public static readonly DependencyProperty ContentProperty =
+      DependencyProperty.Register(nameof(Content), typeof(FrameworkElement), typeof(SlidePanel));
+    public static readonly DependencyProperty IsPinnedProperty =
+      DependencyProperty.Register(nameof(IsPinned), typeof(bool), typeof(SlidePanel), new(IsPinnedChanged));
+    public static readonly DependencyProperty IsOpenProperty =
+      DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(SlidePanel), new(IsOpenChanged));
+    public static readonly DependencyProperty PositionProperty =
+      DependencyProperty.Register(nameof(Position), typeof(Dock), typeof(SlidePanel));
 
     public Thickness BorderMargin {
       get => (Thickness)GetValue(BorderMarginProperty);
@@ -32,28 +31,14 @@ namespace PictureManager.CustomControls {
       set => SetValue(ContentProperty, value);
     }
 
-    public bool IsOpen {
-      get => _isOpen;
-      set {
-        if (value && CanOpen?.Invoke() == false)
-          return;
-
-        _isOpen = value;
-        OnPropertyChanged();
-        if (value)
-          _sbOpen?.Begin(this);
-        else
-          _sbClose?.Begin(this);
-      }
+    public bool IsPinned {
+      get => (bool)GetValue(IsPinnedProperty);
+      set => SetValue(IsPinnedProperty, value);
     }
 
-    public bool IsPinned {
-      get => _isPinned;
-      set {
-        _isPinned = value;
-        OnPropertyChanged();
-        OnIsPinnedChanged?.Invoke(this, EventArgs.Empty);
-      }
+    public bool IsOpen {
+      get => (bool)GetValue(IsOpenProperty);
+      set => SetValue(IsOpenProperty, value);
     }
 
     public Dock Position {
@@ -61,11 +46,13 @@ namespace PictureManager.CustomControls {
       set => SetValue(PositionProperty, value);
     }
 
-    public EventHandler OnIsPinnedChanged { get; set; }
+    public event EventHandler IsPinnedChangedEvent;
     public Func<bool> CanOpen { get; set; }
 
     static SlidePanel() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(SlidePanel), new FrameworkPropertyMetadata(typeof(SlidePanel)));
+      DefaultStyleKeyProperty.OverrideMetadata(
+        typeof(SlidePanel),
+        new FrameworkPropertyMetadata(typeof(SlidePanel)));
     }
 
     public override void OnApplyTemplate() {
@@ -73,14 +60,31 @@ namespace PictureManager.CustomControls {
       UpdateAnimation();
 
       Storyboard.SetTargetProperty(_openAnimation, new(MarginProperty));
-      _sbOpen = new();
-      _sbOpen.Children.Add(_openAnimation);
+      SbOpen = new();
+      SbOpen.Children.Add(_openAnimation);
 
       Storyboard.SetTargetProperty(_closeAnimation, new(MarginProperty));
-      _sbClose = new();
-      _sbClose.Children.Add(_closeAnimation);
+      SbClose = new();
+      SbClose.Children.Add(_closeAnimation);
 
-      OnIsPinnedChanged?.Invoke(this, EventArgs.Empty);
+      IsPinnedChangedEvent?.Invoke(this, EventArgs.Empty);
+    }
+
+    private static void IsPinnedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+      (d as SlidePanel)?.IsPinnedChangedEvent?.Invoke(d, EventArgs.Empty);
+
+    private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not SlidePanel panel) return;
+
+      var value = e.NewValue as bool? == true;
+
+      if (value && panel.CanOpen?.Invoke() == false)
+        return;
+
+      if (value)
+        panel.SbOpen?.Begin(panel);
+      else
+        panel.SbClose?.Begin(panel);
     }
 
     // creates new or update existing animation if panel width changes
@@ -95,10 +99,10 @@ namespace PictureManager.CustomControls {
         From = new(0, Margin.Top, 0, Margin.Bottom)
       };
 
-      var th = Position switch {
-        Dock.Left => new Thickness(Width * -1, Margin.Top, 0, Margin.Bottom),
-        Dock.Right => new Thickness(0, Margin.Top, Width * -1, Margin.Bottom),
-        _ => new Thickness()
+      Thickness th = Position switch {
+        Dock.Left => new(Width * -1, Margin.Top, 0, Margin.Bottom),
+        Dock.Right => new(0, Margin.Top, Width * -1, Margin.Bottom),
+        _ => new()
       };
 
       _openAnimation.From = th;

@@ -6,32 +6,21 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
+using MH.Utils.BaseClasses;
 using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Interfaces;
 using PictureManager.Utils;
 using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
-using WindowCommands = PictureManager.Commands.WindowCommands;
 
 namespace PictureManager.ViewModels {
-  public sealed class ThumbnailsGridVM: ObservableObject, IMainTabsItem {
+  public sealed class ThumbnailsGridVM: ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     private readonly MediaElement _videoPreview;
 
-    #region IMainTabsItem implementation
-    private string _title;
-    private object _toolTip;
-    private ContextMenu _contextMenu;
-
-    public string IconName { get; set; }
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public object ToolTip { get => _toolTip; set { _toolTip = value; OnPropertyChanged(); } }
-    public ContextMenu ContextMenu { get => _contextMenu; set { _contextMenu = value; OnPropertyChanged(); } }
-    #endregion
-
     public ThumbnailsGridM Model { get; }
+    public HeaderedListItem<object, string> MainTabsItem { get; }
 
     public RelayCommand<object> ShowVideoPreviewCommand { get; }
     public RelayCommand<MediaItemM> HideVideoPreviewCommand { get; }
@@ -47,9 +36,14 @@ namespace PictureManager.ViewModels {
       _core = core;
       _coreVM = coreVM;
       Model = model;
-      Title = tabTitle;
-      IconName = "IconFolder";
+
+      MainTabsItem = new(this, tabTitle);
+
       Panel = new();
+      Panel.SizeChanged += async (o, e) => {
+        if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
+          await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
+      };
       DragDropFactory.SetDrag(Panel, CanDrag, DataFormats.FileDrop);
 
       ShowVideoPreviewCommand = new(ShowVideoPreview);
@@ -84,8 +78,6 @@ namespace PictureManager.ViewModels {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
         ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
-
-      ContextMenu = Application.Current.FindResource("ThumbnailsGridContextMenu") as ContextMenu;
     }
 
     private object CanDrag(MouseEventArgs e) {
@@ -125,11 +117,8 @@ namespace PictureManager.ViewModels {
         _videoPreview.Source = null;
       }
 
-      WindowCommands.SwitchToFullScreen();
-
-      // TODO add command with SwitchToFullScreen and setting MediaViewer
-      App.WMain.MediaViewer.SetMediaItems(Model.FilteredItems.ToList());
-      App.WMain.MediaViewer.SetMediaItemSource(mi);
+      _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
+      _coreVM.MainWindowVM.IsFullScreen = true;
     }
 
     private async void Refresh() {

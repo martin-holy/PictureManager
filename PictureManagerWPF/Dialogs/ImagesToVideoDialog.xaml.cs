@@ -24,14 +24,14 @@ namespace PictureManager.Dialogs {
 
     public delegate void OnSuccess(FolderM folder, string fileName);
 
-    public ImagesToVideoDialog(Window owner, IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
+    public ImagesToVideoDialog(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
       InitializeComponent();
 
       _items = items.ToArray();
       var firstMi = _items.First();
       var fileName = IOExtensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 
-      Owner = owner;
+      Owner = Application.Current.MainWindow;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
       _outputFilePath = IOExtensions.PathCombine(firstMi.Folder.FullPath, fileName);
       _outputFileName = fileName;
@@ -39,8 +39,8 @@ namespace PictureManager.Dialogs {
       _onSuccess = onSuccess;
     }
 
-    public static void ShowDialog(Window owner, IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
-      var dlg = new ImagesToVideoDialog(owner, items, onSuccess);
+    public static void Show(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
+      var dlg = new ImagesToVideoDialog(items, onSuccess);
       dlg.ShowDialog();
     }
 

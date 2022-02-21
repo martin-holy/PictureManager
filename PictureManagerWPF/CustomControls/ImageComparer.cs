@@ -87,7 +87,7 @@ namespace PictureManager.CustomControls {
 
       thumbsGrid.CurrentMediaItem = null;
       await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
-      App.Ui.MarkUsedKeywordsAndPeople();
+      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, HashMethod hashMethod) {
@@ -100,7 +100,7 @@ namespace PictureManager.CustomControls {
     }
 
     private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, HashMethod hashMethod) {
-      var progress = new ProgressBarDialog(App.WMain, false, 1, "Computing Hashes ...");
+      var progress = new ProgressBarDialog(false, 1, "Computing Hashes ...");
       progress.AddEvents(
         items,
         null,

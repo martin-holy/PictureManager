@@ -8,28 +8,26 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class KeywordsTreeVM : CatTreeViewCategoryBase {
-    private readonly Core _core;
-    private readonly AppCore _coreVM;
+    private readonly CategoryGroupsTreeVM _categoryGroupsTreeVM;
 
-    public KeywordsM Model { get; }
+    public KeywordsM KeywordsM { get; }
     public readonly Dictionary<int, KeywordTreeVM> All = new();
 
-    public KeywordsTreeVM(Core core, AppCore coreVM, KeywordsM model) : base(Category.Keywords, "Keywords") {
-      _core = core;
-      _coreVM = coreVM;
-      Model = model;
+    public KeywordsTreeVM(KeywordsM keywordsM, CategoryGroupsTreeVM categoryGroupsTreeVM) : base(Category.Keywords, "Keywords") {
+      _categoryGroupsTreeVM = categoryGroupsTreeVM;
+      KeywordsM = keywordsM;
       CanMoveItem = true;
 
-      Model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      Model.KeywordDeletedEvent += (_, e) => All.Remove(e.Keyword.Id);
+      KeywordsM.Items.CollectionChanged += ModelItems_CollectionChanged;
+      KeywordsM.KeywordDeletedEvent += (_, e) => All.Remove(e.Keyword.Id);
 
       // load items
-      ModelItems_CollectionChanged(Model.Items, null);
+      ModelItems_CollectionChanged(KeywordsM.Items, null);
     }
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
       // sync Category Groups
-      _coreVM.CategoryGroupsTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
+      _categoryGroupsTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       // sync Items
       SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
     }
@@ -41,31 +39,31 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     protected override ICatTreeViewItem ModelItemCreate(ICatTreeViewItem root, string name) =>
-      All[Model.ItemCreate((ITreeBranch)ToModel(root), name).Id];
+      All[KeywordsM.ItemCreate((ITreeBranch)ToModel(root), name).Id];
 
     protected override void ModelItemRename(ICatTreeViewItem item, string name) =>
-      Model.ItemRename((KeywordM)ToModel(item), name);
+      KeywordsM.ItemRename((KeywordM)ToModel(item), name);
 
     protected override void ModelItemDelete(ICatTreeViewItem item) =>
-      Model.ItemDelete((KeywordM)ToModel(item));
+      KeywordsM.ItemDelete((KeywordM)ToModel(item));
 
     public override void ItemMove(ICatTreeViewItem item, ICatTreeViewItem dest, bool aboveDest) =>
-      Model.ItemMove((KeywordM)ToModel(item), (ITreeLeaf)ToModel(dest), aboveDest);
+      KeywordsM.ItemMove((KeywordM)ToModel(item), (ITreeLeaf)ToModel(dest), aboveDest);
 
     protected override string ValidateNewItemName(ICatTreeViewItem root, string name) =>
       KeywordsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} item already exists!";
 
     protected override void ModelGroupCreate(ICatTreeViewItem root, string name) =>
-      _core.CategoryGroupsM.GroupCreate(name, Category);
+      _categoryGroupsTreeVM.CategoryGroupsM.GroupCreate(name, Category);
 
     protected override void ModelGroupRename(ICatTreeViewGroup group, string name) =>
-      _core.CategoryGroupsM.GroupRename((CategoryGroupM)ToModel(group), name);
+      _categoryGroupsTreeVM.CategoryGroupsM.GroupRename((CategoryGroupM)ToModel(group), name);
 
     protected override void ModelGroupDelete(ICatTreeViewGroup group) =>
-      _core.CategoryGroupsM.GroupDelete((CategoryGroupM)ToModel(group));
+      _categoryGroupsTreeVM.CategoryGroupsM.GroupDelete((CategoryGroupM)ToModel(group));
 
     public override void GroupMove(ICatTreeViewGroup group, ICatTreeViewGroup dest, bool aboveDest) =>
-      _core.CategoryGroupsM.GroupMove((CategoryGroupM)ToModel(group), (CategoryGroupM)ToModel(dest), aboveDest);
+      _categoryGroupsTreeVM.CategoryGroupsM.GroupMove((CategoryGroupM)ToModel(group), (CategoryGroupM)ToModel(dest), aboveDest);
 
     protected override string ValidateNewGroupName(ICatTreeViewItem root, string name) =>
       CategoryGroupsM.ItemCanRename((ITreeBranch)ToModel(root), name) ? null : $"{name} group already exists!";
@@ -80,7 +78,7 @@ namespace PictureManager.ViewModels.Tree {
     private static object ToModel(object item) =>
       item switch {
         KeywordTreeVM x => x.Model,
-        KeywordsTreeVM x => x.Model,
+        KeywordsTreeVM x => x.KeywordsM,
         CategoryGroupTreeVM x => x.Model,
         _ => null
       };

@@ -4,7 +4,6 @@ using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -13,7 +12,6 @@ using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentM : ObservableObject, IRecord, IEquatable<SegmentM>, ISelectable {
-    private BitmapSource _picture;
     private bool _isSelected;
 
     #region DB Properties
@@ -86,13 +84,12 @@ namespace PictureManager.Domain.Models {
     }
     #endregion DB Properties
 
-    public BitmapSource Picture { get => _picture; set { _picture = value; OnPropertyChanged(); } }
     public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsNotUnknown => PersonId != 0;
     public Dictionary<SegmentM, double> Similar { get; set; }
     public double SimMax { get; set; }
-    public string CacheFilePath => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
+    public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
     public SegmentM() { }
 
@@ -112,40 +109,35 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
     #endregion IEquatable implementation
 
-    public async Task SetPictureAsync(int size, bool reload = false) {
-      if (reload) {
-        Picture = null;
-        ComparePicture = null;
-      }
-
-      Picture ??= await Task.Run(() => {
-        var filePath = MediaItem.MediaType == MediaType.Image ? MediaItem.FilePath : MediaItem.FilePathCache;
+    public async Task SetComparePictureAsync(int size) {
+      ComparePicture ??= await Task.Run(() => {
         try {
-          var cacheFilePath = CacheFilePath;
-          if (!reload && File.Exists(cacheFilePath))
-            return Imaging.GetBitmapSource(cacheFilePath);
+          if (!File.Exists(FilePathCache))
+            CreateThumbnail();
 
-          var src = Imaging.GetCroppedBitmapSource(filePath, ToRect(), size);
-          src?.SaveAsJpg(80, cacheFilePath);
-
-          return src;
+          return File.Exists(FilePathCache)
+            ? Imaging.GetBitmapSource(FilePathCache)?.ToGray().Resize(size).ToBitmap()
+            : null;
         }
         catch (Exception ex) {
-          Core.Instance.LogError(ex, filePath);
+          Core.Instance.LogError(ex, FilePathCache);
           return null;
         }
       });
     }
 
-    public async Task SetComparePictureAsync(int size) {
-      ComparePicture ??= await Task.Run(() => {
-        try {
-          return Picture?.ToGray().Resize(size).ToBitmap();
-        }
-        catch (Exception) {
-          return null;
-        }
-      });
+    public void CreateThumbnail() {
+      var filePath = MediaItem.MediaType == MediaType.Image
+        ? MediaItem.FilePath
+        : MediaItem.FilePathCache;
+
+      try {
+        Imaging.GetCroppedBitmapSource(filePath, ToRect(), Core.Instance.SegmentsM.SegmentSize)
+          ?.SaveAsJpg(80, FilePathCache);
+      }
+      catch (Exception ex) {
+        Core.Instance.LogError(ex, filePath);
+      }
     }
 
     public Int32Rect ToRect() => new Int32Rect(X - Radius, Y - Radius, Radius * 2, Radius * 2);

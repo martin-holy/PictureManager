@@ -6,7 +6,10 @@
                     xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
                     xmlns:pm="clr-namespace:PictureManager"
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
-                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
+                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
+                    xmlns:converters="clr-namespace:PictureManager.Converters">
+
+  <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
 
   <ContextMenu x:Key="PersonTreeContextMenu"
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
@@ -39,8 +42,15 @@
                 <Setter.Value>
                   <ToolTip BorderThickness="0" Padding="0">
                     <Border BorderThickness="1" BorderBrush="Black">
-                      <Image Source="{Binding Model.Segment.Picture}"
-                             Width="{Binding SegmentsM.SegmentSize, Source={x:Static pm:App.Core}}" />
+                      <Image
+                        Source="{Binding Model.Segment,
+                                 IsAsync=True,
+                                 Converter={StaticResource SegmentThumbnailSourceConverter}}"
+                        Stretch="Fill"
+                        Width="{Binding SegmentsM.SegmentSize,
+                                Source={x:Static pm:App.Core}}"
+                        Height="{Binding SegmentsM.SegmentSize,
+                                 Source={x:Static pm:App.Core}}" />
                     </Border>
                   </ToolTip>
                 </Setter.Value>
@@ -51,12 +61,6 @@
       </Grid.Style>
 
       <b:Interaction.Triggers>
-        <!-- Load Person Segment -->
-        <b:EventTrigger EventName="MouseEnter">
-          <b:InvokeCommandAction Command="{Binding SegmentsVM.SetSegmentPictureCommand, Source={x:Static pm:App.Ui}}"
-                                 CommandParameter="{Binding Model.Segment}"/>
-        </b:EventTrigger>
-
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <mhu:SetterAction PropertyName="ContextMenu" Value="{StaticResource PersonTreeContextMenu}" />

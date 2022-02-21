@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Input;
 
 namespace PictureManager.Dialogs {
@@ -33,7 +34,7 @@ namespace PictureManager.Dialogs {
 
     public static bool Open(string iconName, string title, string question, string answer, Func<string, string> validator, out string output) {
       var inputDialog = new InputDialog {
-        Owner = App.WMain,
+        Owner = Application.Current.MainWindow,
         IconName = iconName,
         Title = title,
         Question = question,

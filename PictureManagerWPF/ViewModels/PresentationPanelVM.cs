@@ -3,30 +3,20 @@ using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
-using PictureManager.UserControls;
 
 namespace PictureManager.ViewModels {
   public sealed class PresentationPanelVM : ObservableObject {
     private bool _isRunning;
-    private bool _areSegmentsRectsOn;
     private bool _playPanoramicImages = true;
     private int _interval = 3;
     private readonly Timer _timer = new();
-    private readonly MediaViewer _mediaViewer;
+    private readonly MediaViewerVM _mediaViewerVM;
 
     public bool IsRunning {
       get => _isRunning;
       set {
         _isRunning = value;
         _timer.Enabled = value;
-        OnPropertyChanged();
-      }
-    }
-
-    public bool AreSegmentsRectsOn {
-      get => _areSegmentsRectsOn;
-      set {
-        _areSegmentsRectsOn = value;
         OnPropertyChanged();
       }
     }
@@ -51,8 +41,8 @@ namespace PictureManager.ViewModels {
     public bool IsPaused { get; private set; }
     public RelayCommand<object> PresentationCommand { get; set; }
 
-    public PresentationPanelVM(MediaViewer mediaViewer) {
-      _mediaViewer = mediaViewer;
+    public PresentationPanelVM(MediaViewerVM mediaViewerVM) {
+      _mediaViewerVM = mediaViewerVM;
       PresentationCommand = new(Presentation);
 
       _timer.Interval = Interval * 1000;
@@ -64,16 +54,16 @@ namespace PictureManager.ViewModels {
     }
 
     public void Start(bool delay) {
-      if (delay && _mediaViewer.Current.MediaType == MediaType.Image && _mediaViewer.Current.IsPanoramic && PlayPanoramicImages) {
+      if (delay && _mediaViewerVM.Current.MediaType == MediaType.Image && _mediaViewerVM.Current.IsPanoramic && PlayPanoramicImages) {
         Pause();
-        _mediaViewer.FullImage.Play(Interval * 1000, () => Start(false));
+        _mediaViewerVM.FullImage.Play(Interval * 1000, () => Start(false));
         return;
       }
 
       IsPaused = false;
       IsRunning = true;
-      _mediaViewer.FullVideo.PlayType = PlayType.Video;
-      _mediaViewer.FullVideo.RepeatForSeconds = Interval;
+      _mediaViewerVM.FullVideo.PlayType = PlayType.Video;
+      _mediaViewerVM.FullVideo.RepeatForSeconds = Interval;
 
       if (!delay) Next();
     }
@@ -81,7 +71,7 @@ namespace PictureManager.ViewModels {
     public void Stop() {
       IsPaused = false;
       IsRunning = false;
-      _mediaViewer.FullVideo.RepeatForSeconds = 0; // infinity
+      _mediaViewerVM.FullVideo.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {
@@ -90,8 +80,8 @@ namespace PictureManager.ViewModels {
     }
 
     private void Presentation() {
-      if (_mediaViewer.FullImage.IsAnimationOn) {
-        _mediaViewer.FullImage.Stop();
+      if (_mediaViewerVM.FullImage.IsAnimationOn) {
+        _mediaViewerVM.FullImage.Stop();
         Stop();
         return;
       }
@@ -105,8 +95,8 @@ namespace PictureManager.ViewModels {
     private void Next() {
       Core.RunOnUiThread(() => {
         if (IsPaused) return;
-        if (_mediaViewer.CanNext())
-          _mediaViewer.Next();
+        if (_mediaViewerVM.CanNext())
+          _mediaViewerVM.Next();
         else
           Stop();
       });

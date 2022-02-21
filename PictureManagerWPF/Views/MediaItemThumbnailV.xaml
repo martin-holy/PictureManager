@@ -1,9 +1,10 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                    xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:sys="clr-namespace:System;assembly=mscorlib"
+  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../ResourceDictionaries/Converters.xaml" />
@@ -15,21 +16,31 @@
 
   <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
 
-  <DataTemplate x:Key="MediaItemThumbnailV" DataType="{x:Type models:MediaItemM}">
-    <Border x:Name="PART_Border"
-            Width="{Binding ThumbWidth}"
-            Height="{Binding ThumbHeight}"
-            BorderThickness="2"
-            Margin="1"
-            ClipToBounds="True">
+  <DataTemplate
+    x:Key="Views.MediaItemThumbnailV"
+    DataType="{x:Type models:MediaItemM}">
+
+    <Border
+      Width="{Binding ThumbWidth}"
+      Height="{Binding ThumbHeight}"
+      BorderThickness="2"
+      Margin="1"
+      ClipToBounds="True">
 
       <Border.Style>
         <Style TargetType="{x:Type Border}">
-          <Setter Property="BorderBrush" Value="Black" />
+          <Setter
+            Property="BorderBrush"
+            Value="Black" />
 
           <Style.Triggers>
-            <DataTrigger Binding="{Binding IsSelected}" Value="True">
-              <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}" />
+            <DataTrigger
+              Binding="{Binding IsSelected}"
+              Value="True">
+
+              <Setter
+                Property="BorderBrush"
+                Value="{DynamicResource AccentColorBrush}" />
             </DataTrigger>
           </Style.Triggers>
         </Style>
@@ -37,38 +48,47 @@
 
       <Grid x:Name="PART_Grid">
         <!-- Thumbnail Image -->
-        <Image Source="{Binding FilePathCache,
-                        Converter={StaticResource ImageSourceConverter}}"
-               Stretch="Fill" />
+        <Image
+          Source="{Binding FilePathCache,
+                   Converter={StaticResource ImageSourceConverter}}"
+          Stretch="Fill" />
 
         <!-- Video over layer -->
-        <ContentControl Content="&#xE29E;"
-                        FontFamily="Segoe UI Symbol"
-                        FontSize="20" 
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Opacity="0.77"
-                        Visibility="{Binding MediaType, 
-                                     Converter={StaticResource AllToVisibilityConverter},
-                                     ConverterParameter={x:Static pmd:MediaType.Video}}">
+        <ContentControl
+          Content="&#xE29E;"
+          FontFamily="Segoe UI Symbol"
+          FontSize="20" 
+          VerticalAlignment="Center"
+          HorizontalAlignment="Center"
+          Opacity="0.77"
+          Visibility="{Binding MediaType, 
+                       Converter={StaticResource AllToVisibilityConverter},
+                       ConverterParameter={x:Static pmd:MediaType.Video}}">
         </ContentControl>
 
         <!-- Video Clips over layer -->
-        <mhc:Icon Source="{StaticResource IconImageMultiple}"
-                  Size="20"
-                  HorizontalAlignment="Right"
-                  VerticalAlignment="Bottom"
-                  Margin="5"
-                  Visibility="{Binding HasVideoClips,
-                               Converter={StaticResource AllToVisibilityConverter}}" />
+        <mhc:Icon
+          Source="{StaticResource IconImageMultiple}"
+          Size="20"
+          HorizontalAlignment="Right"
+          VerticalAlignment="Bottom"
+          Margin="5"
+          Visibility="{Binding HasVideoClips,
+                       Converter={StaticResource AllToVisibilityConverter}}" />
 
         <!-- Thumbnail Info Box -->
         <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
           <ItemsControl.Style>
             <Style TargetType="{x:Type ItemsControl}">
               <Style.Triggers>
-                <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType=Border}}" Value="True">
-                  <Setter Property="Visibility" Value="Hidden"/>
+                <DataTrigger
+                  Binding="{Binding IsMouseOver,
+                            RelativeSource={RelativeSource AncestorType=Border}}"
+                  Value="True">
+
+                  <Setter
+                    Property="Visibility"
+                    Value="Hidden" />
                 </DataTrigger>
 
                 <DataTrigger Value="True">
@@ -80,7 +100,9 @@
                     </MultiBinding>
                   </DataTrigger.Binding>
 
-                  <Setter Property="Visibility" Value="Hidden"/>
+                  <Setter
+                    Property="Visibility"
+                    Value="Hidden" />
                 </DataTrigger>
 
               </Style.Triggers>
@@ -96,29 +118,35 @@
           <ItemsControl.ItemTemplate>
             <DataTemplate>
               <Border Style="{StaticResource SBorderTextThumb}">
-                <TextBlock Style="{StaticResource STextBlock}"
-                           TextWrapping="Wrap"
-                           Text="{Binding}" />
+                <TextBlock
+                  Style="{StaticResource STextBlock}"
+                  TextWrapping="Wrap"
+                  Text="{Binding}" />
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
         <!-- Selected over layer -->
-        <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
-          <Polygon Width="40"
-                   Height="40"
-                   Points="0,0 40,0 40,40"
-                   Stroke="Black"
-                   StrokeThickness="2"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Top"
-                   Fill="{DynamicResource AccentColorBrush}" />
+        <Grid
+          Visibility="{Binding IsSelected,
+                       Converter={StaticResource AllToVisibilityConverter}}">
 
-          <Border HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  BorderThickness="2"
-                  BorderBrush="Black" />
+          <Polygon
+            Width="40"
+            Height="40"
+            Points="0,0 40,0 40,40"
+            Stroke="Black"
+            StrokeThickness="2"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Fill="{DynamicResource AccentColorBrush}" />
+
+          <Border
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            BorderThickness="2"
+            BorderBrush="Black" />
         </Grid>
 
       </Grid>

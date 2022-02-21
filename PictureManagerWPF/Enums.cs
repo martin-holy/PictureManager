@@ -1,4 +1,3 @@
 ﻿namespace PictureManager {
-  public enum AppMode { Browser = 0, Viewer = 1 }
-  public enum AppProperty { Ui, WMain, Core, Db }
+  public enum AppProperty { Ui, MainWindowV, Core }
 }

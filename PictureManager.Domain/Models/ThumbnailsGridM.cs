@@ -182,6 +182,7 @@ namespace PictureManager.Domain.Models {
       GroupByDate = false;
     }
 
+    // TODO use universal function
     public void FilteredItemsSetInPlace(MediaItemM mi) {
       var oldIndex = FilteredItems.IndexOf(mi);
       var newIndex = FilteredItems.OrderBy(x => x.FileName).ToList().IndexOf(mi);

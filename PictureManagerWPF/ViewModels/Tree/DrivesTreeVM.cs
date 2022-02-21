@@ -1,17 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class DrivesTreeVM {
-    private readonly AppCore _coreVM;
-
     public readonly Dictionary<int, DriveTreeVM> All = new();
-
-    public DrivesTreeVM(AppCore coreVM) {
-      _coreVM = coreVM;
-    }
+    public event EventHandler<ObjectEventArgs> DriveExpandedChangedEvent;
 
     public void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
       MH.Utils.Tree.SyncCollection<FolderM, DriveTreeVM>(src, dest, parent,
@@ -21,7 +18,8 @@ namespace PictureManager.ViewModels.Tree {
 
     private DriveTreeVM ItemCreateVM(FolderM model, ITreeBranch parent) {
       var item = new DriveTreeVM(model, parent);
-      item.OnExpandedChanged += (o, _) => _coreVM.FoldersTreeVM.HandleItemExpandedChanged(o as FolderTreeVM);
+      item.OnExpandedChanged += (o, _) =>
+        DriveExpandedChangedEvent?.Invoke(this, new(o));
 
       return item;
     }

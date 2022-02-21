@@ -96,7 +96,7 @@ namespace PictureManager.Domain.Models {
 
       if (_isCurrentModified) {
         SegmentsM.DataAdapter.IsModified = true;
-        _ = Current.Segment.SetPictureAsync(SegmentsM.SegmentSize, true);
+        Current.Segment.CreateThumbnail();
         _isCurrentModified = false;
         IsEditOn = false;
       }

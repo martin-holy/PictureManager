@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace PictureManager.Dialogs {
   public partial class MessageDialog : INotifyPropertyChanged {
@@ -20,7 +21,7 @@ namespace PictureManager.Dialogs {
       TitleText = title;
       Message = message;
       CanCancel = canCancel;
-      Owner = App.WMain;
+      Owner = Application.Current.MainWindow;
       if (buttons == null)
         BtnOk.Content = canCancel ? "YES" : "OK";
       else {

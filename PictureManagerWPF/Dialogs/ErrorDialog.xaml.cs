@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace PictureManager.Dialogs {
   public partial class ErrorDialog : INotifyPropertyChanged {
@@ -24,7 +25,7 @@ namespace PictureManager.Dialogs {
 
     public static void Show(Exception ex, string title) {
       var ed = new ErrorDialog {
-        Owner = App.WMain,
+        Owner = Application.Current.MainWindow,
         TitleText = string.IsNullOrEmpty(title) ? "Error" : title,
         Message = ex.Message,
         Detail = ex.InnerException == null ? ex.StackTrace : $"{ex.InnerException.Message}\n{ex.StackTrace}"

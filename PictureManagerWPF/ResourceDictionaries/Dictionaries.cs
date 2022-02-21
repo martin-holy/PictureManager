@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PictureManager.Domain;
+using PictureManager.ViewModels;
 
 namespace PictureManager.ResourceDictionaries {
   public static class Dictionaries {
@@ -52,6 +53,37 @@ namespace PictureManager.ResourceDictionaries {
       { DisplayFilter.And, "DisplayFilterAndBrush" },
       { DisplayFilter.Or, "DisplayFilterOrBrush" },
       { DisplayFilter.Not, "DisplayFilterNotBrush" }
+    };
+
+    public static Dictionary<object, object> ToolsTabsTypeToTemplate = new() {
+      { typeof(VideoClipsVM), "Views.VideoClipsV" },
+      { typeof(SegmentsDrawerVM), "Views.SegmentsDrawerV" },
+      { typeof(PersonVM), "Views.PersonV" }
+    };
+
+    public static Dictionary<object, object> MainTabsTypeToTemplate = new() {
+      { typeof(PeopleVM), "Views.PeopleV" },
+      { typeof(SegmentsVM), "Views.SegmentsV" },
+      { typeof(ViewerVM), "Views.ViewerV" },
+      { typeof(ThumbnailsGridVM), "Views.ThumbnailsGridV" }
+    };
+
+    public static Dictionary<object, object> MainTabsTypeToIcon = new() {
+      { typeof(PeopleVM), "IconPeople" },
+      { typeof(SegmentsVM), "IconEquals" },
+      { typeof(ViewerVM), "IconEye" },
+      { typeof(ThumbnailsGridVM), "IconFolder" }
+    };
+
+    public static Dictionary<object, object> MainTabsTypeToIconBrush = new() {
+      { typeof(PeopleVM), "ColorBrushPeople" },
+      { typeof(SegmentsVM), "ColorBrushWhite" },
+      { typeof(ViewerVM), "ColorBrushWhite" },
+      { typeof(ThumbnailsGridVM), "ColorBrushFolder" }
+    };
+
+    public static Dictionary<object, object> MainTabsTypeToContextMenu = new() {
+      { typeof(ThumbnailsGridVM), "ThumbnailsGridContextMenu" }
     };
   }
 }

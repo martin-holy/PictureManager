@@ -1,178 +1,358 @@
-﻿<UserControl x:Class="PictureManager.Views.ViewerV"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-             xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-             xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-             DataContext="{Binding RelativeSource={RelativeSource Self}}">
-  
-  <WrapPanel>
-    <WrapPanel.Resources>
-      <Style TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="Black" />
-        <Setter Property="Margin" Value="2" />
-        <Setter Property="MinWidth" Value="210" />
-      </Style>
-      
-      <Style x:Key="_header" TargetType="{x:Type StackPanel}">
-        <Setter Property="Orientation" Value="Horizontal" />
-        <Setter Property="Background" Value="#88000000" />
-      </Style>
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-      <Style x:Key="_headerIcon" TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-        <Setter Property="Margin" Value="6,0,0,0" />
-      </Style>
-      
-      <Style x:Key="_headerText" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="Padding" Value="8" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-      </Style>
-      
-      <DataTemplate DataType="{x:Type models:FolderM}">
-        <StackPanel Orientation="Horizontal">
-          <mhc:Icon
-            Source="{Binding IconName,
-                      Converter={StaticResource ResourceConverter},
-                      FallbackValue={StaticResource IconFolder}}"
-            Fill="{Binding IconName,
-                    Converter={StaticResource ResourceConverter},
-                    ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
-                    FallbackValue={StaticResource ColorBrushFolder}}"
-            ShowShadow="False"
-            HorizontalAlignment="Center" />
-          <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
-        </StackPanel>
-      </DataTemplate>
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
+    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListBox.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
 
-      <DataTemplate DataType="{x:Type models:CategoryGroupM}">
-        <StackPanel Orientation="Horizontal">
-          <mhc:Icon
-            Source="{Binding Category,
-                      Converter={StaticResource ResourceConverter},
-                      ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
-            Fill="{Binding Category,
-                    Converter={StaticResource ResourceConverter},
-                    ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
-                    FallbackValue={StaticResource ColorBrushWhite}}" />
-          <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
-        </StackPanel>
-      </DataTemplate>
+  <Style
+    x:Key="Views.ViewerV.LbIncludedFolders"
+    TargetType="{x:Type ListBox}"
+    BasedOn="{StaticResource MahApps.Styles.ListBox}">
 
-      <DataTemplate DataType="{x:Type models:KeywordM}">
-        <StackPanel Orientation="Horizontal">
-          <mhc:Icon Source="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}" />
-          <TextBlock Text="{Binding Name}" Margin="5,0" FontSize="14" />
-        </StackPanel>
-      </DataTemplate>
-      
-    </WrapPanel.Resources>
-    
-    <!-- Included Folders -->
-    <Border>
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Setter
+      Property="ItemsSource"
+      Value="{Binding Viewer.IncludedFolders}" />
+    <Setter
+      Property="ItemContainerStyle">
+      <Setter.Value>
+        <Style
+          TargetType="{x:Type ListBoxItem}"
+          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+          <Setter
+            Property="ToolTip"
+            Value="{Binding FullPath}" />
+        </Style>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
-        <StackPanel Style="{StaticResource _header}">
-          <mhc:Icon Source="{StaticResource IconFolder}"
-                    Fill="{StaticResource ColorBrushFolder}"
-                    Style="{StaticResource _headerIcon}" />
-          <TextBlock Style="{StaticResource _headerText}" Text="Included Folders" />
-        </StackPanel>
+  <Style
+    x:Key="Views.ViewerV.LbExcludedFolders"
+    TargetType="{x:Type ListBox}"
+    BasedOn="{StaticResource MahApps.Styles.ListBox}">
 
-        <ListBox x:Name="LbIncludedFolders"
-                 ItemsSource="{Binding Viewer.IncludedFolders}"
-                 Grid.Row="1">
-          <ListBox.ItemContainerStyle>
-            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-              <Setter Property="ToolTip" Value="{Binding FullPath}" />
-            </Style>
-          </ListBox.ItemContainerStyle>
-        </ListBox>
-      </Grid>
-    </Border>
-    
-    <!-- Excluded Folders -->
-    <Border>
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Setter
+      Property="ItemsSource"
+      Value="{Binding Viewer.ExcludedFolders}" />
+    <Setter
+      Property="ItemContainerStyle">
+      <Setter.Value>
+        <Style
+          TargetType="{x:Type ListBoxItem}"
+          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+          <Setter
+            Property="ToolTip"
+            Value="{Binding FullPath}" />
+        </Style>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
-        <StackPanel Style="{StaticResource _header}">
-          <mhc:Icon Source="{StaticResource IconFolder}"
-                    Fill="{StaticResource ColorBrushFolder}"
-                    Style="{StaticResource _headerIcon}" />
-          <TextBlock Style="{StaticResource _headerText}" Text="Excluded Folders" />
-        </StackPanel>
+  <Style
+    x:Key="Views.ViewerV.LbExcludedKeywords"
+    TargetType="{x:Type ListBox}"
+    BasedOn="{StaticResource MahApps.Styles.ListBox}">
+
+    <Setter
+      Property="ItemsSource"
+      Value="{Binding Viewer.ExcludedKeywords}" />
+    <Setter
+      Property="ItemContainerStyle">
+      <Setter.Value>
+        <Style
+          TargetType="{x:Type ListBoxItem}"
+          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+          <Setter
+            Property="ToolTip"
+            Value="{Binding FullName}" />
+        </Style>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <DataTemplate
+    x:Key="Views.ViewerV"
+    DataType="{x:Type vm:ViewerVM}">
+
+    <WrapPanel>
+      <WrapPanel.Resources>
+        <Style
+          TargetType="{x:Type Border}">
+
+          <Setter
+            Property="BorderThickness"
+            Value="1" />
+          <Setter
+            Property="BorderBrush"
+            Value="Black" />
+          <Setter
+            Property="Margin"
+            Value="2" />
+          <Setter
+            Property="MinWidth"
+            Value="210" />
+          <Setter
+            Property="MinHeight"
+            Value="210" />
+        </Style>
         
-        <ListBox x:Name="LbExcludedFolders"
-                 ItemsSource="{Binding Viewer.ExcludedFolders}"
-                 Grid.Row="1">
-          <ListBox.ItemContainerStyle>
-            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-              <Setter Property="ToolTip" Value="{Binding FullPath}" />
-            </Style>
-          </ListBox.ItemContainerStyle>
-        </ListBox>
-      </Grid>
-    </Border>
-    
-    <!-- Category Groups -->
-    <Border>
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Style
+          x:Key="_header"
+          TargetType="{x:Type StackPanel}">
 
-        <StackPanel Style="{StaticResource _header}">
-          <mhc:Icon Source="{StaticResource IconGroup}"
-                    Fill="{StaticResource ColorBrushWhite}"
-                    Style="{StaticResource _headerIcon}" />
-          <TextBlock Style="{StaticResource _headerText}" Text="Category Groups" />
-        </StackPanel>
+          <Setter
+            Property="Orientation"
+            Value="Horizontal" />
+          <Setter
+            Property="Background"
+            Value="#88000000" />
+        </Style>
+
+        <Style
+          x:Key="_headerIcon"
+          TargetType="{x:Type mhc:Icon}"
+          BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
+
+          <Setter
+            Property="Margin"
+            Value="6,0,0,0" />
+        </Style>
         
-        <ListBox x:Name="LbCategoryGroups"
-                 ItemsSource="{Binding CategoryGroups}"
-                 SelectionMode="Multiple"
-                 Grid.Row="1" />
-      </Grid>
-    </Border>
-    
-    <!-- Excluded Keywords -->
-    <Border>
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Style
+          x:Key="_headerText"
+          TargetType="{x:Type TextBlock}">
 
-        <StackPanel Style="{StaticResource _header}">
-          <mhc:Icon Source="{StaticResource IconTagLabel}"
-                    Fill="{StaticResource ColorBrushTag}"
-                    Style="{StaticResource _headerIcon}" />
-          <TextBlock Style="{StaticResource _headerText}" Text="Excluded Keywords" />
-        </StackPanel>
+          <Setter
+            Property="FontSize"
+            Value="20" />
+          <Setter
+            Property="Padding"
+            Value="8" />
+          <Setter
+            Property="HorizontalAlignment"
+            Value="Center" />
+          <Setter
+            Property="VerticalAlignment"
+            Value="Center" />
+        </Style>
         
-        <ListBox x:Name="LbExcludedKeywords"
-                 ItemsSource="{Binding Viewer.ExcludedKeywords}"
-                 Grid.Row="1">
-          <ListBox.ItemContainerStyle>
-            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-              <Setter Property="ToolTip" Value="{Binding FullName}" />
-            </Style>
-          </ListBox.ItemContainerStyle>
-        </ListBox>
-      </Grid>
-    </Border>
+        <DataTemplate
+          DataType="{x:Type models:FolderM}">
 
-  </WrapPanel>
+          <StackPanel Orientation="Horizontal">
+            <mhc:Icon
+              Source="{Binding IconName,
+                       Converter={StaticResource ResourceConverter},
+                       FallbackValue={StaticResource IconFolder}}"
+              Fill="{Binding IconName,
+                     Converter={StaticResource ResourceConverter},
+                     ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
+                     FallbackValue={StaticResource ColorBrushFolder}}"
+              ShowShadow="False"
+              HorizontalAlignment="Center" />
 
-</UserControl>
+            <TextBlock
+              Text="{Binding Name}"
+              Margin="5,0"
+              FontSize="14" />
+
+          </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate
+          DataType="{x:Type models:CategoryGroupM}">
+
+          <StackPanel
+            Orientation="Horizontal"
+            Background="Transparent">
+
+            <mhc:Icon
+              Source="{Binding Category,
+                       Converter={StaticResource ResourceConverter},
+                       ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
+              Fill="{Binding Category,
+                     Converter={StaticResource ResourceConverter},
+                     ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
+                     FallbackValue={StaticResource ColorBrushWhite}}" />
+
+            <TextBlock
+              Text="{Binding Name}"
+              Margin="5,0"
+              FontSize="14" />
+
+          </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate
+          DataType="{x:Type models:KeywordM}">
+
+          <StackPanel Orientation="Horizontal">
+            <mhc:Icon
+              Source="{StaticResource IconTag}"
+              Fill="{StaticResource ColorBrushTag}" />
+
+            <TextBlock
+              Text="{Binding Name}"
+              Margin="5,0"
+              FontSize="14" />
+
+          </StackPanel>
+        </DataTemplate>
+        
+      </WrapPanel.Resources>
+      
+      <!-- Included Folders -->
+      <Border>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <StackPanel Style="{StaticResource _header}">
+            <mhc:Icon
+              Source="{StaticResource IconFolder}"
+              Fill="{StaticResource ColorBrushFolder}"
+              Style="{StaticResource _headerIcon}" />
+
+            <TextBlock
+              Style="{StaticResource _headerText}"
+              Text="Included Folders" />
+
+          </StackPanel>
+
+          <ContentPresenter
+            Content="{Binding LbIncludedFolders}"
+            Grid.Row="1" />
+
+        </Grid>
+      </Border>
+      
+      <!-- Excluded Folders -->
+      <Border>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <StackPanel Style="{StaticResource _header}">
+            <mhc:Icon
+              Source="{StaticResource IconFolder}"
+              Fill="{StaticResource ColorBrushFolder}"
+              Style="{StaticResource _headerIcon}" />
+
+            <TextBlock
+              Style="{StaticResource _headerText}"
+              Text="Excluded Folders" />
+
+          </StackPanel>
+          
+          <ContentPresenter
+            Content="{Binding LbExcludedFolders}"
+            Grid.Row="1" />
+
+        </Grid>
+      </Border>
+      
+      <!-- Category Groups -->
+      <Border>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <StackPanel Style="{StaticResource _header}">
+            <mhc:Icon
+              Source="{StaticResource IconGroup}"
+              Fill="{StaticResource ColorBrushWhite}"
+              Style="{StaticResource _headerIcon}" />
+
+            <TextBlock
+              Style="{StaticResource _headerText}"
+              Text="Category Groups" />
+
+          </StackPanel>
+
+          <ListBox
+            Grid.Row="1"
+            ItemsSource="{Binding CategoryGroups}"
+            SelectionMode="Multiple">
+
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <ContentPresenter
+                  Content="{Binding Content}">
+
+                  <ContentPresenter.InputBindings>
+                    <MouseBinding
+                      MouseAction="LeftClick"
+                      Command="{Binding DataContext.CategoryGroupsSelectCommand,
+                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                      CommandParameter="{Binding DataContext,
+                                         RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}" />
+                  </ContentPresenter.InputBindings>
+                </ContentPresenter>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+
+            <ListBox.ItemContainerStyle>
+              <Style
+                TargetType="{x:Type ListBoxItem}"
+                BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+                
+                <Setter
+                  Property="IsSelected"
+                  Value="{Binding IsSelected}" />
+                <Setter
+                  Property="Visibility"
+                  Value="{Binding IsVisible,
+                          Converter={StaticResource AllToVisibilityConverter}}" />
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+        </Grid>
+      </Border>
+      
+      <!-- Excluded Keywords -->
+      <Border>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <StackPanel Style="{StaticResource _header}">
+            <mhc:Icon
+              Source="{StaticResource IconTagLabel}"
+              Fill="{StaticResource ColorBrushTag}"
+              Style="{StaticResource _headerIcon}" />
+
+            <TextBlock
+              Style="{StaticResource _headerText}"
+              Text="Excluded Keywords" />
+
+          </StackPanel>
+
+          <ContentPresenter
+            Content="{Binding LbExcludedKeywords}"
+            Grid.Row="1" />
+
+        </Grid>
+      </Border>
+
+    </WrapPanel>
+  </DataTemplate>
+    
+</ResourceDictionary>

@@ -86,12 +86,10 @@ namespace PictureManager {
       }
 
       foreach (var faceA in facesA) {
-        await faceA.SetPictureAsync(100);
         await faceA.SetComparePictureAsync(32);
         faceA.Similar ??= new();
 
         foreach (var faceB in facesB) {
-          await faceB.SetPictureAsync(100);
           await faceB.SetComparePictureAsync(32);
 
           var matchings = tm.ProcessImage(faceB.ComparePicture, faceA.ComparePicture);
@@ -105,7 +103,7 @@ namespace PictureManager {
     }
 
     private static void ChangeDate() {
-      var progress = new ProgressBarDialog(App.WMain, true, 1, "Change date");
+      var progress = new ProgressBarDialog(true, 1, "Change date");
       progress.AddEvents(
         Directory.GetFiles(@"d:\fotos", "*.jpg", SearchOption.AllDirectories),
         null,

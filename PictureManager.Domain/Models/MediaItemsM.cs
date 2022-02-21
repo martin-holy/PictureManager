@@ -236,7 +236,7 @@ namespace PictureManager.Domain.Models {
 
             if (mi.Segments != null)
               for (int i = 0; i < mi.Segments.Count; i++)
-                File.Copy(mi.Segments[i].CacheFilePath, miCopy.Segments[i].CacheFilePath, true);
+                File.Copy(mi.Segments[i].FilePathCache, miCopy.Segments[i].FilePathCache, true);
             
             break;
 
@@ -259,8 +259,8 @@ namespace PictureManager.Domain.Models {
             File.Move(srcFilePathCache, mi.FilePathCache);
             // Segments
             foreach (var segment in mi.Segments ?? Enumerable.Empty<SegmentM>()) {
-              File.Delete(segment.CacheFilePath);
-              File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.CacheFilePath);
+              File.Delete(segment.FilePathCache);
+              File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.FilePathCache);
             }
 
             break;

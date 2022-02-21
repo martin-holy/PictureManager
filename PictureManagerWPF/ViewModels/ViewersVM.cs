@@ -17,7 +17,7 @@ namespace PictureManager.ViewModels {
 
     public void SetCurrent(ViewerM viewer) {
       Model.SetCurrent(viewer);
-      _coreVM.FoldersTreeVM.UpdateDrivesVisibility();
+      _coreVM.TreeViewCategoriesVM.FoldersTreeVM.UpdateDrivesVisibility();
     }
   }
 }

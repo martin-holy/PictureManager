@@ -1,0 +1,24 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="../Views/MainTabsV.xaml" />
+    <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
+    <ResourceDictionary Source="../Views/MediaViewerV.xaml" />
+    <ResourceDictionary Source="../Views/PeopleV.xaml" />
+    <ResourceDictionary Source="../Views/PersonThumbnailV.xaml" />
+    <ResourceDictionary Source="../Views/PersonV.xaml" />
+    <ResourceDictionary Source="../Views/PresentationPanelV.xaml" />
+    <ResourceDictionary Source="../Views/SegmentRectV.xaml" />
+    <ResourceDictionary Source="../Views/SegmentsDrawerV.xaml" />
+    <ResourceDictionary Source="../Views/SegmentsRectsV.xaml" />
+    <ResourceDictionary Source="../Views/SegmentsV.xaml" />
+    <ResourceDictionary Source="../Views/SegmentV.xaml" />
+    <ResourceDictionary Source="../Views/ThumbnailsGridV.xaml" />
+    <ResourceDictionary Source="../Views/ToolsTabsV.xaml" />
+    <ResourceDictionary Source="../Views/TreeViewCategoriesV.xaml" />
+    <ResourceDictionary Source="../Views/TreeViewSearchV.xaml" />
+    <ResourceDictionary Source="../Views/VideoClipsV.xaml" />
+    <ResourceDictionary Source="../Views/ViewerV.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+    
+</ResourceDictionary>

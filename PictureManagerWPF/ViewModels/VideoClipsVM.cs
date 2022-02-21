@@ -5,6 +5,7 @@ using System.Windows;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Interfaces;
+using MH.Utils.BaseClasses;
 using PictureManager.CustomControls;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
@@ -19,6 +20,7 @@ namespace PictureManager.ViewModels {
     private readonly VideoClipsTreeVM _treeVM;
 
     public CatTreeView CtvClips { get; set; }
+    public HeaderedListItem<object, string> ToolsTabsItem;
     public ObservableCollection<ICatTreeViewCategory> MediaItemClips { get; }
     public bool ShowRepeatSlider => VideoPlayer?.PlayType is PlayType.Clips or PlayType.Group;
 
@@ -41,10 +43,13 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> SplitCommand { get; }
     public RelayCommand<object> SaveCommand { get; }
     public RelayCommand<int> SeekToPositionCommand { get; }
+    public RelayCommand<CatTreeView> SetCatTreeViewCommand { get; }
 
     public VideoClipsVM(VideoClipsM model, VideoClipsTreeVM treeVM) {
       _model = model;
       _treeVM = treeVM;
+
+      ToolsTabsItem = new(this, "Clips");
       MediaItemClips = new() { _treeVM };
 
       _treeVM.ItemCreatedEventHandler += (_, e) => {
@@ -80,6 +85,8 @@ namespace PictureManager.ViewModels {
       SeekToPositionCommand = new(position => {
         VideoPlayer.TimelinePosition = position;
       });
+
+      SetCatTreeViewCommand = new(ctv => CtvClips = ctv);
     }
 
     private void SetMarker(bool start) {

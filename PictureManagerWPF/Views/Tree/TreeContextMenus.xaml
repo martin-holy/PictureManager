@@ -3,7 +3,6 @@
                     xmlns:cc="clr-namespace:PictureManager.CustomControls"
                     xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:commands="clr-namespace:PictureManager.Commands"
                     xmlns:pm="clr-namespace:PictureManager">
 
   <!-- Tag Items Load and Filters -->
@@ -33,7 +32,8 @@
               Command="cc:CatTreeView.GroupCreateCommand"
               CommandParameter="{Binding}" />
     <MenuItem Header="Delete not used"
-              Command="commands:TreeViewCommands.TagItemDeleteNotUsedCommand"
+              Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
+                        Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
 
     <!--TODO: Sort-->
@@ -59,7 +59,8 @@
               Command="cc:CatTreeView.GroupCreateCommand"
               CommandParameter="{Binding}" />
     <MenuItem Header="Delete not used"
-              Command="commands:TreeViewCommands.TagItemDeleteNotUsedCommand"
+              Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
+                        Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
 
     <!--TODO: Sort-->

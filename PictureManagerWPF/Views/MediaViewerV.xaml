@@ -1,0 +1,130 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="PresentationPanelV.xaml" />
+    <ResourceDictionary Source="SegmentsRectsV.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+
+  <DataTemplate
+    x:Key="Views.MediaViewerV"
+    DataType="{x:Type vm:MediaViewerVM}">
+
+    <Grid
+      x:Name="Root"
+      Background="Transparent"
+      Focusable="True"
+      FocusVisualStyle="{x:Null}">
+
+      <Grid.Style>
+        <Style TargetType="{x:Type Grid}">
+          <Style.Triggers>
+            <Trigger
+              Property="IsMouseOver"
+              Value="True">
+              <Setter
+                Property="FocusManager.FocusedElement"
+                Value="{Binding RelativeSource={RelativeSource Self}}" />
+            </Trigger>
+          </Style.Triggers>
+        </Style>
+      </Grid.Style>
+
+      <Grid.InputBindings>
+        <MouseBinding
+          MouseAction="LeftDoubleClick"
+          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding
+          Key="Esc"
+          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding
+          Key="Right"
+          Command="{Binding NextCommand}" />
+        <KeyBinding
+          Key="Left"
+          Command="{Binding PreviousCommand}" />
+        <KeyBinding
+          Modifiers="Control"
+          Key="P"
+          Command="{Binding PresentationPanel.PresentationCommand}" />
+        <KeyBinding
+          Modifiers="Control"
+          Key="R"
+          Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding
+          Key="F2"
+          Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding
+          Key="Delete"
+          Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+        <KeyBinding
+          Modifiers="Control" Key="K"
+          Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+      </Grid.InputBindings>
+
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="MouseWheel">
+          <b:InvokeCommandAction
+            Command="{Binding NavigateCommand}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="PreviewMouseDown">
+          <b:InvokeCommandAction
+            Command="{Binding SegmentsVM.SegmentsRectsVM.CreateCommand,
+                      Source={x:Static pm:App.Ui}}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="PreviewMouseMove">
+          <b:InvokeCommandAction
+            Command="{Binding SegmentsVM.SegmentsRectsVM.EditCommand,
+                      Source={x:Static pm:App.Ui}}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="PreviewMouseUp">
+          <b:InvokeCommandAction
+            Command="{Binding SegmentsVM.SegmentsRectsVM.EndEditCommand,
+                      Source={x:Static pm:App.Ui}}" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+      <!-- Full Media Image -->
+      <Grid
+        Visibility="{Binding Current.MediaType,
+                     Converter={StaticResource AllToVisibilityConverter},
+                     ConverterParameter={x:Static pmd:MediaType.Image}}" >
+
+        <ContentPresenter
+          Content="{Binding FullImage}"
+          Focusable="False" />
+        
+        <!-- Presentation Panel -->
+        <ContentPresenter
+          Content="{Binding PresentationPanel}"
+          ContentTemplate="{StaticResource Views.PresentationPanelV}" />
+      </Grid>
+
+      <!-- Full Media Video -->
+      <ContentPresenter
+        Content="{Binding FullVideo}"
+        Visibility="{Binding Current.MediaType,
+                     Converter={StaticResource AllToVisibilityConverter}, 
+                     ConverterParameter={x:Static pmd:MediaType.Video}}" />
+      
+      <!-- Segments Rects -->
+      <ContentPresenter
+        Content="{Binding SegmentsVM.SegmentsRectsVM, Source={x:Static pm:App.Ui}}"
+        ContentTemplate="{StaticResource Views.SegmentsRectsV}" />
+
+    </Grid>
+
+  </DataTemplate>
+    
+</ResourceDictionary>

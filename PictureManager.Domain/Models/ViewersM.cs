@@ -78,7 +78,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetCurrent(ViewerM viewer) {
-      if (Current == viewer) return;
+      if (viewer == null) viewer = Current;
+      if (viewer == null) return;
 
       if (Current != null)
         Current.IsDefault = false;

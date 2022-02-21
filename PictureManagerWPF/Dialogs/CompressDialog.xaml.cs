@@ -90,8 +90,8 @@ namespace PictureManager.Dialogs {
       Close();
     }
 
-    public static void ShowDialog(Window owner) {
-      var compress = new CompressDialog { Owner = owner };
+    public static void Open() {
+      var compress = new CompressDialog { Owner = Application.Current.MainWindow };
       compress.ShowDialog();
     }
   }

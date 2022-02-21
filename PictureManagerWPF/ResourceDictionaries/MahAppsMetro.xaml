@@ -15,7 +15,7 @@
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Menu.xaml"/>
     <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ContextMenu.xaml"/>-->
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.DatePicker.xaml"/>
-    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.DataGrid.xaml"/>
+    <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.DataGrid.xaml"/>-->
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Expander.xaml"/>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.GridSplitter.xaml"/>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.GroupBox.xaml"/>
@@ -85,7 +85,7 @@
   <Style BasedOn="{StaticResource MahApps.Styles.DatePicker}" TargetType="{x:Type DatePicker}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.DatePickerTextBox}" TargetType="{x:Type DatePickerTextBox}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.Calendar}" TargetType="{x:Type Calendar}"/>
-  <Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}"/>
+  <!--<Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}"/>-->
   <Style BasedOn="{StaticResource MahApps.Styles.StatusBar}" TargetType="{x:Type StatusBar}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.StatusBarItem}" TargetType="{x:Type StatusBarItem}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.ScrollViewer}" TargetType="{x:Type ScrollViewer}"/>
