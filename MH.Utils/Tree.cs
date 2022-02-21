@@ -44,18 +44,23 @@ namespace MH.Utils {
       return string.Join(separator, list.Select(nameSelector));
     }
 
-    public static void ItemMove<T>(T item, object dest, bool aboveDest, Func<object, string> keySelector) where T : ITreeLeaf {
-      if ((dest is T and ITreeLeaf { Parent: { } } x ? x.Parent : dest) is not ITreeBranch destParent) return;
+    public static void ItemMove<T>(T item, ITreeLeaf dest, bool aboveDest, Func<object, string> keySelector) where T : ITreeLeaf {
+      var relative = item.GetType() == dest.GetType();
+      var newParent = relative
+        ? dest.Parent
+        : dest as ITreeBranch;
 
-      if (!item.Parent.Equals(destParent)) {
+      if (newParent == null) return;
+
+      if (!item.Parent.Equals(newParent)) {
         item.Parent.Items.Remove(item);
-        item.Parent = destParent;
+        item.Parent = newParent;
       }
 
-      if (dest is T leaf)
-        destParent.Items.SetRelativeTo(item, leaf, aboveDest);
+      if (relative)
+        newParent.Items.SetRelativeTo(item, dest, aboveDest);
       else
-        destParent.Items.SetInOrder(item, keySelector);
+        newParent.Items.SetInOrder(item, keySelector);
     }
 
     public static void SyncCollection<TSrc, TDest>(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest,

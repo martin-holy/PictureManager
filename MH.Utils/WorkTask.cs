@@ -15,8 +15,18 @@ namespace MH.Utils {
 
       _waitingForCancel = true;
       _cts?.Cancel();
-      if (_task.Status != TaskStatus.Canceled)
-        await _task;
+
+      // TODO BUG unexpected error, task was canceled. problem when returning false from catch
+      // to test it => resizing main window with thumbnails grid active will cause reloading to many times to fast
+      try {
+        if (_task.Status != TaskStatus.Canceled)
+          await _task;
+      }
+      catch (Exception) {
+        _waitingForCancel = false;
+        return true;
+      }
+
       _waitingForCancel = false;
 
       return true;
