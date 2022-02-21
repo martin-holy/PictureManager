@@ -132,7 +132,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     public void Stop() {
-      ImageTransform.BeginAnimation(TranslateTransform.XProperty, null);
+      ImageTransform?.BeginAnimation(TranslateTransform.XProperty, null);
       IsAnimationOn = false;
     }
 

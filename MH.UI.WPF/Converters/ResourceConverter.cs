@@ -10,9 +10,15 @@ namespace MH.UI.WPF.Converters {
       if (value == null)
         return DependencyProperty.UnsetValue;
 
-      if (parameter is Dictionary<object, object> dict)
-        if (!dict.TryGetValue(value, out value) || value == null)
+      if (parameter is Dictionary<object, object> dict) {
+        if (!dict.TryGetValue(value, out var dicValue))
+          dict.TryGetValue(value.GetType(), out dicValue);
+
+        if (dicValue == null)
           return DependencyProperty.UnsetValue;
+        else
+          value = dicValue;
+      }
 
       return Application.Current.TryFindResource(value)
              ?? DependencyProperty.UnsetValue;
