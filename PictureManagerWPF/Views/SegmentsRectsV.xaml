@@ -1,37 +1,55 @@
-﻿<UserControl
-  x:Class="PictureManager.Views.SegmentsRectsV"
+﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:v="clr-namespace:PictureManager.Views">
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:pm="clr-namespace:PictureManager">
 
-  <UserControl.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="../Views/SegmentRectV.xaml" />
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </UserControl.Resources>
-  
-  <ItemsControl
-    DataContext="{Binding RelativeSource=
-                 {RelativeSource AncestorType={x:Type v:SegmentsRectsV}}}"
-    ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}">
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="SegmentRectV.xaml" />
+  </ResourceDictionary.MergedDictionaries>
 
-    <ItemsControl.ItemTemplate>
-      <DataTemplate>
-        <ContentPresenter
-          Content="{Binding}"
-          PreviewMouseDown="SegmentRect_PreviewMouseDown" />
-      </DataTemplate>
-    </ItemsControl.ItemTemplate>
+  <DataTemplate
+    x:Key="Views.SegmentsRectsV"
+    DataType="{x:Type vm:SegmentsRectsVM}">
 
-    <ItemsControl.ItemsPanel>
-      <ItemsPanelTemplate>
-        <Grid Width="{Binding ActualWidth}"
-              Height="{Binding ActualHeight}"/>
-      </ItemsPanelTemplate>
-    </ItemsControl.ItemsPanel>
+    <ItemsControl
+      x:Name="Root"
+      ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
+      ItemTemplate="{StaticResource Views.SegmentRectV}"
+      Visibility="{Binding AreVisible,
+                   Converter={StaticResource AllToVisibilityConverter}}"
+      Width="{Binding MediaViewerVM.FullImage.ActualWidth,
+              Source={x:Static pm:App.Ui}}"
+      Height="{Binding MediaViewerVM.FullImage.ActualHeight,
+               Source={x:Static pm:App.Ui}}">
 
-  </ItemsControl>
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <Grid
+            Width="{Binding ActualWidth, ElementName=Root}"
+            Height="{Binding ActualHeight, ElementName=Root}" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
 
-</UserControl>
+      <ItemsControl.RenderTransform>
+        <TranslateTransform
+          X="{Binding MediaViewerVM.FullImage.TransformX,
+              Source={x:Static pm:App.Ui}}"
+          Y="{Binding MediaViewerVM.FullImage.TransformY,
+              Source={x:Static pm:App.Ui}}" />
+      </ItemsControl.RenderTransform>
+
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+          <b:InvokeCommandAction
+            Command="{Binding SetViewCommand}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+    </ItemsControl>
+
+  </DataTemplate>
+    
+</ResourceDictionary>

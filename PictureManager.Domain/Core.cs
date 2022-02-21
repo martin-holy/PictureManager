@@ -13,6 +13,7 @@ namespace PictureManager.Domain {
     public double WindowsDisplayScale { get; set; }
     public ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
+    public TitleProgressBarM TitleProgressBarM { get; } = new();
 
     public CategoryGroupsM CategoryGroupsM { get; }
     public FavoriteFoldersM FavoriteFoldersM { get; }

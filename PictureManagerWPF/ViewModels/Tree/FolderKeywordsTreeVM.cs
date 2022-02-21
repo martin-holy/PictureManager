@@ -10,18 +10,18 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels.Tree {
   public sealed class FolderKeywordsTreeVM : CatTreeViewCategoryBase {
-    private readonly Core _core;
+    private readonly FoldersM _foldersM;
 
-    public FolderKeywordsM Model { get; }
+    public FolderKeywordsM FolderKeywordsM { get; }
     public readonly Dictionary<int, FolderKeywordTreeVM> All = new();
     public static RelayCommand<object> OpenFolderKeywordsListCommand { get; } = new(FolderKeywordList.Open);
 
-    public FolderKeywordsTreeVM(Core core, FolderKeywordsM model) : base(Category.FolderKeywords, "Folder Keywords") {
-      _core = core;
-      Model = model;
+    public FolderKeywordsTreeVM(FolderKeywordsM folderKeywordsM, FoldersM foldersM) : base(Category.FolderKeywords, "Folder Keywords") {
+      FolderKeywordsM = folderKeywordsM;
+      _foldersM = foldersM;
 
-      Model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      Model.ReloadEvent += (_, _) => {
+      FolderKeywordsM.Items.CollectionChanged += ModelItems_CollectionChanged;
+      FolderKeywordsM.ReloadEvent += (_, _) => {
         All.Clear();
         LoadRoot();
       };
@@ -39,13 +39,13 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private void LoadRoot() {
-      ModelItems_CollectionChanged(Model.Items, null);
+      ModelItems_CollectionChanged(FolderKeywordsM.Items, null);
       UpdateItemsVisibility(Items.Cast<FolderKeywordTreeVM>());
     }
 
     private void UpdateItemsVisibility(IEnumerable<FolderKeywordTreeVM> items) {
       foreach (var item in items)
-        if (item.Model.Folders.All(x => !_core.FoldersM.IsFolderVisible(x)))
+        if (item.Model.Folders.All(x => !_foldersM.IsFolderVisible(x)))
           item.IsHidden = true;
     }
 

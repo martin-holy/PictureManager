@@ -22,7 +22,7 @@ namespace PictureManager.Dialogs {
     }
 
     public static void Open() {
-      var fkl = new FolderKeywordList { Owner = App.WMain };
+      var fkl = new FolderKeywordList { Owner = Application.Current.MainWindow };
       fkl.ShowDialog();
     }
 

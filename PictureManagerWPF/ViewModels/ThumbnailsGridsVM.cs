@@ -42,6 +42,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> ResizeImagesCommand { get; }
     public RelayCommand<object> ImagesToVideoCommand { get; }
     public RelayCommand<object> CopyPathsCommand { get; }
+    public RelayCommand<object> ReapplyFilterCommand { get; }
 
     public ThumbnailsGridsVM(Core core, AppCore coreVM, ThumbnailsGridsM model) {
       _core = core;
@@ -75,11 +76,11 @@ namespace PictureManager.ViewModels {
         () => Model.Current?.FilteredItems.Count > 0);
 
       CompressCommand = new(
-        () => CompressDialog.ShowDialog(App.WMain),
+        () => CompressDialog.Open(),
         () => Model.Current?.FilteredItems.Count > 0);
 
       ResizeImagesCommand = new(
-        () => ResizeImagesDialog.Show(App.WMain, Model.Current.GetSelectedOrAll()),
+        () => ResizeImagesDialog.Show(Model.Current.GetSelectedOrAll()),
         () => Model.Current?.FilteredItems.Count > 0);
 
       ImagesToVideoCommand = new(
@@ -89,33 +90,32 @@ namespace PictureManager.ViewModels {
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Model.Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
         () => Model.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+
+      ReapplyFilterCommand = new(async () => await ReapplyFilter());
       #endregion
+    }
 
-      _coreVM.MainTabsVM.TabClosed += (o, _) => {
-        if (o is not ThumbnailsGridVM thumbGridVM) return;
-        thumbGridVM.Panel.ClearRows();
-        thumbGridVM.Model.ClearItBeforeLoad();
-        Model.All.Remove(thumbGridVM.Model);
-        Current = null;
-        Model.Current = null;
-      };
+    public void CloseGrid(ThumbnailsGridVM grid) {
+      grid.Panel.ClearRows();
+      grid.Model.ClearItBeforeLoad();
+      Model.All.Remove(grid.Model);
+      Current = null;
+      Model.Current = null;
+    }
 
-      _coreVM.MainTabsVM.SelectionChanged += async (o, _) => {
-        Current = (o as MainTabsVM)?.Selected as ThumbnailsGridVM;
-        Model.Current = ThumbnailsGridM.ActivateThumbnailsGrid(Model.Current, Current?.Model);
-        Current?.Model.UpdateSelected();
-        
-        if (Current?.Model.NeedReload == true) {
-          await ThumbsGridReloadItems();
-          Current?.Model.UpdatePositionSlashCount();
-        }
-        else {
-          //TODO this causes error
-          //ScrollToCurrentMediaItem();
-        }
-        
-        _coreVM.MarkUsedKeywordsAndPeople();
-      };
+    public async Task SetCurrentGrid(ThumbnailsGridVM grid) {
+      Current = grid;
+      Model.Current = ThumbnailsGridM.ActivateThumbnailsGrid(Model.Current, Current?.Model);
+      Current?.Model.UpdateSelected();
+      
+      if (Current?.Model.NeedReload == true) {
+        await ThumbsGridReloadItems();
+        Current?.Model.UpdatePositionSlashCount();
+      }
+      else {
+        //TODO this causes error
+        //ScrollToCurrentMediaItem();
+      }
     }
 
     public void ScrollToCurrentMediaItem() {
@@ -128,15 +128,15 @@ namespace PictureManager.ViewModels {
     public void ScrollToTop() {
       Current?.Panel.ScrollToTop();
       // TODO
-      App.WMain.UpdateLayout();
+      App.MainWindowV.UpdateLayout();
     }
 
     public void ScrollTo(MediaItemM mi) => Current?.Panel.ScrollTo(mi);
 
     private void AddThumbnailsGridIfNotActive(string tabTitle) {
-      if (_coreVM.MainTabsVM.Selected is ThumbnailsGridVM thumbsGridVM) {
+      if (_coreVM.MainTabsVM.Selected?.Content is ThumbnailsGridVM thumbsGridVM) {
         if (tabTitle != null)
-          thumbsGridVM.Title = tabTitle;
+          _coreVM.MainTabsVM.Selected.ContentHeader = tabTitle;
 
         return;
       }
@@ -146,9 +146,13 @@ namespace PictureManager.ViewModels {
 
     private void AddThumbnailsGrid(string tabTitle) {
       var model = Model.AddThumbnailsGrid();
+      var viewModel = new ThumbnailsGridVM(_core, _coreVM, model, tabTitle);
+
       // TODO check all usage and use it less
-      model.SelectionChangedEventHandler += (_, _) => _coreVM.MarkUsedKeywordsAndPeople();
-      _coreVM.MainTabsVM.AddTab(new ThumbnailsGridVM(_core, _coreVM, model, tabTitle));
+      model.SelectionChangedEventHandler += (_, _) =>
+        _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
+
+      _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
     }
 
     public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
@@ -180,11 +184,10 @@ namespace PictureManager.ViewModels {
 
       item.IsSelected = true;
 
-      if (_coreVM.AppInfo.AppMode == AppMode.Viewer)
-        Commands.WindowCommands.SwitchToBrowser();
-
       var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<FolderM> { ((FolderTreeVM)item).Model };
-      var folders = FoldersM.GetFolders(roots, recursive).Where(f => !_coreVM.FoldersTreeVM.All[f.Id].IsHidden).ToList();
+      var folders = FoldersM.GetFolders(roots, recursive)
+        .Where(f => !_coreVM.TreeViewCategoriesVM.FoldersTreeVM.All[f.Id].IsHidden)
+        .ToList();
 
       if (and || hide) {
         var items = folders.SelectMany(x => x.MediaItems).ToList();
@@ -196,7 +199,7 @@ namespace PictureManager.ViewModels {
       AddThumbnailsGridIfNotActive(folders[0].Name);
       await LoadAsync(null, folders);
       // TODO move this up, check for changes before update
-      App.Ui.MarkUsedKeywordsAndPeople();
+      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide) {
@@ -210,7 +213,7 @@ namespace PictureManager.ViewModels {
 
       await LoadAsync(items, null);
       // TODO move this up, check for changes before update
-      App.Ui.MarkUsedKeywordsAndPeople();
+      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private async Task LoadAsync(List<MediaItemM> mediaItems, List<FolderM> folders) {
@@ -220,9 +223,9 @@ namespace PictureManager.ViewModels {
       // Clear before new load
       Current.Model.ClearItBeforeLoad();
       // TODO move this elsewhere
-      App.WMain.ImageComparerTool.Close();
+      App.MainWindowV.ImageComparerTool.Close();
       // TODO set this to false when finished
-      _coreVM.AppInfo.ProgressBarIsIndeterminate = true;
+      _core.TitleProgressBarM.IsIndeterminate = true;
 
       await _workTask.Start(Task.Run(async () => {
         var items = await _core.MediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders, _workTask.Token);
@@ -248,14 +251,14 @@ namespace PictureManager.ViewModels {
     }
 
     private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
-      _coreVM.AppInfo.ProgressBarIsIndeterminate = false;
-      _coreVM.AppInfo.ResetProgressBars(100);
+      _core.TitleProgressBarM.IsIndeterminate = false;
+      _core.TitleProgressBarM.ResetProgressBars(100);
 
       await Task.Run(async () => {
         // read metadata for new items and add thumbnails to grid
         var metadata = ReadMetadataAndListThumbsAsync(items, token);
         // create thumbnails
-        var progress = new Progress<int>(x => _coreVM.AppInfo.ProgressBarValueB = x);
+        var progress = new Progress<int>(x => _core.TitleProgressBarM.ValueB = x);
         var thumbs = Imaging.CreateThumbnailsAsync(items, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress, token);
         
         await Task.WhenAll(metadata, thumbs);
@@ -270,8 +273,8 @@ namespace PictureManager.ViewModels {
         Current.Model.SetSelected(Current.Model.CurrentMediaItem, true);
       }
 
-      _coreVM.AppInfo.ProgressBarValueA = 100;
-      _coreVM.AppInfo.ProgressBarValueB = 100;
+      _core.TitleProgressBarM.ValueA = 100;
+      _core.TitleProgressBarM.ValueB = 100;
 
       GC.Collect();
     }
@@ -290,9 +293,8 @@ namespace PictureManager.ViewModels {
           var percent = Convert.ToInt32((double)workingOn / count * 100);
 
           if (mi.IsNew) {
-            mi.IsNew = false;
-
             var success = await _coreVM.MediaItemsVM.ReadMetadata(mi);
+            mi.IsNew = false;
             if (!success) {
               // delete corrupted MediaItems
               await Core.RunOnUiThread(() => {
@@ -300,7 +302,7 @@ namespace PictureManager.ViewModels {
                 Current.Model.FilteredItems.Remove(mi);
                 Current.Model.UpdatePositionSlashCount();
                 _core.MediaItemsM.Delete(mi);
-                _coreVM.AppInfo.ProgressBarValueA = percent;
+                _core.TitleProgressBarM.ValueA = percent;
               });
 
               continue;
@@ -311,7 +313,7 @@ namespace PictureManager.ViewModels {
 
           await Core.RunOnUiThread(() => {
             mi.SetInfoBox();
-            _coreVM.AppInfo.ProgressBarValueA = percent;
+            _core.TitleProgressBarM.ValueA = percent;
           });
         }
       }, token);
@@ -352,7 +354,7 @@ namespace PictureManager.ViewModels {
       if (Current != null)
         await Current.Model.ReloadFilteredItems();
 
-      _coreVM.MarkUsedKeywordsAndPeople();
+      _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
       await ThumbsGridReloadItems();
     }
 
@@ -362,8 +364,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void ImagesToVideo() {
-      ImagesToVideoDialog.ShowDialog(App.WMain,
-        Current.Model.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+      ImagesToVideoDialog.Show(Current.Model.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (folder, fileName) => {
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = new MediaItemM(_core.MediaItemsM.DataAdapter.GetNextId(), folder, fileName);

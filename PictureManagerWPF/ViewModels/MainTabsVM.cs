@@ -4,57 +4,45 @@ using System.Linq;
 using System.Windows.Controls;
 using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Interfaces;
 
 namespace PictureManager.ViewModels {
   public sealed class MainTabsVM : ObservableObject {
-    private IMainTabsItem _selected;
+    private HeaderedListItem<object, string> _selected;
     private double _tabsActualHeight;
 
     public RelayCommand<double> UpdateTabHeadersSizeCommand { get; }
-    public RelayCommand<SelectionChangedEventArgs> SelectionChangedCommand { get; }
-    public RelayCommand<IMainTabsItem> TabCloseCommand { get; }
+    public RelayCommand<HeaderedListItem<object, string>> CloseTabCommand { get; }
 
-    public event EventHandler SelectionChanged = delegate { };
-    public event EventHandler TabClosed = delegate { };
+    public event EventHandler<ObjectEventArgs> TabClosedEvent = delegate { };
 
-    public ObservableCollection<IMainTabsItem> Items { get; } = new();
-    public IMainTabsItem Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
+    public ObservableCollection<HeaderedListItem<object, string>> Items { get; } = new();
+    public HeaderedListItem<object, string> Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public double TabMaxHeight => _tabsActualHeight / Items.Count;
 
     public MainTabsVM() {
       UpdateTabHeadersSizeCommand = new(UpdateTabHeadersSize);
-      SelectionChangedCommand = new(OnSelectionChanged);
-      TabCloseCommand = new(OnTabClosed);
+      CloseTabCommand = new(CloseTab);
 
-      Items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(TabMaxHeight));
+      Items.CollectionChanged += (_, _) =>
+        OnPropertyChanged(nameof(TabMaxHeight));
     }
 
-    public T ActivateTab<T>() where T : IMainTabsItem, new() {
-      var item = Items.FirstOrDefault(x => x.GetType() == typeof(T));
-
-      if (item == null) {
-        item = new T();
-        AddTab(item);
-      }
+    public void Activate(HeaderedListItem<object, string> item) {
+      if (!Items.Contains(item))
+        AddItem(item);
       else
         Selected = item;
-
-      return (T)item;
     }
 
-    public void AddTab(IMainTabsItem tab) {
-      Items.Add(tab);
-      Selected = tab;
+    public void AddItem(HeaderedListItem<object, string> item) {
+      Items.Add(item);
+      Selected = item;
     }
 
-    private void OnSelectionChanged(SelectionChangedEventArgs e) {
-      SelectionChanged.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnTabClosed(IMainTabsItem item) {
+    private void CloseTab(HeaderedListItem<object, string> item) {
       Items.Remove(item);
-      TabClosed.Invoke(item, EventArgs.Empty);
+      Selected = Items.FirstOrDefault();
+      TabClosedEvent(this, new ObjectEventArgs(item));
     }
 
     private void UpdateTabHeadersSize(double actualHeight) {

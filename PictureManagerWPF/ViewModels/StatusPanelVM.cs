@@ -14,6 +14,7 @@ namespace PictureManager.ViewModels {
 
     public bool IsPinned { get => _isPinned; set { _isPinned = value; OnPropertyChanged(); } }
 
+    // TODO remove this
     public MediaItemM CurrentMediaItemM {
       get => _currentMediaItemM;
       set {
@@ -30,7 +31,7 @@ namespace PictureManager.ViewModels {
         var paths = new ObservableCollection<string>();
         if (CurrentMediaItemM == null) return paths;
 
-        if (App.Ui.AppInfo.AppMode == AppMode.Browser || CurrentMediaItemM.Folder.FolderKeyword == null) {
+        if (!App.Ui.MediaViewerVM.IsVisible || CurrentMediaItemM.Folder.FolderKeyword == null) {
           paths.Add(CurrentMediaItemM.FilePath);
           return paths;
         }
@@ -54,8 +55,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    // TODO this prop is here because binding to App.WMain... doesn't work
-    public double? ActualZoom => App.WMain?.MediaViewer.FullImage.ActualZoom;
     public string DateAndTime => DateTimeExtensions.DateTimeFromString(CurrentMediaItemM?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<int> Rating { get; } = new();
 

@@ -1,53 +1,72 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-                    xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-                    xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-                    xmlns:cc="clr-namespace:PictureManager.CustomControls"
-                    xmlns:commands="clr-namespace:PictureManager.Commands"
-                    xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:cc="clr-namespace:PictureManager.CustomControls"
+  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-  <ContextMenu x:Key="KeywordTreeContextMenu"
-               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                             RelativeSource={RelativeSource Self}}">
+  <ContextMenu
+    x:Key="KeywordTreeContextMenu"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                  RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
-        <MenuItem Header="New"
-                  Command="cc:CatTreeView.ItemCreateCommand"
-                  CommandParameter="{Binding}" />
-        <MenuItem Header="Rename"
-                  Command="cc:CatTreeView.ItemRenameCommand"
-                  CommandParameter="{Binding}" />
-        <MenuItem Header="Delete"
-                  Command="cc:CatTreeView.ItemDeleteCommand"
-                  CommandParameter="{Binding}" />
+        <MenuItem
+          Header="New"
+          Command="cc:CatTreeView.ItemCreateCommand"
+          CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Rename"
+          Command="cc:CatTreeView.ItemRenameCommand"
+          CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Delete"
+          Command="cc:CatTreeView.ItemDeleteCommand"
+          CommandParameter="{Binding}" />
         <Separator />
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
-        <MenuItem Header="Delete not used"
-                  Command="commands:TreeViewCommands.TagItemDeleteNotUsedCommand"
-                  CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Delete not used"
+          Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
+                    Source={x:Static pm:App.Ui}}"
+          CommandParameter="{Binding}" />
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
 
-  <HierarchicalDataTemplate DataType="{x:Type tree:KeywordTreeVM}" ItemsSource="{Binding Items}">
+  <HierarchicalDataTemplate
+    DataType="{x:Type tree:KeywordTreeVM}"
+    ItemsSource="{Binding Items}">
+    
     <Grid Background="{Binding DisplayFilter,
-                        Converter={StaticResource ResourceConverter},
-                        ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
-                        FallbackValue={StaticResource TransparentBrush}}">
+                       Converter={StaticResource ResourceConverter},
+                       ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
+                       FallbackValue={StaticResource TransparentBrush}}">
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
-          <mhu:SetterAction PropertyName="ContextMenu" Value="{StaticResource KeywordTreeContextMenu}" />
+          <mhu:SetterAction
+            PropertyName="ContextMenu"
+            Value="{StaticResource KeywordTreeContextMenu}" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <StackPanel Orientation="Horizontal"
-                  Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-        <mhc:Icon Source="{StaticResource IconTag}" Fill="{StaticResource ColorBrushTag}" />
-        <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Model.Name}" />
-        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
+      <StackPanel
+        Orientation="Horizontal"
+        Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
+        
+        <mhc:Icon
+          Source="{StaticResource IconTag}"
+          Fill="{StaticResource ColorBrushTag}" />
+        <TextBlock
+          Style="{StaticResource TreeItemTitle}"
+          Text="{Binding Model.Name}" />
+        <TextBlock
+          Style="{StaticResource TreeItemKeywordsPicCount}" />
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>

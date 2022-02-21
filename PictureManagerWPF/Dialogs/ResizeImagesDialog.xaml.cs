@@ -32,9 +32,9 @@ namespace PictureManager.Dialogs {
     public double MaxMpx { get => _maxMpx; set { _maxMpx = value; OnPropertyChanged(); } }
     public ObservableCollection<string> DirPaths { get => _dirPaths; set { _dirPaths = value; OnPropertyChanged(); } }
 
-    public ResizeImagesDialog(Window owner, IEnumerable<MediaItemM> items) {
+    public ResizeImagesDialog(IEnumerable<MediaItemM> items) {
       InitializeComponent();
-      Owner = owner;
+      Owner = Application.Current.MainWindow;
       _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
 
       DirPaths = new(Settings.Default.DirectorySelectFolders.Split(new[] { Environment.NewLine },
@@ -43,8 +43,8 @@ namespace PictureManager.Dialogs {
       SetMaxMpx();
     }
 
-    public static void Show(Window owner, IEnumerable<MediaItemM> items) {
-      var dlg = new ResizeImagesDialog(owner, items);
+    public static void Show(IEnumerable<MediaItemM> items) {
+      var dlg = new ResizeImagesDialog(items);
       dlg.Show();
     }
 
@@ -123,7 +123,7 @@ namespace PictureManager.Dialogs {
     }
 
     private void BtnOpenDirectoryPicker_OnClick(object sender, RoutedEventArgs e) {
-      var dir = new FolderBrowserDialog(App.WMain);
+      var dir = new FolderBrowserDialog();
       if (!(dir.ShowDialog() ?? true)) return;
 
       if (!DirPaths.Contains(dir.SelectedPath)) {

@@ -16,15 +16,13 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
     #endregion
 
-    private PersonM _current;
-
     public DataAdapter DataAdapter { get; set; }
     public List<PersonM> All { get; } = new();
     public List<PersonM> Selected { get; } = new();
     public Dictionary<int, PersonM> AllDic { get; set; }
-    public PersonM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public event EventHandler<PersonDeletedEventArgs> PersonDeletedEvent = delegate { };
+    public event EventHandler PeopleKeywordChangedEvent = delegate { };
 
     private static string GetItemName(object item) => item is PersonM p ? p.Name : string.Empty;
 
@@ -109,6 +107,16 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
+    public void ToggleSegment(PersonM person, SegmentM segment) {
+      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
+      person.OnPropertyChanged(nameof(person.Segments));
+
+      if (person.Segments?.Count > 0)
+        person.Segment = person.Segments[0];
+
+      DataAdapter.IsModified = true;
+    }
+
     public void ToggleKeyword(PersonM person, KeywordM keyword) {
       person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
       DataAdapter.IsModified = true;
@@ -117,6 +125,8 @@ namespace PictureManager.Domain.Models {
     public void RemoveKeywordFromPeople(KeywordM keyword) {
       foreach (var person in All.Where(x => x.Keywords?.Contains(keyword) == true))
         ToggleKeyword(person, keyword);
+
+      PeopleKeywordChangedEvent(this, EventArgs.Empty);
     }
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {
@@ -124,6 +134,8 @@ namespace PictureManager.Domain.Models {
         ToggleKeyword(person, keyword);
         person.UpdateDisplayKeywords();
       }
+
+      PeopleKeywordChangedEvent(this, EventArgs.Empty);
     }
 
     public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>

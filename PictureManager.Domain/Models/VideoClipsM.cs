@@ -60,14 +60,14 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ItemDelete(VideoClipM vc) {
+      File.Delete(vc.ThumbPath);
+
       vc.MediaItem.HasVideoClips = Items.Count != 0;
       vc.MediaItem = null;
       vc.Parent.Items.Remove(vc);
       vc.Parent = null;
       vc.People = null;
       vc.Keywords = null;
-
-      File.Delete(vc.ThumbPath);
 
       All.Remove(vc);
       VideoClipDeletedEvent(this, new(vc));

@@ -5,17 +5,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MH.UI.WPF.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Commands;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.UserControls;
 using PictureManager.Utils;
 using PictureManager.ViewModels.Tree;
 using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
@@ -36,6 +35,9 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> CommentCommand { get; }
     public RelayCommand<object> ReloadMetadataCommand { get; }
     public RelayCommand<FolderTreeVM> ReloadMetadataInFolderCommand { get; }
+    public RelayCommand<object> RebuildThumbnailsCommand { get; }
+    public RelayCommand<object> CompareCommand { get; }
+    public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
 
     public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
@@ -54,7 +56,7 @@ namespace PictureManager.ViewModels {
 
       DeleteCommand = new(
         Delete,
-        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || _coreVM.AppInfo.AppMode == AppMode.Viewer);
+        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || Model.Current != null);
 
       EditCommand = new(
         () => Model.IsEditModeOn = true,
@@ -79,6 +81,18 @@ namespace PictureManager.ViewModels {
       ReloadMetadataInFolderCommand = new(
         ReloadMetadataInFolder,
         x => x != null);
+
+      RebuildThumbnailsCommand = new(
+        RebuildThumbnails,
+        x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      CompareCommand = new(
+        Compare,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      AddGeoNamesFromFilesCommand = new(
+        AddGeoNamesFromFiles,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
       #endregion
     }
 
@@ -87,14 +101,13 @@ namespace PictureManager.ViewModels {
       if (rotation == Rotation.Rotate0) return;
       SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
-      if (_coreVM.AppInfo.AppMode != AppMode.Viewer) return;
-      // TODO remove App.WMain
-      App.WMain.MediaViewer.SetMediaItemSource(Model.Current);
+      if (_coreVM.MediaViewerVM.IsVisible)
+        _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
     }
 
     private async void Rename() {
       var inputDialog = new InputDialog {
-        Owner = App.WMain,
+        Owner = Application.Current.MainWindow,
         IconName = "IconNotification",
         Title = "Rename",
         Question = "Add a new name.",
@@ -134,15 +147,14 @@ namespace PictureManager.ViewModels {
 
     public void Delete(MediaItemM[] items) {
       if (items.Length == 0) return;
-      var progress = new ProgressBarDialog(App.WMain, false, 1, "Removing Media Items from database ...");
+      var progress = new ProgressBarDialog(false, 1, "Removing Media Items from database ...");
       progress.AddEvents(items, null, Model.Delete, mi => mi.FilePath, null);
       progress.StartDialog();
     }
 
     private async void Delete() {
-      // TODO remove App.WMain
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
-      var items = _coreVM.AppInfo.AppMode == AppMode.Viewer
+      var items = _coreVM.MediaViewerVM.IsVisible
         ? new() { Model.Current }
         : currentThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
@@ -152,21 +164,22 @@ namespace PictureManager.ViewModels {
 
       Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
           ? currentThumbsGrid.LoadedItems
-          : App.WMain.MediaViewer.MediaItems,
+          : _coreVM.MediaViewerVM.MediaItems,
         items);
 
       Model.Delete(items, AppCore.FileOperationDelete);
       await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
 
-      if (_coreVM.MainTabsVM.Selected is SegmentMatchingControl smc)
-        _ = smc.SortAndReload();
+      // TODO do it in event
+      if (_coreVM.MainTabsVM.Selected?.Content is SegmentsVM)
+        _coreVM.SegmentsVM.SortAndReload();
 
-      if (_coreVM.AppInfo.AppMode == AppMode.Viewer) {
-        _ = App.WMain.MediaViewer.MediaItems.Remove(items[0]);
+      if (_coreVM.MediaViewerVM.IsVisible) {
+        _ = _coreVM.MediaViewerVM.MediaItems.Remove(items[0]);
         if (Model.Current != null)
-          App.WMain.MediaViewer.SetMediaItemSource(Model.Current);
+          _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
         else
-          WindowCommands.SwitchToBrowser();
+          _coreVM.MainWindowVM.IsFullScreen = false;
       }
     }
 
@@ -221,7 +234,8 @@ namespace PictureManager.ViewModels {
           mi.Height = frame.PixelHeight;
           mi.SetThumbSize(true);
 
-          Model.DataAdapter.IsModified = true;
+          if (!mi.IsNew)
+            Model.DataAdapter.IsModified = true;
 
           // true because only media item dimensions are required
           if (frame.Metadata is not BitmapMetadata bm) return true;
@@ -334,8 +348,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, Rotation rotation) {
-      // TODO ProgressBarDialog(App.WMain
-      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Changing orientation ...");
+      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Changing orientation ...");
       progress.AddEvents(
         mediaItems,
         null,
@@ -516,7 +529,7 @@ namespace PictureManager.ViewModels {
     /// <param name="items"></param>
     /// <param name="destFolder"></param>
     public void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder) {
-      var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = false, Value = 0 } };
+      var fop = new FileOperationDialog(Application.Current.MainWindow, mode) { PbProgress = { IsIndeterminate = false, Value = 0 } };
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new();
         var token = fop.LoadCts.Token;
@@ -540,7 +553,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void SaveEdit() {
-      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Saving metadata ...");
+      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Saving metadata ...");
       progress.AddEvents(
         Model.ModifiedItems.ToArray(),
         null,
@@ -565,7 +578,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void CancelEdit() {
-      var progress = new ProgressBarDialog(App.WMain, false, Environment.ProcessorCount, "Reloading metadata ...");
+      var progress = new ProgressBarDialog(false, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         Model.ModifiedItems.ToArray(),
         null,
@@ -581,7 +594,7 @@ namespace PictureManager.ViewModels {
         mi => mi.FilePath,
         // onCompleted
         (o, e) => {
-          _coreVM.MarkUsedKeywordsAndPeople();
+          _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
           Model.IsEditModeOn = false;
         });
 
@@ -590,7 +603,7 @@ namespace PictureManager.ViewModels {
 
     private void Comment() {
       var inputDialog = new InputDialog {
-        Owner = App.WMain,
+        Owner = App.MainWindowV,
         IconName = "IconNotification",
         Title = "Comment",
         Question = "Add a comment.",
@@ -622,7 +635,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
-      var progress = new ProgressBarDialog(App.WMain, true, Environment.ProcessorCount, "Reloading metadata ...");
+      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Reloading metadata ...");
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -636,9 +649,73 @@ namespace PictureManager.ViewModels {
         },
         mi => mi.FilePath,
         // onCompleted
-        (_, _) => _coreVM.MarkUsedKeywordsAndPeople());
+        (_, _) => _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople());
 
       progress.Start();
+    }
+
+    private void RebuildThumbnails(object parameter) {
+      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      var mediaItems = parameter switch {
+        FolderM folder => folder.GetMediaItems(recursive),
+        List<MediaItemM> items => items,
+        _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
+      };
+
+      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        async (mi) => {
+          mi.SetThumbSize(true);
+          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
+          mi.ReloadThumbnail();
+        },
+        mi => mi.FilePath,
+        delegate {
+          _ = _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
+        });
+
+      progress.Start();
+    }
+
+    private void Compare() {
+      // TODO
+      App.MainWindowV.ImageComparerTool.Visibility = Visibility.Visible;
+      App.MainWindowV.UpdateLayout();
+      App.MainWindowV.ImageComparerTool.SelectDefaultMethod();
+      _ = App.MainWindowV.ImageComparerTool.Compare();
+    }
+
+    private void AddGeoNamesFromFiles() {
+      if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
+
+      var progress = new ProgressBarDialog(true, 1, "Adding GeoNames ...");
+      progress.AddEvents(
+        _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        null,
+        // action
+        async mi => {
+          if (mi.Lat == null || mi.Lng == null) _ = await ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) return;
+
+          var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
+          if (lastGeoName == null) return;
+
+          mi.GeoName = lastGeoName;
+          TryWriteMetadata(mi);
+          await Core.RunOnUiThread(() => {
+            mi.SetInfoBox();
+            Model.DataAdapter.IsModified = true;
+          });
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          Model.Current?.GeoName?.OnPropertyChanged(nameof(Model.Current.GeoName.FullName));
+        });
+
+      progress.StartDialog();
     }
   }
 }

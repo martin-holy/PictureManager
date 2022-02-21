@@ -41,7 +41,7 @@
       <Setter.Value>
         <MultiBinding Converter="{StaticResource MarkedTagsItemsCountConverter}">
           <Binding
-            Path="MarkedTags"
+            Path="TreeViewCategoriesVM.MarkedTags"
             Source="{x:Static pm:App.Ui}" />
           <Binding
             Path="DataContext"

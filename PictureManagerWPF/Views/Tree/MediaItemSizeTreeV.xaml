@@ -41,13 +41,13 @@
 
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="UpperThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
             <b:EventTrigger EventName="LowerThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
             <b:EventTrigger EventName="CentralThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mah:RangeSlider>

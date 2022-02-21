@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.Dialogs {
@@ -14,7 +15,7 @@ namespace PictureManager.Dialogs {
 
     public static new Rotation Show() {
       var result = Rotation.Rotate0;
-      var rd = new RotationDialog { Owner = App.WMain };
+      var rd = new RotationDialog { Owner = Application.Current.MainWindow };
 
       rd.Btn270.Click += delegate {
         rd.Close();

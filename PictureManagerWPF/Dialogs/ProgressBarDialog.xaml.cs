@@ -10,10 +10,10 @@ namespace PictureManager.Dialogs {
     private readonly CancellationTokenSource _cts;
     private readonly ParallelOptions _po;
 
-    public ProgressBarDialog(Window owner, bool canCancel, int maxDegreeOfParallelism, string title) {
+    public ProgressBarDialog(bool canCancel, int maxDegreeOfParallelism, string title) {
       InitializeComponent();
 
-      Owner = owner;
+      Owner = Application.Current.MainWindow;
       Title = title;
       _worker = new() {
         WorkerReportsProgress = true,

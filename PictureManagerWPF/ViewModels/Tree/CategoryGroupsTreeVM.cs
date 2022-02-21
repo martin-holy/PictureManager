@@ -6,6 +6,11 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels.Tree {
   public sealed class CategoryGroupsTreeVM {
     public readonly Dictionary<int, CategoryGroupTreeVM> All = new();
+    public CategoryGroupsM CategoryGroupsM { get; }
+
+    public CategoryGroupsTreeVM(CategoryGroupsM categoryGroupsM) {
+      CategoryGroupsM = categoryGroupsM;
+    }
 
     public void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
       MH.Utils.Tree.SyncCollection<CategoryGroupM, CategoryGroupTreeVM>(src, dest, parent,

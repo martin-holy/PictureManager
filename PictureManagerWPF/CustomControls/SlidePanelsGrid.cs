@@ -29,6 +29,7 @@ namespace PictureManager.CustomControls {
       set => SetValue(GridSplitterWidthProperty, value);
     }
 
+    // TODO change to events
     public Action OnContentLeftWidthChanged { get; set; }
     public Action OnContentRightWidthChanged { get; set; }
 
@@ -83,7 +84,7 @@ namespace PictureManager.CustomControls {
         _mainGrid.ColumnDefinitions[0].Width = new(ContentLeft.Width);
         _mainGrid.ColumnDefinitions[1].Width = new(GridSplitterWidth);
 
-        ContentLeft.OnIsPinnedChanged += delegate {
+        ContentLeft.IsPinnedChangedEvent += delegate {
           _mainGrid.ColumnDefinitions[0].Width = new(ContentLeft.IsPinned ? ContentLeft.Width : 0);
           _mainGrid.ColumnDefinitions[1].Width = new(ContentLeft.IsPinned ? GridSplitterWidth : 0);
         };
@@ -93,7 +94,7 @@ namespace PictureManager.CustomControls {
         _mainGrid.ColumnDefinitions[3].Width = new(GridSplitterWidth);
         _mainGrid.ColumnDefinitions[4].Width = new(ContentRight.Width);
 
-        ContentRight.OnIsPinnedChanged += delegate {
+        ContentRight.IsPinnedChangedEvent += delegate {
           _mainGrid.ColumnDefinitions[3].Width = new(ContentRight.IsPinned ? GridSplitterWidth : 0);
           _mainGrid.ColumnDefinitions[4].Width = new(ContentRight.IsPinned ? ContentRight.Width : 0);
         };

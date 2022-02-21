@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
 using MH.Utils.Extensions;
@@ -18,6 +19,7 @@ namespace PictureManager.ViewModels.Tree {
   public sealed class FoldersTreeVM : CatTreeViewCategoryBase {
     private readonly Core _core;
     private readonly AppCore _coreVM;
+    private readonly DrivesTreeVM _drivesTreeVM;
 
     public FoldersM Model { get; }
     public readonly Dictionary<int, FolderTreeVM> All = new();
@@ -25,22 +27,17 @@ namespace PictureManager.ViewModels.Tree {
     public static RelayCommand<FolderTreeVM> SetAsFolderKeywordCommand { get; } =
       new(item => App.Core.FoldersM.SetAsFolderKeyword(item.Model), item => item != null);
 
-    public FoldersTreeVM(Core core, AppCore coreVM, FoldersM model) : base(Category.Folders, "Folders") {
+    public FoldersTreeVM(Core core, AppCore coreVM, FoldersM model, DrivesTreeVM drivesTreeVM) : base(Category.Folders, "Folders") {
       _core = core;
       _coreVM = coreVM;
       Model = model;
+      _drivesTreeVM = drivesTreeVM;
       CanMoveItem = true;
       CanCopyItem = true;
       IsExpanded = true;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
       Model.FolderDeletedEvent += (_, e) => All.Remove(e.Folder.Id);
-      
-      OnAfterItemRename += (o, e) => {
-        // reload if the folder was selected before
-        if (o is FolderTreeVM { IsSelected: true } folder)
-          _ = _coreVM.TreeView_Select(folder);
-      };
 
       OnAfterItemDelete += (o, _) => {
         // delete folder, sub folders and mediaItems from file system
@@ -52,7 +49,7 @@ namespace PictureManager.ViewModels.Tree {
     public void Load() => ModelItems_CollectionChanged(Model.Items, null);
 
     private void ModelItems_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
-      _coreVM.DrivesTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
+      _drivesTreeVM.SyncCollection((ObservableCollection<ITreeLeaf>)sender, Items, this, SyncCollection);
       UpdateDrivesVisibility();
     }
 
@@ -64,7 +61,7 @@ namespace PictureManager.ViewModels.Tree {
 
     public void UpdateDrivesVisibility() {
       // unHide all hidden
-      foreach (var driveTreeVM in _coreVM.DrivesTreeVM.All.Values.Where(x => x.IsHidden))
+      foreach (var driveTreeVM in _drivesTreeVM.All.Values.Where(x => x.IsHidden))
         driveTreeVM.IsHidden = false;
       foreach (var folderTreeVM in All.Values.Where(x => x.IsHidden))
         folderTreeVM.IsHidden = false;
@@ -129,7 +126,7 @@ namespace PictureManager.ViewModels.Tree {
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.Model.GetByPath(srcData.Model.Name) != null) {
             CatTreeView.ExpandTo(destFolder);
-            _ = _coreVM.TreeView_Select(destFolder);
+            _coreVM.TreeViewCategoriesVM.Select(destFolder);
           }
 
           break;
@@ -143,12 +140,12 @@ namespace PictureManager.ViewModels.Tree {
           break;
       }
 
-      _coreVM.MarkUsedKeywordsAndPeople();
+      _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     // TODO try to remove dependency to _core
     private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
-      var fop = new FileOperationDialog(App.WMain, mode) { PbProgress = { IsIndeterminate = true } };
+      var fop = new FileOperationDialog(Application.Current.MainWindow, mode) { PbProgress = { IsIndeterminate = true } };
       fop.RunTask = Task.Run(() => {
         fop.LoadCts = new();
         var token = fop.LoadCts.Token;

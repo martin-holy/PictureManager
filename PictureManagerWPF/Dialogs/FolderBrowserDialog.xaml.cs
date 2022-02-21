@@ -19,9 +19,9 @@ namespace PictureManager.Dialogs {
     public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
     public string SelectedPath => ((FolderTreeViewItem)TreeViewFolders.SelectedValue)?.FullPath;
 
-    public FolderBrowserDialog(Window owner) {
+    public FolderBrowserDialog() {
       InitializeComponent();
-      Owner = owner;
+      Owner = Application.Current.MainWindow;
       TreeViewFolders.ItemsSource = Drives;
       AddDrives();
     }

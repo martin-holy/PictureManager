@@ -1,52 +1,88 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:vm="clr-namespace:PictureManager.ViewModels"
-                    xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager">
 
-  <DataTemplate DataType="{x:Type vm:PresentationPanelVM}">
-    <Grid Height="40"
-          VerticalAlignment="Top"
-          Background="#88000000">
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
+  </ResourceDictionary.MergedDictionaries>
+
+  <DataTemplate
+    x:Key="Views.PresentationPanelV"
+    DataType="{x:Type vm:PresentationPanelVM}">
+
+    <Grid
+      Height="40"
+      VerticalAlignment="Top"
+      Background="#88000000">
 
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">
-          <Setter Property="Opacity" Value="0" />
+          <Setter
+            Property="Opacity"
+            Value="0" />
+
           <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-              <Setter Property="Opacity" Value="1" />
+            <Trigger
+              Property="IsMouseOver"
+              Value="True">
+
+              <Setter
+                Property="Opacity"
+                Value="1" />
             </Trigger>
           </Style.Triggers>
         </Style>
       </Grid.Style>
 
-      <StackPanel Orientation="Horizontal"
-                  HorizontalAlignment="Left"
-                  VerticalAlignment="Center">
+      <StackPanel
+        Orientation="Horizontal"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center">
 
         <StackPanel.Resources>
           <!-- TextBlock style -->
           <Style TargetType="{x:Type TextBlock}">
-            <Setter Property="Margin" Value="10" />
-            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter
+              Property="Margin"
+              Value="10" />
+            <Setter
+              Property="VerticalAlignment"
+              Value="Center" />
           </Style>
         </StackPanel.Resources>
 
-        <TextBlock Text="Presentation"
-                   FontSize="20" />
+        <TextBlock
+          Text="Presentation"
+          FontSize="20" />
 
         <!-- Play/Pause -->
-        <mhc:IconButton Command="{Binding PresentationCommand}"
-                        Fill="White"
-                        VerticalAlignment="Center"
-                        ShowShadow="False"
-                        Cursor="Hand">
+        <mhc:IconButton
+          Command="{Binding PresentationCommand}"
+          Fill="White"
+          VerticalAlignment="Center"
+          ShowShadow="False"
+          Cursor="Hand">
+
           <mhc:IconButton.Style>
-            <Style TargetType="{x:Type mhc:IconButton}"
-                   BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
-              <Setter Property="Source" Value="{StaticResource IconPlay}" />
+            <Style
+              TargetType="{x:Type mhc:IconButton}"
+              BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
+
+              <Setter
+                Property="Source"
+                Value="{StaticResource IconPlay}" />
+
               <Style.Triggers>
-                <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                  <Setter Property="Source" Value="{StaticResource IconStop}" />
+                <DataTrigger
+                  Binding="{Binding IsRunning}"
+                  Value="False">
+
+                  <Setter
+                    Property="Source"
+                    Value="{StaticResource IconStop}" />
                 </DataTrigger>
               </Style.Triggers>
             </Style>
@@ -55,25 +91,28 @@
 
         <!-- Interval -->
         <TextBlock Text="Interval" />
-        <Slider Value="{Binding Interval}"
-                Width="70"
-                Minimum="1"
-                Maximum="10"
-                TickFrequency="1"
-                IsSnapToTickEnabled="True" 
-                AutoToolTipPlacement="BottomRight" />
+        <Slider
+          Value="{Binding Interval}"
+          Width="70"
+          Minimum="1"
+          Maximum="10"
+          TickFrequency="1"
+          IsSnapToTickEnabled="True" 
+          AutoToolTipPlacement="BottomRight" />
 
         <!-- Play Panoramic Images -->
         <TextBlock Text="Play Panoramic Images" />
         <CheckBox IsChecked="{Binding PlayPanoramicImages}" />
 
         <!-- Segments edit -->
-        <mhc:IconToggleButton ToolTip="Segments edit"
-                              IsThreeState="False"
-                              VerticalAlignment="Center"
-                              ShowShadow="False"
-                              Source="{StaticResource IconPeople}"
-                              IsChecked="{Binding AreSegmentsRectsOn}" />
+        <mhc:IconToggleButton
+          ToolTip="Segments edit"
+          IsThreeState="False"
+          VerticalAlignment="Center"
+          ShowShadow="False"
+          Source="{StaticResource IconPeople}"
+          IsChecked="{Binding SegmentsVM.SegmentsRectsVM.AreVisible,
+                      Source={x:Static pm:App.Ui}}" />
       </StackPanel>
     </Grid>
   </DataTemplate>
