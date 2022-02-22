@@ -186,7 +186,7 @@ namespace PictureManager.ViewModels {
 
       var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<FolderM> { ((FolderTreeVM)item).Model };
       var folders = FoldersM.GetFolders(roots, recursive)
-        .Where(f => !_coreVM.TreeViewCategoriesVM.FoldersTreeVM.All[f.Id].IsHidden)
+        .Where(f => _core.FoldersM.IsFolderVisible(f))
         .ToList();
 
       if (and || hide) {
