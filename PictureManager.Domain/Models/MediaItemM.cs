@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
       var thumbScale = core.ThumbnailsGridsM.Current?.ThumbScale ?? 1.0;
 
       // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int)(core.ThumbnailSize / core.WindowsDisplayScale * 100 * thumbScale);
+      var desiredSize = (int)(core.ThumbnailSize * thumbScale);
       var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
       
       // TODO move rotation check to GetThumbSize or create func for getting w & h rotated
@@ -112,7 +112,7 @@ namespace PictureManager.Domain.Models {
       IsPanoramic = w > desiredSize;
       ThumbWidth = w;
       ThumbHeight = h;
-      ThumbSize = (int)((w > h ? w : h) * core.WindowsDisplayScale / 100 / thumbScale);
+      ThumbSize = (int)((w > h ? w : h) / thumbScale);
     }
 
     // TODO update just when needed

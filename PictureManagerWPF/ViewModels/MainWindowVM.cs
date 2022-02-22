@@ -93,10 +93,10 @@ namespace PictureManager.ViewModels {
     }
 
     private void Loaded() {
-      _core.WindowsDisplayScale =
-        PresentationSource.FromVisual(Application.Current.MainWindow)
-        ?.CompositionTarget?.TransformToDevice.M11 * 100
-        ?? 100.0;
+      var windowsDisplayScale = PresentationSource.FromVisual(Application.Current.MainWindow)
+        ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+
+      _core.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
     }
   }
 }

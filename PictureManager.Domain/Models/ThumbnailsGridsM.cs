@@ -7,9 +7,10 @@ namespace PictureManager.Domain.Models {
 
     public ObservableCollection<ThumbnailsGridM> All { get; } = new();
     public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+    public double DefaultThumbScale { get; set; } = 1.0;
 
     public ThumbnailsGridM AddThumbnailsGrid() {
-      var grid = new ThumbnailsGridM();
+      var grid = new ThumbnailsGridM(DefaultThumbScale);
       All.Add(grid);
       Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
 

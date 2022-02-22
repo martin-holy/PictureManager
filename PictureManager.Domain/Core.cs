@@ -10,7 +10,6 @@ namespace PictureManager.Domain {
   public sealed class Core : ILogger {
     public string CachePath { get; set; }
     public int ThumbnailSize { get; set; }
-    public double WindowsDisplayScale { get; set; }
     public ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
     public TitleProgressBarM TitleProgressBarM { get; } = new();

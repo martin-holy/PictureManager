@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
 
     public bool NeedReload { get; set; }
-    public double ThumbScale { get; set; } = 1.0;
+    public double ThumbScale { get; set; }
 
     public MediaItemM CurrentMediaItem {
       get => _currentMediaItem;
@@ -71,6 +71,10 @@ namespace PictureManager.Domain.Models {
           return string.Empty;
         }
       }
+    }
+
+    public ThumbnailsGridM(double thumbScale) {
+      ThumbScale = thumbScale;
     }
 
     public void UpdatePositionSlashCount() =>
