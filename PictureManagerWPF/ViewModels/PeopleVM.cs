@@ -17,7 +17,6 @@ namespace PictureManager.ViewModels {
     public VirtualizingWrapPanel Panel { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> SizeChangedCommand { get; }
 
     public PeopleVM(PeopleM peopleM) {
       PeopleM = peopleM;
@@ -28,8 +27,12 @@ namespace PictureManager.ViewModels {
         Style = (Style)Application.Current.FindResource("Views.PeopleV.Panel")
       };
 
+      Panel.SizeChanged += (o, e) => {
+        if (e.WidthChanged && !App.Ui.MainWindowVM.IsFullScreenIsChanging)
+          Reload();
+      };
+
       SelectCommand = new(Select);
-      SizeChangedCommand = new(Reload, e => e.WidthChanged);
 
       // TODO do it just for loaded
       foreach (var person in App.Core.PeopleM.All)
