@@ -9,6 +9,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   DataContext="{Binding MainWindowVM, Source={x:Static pm:App.Ui}}"
   UseNoneWindowStyle="{Binding IsFullScreen}"
+  IgnoreTaskbarOnMaximize="{Binding IsFullScreen}"
   Title="Picture Manager"
   TitleAlignment="Center"
   WindowState="Maximized" 
