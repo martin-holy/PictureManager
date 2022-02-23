@@ -75,7 +75,8 @@
                                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
                                 FallbackValue={StaticResource ColorBrushWhite}}"
                         ShowShadow="False"
-                        HorizontalAlignment="Center" />
+                        HorizontalAlignment="Center"
+                        Margin="8,0,0,0" />
                       <TextBlock Text="{Binding ItemsCount}" FontSize="20" Padding="8" />
                     </StackPanel>
                   </StackPanel>
