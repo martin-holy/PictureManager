@@ -36,6 +36,16 @@
       Property="ItemsSource"
       Value="{Binding Items}" />
     <Setter
+      Property="VirtualizingPanel.IsVirtualizing"
+      Value="True" />
+    <Setter
+      Property="VirtualizingPanel.VirtualizationMode"
+      Value="Recycling" />
+    <Setter
+      Property="ScrollViewer.HorizontalScrollBarVisibility"
+      Value="Auto" />
+    
+    <Setter
       Property="ItemContainerStyle">
       <Setter.Value>
         <Style
@@ -48,7 +58,13 @@
           <Setter
             Property="HorizontalContentAlignment"
             Value="Stretch" />
-          
+          <Setter
+            Property="VirtualizingPanel.IsVirtualizing"
+            Value="True" />
+          <Setter
+            Property="VirtualizingPanel.VirtualizationMode"
+            Value="Recycling" />
+
           <Style.Triggers>
             <DataTrigger
               Binding="{Binding IsHidden}"

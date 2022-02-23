@@ -35,6 +35,7 @@ namespace PictureManager.CustomControls {
     #endregion
 
     private ScrollViewer _scrollViewer;
+    private double _verticalOffset;
 
     static CatTreeView() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
@@ -62,21 +63,26 @@ namespace PictureManager.CustomControls {
 
     public void ScrollTo(ICatTreeViewItem item) {
       if (item == null) return;
-      UpdateLayout();
+
       var items = new List<ICatTreeViewItem>();
       Tree.GetThisAndParentRecursive(item, ref items);
       items.Reverse();
-      var tvi = ItemContainerGenerator.ContainerFromItem(items[0]) as TreeViewItem;
 
-      for (var i = 1; i < items.Count; i++) {
-        if (tvi == null) break;
-        tvi = tvi.ItemContainerGenerator.ContainerFromItem(items[i]) as TreeViewItem;
+      var offset = 0.0;
+      var parent = this as ItemsControl;
+      
+      for (var i = 0; i < items.Count; i++) {
+        var index = parent.Items.IndexOf(items[i]);
+        var panel = parent.FindChild<VirtualizingStackPanel>();
+        panel.BringIndexIntoViewPublic(index);
+        var tvi = parent.ItemContainerGenerator.ContainerFromIndex(index) as TreeViewItem;
+        tvi.IsExpanded = true;
+        parent = tvi;
+        offset += panel.GetItemOffset(tvi);
       }
 
-      var sv = this.FindChildren<ScrollViewer>(true).SingleOrDefault();
-      sv?.ScrollToBottom();
-      tvi?.BringIntoView();
-      sv?.ScrollToHorizontalOffset(0);
+      _verticalOffset = offset;
+      _scrollViewer.ScrollToHorizontalOffset(0);
     }
 
     public override void OnApplyTemplate() {
@@ -84,6 +90,13 @@ namespace PictureManager.CustomControls {
       ItemTemplateSelector = new CatTreeViewInterfaceTemplateSelector();
 
       _scrollViewer = Template.FindName("PART_ScrollViewer", this) as ScrollViewer;
+
+      LayoutUpdated += (_, _) => {
+        if (_verticalOffset > 0) {
+          _scrollViewer.ScrollToVerticalOffset(_verticalOffset);
+          _verticalOffset = 0;
+        }
+      };
 
       DragDropFactory.SetDrag(this, CanDrag);
       DragDropFactory.SetDrop(this, CanDrop, DoDrop);
