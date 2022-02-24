@@ -93,10 +93,10 @@ namespace PictureManager.ViewModels {
 
       MatchingPanelSizeChangedCommand = new(
         () => Reload(true, false),
-        e => e.WidthChanged);
+        e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
       ConfirmedMatchingPanelSizeChangedCommand = new(
         () => Reload(false, true),
-        e => e.WidthChanged);
+        e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
 
       // TODO do it just when needed
       foreach (var person in App.Core.PeopleM.All)
