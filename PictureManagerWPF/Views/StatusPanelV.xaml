@@ -215,8 +215,7 @@
         <!-- File Size -->
         <Border
           Style="{StaticResource _infoGroup}"
-          DataContext="{x:Static pm:App.Core}"
-          Visibility="{Binding ThumbnailsGridsM.Current.ActiveFileSize,
+          Visibility="{Binding FileSize,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
             <mhc:Icon
@@ -224,7 +223,7 @@
 
             <Border>
               <TextBlock
-                Text="{Binding ThumbnailsGridsM.Current.ActiveFileSize}" />
+                Text="{Binding FileSize}" />
             </Border>
           </StackPanel>
         </Border>

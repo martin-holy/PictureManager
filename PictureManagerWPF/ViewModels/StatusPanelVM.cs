@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
@@ -22,7 +23,30 @@ namespace PictureManager.ViewModels {
         OnPropertyChanged();
         OnPropertyChanged(nameof(DateAndTime));
         OnPropertyChanged(nameof(FilePath));
+        OnPropertyChanged(nameof(FileSize));
         UpdateRating();
+      }
+    }
+
+    public string FileSize {
+      get {
+        var fileSize = App.Core.ThumbnailsGridsM.Current?.ActiveFileSize;
+        if (fileSize != null)
+          return fileSize;
+
+        if (CurrentMediaItemM == null)
+          return string.Empty;
+
+        try {
+          var size = new FileInfo(CurrentMediaItemM.FilePath).Length;
+
+          return size == 0
+            ? string.Empty
+            : IOExtensions.FileSizeToString(size);
+        }
+        catch {
+          return string.Empty;
+        }
       }
     }
 
