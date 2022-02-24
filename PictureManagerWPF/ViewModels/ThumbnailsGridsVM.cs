@@ -149,8 +149,10 @@ namespace PictureManager.ViewModels {
       var viewModel = new ThumbnailsGridVM(_core, _coreVM, model, tabTitle);
 
       // TODO check all usage and use it less
-      model.SelectionChangedEventHandler += (_, _) =>
+      model.SelectionChangedEventHandler += (_, _) => {
         _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
+        _coreVM.StatusPanelVM.OnPropertyChanged(nameof(_coreVM.StatusPanelVM.FileSize));
+      };
 
       _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
     }
