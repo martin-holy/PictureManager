@@ -17,11 +17,7 @@ namespace PictureManager.ViewModels {
 
     public SegmentsDrawerVM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
-
-      Panel = new() {
-        Style = (Style)Application.Current.FindResource("Views.SegmentsDrawerV.Panel")
-      };
-
+      Panel = new();
       ToolsTabsItem = new(this, "Segments");
 
       DragDropFactory.SetDrag(Panel, CanDrag);

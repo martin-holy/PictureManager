@@ -50,9 +50,6 @@ namespace PictureManager.ViewModels {
       FullImage = new();
       FullVideo = new();
 
-      FullImage.Style = (Style)Application.Current.FindResource("MH.UI.WPF.Controls.ZoomAndPanImage");
-      FullVideo.Style = (Style)Application.Current.FindResource("MH.UI.WPF.Controls.VideoPlayer");
-
       FullVideo.ApplyTemplate();
 
       AttachEvents();

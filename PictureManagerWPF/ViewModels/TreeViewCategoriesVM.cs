@@ -62,9 +62,7 @@ namespace PictureManager.ViewModels {
       CategoryGroupsTreeVM = new(_core.CategoryGroupsM);
       DrivesTreeVM = new();
       TreeViewSearchVM = new(this);
-      TvCategories = new() {
-        Style = (Style)Application.Current.FindResource("Views.TreeViewCategoriesV.CatTreeView")
-      };
+      TvCategories = new();
 
       #region Categories
       FavoriteFoldersTreeVM = new(_core.FavoriteFoldersM);
