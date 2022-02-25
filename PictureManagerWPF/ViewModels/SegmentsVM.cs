@@ -22,10 +22,12 @@ namespace PictureManager.ViewModels {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     private bool _matchingAutoSort;
+    private int _segmentUiSize;
+
+    public int SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
 
     private readonly WorkTask _workTask = new();
     private readonly IProgress<int> _progress;
-    private readonly int _segmentPanelWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private List<MediaItemM> _mediaItems;
 
     public SegmentsM SegmentsM { get; set; }
@@ -35,6 +37,8 @@ namespace PictureManager.ViewModels {
     public VirtualizingWrapPanel MatchingPanel { get; set; }
     public VirtualizingWrapPanel ConfirmedMatchingPanel { get; set; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
+    
+    public int SegmentUiFullWidth { get; set; } //border, margin, padding, ... //TODO find the real value
     
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
@@ -154,7 +158,7 @@ namespace PictureManager.ViewModels {
 
       foreach (var segment in SegmentsM.GetSegments(_mediaItems, withPersonOnly)) {
         SegmentsM.Loaded.Add(segment);
-        MatchingPanel.AddItem(segment, _segmentPanelWidth);
+        MatchingPanel.AddItem(segment, SegmentUiFullWidth);
       }
 
       SortAndReload(false, true);
@@ -197,13 +201,13 @@ namespace PictureManager.ViewModels {
           MatchingPanel.AddGroup("IconPeople", groupTitle);
 
           foreach (var segment in group)
-            MatchingPanel.AddItem(segment, _segmentPanelWidth);
+            MatchingPanel.AddItem(segment, SegmentUiFullWidth);
         }
       }
       else {
         MatchingPanel.AddGroup("IconPeople", "?");
         foreach (var segment in SegmentsM.Loaded)
-          MatchingPanel.AddItem(segment, _segmentPanelWidth);
+          MatchingPanel.AddItem(segment, SegmentUiFullWidth);
       }
 
       if (rowIndex > 0)
@@ -222,10 +226,10 @@ namespace PictureManager.ViewModels {
             ? segment.Person.Name
             : personId.ToString();
           ConfirmedMatchingPanel.AddGroup("IconPeople", groupTitle);
-          ConfirmedMatchingPanel.AddItem(segment, _segmentPanelWidth);
+          ConfirmedMatchingPanel.AddItem(segment, SegmentUiFullWidth);
 
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
-            ConfirmedMatchingPanel.AddItem(simGroup.segment, _segmentPanelWidth);
+            ConfirmedMatchingPanel.AddItem(simGroup.segment, SegmentUiFullWidth);
         }
       }
       else {
@@ -247,7 +251,7 @@ namespace PictureManager.ViewModels {
 
           // add people
           foreach (var (_, segment, _) in group)
-            ConfirmedMatchingPanel.AddItem(segment, _segmentPanelWidth);
+            ConfirmedMatchingPanel.AddItem(segment, SegmentUiFullWidth);
         }
       }
 

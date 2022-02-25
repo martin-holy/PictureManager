@@ -11,14 +11,15 @@ using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class PeopleVM : ObservableObject {
-    private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
+    private readonly AppCore _coreVM;
 
     public PeopleM PeopleM { get; set; }
     public VirtualizingWrapPanel Panel { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
 
-    public PeopleVM(PeopleM peopleM) {
+    public PeopleVM(AppCore coreVM, PeopleM peopleM) {
+      _coreVM = coreVM;
       PeopleM = peopleM;
 
       MainTabsItem = new(this, "People");
@@ -28,7 +29,7 @@ namespace PictureManager.ViewModels {
       };
 
       Panel.SizeChanged += (o, e) => {
-        if (e.WidthChanged && !App.Ui.MainWindowVM.IsFullScreenIsChanging)
+        if (e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
           Reload();
       };
 
@@ -89,7 +90,7 @@ namespace PictureManager.ViewModels {
 
         // add people
         foreach (var person in group.OrderBy(p => p.Name))
-          Panel.AddItem(person, _segmentGridWidth);
+          Panel.AddItem(person, _coreVM.SegmentsVM.SegmentUiFullWidth);
       }
     }
   }

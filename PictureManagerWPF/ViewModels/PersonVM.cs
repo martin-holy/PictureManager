@@ -13,9 +13,9 @@ using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class PersonVM : ObservableObject {
+    private readonly AppCore _coreVM;
     private readonly PeopleM _peopleM;
     private readonly SegmentsM _segmentsM;
-    private readonly int _segmentGridWidth = 100 + 6; //border, margin, padding, ... //TODO find the real value
     private PersonM _personM;
     private readonly HeaderedListItem<object, string> _toolsTabsItem;
 
@@ -26,7 +26,8 @@ namespace PictureManager.ViewModels {
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public PersonM PersonM { get => _personM; set { _personM = value; OnPropertyChanged(); } }
 
-    public PersonVM(PeopleM peopleM, SegmentsM segmentsM) {
+    public PersonVM(AppCore coreVM, PeopleM peopleM, SegmentsM segmentsM) {
+      _coreVM = coreVM;
       _peopleM = peopleM;
       _segmentsM = segmentsM;
       _toolsTabsItem = new(this, "Person");
@@ -89,7 +90,7 @@ namespace PictureManager.ViewModels {
       TopSegmentsPanel.UpdateMaxRowWidth();
 
       foreach (var segment in PersonM.Segments)
-        TopSegmentsPanel.AddItem(segment, _segmentGridWidth);
+        TopSegmentsPanel.AddItem(segment, _coreVM.SegmentsVM.SegmentUiFullWidth);
 
       TopSegmentsPanel.ScrollToTop();
     }
@@ -115,7 +116,7 @@ namespace PictureManager.ViewModels {
 
         // add segments
         foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
-          AllSegmentsPanel.AddItem(segment, _segmentGridWidth);
+          AllSegmentsPanel.AddItem(segment, _coreVM.SegmentsVM.SegmentUiFullWidth);
           AllSegments.Add(segment);
         }
       }
