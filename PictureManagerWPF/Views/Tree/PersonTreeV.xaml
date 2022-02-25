@@ -47,10 +47,10 @@
                                  IsAsync=True,
                                  Converter={StaticResource SegmentThumbnailSourceConverter}}"
                         Stretch="Fill"
-                        Width="{Binding SegmentsM.SegmentSize,
-                                Source={x:Static pm:App.Core}}"
-                        Height="{Binding SegmentsM.SegmentSize,
-                                 Source={x:Static pm:App.Core}}" />
+                        Width="{Binding SegmentsVM.SegmentUiSize,
+                                Source={x:Static pm:App.Ui}}"
+                        Height="{Binding SegmentsVM.SegmentUiSize,
+                                 Source={x:Static pm:App.Ui}}" />
                     </Border>
                   </ToolTip>
                 </Setter.Value>

@@ -23,10 +23,10 @@
         Source="{StaticResource IconPeople}"
         Fill="Gray"
         Size="50"
-        Width="{Binding SegmentsM.SegmentSize,
-                Source={x:Static pm:App.Core}}"
-        Height="{Binding SegmentsM.SegmentSize,
-                 Source={x:Static pm:App.Core}}" />
+        Width="{Binding SegmentsVM.SegmentUiSize,
+                Source={x:Static pm:App.Ui}}"
+        Height="{Binding SegmentsVM.SegmentUiSize,
+                 Source={x:Static pm:App.Ui}}" />
     </Border>
   </DataTemplate>
 

@@ -38,7 +38,7 @@ namespace PictureManager {
 
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new();
-      PeopleVM = new(App.Core.PeopleM);
+      PeopleVM = new(this, App.Core.PeopleM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsTreeVM = new(App.Core.VideoClipsM);
@@ -48,7 +48,7 @@ namespace PictureManager {
       TreeViewCategoriesVM = new(App.Core, this);
 
       StatusPanelVM = new(App.Core);
-      PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
+      PersonVM = new(this, App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM, TreeViewCategoriesVM.TvCategories);
 
       ViewersVM.SetCurrent(null);
