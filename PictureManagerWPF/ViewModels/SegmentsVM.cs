@@ -67,9 +67,6 @@ namespace PictureManager.ViewModels {
       MatchingPanel = new();
       ConfirmedMatchingPanel = new();
 
-      MatchingPanel.Style = (Style)Application.Current.FindResource("Views.SegmentsV.MatchingPanel");
-      ConfirmedMatchingPanel.Style = (Style)Application.Current.FindResource("Views.SegmentsV.ConfirmedMatchingPanel");
-
       DragDropFactory.SetDrag(MatchingPanel, CanDrag);
       DragDropFactory.SetDrag(ConfirmedMatchingPanel, CanDrag);
 

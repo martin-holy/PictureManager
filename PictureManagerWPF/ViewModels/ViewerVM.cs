@@ -36,10 +36,6 @@ namespace PictureManager.ViewModels {
       LbExcludedFolders = new();
       LbExcludedKeywords = new();
 
-      LbIncludedFolders.Style = (Style)Application.Current.FindResource("Views.ViewerV.LbIncludedFolders");
-      LbExcludedFolders.Style = (Style)Application.Current.FindResource("Views.ViewerV.LbExcludedFolders");
-      LbExcludedKeywords.Style = (Style)Application.Current.FindResource("Views.ViewerV.LbExcludedKeywords");
-
       CategoryGroupsSelectCommand = new(CategoryGroupsSelect);
 
       AttachEvents();

@@ -24,78 +24,7 @@
     <ResourceDictionary Source="../Views/Tree/GeoNameTreeV.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <Style
-    x:Key="Views.TreeViewCategoriesV.CatTreeView"
-    TargetType="{x:Type cc:CatTreeView}"
-    BasedOn="{StaticResource CatTreeView}">
-
-    <Setter
-      Property="FocusManager.IsFocusScope"
-      Value="True" />
-    <Setter
-      Property="ItemsSource"
-      Value="{Binding Items}" />
-    <Setter
-      Property="VirtualizingPanel.IsVirtualizing"
-      Value="True" />
-    <Setter
-      Property="VirtualizingPanel.VirtualizationMode"
-      Value="Recycling" />
-    <Setter
-      Property="ScrollViewer.HorizontalScrollBarVisibility"
-      Value="Auto" />
-    
-    <Setter
-      Property="ItemContainerStyle">
-      <Setter.Value>
-        <Style
-          TargetType="{x:Type TreeViewItem}"
-          BasedOn="{StaticResource CatTreeViewItem}">
-
-          <Setter
-            Property="VerticalContentAlignment"
-            Value="Stretch" />
-          <Setter
-            Property="HorizontalContentAlignment"
-            Value="Stretch" />
-          <Setter
-            Property="VirtualizingPanel.IsVirtualizing"
-            Value="True" />
-          <Setter
-            Property="VirtualizingPanel.VirtualizationMode"
-            Value="Recycling" />
-
-          <Style.Triggers>
-            <DataTrigger
-              Binding="{Binding IsHidden}"
-              Value="True">
-
-              <Setter
-                Property="Visibility"
-                Value="Collapsed" />
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Setter.Value>
-    </Setter>
-
-    <!-- BlurEffect when Search is visible -->
-    <Style.Triggers>
-      <DataTrigger
-        Binding="{Binding TreeViewSearchVM.IsVisible}"
-        Value="True">
-
-        <Setter
-          Property="Effect">
-          <Setter.Value>
-            <BlurEffect
-              Radius="4"
-              KernelType="Gaussian" />
-          </Setter.Value>
-        </Setter>
-      </DataTrigger>
-    </Style.Triggers>
-  </Style>
+  
 
   <DataTemplate
     x:Key="Views.TreeViewCategoriesV"
@@ -177,6 +106,80 @@
       <ContentPresenter
         Grid.Row="1"
         Content="{Binding TvCategories}">
+        
+        <ContentPresenter.Resources>
+          <Style
+            TargetType="{x:Type cc:CatTreeView}"
+            BasedOn="{StaticResource CatTreeView}">
+
+            <Setter
+              Property="FocusManager.IsFocusScope"
+              Value="True" />
+            <Setter
+              Property="ItemsSource"
+              Value="{Binding Items}" />
+            <Setter
+              Property="VirtualizingPanel.IsVirtualizing"
+              Value="True" />
+            <Setter
+              Property="VirtualizingPanel.VirtualizationMode"
+              Value="Recycling" />
+            <Setter
+              Property="ScrollViewer.HorizontalScrollBarVisibility"
+              Value="Auto" />
+    
+            <Setter
+              Property="ItemContainerStyle">
+              <Setter.Value>
+                <Style
+                  TargetType="{x:Type TreeViewItem}"
+                  BasedOn="{StaticResource CatTreeViewItem}">
+
+                  <Setter
+                    Property="VerticalContentAlignment"
+                    Value="Stretch" />
+                  <Setter
+                    Property="HorizontalContentAlignment"
+                    Value="Stretch" />
+                  <Setter
+                    Property="VirtualizingPanel.IsVirtualizing"
+                    Value="True" />
+                  <Setter
+                    Property="VirtualizingPanel.VirtualizationMode"
+                    Value="Recycling" />
+
+                  <Style.Triggers>
+                    <DataTrigger
+                      Binding="{Binding IsHidden}"
+                      Value="True">
+
+                      <Setter
+                        Property="Visibility"
+                        Value="Collapsed" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </Setter.Value>
+            </Setter>
+
+            <!-- BlurEffect when Search is visible -->
+            <Style.Triggers>
+              <DataTrigger
+                Binding="{Binding TreeViewSearchVM.IsVisible}"
+                Value="True">
+
+                <Setter
+                  Property="Effect">
+                  <Setter.Value>
+                    <BlurEffect
+                      Radius="4"
+                      KernelType="Gaussian" />
+                  </Setter.Value>
+                </Setter>
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </ContentPresenter.Resources>
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="MouseLeftButtonUp">

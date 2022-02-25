@@ -4,11 +4,14 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:pm="clr-namespace:PictureManager"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="PresentationPanelV.xaml" />
     <ResourceDictionary Source="SegmentsRectsV.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate
@@ -103,7 +106,14 @@
 
         <ContentPresenter
           Content="{Binding FullImage}"
-          Focusable="False" />
+          Focusable="False">
+          
+          <ContentPresenter.Resources>
+            <Style
+              TargetType="{x:Type mhc:ZoomAndPanImage}"
+              BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
+          </ContentPresenter.Resources>
+        </ContentPresenter>
         
         <!-- Presentation Panel -->
         <ContentPresenter
@@ -116,7 +126,14 @@
         Content="{Binding FullVideo}"
         Visibility="{Binding Current.MediaType,
                      Converter={StaticResource AllToVisibilityConverter}, 
-                     ConverterParameter={x:Static pmd:MediaType.Video}}" />
+                     ConverterParameter={x:Static pmd:MediaType.Video}}">
+        
+        <ContentPresenter.Resources>
+          <Style
+            TargetType="{x:Type mhc:VideoPlayer}"
+            BasedOn="{StaticResource MH.UI.WPF.Controls.VideoPlayer}" />
+        </ContentPresenter.Resources>
+      </ContentPresenter>
       
       <!-- Segments Rects -->
       <ContentPresenter

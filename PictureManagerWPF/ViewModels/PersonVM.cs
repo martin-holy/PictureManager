@@ -35,9 +35,6 @@ namespace PictureManager.ViewModels {
       TopSegmentsPanel = new();
       AllSegmentsPanel = new();
 
-      TopSegmentsPanel.Style = (Style)Application.Current.FindResource("Views.PersonV.TopSegmentsPanel");
-      AllSegmentsPanel.Style = (Style)Application.Current.FindResource("Views.PersonV.AllSegmentsPanel");
-
       DragDropFactory.SetDrag(TopSegmentsPanel, CanDrag);
       DragDropFactory.SetDrop(TopSegmentsPanel, CanDrop, TopSegmentsDrop);
       DragDropFactory.SetDrag(AllSegmentsPanel, CanDrag);

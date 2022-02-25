@@ -11,75 +11,7 @@
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListBox.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <Style
-    x:Key="Views.ViewerV.LbIncludedFolders"
-    TargetType="{x:Type ListBox}"
-    BasedOn="{StaticResource MahApps.Styles.ListBox}">
-
-    <Setter
-      Property="ItemsSource"
-      Value="{Binding Viewer.IncludedFolders}" />
-    <Setter
-      Property="ItemContainerStyle">
-      <Setter.Value>
-        <Style
-          TargetType="{x:Type ListBoxItem}"
-          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-          
-          <Setter
-            Property="ToolTip"
-            Value="{Binding FullPath}" />
-        </Style>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
-  <Style
-    x:Key="Views.ViewerV.LbExcludedFolders"
-    TargetType="{x:Type ListBox}"
-    BasedOn="{StaticResource MahApps.Styles.ListBox}">
-
-    <Setter
-      Property="ItemsSource"
-      Value="{Binding Viewer.ExcludedFolders}" />
-    <Setter
-      Property="ItemContainerStyle">
-      <Setter.Value>
-        <Style
-          TargetType="{x:Type ListBoxItem}"
-          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-          
-          <Setter
-            Property="ToolTip"
-            Value="{Binding FullPath}" />
-        </Style>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
-  <Style
-    x:Key="Views.ViewerV.LbExcludedKeywords"
-    TargetType="{x:Type ListBox}"
-    BasedOn="{StaticResource MahApps.Styles.ListBox}">
-
-    <Setter
-      Property="ItemsSource"
-      Value="{Binding Viewer.ExcludedKeywords}" />
-    <Setter
-      Property="ItemContainerStyle">
-      <Setter.Value>
-        <Style
-          TargetType="{x:Type ListBoxItem}"
-          BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
-          
-          <Setter
-            Property="ToolTip"
-            Value="{Binding FullName}" />
-        </Style>
-      </Setter.Value>
-    </Setter>
-  </Style>
-
+  <!-- ViewerM DataTemplate -->
   <DataTemplate
     x:Key="Views.ViewerV"
     DataType="{x:Type vm:ViewerVM}">
@@ -146,6 +78,7 @@
             Value="Center" />
         </Style>
         
+        <!-- FolderM DataTemplate -->
         <DataTemplate
           DataType="{x:Type models:FolderM}">
 
@@ -169,6 +102,7 @@
           </StackPanel>
         </DataTemplate>
 
+        <!-- CategoryGroupM DataTemplate -->
         <DataTemplate
           DataType="{x:Type models:CategoryGroupM}">
 
@@ -193,6 +127,7 @@
           </StackPanel>
         </DataTemplate>
 
+        <!-- KeywordM DataTemplate -->
         <DataTemplate
           DataType="{x:Type models:KeywordM}">
 
@@ -233,7 +168,32 @@
 
           <ContentPresenter
             Content="{Binding LbIncludedFolders}"
-            Grid.Row="1" />
+            Grid.Row="1">
+            
+            <ContentPresenter.Resources>
+              <Style
+                TargetType="{x:Type ListBox}"
+                BasedOn="{StaticResource MahApps.Styles.ListBox}">
+
+                <Setter
+                  Property="ItemsSource"
+                  Value="{Binding Viewer.IncludedFolders}" />
+                <Setter
+                  Property="ItemContainerStyle">
+                  <Setter.Value>
+                    <Style
+                      TargetType="{x:Type ListBoxItem}"
+                      BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+                      <Setter
+                        Property="ToolTip"
+                        Value="{Binding FullPath}" />
+                    </Style>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ContentPresenter.Resources>
+          </ContentPresenter>
 
         </Grid>
       </Border>
@@ -260,7 +220,32 @@
           
           <ContentPresenter
             Content="{Binding LbExcludedFolders}"
-            Grid.Row="1" />
+            Grid.Row="1">
+            
+            <ContentPresenter.Resources>
+              <Style
+                TargetType="{x:Type ListBox}"
+                BasedOn="{StaticResource MahApps.Styles.ListBox}">
+
+                <Setter
+                  Property="ItemsSource"
+                  Value="{Binding Viewer.ExcludedFolders}" />
+                <Setter
+                  Property="ItemContainerStyle">
+                  <Setter.Value>
+                    <Style
+                      TargetType="{x:Type ListBoxItem}"
+                      BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+                      <Setter
+                        Property="ToolTip"
+                        Value="{Binding FullPath}" />
+                    </Style>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ContentPresenter.Resources>
+          </ContentPresenter>
 
         </Grid>
       </Border>
@@ -347,7 +332,32 @@
 
           <ContentPresenter
             Content="{Binding LbExcludedKeywords}"
-            Grid.Row="1" />
+            Grid.Row="1">
+            
+            <ContentPresenter.Resources>
+              <Style
+                TargetType="{x:Type ListBox}"
+                BasedOn="{StaticResource MahApps.Styles.ListBox}">
+
+                <Setter
+                  Property="ItemsSource"
+                  Value="{Binding Viewer.ExcludedKeywords}" />
+                <Setter
+                  Property="ItemContainerStyle">
+                  <Setter.Value>
+                    <Style
+                      TargetType="{x:Type ListBoxItem}"
+                      BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+          
+                      <Setter
+                        Property="ToolTip"
+                        Value="{Binding FullName}" />
+                    </Style>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ContentPresenter.Resources>
+           </ContentPresenter>
 
         </Grid>
       </Border>

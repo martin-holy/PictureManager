@@ -24,10 +24,7 @@ namespace PictureManager.ViewModels {
 
       MainTabsItem = new(this, "People");
 
-      Panel = new() {
-        Style = (Style)Application.Current.FindResource("Views.PeopleV.Panel")
-      };
-
+      Panel = new();
       Panel.SizeChanged += (o, e) => {
         if (e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
           Reload();
