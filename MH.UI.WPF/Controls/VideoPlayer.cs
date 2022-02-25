@@ -167,6 +167,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     public void SetNullSource() {
+      if (Player == null) return;
       Player.Source = null;
       IsPlaying = false;
     }
