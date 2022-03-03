@@ -36,11 +36,9 @@
   <mahApps:MetroWindow.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="TreeViewCategoriesV.xaml" />
-        <ResourceDictionary Source="MainTabsV.xaml" />
         <ResourceDictionary Source="MainMenuV.xaml" />
-        <ResourceDictionary Source="StatusPanelV.xaml" />
         <ResourceDictionary Source="TitleProgressBarV.xaml" />
+        <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </mahApps:MetroWindow.Resources>
@@ -67,10 +65,7 @@
   <!-- Title -->
   <mahApps:MetroWindow.TitleTemplate>
     <DataTemplate>
-      <ContentPresenter
-        Content="{Binding TitleProgressBarM,
-                  Source={x:Static pm:App.Core}}"
-        ContentTemplate="{StaticResource Views.TitleProgressBarV}"/>
+      <ContentPresenter Content="{Binding TitleProgressBarM, Source={x:Static pm:App.Core}}" />
     </DataTemplate>
   </mahApps:MetroWindow.TitleTemplate>
 
@@ -211,87 +206,6 @@
     </mahApps:WindowCommands>
   </mahApps:MetroWindow.RightWindowCommands>
 
-  <Grid>
-    <cc:SlidePanelsGrid
-      FocusVisualStyle="{x:Null}">
-      
-      <!-- Tree View Categories -->
-      <cc:SlidePanelsGrid.ContentLeft>
-        <cc:SlidePanel
-          DataContext="{Binding TreeViewCategoriesVM, Source={x:Static pm:App.Ui}}"
-          IsOpen="{Binding IsOpen, Mode=TwoWay}"
-          IsPinned="{Binding IsPinned}"
-          Position="Left"
-          Width="380">
-
-          <cc:SlidePanel.Content>
-            <Grid>
-              <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-              </Grid.RowDefinitions>
-
-              <!-- Tree View Categories -->
-              <ContentPresenter
-                Grid.Row="0"
-                Content="{Binding}"
-                ContentTemplate="{StaticResource Views.TreeViewCategoriesV}" />
-
-              <!-- Status Bar Margin -->
-              <Control
-                Grid.Row="1"
-                Height="{Binding ActualHeight, ElementName=StatusPanel}" />
-            </Grid>
-          </cc:SlidePanel.Content>
-        </cc:SlidePanel>
-      </cc:SlidePanelsGrid.ContentLeft>
-
-      <cc:SlidePanelsGrid.ContentMiddle>
-        <Grid>
-          <!-- Main Tabs -->
-          <ContentPresenter
-            Content="{Binding MainTabsVM, Source={x:Static pm:App.Ui}}"
-            ContentTemplate="{StaticResource Views.MainTabsV}"
-            Visibility="{Binding MediaViewerVM.IsVisible,
-                         Source={x:Static pm:App.Ui},
-                         Converter={StaticResource AllToVisibilityConverter}, 
-                         ConverterParameter={StaticResource False}}" />
-
-          <!-- MediaViewer -->
-          <ContentPresenter
-            Content="{Binding MediaViewerVM, Source={x:Static pm:App.Ui}}"
-            ContentTemplate="{StaticResource Views.MediaViewerV}"
-            Visibility="{Binding MediaViewerVM.IsVisible,
-                         Source={x:Static pm:App.Ui},
-                         Converter={StaticResource AllToVisibilityConverter}}"/>
-        </Grid>
-      </cc:SlidePanelsGrid.ContentMiddle>
-      
-      <!-- Tools Tabs -->
-      <cc:SlidePanelsGrid.ContentRight>
-        <cc:SlidePanel
-          DataContext="{Binding ToolsTabsVM, Source={x:Static pm:App.Ui}}"
-          Position="Right"
-          Width="340"
-          Margin="0,0,-340,0"
-          IsPinned="{Binding IsPinned}"
-          IsOpen="{Binding IsOpen, Mode=TwoWay}">
-          
-          <cc:SlidePanel.Content>
-            <ContentPresenter
-              Content="{Binding}"
-              ContentTemplate="{StaticResource Views.ToolsTabsV}" />
-          </cc:SlidePanel.Content>
-        </cc:SlidePanel>
-      </cc:SlidePanelsGrid.ContentRight>
-    </cc:SlidePanelsGrid>
-
-    <!-- Status Panel -->
-    <ContentPresenter
-      x:Name="StatusPanel"
-      ContentTemplate="{StaticResource Views.StatusPanelV}"
-      Content="{Binding StatusPanelVM, Source={x:Static pm:App.Ui}}"
-      VerticalAlignment="Bottom" />
-  </Grid>
+  <ContentPresenter Content="{Binding MainWindowContentVM, Source={x:Static pm:App.Ui}}" />
   
 </mahApps:MetroWindow>

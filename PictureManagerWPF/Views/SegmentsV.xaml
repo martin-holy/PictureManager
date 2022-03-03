@@ -6,15 +6,16 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentV.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <DataTemplate
-    x:Key="Views.SegmentsV"
-    DataType="{x:Type vm:SegmentsVM}">
-
+  <DataTemplate DataType="{x:Type vm:SegmentsVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="SegmentV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <Grid>
       <!-- Segments Grids -->
       <Grid>
@@ -50,9 +51,6 @@
                 <Setter
                   Property="ScrollViewerSpeedFactor"
                   Value="1" />
-                <Setter
-                  Property="ItemDataTemplate"
-                  Value="{StaticResource Views.SegmentV}" />
               </Style>
             </ContentPresenter.Resources>
 
@@ -91,9 +89,6 @@
               <Setter
                 Property="ScrollViewerSpeedFactor"
                 Value="1" />
-              <Setter
-                Property="ItemDataTemplate"
-                Value="{StaticResource Views.SegmentV}" />
               <Setter
                 Property="ShowGroupItemsCount"
                 Value="True" />

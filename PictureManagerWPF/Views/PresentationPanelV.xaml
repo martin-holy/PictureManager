@@ -9,10 +9,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate
-    x:Key="Views.PresentationPanelV"
-    DataType="{x:Type vm:PresentationPanelVM}">
-
+  <DataTemplate DataType="{x:Type vm:PresentationPanelVM}">
     <Grid
       Height="40"
       VerticalAlignment="Top"

@@ -7,16 +7,19 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
-
-  <DataTemplate
-    x:Key="Views.SegmentV"
-    DataType="{x:Type m:SegmentM}">
-
+  <DataTemplate DataType="{x:Type m:SegmentM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+        
+        <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
+        
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <Border
       x:Name="Root"
       BorderThickness="2"
@@ -65,14 +68,11 @@
           <DockPanel>
             <Grid DockPanel.Dock="Top">
               <!-- Thumbnail -->
-              <ContentPresenter
-                Content="{Binding MediaItem}"
-                ContentTemplate="{StaticResource Views.MediaItemThumbnailV}" />
+              <ContentPresenter Content="{Binding MediaItem}" />
               
               <!-- Segments Rects -->
-              <ItemsControl
-                ItemsSource="{Binding SegmentsM.SegmentToolTipRects,
-                              Source={x:Static pm:App.Core}}">
+              <ItemsControl ItemsSource="{Binding SegmentsM.SegmentToolTipRects,
+                                          Source={x:Static pm:App.Core}}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>

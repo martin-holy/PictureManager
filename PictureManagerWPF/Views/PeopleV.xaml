@@ -5,18 +5,17 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="PersonThumbnailV.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <DataTemplate
-    x:Key="Views.PeopleV"
-    DataType="{x:Type vm:PeopleVM}">
-
-    <ContentPresenter
-      Content="{Binding Panel}">
-      
+  <DataTemplate DataType="{x:Type vm:PeopleVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PersonThumbnailV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <ContentPresenter Content="{Binding Panel}">
       <ContentPresenter.Resources>
         <Style
           TargetType="{x:Type cc:VirtualizingWrapPanel}"
@@ -31,9 +30,6 @@
           <Setter
             Property="GroupItemsCountIcon"
             Value="IconImageMultiple" />
-          <Setter
-            Property="ItemDataTemplate"
-            Value="{StaticResource Views.PersonThumbnailV}" />
         </Style>
       </ContentPresenter.Resources>
 

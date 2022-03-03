@@ -11,6 +11,7 @@ using MH.Utils.BaseClasses;
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public MainWindowVM MainWindowVM { get; }
+    public MainWindowContentVM MainWindowContentVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
     public PeopleVM PeopleVM { get; set; }
@@ -33,6 +34,7 @@ namespace PictureManager {
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
 
       MainWindowVM = new(App.Core, this);
+      MainWindowContentVM = new();
       MainTabsVM = new();
       ToolsTabsVM = new();
 

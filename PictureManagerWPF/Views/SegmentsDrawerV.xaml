@@ -4,27 +4,21 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:vm="clr-namespace:PictureManager.ViewModels">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentV.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-  
-  <DataTemplate
-    x:Key="Views.SegmentsDrawerV"
-    DataType="{x:Type vm:SegmentsDrawerVM}">
-
-    <ContentPresenter
-      Content="{Binding Panel}">
-      
+  <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="SegmentV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <ContentPresenter Content="{Binding Panel}">
       <ContentPresenter.Resources>
-        <Style
-          TargetType="{x:Type ItemsControl}">
-
+        <Style TargetType="{x:Type ItemsControl}">
           <Setter
             Property="Margin"
             Value="2,0,0,0" />
-          <Setter
-            Property="ItemTemplate"
-            Value="{StaticResource Views.SegmentV}" />
           <Setter
             Property="ItemsSource"
             Value="{Binding SegmentsM.SegmentsDrawer}" />

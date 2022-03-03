@@ -8,10 +8,7 @@
 
   <!--TODO remove static source to pm:App.Ui-->
 
-  <DataTemplate
-    x:Key="Views.SegmentRectV"
-    DataType="{x:Type m:SegmentRectM}">
-
+  <DataTemplate DataType="{x:Type m:SegmentRectM}">
     <Border
       x:Name="Root"
       MinWidth="{Binding Size}"

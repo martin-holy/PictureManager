@@ -9,14 +9,10 @@
     <ResourceDictionary Source="SegmentRectV.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate
-    x:Key="Views.SegmentsRectsV"
-    DataType="{x:Type vm:SegmentsRectsVM}">
-
+  <DataTemplate DataType="{x:Type vm:SegmentsRectsVM}">
     <ItemsControl
       x:Name="Root"
       ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
-      ItemTemplate="{StaticResource Views.SegmentRectV}"
       Visibility="{Binding AreVisible,
                    Converter={StaticResource AllToVisibilityConverter}}"
       Width="{Binding MediaViewerVM.FullImage.ActualWidth,

@@ -7,75 +7,75 @@
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <ContextMenu
-    x:Key="ThumbnailsGridContextMenu"
-    DataContext="{Binding ThumbnailsGridsVM.Current, Source={x:Static pm:App.Ui}}">
+  <DataTemplate DataType="{x:Type vm:ThumbnailsGridVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+        
+        <ContextMenu
+          x:Key="ThumbnailsGridContextMenu"
+          DataContext="{Binding ThumbnailsGridsVM.Current, Source={x:Static pm:App.Ui}}">
     
-    <MenuItem
-      Header="Group by Folders"
-      IsCheckable="True"
-      IsChecked="{Binding Model.GroupByFolders}"
-      Command="{Binding RefreshCommand}" />
-    <MenuItem
-      Header="Group by Date"
-      IsCheckable="True"
-      IsChecked="{Binding Model.GroupByDate}"
-      Command="{Binding RefreshCommand}" />
-    <MenuItem
-      Header="Sort by File first"
-      IsCheckable="True"
-      IsChecked="{Binding Model.SortByFileFirst}"
-      Command="{Binding RefreshCommand}" />
-  </ContextMenu>
-
-  <DataTemplate
-    x:Key="MiThumbWithCommands"
-    DataType="{x:Type models:MediaItemM}">
+          <MenuItem
+            Header="Group by Folders"
+            IsCheckable="True"
+            IsChecked="{Binding Model.GroupByFolders}"
+            Command="{Binding RefreshCommand}" />
+          <MenuItem
+            Header="Group by Date"
+            IsCheckable="True"
+            IsChecked="{Binding Model.GroupByDate}"
+            Command="{Binding RefreshCommand}" />
+          <MenuItem
+            Header="Sort by File first"
+            IsCheckable="True"
+            IsChecked="{Binding Model.SortByFileFirst}"
+            Command="{Binding RefreshCommand}" />
+        </ContextMenu>
+        
+        <DataTemplate
+          x:Key="MiThumbWithCommands"
+          DataType="{x:Type models:MediaItemM}">
     
-    <ContentPresenter
-      ContentTemplate="{StaticResource Views.MediaItemThumbnailV}"
-      Content="{Binding}">
+          <ContentPresenter Content="{Binding}">
+            <b:Interaction.Triggers>
+              <b:EventTrigger EventName="MouseEnter">
+                <b:InvokeCommandAction
+                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.ShowVideoPreviewCommand),
+                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
+              </b:EventTrigger>
 
-      <b:Interaction.Triggers>
-        <b:EventTrigger EventName="MouseEnter">
-          <b:InvokeCommandAction
-            Command="{Binding Tag.ShowVideoPreviewCommand,
-                      RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
-            CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
-        </b:EventTrigger>
+              <b:EventTrigger EventName="MouseLeave">
+                <b:InvokeCommandAction
+                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.HideVideoPreviewCommand),
+                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                  CommandParameter="{Binding}" />
+              </b:EventTrigger>
 
-        <b:EventTrigger EventName="MouseLeave">
-          <b:InvokeCommandAction
-            Command="{Binding Tag.HideVideoPreviewCommand,
-                      RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
-            CommandParameter="{Binding}" />
-        </b:EventTrigger>
+              <b:EventTrigger EventName="PreviewMouseUp">
+                <b:InvokeCommandAction
+                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.SelectMediaItemCommand),
+                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                  PassEventArgsToCommand="True" />
+              </b:EventTrigger>
 
-        <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction
-            Command="{Binding Tag.SelectMediaItemCommand,
-                      RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
-            PassEventArgsToCommand="True" />
-        </b:EventTrigger>
-
-        <b:EventTrigger EventName="MouseLeftButtonDown">
-          <b:InvokeCommandAction
-            Command="{Binding Tag.OpenMediaItemCommand,
-                      RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
-            PassEventArgsToCommand="True" />
-        </b:EventTrigger>
-      </b:Interaction.Triggers>
-    </ContentPresenter>
-  </DataTemplate>
-
-  <DataTemplate
-    x:Key="Views.ThumbnailsGridV"
-    DataType="{x:Type vm:ThumbnailsGridVM}">
+              <b:EventTrigger EventName="MouseLeftButtonDown">
+                <b:InvokeCommandAction
+                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.OpenMediaItemCommand),
+                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                  PassEventArgsToCommand="True" />
+              </b:EventTrigger>
+            </b:Interaction.Triggers>
+          </ContentPresenter>
+        </DataTemplate>
+        
+      </ResourceDictionary>
+    </DataTemplate.Resources>
     
     <ContentPresenter Content="{Binding Panel}">
       <ContentPresenter.Resources>

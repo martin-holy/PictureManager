@@ -6,15 +6,16 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentV.xaml" />
-    <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <DataTemplate
-    x:Key="Views.PersonV"
-    DataType="{x:Type vm:PersonVM}">
-
+  <DataTemplate DataType="{x:Type vm:PersonVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="SegmentV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -96,9 +97,6 @@
                 Property="Margin"
                 Value="2,0,0,0" />
               <Setter
-                Property="ItemDataTemplate"
-                Value="{StaticResource Views.SegmentV}" />
-              <Setter
                 Property="MinHeight"
                 Value="106" />
             </Style>
@@ -128,9 +126,6 @@
             <Setter
               Property="Margin"
               Value="2,0,0,0" />
-            <Setter
-              Property="ItemDataTemplate"
-              Value="{StaticResource Views.SegmentV}" />
           </Style>
         </ContentPresenter.Resources>
       </ContentPresenter>

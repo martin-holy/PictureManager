@@ -1,12 +1,13 @@
-<Application x:Class="PictureManager.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:cc="clr-namespace:PictureManager.CustomControls">
+<Application
+  x:Class="PictureManager.App"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ResourceDictionaries/DataTypes.xaml" />
-        
+
         <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
@@ -25,22 +26,14 @@
         
         <ResourceDictionary Source="ResourceDictionaries/MixedStyles.xaml" />
 
-        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
-
         <ResourceDictionary Source="ResourceDictionaries/MahAppsMetro.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/themes/dark.blue.xaml" />
-
-        <ResourceDictionary Source="../Views/Tree/TreeContextMenus.xaml" />
-
-        <ResourceDictionary Source="ResourceDictionaries/Views.xaml" />
         
         <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml" />
 
-        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+        <ResourceDictionary Source="Views/MainWindowContentV.xaml" />
       </ResourceDictionary.MergedDictionaries>
-
-      <Style TargetType="{x:Type cc:VirtualizingWrapPanel}" BasedOn="{StaticResource CustomControls.VirtualizingWrapPanel}" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>

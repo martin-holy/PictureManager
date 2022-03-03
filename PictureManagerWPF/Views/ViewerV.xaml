@@ -12,15 +12,10 @@
   </ResourceDictionary.MergedDictionaries>
 
   <!-- ViewerM DataTemplate -->
-  <DataTemplate
-    x:Key="Views.ViewerV"
-    DataType="{x:Type vm:ViewerVM}">
-
+  <DataTemplate DataType="{x:Type vm:ViewerVM}">
     <WrapPanel>
       <WrapPanel.Resources>
-        <Style
-          TargetType="{x:Type Border}">
-
+        <Style TargetType="{x:Type Border}">
           <Setter
             Property="BorderThickness"
             Value="1" />
@@ -79,9 +74,7 @@
         </Style>
         
         <!-- FolderM DataTemplate -->
-        <DataTemplate
-          DataType="{x:Type models:FolderM}">
-
+        <DataTemplate DataType="{x:Type models:FolderM}">
           <StackPanel Orientation="Horizontal">
             <mhc:Icon
               Source="{Binding IconName,
@@ -103,9 +96,7 @@
         </DataTemplate>
 
         <!-- CategoryGroupM DataTemplate -->
-        <DataTemplate
-          DataType="{x:Type models:CategoryGroupM}">
-
+        <DataTemplate DataType="{x:Type models:CategoryGroupM}">
           <StackPanel
             Orientation="Horizontal"
             Background="Transparent">
@@ -128,9 +119,7 @@
         </DataTemplate>
 
         <!-- KeywordM DataTemplate -->
-        <DataTemplate
-          DataType="{x:Type models:KeywordM}">
-
+        <DataTemplate DataType="{x:Type models:KeywordM}">
           <StackPanel Orientation="Horizontal">
             <mhc:Icon
               Source="{StaticResource IconTag}"
@@ -187,7 +176,7 @@
           
                       <Setter
                         Property="ToolTip"
-                        Value="{Binding FullPath}" />
+                        Value="{Binding Path=(models:FolderM.FullPath)}" />
                     </Style>
                   </Setter.Value>
                 </Setter>
@@ -239,7 +228,7 @@
           
                       <Setter
                         Property="ToolTip"
-                        Value="{Binding FullPath}" />
+                        Value="{Binding Path=(models:FolderM.FullPath)}" />
                     </Style>
                   </Setter.Value>
                 </Setter>
@@ -277,9 +266,7 @@
 
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <ContentPresenter
-                  Content="{Binding Content}">
-
+                <ContentPresenter Content="{Binding Content}">
                   <ContentPresenter.InputBindings>
                     <MouseBinding
                       MouseAction="LeftClick"
@@ -351,7 +338,7 @@
           
                       <Setter
                         Property="ToolTip"
-                        Value="{Binding FullName}" />
+                        Value="{Binding Path=(models:KeywordM.FullName)}" />
                     </Style>
                   </Setter.Value>
                 </Setter>

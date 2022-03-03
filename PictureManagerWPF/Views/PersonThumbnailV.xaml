@@ -5,35 +5,36 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentV.xaml" />
-  </ResourceDictionary.MergedDictionaries>
+  <DataTemplate DataType="{x:Type m:PersonM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="SegmentV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+        
+        <DataTemplate x:Key="NoSegmentIcon">
+          <Border
+            BorderThickness="2"
+            BorderBrush="Black"
+            Margin="1"
+            Background="Transparent"
+            FocusVisualStyle="{x:Null}">
 
-  <DataTemplate
-    x:Key="NoSegmentIcon">
-
-    <Border
-      BorderThickness="2"
-      BorderBrush="Black"
-      Margin="1"
-      Background="Transparent"
-      FocusVisualStyle="{x:Null}">
-
-      <mhc:Icon
-        Source="{StaticResource IconPeople}"
-        Fill="Gray"
-        Size="50"
-        Width="{Binding SegmentsVM.SegmentUiSize,
-                Source={x:Static pm:App.Ui}}"
-        Height="{Binding SegmentsVM.SegmentUiSize,
-                 Source={x:Static pm:App.Ui}}" />
-    </Border>
-  </DataTemplate>
-
-  <DataTemplate
-    x:Key="Views.PersonThumbnailV"
-    DataType="{x:Type m:PersonM}">
-
+            <mhc:Icon
+              Source="{StaticResource IconPeople}"
+              Fill="Gray"
+              Size="50"
+              Width="{Binding SegmentsVM.SegmentUiSize,
+                      Source={x:Static pm:App.Ui}}"
+              Height="{Binding SegmentsVM.SegmentUiSize,
+                       Source={x:Static pm:App.Ui}}" />
+          </Border>
+        </DataTemplate>
+        
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <Grid>
       <!-- Segment or empty icon -->
       <ContentControl>
@@ -42,9 +43,6 @@
             <Setter
               Property="Content"
               Value="{Binding Segment}" />
-            <Setter
-              Property="ContentTemplate"
-              Value="{StaticResource Views.SegmentV}" />
 
             <Style.Triggers>
               <DataTrigger
