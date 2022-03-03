@@ -117,8 +117,8 @@ namespace PictureManager.ViewModels {
         _videoPreview.Source = null;
       }
 
-      _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
       _coreVM.MainWindowVM.IsFullScreen = true;
+      _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
     }
 
     private async void Refresh() {
