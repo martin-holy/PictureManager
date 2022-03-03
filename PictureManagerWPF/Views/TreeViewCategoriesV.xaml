@@ -6,32 +6,33 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:mhbc="clr-namespace:MH.UI.WPF.BaseClasses;assembly=MH.UI.WPF">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="../Views/TreeViewSearchV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/CategoryTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/CategoryGroupTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/FavoriteFolderTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/DriveTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/FolderTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/RatingTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/MediaItemSizeTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/PersonTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/FolderKeywordTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/KewordTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/ViewerTreeV.xaml" />
-    <ResourceDictionary Source="../Views/Tree/GeoNameTreeV.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  
-
-  <DataTemplate
-    x:Key="Views.TreeViewCategoriesV"
-    DataType="{x:Type vm:TreeViewCategoriesVM}">
-
-    <Grid
-      Background="{StaticResource ColorBrushBackground}">
+  <DataTemplate DataType="{x:Type vm:TreeViewCategoriesVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
+          <ResourceDictionary Source="TreeViewSearchV.xaml" />
+          <ResourceDictionary Source="Tree/CategoryGroupTreeV.xaml" />
+          <ResourceDictionary Source="Tree/CategoryTreeV.xaml" />
+          <ResourceDictionary Source="Tree/DriveTreeV.xaml" />
+          <ResourceDictionary Source="Tree/FavoriteFolderTreeV.xaml" />
+          <ResourceDictionary Source="Tree/FolderKeywordTreeV.xaml" />
+          <ResourceDictionary Source="Tree/FolderTreeV.xaml" />
+          <ResourceDictionary Source="Tree/GeoNameTreeV.xaml" />
+          <ResourceDictionary Source="Tree/KewordTreeV.xaml" />
+          <ResourceDictionary Source="Tree/MediaItemSizeTreeV.xaml" />
+          <ResourceDictionary Source="Tree/PersonTreeV.xaml" />
+          <ResourceDictionary Source="Tree/RatingTreeV.xaml" />
+          <ResourceDictionary Source="Tree/TreeContextMenus.xaml" />
+          <ResourceDictionary Source="Tree/ViewerTreeV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <Grid Background="{StaticResource ColorBrushBackground}">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
@@ -150,7 +151,7 @@
 
                   <Style.Triggers>
                     <DataTrigger
-                      Binding="{Binding IsHidden}"
+                      Binding="{Binding Path=(mhbc:CatTreeViewItem.IsHidden)}"
                       Value="True">
 
                       <Setter
@@ -193,8 +194,7 @@
       <!-- Search -->
       <ContentPresenter
         Grid.Row="1"
-        Content="{Binding TreeViewSearchVM}"
-        ContentTemplate="{StaticResource Views.TreeViewSearchV}" />
+        Content="{Binding TreeViewSearchVM}" />
 
     </Grid>
   </DataTemplate>

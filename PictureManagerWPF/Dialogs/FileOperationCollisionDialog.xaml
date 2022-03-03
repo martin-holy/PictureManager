@@ -61,8 +61,7 @@
 
         <Grid Visibility="{Binding SrcMediaItemThumbVisibility}"
               ToolTip="{Binding SrcFileInfo.FullName}">
-          <ContentPresenter Content="{Binding SrcMediaItem}"
-                            ContentTemplate="{StaticResource Views.MediaItemThumbnailV}" />
+          <ContentPresenter Content="{Binding SrcMediaItem}" />
         </Grid>
       </Grid>
 
@@ -75,8 +74,7 @@
 
         <Grid Visibility="{Binding DestMediaItemThumbVisibility}"
               ToolTip="{Binding DestFileInfo.FullName}">
-          <ContentPresenter Content="{Binding DestMediaItem}"
-                            ContentTemplate="{StaticResource Views.MediaItemThumbnailV}" />
+          <ContentPresenter Content="{Binding DestMediaItem}" />
         </Grid>
       </Grid>
 

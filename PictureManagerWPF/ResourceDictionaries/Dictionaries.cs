@@ -55,19 +55,6 @@ namespace PictureManager.ResourceDictionaries {
       { DisplayFilter.Not, "DisplayFilterNotBrush" }
     };
 
-    public static Dictionary<object, object> ToolsTabsTypeToTemplate = new() {
-      { typeof(VideoClipsVM), "Views.VideoClipsV" },
-      { typeof(SegmentsDrawerVM), "Views.SegmentsDrawerV" },
-      { typeof(PersonVM), "Views.PersonV" }
-    };
-
-    public static Dictionary<object, object> MainTabsTypeToTemplate = new() {
-      { typeof(PeopleVM), "Views.PeopleV" },
-      { typeof(SegmentsVM), "Views.SegmentsV" },
-      { typeof(ViewerVM), "Views.ViewerV" },
-      { typeof(ThumbnailsGridVM), "Views.ThumbnailsGridV" }
-    };
-
     public static Dictionary<object, object> MainTabsTypeToIcon = new() {
       { typeof(PeopleVM), "IconPeople" },
       { typeof(SegmentsVM), "IconEquals" },

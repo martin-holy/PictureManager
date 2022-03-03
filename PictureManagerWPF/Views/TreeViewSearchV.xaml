@@ -5,10 +5,7 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-  <DataTemplate
-    x:Key="Views.TreeViewSearchV"
-    DataType="{x:Type vm:TreeViewSearchVM}">
-
+  <DataTemplate DataType="{x:Type vm:TreeViewSearchVM}">
     <Grid
       Margin="4"
       Visibility="{Binding IsVisible,

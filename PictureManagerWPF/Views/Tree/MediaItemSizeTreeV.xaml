@@ -1,14 +1,17 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
-                    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-                    xmlns:pm="clr-namespace:PictureManager">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:tree="clr-namespace:PictureManager.ViewModels.Tree"
+  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:pm="clr-namespace:PictureManager">
   
   <HierarchicalDataTemplate DataType="{x:Type tree:MediaItemSizeTreeVM}">
-    <StackPanel Orientation="Horizontal"
-                Margin="18,0,3,3">
-      <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type StackPanel}}}">
+    <StackPanel
+      Orientation="Horizontal"
+      Margin="18,0,3,3">
+      
+      <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}}}">
         <Grid.RowDefinitions>
           <RowDefinition />
           <RowDefinition />
@@ -18,36 +21,46 @@
           <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-        <TextBlock HorizontalAlignment="Left"
-                   Grid.Row="0"
-                   Grid.Column="0" 
-                   Text="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMin, Source={x:Static pm:App.Core}, Converter={StaticResource MediaItemSizeConverter}}" />
-        <TextBlock HorizontalAlignment="Right"
-                   Grid.Row="0"
-                   Grid.Column="1" 
-                   Text="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMax, Source={x:Static pm:App.Core}, Converter={StaticResource MediaItemSizeConverter}}" />
+        <TextBlock
+          HorizontalAlignment="Left"
+          Grid.Row="0"
+          Grid.Column="0" 
+          Text="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMin,
+                 Source={x:Static pm:App.Core},
+                 Converter={StaticResource MediaItemSizeConverter}}" />
+        <TextBlock
+          HorizontalAlignment="Right"
+          Grid.Row="0"
+          Grid.Column="1" 
+          Text="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMax,
+                 Source={x:Static pm:App.Core},
+                 Converter={StaticResource MediaItemSizeConverter}}" />
 
-        <mah:RangeSlider Grid.Row="1"
-                         Grid.Column="0"
-                         Grid.ColumnSpan="2"
-                         HorizontalAlignment="Stretch" 
-                         MoveWholeRange="True"
-                         IsSnapToTickEnabled="True"
-                         TickFrequency="0.1"
-                         Minimum="{Binding ThumbnailsGridsM.Current.FilterSize.Min, Source={x:Static pm:App.Core}}"
-                         Maximum="{Binding ThumbnailsGridsM.Current.FilterSize.Max, Source={x:Static pm:App.Core}}"
-                         LowerValue="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMin, Source={x:Static pm:App.Core}}"
-                         UpperValue="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMax, Source={x:Static pm:App.Core}}">
+        <mah:RangeSlider
+          Grid.Row="1"
+          Grid.Column="0"
+          Grid.ColumnSpan="2"
+          HorizontalAlignment="Stretch" 
+          MoveWholeRange="True"
+          IsSnapToTickEnabled="True"
+          TickFrequency="0.1"
+          Minimum="{Binding ThumbnailsGridsM.Current.FilterSize.Min, Source={x:Static pm:App.Core}}"
+          Maximum="{Binding ThumbnailsGridsM.Current.FilterSize.Max, Source={x:Static pm:App.Core}}"
+          LowerValue="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMin, Source={x:Static pm:App.Core}}"
+          UpperValue="{Binding ThumbnailsGridsM.Current.FilterSize.PixelMax, Source={x:Static pm:App.Core}}">
 
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="UpperThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand,
+                                               Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
             <b:EventTrigger EventName="LowerThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand,
+                                               Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
             <b:EventTrigger EventName="CentralThumbDragCompleted">
-              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand, Source={x:Static pm:App.Ui}}" />
+              <b:InvokeCommandAction Command="{Binding TreeViewCategoriesVM.MediaItemSizesTreeVM.RangeChangedCommand,
+                                               Source={x:Static pm:App.Ui}}" />
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mah:RangeSlider>

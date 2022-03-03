@@ -3,14 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <DataTemplate
-    x:Key="Views.TitleProgressBarV"
-    DataType="{x:Type m:TitleProgressBarM}">
-
+  <DataTemplate DataType="{x:Type m:TitleProgressBarM}">
     <Grid>
-      <StackPanel
-        Orientation="Vertical">
-
+      <StackPanel Orientation="Vertical">
         <ProgressBar
           Width="250"
           Height="11"

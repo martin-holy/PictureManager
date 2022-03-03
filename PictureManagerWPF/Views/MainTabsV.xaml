@@ -6,11 +6,19 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
-
-  <DataTemplate
-    x:Key="Views.MainTabsV"
-    DataType="{x:Type vm:MainTabsVM}">
-
+  
+  <DataTemplate DataType="{x:Type vm:MainTabsVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PeopleV.xaml" />
+          <ResourceDictionary Source="SegmentsV.xaml" />
+          <ResourceDictionary Source="ThumbnailsGridV.xaml" />
+          <ResourceDictionary Source="ViewerV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <TabControl
       x:Name="Tabs"
       Background="Transparent"
@@ -56,9 +64,6 @@
                     Grid.Column="1"
                     ContentSource="SelectedContent"
                     Content="{Binding Selected.Content}"
-                    ContentTemplate="{Binding
-                                      Converter={StaticResource ResourceConverter},
-                                      ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToTemplate}}"
                     KeyboardNavigation.DirectionalNavigation="Contained"
                     KeyboardNavigation.TabIndex="2"
                     KeyboardNavigation.TabNavigation="Local" />
@@ -85,7 +90,7 @@
 
           <Setter
             Property="MaxHeight"
-            Value="{Binding DataContext.TabMaxHeight,
+            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight),
                     ElementName=Tabs}" />
           <Setter
             Property="Header"

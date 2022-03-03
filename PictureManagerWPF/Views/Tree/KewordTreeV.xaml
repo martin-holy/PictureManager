@@ -9,38 +9,48 @@
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-  <ContextMenu
-    x:Key="KeywordTreeContextMenu"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <ContextMenu.ItemsSource>
-      <CompositeCollection>
-        <MenuItem
-          Header="New"
-          Command="cc:CatTreeView.ItemCreateCommand"
-          CommandParameter="{Binding}" />
-        <MenuItem
-          Header="Rename"
-          Command="cc:CatTreeView.ItemRenameCommand"
-          CommandParameter="{Binding}" />
-        <MenuItem
-          Header="Delete"
-          Command="cc:CatTreeView.ItemDeleteCommand"
-          CommandParameter="{Binding}" />
-        <Separator />
-        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
-        <MenuItem
-          Header="Delete not used"
-          Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
-                    Source={x:Static pm:App.Ui}}"
-          CommandParameter="{Binding}" />
-      </CompositeCollection>
-    </ContextMenu.ItemsSource>
-  </ContextMenu>
+  
 
   <HierarchicalDataTemplate
     DataType="{x:Type tree:KeywordTreeVM}"
     ItemsSource="{Binding Items}">
+    
+    <HierarchicalDataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="TreeContextMenus.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+
+        <ContextMenu
+          x:Key="KeywordTreeContextMenu"
+          DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                      RelativeSource={RelativeSource Self}}">
+          <ContextMenu.ItemsSource>
+            <CompositeCollection>
+              <MenuItem
+                Header="New"
+                Command="cc:CatTreeView.ItemCreateCommand"
+                CommandParameter="{Binding}" />
+              <MenuItem
+                Header="Rename"
+                Command="cc:CatTreeView.ItemRenameCommand"
+                CommandParameter="{Binding}" />
+              <MenuItem
+                Header="Delete"
+                Command="cc:CatTreeView.ItemDeleteCommand"
+                CommandParameter="{Binding}" />
+              <Separator />
+              <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
+              <MenuItem
+                Header="Delete not used"
+                Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
+                        Source={x:Static pm:App.Ui}}"
+                CommandParameter="{Binding}" />
+            </CompositeCollection>
+          </ContextMenu.ItemsSource>
+        </ContextMenu>
+      </ResourceDictionary>
+    </HierarchicalDataTemplate.Resources>
     
     <Grid Background="{Binding DisplayFilter,
                        Converter={StaticResource ResourceConverter},

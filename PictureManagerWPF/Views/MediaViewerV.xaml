@@ -14,10 +14,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate
-    x:Key="Views.MediaViewerV"
-    DataType="{x:Type vm:MediaViewerVM}">
-
+  <DataTemplate DataType="{x:Type vm:MediaViewerVM}">
     <Grid
       x:Name="Root"
       Background="Transparent"
@@ -116,9 +113,7 @@
         </ContentPresenter>
         
         <!-- Presentation Panel -->
-        <ContentPresenter
-          Content="{Binding PresentationPanel}"
-          ContentTemplate="{StaticResource Views.PresentationPanelV}" />
+        <ContentPresenter Content="{Binding PresentationPanel}" />
       </Grid>
 
       <!-- Full Media Video -->
@@ -136,10 +131,8 @@
       </ContentPresenter>
       
       <!-- Segments Rects -->
-      <ContentPresenter
-        Content="{Binding SegmentsVM.SegmentsRectsVM, Source={x:Static pm:App.Ui}}"
-        ContentTemplate="{StaticResource Views.SegmentsRectsV}" />
-
+      <ContentPresenter Content="{Binding SegmentsVM.SegmentsRectsVM,
+                                  Source={x:Static pm:App.Ui}}" />
     </Grid>
 
   </DataTemplate>

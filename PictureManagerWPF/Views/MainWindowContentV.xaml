@@ -1,0 +1,100 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:cc="clr-namespace:PictureManager.CustomControls">
+  
+  <DataTemplate DataType="{x:Type vm:MainWindowContentVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="MainTabsV.xaml" />
+          <ResourceDictionary Source="MediaViewerV.xaml" />
+          <ResourceDictionary Source="StatusPanelV.xaml" />
+          <ResourceDictionary Source="ToolsTabsV.xaml" />
+          <ResourceDictionary Source="TreeViewCategoriesV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelStyle.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <Grid>
+      <cc:SlidePanelsGrid FocusVisualStyle="{x:Null}">
+      
+        <!-- Tree View Categories -->
+        <cc:SlidePanelsGrid.ContentLeft>
+          <cc:SlidePanel
+            DataContext="{Binding TreeViewCategoriesVM, Source={x:Static pm:App.Ui}}"
+            IsOpen="{Binding IsOpen, Mode=TwoWay}"
+            IsPinned="{Binding IsPinned}"
+            Position="Left"
+            Width="380">
+
+            <cc:SlidePanel.Content>
+              <Grid>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Tree View Categories -->
+                <ContentPresenter
+                  Grid.Row="0"
+                  Content="{Binding}" />
+
+                <!-- Status Bar Margin -->
+                <Control
+                  Grid.Row="1"
+                  Height="{Binding ActualHeight, ElementName=StatusPanel}" />
+              </Grid>
+            </cc:SlidePanel.Content>
+          </cc:SlidePanel>
+        </cc:SlidePanelsGrid.ContentLeft>
+
+        <cc:SlidePanelsGrid.ContentMiddle>
+          <Grid>
+            <!-- Main Tabs -->
+            <ContentPresenter
+              Content="{Binding MainTabsVM, Source={x:Static pm:App.Ui}}"
+              Visibility="{Binding MediaViewerVM.IsVisible,
+                           Source={x:Static pm:App.Ui},
+                           Converter={StaticResource AllToVisibilityConverter}, 
+                           ConverterParameter={StaticResource False}}" />
+
+            <!-- MediaViewer -->
+            <ContentPresenter
+              Content="{Binding MediaViewerVM, Source={x:Static pm:App.Ui}}"
+              Visibility="{Binding MediaViewerVM.IsVisible,
+                           Source={x:Static pm:App.Ui},
+                           Converter={StaticResource AllToVisibilityConverter}}"/>
+          </Grid>
+        </cc:SlidePanelsGrid.ContentMiddle>
+      
+        <!-- Tools Tabs -->
+        <cc:SlidePanelsGrid.ContentRight>
+          <cc:SlidePanel
+            DataContext="{Binding ToolsTabsVM, Source={x:Static pm:App.Ui}}"
+            Position="Right"
+            Width="340"
+            Margin="0,0,-340,0"
+            IsPinned="{Binding IsPinned}"
+            IsOpen="{Binding IsOpen, Mode=TwoWay}">
+          
+            <cc:SlidePanel.Content>
+              <ContentPresenter Content="{Binding}" />
+            </cc:SlidePanel.Content>
+          </cc:SlidePanel>
+        </cc:SlidePanelsGrid.ContentRight>
+      </cc:SlidePanelsGrid>
+
+      <!-- Status Panel -->
+      <ContentPresenter
+        x:Name="StatusPanel"
+        Content="{Binding StatusPanelVM, Source={x:Static pm:App.Ui}}"
+        VerticalAlignment="Bottom" />
+    </Grid>
+  </DataTemplate>
+    
+</ResourceDictionary>

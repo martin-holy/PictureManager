@@ -2,13 +2,19 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
-
-  <DataTemplate
-    x:Key="Views.ToolsTabsV"
-    DataType="{x:Type vm:ToolsTabsVM}">
-
+  
+  <DataTemplate DataType="{x:Type vm:ToolsTabsVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PersonV.xaml" />
+          <ResourceDictionary Source="SegmentsDrawerV.xaml" />
+          <ResourceDictionary Source="VideoClipsV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
     <Grid
       Background="{StaticResource ColorBrushBackground}"
       Visibility="{Binding HasItems,
@@ -47,11 +53,6 @@
             <Setter
               Property="Content"
               Value="{Binding Content}" />
-            <Setter
-              Property="ContentTemplate"
-              Value="{Binding Content,
-                      Converter={StaticResource ResourceConverter},
-                      ConverterParameter={x:Static rd:Dictionaries.ToolsTabsTypeToTemplate}}" />
           </Style>
         </TabControl.ItemContainerStyle>
       </TabControl>

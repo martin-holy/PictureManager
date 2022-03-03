@@ -9,34 +9,36 @@
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-  <ContextMenu
-    x:Key="CatGroupTreeContextMenu"
-    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                  RelativeSource={RelativeSource Self}}">
-    <MenuItem
-      Header="New"
-      Command="cc:CatTreeView.ItemCreateCommand"
-      CommandParameter="{Binding}" />
-    <MenuItem
-      Header="Rename Group"
-      Command="cc:CatTreeView.GroupRenameCommand"
-      CommandParameter="{Binding}" />
-    <MenuItem
-      Header="Delete Group"
-      Command="cc:CatTreeView.GroupDeleteCommand"
-      CommandParameter="{Binding}" />
-    <MenuItem
-      Header="Delete not used"
-      Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
-                Source={x:Static pm:App.Ui}}"
-      CommandParameter="{Binding}" />
-
-    <!--TODO: Sort-->
-  </ContextMenu>
-
   <HierarchicalDataTemplate
     DataType="{x:Type tree:CategoryGroupTreeVM}"
     ItemsSource="{Binding Items}">
+    
+    <HierarchicalDataTemplate.Resources>
+      <ContextMenu
+        x:Key="CatGroupTreeContextMenu"
+        DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                      RelativeSource={RelativeSource Self}}">
+        <MenuItem
+          Header="New"
+          Command="cc:CatTreeView.ItemCreateCommand"
+          CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Rename Group"
+          Command="cc:CatTreeView.GroupRenameCommand"
+          CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Delete Group"
+          Command="cc:CatTreeView.GroupDeleteCommand"
+          CommandParameter="{Binding}" />
+        <MenuItem
+          Header="Delete not used"
+          Command="{Binding TreeViewCategoriesVM.TagItemDeleteNotUsedCommand,
+                    Source={x:Static pm:App.Ui}}"
+          CommandParameter="{Binding}" />
+
+        <!--TODO: Sort-->
+      </ContextMenu>
+    </HierarchicalDataTemplate.Resources>
     
     <Grid Background="Transparent">
       <b:Interaction.Triggers>

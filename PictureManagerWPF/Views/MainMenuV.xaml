@@ -10,12 +10,8 @@
     x:Shared="False"
     Source="{StaticResource IconEye}" />
 
-  <DataTemplate
-    x:Key="Views.MainMenu">
-
-    <Menu
-      Background="Transparent">
-
+  <DataTemplate x:Key="Views.MainMenu">
+    <Menu Background="Transparent">
       <!-- Tools -->
       <MenuItem
         Header="Tools"

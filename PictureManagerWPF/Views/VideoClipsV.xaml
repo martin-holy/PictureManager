@@ -6,19 +6,19 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:vm="clr-namespace:PictureManager.ViewModels">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="Tree/CategoryTreeV.xaml" />
-    <ResourceDictionary Source="Tree/VideoClipsGroupTreeV.xaml" />
-    <ResourceDictionary Source="Tree/VideoClipTreeV.xaml" />
-  </ResourceDictionary.MergedDictionaries>
-
-  <DataTemplate
-    x:Key="Views.VideoClipsV"
-    DataType="{x:Type vm:VideoClipsVM}">
-
-    <Grid
-      Background="{StaticResource ColorBrushBackground}">
-      
+  <DataTemplate DataType="{x:Type vm:VideoClipsVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
+          <ResourceDictionary Source="Tree/CategoryTreeV.xaml" />
+          <ResourceDictionary Source="Tree/VideoClipsGroupTreeV.xaml" />
+          <ResourceDictionary Source="Tree/VideoClipTreeV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+    
+    <Grid Background="{StaticResource ColorBrushBackground}">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />

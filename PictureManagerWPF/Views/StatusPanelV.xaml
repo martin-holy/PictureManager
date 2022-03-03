@@ -7,18 +7,13 @@
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <DataTemplate
-    x:Key="Views.StatusPanelV"
-    DataType="{x:Type vm:StatusPanelVM}">
-
+  <DataTemplate DataType="{x:Type vm:StatusPanelVM}">
     <Grid
       VerticalAlignment="Top"
       Background="#88000000">
 
       <Grid.Style>
-        <Style
-          TargetType="{x:Type Grid}">
-
+        <Style TargetType="{x:Type Grid}">
           <Setter
             Property="Opacity"
             Value="0" />
@@ -83,22 +78,18 @@
             x:Key="_itemsControlStyle"
             TargetType="{x:Type ItemsControl}">
 
-            <Setter
-              Property="ItemsPanel">
+            <Setter Property="ItemsPanel">
               <Setter.Value>
                 <ItemsPanelTemplate>
-                  <WrapPanel
-                    Orientation="Horizontal" />
+                  <WrapPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
               </Setter.Value>
             </Setter>
 
-            <Setter
-              Property="ItemTemplate">
+            <Setter Property="ItemTemplate">
               <Setter.Value>
                 <DataTemplate>
-                  <Border
-                    Style="{StaticResource SBorderText}">
+                  <Border Style="{StaticResource SBorderText}">
                     <TextBlock
                       Text="{Binding}"
                       Style="{StaticResource STextBlock}" />
@@ -114,8 +105,7 @@
             BasedOn="{StaticResource SBorderGroup}">
 
             <Style.Resources>
-              <Style
-                TargetType="{x:Type StackPanel}">
+              <Style TargetType="{x:Type StackPanel}">
                 <Setter
                   Property="Orientation"
                   Value="Horizontal" />
@@ -141,11 +131,8 @@
           Style="{StaticResource _infoGroup}"
           DataContext="{x:Static pm:App.Ui}">
 
-          <StackPanel
-            Orientation="Horizontal">
-
-            <mhc:Icon
-              Source="{StaticResource IconImageMultiple}" />
+          <StackPanel Orientation="Horizontal">
+            <mhc:Icon Source="{StaticResource IconImageMultiple}" />
 
             <!-- PositionSlashCount -->
             <!--TODO store PositionSlashCount just in one location-->
@@ -181,8 +168,7 @@
               Visibility="{Binding MediaViewerVM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock
-                Text="{Binding ThumbnailsGridsVM.Current.Model.SelectedCount}" />
+              <TextBlock Text="{Binding ThumbnailsGridsVM.Current.Model.SelectedCount}" />
             </Border>
 
             <!-- Modified -->
@@ -190,8 +176,7 @@
               Background="#CA5100" 
               Visibility="{Binding MediaItemsVM.Model.IsEditModeOn,
                            Converter={StaticResource AllToVisibilityConverter}}">
-              <TextBlock
-                Text="{Binding MediaItemsVM.Model.ModifiedItemsCount}" />
+              <TextBlock Text="{Binding MediaItemsVM.Model.ModifiedItemsCount}" />
             </Border>
           </StackPanel>
         </Border>
@@ -202,12 +187,10 @@
           Visibility="{Binding CurrentMediaItemM,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconRuler}" />
+            <mhc:Icon Source="{StaticResource IconRuler}" />
 
             <Border>
-              <TextBlock
-                Text="{Binding CurrentMediaItemM.Dimensions}" />
+              <TextBlock Text="{Binding CurrentMediaItemM.Dimensions}" />
             </Border>
           </StackPanel>
         </Border>
@@ -218,12 +201,10 @@
           Visibility="{Binding FileSize,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconPageUpload}" />
+            <mhc:Icon Source="{StaticResource IconPageUpload}" />
 
             <Border>
-              <TextBlock
-                Text="{Binding FileSize}" />
+              <TextBlock Text="{Binding FileSize}" />
             </Border>
           </StackPanel>
         </Border>
@@ -260,14 +241,12 @@
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconMagnify}" />
+            <mhc:Icon Source="{StaticResource IconMagnify}" />
 
             <Border>
-              <TextBlock
-                Text="{Binding MediaViewerVM.FullImage.ActualZoom,
-                       Source={x:Static pm:App.Ui},
-                       StringFormat={}{0:####}%}" />
+              <TextBlock Text="{Binding MediaViewerVM.FullImage.ActualZoom,
+                                Source={x:Static pm:App.Ui},
+                                StringFormat={}{0:####}%}" />
             </Border>
           </StackPanel>
         </Border>
@@ -277,23 +256,18 @@
           Style="{StaticResource SBorderGroup}"
           Visibility="{Binding Rating.Count,
                        Converter={StaticResource AllToVisibilityConverter}}">
-          <Border
-            Margin="0">
-
-            <ItemsControl
-              ItemsSource="{Binding Rating}">
+          <Border Margin="0">
+            <ItemsControl ItemsSource="{Binding Rating}">
 
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <StackPanel
-                    Orientation="Horizontal" />
+                  <StackPanel Orientation="Horizontal" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <mhc:Icon
-                    Source="{StaticResource IconStar}" />
+                  <mhc:Icon Source="{StaticResource IconStar}" />
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -328,8 +302,7 @@
             </Style>
           </Border.Style>
 
-          <mhc:Icon
-            Source="{StaticResource IconLocationCheckin}" />
+          <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
         </Border>
 
         <!-- FilePath -->
@@ -344,8 +317,7 @@
               Source="{StaticResource IconFolder}"
               Fill="{StaticResource ColorBrushFolder}"/>
 
-            <ItemsControl
-              ItemsSource="{Binding FilePath}" />
+            <ItemsControl ItemsSource="{Binding FilePath}" />
           </StackPanel>
         </Border>
 
@@ -355,12 +327,10 @@
           Visibility="{Binding DateAndTime,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconCalendar}" />
+            <mhc:Icon Source="{StaticResource IconCalendar}" />
 
             <Border>
-              <TextBlock
-                Text="{Binding DateAndTime}" />
+              <TextBlock Text="{Binding DateAndTime}" />
             </Border>
           </StackPanel>
         </Border>
@@ -403,8 +373,7 @@
               Source="{StaticResource IconPeople}"
               Fill="{StaticResource ColorBrushPeople}"/>
 
-            <ItemsControl
-              ItemsSource="{Binding CurrentMediaItemM.InfoBoxPeople}" />
+            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxPeople}" />
           </StackPanel>
         </Border>
 
@@ -446,8 +415,7 @@
               Source="{StaticResource IconTag}"
               Fill="{StaticResource ColorBrushTag}"/>
 
-            <ItemsControl
-              ItemsSource="{Binding CurrentMediaItemM.InfoBoxKeywords}" />
+            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxKeywords}" />
           </StackPanel>
         </Border>
 
@@ -484,12 +452,10 @@
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconNotification}" />
+            <mhc:Icon Source="{StaticResource IconNotification}" />
 
             <Border>
-              <TextBlock
-                Text="{Binding CurrentMediaItemM.Comment}" />
+              <TextBlock Text="{Binding CurrentMediaItemM.Comment}" />
             </Border>
           </StackPanel>
         </Border>
