@@ -243,6 +243,11 @@ namespace PictureManager.ViewModels {
       }
 
       switch (item) {
+        case RatingTreeVM r:
+          r.IsSelected = false;
+          _ = _coreVM.ThumbnailsGridsVM.ActivateFilter(r, DisplayFilter.Or);
+          break;
+
         case KeywordTreeVM k:
           ToggleKeyword(k);
           break;

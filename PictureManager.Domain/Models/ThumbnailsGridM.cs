@@ -247,10 +247,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
-      item.DisplayFilter = item.DisplayFilter != DisplayFilter.None ? DisplayFilter.None : displayFilter;
+      item.DisplayFilter = item.DisplayFilter != DisplayFilter.None
+        ? DisplayFilter.None
+        : displayFilter;
 
-      if (item is not IViewModel<object> vm) return;
-      var m = vm.ToModel();
+      var m = (item as IViewModel<object>)?.ToModel()
+        ?? (item as IViewModel<int>)?.ToModel();
+
       if (m == null) return;
 
       _filterAll.Remove(item);
@@ -292,7 +295,6 @@ namespace PictureManager.Domain.Models {
 
       // TODO GeoNames
 
-      // TODO what about And & Not?
       //Ratings
       var chosenRatings = _filterOr.OfType<int>().ToArray();
       if (chosenRatings.Length > 0)
