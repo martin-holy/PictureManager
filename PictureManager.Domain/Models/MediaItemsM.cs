@@ -118,7 +118,6 @@ namespace PictureManager.Domain.Models {
       copy.Folder.MediaItems.Add(copy);
       All.Add(copy);
       OnPropertyChanged(nameof(MediaItemsCount));
-      DataAdapter.IsModified = true;
 
       return copy;
     }

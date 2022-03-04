@@ -27,7 +27,6 @@ namespace PictureManager.Domain.Models {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
       root.Items.SetInOrder(item, x => ((ViewerM)x).Name);
       All.Add(item);
-      DataAdapter.IsModified = true;
 
       return item;
     }

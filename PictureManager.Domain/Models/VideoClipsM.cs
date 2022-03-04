@@ -49,7 +49,6 @@ namespace PictureManager.Domain.Models {
       CurrentVideoClip = item;
       mi.HasVideoClips = true;
       All.Add(item);
-      DataAdapter.IsModified = true;
 
       return item;
     }
