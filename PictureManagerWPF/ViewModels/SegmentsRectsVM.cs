@@ -25,7 +25,7 @@ namespace PictureManager.ViewModels {
 
       SetViewCommand = new(e => _view = (IInputElement)e.Source);
       SetCurrentCommand = new(SetCurrent);
-      CreateCommand = new(Create);
+      CreateCommand = new(Create, () => AreVisible);
       EditCommand = new(Edit);
       EndEditCommand = new(() => SegmentsRectsM.EndEdit());
       DeleteCommand = new(Delete);
