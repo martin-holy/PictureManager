@@ -72,6 +72,7 @@ namespace PictureManager.ViewModels {
       FullVideo.IsPlaying = false;
       FullVideo.SetNullSource();
       MediaItems.Clear();
+      Current = null;
     }
 
     public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
@@ -89,11 +90,8 @@ namespace PictureManager.ViewModels {
     }
 
     public void SetMediaItemSource(MediaItemM mediaItem) {
-      var index = MediaItems.IndexOf(mediaItem);
-      if (index < 0) return;
-      _indexOfCurrent = index;
+      _indexOfCurrent = MediaItems.IndexOf(mediaItem);
       Current = mediaItem;
-      App.Core.SegmentsM.SegmentsRectsM.MediaItem = mediaItem;
 
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
@@ -120,8 +118,7 @@ namespace PictureManager.ViewModels {
       MediaItems.Count > 0 && _indexOfCurrent < MediaItems.Count - 1;
 
     public void Next() {
-      Current = MediaItems[++_indexOfCurrent];
-      SetMediaItemSource(Current);
+      SetMediaItemSource(MediaItems[++_indexOfCurrent]);
 
       if (PresentationPanel.IsRunning && (Current.MediaType == MediaType.Video ||
         (Current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
@@ -142,8 +139,7 @@ namespace PictureManager.ViewModels {
       if (PresentationPanel.IsRunning)
         PresentationPanel.Stop();
 
-      Current = MediaItems[--_indexOfCurrent];
-      SetMediaItemSource(Current);
+      SetMediaItemSource(MediaItems[--_indexOfCurrent]);
       App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 

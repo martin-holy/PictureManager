@@ -94,6 +94,9 @@ namespace PictureManager {
       MediaViewerVM.PropertyChanged += (o, e) => {
         if (nameof(MediaViewerVM.IsVisible).Equals(e.PropertyName))
           StatusPanelVM.OnPropertyChanged(nameof(StatusPanelVM.FilePath));
+
+        if (nameof(MediaViewerVM.Current).Equals(e.PropertyName))
+          App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
       };
 
       MainTabsVM.TabClosedEvent += (o, e) => {
