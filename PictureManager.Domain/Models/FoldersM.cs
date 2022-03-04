@@ -318,8 +318,6 @@ namespace PictureManager.Domain.Models {
       // add new Folder to the tree
       root.Items.SetInOrder(item, x => ((FolderM)x).Name);
 
-      DataAdapter.IsModified = true;
-
       // reload FolderKeywords
       if (((FolderM)root).IsFolderKeyword || ((FolderM)root).FolderKeyword != null)
         _core.FolderKeywordsM.Load(All);

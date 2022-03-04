@@ -39,7 +39,6 @@ namespace PictureManager.Domain.Models {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
       root.Items.SetInOrder(item, GetItemName);
       All.Add(item);
-      DataAdapter.IsModified = true;
 
       return item;
     }

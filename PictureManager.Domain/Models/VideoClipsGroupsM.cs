@@ -26,7 +26,6 @@ namespace PictureManager.Domain.Models {
       group.MediaItem.HasVideoClips = true;
       _videoClips.Items.SetInOrder(group, x => x is VideoClipsGroupM g ? g.Name : string.Empty);
       All.Add(group);
-      DataAdapter.IsModified = true;
 
       return group;
     }

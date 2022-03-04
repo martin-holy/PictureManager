@@ -20,7 +20,6 @@ namespace PictureManager.Domain.Models {
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       parent.Items.SetInOrder(group, x => x is CategoryGroupM cg ? cg.Name : string.Empty);
-      DataAdapter.IsModified = true;
       return group;
     }
 

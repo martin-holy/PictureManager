@@ -51,7 +51,6 @@ namespace PictureManager.Domain.Models {
       var item = new KeywordM(DataAdapter.GetNextId(), name, root);
       root.Items.SetInOrder(item, GetItemName);
       All.Add(item);
-      DataAdapter.IsModified = true;
 
       return item;
     }
