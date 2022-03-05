@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
@@ -22,9 +23,8 @@ namespace PictureManager.ViewModels {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     private bool _matchingAutoSort;
-    private int _segmentUiSize;
-
-    public int SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
+    private double _segmentUiSize;
+    private double _confirmedPanelWidth;
 
     private readonly WorkTask _workTask = new();
     private readonly IProgress<int> _progress;
@@ -34,11 +34,22 @@ namespace PictureManager.ViewModels {
     public SegmentsDrawerVM SegmentsDrawerVM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
+    public double ConfirmedPanelWidth { get => _confirmedPanelWidth; set { _confirmedPanelWidth = value; OnPropertyChanged(); } }
     public VirtualizingWrapPanel MatchingPanel { get; set; }
     public VirtualizingWrapPanel ConfirmedMatchingPanel { get; set; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
+
+    public double SegmentUiSize {
+      get => _segmentUiSize;
+      set {
+        _segmentUiSize = value;
+        SegmentUiFullWidth = value + 6; // + border, margin
+        ConfirmedPanelWidth = SegmentUiFullWidth + AppCore.ScrollBarSize;
+        OnPropertyChanged();
+      }
+    }
     
-    public int SegmentUiFullWidth { get; set; } //border, margin, padding, ... //TODO find the real value
+    public double SegmentUiFullWidth { get; set; }
     
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
@@ -53,7 +64,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<SizeChangedEventArgs> MatchingPanelSizeChangedCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> ConfirmedMatchingPanelSizeChangedCommand { get; }
+    public RelayCommand<DragCompletedEventArgs> ConfirmedMatchingPanelSizeChangedCommand { get; }
 
     public SegmentsVM(Core core, AppCore coreVM, SegmentsM segmentsM) {
       _core = core;
@@ -95,9 +106,11 @@ namespace PictureManager.ViewModels {
       MatchingPanelSizeChangedCommand = new(
         () => Reload(true, false),
         e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
-      ConfirmedMatchingPanelSizeChangedCommand = new(
-        () => Reload(false, true),
-        e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
+      ConfirmedMatchingPanelSizeChangedCommand = new(e => {
+        ConfirmedMatchingPanel.UpdateLayout();
+        ConfirmedPanelWidth = ConfirmedMatchingPanel.ActualWidth;
+        Reload(false, true);
+      });
 
       // TODO do it just when needed
       foreach (var person in App.Core.PeopleM.All)
@@ -214,8 +227,7 @@ namespace PictureManager.ViewModels {
     private void ReloadConfirmedMatchingPanel() {
       var itemToScrollTo = ConfirmedMatchingPanel.GetFirstItemFromRow(ConfirmedMatchingPanel.GetTopRowIndex());
       ConfirmedMatchingPanel.ClearRows();
-      //ConfirmedMatchingPanel.UpdateLayout();
-      ConfirmedMatchingPanel.UpdateMaxRowWidth();
+      //ConfirmedMatchingPanel.UpdateMaxRowWidth(ConfirmedPanelWidth - AppCore.ScrollBarSize);
 
       if (SegmentsM.GroupConfirmedSegments) {
         foreach (var (personId, segment, similar) in SegmentsM.ConfirmedSegments) {

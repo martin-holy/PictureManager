@@ -20,7 +20,7 @@
       <!-- Segments Grids -->
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="122" /><!-- TODO if set to auto => endless reload -->
+          <ColumnDefinition Width="{Binding ConfirmedPanelWidth, Mode=OneWay}" />
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
@@ -53,14 +53,6 @@
                   Value="1" />
               </Style>
             </ContentPresenter.Resources>
-
-            <b:Interaction.Triggers>
-              <b:EventTrigger EventName="SizeChanged">
-                <b:InvokeCommandAction
-                  Command="{Binding ConfirmedMatchingPanelSizeChangedCommand}"
-                  PassEventArgsToCommand="True" />
-              </b:EventTrigger>
-            </b:Interaction.Triggers>
           </ContentPresenter>
           
           <mhc:IconToggleButton
@@ -75,7 +67,16 @@
           Grid.Column="1"
           HorizontalAlignment="Stretch"
           Width="3"
-          Background="Transparent" />
+          Background="Transparent">
+          
+          <b:Interaction.Triggers>
+            <b:EventTrigger EventName="DragCompleted">
+              <b:InvokeCommandAction
+                Command="{Binding ConfirmedMatchingPanelSizeChangedCommand}"
+                PassEventArgsToCommand="True" />
+            </b:EventTrigger>
+          </b:Interaction.Triggers>
+        </GridSplitter>
 
         <ContentPresenter
           Content="{Binding MatchingPanel}"
