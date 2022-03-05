@@ -220,11 +220,10 @@
                           Binding="{Binding IsSelected}"
                           Value="True" />
                         <Condition
-                          Binding="{Binding SegmentsM.SelectedCount,
+                          Binding="{Binding SegmentsM.MultiplePeopleSelected,
                                     Source={x:Static pm:App.Core},
-                                    Converter={StaticResource AllToBoolConverter},
-                                    ConverterParameter=1}"
-                          Value="False" />
+                                    Converter={StaticResource AllToBoolConverter}}"
+                          Value="True" />
                       </MultiDataTrigger.Conditions>
 
                       <Setter

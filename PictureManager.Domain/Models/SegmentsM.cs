@@ -38,23 +38,30 @@ namespace PictureManager.Domain.Models {
     public int SelectedCount => Selected.Count;
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
+    public bool MultiplePeopleSelected => Selected.GroupBy(x => x.PersonId).Count() > 1;
 
     public event EventHandler<SegmentPersonChangeEventArgs> SegmentPersonChangeEvent = delegate { };
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
     public event EventHandler SegmentsKeywordChangedEvent = delegate { };
+    public event EventHandler SelectedChangedEventHandler = delegate { };
 
     public SegmentsM() {
       SegmentsRectsM = new(this);
+
+      SelectedChangedEventHandler += (_, _) => {
+        OnPropertyChanged(nameof(SelectedCount));
+        OnPropertyChanged(nameof(MultiplePeopleSelected));
+      };
     }
 
     public void Select(List<SegmentM> list, SegmentM segment, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select(_selected, list, segment, isCtrlOn, isShiftOn, () => OnPropertyChanged(nameof(SelectedCount)));
+      Selecting.Select(_selected, list, segment, isCtrlOn, isShiftOn, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
     public void DeselectAll() =>
-      Selecting.DeselectAll(_selected, () => OnPropertyChanged(nameof(SelectedCount)));
+      Selecting.DeselectAll(_selected, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
     public void SetSelected(SegmentM segment, bool value) =>
-      Selecting.SetSelected(_selected, segment, value, () => OnPropertyChanged(nameof(SelectedCount)));
+      Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
     public void SegmentsDrawerToggle(SegmentM segment) {
       if (segment == null) return;
