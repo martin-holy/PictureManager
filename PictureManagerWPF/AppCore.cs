@@ -10,6 +10,7 @@ using MH.Utils.BaseClasses;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
+    public static double ScrollBarSize;
     public MainWindowVM MainWindowVM { get; }
     public MainWindowContentVM MainWindowContentVM { get; }
     public MediaItemsVM MediaItemsVM { get; }

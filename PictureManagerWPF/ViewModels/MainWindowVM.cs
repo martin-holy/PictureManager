@@ -96,9 +96,9 @@ namespace PictureManager.ViewModels {
       var windowsDisplayScale = PresentationSource.FromVisual(Application.Current.MainWindow)
         ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
 
+      AppCore.ScrollBarSize = 14;
       _core.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
-      _coreVM.SegmentsVM.SegmentUiSize = (int)Math.Round(_core.SegmentsM.SegmentSize / windowsDisplayScale);
-      _coreVM.SegmentsVM.SegmentUiFullWidth = _coreVM.SegmentsVM.SegmentUiSize + 6; //border, margin, padding, ... //TODO find the real value
+      _coreVM.SegmentsVM.SegmentUiSize = _core.SegmentsM.SegmentSize / windowsDisplayScale;
     }
   }
 }
