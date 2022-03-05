@@ -54,7 +54,8 @@ namespace PictureManager.CustomControls {
 
       _grid = (ItemsControl)Template.FindName("PART_Grid", this);
       _ = _grid.ApplyTemplate();
-      _grid.SizeChanged += (_, _) => _maxRowWidth = ActualWidth;
+      _grid.SizeChanged += (_, _) =>
+        _maxRowWidth = ActualWidth - AppCore.ScrollBarSize; // TODO try to find it from style
 
       var itemsPresenter = (ItemsPresenter)_grid.Template.FindName("PART_ItemsPresenter", _grid);
       _ = itemsPresenter.ApplyTemplate();
@@ -174,7 +175,7 @@ namespace PictureManager.CustomControls {
         AddGroup(groupItems);
     }
 
-    public void AddItem(object item, int itemWidth) {
+    public void AddItem(object item, double itemWidth) {
       if (_lastRow == null || (_lastRow.Items.Count > 0 && itemWidth > _lastRow.SpaceLeft)) {
         _lastRow = new VirtualizingWrapPanelRow(_maxRowWidth, _lastGroup, ItemDataTemplate);
         Rows.Add(_lastRow);
