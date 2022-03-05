@@ -38,7 +38,7 @@ namespace PictureManager.Domain.Models {
     public int SelectedCount => Selected.Count;
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
-    public bool MultiplePeopleSelected => Selected.GroupBy(x => x.PersonId).Count() > 1;
+    public bool MultiplePeopleSelected => Selected.GroupBy(x => x.PersonId).Count() > 1 || Selected.Count(x => x.PersonId == 0) > 1;
 
     public event EventHandler<SegmentPersonChangeEventArgs> SegmentPersonChangeEvent = delegate { };
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
