@@ -39,7 +39,7 @@ namespace PictureManager.Domain.Models {
 
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
-    public List<SegmentM> Segments { get; set; } // Top Segments only
+    public List<SegmentM> TopSegments { get; set; }
     public List<KeywordM> Keywords { get; set; }
     public ObservableCollection<KeywordM> DisplayKeywords { get => _displayKeywords; set { _displayKeywords = value; OnPropertyChanged(); } }
 

@@ -15,7 +15,7 @@ namespace PictureManager {
     public MainWindowContentVM MainWindowContentVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
-    public PeopleVM PeopleVM { get; set; }
+    public PeopleVM PeopleVM { get; }
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
@@ -51,7 +51,7 @@ namespace PictureManager {
       TreeViewCategoriesVM = new(App.Core, this);
 
       StatusPanelVM = new(App.Core);
-      PersonVM = new(this, App.Core.PeopleM, App.Core.SegmentsM);
+      PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM, TreeViewCategoriesVM.TvCategories);
 
       ViewersVM.SetCurrent(null);
@@ -76,7 +76,7 @@ namespace PictureManager {
         SegmentsVM.SortAndReload();
       };
 
-      MainWindowVM.PropertyChanged += (o, e) => {
+      MainWindowVM.PropertyChanged += (_, e) => {
         if (nameof(MainWindowVM.IsFullScreen).Equals(e.PropertyName)) {
           var isFullScreen = MainWindowVM.IsFullScreen;
 
@@ -92,7 +92,7 @@ namespace PictureManager {
         }
       };
 
-      MediaViewerVM.PropertyChanged += (o, e) => {
+      MediaViewerVM.PropertyChanged += (_, e) => {
         if (nameof(MediaViewerVM.IsVisible).Equals(e.PropertyName))
           StatusPanelVM.OnPropertyChanged(nameof(StatusPanelVM.FilePath));
 
@@ -100,12 +100,12 @@ namespace PictureManager {
           App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
       };
 
-      MainTabsVM.TabClosedEvent += (o, e) => {
-        if (e.Data is HeaderedListItem<object, string> hli && hli.Content is ThumbnailsGridVM grid)
+      MainTabsVM.TabClosedEvent += (_, e) => {
+        if (e.Data is HeaderedListItem<object, string> { Content: ThumbnailsGridVM grid })
           ThumbnailsGridsVM.CloseGrid(grid);
       };
 
-      MainTabsVM.PropertyChanged += async (o, e) => {
+      MainTabsVM.PropertyChanged += async (_, e) => {
         if (nameof(MainTabsVM.Selected).Equals(e.PropertyName)) {
           await ThumbnailsGridsVM.SetCurrentGrid(MainTabsVM.Selected?.Content as ThumbnailsGridVM);
           TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
