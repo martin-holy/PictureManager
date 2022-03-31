@@ -59,14 +59,39 @@
                       KeyboardNavigation.TabIndex="1"
                       Margin="0" />
                   </StackPanel>
-                  
-                  <ContentPresenter
+
+                  <ItemsControl
                     Grid.Column="1"
-                    ContentSource="SelectedContent"
-                    Content="{Binding Selected.Content}"
-                    KeyboardNavigation.DirectionalNavigation="Contained"
-                    KeyboardNavigation.TabIndex="2"
-                    KeyboardNavigation.TabNavigation="Local" />
+                    ItemsSource="{Binding Items}">
+                    
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <Grid />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <ContentPresenter Content="{Binding Content}" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                    <ItemsControl.ItemContainerStyle>
+                      <Style>
+                        <Style.Triggers>
+                          <DataTrigger
+                            Binding="{Binding IsSelected}"
+                            Value="False">
+
+                            <Setter
+                              Property="ContentPresenter.Visibility"
+                              Value="Hidden" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </ItemsControl.ItemContainerStyle>
+                  </ItemsControl>
+                  
                 </Grid>
               </ControlTemplate>
             </Setter.Value>
@@ -78,8 +103,7 @@
         <b:EventTrigger EventName="SizeChanged">
           <b:InvokeCommandAction
             Command="{Binding UpdateTabHeadersSizeCommand}"
-            CommandParameter="{Binding ActualHeight,
-                               ElementName=Tabs}"/>
+            CommandParameter="{Binding ActualHeight, ElementName=Tabs}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -90,8 +114,10 @@
 
           <Setter
             Property="MaxHeight"
-            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight),
-                    ElementName=Tabs}" />
+            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight), ElementName=Tabs}" />
+          <Setter
+            Property="IsSelected"
+            Value="{Binding IsSelected, Mode=TwoWay}" />
           <Setter
             Property="Header"
             Value="{Binding}" />
@@ -116,8 +142,7 @@
                       ShowShadow="False"
                       ToolTip="Close"
                       HorizontalAlignment="Center"
-                      Command="{Binding DataContext.CloseTabCommand,
-                                ElementName=Tabs}"
+                      Command="{Binding Path=DataContext.(vm:MainTabsVM.CloseTabCommand), ElementName=Tabs}"
                       CommandParameter="{Binding}"
                       Visibility="{Binding IsMouseOver,
                                    ElementName=TabHeader,
@@ -142,8 +167,7 @@
 
                           <Style.Triggers>
                             <DataTrigger
-                              Binding="{Binding IsMouseOver,
-                                        ElementName=TabHeader}"
+                              Binding="{Binding IsMouseOver, ElementName=TabHeader}"
                               Value="True">
 
                               <Setter

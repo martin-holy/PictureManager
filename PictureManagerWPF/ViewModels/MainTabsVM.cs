@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Controls;
 using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
 
@@ -36,13 +35,15 @@ namespace PictureManager.ViewModels {
 
     public void AddItem(HeaderedListItem<object, string> item) {
       Items.Add(item);
+      OnPropertyChanged(nameof(TabMaxHeight));
       Selected = item;
     }
 
     private void CloseTab(HeaderedListItem<object, string> item) {
       Items.Remove(item);
+      OnPropertyChanged(nameof(TabMaxHeight));
       Selected = Items.FirstOrDefault();
-      TabClosedEvent(this, new ObjectEventArgs(item));
+      TabClosedEvent(this, new(item));
     }
 
     private void UpdateTabHeadersSize(double actualHeight) {
