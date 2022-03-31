@@ -30,8 +30,9 @@ namespace PictureManager.ViewModels {
     }
 
     public void Deactivate(HeaderedListItem<object, string> item) {
-      Items.Remove(item);
-      Selected = Items.FirstOrDefault();
+      if (Items.Remove(item))
+        if (Selected == item)
+          Selected = Items.FirstOrDefault();
 
       if (Selected == null)
         IsPinned = false;
