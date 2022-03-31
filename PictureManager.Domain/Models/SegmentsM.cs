@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.HelperClasses;
 using PictureManager.Domain.EventsArgs;
+using PictureManager.Domain.HelperClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -184,8 +186,8 @@ namespace PictureManager.Domain.Models {
       var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
 
       SegmentM GetRandomSegment(IEnumerable<SegmentM> segments) {
-        var tmpSegments = (segments.First().Person?.Segments ?? segments).ToArray();
-        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Count() - 1)];
+        var tmpSegments = (segments.First().Person?.TopSegments ?? segments).ToArray();
+        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Length - 1)];
         return segment;
       }
 
@@ -455,6 +457,40 @@ namespace PictureManager.Domain.Models {
       }
 
       return items;
+    }
+
+    public void ReloadPersonSegments(PersonM person, List<SegmentM> allSegments, List<object> allSegmentsGrouped) {
+      allSegments.Clear();
+      allSegmentsGrouped.Clear();
+
+      if (person == null) return;
+
+      foreach (var group in All
+        .Where(x => x.PersonId == person.Id)
+        .GroupBy(x => x.Keywords == null
+          ? string.Empty
+          : string.Join(", ", KeywordsM.GetAllKeywords(x.Keywords).Select(k => k.Name)))
+        .OrderBy(x => x.Key)) {
+
+        if (string.IsNullOrEmpty(group.Key)) {
+          // add segments without group
+          foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
+            allSegments.Add(segment);
+            allSegmentsGrouped.Add(segment);
+          }
+        }
+        else {
+          // add segments in group
+          var itemsGroup = new ItemsGroup();
+          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
+          allSegmentsGrouped.Add(itemsGroup);
+
+          foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
+            allSegments.Add(segment);
+            itemsGroup.Items.Add(segment);
+          }
+        }
+      }
     }
   }
 }
