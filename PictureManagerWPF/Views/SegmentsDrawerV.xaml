@@ -2,7 +2,9 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels">
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
     <DataTemplate.Resources>
@@ -13,44 +15,33 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
     
-    <ContentPresenter Content="{Binding Panel}">
-      <ContentPresenter.Resources>
-        <Style TargetType="{x:Type ItemsControl}">
-          <Setter
-            Property="Margin"
-            Value="2,0,0,0" />
-          <Setter
-            Property="ItemsSource"
-            Value="{Binding SegmentsM.SegmentsDrawer}" />
-          <Setter
-            Property="Template">
-            <Setter.Value>
-              <ControlTemplate>
-                <ScrollViewer>
-                  <ItemsPresenter />
-                </ScrollViewer>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-          <Setter
-            Property="ItemsPanel">
-            <Setter.Value>
-              <ItemsPanelTemplate>
-                <WrapPanel />
-              </ItemsPanelTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </ContentPresenter.Resources>
-
+    <mhc:VirtualizingWrapPanel
+      Margin="2,0,0,0"
+      ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
+                  Source={x:Static pm:App.Ui}}"
+      ItemsToWrap="{Binding SegmentsM.SegmentsDrawer}">
+        
       <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Loaded">
+          <b:InvokeCommandAction
+            Command="{Binding PanelLoadedCommand}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
+        
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
             Command="{Binding SelectCommand}"
             EventArgsConverter="{StaticResource ClickConverter}"
             EventArgsConverterParameter="{StaticResource True}" />
         </b:EventTrigger>
+        
+        <b:EventTrigger EventName="SizeChanged">
+          <b:InvokeCommandAction
+            Command="{Binding PanelSizeChangedCommand}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
       </b:Interaction.Triggers>
-    </ContentPresenter>
+    </mhc:VirtualizingWrapPanel>
+
   </DataTemplate>
 </ResourceDictionary>

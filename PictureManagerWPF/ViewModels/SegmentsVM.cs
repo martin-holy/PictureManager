@@ -117,8 +117,10 @@ namespace PictureManager.ViewModels {
         person.UpdateDisplayKeywords();
     }
 
-    private static object CanDrag(MouseEventArgs e) =>
-      (e.OriginalSource as FrameworkElement)?.DataContext as SegmentM;
+    private object CanDrag(MouseEventArgs e) =>
+      e.OriginalSource is FrameworkElement { DataContext: SegmentM segmentM }
+        ? SegmentsM.GetOneOrSelected(segmentM)
+        : null;
 
     private void ViewMediaItemsWithSegment(SegmentM segmentM) {
       var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _coreVM.MainTabsVM.Selected == MainTabsItem);
