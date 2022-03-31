@@ -280,7 +280,7 @@ namespace PictureManager.ViewModels {
         case ICatTreeViewCategory cat:
           if (cat is PeopleTreeVM) {
             _coreVM.MainTabsVM.Activate(_coreVM.PeopleVM.MainTabsItem);
-            _coreVM.PeopleVM.Reload();
+            _core.PeopleM.ReloadPeopleInGroups();
           }
 
           // if category is going to collapse and sub item is selected, category gets selected
