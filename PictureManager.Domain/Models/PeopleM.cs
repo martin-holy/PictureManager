@@ -5,8 +5,10 @@ using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.HelperClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.EventsArgs;
+using PictureManager.Domain.HelperClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -20,6 +22,7 @@ namespace PictureManager.Domain.Models {
     public List<PersonM> All { get; } = new();
     public List<PersonM> Selected { get; } = new();
     public Dictionary<int, PersonM> AllDic { get; set; }
+    public List<object> PeopleInGroups { get; } = new();
 
     public event EventHandler<PersonDeletedEventArgs> PersonDeletedEvent = delegate { };
     public event EventHandler PeopleKeywordChangedEvent = delegate { };
@@ -61,7 +64,7 @@ namespace PictureManager.Domain.Models {
       person.Parent.Items.Remove(person);
       person.Parent = null;
       person.Segment = null;
-      person.Segments = null;
+      person.TopSegments = null;
       person.Keywords = null;
       All.Remove(person);
       PersonDeletedEvent(this, new(person));
@@ -99,19 +102,20 @@ namespace PictureManager.Domain.Models {
       if (oldPerson.Segment == segment)
         oldPerson.Segment = null;
 
-      if (oldPerson.Segments?.Contains(segment) != true) return;
+      if (oldPerson.TopSegments?.Contains(segment) != true) return;
 
-      oldPerson.Segments = ListExtensions.Toggle(oldPerson.Segments, segment, true);
-      oldPerson.OnPropertyChanged(nameof(oldPerson.Segments));
+      oldPerson.TopSegments = ListExtensions.Toggle(oldPerson.TopSegments, segment, true);
+      oldPerson.OnPropertyChanged(nameof(oldPerson.TopSegments));
       DataAdapter.IsModified = true;
     }
 
-    public void ToggleSegment(PersonM person, SegmentM segment) {
-      person.Segments = ListExtensions.Toggle(person.Segments, segment, true);
-      person.OnPropertyChanged(nameof(person.Segments));
+    public void ToggleTopSegment(PersonM person, SegmentM segment) {
+      person.TopSegments = ListExtensions.Toggle(person.TopSegments, segment, true);
+      // BUG this doesn't work. I need to call Wrap in PersonVM
+      person.OnPropertyChanged(nameof(person.TopSegments));
 
-      if (person.Segments?.Count > 0)
-        person.Segment = person.Segments[0];
+      if (person.TopSegments?.Count > 0)
+        person.Segment = person.TopSegments[0];
 
       DataAdapter.IsModified = true;
     }
@@ -145,5 +149,43 @@ namespace PictureManager.Domain.Models {
 
     public void SetSelected(PersonM p, bool value) =>
       Selecting.SetSelected(Selected, p, value, null);
+
+    public void ReloadPeopleInGroups() {
+      PeopleInGroups.Clear();
+
+      // add people in groups
+      foreach (var group in Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden))
+        AddPeopleToGroups(group.Name, group.Items.Cast<PersonM>());
+
+      // add people without group
+      var peopleWithoutGroup = Items.OfType<PersonM>().ToArray();
+      if (peopleWithoutGroup.Any())
+        AddPeopleToGroups(string.Empty, peopleWithoutGroup);
+
+      OnPropertyChanged(nameof(PeopleInGroups));
+    }
+
+    private void AddPeopleToGroups(string groupTitle, IEnumerable<PersonM> people) {
+      // group people by keywords
+      foreach (var group in people
+                 .GroupBy(p => p.DisplayKeywords == null
+                   ? string.Empty
+                   : string.Join(", ", p.DisplayKeywords.Select(dk => dk.FullName)))
+                 .OrderBy(g => g.Key)) {
+
+        var itemsGroup = new ItemsGroup();
+        if (!string.IsNullOrEmpty(groupTitle))
+          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
+        if (!group.Key.Equals(string.Empty))
+          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
+
+        foreach (var person in group.OrderBy(p => p.Name))
+          itemsGroup.Items.Add(person);
+
+        itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconImageMultiple", Title = itemsGroup.Items.Count.ToString() });
+
+        PeopleInGroups.Add(itemsGroup);
+      }
+    }
   }
 }
