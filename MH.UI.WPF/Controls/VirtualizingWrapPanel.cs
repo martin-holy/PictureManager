@@ -157,7 +157,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void ScrollTo(int index) {
-      if (Items.Count - 1 < index) return;
+      if (Items.Count - 1 < index || index < 0) return;
 
       _rowsStackPanel.BringIndexIntoViewPublic(index);
 
