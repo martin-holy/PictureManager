@@ -64,6 +64,9 @@ namespace PictureManager {
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
+
+        if (MediaViewerVM.IsVisible)
+          MediaViewerVM.Current?.SetInfoBox();
       };
 
       App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, _) => {
