@@ -51,15 +51,15 @@ namespace PictureManager.ViewModels {
     }
 
     private void DoDrop(DragEventArgs e, object source, object data) {
-      if (source.Equals(_panel) && !MessageDialog.Show(
+      var add = !source.Equals(_panel);
+
+      if (!add && !MessageDialog.Show(
             "Segments Drawer",
             "Do you want to remove segments from drawer?",
             true))
         return;
 
-      foreach (var segment in data as SegmentM[] ?? new[] { data as SegmentM })
-        SegmentsM.SegmentsDrawerToggle(segment);
-
+      SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, add);
       _panel.Wrap();
     }
 
