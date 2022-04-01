@@ -37,7 +37,7 @@ namespace MH.Utils.Extensions {
       for (newIdx = 0; newIdx < collection.Count; newIdx++) {
         var strA = keySelector.Invoke(collection[newIdx]);
         var strB = keySelector.Invoke(item);
-        var cRes = string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase);
+        var cRes = string.Compare(strA, strB, StringComparison.InvariantCultureIgnoreCase);
         if (collection[newIdx].Equals(item) || cRes < 0) continue;
 
         break;
