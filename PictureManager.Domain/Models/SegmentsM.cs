@@ -7,7 +7,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.HelperClasses;
 using PictureManager.Domain.EventsArgs;
 using PictureManager.Domain.HelperClasses;
@@ -73,10 +72,18 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
-    public void SegmentsDrawerToggle(SegmentM segment) {
-      if (segment == null) return;
-      SegmentsDrawer.Toggle(segment);
-      DataAdapter.AreTablePropsModified = true;
+    public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
+      var count = SegmentsDrawer.Count;
+
+      if (add)
+        foreach (var segment in segments.Except(SegmentsDrawer).ToArray())
+          SegmentsDrawer.Add(segment);
+      else
+        foreach (var segment in segments)
+          SegmentsDrawer.Remove(segment);
+
+      if (count != SegmentsDrawer.Count)
+        DataAdapter.AreTablePropsModified = true;
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>
