@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,49 +7,44 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
-    private bool _matchingAutoSort;
     private double _segmentUiSize;
     private double _confirmedPanelWidth;
+    private VirtualizingWrapPanel _matchingPanel;
+    private VirtualizingWrapPanel _confirmedMatchingPanel;
 
     private readonly WorkTask _workTask = new();
-    private readonly IProgress<int> _progress;
     private List<MediaItemM> _mediaItems;
 
     public SegmentsM SegmentsM { get; set; }
     public SegmentsDrawerVM SegmentsDrawerVM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
-    public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
-    public double ConfirmedPanelWidth { get => _confirmedPanelWidth; set { _confirmedPanelWidth = value; OnPropertyChanged(); } }
-    public VirtualizingWrapPanel MatchingPanel { get; set; }
-    public VirtualizingWrapPanel ConfirmedMatchingPanel { get; set; }
+    public double ConfirmedPanelWidth { get => _confirmedPanelWidth; private set { _confirmedPanelWidth = value; OnPropertyChanged(); } }
     public HeaderedListItem<object, string> MainTabsItem { get; }
+    public double SegmentUiFullWidth { get; set; }
 
     public double SegmentUiSize {
       get => _segmentUiSize;
       set {
         _segmentUiSize = value;
         SegmentUiFullWidth = value + 6; // + border, margin
-        ConfirmedPanelWidth = SegmentUiFullWidth + AppCore.ScrollBarSize;
+        ConfirmedPanelWidth = (SegmentUiFullWidth * 2) + AppCore.ScrollBarSize;
         OnPropertyChanged();
       }
     }
-    
-    public double SegmentUiFullWidth { get; set; }
-    
+
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
     public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
@@ -63,6 +57,8 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> CompareCommand { get; }
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
+    public RelayCommand<RoutedEventArgs> MatchingPanelLoadedCommand { get; }
+    public RelayCommand<RoutedEventArgs> ConfirmedMatchingPanelLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> MatchingPanelSizeChangedCommand { get; }
     public RelayCommand<DragCompletedEventArgs> ConfirmedMatchingPanelSizeChangedCommand { get; }
 
@@ -75,46 +71,56 @@ namespace PictureManager.ViewModels {
       SegmentsDrawerVM = new(SegmentsM);
       SegmentsRectsVM = new(segmentsM.SegmentsRectsM);
 
-      MatchingPanel = new();
-      ConfirmedMatchingPanel = new();
-
-      DragDropFactory.SetDrag(MatchingPanel, CanDrag);
-      DragDropFactory.SetDrag(ConfirmedMatchingPanel, CanDrag);
-
-      // TODO move _progress to Model
-      _progress = new Progress<int>(x => {
-        _core.TitleProgressBarM.ValueA = x;
-        _core.TitleProgressBarM.ValueB = x;
-      });
-
       SetSelectedAsSamePersonCommand = new(SegmentsM.SetSelectedAsSamePerson);
       SetSelectedAsUnknownCommand = new(SegmentsM.SetSelectedAsUnknown);
       SegmentToolTipReloadCommand = new(SegmentsM.SegmentToolTipReload);
       ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
       SelectCommand = new(Select);
       SegmentMatchingCommand = new(SegmentMatching, () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-      GroupConfirmedCommand = new(() => Reload(false, true));
-      CompareAllGroupsCommand = new(() => LoadSegments(true));
-      SortCommand = new(() => SortAndReload(true, true));
+      GroupConfirmedCommand = new(() => SegmentsM.Reload(false, true));
+      CompareAllGroupsCommand = new(() => SegmentsM.LoadSegments(_mediaItems, true));
+      SortCommand = new(() => SegmentsM.Reload(true, true));
       CompareCommand = new(async () => {
         await CompareAsync();
-        SortAndReload(true, true);
+        SegmentsM.Reload(true, true);
       });
       OpenSegmentsDrawerCommand = new(() => App.Ui.ToolsTabsVM.Activate(SegmentsDrawerVM.ToolsTabsItem, true));
-      GroupMatchingPanelCommand = new(() => Reload(true, false));
+      GroupMatchingPanelCommand = new(() => SegmentsM.Reload(true, false));
 
+      MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
+      ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
       MatchingPanelSizeChangedCommand = new(
-        () => Reload(true, false),
+        () => _matchingPanel.Wrap(),
         e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
-      ConfirmedMatchingPanelSizeChangedCommand = new(e => {
-        ConfirmedMatchingPanel.UpdateLayout();
-        ConfirmedPanelWidth = ConfirmedMatchingPanel.ActualWidth;
-        Reload(false, true);
+      ConfirmedMatchingPanelSizeChangedCommand = new(() => {
+        _confirmedMatchingPanel.UpdateLayout();
+        _confirmedMatchingPanel.Wrap();
       });
+
+      SegmentsM.PropertyChanged += (_, e) => {
+        switch (e.PropertyName) {
+          case nameof(SegmentsM.LoadedGrouped):
+            _matchingPanel.Wrap();
+            break;
+          case nameof(SegmentsM.ConfirmedGrouped):
+            _confirmedMatchingPanel.Wrap();
+            break;
+        }
+      };
 
       // TODO do it just when needed
       foreach (var person in App.Core.PeopleM.All)
         person.UpdateDisplayKeywords();
+    }
+
+    private void OnMatchingPanelLoaded(RoutedEventArgs e) {
+      _matchingPanel = e.Source as VirtualizingWrapPanel;
+      DragDropFactory.SetDrag(_matchingPanel, CanDrag);
+    }
+
+    private void OnConfirmedMatchingPanelLoaded(RoutedEventArgs e) {
+      _confirmedMatchingPanel = e.Source as VirtualizingWrapPanel;
+      DragDropFactory.SetDrag(_confirmedMatchingPanel, CanDrag);
     }
 
     private object CanDrag(MouseEventArgs e) =>
@@ -133,22 +139,21 @@ namespace PictureManager.ViewModels {
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM } image) {
         var list = image.TryFindParent<StackPanel>()
-          ?.DataContext is VirtualizingWrapPanelRow { Group: { } } row
-            ? row.Group.Items.Cast<SegmentM>().ToList()
+          ?.DataContext is VirtualizingWrapPanelRow { Items: { } } row
+            ? row.Items.Cast<SegmentM>().ToList()
             : new() { segmentM };
         SegmentsM.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
       }
     }
 
-    public async Task CompareAsync() {
+    private async Task CompareAsync() {
       await _workTask.Cancel();
       SegmentsM.AddSegmentsForComparison();
       _core.TitleProgressBarM.ResetProgressBars(SegmentsM.Loaded.Count);
-      await _workTask.Start(SegmentsM.FindSimilaritiesAsync(SegmentsM.Loaded, _progress, _workTask.Token));
+      await _workTask.Start(SegmentsM.FindSimilaritiesAsync(SegmentsM.Loaded, _workTask.Token));
     }
 
     private void SegmentMatching() {
-      // TODO do I need _mediaItems prop??
       _mediaItems = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       _coreVM.MainTabsVM.Activate(MainTabsItem);
 
@@ -158,116 +163,7 @@ namespace PictureManager.ViewModels {
         true,
         new[] { "All segments", "Segments with person" });
 
-      LoadSegments(!all);
-    }
-
-    public void LoadSegments(bool withPersonOnly) {
-      MatchingPanel.ClearRows();
-      MatchingPanel.AddGroup("IconPeople", "?");
-      ConfirmedMatchingPanel.ClearRows();
-      SegmentsM.GroupSegments = false;
-      SegmentsM.ResetBeforeNewLoad();
-
-      foreach (var segment in SegmentsM.GetSegments(_mediaItems, withPersonOnly)) {
-        SegmentsM.Loaded.Add(segment);
-        MatchingPanel.AddItem(segment, SegmentUiFullWidth);
-      }
-
-      SortAndReload(false, true);
-    }
-
-    public void SortAndReload() =>
-      SortAndReload(MatchingAutoSort, MatchingAutoSort);
-
-    public void SortAndReload(bool segments, bool confirmedSegments) {
-      Sort(segments, confirmedSegments);
-      Reload(segments, confirmedSegments);
-    }
-
-    private void Sort(bool segments, bool confirmedSegments) {
-      if (segments) SegmentsM.ReloadLoadedGroupedByPerson();
-      if (confirmedSegments) SegmentsM.ReloadConfirmedSegments();
-    }
-
-    public void Reload(bool segments, bool confirmedSegments) {
-      if (segments) ReloadMatchingPanel();
-      if (confirmedSegments) ReloadConfirmedMatchingPanel();
-    }
-
-    private void ReloadMatchingPanel() {
-      var rowIndex = MatchingPanel.GetTopRowIndex();
-      var itemToScrollTo = MatchingPanel.GetFirstItemFromRow(rowIndex);
-      MatchingPanel.ClearRows();
-      // TODO UpdateLayout repeats it self. find the way to do it without everywhere
-      //MatchingPanel.UpdateLayout();
-      MatchingPanel.UpdateMaxRowWidth();
-
-      if (SegmentsM.GroupSegments) {
-        if (SegmentsM.LoadedGroupedByPerson.Count == 0)
-          SegmentsM.ReloadLoadedGroupedByPerson();
-
-        foreach (var group in SegmentsM.LoadedGroupedByPerson) {
-          var groupTitle = group[0].Person != null
-            ? group[0].Person.Name
-            : group[0].PersonId.ToString();
-          MatchingPanel.AddGroup("IconPeople", groupTitle);
-
-          foreach (var segment in group)
-            MatchingPanel.AddItem(segment, SegmentUiFullWidth);
-        }
-      }
-      else {
-        MatchingPanel.AddGroup("IconPeople", "?");
-        foreach (var segment in SegmentsM.Loaded)
-          MatchingPanel.AddItem(segment, SegmentUiFullWidth);
-      }
-
-      if (rowIndex > 0)
-        MatchingPanel.ScrollTo(itemToScrollTo);
-    }
-
-    private void ReloadConfirmedMatchingPanel() {
-      var itemToScrollTo = ConfirmedMatchingPanel.GetFirstItemFromRow(ConfirmedMatchingPanel.GetTopRowIndex());
-      ConfirmedMatchingPanel.ClearRows();
-      //ConfirmedMatchingPanel.UpdateMaxRowWidth(ConfirmedPanelWidth - AppCore.ScrollBarSize);
-
-      if (SegmentsM.GroupConfirmedSegments) {
-        foreach (var (personId, segment, similar) in SegmentsM.ConfirmedSegments) {
-          var groupTitle = segment.Person != null
-            ? segment.Person.Name
-            : personId.ToString();
-          ConfirmedMatchingPanel.AddGroup("IconPeople", groupTitle);
-          ConfirmedMatchingPanel.AddItem(segment, SegmentUiFullWidth);
-
-          foreach (var simGroup in similar.OrderByDescending(x => x.sim))
-            ConfirmedMatchingPanel.AddItem(simGroup.segment, SegmentUiFullWidth);
-        }
-      }
-      else {
-        foreach (var group in SegmentsM.ConfirmedSegments
-          .GroupBy(x => {
-            if (x.segment.Person == null) return "Unknown";
-            return x.segment.Person.DisplayKeywords == null
-              ? string.Empty
-              : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name));
-          })
-          .OrderBy(g => g.First().personId < 0)
-          .ThenBy(g => g.Key)) {
-
-          // add group
-          if (!string.IsNullOrEmpty(group.Key) && !"Unknown".Equals(group.Key))
-            ConfirmedMatchingPanel.AddGroup("IconTag", group.Key);
-          if ("Unknown".Equals(group.Key))
-            ConfirmedMatchingPanel.AddGroup("IconPeople", group.Key);
-
-          // add people
-          foreach (var (_, segment, _) in group)
-            ConfirmedMatchingPanel.AddItem(segment, SegmentUiFullWidth);
-        }
-      }
-
-      //TODO this is causing error
-      //ConfirmedMatchingPanel.ScrollTo(itemToScrollTo);
+      SegmentsM.LoadSegments(_mediaItems, !all);
     }
   }
 }

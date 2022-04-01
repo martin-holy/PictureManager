@@ -172,7 +172,7 @@ namespace PictureManager.ViewModels {
 
       // TODO do it in event
       if (_coreVM.MainTabsVM.Selected?.Content is SegmentsVM)
-        _coreVM.SegmentsVM.SortAndReload();
+        _core.SegmentsM.Reload();
 
       if (_coreVM.MediaViewerVM.IsVisible) {
         _ = _coreVM.MediaViewerVM.MediaItems.Remove(items[0]);
