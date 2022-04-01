@@ -21,18 +21,20 @@ namespace PictureManager.Domain.Models {
     private int _similarityLimitMin = 80;
     private bool _groupSegments;
     private bool _groupConfirmedSegments;
-    private List<SegmentM> _selected = new();
+    private bool _matchingAutoSort;
+    private readonly List<SegmentM> _selected = new();
+    private readonly IProgress<int> _progress;
 
     public DataAdapter DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
     public Dictionary<int, SegmentM> AllDic { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
-    public List<List<SegmentM>> LoadedGroupedByPerson { get; } = new();
+    public List<ItemsGroup> LoadedGrouped { get; } = new();
+    public List<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
     public ObservableCollection<SegmentM> SegmentsDrawer { get; } = new();
     public ObservableCollection<Tuple<int, int, int, int, bool>> SegmentToolTipRects { get; } = new();
-    public List<(int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar)> ConfirmedSegments { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
@@ -41,6 +43,7 @@ namespace PictureManager.Domain.Models {
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
     public bool MultiplePeopleSelected => Selected.GroupBy(x => x.PersonId).Count() > 1 || Selected.Count(x => x.PersonId == 0) > 1;
+    public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
 
     public event EventHandler<SegmentPersonChangeEventArgs> SegmentPersonChangeEvent = delegate { };
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
@@ -49,6 +52,11 @@ namespace PictureManager.Domain.Models {
 
     public SegmentsM() {
       SegmentsRectsM = new(this);
+
+      _progress = new Progress<int>(x => {
+        Core.Instance.TitleProgressBarM.ValueA = x;
+        Core.Instance.TitleProgressBarM.ValueB = x;
+      });
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));
@@ -76,24 +84,6 @@ namespace PictureManager.Domain.Models {
         ? Selected.ToArray()
         : new[] { one };
 
-    public SegmentM[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
-      if (withPersonOnly) {
-        var people = mediaItems.Where(mi => mi.Segments != null)
-          .SelectMany(mi => mi.Segments.Select(s => s.PersonId)).Distinct().ToHashSet();
-        people.Remove(0);
-        return All.Where(s => people.Contains(s.PersonId)).OrderBy(s => s.MediaItem.FileName).ToArray();
-      }
-
-      return mediaItems.Where(x => x.Segments != null).SelectMany(x => x.Segments).ToArray();
-    }
-
-    public void ResetBeforeNewLoad() {
-      DeselectAll();
-      Loaded.Clear();
-      LoadedGroupedByPerson.ForEach(x => x.Clear());
-      LoadedGroupedByPerson.Clear();
-    }
-
     public SegmentM AddNewSegment(int x, int y, int radius, MediaItemM mediaItem) {
       var newSegment = new SegmentM(DataAdapter.GetNextId(), 0, x, y, radius) { MediaItem = mediaItem };
       mediaItem.Segments ??= new();
@@ -120,7 +110,7 @@ namespace PictureManager.Domain.Models {
         Loaded.Add(segment);
     }
 
-    public Task FindSimilaritiesAsync(List<SegmentM> segments, IProgress<int> progress, CancellationToken token) {
+    public Task FindSimilaritiesAsync(List<SegmentM> segments, CancellationToken token) {
       return Task.Run(async () => {
         // clear previous loaded similar
         // clear needs to be for Loaded!
@@ -135,16 +125,16 @@ namespace PictureManager.Domain.Models {
         foreach (var segmentA in segments) {
           if (token.IsCancellationRequested) break;
           await segmentA.SetComparePictureAsync(CompareSegmentSize);
-          progress.Report(++done);
+          _progress.Report(++done);
         }
 
         done = 0;
-        progress.Report(done);
+        _progress.Report(done);
 
         foreach (var segmentA in segments) {
           if (token.IsCancellationRequested) break;
           if (segmentA.ComparePicture == null) {
-            progress.Report(++done);
+            _progress.Report(++done);
             continue;
           }
 
@@ -170,109 +160,9 @@ namespace PictureManager.Domain.Models {
             segmentA.SimMax = 0;
           }
 
-          progress.Report(++done);
+          _progress.Report(++done);
         }
       }, token);
-    }
-
-    /// <summary>
-    /// Compares segments with same person id to other segments with same person id
-    /// and select random segment from each group for display
-    /// </summary>
-    public void ReloadConfirmedSegments() {
-      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
-      var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
-      var groups = groupsA.Concat(groupsB).ToArray();
-      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
-
-      SegmentM GetRandomSegment(IEnumerable<SegmentM> segments) {
-        var tmpSegments = (segments.First().Person?.TopSegments ?? segments).ToArray();
-        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Length - 1)];
-        return segment;
-      }
-
-      ConfirmedSegments.Clear();
-
-      foreach (var gA in groups) {
-        (int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar) confirmedSegment = new() {
-          personId = gA.Key,
-          segment = GetRandomSegment(gA),
-          similar = new()
-        };
-
-        ConfirmedSegments.Add(confirmedSegment);
-        if (gA.All(x => x.Similar == null)) continue;
-
-        foreach (var gB in groups) {
-          if (gA.Key == gB.Key) continue;
-
-          var sims = new List<double>();
-
-          foreach (var segmentA in gA)
-            foreach (var segmentB in gB)
-              if (segmentA.Similar != null && segmentA.Similar.TryGetValue(segmentB, out var sim) && sim >= SimilarityLimit)
-                sims.Add(sim);
-
-          if (sims.Count == 0) continue;
-
-          var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
-          confirmedSegment.similar.Add(new(gB.Key, GetRandomSegment(gB), simMedian));
-        }
-      }
-    }
-
-    public void ReloadLoadedGroupedByPerson() {
-      // clear
-      foreach (var group in LoadedGroupedByPerson)
-        group.Clear();
-      LoadedGroupedByPerson.Clear();
-
-      List<SegmentM> segmentsGroup;
-
-      // add segments with PersonId != 0 with all similar segments with PersonId == 0
-      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
-      var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
-      var samePerson = groupsA.Concat(groupsB);
-      foreach (var segments in samePerson) {
-        var sims = new List<(SegmentM segment, double sim)>();
-        segmentsGroup = new();
-
-        foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
-          segmentsGroup.Add(segment);
-          if (segment.Similar == null) continue;
-          sims.AddRange(segment.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).Select(x => (x.Key, x.Value)));
-        }
-
-        // order by number of similar than by similarity
-        foreach (var segment in sims.GroupBy(x => x.segment).OrderByDescending(g => g.Count())
-                                 .Select(g => g.OrderByDescending(x => x.sim).First().segment)) {
-          segmentsGroup.Add(segment);
-        }
-
-        if (segmentsGroup.Count != 0)
-          LoadedGroupedByPerson.Add(segmentsGroup);
-      }
-
-      // add segments with PersonId == 0 ordered by similar
-      var unknown = Loaded.Where(x => x.PersonId == 0).ToArray();
-      var withSimilar = unknown.Where(x => x.Similar != null).OrderByDescending(x => x.SimMax);
-      var set = new HashSet<int>();
-      segmentsGroup = new();
-
-      foreach (var segment in withSimilar) {
-        var simSegments = segment.Similar.Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit).OrderByDescending(x => x.Value);
-        foreach (var simSegment in simSegments) {
-          if (set.Add(segment.Id)) segmentsGroup.Add(segment);
-          if (set.Add(simSegment.Key.Id)) segmentsGroup.Add(simSegment.Key);
-        }
-      }
-
-      // add rest of the segments
-      foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
-        segmentsGroup.Add(segment);
-
-      if (segmentsGroup.Count != 0)
-        LoadedGroupedByPerson.Add(segmentsGroup);
     }
 
     /// <summary>
@@ -437,9 +327,11 @@ namespace PictureManager.Domain.Models {
 
       if (segmentM.PersonId == 0) {
         if (inGroups
-            && LoadedGroupedByPerson.Count > 0
-            && LoadedGroupedByPerson[^1].Any(x => x.PersonId == 0)) {
-          items = LoadedGroupedByPerson[^1]
+            && LoadedGrouped.Count > 0
+            && LoadedGrouped[^1].Items.Cast<SegmentM>().Any(x => x.PersonId == 0)) {
+          items = LoadedGrouped[^1].Items
+            .Cast<SegmentM>()
+            .Where(x => x.PersonId == 0)
             .Select(x => x.MediaItem)
             .Distinct()
             .ToList();
@@ -491,6 +383,242 @@ namespace PictureManager.Domain.Models {
           }
         }
       }
+    }
+
+    public void LoadSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
+      GroupSegments = false;
+      DeselectAll();
+      Loaded.Clear();
+
+      foreach (var segment in GetSegments(mediaItems, withPersonOnly))
+        Loaded.Add(segment);
+
+      Reload(true, true);
+    }
+
+    public void Reload() =>
+      Reload(MatchingAutoSort, MatchingAutoSort);
+
+    public void Reload(bool segments, bool confirmedSegments) {
+      if (segments)
+        ReloadLoadedGrouped();
+
+      if (confirmedSegments)
+        ReloadConfirmedGrouped();
+    }
+
+    private SegmentM[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
+      if (withPersonOnly) {
+        var people = mediaItems
+          .Where(mi => mi.Segments != null)
+          .SelectMany(mi => mi.Segments.Select(s => s.PersonId))
+          .Distinct()
+          .ToHashSet();
+        people.Remove(0);
+
+        return All
+          .Where(s => people.Contains(s.PersonId))
+          .OrderBy(s => s.MediaItem.FileName)
+          .ToArray();
+      }
+
+      return mediaItems
+        .Where(x => x.Segments != null)
+        .SelectMany(x => x.Segments)
+        .ToArray();
+    }
+
+    private void ReloadLoadedGrouped() {
+      // clear before new load
+      foreach (var group in LoadedGrouped) {
+        group.GroupInfo.Clear();
+        group.Items.Clear();
+      }
+      LoadedGrouped.Clear();
+
+      ItemsGroup segmentsGroup;
+
+      if (!GroupSegments) {
+        segmentsGroup = new();
+        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = "?" });
+        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconImageMultiple", Title = Loaded.Count.ToString() });
+        LoadedGrouped.Add(segmentsGroup);
+
+        foreach (var segment in Loaded)
+          segmentsGroup.Items.Add(segment);
+
+        OnPropertyChanged(nameof(LoadedGrouped));
+
+        return;
+      }
+
+      // add segments with PersonId != 0 with all similar segments with PersonId == 0
+      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
+      var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
+      var samePerson = groupsA.Concat(groupsB);
+      foreach (var segments in samePerson) {
+        var sims = new List<(SegmentM segment, double sim)>();
+        var s = segments.First();
+        var groupTitle = s.Person != null
+            ? s.Person.Name
+            : s.PersonId.ToString();
+
+        segmentsGroup = new();
+        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
+
+        foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
+          segmentsGroup.Items.Add(segment);
+          if (segment.Similar == null) continue;
+          sims.AddRange(segment.Similar
+            .Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit)
+            .Select(x => (x.Key, x.Value)));
+        }
+
+        // order by number of similar than by similarity
+        foreach (var segment in sims
+                   .GroupBy(x => x.segment)
+                   .OrderByDescending(g => g.Count())
+                   .Select(g => g.OrderByDescending(x => x.sim).First().segment)) {
+          segmentsGroup.Items.Add(segment);
+        }
+
+        if (segmentsGroup.Items.Count != 0) {
+          segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
+            Icon = "IconImageMultiple",
+            Title = segmentsGroup.Items.Count.ToString() });
+          LoadedGrouped.Add(segmentsGroup);
+        }
+      }
+
+      // add segments with PersonId == 0 ordered by similar
+      var unknown = Loaded.Where(x => x.PersonId == 0).ToArray();
+      var set = new HashSet<int>();
+      var withSimilar = unknown
+        .Where(x => x.Similar != null)
+        .OrderByDescending(x => x.SimMax);
+      
+      segmentsGroup = new();
+      segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = "0" });
+
+      foreach (var segment in withSimilar) {
+        var simSegments = segment.Similar
+          .Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit)
+          .OrderByDescending(x => x.Value);
+
+        foreach (var simSegment in simSegments) {
+          if (set.Add(segment.Id)) segmentsGroup.Items.Add(segment);
+          if (set.Add(simSegment.Key.Id)) segmentsGroup.Items.Add(simSegment.Key);
+        }
+      }
+
+      // add rest of the segments
+      foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
+        segmentsGroup.Items.Add(segment);
+
+      if (segmentsGroup.Items.Count != 0)
+        LoadedGrouped.Add(segmentsGroup);
+
+      OnPropertyChanged(nameof(LoadedGrouped));
+    }
+
+    /// <summary>
+    /// Compares segments with same person id to other segments with same person id
+    /// and select random segment from each group for display
+    /// </summary>
+    private void ReloadConfirmedGrouped() {
+      var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
+      var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
+      var groups = groupsA.Concat(groupsB).ToArray();
+      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+      var tmp = new List<(int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar)>();
+
+      SegmentM GetRandomSegment(IEnumerable<SegmentM> segments) {
+        var tmpSegments = (segments.First().Person?.TopSegments ?? segments).ToArray();
+        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Length - 1)];
+        return segment;
+      }
+
+      // clear before new load
+      foreach (var group in ConfirmedGrouped.OfType<ItemsGroup>()) {
+        group.GroupInfo.Clear();
+        group.Items.Clear();
+      }
+      ConfirmedGrouped.Clear();
+
+      // get segments
+      foreach (var gA in groups) {
+        (int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar) confirmedSegment = new() {
+          personId = gA.Key,
+          segment = GetRandomSegment(gA),
+          similar = new()
+        };
+
+        tmp.Add(confirmedSegment);
+        if (gA.All(x => x.Similar == null)) continue;
+
+        foreach (var gB in groups) {
+          if (gA.Key == gB.Key) continue;
+
+          var sims = new List<double>();
+
+          foreach (var segmentA in gA)
+            foreach (var segmentB in gB)
+              if (segmentA.Similar != null && segmentA.Similar.TryGetValue(segmentB, out var sim) && sim >= SimilarityLimit)
+                sims.Add(sim);
+
+          if (sims.Count == 0) continue;
+
+          var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
+          confirmedSegment.similar.Add(new(gB.Key, GetRandomSegment(gB), simMedian));
+        }
+      }
+
+      if (GroupConfirmedSegments) {
+        foreach (var (personId, segment, similar) in tmp) {
+          var groupTitle = segment.Person != null
+            ? segment.Person.Name
+            : personId.ToString();
+
+          var group = new ItemsGroup();
+          group.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
+          group.Items.Add(segment);
+          ConfirmedGrouped.Add(group);
+
+          foreach (var simGroup in similar.OrderByDescending(x => x.sim))
+            group.Items.Add(simGroup.segment);
+        }
+      }
+      else {
+        foreach (var group in tmp
+          .GroupBy(x => {
+            if (x.segment.Person == null) return "Unknown";
+            return x.segment.Person.DisplayKeywords == null
+              ? string.Empty
+              : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name));
+          })
+          .OrderBy(g => g.First().personId < 0)
+          .ThenBy(g => g.Key)) {
+
+          if (string.IsNullOrEmpty(group.Key)) {
+            foreach (var (_, segment, _) in group)
+              ConfirmedGrouped.Add(segment);
+          }
+          else {
+            var itemsGroup = new ItemsGroup();
+            itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
+              Icon = "Unknown".Equals(group.Key)
+                ? "IconPeople"
+                : "IconTag",
+              Title = group.Key });
+            ConfirmedGrouped.Add(itemsGroup);
+
+            foreach (var (_, segment, _) in group)
+              itemsGroup.Items.Add(segment);
+          }
+        }
+      }
+
+      OnPropertyChanged(nameof(ConfirmedGrouped));
     }
   }
 }

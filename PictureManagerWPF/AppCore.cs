@@ -63,17 +63,17 @@ namespace PictureManager {
     private void AttachEvents() {
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
-        SegmentsVM.SortAndReload();
+        App.Core.SegmentsM.Reload();
       };
 
       App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
-        SegmentsVM.SortAndReload();
+        App.Core.SegmentsM.Reload();
       };
 
       App.Core.PeopleM.PeopleKeywordChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
-        SegmentsVM.SortAndReload();
+        App.Core.SegmentsM.Reload();
       };
 
       MainWindowVM.PropertyChanged += (_, e) => {
