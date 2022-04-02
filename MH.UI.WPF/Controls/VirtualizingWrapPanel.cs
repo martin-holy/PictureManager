@@ -170,13 +170,16 @@ namespace MH.UI.WPF.Controls {
 
     private int GetRowIndex(object item) {
       var rowIndex = 0;
+      var found = false;
       foreach (var row in Items) {
-        if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item)))
+        if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item))) {
+          found = true;
           break;
+        }
         rowIndex++;
       }
 
-      return rowIndex;
+      return found ? rowIndex : 0;
     }
 
     private int GetRowIndex(FrameworkElement element) {
