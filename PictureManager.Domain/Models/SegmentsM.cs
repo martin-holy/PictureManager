@@ -472,7 +472,6 @@ namespace PictureManager.Domain.Models {
             : s.PersonId.ToString();
 
         segmentsGroup = new();
-        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
 
         foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
           segmentsGroup.Items.Add(segment);
@@ -492,6 +491,9 @@ namespace PictureManager.Domain.Models {
 
         if (segmentsGroup.Items.Count != 0) {
           segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
+            Icon = "IconPeople",
+            Title = groupTitle });
+          segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
             Icon = "IconImageMultiple",
             Title = segmentsGroup.Items.Count.ToString() });
           LoadedGrouped.Add(segmentsGroup);
@@ -506,7 +508,6 @@ namespace PictureManager.Domain.Models {
         .OrderByDescending(x => x.SimMax);
       
       segmentsGroup = new();
-      segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = "0" });
 
       foreach (var segment in withSimilar) {
         var simSegments = segment.Similar
@@ -523,8 +524,15 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
         segmentsGroup.Items.Add(segment);
 
-      if (segmentsGroup.Items.Count != 0)
+      if (segmentsGroup.Items.Count != 0) {
+        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
+          Icon = "IconPeople",
+          Title = "0" });
+        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
+            Icon = "IconImageMultiple",
+            Title = segmentsGroup.Items.Count.ToString() });
         LoadedGrouped.Add(segmentsGroup);
+      }
 
       OnPropertyChanged(nameof(LoadedGrouped));
     }
