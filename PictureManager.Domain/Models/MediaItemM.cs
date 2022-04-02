@@ -141,7 +141,7 @@ namespace PictureManager.Domain.Models {
           .Concat(
             Segments == null
               ? Array.Empty<string>()
-              : Segments.Where(x => x.Person != null).Select(x => x.Person.Name)).ToArray();
+              : Segments.Select(x => x.Person == null ? $"S {x.PersonId}" : x.Person.Name)).ToArray();
 
         if (people.Any()) {
           InfoBoxPeople = new();
