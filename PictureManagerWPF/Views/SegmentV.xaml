@@ -188,7 +188,27 @@
           Orientation="Horizontal"
           HorizontalAlignment="Right"
           VerticalAlignment="Top">
+          
+          <StackPanel.Style>
+            <Style TargetType="{x:Type StackPanel}">
+              <Setter
+                Property="Visibility"
+                Value="Hidden" />
 
+              <Style.Triggers>
+                <DataTrigger
+                  Binding="{Binding IsMouseOver, ElementName=Root}"
+                  Value="True">
+
+                  <Setter
+                    Property="Visibility"
+                    Value="Visible" />
+                </DataTrigger>
+              </Style.Triggers>
+            </Style>
+          </StackPanel.Style>
+            
+          <!-- Same Person Button -->
           <StackPanel Orientation="Horizontal">
             <StackPanel.Style>
               <Style TargetType="{x:Type StackPanel}">
@@ -197,77 +217,55 @@
                   Value="Hidden" />
 
                 <Style.Triggers>
-                  <DataTrigger
-                    Binding="{Binding IsMouseOver, ElementName=Root}"
-                    Value="True">
+                  <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                      <Condition
+                        Binding="{Binding IsSelected}"
+                        Value="True" />
+                      <Condition
+                        Binding="{Binding SegmentsM.MultiplePeopleSelected,
+                                  Source={x:Static pm:App.Core},
+                                  Converter={StaticResource AllToBoolConverter}}"
+                        Value="True" />
+                    </MultiDataTrigger.Conditions>
 
                     <Setter
                       Property="Visibility"
                       Value="Visible" />
-                  </DataTrigger>
+                  </MultiDataTrigger>
                 </Style.Triggers>
               </Style>
             </StackPanel.Style>
-            
-            <!-- Same Person Button -->
-            <StackPanel Orientation="Horizontal">
-              <StackPanel.Style>
-                <Style TargetType="{x:Type StackPanel}">
-                  <Setter
-                    Property="Visibility"
-                    Value="Hidden" />
-
-                  <Style.Triggers>
-                    <MultiDataTrigger>
-                      <MultiDataTrigger.Conditions>
-                        <Condition
-                          Binding="{Binding IsSelected}"
-                          Value="True" />
-                        <Condition
-                          Binding="{Binding SegmentsM.MultiplePeopleSelected,
-                                    Source={x:Static pm:App.Core},
-                                    Converter={StaticResource AllToBoolConverter}}"
-                          Value="True" />
-                      </MultiDataTrigger.Conditions>
-
-                      <Setter
-                        Property="Visibility"
-                        Value="Visible" />
-                    </MultiDataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </StackPanel.Style>
               
-              <Border
-                Style="{StaticResource SBorderGroup}"
-                Background="#1181B1"
-                VerticalAlignment="Center"
-                Margin="0,0,2,0">
+            <Border
+              Style="{StaticResource SBorderGroup}"
+              Background="#1181B1"
+              VerticalAlignment="Center"
+              Margin="0,0,2,0">
 
-                <TextBlock
-                  Style="{StaticResource STextBlock}"
-                  Text="{Binding SegmentsM.SelectedCount,
-                         Source={x:Static pm:App.Core}}" />
-              </Border>
+              <TextBlock
+                Style="{StaticResource STextBlock}"
+                Text="{Binding SegmentsM.SelectedCount,
+                        Source={x:Static pm:App.Core}}" />
+            </Border>
 
-              <mhc:IconButton
-                Source="{StaticResource IconEquals}"
-                Size="14"
-                ToolTip="Set selected as same person"
-                Command="{Binding SegmentsVM.SetSelectedAsSamePersonCommand,
-                          Source={x:Static pm:App.Ui}}" />
-            </StackPanel>
-
-            <!-- Open Person Detail Control -->
             <mhc:IconButton
-              Source="{StaticResource IconInformation}"
+              Source="{StaticResource IconEquals}"
               Size="14"
-              Command="{Binding PersonVM.SetPersonCommand,
-                        Source={x:Static pm:App.Ui}}"
-              CommandParameter="{Binding Person}" />
+              ToolTip="Set selected as same person"
+              Command="{Binding SegmentsVM.SetSelectedAsSamePersonCommand,
+                        Source={x:Static pm:App.Ui}}" />
           </StackPanel>
 
+          <!-- Open Person Detail Control -->
+          <mhc:IconButton
+            Source="{StaticResource IconInformation}"
+            Size="14"
+            Command="{Binding PersonVM.SetPersonCommand,
+                      Source={x:Static pm:App.Ui}}"
+            CommandParameter="{Binding Person}" />
         </StackPanel>
+
       </Grid>
     </Border>
   </DataTemplate>
