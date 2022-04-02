@@ -230,21 +230,20 @@ namespace PictureManager.ViewModels {
 
       if (item == null) return;
 
-      if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM) {
-        if (_core.MediaItemsM.IsEditModeOn) {
-          if (_coreVM.MediaItemsVM.SetMetadata(item) == 0) return;
+      if (item is RatingTreeVM or PersonTreeVM or KeywordTreeVM or GeoNameTreeVM && _core.MediaItemsM.IsEditModeOn) {
+        item.IsSelected = false;
 
-          MarkUsedKeywordsAndPeople();
-          if (item is RatingTreeVM)
-            _coreVM.StatusPanelVM.UpdateRating();
+        if (_coreVM.MediaItemsVM.SetMetadata(item) == 0) return;
 
-          return;
-        }
+        MarkUsedKeywordsAndPeople();
+        if (item is RatingTreeVM)
+          _coreVM.StatusPanelVM.UpdateRating();
+
+        return;
       }
 
       switch (item) {
         case RatingTreeVM r:
-          r.IsSelected = false;
           _ = _coreVM.ThumbnailsGridsVM.ActivateFilter(r, DisplayFilter.Or);
           break;
 
@@ -282,13 +281,10 @@ namespace PictureManager.ViewModels {
             _coreVM.MainTabsVM.Activate(_coreVM.PeopleVM.MainTabsItem);
             _core.PeopleM.ReloadPeopleInGroups();
           }
-
-          // if category is going to collapse and sub item is selected, category gets selected
-          // and setting IsSelected to false in OnSelectedItemChanged will stop collapsing the category
-          // this will only prevent selecting category if selection was made with mouse click
-          cat.IsSelected = false;
           break;
       }
+
+      item.IsSelected = false;
     }
 
     private void ToggleKeyword(KeywordTreeVM keyword) {
