@@ -27,6 +27,7 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
     public Dictionary<int, SegmentM> AllDic { get; set; }
+    public SegmentM IgnoreImageCacheSegment { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public List<ItemsGroup> LoadedGrouped { get; } = new();

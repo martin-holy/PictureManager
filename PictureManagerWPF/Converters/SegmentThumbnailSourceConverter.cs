@@ -7,10 +7,10 @@ using System.Windows.Media.Imaging;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Converters {
-  public class SegmentThumbnailSourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+  public class SegmentThumbnailSourceConverter : IMultiValueConverter {
+    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
       try {
-        if (value is not SegmentM segment) return null;
+        if (values?.Length != 2 || values[1] is not SegmentM segment) return null;
 
         if (!File.Exists(segment.FilePathCache))
           segment.CreateThumbnail();
@@ -19,6 +19,12 @@ namespace PictureManager.Converters {
         src.BeginInit();
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(segment.FilePathCache);
+
+        if (segment.Equals(App.Core.SegmentsM.IgnoreImageCacheSegment)) {
+          App.Core.SegmentsM.IgnoreImageCacheSegment = null;
+          src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+        }
+
         src.EndInit();
 
         return src;
@@ -29,7 +35,7 @@ namespace PictureManager.Converters {
       }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      value;
+    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>
+      throw new NotSupportedException();
   }
 }
