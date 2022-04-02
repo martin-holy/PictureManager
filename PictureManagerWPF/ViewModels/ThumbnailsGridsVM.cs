@@ -99,8 +99,11 @@ namespace PictureManager.ViewModels {
       grid.Panel.ClearRows();
       grid.Model.ClearItBeforeLoad();
       Model.All.Remove(grid.Model);
-      Current = null;
-      Model.Current = null;
+
+      if (Current.Equals(grid)) {
+        Current = null;
+        Model.Current = null;
+      }
     }
 
     public async Task SetCurrentGrid(ThumbnailsGridVM grid) {
