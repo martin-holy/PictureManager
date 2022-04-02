@@ -134,6 +134,9 @@ namespace PictureManager.Domain.Models {
       try {
         Imaging.GetCroppedBitmapSource(filePath, ToRect(), Core.Instance.SegmentsM.SegmentSize)
           ?.SaveAsJpg(80, FilePathCache);
+
+        Core.Instance.SegmentsM.IgnoreImageCacheSegment = this;
+        OnPropertyChanged(nameof(FilePathCache));
       }
       catch (Exception ex) {
         Core.Instance.LogError(ex, filePath);

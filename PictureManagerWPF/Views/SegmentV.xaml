@@ -168,16 +168,20 @@
       </Border.ToolTip>
     
       <Grid>
-
+        
         <Image
-          Source="{Binding
-                   IsAsync=True,
-                   Converter={StaticResource SegmentThumbnailSourceConverter}}"
           Stretch="Fill"
           Width="{Binding SegmentsVM.SegmentUiSize,
                   Source={x:Static pm:App.Ui}}"
           Height="{Binding SegmentsVM.SegmentUiSize,
-                   Source={x:Static pm:App.Ui}}" />
+                   Source={x:Static pm:App.Ui}}">
+          <Image.Source>
+            <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
+              <Binding Path="FilePathCache" IsAsync="True" />
+              <Binding />
+            </MultiBinding>
+          </Image.Source>
+        </Image>
 
         <!-- Buttons -->
         <StackPanel

@@ -65,14 +65,18 @@
                       BorderBrush="Black">
                       
                       <Image
-                        Source="{Binding Model.Segment,
-                                 IsAsync=True,
-                                 Converter={StaticResource SegmentThumbnailSourceConverter}}"
                         Stretch="Fill"
                         Width="{Binding SegmentsVM.SegmentUiSize,
                                 Source={x:Static pm:App.Ui}}"
                         Height="{Binding SegmentsVM.SegmentUiSize,
-                                 Source={x:Static pm:App.Ui}}" />
+                                 Source={x:Static pm:App.Ui}}">
+                        <Image.Source>
+                          <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
+                            <Binding Path="Model.Segment.FilePathCache" IsAsync="True" />
+                            <Binding Path="Model.Segment" />
+                          </MultiBinding>
+                        </Image.Source>
+                      </Image>
                     </Border>
                   </ToolTip>
                 </Setter.Value>
