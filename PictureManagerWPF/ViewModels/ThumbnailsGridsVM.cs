@@ -261,12 +261,7 @@ namespace PictureManager.ViewModels {
 
       await Task.Run(async () => {
         // read metadata for new items and add thumbnails to grid
-        var metadata = ReadMetadataAndListThumbsAsync(items, token);
-        // create thumbnails
-        var progress = new Progress<int>(x => _core.TitleProgressBarM.ValueB = x);
-        var thumbs = Imaging.CreateThumbnailsAsync(items, Settings.Default.ThumbnailSize, Settings.Default.JpegQualityLevel, progress, token);
-        
-        await Task.WhenAll(metadata, thumbs);
+        await ReadMetadataAndListThumbsAsync(items, token);
 
         if (token.IsCancellationRequested)
           await Core.RunOnUiThread(() => _coreVM.MediaItemsVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
@@ -308,6 +303,7 @@ namespace PictureManager.ViewModels {
                 Current.Model.UpdatePositionSlashCount();
                 _core.MediaItemsM.Delete(mi);
                 _core.TitleProgressBarM.ValueA = percent;
+                _core.TitleProgressBarM.ValueB = percent;
               });
 
               continue;
@@ -319,6 +315,7 @@ namespace PictureManager.ViewModels {
           await Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             _core.TitleProgressBarM.ValueA = percent;
+            _core.TitleProgressBarM.ValueB = percent;
           });
         }
       }, token);
@@ -378,7 +375,6 @@ namespace PictureManager.ViewModels {
           folder.MediaItems.Add(mi);
           await _coreVM.MediaItemsVM.ReadMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
 
           // reload grid
           Current.Model.LoadedItems.AddInOrder(mi,

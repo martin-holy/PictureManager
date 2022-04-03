@@ -173,7 +173,5 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(InfoBoxPeople));
       OnPropertyChanged(nameof(InfoBoxKeywords));
     }
-
-    public void ReloadThumbnail() => OnPropertyChanged(nameof(FilePathCache));
   }
 }
