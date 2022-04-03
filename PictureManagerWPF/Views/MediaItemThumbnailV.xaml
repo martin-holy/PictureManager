@@ -4,6 +4,7 @@
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:sys="clr-namespace:System;assembly=mscorlib"
+  xmlns:converters="clr-namespace:PictureManager.Converters"
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type models:MediaItemM}">
@@ -19,6 +20,7 @@
         </ResourceDictionary.MergedDictionaries>
         
         <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
+        <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter" />
         
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -52,8 +54,9 @@
       <Grid x:Name="PART_Grid">
         <!-- Thumbnail Image -->
         <Image
-          Source="{Binding FilePathCache,
-                   Converter={StaticResource ImageSourceConverter}}"
+          Source="{Binding
+                   IsAsync=True,
+                   Converter={StaticResource MediaItemThumbnailSourceConverter}}"
           Stretch="Fill" />
 
         <!-- Video over layer -->

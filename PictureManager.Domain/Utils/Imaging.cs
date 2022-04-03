@@ -155,35 +155,6 @@ namespace PictureManager.Domain.Utils {
       }
     }
 
-    public static Task CreateThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, int size, int quality, IProgress<int> progress, CancellationToken token) {
-      return Task.Run(async () => {
-        var count = items.Count;
-        var workingOn = 0;
-
-        await Task.WhenAll(
-          from partition in Partitioner.Create(items).GetPartitions(Environment.ProcessorCount)
-          select Task.Run(async delegate {
-            using (partition) {
-              while (partition.MoveNext()) {
-                if (token.IsCancellationRequested) break;
-
-                workingOn++;
-                var workingOnInt = workingOn;
-
-                await Core.RunOnUiThread(() => progress.Report(Convert.ToInt32((double)workingOnInt / count * 100)));
-
-                var mi = partition.Current;
-                // Folder can by null if the mediaItem is corrupted and is deleted in loading metadata process
-                if (mi == null || mi.Folder == null) continue;
-                if (File.Exists(mi.FilePathCache)) continue;
-                await CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, size, 0, quality);
-                mi.ReloadThumbnail();
-              }
-            }
-          }));
-      }, token);
-    }
-
     public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle, int quality) =>
       type == MediaType.Image
         ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size, quality))
@@ -210,42 +181,36 @@ namespace PictureManager.Domain.Utils {
       return tcs.Task;
     }
 
-    public static bool CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) {
-      try {
-        var dir = Path.GetDirectoryName(destPath);
-        if (dir == null) return false;
-        Directory.CreateDirectory(dir);
+    public static void CreateImageThumbnail(string srcPath, string destPath, int desiredSize, int quality) {
+      var dir = Path.GetDirectoryName(destPath);
+      if (dir == null) throw new ArgumentException($"Invalid destination path. {destPath}");
+      Directory.CreateDirectory(dir);
 
-        using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-          var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-          if (decoder.CodecInfo?.FileExtensions.Contains("jpg") != true || decoder.Frames[0] == null) return false;
+      using (Stream srcFileStream = File.Open(srcPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+        var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
+        if (decoder.CodecInfo?.FileExtensions.Contains("jpg") != true || decoder.Frames[0] == null)
+          throw new BadImageFormatException($"Image is not a JPG. {srcPath}");
 
-          var frame = decoder.Frames[0];
-          var orientation = (MediaOrientation)((ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1);
-          var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
-          var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
-          var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
+        var frame = decoder.Frames[0];
+        var orientation = (MediaOrientation)((ushort?)((BitmapMetadata)frame.Metadata)?.GetQuery("System.Photo.Orientation") ?? 1);
+        var rotated = orientation is MediaOrientation.Rotate90 or MediaOrientation.Rotate270;
+        var pxw = (double)(rotated ? frame.PixelHeight : frame.PixelWidth);
+        var pxh = (double)(rotated ? frame.PixelWidth : frame.PixelHeight);
 
-          GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
+        GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
 
-          var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
+        var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
 
-          if (rotated) {
-            // yes, angles 90 and 270 are switched
-            var angle = orientation == MediaOrientation.Rotate90 ? 270 : 90;
-            output = new TransformedBitmap(output, new RotateTransform(angle));
-          }
-
-          using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
-          var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-          encoder.Frames.Add(BitmapFrame.Create(output));
-          encoder.Save(destFileStream);
+        if (rotated) {
+          // yes, angles 90 and 270 are switched
+          var angle = orientation == MediaOrientation.Rotate90 ? 270 : 90;
+          output = new TransformedBitmap(output, new RotateTransform(angle));
         }
 
-        return true;
-      }
-      catch (Exception) {
-        return false;
+        using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
+        var encoder = new JpegBitmapEncoder { QualityLevel = quality };
+        encoder.Frames.Add(BitmapFrame.Create(output));
+        encoder.Save(destFileStream);
       }
     }
 

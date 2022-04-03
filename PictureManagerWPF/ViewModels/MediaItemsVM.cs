@@ -384,8 +384,7 @@ namespace PictureManager.ViewModels {
 
           TryWriteMetadata(mi);
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, mi.RotationAngle, Settings.Default.JpegQualityLevel);
-          mi.ReloadThumbnail();
+          File.Delete(mi.FilePathCache);
           await Core.RunOnUiThread(() => Model.DataAdapter.IsModified = true);
         },
         mi => mi.FilePath,
@@ -666,10 +665,9 @@ namespace PictureManager.ViewModels {
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
-        async (mi) => {
+        (mi) => {
           mi.SetThumbSize(true);
-          await Imaging.CreateThumbnailAsync(mi.MediaType, mi.FilePath, mi.FilePathCache, mi.ThumbSize, 0, Settings.Default.JpegQualityLevel);
-          mi.ReloadThumbnail();
+          File.Delete(mi.FilePathCache);
         },
         mi => mi.FilePath,
         delegate {
