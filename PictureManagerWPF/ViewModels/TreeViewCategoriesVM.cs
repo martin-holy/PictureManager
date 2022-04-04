@@ -252,7 +252,7 @@ namespace PictureManager.ViewModels {
           break;
 
         case PersonTreeVM p:
-          SetPerson(p.Model);
+          _core.SegmentsM.SetPerson(p.Model);
           break;
 
         case FavoriteFolderTreeVM ff:
@@ -285,17 +285,6 @@ namespace PictureManager.ViewModels {
       }
 
       item.IsSelected = false;
-    }
-
-    private void SetPerson(PersonM person) {
-      var sCount = _core.SegmentsM.Selected.Count;
-      if (sCount == 0) return;
-
-      var msgCount = sCount > 1 ? $"'s ({sCount})" : string.Empty;
-      var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}??";
-
-      if (!MessageDialog.Show("Set Person", msg, true)) return;
-      _core.SegmentsM.SetSelectedAsPerson(person);
     }
   }
 }
