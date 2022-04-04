@@ -33,6 +33,8 @@ namespace PictureManager {
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
+      Core.MessageDialogShow = (a, b, c, d, e) =>
+        MH.UI.WPF.Controls.DialogHost.Show(new MH.Utils.Dialogs.MessageDialog(a, b, c, d, e));
 
       MainWindowVM = new(App.Core, this);
       MainWindowContentVM = new();

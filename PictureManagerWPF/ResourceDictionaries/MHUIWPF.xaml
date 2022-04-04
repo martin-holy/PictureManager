@@ -4,13 +4,26 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/DialogHostStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/MessageDialogStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VirtualizingWrapPanelStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
+  
+  <Style
+    TargetType="{x:Type mhc:DialogHost}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.DialogHost}">
+    <Setter
+      Property="Background"
+      Value="{StaticResource ColorBrushBackground}" />
+    <Setter
+      Property="Foreground"
+      Value="White" />
+  </Style>
   
   <Style
     TargetType="{x:Type mhc:Icon}"

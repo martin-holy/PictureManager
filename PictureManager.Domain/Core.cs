@@ -29,6 +29,8 @@ namespace PictureManager.Domain {
 
     private static TaskScheduler UiTaskScheduler { get; set; }
 
+    public static MH.Utils.Dialogs.MessageDialogShow MessageDialogShow { get; set; }
+
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 
