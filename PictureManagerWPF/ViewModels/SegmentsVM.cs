@@ -11,7 +11,6 @@ using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
@@ -78,7 +77,7 @@ namespace PictureManager.ViewModels {
       SelectCommand = new(Select);
       SegmentMatchingCommand = new(SegmentMatching, () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       GroupConfirmedCommand = new(() => SegmentsM.Reload(false, true));
-      CompareAllGroupsCommand = new(() => SegmentsM.LoadSegments(_mediaItems, true));
+      CompareAllGroupsCommand = new(() => SegmentsM.LoadSegments(_mediaItems, 1));
       SortCommand = new(() => SegmentsM.Reload(true, true));
       CompareCommand = new(async () => {
         await CompareAsync();
@@ -100,10 +99,10 @@ namespace PictureManager.ViewModels {
       SegmentsM.PropertyChanged += (_, e) => {
         switch (e.PropertyName) {
           case nameof(SegmentsM.LoadedGrouped):
-            _matchingPanel.Wrap();
+            _matchingPanel?.Wrap();
             break;
           case nameof(SegmentsM.ConfirmedGrouped):
-            _confirmedMatchingPanel.Wrap();
+            _confirmedMatchingPanel?.Wrap();
             break;
         }
       };
@@ -154,16 +153,19 @@ namespace PictureManager.ViewModels {
     }
 
     private void SegmentMatching() {
+      var result = Core.MessageDialogShow(
+        "Segment Matching",
+        "Do you want to load all segments, segments with person \nor one segment from each person?",
+        "IconQuestion",
+        true,
+        new[] { "All segments", "Segments with person", "One from each" });
+
+      if (result == -1) return;
+
       _mediaItems = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       _coreVM.MainTabsVM.Activate(MainTabsItem);
 
-      var all = MessageDialog.Show(
-        "Segment Matching",
-        "Do you want to load all segments or just segments with person?",
-        true,
-        new[] { "All segments", "Segments with person" });
-
-      SegmentsM.LoadSegments(_mediaItems, !all);
+      SegmentsM.LoadSegments(_mediaItems, result);
     }
   }
 }
