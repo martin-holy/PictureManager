@@ -248,7 +248,7 @@ namespace PictureManager.ViewModels {
           break;
 
         case KeywordTreeVM k:
-          ToggleKeyword(k);
+          App.Core.ToggleKeyword(k.Model);
           break;
 
         case PersonTreeVM p:
@@ -285,32 +285,6 @@ namespace PictureManager.ViewModels {
       }
 
       item.IsSelected = false;
-    }
-
-    private void ToggleKeyword(KeywordTreeVM keyword) {
-      var sCount = _core.SegmentsM.Selected.Count;
-      var pCount = _core.PeopleM.Selected.Count;
-      if (sCount == 0 && pCount == 0) return;
-
-      var msgA = $"Do you want to toggle #{keyword.Model.FullName} on selected";
-      var msgS = sCount > 1 ? "Segments" : "Segment";
-      var msgP = pCount > 1 ? "People" : "Person";
-      var msgSCount = sCount > 1 ? $" ({sCount})" : string.Empty;
-      var msgPCount = pCount > 1 ? $" ({pCount})" : string.Empty;
-
-      bool? result = null;
-      if (sCount > 0 && pCount > 0)
-        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgS} or {msgP}?", true, msgS + msgSCount, msgP + msgPCount);
-      else if (sCount > 0)
-        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgS}{msgSCount}?", true) ? true : null;
-      else if (pCount > 0)
-        result = MessageDialog.Show("Toggle Keyword", $"{msgA} {msgP}{msgPCount}?", true) ? false : null;
-
-      if (result == null) return;
-      if (result == true)
-        _core.SegmentsM.ToggleKeywordOnSelected(keyword.Model);
-      else
-        _core.PeopleM.ToggleKeywordOnSelected(keyword.Model);
     }
 
     private void SetPerson(PersonM person) {

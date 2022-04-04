@@ -158,6 +158,33 @@ namespace PictureManager.Domain {
       };
     }
 
+    public void ToggleKeyword(KeywordM keyword) {
+      var sCount = SegmentsM.Selected.Count;
+      var pCount = PeopleM.Selected.Count;
+      if (sCount == 0 && pCount == 0) return;
+
+      var title = "Toggle Keyword";
+      var icon = "IconQuestion";
+      var msgA = $"Do you want to toggle #{keyword.FullName} on selected";
+      var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
+      var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
+
+      if (sCount > 0 && pCount > 0) {
+        switch (MessageDialogShow(title, $"{msgA} {msgS} or {msgP}?", icon, true, new[] { msgS, msgP })) {
+          case 0: SegmentsM.ToggleKeywordOnSelected(keyword); break;
+          case 1: PeopleM.ToggleKeywordOnSelected(keyword); break;
+        }
+      }
+      else if (sCount > 0) {
+        if (MessageDialogShow("Toggle Keyword", $"{msgA} {msgS}?", icon, true) == 0)
+          SegmentsM.ToggleKeywordOnSelected(keyword);
+      }
+      else if (pCount > 0) {
+        if (MessageDialogShow("Toggle Keyword", $"{msgA} {msgP}?", icon, true) == 0)
+          PeopleM.ToggleKeywordOnSelected(keyword);
+      }
+    }
+
     public void LogError(Exception ex) =>
       LogError(ex, string.Empty);
 
