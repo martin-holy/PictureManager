@@ -42,7 +42,7 @@ namespace PictureManager.ViewModels {
     private void CloseTab(HeaderedListItem<object, string> item) {
       Items.Remove(item);
 
-      if (Selected.Equals(item))
+      if (item.Equals(Selected))
         Selected = Items.FirstOrDefault();
 
       OnPropertyChanged(nameof(TabMaxHeight));
