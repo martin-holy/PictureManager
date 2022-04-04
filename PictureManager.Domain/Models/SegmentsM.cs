@@ -393,12 +393,12 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void LoadSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
+    public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
       GroupSegments = false;
       DeselectAll();
       Loaded.Clear();
 
-      foreach (var segment in GetSegments(mediaItems, withPersonOnly))
+      foreach (var segment in GetSegments(mediaItems, mode))
         Loaded.Add(segment);
 
       Reload(true, true);
@@ -415,25 +415,34 @@ namespace PictureManager.Domain.Models {
         ReloadConfirmedGrouped();
     }
 
-    private SegmentM[] GetSegments(List<MediaItemM> mediaItems, bool withPersonOnly) {
-      if (withPersonOnly) {
-        var people = mediaItems
-          .Where(mi => mi.Segments != null)
-          .SelectMany(mi => mi.Segments.Select(s => s.PersonId))
-          .Distinct()
-          .ToHashSet();
-        people.Remove(0);
+    private SegmentM[] GetSegments(List<MediaItemM> mediaItems, int mode) {
+      switch (mode) {
+        case 0: // all segments from mediaItems
+          return mediaItems
+            .Where(x => x.Segments != null)
+            .SelectMany(x => x.Segments)
+            .ToArray();
+        case 1: // all segments with person found on segments from mediaItems
+          var people = mediaItems
+            .Where(mi => mi.Segments != null)
+            .SelectMany(mi => mi.Segments.Select(s => s.PersonId))
+            .Distinct()
+            .ToHashSet();
+          people.Remove(0);
 
-        return All
-          .Where(s => people.Contains(s.PersonId))
-          .OrderBy(s => s.MediaItem.FileName)
-          .ToArray();
+          return All
+            .Where(s => people.Contains(s.PersonId))
+            .OrderBy(s => s.MediaItem.FileName)
+            .ToArray();
+        case 2: // one segment from each person
+          return All
+            .Where(x => x.PersonId != 0)
+            .GroupBy(x => x.PersonId)
+            .Select(x => x.First())
+            .ToArray();
+        default:
+          return Array.Empty<SegmentM>();
       }
-
-      return mediaItems
-        .Where(x => x.Segments != null)
-        .SelectMany(x => x.Segments)
-        .ToArray();
     }
 
     private void ReloadLoadedGrouped() {
