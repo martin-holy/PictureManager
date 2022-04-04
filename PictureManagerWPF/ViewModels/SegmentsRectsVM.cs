@@ -28,7 +28,7 @@ namespace PictureManager.ViewModels {
       CreateCommand = new(Create, () => AreVisible);
       EditCommand = new(Edit);
       EndEditCommand = new(() => SegmentsRectsM.EndEdit());
-      DeleteCommand = new(Delete);
+      DeleteCommand = new(SegmentsRectsM.Delete);
     }
 
     private void SetCurrent(RoutedEventArgs e) {
@@ -54,14 +54,6 @@ namespace PictureManager.ViewModels {
       e.Handled = true;
       var pos = e.GetPosition(_view);
       SegmentsRectsM.StartEdit((int)pos.X, (int)pos.Y);
-    }
-
-    private void Delete(SegmentRectM segmentRect) {
-      if (MessageDialog.Show(
-            "Delete Segment",
-            "Do you really want to delete this segment?",
-            true))
-        SegmentsRectsM.Delete(segmentRect);
     }
   }
 }
