@@ -21,6 +21,11 @@ namespace MH.UI.WPF.Controls {
     public static readonly DependencyProperty ItemsToWrapProperty = DependencyProperty.Register(
       nameof(ItemsToWrap),
       typeof(IEnumerable<object>),
+      typeof(VirtualizingWrapPanel));
+
+    public static readonly DependencyProperty WrapTriggerProperty = DependencyProperty.Register(
+      nameof(WrapTrigger),
+      typeof(object),
       typeof(VirtualizingWrapPanel),
       new(ItemsToWrapChanged));
 
@@ -43,6 +48,11 @@ namespace MH.UI.WPF.Controls {
     public IEnumerable<object> ItemsToWrap {
       get => (IEnumerable<object>)GetValue(ItemsToWrapProperty);
       set => SetValue(ItemsToWrapProperty, value);
+    }
+
+    public object WrapTrigger {
+      get => GetValue(WrapTriggerProperty);
+      set => SetValue(WrapTriggerProperty, value);
     }
 
     public ObservableCollection<object> WrappedItems {
