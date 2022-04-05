@@ -62,12 +62,8 @@ namespace PictureManager.ViewModels {
       return DragDropEffects.None;
     }
 
-    private void TopSegmentsDrop(DragEventArgs e, object source, object data) {
-      if (data is SegmentM segmentM) {
-        _peopleM.ToggleTopSegment(PersonM, segmentM);
-        _topSegmentsPanel.Wrap();
-      }
-    }
+    private void TopSegmentsDrop(DragEventArgs e, object source, object data) =>
+      _peopleM.ToggleTopSegment(PersonM, data as SegmentM);
 
     private void SetPerson(PersonM person) {
       PersonM = person;
@@ -77,8 +73,9 @@ namespace PictureManager.ViewModels {
 
     public void ReloadPersonSegments() {
       _segmentsM.ReloadPersonSegments(PersonM, AllSegments, AllSegmentsGrouped);
+      PersonM?.OnPropertyChanged(nameof(PersonM.TopSegments));
       OnPropertyChanged(nameof(AllSegments));
-      _allSegmentsPanel?.Wrap();
+      OnPropertyChanged(nameof(AllSegmentsGrouped));
     }
 
     private void Select(ClickEventArgs e) {

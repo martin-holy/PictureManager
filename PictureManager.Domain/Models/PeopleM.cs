@@ -109,8 +109,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ToggleTopSegment(PersonM person, SegmentM segment) {
+      if (segment == null) return;
+
       person.TopSegments = ListExtensions.Toggle(person.TopSegments, segment, true);
-      // BUG this doesn't work. I need to call Wrap in PersonVM
       person.OnPropertyChanged(nameof(person.TopSegments));
 
       if (person.TopSegments?.Count > 0)
