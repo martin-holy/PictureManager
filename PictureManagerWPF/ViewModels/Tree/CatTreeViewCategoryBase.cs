@@ -114,10 +114,11 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private static bool DeleteAccepted(string name) =>
-      MessageDialog.Show(
+      Core.MessageDialogShow(
         "Delete Confirmation",
         $"Do you really want to delete '{name}'?",
-        true);
+        "IconQuestion",
+        true) == 0;
 
     private static string CategoryToIconName(Category category) {
       return category switch {
