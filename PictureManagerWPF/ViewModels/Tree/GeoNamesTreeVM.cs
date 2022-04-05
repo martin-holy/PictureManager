@@ -34,7 +34,7 @@ namespace PictureManager.ViewModels.Tree {
         model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), onItemsChanged));
 
     private static void NewGeoNameFromGps(GeoNamesTreeVM treeVM) {
-      if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
+      if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
 
       var result = InputDialog.Open(
         "IconLocationCheckin",
