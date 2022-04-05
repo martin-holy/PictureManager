@@ -32,7 +32,7 @@ namespace PictureManager.Domain.Models {
     public List<ItemsGroup> LoadedGrouped { get; } = new();
     public List<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
-    public ObservableCollection<SegmentM> SegmentsDrawer { get; } = new();
+    public List<SegmentM> SegmentsDrawer { get; } = new();
     public ObservableCollection<Tuple<int, int, int, int, bool>> SegmentToolTipRects { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
@@ -73,13 +73,13 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
-    public bool SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
+    public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
       if (!add && Core.MessageDialogShow(
             "Segments Drawer",
             "Do you want to remove segments from drawer?",
             "IconQuestion",
             true) != 0)
-        return false;
+        return;
 
       var count = SegmentsDrawer.Count;
 
@@ -91,11 +91,16 @@ namespace PictureManager.Domain.Models {
           SegmentsDrawer.Remove(segment);
 
       if (count != SegmentsDrawer.Count) {
+        OnPropertyChanged(nameof(SegmentsDrawer));
         DataAdapter.AreTablePropsModified = true;
-        return true;
       }
+    }
 
-      return false;
+    public void SegmentsDrawerRemove(SegmentM segment) {
+      if (SegmentsDrawer.Remove(segment)) {
+        OnPropertyChanged(nameof(SegmentsDrawer));
+        DataAdapter.AreTablePropsModified = true;
+      }
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>

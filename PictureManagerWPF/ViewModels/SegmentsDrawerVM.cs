@@ -49,14 +49,12 @@ namespace PictureManager.ViewModels {
       return DragDropEffects.None;
     }
 
-    private void DoDrop(DragEventArgs e, object source, object data) {
-      if (SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !source.Equals(_panel)))
-        _panel.Wrap();
-    }
+    private void DoDrop(DragEventArgs e, object source, object data) =>
+      SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !source.Equals(_panel));
 
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM })
-        SegmentsM.Select(SegmentsM.SegmentsDrawer.ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
+        SegmentsM.Select(SegmentsM.SegmentsDrawer, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
