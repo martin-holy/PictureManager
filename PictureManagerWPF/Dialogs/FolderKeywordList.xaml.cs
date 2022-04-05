@@ -1,4 +1,5 @@
-﻿using PictureManager.Domain.Models;
+﻿using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace PictureManager.Dialogs {
 
     private void BtnRemove_OnClick(object sender, RoutedEventArgs e) {
       if (LbFolderKeywords.SelectedItems.Count == 0) return;
-      if (!MessageDialog.Show("Remove Confirmation", "Are you sure?", true)) return;
+      if (Core.MessageDialogShow("Remove Confirmation", "Are you sure?", "IconQuestion", true) != 0) return;
 
       foreach (var item in LbFolderKeywords.SelectedItems.Cast<FolderM>().ToList()) {
         item.IsFolderKeyword = false;
