@@ -73,7 +73,14 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
-    public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
+    public bool SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
+      if (!add && Core.MessageDialogShow(
+            "Segments Drawer",
+            "Do you want to remove segments from drawer?",
+            "IconQuestion",
+            true) != 0)
+        return false;
+
       var count = SegmentsDrawer.Count;
 
       if (add)
@@ -83,8 +90,12 @@ namespace PictureManager.Domain.Models {
         foreach (var segment in segments)
           SegmentsDrawer.Remove(segment);
 
-      if (count != SegmentsDrawer.Count)
+      if (count != SegmentsDrawer.Count) {
         DataAdapter.AreTablePropsModified = true;
+        return true;
+      }
+
+      return false;
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>
