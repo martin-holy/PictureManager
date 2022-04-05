@@ -74,18 +74,20 @@ namespace PictureManager.ViewModels {
 
     private void Closing() {
       if (_core.MediaItemsM.ModifiedItems.Count > 0 &&
-          MessageDialog.Show(
+          Core.MessageDialogShow(
             "Metadata Edit",
             "Some Media Items are modified, do you want to save them?",
-            true)) {
+            "IconQuestion",
+            true) == 0) {
         _coreVM.MediaItemsVM.SaveEdit();
       }
 
       if (_core.Sdb.Changes > 0 &&
-          MessageDialog.Show(
+          Core.MessageDialogShow(
             "Database changes",
             "There are some changes in database, do you want to save them?",
-            true)) {
+            "IconQuestion",
+            true) == 0) {
         _core.Sdb.SaveAllTables();
       }
 
