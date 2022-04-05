@@ -54,5 +54,17 @@ namespace PictureManager.Domain.Models {
 
       InsertGeoNameHierarchy(lat, lng, userName);
     }
+
+    public static bool IsGeoNamesUserNameInSettings(string userName) {
+      if (!string.IsNullOrEmpty(userName)) return true;
+
+      Core.MessageDialogShow(
+        "GeoNames User Name",
+        "GeoNames user name was not found.\nPlease register at geonames.org and set your user name in the settings.",
+        "IconInformation",
+        false);
+
+      return false;
+    }
   }
 }

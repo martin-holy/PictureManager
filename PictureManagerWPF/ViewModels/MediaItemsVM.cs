@@ -686,7 +686,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void AddGeoNamesFromFiles() {
-      if (!GeoNamesBaseVM.IsGeoNamesUserNameInSettings()) return;
+      if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
 
       var progress = new ProgressBarDialog(true, 1, "Adding GeoNames ...");
       progress.AddEvents(
