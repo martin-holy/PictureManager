@@ -80,7 +80,7 @@ namespace PictureManager {
         if (PersonVM.PersonM?.Equals(e.Data.Person) == true)
           PersonVM.ReloadPersonSegments();
 
-        // TODO segments drawer
+        App.Core.SegmentsM.SegmentsDrawerRemove(e.Data);
       };
 
       App.Core.PeopleM.PeopleKeywordChangedEvent += (_, _) => {
