@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -23,7 +23,7 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public List<FolderM> All { get; } = new();
     public Dictionary<int, FolderM> AllDic { get; set; }
-    public event EventHandler<FolderDeletedEventArgs> FolderDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
 
     public FoldersM(Core core, ViewersM viewersM) {
@@ -351,7 +351,7 @@ namespace PictureManager.Domain.Models {
 
       foreach (var f in folders) {
         All.Remove(f);
-        FolderDeletedEvent(this, new(f));
+        FolderDeletedEventHandler(this, new(f));
 
         f.Parent = null;
         f.Items.Clear();

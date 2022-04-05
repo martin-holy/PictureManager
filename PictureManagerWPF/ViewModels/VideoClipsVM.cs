@@ -54,7 +54,7 @@ namespace PictureManager.ViewModels {
 
       _treeVM.ItemCreatedEventHandler += (_, e) => {
         SetMarker(true);
-        CtvClips.ScrollTo((VideoClipTreeVM)e.Data);
+        CtvClips.ScrollTo(e.Data);
       };
 
       SetMarkerCommand = new(

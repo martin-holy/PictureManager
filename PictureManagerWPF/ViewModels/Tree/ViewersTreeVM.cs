@@ -15,7 +15,7 @@ namespace PictureManager.ViewModels.Tree {
       Model = model;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      Model.ViewerDeletedEvent += (_, e) => All.Remove(e.Viewer.Id);
+      Model.ViewerDeletedEventHandler += (_, e) => All.Remove(e.Data.Id);
 
       // load items
       ModelItems_CollectionChanged(Model.Items, null);

@@ -19,7 +19,7 @@ namespace PictureManager.ViewModels.Tree {
       CanMoveItem = true;
 
       KeywordsM.Items.CollectionChanged += ModelItems_CollectionChanged;
-      KeywordsM.KeywordDeletedEvent += (_, e) => All.Remove(e.Keyword.Id);
+      KeywordsM.KeywordDeletedEventHandler += (_, e) => All.Remove(e.Data.Id);
 
       // load items
       ModelItems_CollectionChanged(KeywordsM.Items, null);

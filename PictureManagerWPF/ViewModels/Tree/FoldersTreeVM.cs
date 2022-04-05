@@ -37,7 +37,7 @@ namespace PictureManager.ViewModels.Tree {
       IsExpanded = true;
 
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      Model.FolderDeletedEvent += (_, e) => All.Remove(e.Folder.Id);
+      Model.FolderDeletedEventHandler += (_, e) => All.Remove(e.Data.Id);
 
       OnAfterItemDelete += (o, _) => {
         // delete folder, sub folders and mediaItems from file system

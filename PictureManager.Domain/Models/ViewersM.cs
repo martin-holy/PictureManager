@@ -5,7 +5,6 @@ using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -21,7 +20,7 @@ namespace PictureManager.Domain.Models {
     public List<ViewerM> All { get; } = new();
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public event EventHandler<ViewerDeletedEventArgs> ViewerDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<ViewerM>> ViewerDeletedEventHandler = delegate { };
 
     public ViewerM ItemCreate(ITreeBranch root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
@@ -47,7 +46,7 @@ namespace PictureManager.Domain.Models {
       viewer.ExcludedFolders.Clear();
       viewer.ExcludedKeywords.Clear();
       All.Remove(viewer);
-      ViewerDeletedEvent(this, new(viewer));
+      ViewerDeletedEventHandler(this, new(viewer));
       DataAdapter.IsModified = true;
     }
 

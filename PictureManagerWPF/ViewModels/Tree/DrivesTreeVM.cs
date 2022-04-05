@@ -8,7 +8,7 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels.Tree {
   public sealed class DrivesTreeVM {
     public readonly Dictionary<int, DriveTreeVM> All = new();
-    public event EventHandler<ObjectEventArgs> DriveExpandedChangedEvent;
+    public event EventHandler<ObjectEventArgs<FolderTreeVM>> DriveExpandedChangedEventHandler = delegate { };
 
     public void SyncCollection(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, MH.Utils.Tree.OnItemsChanged onItemsChanged) {
       MH.Utils.Tree.SyncCollection<FolderM, DriveTreeVM>(src, dest, parent,
@@ -19,7 +19,7 @@ namespace PictureManager.ViewModels.Tree {
     private DriveTreeVM ItemCreateVM(FolderM model, ITreeBranch parent) {
       var item = new DriveTreeVM(model, parent);
       item.OnExpandedChanged += (o, _) =>
-        DriveExpandedChangedEvent?.Invoke(this, new(o));
+        DriveExpandedChangedEventHandler(this, new(o as FolderTreeVM));
 
       return item;
     }

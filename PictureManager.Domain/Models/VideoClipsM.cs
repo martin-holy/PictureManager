@@ -4,8 +4,8 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -22,7 +22,7 @@ namespace PictureManager.Domain.Models {
     public VideoClipM CurrentVideoClip { get; set; }
     public VideoClipsGroupsM GroupsM { get; }
 
-    public event EventHandler<VideoClipDeletedEventArgs> VideoClipDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<VideoClipM>> VideoClipDeletedEventHandler = delegate { };
 
     public VideoClipsM() {
       GroupsM = new(this);
@@ -69,7 +69,7 @@ namespace PictureManager.Domain.Models {
       vc.Keywords = null;
 
       All.Remove(vc);
-      VideoClipDeletedEvent(this, new(vc));
+      VideoClipDeletedEventHandler(this, new(vc));
       DataAdapter.IsModified = true;
     }
 

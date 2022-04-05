@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public ObservableCollection<CategoryGroupM> All { get; } = new();
     public Dictionary<Category, ITreeBranch> Categories { get; } = new();
-    public event EventHandler<CategoryGroupDeletedEventArgs> CategoryGroupDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<CategoryGroupM>> CategoryGroupDeletedEventHandler = delegate { };
 
     public CategoryGroupM GroupCreate(string name, Category category) {
       ITreeBranch parent = Categories[category];
@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public void GroupDelete(CategoryGroupM group) {
       group.Parent.Items.Remove(group);
       All.Remove(group);
-      CategoryGroupDeletedEvent(this, new(group));
+      CategoryGroupDeletedEventHandler(this, new(group));
       DataAdapter.IsModified = true;
     }
 

@@ -112,8 +112,8 @@ namespace PictureManager {
           App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
       };
 
-      MainTabsVM.TabClosedEvent += (_, e) => {
-        if (e.Data is HeaderedListItem<object, string> { Content: ThumbnailsGridVM grid })
+      MainTabsVM.TabClosedEventHandler += (_, e) => {
+        if (e.Data.Content is ThumbnailsGridVM grid)
           ThumbnailsGridsVM.CloseGrid(grid);
       };
 

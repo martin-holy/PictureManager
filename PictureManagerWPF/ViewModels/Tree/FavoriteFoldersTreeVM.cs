@@ -23,8 +23,8 @@ namespace PictureManager.ViewModels.Tree {
         item => item != null);
 
       _model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      _model.FavoriteFolderDeletedEvent += (_, e) =>
-        _all.Remove(((FavoriteFolderM)e.Data).Id);
+      _model.FavoriteFolderDeletedEventHandler += (_, e) =>
+        _all.Remove(e.Data.Id);
 
       // load items
       ModelItems_CollectionChanged(_model.Items, null);
