@@ -100,7 +100,7 @@ namespace PictureManager.ViewModels {
       grid.Model.ClearItBeforeLoad();
       Model.All.Remove(grid.Model);
 
-      if (Current.Equals(grid)) {
+      if (grid.Equals(Current)) {
         Current = null;
         Model.Current = null;
       }
