@@ -469,6 +469,19 @@ namespace PictureManager.Domain.Models {
     }
 
     private void ReloadLoadedGrouped() {
+
+      void AddGroup(ItemsGroup group, string title) {
+        if (group.Items.Count != 0) {
+          group.GroupInfo.Add(new ItemsGroupInfoItem {
+            Icon = "IconPeople",
+            Title = title });
+          group.GroupInfo.Add(new ItemsGroupInfoItem {
+            Icon = "IconImageMultiple",
+            Title = group.Items.Count.ToString() });
+          LoadedGrouped.Add(group);
+        }
+      }
+
       // clear before new load
       foreach (var group in LoadedGrouped) {
         group.GroupInfo.Clear();
@@ -480,13 +493,11 @@ namespace PictureManager.Domain.Models {
 
       if (!GroupSegments) {
         segmentsGroup = new();
-        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = "?" });
-        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconImageMultiple", Title = Loaded.Count.ToString() });
-        LoadedGrouped.Add(segmentsGroup);
 
         foreach (var segment in Loaded)
           segmentsGroup.Items.Add(segment);
 
+        AddGroup(segmentsGroup, "?");
         OnPropertyChanged(nameof(LoadedGrouped));
 
         return;
@@ -521,15 +532,7 @@ namespace PictureManager.Domain.Models {
           segmentsGroup.Items.Add(segment);
         }
 
-        if (segmentsGroup.Items.Count != 0) {
-          segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
-            Icon = "IconPeople",
-            Title = groupTitle });
-          segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
-            Icon = "IconImageMultiple",
-            Title = segmentsGroup.Items.Count.ToString() });
-          LoadedGrouped.Add(segmentsGroup);
-        }
+        AddGroup(segmentsGroup, groupTitle);
       }
 
       // add segments with PersonId == 0 ordered by similar
@@ -556,16 +559,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
         segmentsGroup.Items.Add(segment);
 
-      if (segmentsGroup.Items.Count != 0) {
-        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
-          Icon = "IconPeople",
-          Title = "0" });
-        segmentsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
-            Icon = "IconImageMultiple",
-            Title = segmentsGroup.Items.Count.ToString() });
-        LoadedGrouped.Add(segmentsGroup);
-      }
-
+      AddGroup(segmentsGroup, "0");
       OnPropertyChanged(nameof(LoadedGrouped));
     }
 
