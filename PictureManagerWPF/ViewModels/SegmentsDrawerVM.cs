@@ -6,7 +6,6 @@ using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils.BaseClasses;
-using PictureManager.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 
@@ -51,16 +50,8 @@ namespace PictureManager.ViewModels {
     }
 
     private void DoDrop(DragEventArgs e, object source, object data) {
-      var add = !source.Equals(_panel);
-
-      if (!add && !MessageDialog.Show(
-            "Segments Drawer",
-            "Do you want to remove segments from drawer?",
-            true))
-        return;
-
-      SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, add);
-      _panel.Wrap();
+      if (SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !source.Equals(_panel)))
+        _panel.Wrap();
     }
 
     private void Select(ClickEventArgs e) {
