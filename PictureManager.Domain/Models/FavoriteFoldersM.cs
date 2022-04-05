@@ -16,7 +16,7 @@ namespace PictureManager.Domain.Models {
 
     public DataAdapter DataAdapter { get; set; }
     public ObservableCollection<FavoriteFolderM> All { get; } = new();
-    public event EventHandler<ObjectEventArgs> FavoriteFolderDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<FavoriteFolderM>> FavoriteFolderDeletedEventHandler = delegate { };
 
     private static string GetItemName(object item) =>
       item is FavoriteFolderM x
@@ -52,7 +52,7 @@ namespace PictureManager.Domain.Models {
       item.Parent.Items.Remove(item);
       item.Folder = null;
       All.Remove(item);
-      FavoriteFolderDeletedEvent(this, new(item));
+      FavoriteFolderDeletedEventHandler(this, new(item));
       DataAdapter.IsModified = true;
     }
 

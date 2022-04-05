@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -20,7 +20,7 @@ namespace PictureManager.Domain.Models {
     public Dictionary<int, KeywordM> AllDic { get; set; }
     public CategoryGroupM AutoAddedGroup { get; set; }
 
-    public event EventHandler<KeywordDeletedEventArgs> KeywordDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<KeywordM>> KeywordDeletedEventHandler = delegate { };
 
     private static string GetItemName(object item) => item is KeywordM k ? k.Name : string.Empty;
 
@@ -78,7 +78,7 @@ namespace PictureManager.Domain.Models {
         keyword.Parent = null;
         keyword.Items = null;
         All.Remove(keyword);
-        KeywordDeletedEvent(this, new(keyword));
+        KeywordDeletedEventHandler(this, new(keyword));
         DataAdapter.IsModified = true;
       }
     }

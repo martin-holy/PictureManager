@@ -19,7 +19,7 @@ namespace PictureManager.ViewModels.Tree {
       CanMoveItem = true;
 
       PeopleM.Items.CollectionChanged += ModelItems_CollectionChanged;
-      PeopleM.PersonDeletedEvent += (_, e) => All.Remove(e.Person.Id);
+      PeopleM.PersonDeletedEventHandler += (_, e) => All.Remove(e.Data.Id);
 
       // load items
       ModelItems_CollectionChanged(PeopleM.Items, null);

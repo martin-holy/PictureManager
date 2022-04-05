@@ -91,8 +91,8 @@ namespace PictureManager.ViewModels {
         TvCategories.ScrollTo((ICatTreeViewItem)o);
       KeywordsTreeVM.OnAfterItemCreate += (o, _) =>
         TvCategories.ScrollTo((ICatTreeViewItem)o);
-      DrivesTreeVM.DriveExpandedChangedEvent += (_, e) =>
-        FoldersTreeVM.HandleItemExpandedChanged(e.Data as FolderTreeVM);
+      DrivesTreeVM.DriveExpandedChangedEventHandler += (_, e) =>
+        FoldersTreeVM.HandleItemExpandedChanged(e.Data);
 
       FoldersTreeVM.OnAfterItemRename += (o, _) => {
         // reload if the folder was selected before

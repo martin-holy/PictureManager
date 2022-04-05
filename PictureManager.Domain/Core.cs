@@ -109,31 +109,31 @@ namespace PictureManager.Domain {
     }
 
     private void AttachEvents() {
-      FoldersM.FolderDeletedEvent += (_, e) => {
-        FavoriteFoldersM.ItemDelete(e.Folder);
-        MediaItemsM.Delete(e.Folder.MediaItems.ToList());
+      FoldersM.FolderDeletedEventHandler += (_, e) => {
+        FavoriteFoldersM.ItemDelete(e.Data);
+        MediaItemsM.Delete(e.Data.MediaItems.ToList());
       };
 
-      PeopleM.PersonDeletedEvent += (_, e) => {
-        MediaItemsM.RemovePersonFromMediaItems(e.Person);
-        SegmentsM.RemovePersonFromSegments(e.Person);
+      PeopleM.PersonDeletedEventHandler += (_, e) => {
+        MediaItemsM.RemovePersonFromMediaItems(e.Data);
+        SegmentsM.RemovePersonFromSegments(e.Data);
       };
 
-      KeywordsM.KeywordDeletedEvent += (_, e) => {
-        PeopleM.RemoveKeywordFromPeople(e.Keyword);
-        SegmentsM.RemoveKeywordFromSegments(e.Keyword);
-        MediaItemsM.RemoveKeywordFromMediaItems(e.Keyword);
+      KeywordsM.KeywordDeletedEventHandler += (_, e) => {
+        PeopleM.RemoveKeywordFromPeople(e.Data);
+        SegmentsM.RemoveKeywordFromSegments(e.Data);
+        MediaItemsM.RemoveKeywordFromMediaItems(e.Data);
       };
 
-      MediaItemsM.MediaItemDeletedEvent += (_, e) => {
-        SegmentsM.Delete(e.MediaItem.Segments);
-        ThumbnailsGridsM.RemoveMediaItem(e.MediaItem);
+      MediaItemsM.MediaItemDeletedEventHandler += (_, e) => {
+        SegmentsM.Delete(e.Data.Segments);
+        ThumbnailsGridsM.RemoveMediaItem(e.Data);
       };
 
-      CategoryGroupsM.CategoryGroupDeletedEvent += (_, e) => {
+      CategoryGroupsM.CategoryGroupDeletedEventHandler += (_, e) => {
         // move all group items to root
-        foreach (var item in e.Group.Items.ToArray()) {
-          switch (e.Group.Category) {
+        foreach (var item in e.Data.Items.ToArray()) {
+          switch (e.Data.Category) {
             case Category.Keywords:
               KeywordsM.ItemMove(item, KeywordsM, false);
               break;
@@ -144,9 +144,9 @@ namespace PictureManager.Domain {
         }
       };
 
-      SegmentsM.SegmentPersonChangeEvent += (_, e) => {
-        PeopleM.SegmentPersonChange(e.Segment, e.OldPerson, e.NewPerson);
-        e.Segment.MediaItem.SetInfoBox();
+      SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
+        PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+        e.Data.Item1.MediaItem.SetInfoBox();
       };
 
       ViewersM.PropertyChanged += (_, e) => {

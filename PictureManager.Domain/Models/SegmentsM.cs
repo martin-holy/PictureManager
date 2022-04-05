@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.HelperClasses;
-using PictureManager.Domain.EventsArgs;
 using PictureManager.Domain.HelperClasses;
 using SimpleDB;
 
@@ -45,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public bool MultiplePeopleSelected => Selected.GroupBy(x => x.PersonId).Count() > 1 || Selected.Count(x => x.PersonId == 0) > 1;
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
 
-    public event EventHandler<SegmentPersonChangeEventArgs> SegmentPersonChangeEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
     public event EventHandler SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler SelectedChangedEventHandler = delegate { };
@@ -294,7 +293,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private void ChangePerson(SegmentM segment, PersonM person, int personId) {
-      SegmentPersonChangeEvent(this, new(segment, segment.Person, person));
+      SegmentPersonChangeEventHandler(this, new((segment, segment.Person, person)));
       segment.Person = person;
       segment.PersonId = personId;
       DataAdapter.IsModified = true;

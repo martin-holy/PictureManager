@@ -12,7 +12,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<double> UpdateTabHeadersSizeCommand { get; }
     public RelayCommand<HeaderedListItem<object, string>> CloseTabCommand { get; }
 
-    public event EventHandler<ObjectEventArgs> TabClosedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<HeaderedListItem<object, string>>> TabClosedEventHandler = delegate { };
 
     public ObservableCollection<HeaderedListItem<object, string>> Items { get; } = new();
     public HeaderedListItem<object, string> Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
@@ -46,7 +46,7 @@ namespace PictureManager.ViewModels {
         Selected = Items.FirstOrDefault();
 
       OnPropertyChanged(nameof(TabMaxHeight));
-      TabClosedEvent(this, new(item));
+      TabClosedEventHandler(this, new(item));
     }
 
     private void UpdateTabHeadersSize(double actualHeight) {

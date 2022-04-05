@@ -7,7 +7,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.HelperClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.EventsArgs;
 using PictureManager.Domain.HelperClasses;
 using SimpleDB;
 
@@ -24,7 +23,7 @@ namespace PictureManager.Domain.Models {
     public Dictionary<int, PersonM> AllDic { get; set; }
     public List<object> PeopleInGroups { get; } = new();
 
-    public event EventHandler<PersonDeletedEventArgs> PersonDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler PeopleKeywordChangedEvent = delegate { };
 
     private static string GetItemName(object item) => item is PersonM p ? p.Name : string.Empty;
@@ -67,7 +66,7 @@ namespace PictureManager.Domain.Models {
       person.TopSegments = null;
       person.Keywords = null;
       All.Remove(person);
-      PersonDeletedEvent(this, new(person));
+      PersonDeletedEventHandler(this, new(person));
       DataAdapter.IsModified = true;
     }
 

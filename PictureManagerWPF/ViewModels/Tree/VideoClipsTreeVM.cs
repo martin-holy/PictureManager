@@ -16,7 +16,7 @@ namespace PictureManager.ViewModels.Tree {
     private readonly VideoClipsGroupsTreeVM _groupsTreeVM;
     
     public readonly Dictionary<int, VideoClipTreeVM> All = new();
-    public event EventHandler<ObjectEventArgs> ItemCreatedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<VideoClipTreeVM>> ItemCreatedEventHandler = delegate { };
 
     public VideoClipsTreeVM(VideoClipsM model) : base(Category.VideoClips, "Clips") {
       _model = model;
@@ -25,7 +25,7 @@ namespace PictureManager.ViewModels.Tree {
       CanMoveItem = true;
 
       _model.Items.CollectionChanged += ModelItems_CollectionChanged;
-      _model.VideoClipDeletedEvent += (_, e) => All.Remove(e.VideoClip.Id);
+      _model.VideoClipDeletedEventHandler += (_, e) => All.Remove(e.Data.Id);
 
       // load items
       ModelItems_CollectionChanged(_model.Items, null);

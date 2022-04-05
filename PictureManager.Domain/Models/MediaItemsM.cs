@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Domain.EventsArgs;
 using PictureManager.Domain.Utils;
 using SimpleDB;
 
@@ -42,7 +41,7 @@ namespace PictureManager.Domain.Models {
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
-    public event EventHandler<MediaItemDeletedEventArgs> MediaItemDeletedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
 
     public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {
       _core = core;
@@ -157,7 +156,7 @@ namespace PictureManager.Domain.Models {
       // remove from DB
       All.Remove(item);
 
-      MediaItemDeletedEvent(this, new(item));
+      MediaItemDeletedEventHandler(this, new(item));
       OnPropertyChanged(nameof(MediaItemsCount));
 
       SetModified(item, false);
