@@ -96,17 +96,6 @@ namespace PictureManager.ViewModels {
         _confirmedMatchingPanel.Wrap();
       });
 
-      SegmentsM.PropertyChanged += (_, e) => {
-        switch (e.PropertyName) {
-          case nameof(SegmentsM.LoadedGrouped):
-            _matchingPanel?.Wrap();
-            break;
-          case nameof(SegmentsM.ConfirmedGrouped):
-            _confirmedMatchingPanel?.Wrap();
-            break;
-        }
-      };
-
       // TODO do it just when needed
       foreach (var person in App.Core.PeopleM.All)
         person.UpdateDisplayKeywords();
