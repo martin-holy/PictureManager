@@ -76,6 +76,13 @@ namespace PictureManager {
         App.Core.SegmentsM.Reload();
       };
 
+      App.Core.SegmentsM.SegmentDeletedEventHandler += (_, e) => {
+        if (PersonVM.PersonM?.Equals(e.Data.Person) == true)
+          PersonVM.ReloadPersonSegments();
+
+        // TODO segments drawer
+      };
+
       App.Core.PeopleM.PeopleKeywordChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
