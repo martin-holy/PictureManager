@@ -124,9 +124,10 @@ namespace PictureManager.Dialogs {
 
       // check for FFMPEG
       if (!File.Exists(Settings.Default.FfmpegPath)) {
-        MessageDialog.Show(
+        Core.MessageDialogShow(
           "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",
+          "IconInformation",
           false);
         Close();
         return;
