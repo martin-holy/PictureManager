@@ -49,6 +49,7 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
     public event EventHandler SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler SelectedChangedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
     public SegmentsM() {
       SegmentsRectsM = new(this);
@@ -306,6 +307,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Delete(SegmentM segment) {
+      SegmentDeletedEventHandler(this, new(segment));
       SetSelected(segment, false);
       ChangePerson(segment, null, 0);
 
@@ -317,7 +319,8 @@ namespace PictureManager.Domain.Models {
       segment.ComparePicture = null;
 
       All.Remove(segment);
-      Loaded.Remove(segment);
+      if (Loaded.Remove(segment))
+        Reload();
 
       foreach (var simSegment in Loaded)
         simSegment.Similar?.Remove(segment);
