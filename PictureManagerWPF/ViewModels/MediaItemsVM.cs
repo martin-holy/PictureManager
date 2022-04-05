@@ -159,8 +159,11 @@ namespace PictureManager.ViewModels {
         : currentThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
 
-      if (!MessageDialog.Show("Delete Confirmation",
-        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?", true)) return;
+      if (Core.MessageDialogShow(
+        "Delete Confirmation",
+        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
+        "IconQuestion",
+        true) != 0) return;
 
       Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
           ? currentThumbsGrid.LoadedItems
