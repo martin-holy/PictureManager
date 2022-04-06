@@ -9,6 +9,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/MessageDialogStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ProgressBarDialogStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VirtualizingWrapPanelStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />

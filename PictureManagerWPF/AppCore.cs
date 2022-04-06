@@ -7,6 +7,8 @@ using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using PictureManager.ViewModels.Tree;
 using MH.Utils.BaseClasses;
+using MH.UI.WPF.Controls;
+using MH.Utils.Dialogs;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -33,8 +35,8 @@ namespace PictureManager {
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-      Core.MessageDialogShow = (a, b, c, d, e) =>
-        MH.UI.WPF.Controls.DialogHost.Show(new MH.Utils.Dialogs.MessageDialog(a, b, c, d, e));
+      Core.MessageDialogShow = (a, b, c, d, e) => DialogHost.Show(new MessageDialog(a, b, c, d, e));
+      Core.ProgressBarDialogShow = (dialog) => DialogHost.Show(dialog);
 
       MainWindowVM = new(App.Core, this);
       MainWindowContentVM = new();

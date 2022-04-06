@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using MH.Utils.Dialogs;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using SimpleDB;
@@ -29,7 +30,8 @@ namespace PictureManager.Domain {
 
     private static TaskScheduler UiTaskScheduler { get; set; }
 
-    public static MH.Utils.Dialogs.MessageDialogShow MessageDialogShow { get; set; }
+    public static MessageDialogShow MessageDialogShow { get; set; }
+    public static ProgressBarDialogShow ProgressBarDialogShow { get; set; }
 
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
