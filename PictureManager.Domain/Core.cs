@@ -113,7 +113,7 @@ namespace PictureManager.Domain {
     private void AttachEvents() {
       FoldersM.FolderDeletedEventHandler += (_, e) => {
         FavoriteFoldersM.ItemDelete(e.Data);
-        MediaItemsM.Delete(e.Data.MediaItems.ToList());
+        MediaItemsM.Delete(e.Data.MediaItems.ToArray());
       };
 
       PeopleM.PersonDeletedEventHandler += (_, e) => {

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Utils;
 using SimpleDB;
@@ -165,7 +166,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void Delete(List<MediaItemM> items) {
+    public void Delete(MediaItemM[] items) {
       foreach (var mi in items)
         Delete(mi);
     }

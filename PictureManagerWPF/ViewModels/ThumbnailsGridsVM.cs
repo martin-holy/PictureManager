@@ -264,7 +264,7 @@ namespace PictureManager.ViewModels {
         await ReadMetadataAndListThumbsAsync(items, token);
 
         if (token.IsCancellationRequested)
-          await Core.RunOnUiThread(() => _coreVM.MediaItemsVM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
+          await Core.RunOnUiThread(() => _core.MediaItemsM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
       }, token);
 
       // TODO: is this necessary?
