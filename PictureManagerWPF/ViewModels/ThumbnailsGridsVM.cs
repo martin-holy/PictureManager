@@ -291,7 +291,7 @@ namespace PictureManager.ViewModels {
           var percent = Convert.ToInt32((double)workingOn / count * 100);
 
           if (mi.IsNew) {
-            var success = await _coreVM.MediaItemsVM.ReadMetadata(mi);
+            var success = await _core.MediaItemsM.ReadMetadata(mi, false);
             mi.IsNew = false;
             if (!success) {
               // delete corrupted MediaItems
@@ -371,7 +371,7 @@ namespace PictureManager.ViewModels {
           _core.MediaItemsM.All.Add(mi);
           _core.MediaItemsM.OnPropertyChanged(nameof(_core.MediaItemsM.MediaItemsCount));
           folder.MediaItems.Add(mi);
-          await _coreVM.MediaItemsVM.ReadMetadata(mi);
+          await _core.MediaItemsM.ReadMetadata(mi, false);
           mi.SetThumbSize(true);
 
           // reload grid
