@@ -145,13 +145,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public void Delete(MediaItemM[] items) {
-      if (items.Length == 0) return;
-      var progress = new ProgressBarDialog(false, 1, "Removing Media Items from database ...");
-      progress.AddEvents(items, null, Model.Delete, mi => mi.FilePath, null);
-      progress.StartDialog();
-    }
-
     private async void Delete() {
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
       var items = _coreVM.MediaViewerVM.IsVisible
@@ -664,7 +657,7 @@ namespace PictureManager.ViewModels {
         _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
       };
 
-      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Rebuilding thumbnails ...");
+      var progress = new MH.Utils.Dialogs.ProgressBarDialog("Rebuilding thumbnails ...", true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -678,6 +671,7 @@ namespace PictureManager.ViewModels {
         });
 
       progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     private void Compare() {
