@@ -1,4 +1,5 @@
-﻿using PictureManager.Dialogs;
+﻿using MH.Utils.Dialogs;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using System;
@@ -100,7 +101,7 @@ namespace PictureManager.CustomControls {
     }
 
     private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, HashMethod hashMethod) {
-      var progress = new ProgressBarDialog(false, 1, "Computing Hashes ...");
+      var progress = new ProgressBarDialog("Computing Hashes ...", false, 1);
       progress.AddEvents(
         items,
         null,
@@ -112,7 +113,8 @@ namespace PictureManager.CustomControls {
         mi => mi.FilePath,
         null);
 
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
   }
 }
