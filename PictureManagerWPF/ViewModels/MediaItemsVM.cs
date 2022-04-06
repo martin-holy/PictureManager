@@ -95,7 +95,7 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       AddGeoNamesFromFilesCommand = new(
-        AddGeoNamesFromFiles,
+        () => Model.AddGeoNamesFromFiles(Settings.Default.GeoNamesUserName),
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
       #endregion
     }
@@ -675,38 +675,6 @@ namespace PictureManager.ViewModels {
       App.MainWindowV.UpdateLayout();
       App.MainWindowV.ImageComparerTool.SelectDefaultMethod();
       _ = App.MainWindowV.ImageComparerTool.Compare();
-    }
-
-    private void AddGeoNamesFromFiles() {
-      if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
-
-      var progress = new ProgressBarDialog("Adding GeoNames ...", true, 1);
-      progress.AddEvents(
-        _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
-        null,
-        // action
-        async mi => {
-          if (mi.Lat == null || mi.Lng == null) _ = await Model.ReadMetadata(mi, true);
-          if (mi.Lat == null || mi.Lng == null) return;
-
-          var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
-          if (lastGeoName == null) return;
-
-          mi.GeoName = lastGeoName;
-          Model.TryWriteMetadata(mi);
-          await Core.RunOnUiThread(() => {
-            mi.SetInfoBox();
-            Model.DataAdapter.IsModified = true;
-          });
-        },
-        mi => mi.FilePath,
-        // onCompleted
-        delegate {
-          Model.Current?.GeoName?.OnPropertyChanged(nameof(Model.Current.GeoName.FullName));
-        });
-
-      progress.Start();
-      Core.ProgressBarDialogShow(progress);
     }
   }
 }
