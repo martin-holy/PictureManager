@@ -387,5 +387,37 @@ namespace PictureManager.Domain.Models {
         return false;
       }
     }
+
+    public void AddGeoNamesFromFiles(string geoNamesUserName) {
+      if (!GeoNamesM.IsGeoNamesUserNameInSettings(geoNamesUserName)) return;
+
+      var progress = new ProgressBarDialog("Adding GeoNames ...", true, 1);
+      progress.AddEvents(
+        _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        null,
+        // action
+        async mi => {
+          if (mi.Lat == null || mi.Lng == null) _ = await ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) return;
+
+          var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, geoNamesUserName);
+          if (lastGeoName == null) return;
+
+          mi.GeoName = lastGeoName;
+          TryWriteMetadata(mi);
+          await Core.RunOnUiThread(() => {
+            mi.SetInfoBox();
+            DataAdapter.IsModified = true;
+          });
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        delegate {
+          Current?.GeoName?.OnPropertyChanged(nameof(Current.GeoName.FullName));
+        });
+
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
+    }
   }
 }
