@@ -275,8 +275,6 @@ namespace PictureManager.ViewModels {
 
       _core.TitleProgressBarM.ValueA = 100;
       _core.TitleProgressBarM.ValueB = 100;
-
-      GC.Collect();
     }
 
     private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
