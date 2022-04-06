@@ -43,6 +43,7 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
+    public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
     public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {
       _core = core;
@@ -370,6 +371,19 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in All.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
         mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
         DataAdapter.IsModified = true;
+      }
+    }
+
+    public bool TryWriteMetadata(MediaItemM mediaItem) {
+      if (mediaItem.IsOnlyInDb) return true;
+      try {
+        return WriteMetadata(mediaItem) ? true : throw new("Error writing metadata");
+      }
+      catch (Exception ex) {
+        _core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
+        // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
+        mediaItem.IsOnlyInDb = true;
+        return false;
       }
     }
   }

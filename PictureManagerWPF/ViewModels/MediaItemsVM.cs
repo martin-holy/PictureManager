@@ -45,6 +45,8 @@ namespace PictureManager.ViewModels {
       _coreVM = coreVM;
       Model = model;
 
+      Model.WriteMetadata = WriteMetadata;
+
       #region Commands
       RotateCommand = new(
         Rotate,
@@ -379,7 +381,7 @@ namespace PictureManager.ViewModels {
             case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
           }
 
-          TryWriteMetadata(mi);
+          Model.TryWriteMetadata(mi);
           mi.SetThumbSize(true);
           File.Delete(mi.FilePathCache);
           await Core.RunOnUiThread(() => Model.DataAdapter.IsModified = true);
@@ -392,20 +394,7 @@ namespace PictureManager.ViewModels {
       Core.ProgressBarDialogShow(progress);
     }
 
-    public bool TryWriteMetadata(MediaItemM mediaItem) {
-      if (mediaItem.IsOnlyInDb) return true;
-      try {
-        return WriteMetadata(mediaItem) ? true : throw new("Error writing metadata");
-      }
-      catch (Exception ex) {
-        _core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
-        // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
-        mediaItem.IsOnlyInDb = true;
-        return false;
-      }
-    }
-
-    private bool WriteMetadata(MediaItemM mi) {
+    private static bool WriteMetadata(MediaItemM mi) {
       if (mi.MediaType == MediaType.Video) return true;
       var original = new FileInfo(mi.FilePath);
       var newFile = new FileInfo(mi.FilePath + "_newFile");
@@ -481,7 +470,7 @@ namespace PictureManager.ViewModels {
       return bSuccess;
     }
 
-    private bool WriteMetadataToFile(MediaItemM mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
+    private static bool WriteMetadataToFile(MediaItemM mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
       bool bSuccess;
       var hResult = 0;
       var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
@@ -500,7 +489,7 @@ namespace PictureManager.ViewModels {
 
         // don't log error if hResult is -2146233033
         if (hResult != -2146233033)
-          _core.LogError(ex, mi.FilePath);
+          Core.Instance.LogError(ex, mi.FilePath);
       }
 
       // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
@@ -556,7 +545,7 @@ namespace PictureManager.ViewModels {
         null,
         // action
         async mi => {
-          TryWriteMetadata(mi);
+          Model.TryWriteMetadata(mi);
           await Core.RunOnUiThread(() => Model.SetModified(mi, false));
         },
         mi => mi.FilePath,
@@ -624,7 +613,7 @@ namespace PictureManager.ViewModels {
       Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
       Model.Current.SetInfoBox();
       Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
-      TryWriteMetadata(Model.Current);
+      Model.TryWriteMetadata(Model.Current);
       Model.DataAdapter.IsModified = true;
     }
 
@@ -703,7 +692,7 @@ namespace PictureManager.ViewModels {
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
-          TryWriteMetadata(mi);
+          Model.TryWriteMetadata(mi);
           await Core.RunOnUiThread(() => {
             mi.SetInfoBox();
             Model.DataAdapter.IsModified = true;
