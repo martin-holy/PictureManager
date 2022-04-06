@@ -37,7 +37,7 @@ namespace PictureManager.Dialogs {
 
         yield return await Task.Run(() => {
           var originalSize = new FileInfo(mi.FilePath).Length;
-          var bSuccess = App.Ui.MediaItemsVM.TryWriteMetadata(mi);
+          var bSuccess = App.Core.MediaItemsM.TryWriteMetadata(mi);
           var newSize = bSuccess ? new FileInfo(mi.FilePath).Length : originalSize;
           return new[] { originalSize, newSize };
         });
