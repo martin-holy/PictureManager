@@ -5,9 +5,9 @@
     <UseWPF>true</UseWPF>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.11.1</AssemblyVersion>
-    <FileVersion>1.11.1</FileVersion>
-    <Version>1.11.1</Version>
+    <AssemblyVersion>1.12.1</AssemblyVersion>
+    <FileVersion>1.12.1</FileVersion>
+    <Version>1.12.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
