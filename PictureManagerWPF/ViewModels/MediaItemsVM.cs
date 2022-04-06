@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MH.UI.WPF.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
@@ -344,7 +345,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, Rotation rotation) {
-      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Changing orientation ...");
+      var progress = new ProgressBarDialog("Changing orientation ...", true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems,
         null,
@@ -387,7 +388,8 @@ namespace PictureManager.ViewModels {
         // onCompleted
         (o, e) => _ = _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems());
 
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     public bool TryWriteMetadata(MediaItemM mediaItem) {
@@ -548,7 +550,7 @@ namespace PictureManager.ViewModels {
     }
 
     public void SaveEdit() {
-      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Saving metadata ...");
+      var progress = new ProgressBarDialog("Saving metadata ...", true, Environment.ProcessorCount);
       progress.AddEvents(
         Model.ModifiedItems.ToArray(),
         null,
@@ -569,11 +571,12 @@ namespace PictureManager.ViewModels {
           _core.ThumbnailsGridsM.Current.OnPropertyChanged(nameof(_core.ThumbnailsGridsM.Current.ActiveFileSize));
         });
 
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     private void CancelEdit() {
-      var progress = new ProgressBarDialog(false, Environment.ProcessorCount, "Reloading metadata ...");
+      var progress = new ProgressBarDialog("Reloading metadata ...", false, Environment.ProcessorCount);
       progress.AddEvents(
         Model.ModifiedItems.ToArray(),
         null,
@@ -593,7 +596,8 @@ namespace PictureManager.ViewModels {
           Model.IsEditModeOn = false;
         });
 
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     private void Comment() {
@@ -630,7 +634,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
-      var progress = new ProgressBarDialog(true, Environment.ProcessorCount, "Reloading metadata ...");
+      var progress = new ProgressBarDialog("Reloading metadata ...", true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -647,6 +651,7 @@ namespace PictureManager.ViewModels {
         (_, _) => _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople());
 
       progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     private void RebuildThumbnails(object parameter) {
@@ -657,7 +662,7 @@ namespace PictureManager.ViewModels {
         _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
       };
 
-      var progress = new MH.Utils.Dialogs.ProgressBarDialog("Rebuilding thumbnails ...", true, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Rebuilding thumbnails ...", true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -685,7 +690,7 @@ namespace PictureManager.ViewModels {
     private void AddGeoNamesFromFiles() {
       if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
 
-      var progress = new ProgressBarDialog(true, 1, "Adding GeoNames ...");
+      var progress = new ProgressBarDialog("Adding GeoNames ...", true, 1);
       progress.AddEvents(
         _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
@@ -710,7 +715,8 @@ namespace PictureManager.ViewModels {
           Model.Current?.GeoName?.OnPropertyChanged(nameof(Model.Current.GeoName.FullName));
         });
 
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
   }
 }

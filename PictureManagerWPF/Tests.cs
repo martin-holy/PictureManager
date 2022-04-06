@@ -1,4 +1,5 @@
 ﻿using PictureManager.Dialogs;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,8 @@ namespace PictureManager {
       //App.Db.SetModified<Viewers>();
       //TestFaceCompare2();
       //TestTryParseDoubleUniversal();
+
+      var x = PictureManager.Domain.Core.MessageDialogShow("test", "test message která je delší a delší a delší", "IconPeople", true);
     }
 
 
@@ -103,7 +106,7 @@ namespace PictureManager {
     }
 
     private static void ChangeDate() {
-      var progress = new ProgressBarDialog(true, 1, "Change date");
+      var progress = new MH.Utils.Dialogs.ProgressBarDialog("Change date", true, 1);
       progress.AddEvents(
         Directory.GetFiles(@"d:\fotos", "*.jpg", SearchOption.AllDirectories),
         null,
@@ -121,7 +124,8 @@ namespace PictureManager {
         },
         x => x,
         null);
-      progress.StartDialog();
+      progress.Start();
+      Core.ProgressBarDialogShow(progress);
     }
 
     public static void CommentChars() {
