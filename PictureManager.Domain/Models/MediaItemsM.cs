@@ -43,6 +43,7 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
+    public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
     public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {

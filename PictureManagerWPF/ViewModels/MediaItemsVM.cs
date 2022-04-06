@@ -45,6 +45,7 @@ namespace PictureManager.ViewModels {
       _coreVM = coreVM;
       Model = model;
 
+      Model.ReadMetadata = ReadMetadata;
       Model.WriteMetadata = WriteMetadata;
 
       #region Commands
@@ -571,7 +572,7 @@ namespace PictureManager.ViewModels {
         null,
         // action
         async mi => {
-          await ReadMetadata(mi);
+          await Model.ReadMetadata(mi, false);
 
           await Core.RunOnUiThread(() => {
             Model.SetModified(mi, false);
@@ -629,7 +630,7 @@ namespace PictureManager.ViewModels {
         null,
         // action
         async (mi) => {
-          await ReadMetadata(mi);
+          await Model.ReadMetadata(mi, false);
 
           // set info box just for loaded media items
           if (updateInfoBox)
@@ -685,7 +686,7 @@ namespace PictureManager.ViewModels {
         null,
         // action
         async mi => {
-          if (mi.Lat == null || mi.Lng == null) _ = await ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) _ = await Model.ReadMetadata(mi, true);
           if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, Settings.Default.GeoNamesUserName);
