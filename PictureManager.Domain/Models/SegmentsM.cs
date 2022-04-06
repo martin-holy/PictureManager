@@ -487,22 +487,16 @@ namespace PictureManager.Domain.Models {
         }
       }
 
-      // clear before new load
-      foreach (var group in LoadedGrouped) {
-        group.GroupInfo.Clear();
-        group.Items.Clear();
-      }
+      ItemsGroup group;
       LoadedGrouped.Clear();
 
-      ItemsGroup segmentsGroup;
-
       if (!GroupSegments) {
-        segmentsGroup = new();
+        group = new();
 
         foreach (var segment in Loaded)
-          segmentsGroup.Items.Add(segment);
+          group.Items.Add(segment);
 
-        AddGroup(segmentsGroup, "?");
+        AddGroup(group, "?");
         OnPropertyChanged(nameof(LoadedGrouped));
 
         return;
@@ -519,10 +513,10 @@ namespace PictureManager.Domain.Models {
             ? s.Person.Name
             : s.PersonId.ToString();
 
-        segmentsGroup = new();
+        group = new();
 
         foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
-          segmentsGroup.Items.Add(segment);
+          group.Items.Add(segment);
           if (segment.Similar == null) continue;
           sims.AddRange(segment.Similar
             .Where(x => x.Key.PersonId == 0 && x.Value >= SimilarityLimit)
@@ -534,10 +528,10 @@ namespace PictureManager.Domain.Models {
                    .GroupBy(x => x.segment)
                    .OrderByDescending(g => g.Count())
                    .Select(g => g.OrderByDescending(x => x.sim).First().segment)) {
-          segmentsGroup.Items.Add(segment);
+          group.Items.Add(segment);
         }
 
-        AddGroup(segmentsGroup, groupTitle);
+        AddGroup(group, groupTitle);
       }
 
       // add segments with PersonId == 0 ordered by similar
@@ -546,8 +540,8 @@ namespace PictureManager.Domain.Models {
       var withSimilar = unknown
         .Where(x => x.Similar != null)
         .OrderByDescending(x => x.SimMax);
-      
-      segmentsGroup = new();
+
+      group = new();
 
       foreach (var segment in withSimilar) {
         var simSegments = segment.Similar
@@ -555,16 +549,16 @@ namespace PictureManager.Domain.Models {
           .OrderByDescending(x => x.Value);
 
         foreach (var simSegment in simSegments) {
-          if (set.Add(segment.Id)) segmentsGroup.Items.Add(segment);
-          if (set.Add(simSegment.Key.Id)) segmentsGroup.Items.Add(simSegment.Key);
+          if (set.Add(segment.Id)) group.Items.Add(segment);
+          if (set.Add(simSegment.Key.Id)) group.Items.Add(simSegment.Key);
         }
       }
 
       // add rest of the segments
       foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
-        segmentsGroup.Items.Add(segment);
+        group.Items.Add(segment);
 
-      AddGroup(segmentsGroup, "0");
+      AddGroup(group, "0");
       OnPropertyChanged(nameof(LoadedGrouped));
     }
 
@@ -585,11 +579,6 @@ namespace PictureManager.Domain.Models {
         return segment;
       }
 
-      // clear before new load
-      foreach (var group in ConfirmedGrouped.OfType<ItemsGroup>()) {
-        group.GroupInfo.Clear();
-        group.Items.Clear();
-      }
       ConfirmedGrouped.Clear();
 
       // get segments
