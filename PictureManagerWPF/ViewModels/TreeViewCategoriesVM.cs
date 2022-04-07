@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
+using MH.Utils.Dialogs;
 using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -126,11 +127,11 @@ namespace PictureManager.ViewModels {
 
     private void TagItemDeleteNotUsed(ICatTreeViewItem root) {
       if (MH.Utils.Tree.GetTopParent(root) is not CatTreeViewCategoryBase cat) return;
-      if (Core.MessageDialogShow(
+      if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
         $"Do you really want to delete not used items in '{cat.GetTitle(root)}'?",
         "IconQuestion",
-        true) != 0) return;
+        true)) != 0) return;
 
       switch (cat.Category) {
         case Category.People: 

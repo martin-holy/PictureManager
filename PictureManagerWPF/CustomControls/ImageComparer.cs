@@ -114,7 +114,7 @@ namespace PictureManager.CustomControls {
         null);
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
   }
 }

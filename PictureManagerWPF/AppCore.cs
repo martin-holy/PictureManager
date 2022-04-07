@@ -35,8 +35,7 @@ namespace PictureManager {
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-      Core.MessageDialogShow = (a, b, c, d, e) => DialogHost.Show(new MessageDialog(a, b, c, d, e));
-      Core.ProgressBarDialogShow = (dialog) => DialogHost.Show(dialog);
+      Core.DialogHostShow = (dialog) => DialogHost.Show(dialog);
 
       MainWindowVM = new(App.Core, this);
       MainWindowContentVM = new();

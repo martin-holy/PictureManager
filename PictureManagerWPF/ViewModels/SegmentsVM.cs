@@ -11,6 +11,7 @@ using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
@@ -142,12 +143,12 @@ namespace PictureManager.ViewModels {
     }
 
     private void SegmentMatching() {
-      var result = Core.MessageDialogShow(
+      var result = Core.DialogHostShow(new MessageDialog(
         "Segment Matching",
         "Do you want to load all segments, segments with person \nor one segment from each person?",
         "IconQuestion",
         true,
-        new[] { "All segments", "Segments with person", "One from each" });
+        new[] { "All segments", "Segments with person", "One from each" }));
 
       if (result == -1) return;
 

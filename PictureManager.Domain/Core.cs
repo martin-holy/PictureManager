@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils.Dialogs;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using SimpleDB;
@@ -28,10 +29,9 @@ namespace PictureManager.Domain {
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
 
-    private static TaskScheduler UiTaskScheduler { get; set; }
+    public static Func<IDialog, int> DialogHostShow { get; set; }
 
-    public static MessageDialogShow MessageDialogShow { get; set; }
-    public static ProgressBarDialogShow ProgressBarDialogShow { get; set; }
+    private static TaskScheduler UiTaskScheduler { get; set; }
 
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
@@ -172,17 +172,17 @@ namespace PictureManager.Domain {
       var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
 
       if (sCount > 0 && pCount > 0) {
-        switch (MessageDialogShow(title, $"{msgA} {msgS} or {msgP}?", icon, true, new[] { msgS, msgP })) {
+        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", icon, true, new[] { msgS, msgP }))) {
           case 0: SegmentsM.ToggleKeywordOnSelected(keyword); break;
           case 1: PeopleM.ToggleKeywordOnSelected(keyword); break;
         }
       }
       else if (sCount > 0) {
-        if (MessageDialogShow("Toggle Keyword", $"{msgA} {msgS}?", icon, true) == 0)
+        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgS}?", icon, true)) == 0)
           SegmentsM.ToggleKeywordOnSelected(keyword);
       }
       else if (pCount > 0) {
-        if (MessageDialogShow("Toggle Keyword", $"{msgA} {msgP}?", icon, true) == 0)
+        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgP}?", icon, true)) == 0)
           PeopleM.ToggleKeywordOnSelected(keyword);
       }
     }

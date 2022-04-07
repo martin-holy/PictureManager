@@ -156,11 +156,11 @@ namespace PictureManager.ViewModels {
         : currentThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
       var count = items.Count;
 
-      if (Core.MessageDialogShow(
+      if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
         "IconQuestion",
-        true) != 0) return;
+        true)) != 0) return;
 
       Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
           ? currentThumbsGrid.LoadedItems
@@ -392,7 +392,7 @@ namespace PictureManager.ViewModels {
         (o, e) => _ = _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems());
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     private static bool WriteMetadata(MediaItemM mi) {
@@ -562,7 +562,7 @@ namespace PictureManager.ViewModels {
         });
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     private void CancelEdit() {
@@ -587,7 +587,7 @@ namespace PictureManager.ViewModels {
         });
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     private void Comment() {
@@ -641,7 +641,7 @@ namespace PictureManager.ViewModels {
         (_, _) => _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople());
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     private void RebuildThumbnails(object parameter) {
@@ -666,7 +666,7 @@ namespace PictureManager.ViewModels {
         });
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     private void Compare() {
