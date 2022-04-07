@@ -1,4 +1,5 @@
-﻿using PictureManager.Dialogs;
+﻿using MH.Utils.Dialogs;
+using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
@@ -49,7 +50,7 @@ namespace PictureManager {
       //TestFaceCompare2();
       //TestTryParseDoubleUniversal();
 
-      var x = PictureManager.Domain.Core.MessageDialogShow("test", "test message která je delší a delší a delší", "IconPeople", true);
+      var x = PictureManager.Domain.Core.DialogHostShow(new MessageDialog("test", "test message která je delší a delší a delší", "IconPeople", true));
     }
 
 
@@ -125,7 +126,7 @@ namespace PictureManager {
         x => x,
         null);
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
 
     public static void CommentChars() {

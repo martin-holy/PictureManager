@@ -417,7 +417,7 @@ namespace PictureManager.Domain.Models {
         });
 
       progress.Start();
-      Core.ProgressBarDialogShow(progress);
+      Core.DialogHostShow(progress);
     }
   }
 }

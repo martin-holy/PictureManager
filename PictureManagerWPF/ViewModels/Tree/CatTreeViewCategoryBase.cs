@@ -1,6 +1,7 @@
 ﻿using System;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
+using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 
@@ -114,11 +115,11 @@ namespace PictureManager.ViewModels.Tree {
     }
 
     private static bool DeleteAccepted(string name) =>
-      Core.MessageDialogShow(
+      Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
         $"Do you really want to delete '{name}'?",
         "IconQuestion",
-        true) == 0;
+        true)) == 0;
 
     private static string CategoryToIconName(Category category) {
       return category switch {

@@ -1,5 +1,6 @@
 ﻿using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Properties;
@@ -74,20 +75,20 @@ namespace PictureManager.ViewModels {
 
     private void Closing() {
       if (_core.MediaItemsM.ModifiedItems.Count > 0 &&
-          Core.MessageDialogShow(
+          Core.DialogHostShow(new MessageDialog(
             "Metadata Edit",
             "Some Media Items are modified, do you want to save them?",
             "IconQuestion",
-            true) == 0) {
+            true)) == 0) {
         _coreVM.MediaItemsVM.SaveEdit();
       }
 
       if (_core.Sdb.Changes > 0 &&
-          Core.MessageDialogShow(
+          Core.DialogHostShow(new MessageDialog(
             "Database changes",
             "There are some changes in database, do you want to save them?",
             "IconQuestion",
-            true) == 0) {
+            true)) == 0) {
         _core.Sdb.SaveAllTables();
       }
 

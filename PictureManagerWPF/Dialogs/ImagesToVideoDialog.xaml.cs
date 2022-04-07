@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -124,11 +125,11 @@ namespace PictureManager.Dialogs {
 
       // check for FFMPEG
       if (!File.Exists(Settings.Default.FfmpegPath)) {
-        Core.MessageDialogShow(
+        Core.DialogHostShow(new MessageDialog(
           "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",
           "IconInformation",
-          false);
+          false));
         Close();
         return;
       }

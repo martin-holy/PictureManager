@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MH.Utils.Dialogs;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -105,11 +106,11 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Delete(SegmentRectM item) {
-      if (Core.MessageDialogShow(
+      if (Core.DialogHostShow(new MessageDialog(
         "Delete Segment",
         "Do you really want to delete this segment?",
         "IconQuestion",
-        true) != 0) return;
+        true)) != 0) return;
 
       SegmentsM.Delete(item.Segment);
       MediaItemSegmentsRects.Remove(item);

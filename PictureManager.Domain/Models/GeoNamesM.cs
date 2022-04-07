@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using SimpleDB;
 
@@ -58,11 +59,11 @@ namespace PictureManager.Domain.Models {
     public static bool IsGeoNamesUserNameInSettings(string userName) {
       if (!string.IsNullOrEmpty(userName)) return true;
 
-      Core.MessageDialogShow(
+      Core.DialogHostShow(new MessageDialog(
         "GeoNames User Name",
         "GeoNames user name was not found.\nPlease register at geonames.org and set your user name in the settings.",
         "IconInformation",
-        false);
+        false));
 
       return false;
     }

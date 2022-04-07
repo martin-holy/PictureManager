@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
 using PictureManager.Domain.HelperClasses;
 using SimpleDB;
@@ -74,11 +75,11 @@ namespace PictureManager.Domain.Models {
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
     public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
-      if (!add && Core.MessageDialogShow(
+      if (!add && Core.DialogHostShow(new MessageDialog(
             "Segments Drawer",
             "Do you want to remove segments from drawer?",
             "IconQuestion",
-            true) != 0)
+            true)) != 0)
         return;
 
       var count = SegmentsDrawer.Count;
@@ -195,7 +196,7 @@ namespace PictureManager.Domain.Models {
       var msgCount = Selected.Count > 1 ? $"'s ({Selected.Count})" : string.Empty;
       var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}??";
 
-      if (Core.MessageDialogShow("Set Person", msg, "IconQuestion", true) == 0)
+      if (Core.DialogHostShow(new MessageDialog("Set Person", msg, "IconQuestion", true)) == 0)
         SetSelectedAsPerson(person);
     }
 
