@@ -19,7 +19,7 @@
       Background="#88000000">
       
       <StackPanel Orientation="Horizontal">
-        <ItemsControl ItemsSource="{Binding GroupInfo}">
+        <ItemsControl ItemsSource="{Binding Info}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <StackPanel Orientation="Horizontal" />
