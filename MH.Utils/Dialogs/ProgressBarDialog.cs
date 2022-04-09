@@ -86,10 +86,12 @@ namespace MH.Utils.Dialogs {
         Result = 0;
       };
 
-      _worker.ProgressChanged += (o, e) => {
-        var userState = (object[])e.UserState;
-        Message = (string)userState[0];
-        StringProgress = $"{userState[1]} / {userState[2]}";
+      _worker.ProgressChanged += (_, e) => {
+        if (e.UserState is object[] userState) {
+          Message = (string)userState[0];
+          StringProgress = $"{userState[1]} / {userState[2]}";
+        }
+
         IntProgress = e.ProgressPercentage;
       };
     }
