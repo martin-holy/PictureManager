@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,7 +20,7 @@ namespace PictureManager.ViewModels {
     private VirtualizingWrapPanel _allSegmentsPanel;
 
     public List<SegmentM> AllSegments { get; } = new();
-    public List<object> AllSegmentsGrouped { get; } = new();
+    public ObservableCollection<object> AllSegmentsGrouped { get; } = new();
     public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
     public RelayCommand<RoutedEventArgs> TopSegmentsLoadedCommand { get; }
     public RelayCommand<RoutedEventArgs> AllSegmentsLoadedCommand { get; }
@@ -73,9 +74,7 @@ namespace PictureManager.ViewModels {
 
     public void ReloadPersonSegments() {
       _segmentsM.ReloadPersonSegments(PersonM, AllSegments, AllSegmentsGrouped);
-      PersonM?.OnPropertyChanged(nameof(PersonM.TopSegments));
-      OnPropertyChanged(nameof(AllSegments));
-      OnPropertyChanged(nameof(AllSegmentsGrouped));
+      OnPropertyChanged(nameof(AllSegments)); // this is for the count
     }
 
     private void Select(ClickEventArgs e) {
@@ -85,8 +84,8 @@ namespace PictureManager.ViewModels {
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
       if (!e.WidthChanged) return;
-      _topSegmentsPanel.Wrap();
-      _allSegmentsPanel.Wrap();
+      _topSegmentsPanel.ReWrap();
+      _allSegmentsPanel.ReWrap();
     }
   }
 }

@@ -6,8 +6,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.CustomControls;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
@@ -15,9 +15,9 @@ using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridVM: ObservableObject {
-    private readonly Core _core;
     private readonly AppCore _coreVM;
     private readonly MediaElement _videoPreview;
+    private VirtualizingWrapPanel _panel;
 
     public ThumbnailsGridM Model { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
@@ -29,27 +29,21 @@ namespace PictureManager.ViewModels {
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
     public RelayCommand<object> RefreshCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
+    public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
+    public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
 
-    public VirtualizingWrapPanel Panel { get; }
-
-    public ThumbnailsGridVM(Core core, AppCore coreVM, ThumbnailsGridM model, string tabTitle) {
-      _core = core;
+    public ThumbnailsGridVM(AppCore coreVM, ThumbnailsGridM model, string tabTitle) {
       _coreVM = coreVM;
       Model = model;
 
       MainTabsItem = new(this, tabTitle);
 
-      Panel = new();
-      Panel.SizeChanged += async (o, e) => {
-        if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
-          await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
-      };
-      DragDropFactory.SetDrag(Panel, CanDrag, DataFormats.FileDrop);
-
       ShowVideoPreviewCommand = new(ShowVideoPreview);
       HideVideoPreviewCommand = new(HideVideoPreview);
       RefreshCommand = new(Refresh);
       SelectAllCommand = new(() => Model.SelectAll());
+      PanelLoadedCommand = new(PanelLoaded);
+      PanelSizeChangedCommand = new(PanelSizeChanged);
 
       SelectMediaItemCommand = new(e => {
         if ((e.Source as FrameworkElement)?.DataContext is not MediaItemM mi) return;
@@ -66,7 +60,7 @@ namespace PictureManager.ViewModels {
           Model.Zoom(e.Delta);
           await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
         },
-        e => (Keyboard.Modifiers & ModifierKeys.Control) > 0);
+        _ => (Keyboard.Modifiers & ModifierKeys.Control) > 0);
 
       _videoPreview = new() {
         LoadedBehavior = MediaState.Manual,
@@ -78,6 +72,16 @@ namespace PictureManager.ViewModels {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
         ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
+    }
+
+    private void PanelLoaded(RoutedEventArgs e) {
+      _panel = e.Source as VirtualizingWrapPanel;
+      DragDropFactory.SetDrag(_panel, CanDrag, DataFormats.FileDrop);
+    }
+
+    private void PanelSizeChanged(SizeChangedEventArgs e) {
+      if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
+        _panel.ReWrap();
     }
 
     private object CanDrag(MouseEventArgs e) {

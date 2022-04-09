@@ -4,16 +4,15 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
-
+  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  
   <DataTemplate DataType="{x:Type vm:ThumbnailsGridVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/VirtualizingWrapPanelStyle.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml" />
         </ResourceDictionary.MergedDictionaries>
         
         <ContextMenu
@@ -37,37 +36,42 @@
             Command="{Binding RefreshCommand}" />
         </ContextMenu>
         
-        <DataTemplate
-          x:Key="MiThumbWithCommands"
-          DataType="{x:Type models:MediaItemM}">
+        <DataTemplate DataType="{x:Type models:MediaItemM}">
+          <DataTemplate.Resources>
+            <ResourceDictionary>
+              <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
+              </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+          </DataTemplate.Resources>
     
           <ContentPresenter Content="{Binding}">
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="MouseEnter">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.ShowVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeave">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.HideVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
                   CommandParameter="{Binding}" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="PreviewMouseUp">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.SelectMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
                   PassEventArgsToCommand="True" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeftButtonDown">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.OpenMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type cc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
                   PassEventArgsToCommand="True" />
               </b:EventTrigger>
             </b:Interaction.Triggers>
@@ -77,28 +81,13 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
     
-    <ContentPresenter Content="{Binding Panel}">
-      <ContentPresenter.Resources>
-        <Style
-          TargetType="{x:Type cc:VirtualizingWrapPanel}"
-          BasedOn="{StaticResource CustomControls.VirtualizingWrapPanel}">
-          
-          <Setter
-            Property="ShowGroupItemsCount"
-            Value="True" />
-          <Setter
-            Property="GroupItemsCountIcon"
-            Value="IconImageMultiple" />
-          <Setter
-            Property="ItemDataTemplate"
-            Value="{StaticResource MiThumbWithCommands}" />
-          <Setter
-            Property="Tag"
-            Value="{Binding}" />
-        </Style>
-      </ContentPresenter.Resources>
-
-      <ContentPresenter.InputBindings>
+    <mhc:VirtualizingWrapPanel
+      ItemWidthGetter="{Binding Model.ItemWidthGetter}"
+      ItemsToWrap="{Binding Model.FilteredGrouped}"
+      ScrollToItem="{Binding Model.ScrollToItem}"
+      Tag="{Binding}">
+      
+      <mhc:VirtualizingWrapPanel.InputBindings>
         <KeyBinding
           Modifiers="Control"
           Key="A"
@@ -121,7 +110,7 @@
           Key="K"
           Command="{Binding MediaItemsVM.CommentCommand,
                     Source={x:Static pm:App.Ui}}" />
-      </ContentPresenter.InputBindings>
+      </mhc:VirtualizingWrapPanel.InputBindings>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseWheel">
@@ -129,8 +118,21 @@
             Command="{Binding ZoomCommand}"
             PassEventArgsToCommand="True" />
         </b:EventTrigger>
+        
+        <b:EventTrigger EventName="Loaded">
+            <b:InvokeCommandAction
+              Command="{Binding PanelLoadedCommand}"
+              PassEventArgsToCommand="True" />
+          </b:EventTrigger>
+        
+        <b:EventTrigger EventName="SizeChanged">
+          <b:InvokeCommandAction
+            Command="{Binding PanelSizeChangedCommand}"
+            PassEventArgsToCommand="True" />
+        </b:EventTrigger>
       </b:Interaction.Triggers>
-    </ContentPresenter>
+    </mhc:VirtualizingWrapPanel>
+
   </DataTemplate>
     
 </ResourceDictionary>

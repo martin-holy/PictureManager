@@ -42,7 +42,7 @@ namespace PictureManager.Domain.DataAdapters {
         person.Name,
         person.TopSegments == null
           ? string.Empty
-          : string.Join(",", person.TopSegments.Select(x => x.Id)),
+          : string.Join(",", person.TopSegments.Cast<SegmentM>().Select(x => x.Id)),
         person.Keywords == null
           ? string.Empty
           : string.Join(",", person.Keywords.Select(x => x.Id)));
@@ -52,10 +52,10 @@ namespace PictureManager.Domain.DataAdapters {
         // Persons top segments
         if (!string.IsNullOrEmpty(person.Csv[2])) {
           var ids = person.Csv[2].Split(',');
-          person.TopSegments = new(ids.Length);
+          person.TopSegments = new();
           foreach (var segmentId in ids)
             person.TopSegments.Add(_segmentsM.AllDic[int.Parse(segmentId)]);
-          person.Segment = person.TopSegments[0];
+          person.Segment = (SegmentM)person.TopSegments[0];
         }
 
         // reference to Keywords

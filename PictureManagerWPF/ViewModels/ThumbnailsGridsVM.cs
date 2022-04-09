@@ -8,13 +8,10 @@ using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Interfaces;
 using MH.Utils;
 using MH.Utils.Extensions;
-using PictureManager.CustomControls;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
-using PictureManager.Properties;
 using PictureManager.Utils;
 using PictureManager.ViewModels.Tree;
 using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
@@ -24,7 +21,6 @@ namespace PictureManager.ViewModels {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     private readonly WorkTask _workTask = new();
-    private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
     private ThumbnailsGridVM _current;
 
     public ThumbnailsGridsM Model { get; }
@@ -96,7 +92,6 @@ namespace PictureManager.ViewModels {
     }
 
     public void CloseGrid(ThumbnailsGridVM grid) {
-      grid.Panel.ClearRows();
       grid.Model.ClearItBeforeLoad();
       Model.All.Remove(grid.Model);
 
@@ -122,22 +117,12 @@ namespace PictureManager.ViewModels {
     }
 
     public void ScrollToCurrentMediaItem() {
-      if (_core.MediaItemsM.Current == null)
-        ScrollToTop();
-      else
-        ScrollTo(_core.MediaItemsM.Current);
+      if (Current != null)
+        Current.Model.ScrollToItem = _core.MediaItemsM.Current;
     }
-
-    public void ScrollToTop() {
-      Current?.Panel.ScrollToTop();
-      // TODO
-      App.MainWindowV.UpdateLayout();
-    }
-
-    public void ScrollTo(MediaItemM mi) => Current?.Panel.ScrollTo(mi);
 
     private void AddThumbnailsGridIfNotActive(string tabTitle) {
-      if (_coreVM.MainTabsVM.Selected?.Content is ThumbnailsGridVM thumbsGridVM) {
+      if (_coreVM.MainTabsVM.Selected?.Content is ThumbnailsGridVM) {
         if (tabTitle != null)
           _coreVM.MainTabsVM.Selected.ContentHeader = tabTitle;
 
@@ -148,8 +133,8 @@ namespace PictureManager.ViewModels {
     }
 
     private void AddThumbnailsGrid(string tabTitle) {
-      var model = Model.AddThumbnailsGrid();
-      var viewModel = new ThumbnailsGridVM(_core, _coreVM, model, tabTitle);
+      var model = Model.AddThumbnailsGrid(_core.MediaItemsM);
+      var viewModel = new ThumbnailsGridVM(_coreVM, model, tabTitle);
 
       // TODO check all usage and use it less
       model.SelectionChangedEventHandler += (_, _) => {
@@ -223,7 +208,6 @@ namespace PictureManager.ViewModels {
 
     private async Task LoadAsync(List<MediaItemM> mediaItems, List<FolderM> folders) {
       await _workTask.Cancel();
-      ScrollToTop();
 
       // Clear before new load
       Current.Model.ClearItBeforeLoad();
@@ -236,7 +220,7 @@ namespace PictureManager.ViewModels {
         var items = await _core.MediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders, _workTask.Token);
         Current.Model.LoadedItems.AddRange(items);
         await Current.Model.ReloadFilteredItems();
-        await LoadThumbnailsAsync(Current.Model.FilteredItems.ToArray(), _workTask.Token);
+        await LoadThumbnailsAsyncNew(Current.Model.FilteredItems.ToArray(), _workTask.Token);
         Current.Model.SetMediaItemFilterSizeRange();
       }));
     }
@@ -245,104 +229,26 @@ namespace PictureManager.ViewModels {
       if (!await _workTask.Cancel()) return;
       if (Current == null) return;
 
-      ScrollToTop();
-      Current.Panel.ClearRows();
-
       await _workTask.Start(Task.Run(async () =>
-        await LoadThumbnailsAsync(Current.Model.FilteredItems.ToArray(), _workTask.Token)));
+        await LoadThumbnailsAsyncNew(Current.Model.FilteredItems.ToArray(), _workTask.Token)));
 
       Current.Model.NeedReload = false;
       ScrollToCurrentMediaItem();
     }
 
-    private async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
+    private async Task LoadThumbnailsAsyncNew(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
+      var progress = new Progress<int>((x) => {
+        _core.TitleProgressBarM.ValueA = x;
+        _core.TitleProgressBarM.ValueB = x;
+      });
+
       _core.TitleProgressBarM.IsIndeterminate = false;
       _core.TitleProgressBarM.ResetProgressBars(100);
 
-      await Task.Run(async () => {
-        // read metadata for new items and add thumbnails to grid
-        await ReadMetadataAndListThumbsAsync(items, token);
-
-        if (token.IsCancellationRequested)
-          await Core.RunOnUiThread(() => _core.MediaItemsM.Delete(_core.MediaItemsM.All.Where(x => x.IsNew).ToArray()));
-      }, token);
-
-      // TODO: is this necessary?
-      if (Current?.Model.CurrentMediaItem != null) {
-        Current.Model.SetSelected(Current.Model.CurrentMediaItem, false);
-        Current.Model.SetSelected(Current.Model.CurrentMediaItem, true);
-      }
+      await Current.Model.LoadThumbnailsAsync(items, token, progress);
 
       _core.TitleProgressBarM.ValueA = 100;
       _core.TitleProgressBarM.ValueB = 100;
-    }
-
-    private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
-      await Core.RunOnUiThread(() => Current.Panel.ClearRows());
-
-      await Task.Run(async () => {
-        var count = items.Count;
-        var workingOn = 0;
-
-        foreach (var mi in items) {
-          if (token.IsCancellationRequested) break;
-
-          workingOn++;
-          var percent = Convert.ToInt32((double)workingOn / count * 100);
-
-          if (mi.IsNew) {
-            var success = await _core.MediaItemsM.ReadMetadata(mi, false);
-            mi.IsNew = false;
-            if (!success) {
-              // delete corrupted MediaItems
-              await Core.RunOnUiThread(() => {
-                Current.Model.LoadedItems.Remove(mi);
-                Current.Model.FilteredItems.Remove(mi);
-                Current.Model.UpdatePositionSlashCount();
-                _core.MediaItemsM.Delete(mi);
-                _core.TitleProgressBarM.ValueA = percent;
-                _core.TitleProgressBarM.ValueB = percent;
-              });
-
-              continue;
-            }
-          }
-
-          await AddMediaItemToGrid(mi);
-
-          await Core.RunOnUiThread(() => {
-            mi.SetInfoBox();
-            _core.TitleProgressBarM.ValueA = percent;
-            _core.TitleProgressBarM.ValueB = percent;
-          });
-        }
-      }, token);
-    }
-
-    private async Task AddMediaItemToGrid(MediaItemM mi) {
-      const int itemOffset = 6; //border, margin, padding, ... //TODO find the real value
-      var groupItems = new List<VirtualizingWrapPanelGroupItem>();
-
-      if (Current.Model.GroupByFolders) {
-        var folderName = mi.Folder.Name;
-        var iOfL = folderName.FirstIndexOfLetter();
-        var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName[iOfL..];
-        var toolTip = mi.Folder.FolderKeyword != null
-          ? mi.Folder.FolderKeyword.FullPath
-          : mi.Folder.FullPath;
-        groupItems.Add(new() { Icon = "IconFolder", Title = title, ToolTip = toolTip });
-      }
-
-      if (Current.Model.GroupByDate) {
-        var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
-        if (!string.IsNullOrEmpty(title))
-          groupItems.Add(new() { Icon = "IconCalendar", Title = title });
-      }
-
-      await Core.RunOnUiThread(() => {
-        Current.Panel.AddGroupIfNew(groupItems.ToArray());
-        Current.Panel.AddItem(mi, mi.ThumbWidth + itemOffset);
-      });
     }
 
     public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
@@ -378,7 +284,7 @@ namespace PictureManager.ViewModels {
           Current.Model.LoadedItems.AddInOrder(mi,
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
           await ReapplyFilter();
-          ScrollTo(mi);
+          Current.Model.ScrollToItem = mi;
         }
       );
     }

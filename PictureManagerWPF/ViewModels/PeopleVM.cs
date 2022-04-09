@@ -39,7 +39,7 @@ namespace PictureManager.ViewModels {
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
       if (e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging && e.Source is VirtualizingWrapPanel panel)
-        panel.Wrap();
+        panel.ReWrap();
     }
   }
 }

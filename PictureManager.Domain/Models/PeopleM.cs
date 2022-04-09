@@ -21,7 +21,7 @@ namespace PictureManager.Domain.Models {
     public List<PersonM> All { get; } = new();
     public List<PersonM> Selected { get; } = new();
     public Dictionary<int, PersonM> AllDic { get; set; }
-    public List<object> PeopleInGroups { get; } = new();
+    public ObservableCollection<object> PeopleInGroups { get; } = new();
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler PeopleKeywordChangedEvent = delegate { };
@@ -103,19 +103,17 @@ namespace PictureManager.Domain.Models {
 
       if (oldPerson.TopSegments?.Contains(segment) != true) return;
 
-      oldPerson.TopSegments = ListExtensions.Toggle(oldPerson.TopSegments, segment, true);
-      oldPerson.OnPropertyChanged(nameof(oldPerson.TopSegments));
+      oldPerson.TopSegments = ObservableCollectionExtensions.Toggle(oldPerson.TopSegments, segment, true);
       DataAdapter.IsModified = true;
     }
 
     public void ToggleTopSegment(PersonM person, SegmentM segment) {
       if (segment == null) return;
 
-      person.TopSegments = ListExtensions.Toggle(person.TopSegments, segment, true);
-      person.OnPropertyChanged(nameof(person.TopSegments));
+      person.TopSegments = ObservableCollectionExtensions.Toggle(person.TopSegments, segment, true);
 
       if (person.TopSegments?.Count > 0)
-        person.Segment = person.TopSegments[0];
+        person.Segment = (SegmentM)person.TopSegments[0];
 
       DataAdapter.IsModified = true;
     }
@@ -161,8 +159,6 @@ namespace PictureManager.Domain.Models {
       var peopleWithoutGroup = Items.OfType<PersonM>().ToArray();
       if (peopleWithoutGroup.Any())
         AddPeopleToGroups(string.Empty, peopleWithoutGroup);
-
-      OnPropertyChanged(nameof(PeopleInGroups));
     }
 
     private void AddPeopleToGroups(string groupTitle, IEnumerable<PersonM> people) {
@@ -175,16 +171,16 @@ namespace PictureManager.Domain.Models {
 
         var itemsGroup = new ItemsGroup();
         if (!string.IsNullOrEmpty(groupTitle))
-          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
+          itemsGroup.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
         if (!group.Key.Equals(string.Empty))
-          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
+          itemsGroup.Info.Add(new ItemsGroupInfoItem("IconTag", group.Key));
+
+        PeopleInGroups.Add(itemsGroup);
 
         foreach (var person in group.OrderBy(p => p.Name))
           itemsGroup.Items.Add(person);
 
-        itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconImageMultiple", Title = itemsGroup.Items.Count.ToString() });
-
-        PeopleInGroups.Add(itemsGroup);
+        itemsGroup.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", itemsGroup.Items.Count.ToString()));
       }
     }
   }

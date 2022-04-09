@@ -30,10 +30,10 @@ namespace PictureManager.Domain.Models {
     public SegmentM IgnoreImageCacheSegment { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
-    public List<ItemsGroup> LoadedGrouped { get; } = new();
-    public List<object> ConfirmedGrouped { get; } = new();
+    public ObservableCollection<object> LoadedGrouped { get; } = new();
+    public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
-    public List<SegmentM> SegmentsDrawer { get; } = new();
+    public ObservableCollection<object> SegmentsDrawer { get; } = new();
     public ObservableCollection<Tuple<int, int, int, int, bool>> SegmentToolTipRects { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
@@ -91,17 +91,13 @@ namespace PictureManager.Domain.Models {
         foreach (var segment in segments)
           SegmentsDrawer.Remove(segment);
 
-      if (count != SegmentsDrawer.Count) {
-        OnPropertyChanged(nameof(SegmentsDrawer));
+      if (count != SegmentsDrawer.Count)
         DataAdapter.AreTablePropsModified = true;
-      }
     }
 
     public void SegmentsDrawerRemove(SegmentM segment) {
-      if (SegmentsDrawer.Remove(segment)) {
-        OnPropertyChanged(nameof(SegmentsDrawer));
+      if (SegmentsDrawer.Remove(segment))
         DataAdapter.AreTablePropsModified = true;
-      }
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>
@@ -365,8 +361,8 @@ namespace PictureManager.Domain.Models {
       if (segmentM.PersonId == 0) {
         if (inGroups
             && LoadedGrouped.Count > 0
-            && LoadedGrouped[^1].Items.Cast<SegmentM>().Any(x => x.PersonId == 0)) {
-          items = LoadedGrouped[^1].Items
+            && ((ItemsGroup)LoadedGrouped[^1]).Items.Cast<SegmentM>().Any(x => x.PersonId == 0)) {
+          items = ((ItemsGroup)LoadedGrouped[^1]).Items
             .Cast<SegmentM>()
             .Where(x => x.PersonId == 0)
             .Select(x => x.MediaItem)
@@ -388,7 +384,7 @@ namespace PictureManager.Domain.Models {
       return items;
     }
 
-    public void ReloadPersonSegments(PersonM person, List<SegmentM> allSegments, List<object> allSegmentsGrouped) {
+    public void ReloadPersonSegments(PersonM person, List<SegmentM> allSegments, ObservableCollection<object> allSegmentsGrouped) {
       allSegments.Clear();
       allSegmentsGrouped.Clear();
 
@@ -411,7 +407,7 @@ namespace PictureManager.Domain.Models {
         else {
           // add segments in group
           var itemsGroup = new ItemsGroup();
-          itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
+          itemsGroup.Info.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
           allSegmentsGrouped.Add(itemsGroup);
 
           foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
@@ -475,30 +471,18 @@ namespace PictureManager.Domain.Models {
     }
 
     private void ReloadLoadedGrouped() {
-
-      void AddGroup(ItemsGroup group, string title) {
-        if (group.Items.Count != 0) {
-          group.GroupInfo.Add(new ItemsGroupInfoItem {
-            Icon = "IconPeople",
-            Title = title });
-          group.GroupInfo.Add(new ItemsGroupInfoItem {
-            Icon = "IconImageMultiple",
-            Title = group.Items.Count.ToString() });
-          LoadedGrouped.Add(group);
-        }
-      }
-
       ItemsGroup group;
       LoadedGrouped.Clear();
 
       if (!GroupSegments) {
         group = new();
+        group.Info.Add(new ItemsGroupInfoItem("IconPeople", "?"));
+        LoadedGrouped.Add(group);
 
         foreach (var segment in Loaded)
           group.Items.Add(segment);
 
-        AddGroup(group, "?");
-        OnPropertyChanged(nameof(LoadedGrouped));
+        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
 
         return;
       }
@@ -515,6 +499,8 @@ namespace PictureManager.Domain.Models {
             : s.PersonId.ToString();
 
         group = new();
+        group.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
+        LoadedGrouped.Add(group);
 
         foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
           group.Items.Add(segment);
@@ -532,7 +518,7 @@ namespace PictureManager.Domain.Models {
           group.Items.Add(segment);
         }
 
-        AddGroup(group, groupTitle);
+        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
       }
 
       // add segments with PersonId == 0 ordered by similar
@@ -543,6 +529,8 @@ namespace PictureManager.Domain.Models {
         .OrderByDescending(x => x.SimMax);
 
       group = new();
+      group.Info.Add(new ItemsGroupInfoItem("IconPeople", "0"));
+      LoadedGrouped.Add(group);
 
       foreach (var segment in withSimilar) {
         var simSegments = segment.Similar
@@ -559,8 +547,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
         group.Items.Add(segment);
 
-      AddGroup(group, "0");
-      OnPropertyChanged(nameof(LoadedGrouped));
+      group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
     }
 
     /// <summary>
@@ -575,7 +562,7 @@ namespace PictureManager.Domain.Models {
       var tmp = new List<(int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar)>();
 
       SegmentM GetRandomSegment(IEnumerable<SegmentM> segments) {
-        var tmpSegments = (segments.First().Person?.TopSegments ?? segments).ToArray();
+        var tmpSegments = (segments.First().Person?.TopSegments?.Cast<SegmentM>() ?? segments).ToArray();
         var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Length - 1)];
         return segment;
       }
@@ -617,9 +604,9 @@ namespace PictureManager.Domain.Models {
             : personId.ToString();
 
           var group = new ItemsGroup();
-          group.GroupInfo.Add(new ItemsGroupInfoItem { Icon = "IconPeople", Title = groupTitle });
-          group.Items.Add(segment);
+          group.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
           ConfirmedGrouped.Add(group);
+          group.Items.Add(segment);
 
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
             group.Items.Add(simGroup.segment);
@@ -642,11 +629,11 @@ namespace PictureManager.Domain.Models {
           }
           else {
             var itemsGroup = new ItemsGroup();
-            itemsGroup.GroupInfo.Add(new ItemsGroupInfoItem {
-              Icon = "Unknown".Equals(group.Key)
+            itemsGroup.Info.Add(new ItemsGroupInfoItem(
+              "Unknown".Equals(group.Key)
                 ? "IconPeople"
                 : "IconTag",
-              Title = group.Key });
+              group.Key));
             ConfirmedGrouped.Add(itemsGroup);
 
             foreach (var (_, segment, _) in group)
@@ -654,8 +641,6 @@ namespace PictureManager.Domain.Models {
           }
         }
       }
-
-      OnPropertyChanged(nameof(ConfirmedGrouped));
     }
   }
 }

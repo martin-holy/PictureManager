@@ -54,12 +54,12 @@ namespace PictureManager.ViewModels {
 
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM })
-        SegmentsM.Select(SegmentsM.SegmentsDrawer, segmentM, e.IsCtrlOn, e.IsShiftOn);
+        SegmentsM.Select(SegmentsM.SegmentsDrawer.Cast<SegmentM>().ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
       if (!e.WidthChanged) return;
-      _panel.Wrap();
+      _panel.ReWrap();
     }
   }
 }
