@@ -19,8 +19,7 @@
     <mhc:VirtualizingWrapPanel
       ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
                   Source={x:Static pm:App.Ui}}"
-      ItemsToWrap="{Binding PeopleM.PeopleInGroups}"
-      WrapTrigger="{Binding PeopleM.PeopleInGroups.Count}">
+      ItemsToWrap="{Binding PeopleM.PeopleInGroups}">
       
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">

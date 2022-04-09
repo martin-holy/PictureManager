@@ -59,7 +59,7 @@ namespace PictureManager.Domain.DataAdapters {
       TableProps.Add(nameof(_model.CompareSegmentSize), _model.CompareSegmentSize.ToString());
       TableProps.Add(nameof(_model.SimilarityLimit), _model.SimilarityLimit.ToString());
       TableProps.Add(nameof(_model.SimilarityLimitMin), _model.SimilarityLimitMin.ToString());
-      TableProps.Add(nameof(_model.SegmentsDrawer), string.Join(",", _model.SegmentsDrawer.Select(x => x.Id)));
+      TableProps.Add(nameof(_model.SegmentsDrawer), string.Join(",", _model.SegmentsDrawer.Cast<SegmentM>().Select(x => x.Id)));
     }
 
     public override void LinkReferences() {

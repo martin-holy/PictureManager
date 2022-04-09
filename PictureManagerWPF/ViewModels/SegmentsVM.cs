@@ -90,11 +90,11 @@ namespace PictureManager.ViewModels {
       MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
       ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
       MatchingPanelSizeChangedCommand = new(
-        () => _matchingPanel.Wrap(),
+        () => _matchingPanel.ReWrap(),
         e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
       ConfirmedMatchingPanelSizeChangedCommand = new(() => {
         _confirmedMatchingPanel.UpdateLayout();
-        _confirmedMatchingPanel.Wrap();
+        _confirmedMatchingPanel.ReWrap();
       });
 
       // TODO do it just when needed

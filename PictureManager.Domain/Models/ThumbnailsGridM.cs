@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.HelperClasses;
+using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
+    private readonly MediaItemsM _mediaItemsM;
     private readonly List<MediaItemM> _selectedItems = new();
     private readonly List<object> _filterAnd = new();
     private readonly List<object> _filterOr = new();
     private readonly List<object> _filterNot = new();
     private readonly Dictionary<IFilterItem, DisplayFilter> _filterAll = new();
+    private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
     private MediaItemM _currentMediaItem;
     private bool _showImages = true;
@@ -23,13 +29,17 @@ namespace PictureManager.Domain.Models {
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
     private string _positionSlashCount;
+    private object _scrollToItem;
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
 
     public List<MediaItemM> SelectedItems => _selectedItems;
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
+    public ObservableCollection<object> FilteredGrouped { get; } = new();
     public MediaItemFilterSizeM FilterSize { get; } = new();
+    public Func<object, int> ItemWidthGetter { get; } = (o) => ((MediaItemM)o).ThumbWidth + 6;
+    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
 
     public int FilterAndCount => _filterAnd.Count;
     public int FilterOrCount => _filterOr.Count;
@@ -73,7 +83,8 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public ThumbnailsGridM(double thumbScale) {
+    public ThumbnailsGridM(MediaItemsM mediaItemsM, double thumbScale) {
+      _mediaItemsM = mediaItemsM;
       ThumbScale = thumbScale;
     }
 
@@ -87,6 +98,7 @@ namespace PictureManager.Domain.Models {
       SelectedItems.Clear();
       LoadedItems.Clear();
       FilteredItems.Clear();
+      FilteredGrouped.Clear();
       SelectionChanged();
       CurrentMediaItem = null;
     }
@@ -350,6 +362,106 @@ namespace PictureManager.Domain.Models {
       }
 
       return mediaItems;
+    }
+
+    public async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token, IProgress<int> progress) {
+      await Task.Run(async () => {
+        // read metadata for new items and add thumbnails to grid
+        await ReadMetadataAndListThumbsAsync(items, token, progress);
+
+        if (token.IsCancellationRequested)
+          await Core.RunOnUiThread(() => _mediaItemsM.Delete(_mediaItemsM.All.Where(x => x.IsNew).ToArray()));
+      }, token);
+
+      // TODO: is this necessary?
+      if (CurrentMediaItem != null) {
+        SetSelected(CurrentMediaItem, false);
+        SetSelected(CurrentMediaItem, true);
+      }
+    }
+
+    private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token, IProgress<int> progress) {
+      await Task.Run(async () => {
+        var count = items.Count;
+        var workingOn = 0;
+
+        await Core.RunOnUiThread(() => {
+          FilteredGrouped.Clear();
+        });
+
+        foreach (var mi in items) {
+          if (token.IsCancellationRequested) break;
+
+          workingOn++;
+          var percent = Convert.ToInt32((double)workingOn / count * 100);
+
+          if (mi.IsNew) {
+            var success = await _mediaItemsM.ReadMetadata(mi, false);
+            mi.IsNew = false;
+            if (!success) {
+              // delete corrupted MediaItems
+              await Core.RunOnUiThread(() => {
+                LoadedItems.Remove(mi);
+                FilteredItems.Remove(mi);
+                UpdatePositionSlashCount();
+                _mediaItemsM.Delete(mi);
+                progress.Report(percent);
+              });
+
+              continue;
+            }
+          }
+
+          AddMediaItemToGrid(mi);
+
+          await Core.RunOnUiThread(() => {
+            mi.SetInfoBox();
+            progress.Report(percent);
+          });
+        }
+
+        await Core.RunOnUiThread(() => {
+          foreach (var group in FilteredGrouped.OfType<ItemsGroup>())
+            group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
+        });
+
+      }, token);
+    }
+
+    private async void AddMediaItemToGrid(MediaItemM mi) {
+      ItemsGroup group = new();
+
+      if (GroupByFolders) {
+        var folderName = mi.Folder.Name;
+        var iOfL = folderName.FirstIndexOfLetter();
+        var title = iOfL == 0 || folderName.Length - 1 == iOfL ? folderName : folderName[iOfL..];
+        var toolTip = mi.Folder.FolderKeyword != null
+          ? mi.Folder.FolderKeyword.FullPath
+          : mi.Folder.FullPath;
+        group.Info.Add(new ItemsGroupInfoItem("IconFolder", title, toolTip));
+      }
+
+      if (GroupByDate) {
+        var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
+        if (!string.IsNullOrEmpty(title))
+          group.Info.Add(new ItemsGroupInfoItem("IconCalendar", title));
+      }
+
+      var lastGroup = FilteredGrouped.LastOrDefault() as ItemsGroup;
+      var groupA = group.Info.Cast<ItemsGroupInfoItem>().ToArray();
+      var groupB = lastGroup?.Info.Cast<ItemsGroupInfoItem>().ToArray();
+      
+      if (lastGroup != null && ItemsGroupInfoItem.AreEqual(groupA, groupB))
+        group = lastGroup;
+      else {
+        await Core.RunOnUiThread(() => {
+          FilteredGrouped.Add(group);
+        });
+      }
+
+      await Core.RunOnUiThread(() => {
+        group.Items.Add(mi);
+      });
     }
   }
 }
