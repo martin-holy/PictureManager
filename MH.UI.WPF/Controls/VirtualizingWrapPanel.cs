@@ -1,12 +1,17 @@
 ﻿using MH.Utils.HelperClasses;
-using System.Collections.Generic;
+using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace MH.UI.WPF.Controls {
+  public class VirtualizingWrapPanelRow {
+    public ObservableCollection<object> Items { get; } = new();
+  }
+
   public class VirtualizingWrapPanel : ItemsControl {
     private UIElement _rowToScrollToTop;
     private ScrollViewer _rowsScrollViewer;
@@ -18,16 +23,22 @@ namespace MH.UI.WPF.Controls {
       typeof(double),
       typeof(VirtualizingWrapPanel));
 
-    public static readonly DependencyProperty ItemsToWrapProperty = DependencyProperty.Register(
-      nameof(ItemsToWrap),
-      typeof(IEnumerable<object>),
+    public static readonly DependencyProperty ItemWidthGetterProperty = DependencyProperty.Register(
+      nameof(ItemWidthGetter),
+      typeof(Func<object, int>),
       typeof(VirtualizingWrapPanel));
 
-    public static readonly DependencyProperty WrapTriggerProperty = DependencyProperty.Register(
-      nameof(WrapTrigger),
-      typeof(object),
+    public static readonly DependencyProperty ItemsToWrapProperty = DependencyProperty.Register(
+      nameof(ItemsToWrap),
+      typeof(ObservableCollection<object>),
       typeof(VirtualizingWrapPanel),
       new(ItemsToWrapChanged));
+
+    public static readonly DependencyProperty ScrollToItemProperty = DependencyProperty.Register(
+      nameof(ScrollToItem),
+      typeof(object),
+      typeof(VirtualizingWrapPanel),
+      new(ScrollToItemChanged));
 
     public static readonly DependencyProperty WrappedItemsProperty = DependencyProperty.Register(
       nameof(WrappedItems),
@@ -45,14 +56,19 @@ namespace MH.UI.WPF.Controls {
       set => SetValue(ItemWidthProperty, value);
     }
 
-    public IEnumerable<object> ItemsToWrap {
-      get => (IEnumerable<object>)GetValue(ItemsToWrapProperty);
+    public Func<object, int> ItemWidthGetter {
+      get => (Func<object, int>)GetValue(ItemWidthGetterProperty);
+      set => SetValue(ItemWidthGetterProperty, value);
+    }
+
+    public ObservableCollection<object> ItemsToWrap {
+      get => (ObservableCollection<object>)GetValue(ItemsToWrapProperty);
       set => SetValue(ItemsToWrapProperty, value);
     }
 
-    public object WrapTrigger {
-      get => GetValue(WrapTriggerProperty);
-      set => SetValue(WrapTriggerProperty, value);
+    public object ScrollToItem {
+      get => GetValue(ScrollToItemProperty);
+      set => SetValue(ScrollToItemProperty, value);
     }
 
     public ObservableCollection<object> WrappedItems {
@@ -98,72 +114,108 @@ namespace MH.UI.WPF.Controls {
         }
       };
 
-      Loaded += (_, _) => {
-        Wrap();
-      };
+      Loaded += (_, _) =>
+        AddAll();
     }
 
-    private static void ItemsToWrapChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-      (d as VirtualizingWrapPanel)?.Wrap();
+    private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
+      (d as VirtualizingWrapPanel)?.ScrollTo(e.NewValue);
 
-    public void Wrap() {
-      if (ActualWidth == 0 || ItemWidth == 0) return;
-      Wrap((int)(ActualWidth / ItemWidth));
+    private static void ItemsToWrapChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      var panel = (VirtualizingWrapPanel)d;
+      panel.WrappedItems = new();
+      panel.AddAll();
+
+      if (e.OldValue is ObservableCollection<object> oldValue)
+        oldValue.CollectionChanged -= panel.ItemsToWrapCollectionChanged;
+
+      if (e.NewValue is ObservableCollection<object> newValue)
+        newValue.CollectionChanged += panel.ItemsToWrapCollectionChanged;
     }
 
-    private void Wrap(int columns) {
-      WrappedItems ??= new();
-      WrappedItems.Clear();
+    private void ItemsToWrapCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+      switch (e.Action) {
+        case NotifyCollectionChangedAction.Add:
+        if (e.NewItems != null)
+          foreach (var item in e.NewItems)
+            if (item is ItemsGroup group) {
+              group.Items.CollectionChanged += ItemsGroupItemsCollectionChanged;
+              WrappedItems.Add(group);
+            }
+            else
+              AddItem(item);
+        break;
 
-      if (ItemsToWrap == null || !ItemsToWrap.Any()) return;
+        case NotifyCollectionChangedAction.Reset:
+        foreach (var group in WrappedItems.OfType<ItemsGroup>())
+          group.Items.CollectionChanged -= ItemsGroupItemsCollectionChanged;
 
-      var looseItems = new List<object>();
-      foreach (var item in ItemsToWrap) {
-        if (item is ItemsGroup group) {
-          if (looseItems.Count != 0) {
-            WrapItems(looseItems, columns);
-            looseItems.Clear();
+        WrappedItems.Clear();
+        break;
+
+        default:
+        WrappedItems.Clear();
+        AddAll();
+        break;
+      }
+    }
+
+    private void ItemsGroupItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e) {
+      if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+        foreach (var item in e.NewItems)
+          AddItem(item);
+      else
+        ReWrap();
+    }
+
+    private void AddAll() {
+      if (ActualWidth != 0 && ItemsToWrap != null && ItemsToWrap.Count != 0 && WrappedItems.Count == 0)
+        foreach (var item in ItemsToWrap) {
+          if (item is ItemsGroup group) {
+            WrappedItems.Add(group);
+            foreach (var groupItem in group.Items)
+              AddItem(groupItem);
           }
-
-          WrappedItems.Add(group);
-          WrapItems(group.Items, columns);
+          else
+            AddItem(item);
         }
-        else
-          looseItems.Add(item);
-      }
-
-      if (looseItems.Count != 0) {
-        WrapItems(looseItems, columns);
-        looseItems.Clear();
-      }
-
-      ScrollTopRowOrItem();
     }
 
-    private void WrapItems(List<object> items, int columns) {
-      var counter = 0;
-      var row = new VirtualizingWrapPanelRow();
-      WrappedItems.Add(row);
+    private void AddItem(object item) {
+      VirtualizingWrapPanelRow row = null;
 
-      foreach (var item in items) {
-        if (counter == columns) {
-          counter = 0;
-          row = new();
-          WrappedItems.Add(row);
-        }
+      if (WrappedItems.Count > 0)
+        row = WrappedItems[^1] as VirtualizingWrapPanelRow;
 
-        row.Items.Add(item);
-        counter++;
+      if (row == null) {
+        row = new();
+        WrappedItems.Add(row);
       }
+
+      var usedSpace = ItemWidthGetter != null
+        ? row.Items.Sum(x => ItemWidthGetter(x))
+        : row.Items.Count * ItemWidth;
+
+      var itemWidth = ItemWidthGetter?.Invoke(item) ?? ItemWidth;
+
+      if (ActualWidth - usedSpace < itemWidth) {
+        row = new();
+        WrappedItems.Add(row);
+      }
+
+      row.Items.Add(item);
+    }
+
+    public void ReWrap() {
+      WrappedItems.Clear();
+      AddAll();
+      ScrollTopRowOrItem();
     }
 
     private void ScrollTopRowOrItem() {
       if (_topItem == null) return;
 
-      if (_topItem is ItemsGroup group)
-        ScrollTo(Items.IndexOf(group));
-      else
-        ScrollTo(_topItem);
+      ScrollTo(_topItem);
     }
 
     private void ScrollTo(int index) {
@@ -175,19 +227,29 @@ namespace MH.UI.WPF.Controls {
       _rowToScrollToTop = ItemContainerGenerator.ContainerFromIndex(index) as UIElement;
     }
 
-    private void ScrollTo(object item) =>
-      ScrollTo(GetRowIndex(item));
+    private void ScrollTo(object item) {
+      if (item == null)
+        _rowsScrollViewer.ScrollToTop();
+      else
+        ScrollTo(GetRowIndex(item));
+    }
 
     private int GetRowIndex(object item) {
       var rowIndex = 0;
       var found = false;
-      foreach (var row in Items) {
-        if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item))) {
-          found = true;
-          break;
-        }
-        rowIndex++;
+
+      if (item is ItemsGroup) {
+        rowIndex = Items.IndexOf(item);
+        found = rowIndex != -1;
       }
+      else
+        foreach (var row in Items) {
+          if (row is VirtualizingWrapPanelRow itemsRow && itemsRow.Items.Any(x => x.Equals(item))) {
+            found = true;
+            break;
+          }
+          rowIndex++;
+        }
 
       return found ? rowIndex : 0;
     }
@@ -213,9 +275,5 @@ namespace MH.UI.WPF.Controls {
 
       return rowIndex;
     }
-  }
-
-  public class VirtualizingWrapPanelRow {
-    public ObservableCollection<object> Items { get; } = new();
   }
 }
