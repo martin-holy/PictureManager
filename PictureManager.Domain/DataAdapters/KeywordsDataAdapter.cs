@@ -62,13 +62,10 @@ namespace PictureManager.Domain.DataAdapters {
       }
 
       // group for keywords automatically added from MediaItems metadata
-      var aag = _model.Items.OfType<CategoryGroupM>()
-        .SingleOrDefault(x => x.Name.Equals("Auto Added"));
-      if (aag == null) {
-        aag = _categoryGroupsM.GroupCreate("Auto Added", Category.Keywords);
-        _model.Items.Insert(0, aag);
-      }
-      _model.AutoAddedGroup = aag;
+      _model.AutoAddedGroup = _model.Items
+        .OfType<CategoryGroupM>()
+        .SingleOrDefault(x => x.Name.Equals("Auto Added"))
+        ?? _categoryGroupsM.GroupCreate("Auto Added", Category.Keywords);
     }
   }
 }
