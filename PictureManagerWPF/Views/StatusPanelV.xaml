@@ -145,7 +145,7 @@
 
                     <Setter
                       Property="Text"
-                      Value="{Binding ThumbnailsGridsVM.Current.Model.PositionSlashCount}" />
+                      Value="{Binding ThumbnailsGridsVM.Model.Current.PositionSlashCount}" />
                     
                     <Style.Triggers>
                       <DataTrigger
@@ -168,7 +168,7 @@
               Visibility="{Binding MediaViewerVM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding ThumbnailsGridsVM.Current.Model.SelectedCount}" />
+              <TextBlock Text="{Binding ThumbnailsGridsVM.Model.Current.SelectedCount}" />
             </Border>
 
             <!-- Modified -->

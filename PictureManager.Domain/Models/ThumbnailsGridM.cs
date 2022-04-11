@@ -15,12 +15,16 @@ using PictureManager.Domain.Interfaces;
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
     private readonly MediaItemsM _mediaItemsM;
+    private readonly TitleProgressBarM _progressBar;
+    private readonly WorkTask _workTask = new();
     private readonly List<MediaItemM> _selectedItems = new();
     private readonly List<object> _filterAnd = new();
     private readonly List<object> _filterOr = new();
     private readonly List<object> _filterNot = new();
     private readonly Dictionary<IFilterItem, DisplayFilter> _filterAll = new();
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
+    private bool _loadIsRunning;
+    private bool _cancelLoad;
 
     private MediaItemM _currentMediaItem;
     private bool _showImages = true;
@@ -83,8 +87,9 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public ThumbnailsGridM(MediaItemsM mediaItemsM, double thumbScale) {
+    public ThumbnailsGridM(MediaItemsM mediaItemsM, TitleProgressBarM progressBar, double thumbScale) {
       _mediaItemsM = mediaItemsM;
+      _progressBar = progressBar;
       ThumbScale = thumbScale;
     }
 
@@ -207,7 +212,7 @@ namespace PictureManager.Domain.Models {
       UpdatePositionSlashCount();
     }
 
-    public async Task ReloadFilteredItems() {
+    public void ReloadFilteredItems() {
       FilteredItems.Clear();
       var filtered = Filter(LoadedItems);
 
@@ -229,7 +234,7 @@ namespace PictureManager.Domain.Models {
         FilteredItems.Add(mi);
 
       if (FilteredItems.IndexOf(CurrentMediaItem) < 0)
-        await Core.RunOnUiThread(() => CurrentMediaItem = null);
+        CurrentMediaItem = null;
 
       UpdatePositionSlashCount();
     }
@@ -364,71 +369,115 @@ namespace PictureManager.Domain.Models {
       return mediaItems;
     }
 
-    public async Task LoadThumbnailsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token, IProgress<int> progress) {
-      await Task.Run(async () => {
-        // read metadata for new items and add thumbnails to grid
-        await ReadMetadataAndListThumbsAsync(items, token, progress);
+    public void ScrollToCurrentMediaItem() {
+      ScrollToItem = _mediaItemsM.Current;
+    }
 
-        if (token.IsCancellationRequested)
-          await Core.RunOnUiThread(() => _mediaItemsM.Delete(_mediaItemsM.All.Where(x => x.IsNew).ToArray()));
-      }, token);
+    public async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide) {
+      // if CTRL is pressed, add new items to already loaded items
+      if (and)
+        items = LoadedItems.Union(items).ToList();
+
+      // if ALT is pressed, remove new items from already loaded items
+      if (hide)
+        items = LoadedItems.Except(items).ToList();
+
+      await LoadAsync(items, null);
+    }
+
+    public async Task LoadAsync(List<MediaItemM> mediaItems, List<FolderM> folders) {
+      if (_loadIsRunning) {
+        _cancelLoad = true;
+        while (_cancelLoad)
+          await Task.Delay(10);
+      }
+
+      _loadIsRunning = true;
+
+      ClearItBeforeLoad();
+      _progressBar.IsIndeterminate = true;
+
+      var items = await _mediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders);
+      LoadedItems.AddRange(items);
+      ReloadFilteredItems();
+      await LoadThumbnails(FilteredItems.ToArray());
+      SetMediaItemFilterSizeRange();
+
+      _loadIsRunning = false;
+      _cancelLoad = false;
+    }
+
+    public async Task ThumbsGridReloadItems() {
+      await LoadThumbnails(FilteredItems.ToArray());
+      NeedReload = false;
+      ScrollToCurrentMediaItem();
+    }
+
+    private async Task LoadThumbnails(IReadOnlyCollection<MediaItemM> items) {
+      var progress = new Progress<int>((x) => {
+        _progressBar.ValueA = x;
+        _progressBar.ValueB = x;
+      });
+
+      _progressBar.IsIndeterminate = false;
+      _progressBar.ResetProgressBars(100);
+
+      // read metadata for new items and add thumbnails to grid
+      await ReadMetadataAndListThumbs(items, progress);
+
+      if (_cancelLoad)
+        _mediaItemsM.Delete(_mediaItemsM.All.Where(x => x.IsNew).ToArray());
 
       // TODO: is this necessary?
       if (CurrentMediaItem != null) {
         SetSelected(CurrentMediaItem, false);
         SetSelected(CurrentMediaItem, true);
       }
+
+      _progressBar.ValueA = 100;
+      _progressBar.ValueB = 100;
     }
 
-    private async Task ReadMetadataAndListThumbsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token, IProgress<int> progress) {
-      await Task.Run(async () => {
-        var count = items.Count;
-        var workingOn = 0;
+    private async Task ReadMetadataAndListThumbs(IReadOnlyCollection<MediaItemM> items, IProgress<int> progress) {
+      var count = items.Count;
+      var workingOn = 0;
 
-        await Core.RunOnUiThread(() => {
-          FilteredGrouped.Clear();
-        });
+      FilteredGrouped.Clear();
 
-        foreach (var mi in items) {
-          if (token.IsCancellationRequested) break;
+      foreach (var mi in items) {
+        if (_cancelLoad) break;
 
-          workingOn++;
-          var percent = Convert.ToInt32((double)workingOn / count * 100);
+        workingOn++;
+        var percent = Convert.ToInt32((double)workingOn / count * 100);
 
-          if (mi.IsNew) {
-            var success = await _mediaItemsM.ReadMetadata(mi, false);
-            mi.IsNew = false;
-            if (!success) {
-              // delete corrupted MediaItems
-              await Core.RunOnUiThread(() => {
-                LoadedItems.Remove(mi);
-                FilteredItems.Remove(mi);
-                UpdatePositionSlashCount();
-                _mediaItemsM.Delete(mi);
-                progress.Report(percent);
-              });
-
-              continue;
-            }
-          }
-
-          AddMediaItemToGrid(mi);
-
-          await Core.RunOnUiThread(() => {
-            mi.SetInfoBox();
-            progress.Report(percent);
+        if (mi.IsNew) {
+          var success = await Task.Run(async () => {
+            return await _mediaItemsM.ReadMetadata(mi, false);
           });
+
+          mi.IsNew = false;
+          if (!success) {
+            // delete corrupted MediaItems
+            LoadedItems.Remove(mi);
+            FilteredItems.Remove(mi);
+            UpdatePositionSlashCount();
+            _mediaItemsM.Delete(mi);
+            progress.Report(percent);
+
+            continue;
+          }
         }
 
-        await Core.RunOnUiThread(() => {
-          foreach (var group in FilteredGrouped.OfType<ItemsGroup>())
-            group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
-        });
+        mi.SetInfoBox();
+        AddMediaItemToGrid(mi);
+        progress.Report(percent);
+      }
 
-      }, token);
+      foreach (var group in FilteredGrouped.OfType<ItemsGroup>())
+        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
     }
 
-    private async void AddMediaItemToGrid(MediaItemM mi) {
+    private void AddMediaItemToGrid(MediaItemM mi) {
       ItemsGroup group = new();
 
       if (GroupByFolders) {
@@ -453,15 +502,10 @@ namespace PictureManager.Domain.Models {
       
       if (lastGroup != null && ItemsGroupInfoItem.AreEqual(groupA, groupB))
         group = lastGroup;
-      else {
-        await Core.RunOnUiThread(() => {
-          FilteredGrouped.Add(group);
-        });
-      }
+      else
+        FilteredGrouped.Add(group);
 
-      await Core.RunOnUiThread(() => {
-        group.Items.Add(mi);
-      });
+      group.Items.Add(mi);
     }
   }
 }
