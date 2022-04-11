@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using MH.Utils.BaseClasses;
 
 namespace PictureManager.Domain.Models {
@@ -9,8 +10,8 @@ namespace PictureManager.Domain.Models {
     public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public double DefaultThumbScale { get; set; } = 1.0;
 
-    public ThumbnailsGridM AddThumbnailsGrid(MediaItemsM mediaItemsM) {
-      var grid = new ThumbnailsGridM(mediaItemsM, DefaultThumbScale);
+    public ThumbnailsGridM AddThumbnailsGrid(MediaItemsM mediaItemsM, TitleProgressBarM progressBar) {
+      var grid = new ThumbnailsGridM(mediaItemsM, progressBar, DefaultThumbScale);
       All.Add(grid);
       Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
 
@@ -20,6 +21,19 @@ namespace PictureManager.Domain.Models {
     public void RemoveMediaItem(MediaItemM item) {
       foreach (var grid in All)
         grid.Remove(item, Current == grid);
+    }
+
+    public async Task SetCurrentGrid(ThumbnailsGridM grid) {
+      Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
+
+      if (Current == null) return;
+
+      Current.UpdateSelected();
+      
+      if (Current.NeedReload == true) {
+        await Current.ThumbsGridReloadItems();
+        Current.UpdatePositionSlashCount();
+      }
     }
   }
 }

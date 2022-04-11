@@ -271,15 +271,15 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public async Task<List<MediaItemM>> GetMediaItemsForLoadAsync(IReadOnlyCollection<MediaItemM> mediaItems, IReadOnlyCollection<FolderM> folders, CancellationToken token) {
+    public async Task<List<MediaItemM>> GetMediaItemsForLoadAsync(IReadOnlyCollection<MediaItemM> mediaItems, IReadOnlyCollection<FolderM> folders) {
       var items = new List<MediaItemM>();
 
       if (mediaItems != null)
         // filter out items if directory or file not exists or Viewer can not see items
-        items = await VerifyAccessibilityOfMediaItemsAsync(mediaItems, token);
+        items = await VerifyAccessibilityOfMediaItemsAsync(mediaItems);
 
       if (folders != null)
-        items = await GetMediaItemsFromFoldersAsync(folders, token);
+        items = await GetMediaItemsFromFoldersAsync(folders);
 
       foreach (var mi in items)
         mi.SetThumbSize();
@@ -287,12 +287,11 @@ namespace PictureManager.Domain.Models {
       return items;
     }
 
-    public async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders, CancellationToken token) {
+    public async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders) {
       var output = new List<MediaItemM>();
 
       await Task.Run(() => {
         foreach (var folder in folders) {
-          if (token.IsCancellationRequested) break;
           if (!Directory.Exists(folder.FullPath)) continue;
           var folderMediaItems = new List<MediaItemM>();
           var hiddenMediaItems = new List<MediaItemM>();
@@ -301,7 +300,6 @@ namespace PictureManager.Domain.Models {
           var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
 
           foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-            if (token.IsCancellationRequested) break;
             if (!Imaging.IsSupportedFileType(file)) continue;
 
             // check if the MediaItem is already in DB, if not put it there
@@ -320,8 +318,6 @@ namespace PictureManager.Domain.Models {
             folderMediaItems.Add(inDbFile);
           }
 
-          if (token.IsCancellationRequested) break;
-
           output.AddRange(folderMediaItems.OrderBy(x => x.FileName));
 
           // remove MediaItems deleted outside of this application
@@ -330,12 +326,12 @@ namespace PictureManager.Domain.Models {
             Delete(fmi);
           }
         }
-      }, token);
+      });
 
       return output;
     }
 
-    public async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items, CancellationToken token) {
+    public async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items) {
       var output = new List<MediaItemM>();
 
       await Task.Run(() => {
@@ -343,20 +339,18 @@ namespace PictureManager.Domain.Models {
         var foldersSet = new HashSet<int>();
 
         foreach (var folder in folders) {
-          if (token.IsCancellationRequested) break;
           if (!_viewersM.CanViewerSeeContentOf(folder)) continue;
           if (!Directory.Exists(folder.FullPath)) continue;
           foldersSet.Add(folder.Id);
         }
 
         foreach (var mi in items) {
-          if (token.IsCancellationRequested) break;
           if (!foldersSet.Contains(mi.Folder.Id)) continue;
           if (!_viewersM.CanViewerSee(mi)) continue;
           if (!File.Exists(mi.FilePath)) continue;
           output.Add(mi);
         }
-      }, token);
+      });
 
       return output;
     }
@@ -414,6 +408,30 @@ namespace PictureManager.Domain.Models {
         // onCompleted
         delegate {
           Current?.GeoName?.OnPropertyChanged(nameof(Current.GeoName.FullName));
+        });
+
+      progress.Start();
+      Core.DialogHostShow(progress);
+    }
+
+    public void RebuildThumbnails(object source, bool recursive) {
+      var mediaItems = source switch {
+        FolderM folder => folder.GetMediaItems(recursive),
+        List<MediaItemM> items => items,
+        _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
+      };
+
+      var progress = new ProgressBarDialog("Rebuilding thumbnails ...", true, Environment.ProcessorCount);
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        (mi) => {
+          mi.SetThumbSize(true);
+          File.Delete(mi.FilePathCache);
+        },
+        mi => mi.FilePath,
+        delegate {
+          _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
         });
 
       progress.Start();

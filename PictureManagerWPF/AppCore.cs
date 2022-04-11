@@ -97,7 +97,7 @@ namespace PictureManager {
           MediaViewerVM.IsVisible = isFullScreen;
 
           if (!isFullScreen) {
-            ThumbnailsGridsVM.ScrollToCurrentMediaItem();
+            App.Core.ThumbnailsGridsM.Current?.ScrollToCurrentMediaItem();
             TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
             MediaViewerVM.Deactivate();
             ToolsTabsVM.Deactivate(VideoClipsVM.ToolsTabsItem);

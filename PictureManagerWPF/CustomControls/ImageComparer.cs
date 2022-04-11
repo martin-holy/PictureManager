@@ -87,7 +87,7 @@ namespace PictureManager.CustomControls {
           thumbsGrid.FilteredItems.Add(mi);
 
       thumbsGrid.CurrentMediaItem = null;
-      await App.Ui.ThumbnailsGridsVM.ThumbsGridReloadItems();
+      await App.Core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
       App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 

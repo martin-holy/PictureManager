@@ -11,7 +11,6 @@ using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridVM: ObservableObject {
@@ -58,7 +57,7 @@ namespace PictureManager.ViewModels {
       ZoomCommand = new(
         async e => {
           Model.Zoom(e.Delta);
-          await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
+          await Model.ThumbsGridReloadItems();
         },
         _ => (Keyboard.Modifiers & ModifierKeys.Control) > 0);
 
@@ -126,8 +125,8 @@ namespace PictureManager.ViewModels {
     }
 
     private async void Refresh() {
-      await Model.ReloadFilteredItems();
-      await _coreVM.ThumbnailsGridsVM.ThumbsGridReloadItems();
+      Model.ReloadFilteredItems();
+      await Model.ThumbsGridReloadItems();
     }
   }
 }
