@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+﻿using PictureManager.Domain;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace PictureManager.Dialogs {
   public partial class RotationDialog : INotifyPropertyChanged {
@@ -13,23 +13,23 @@ namespace PictureManager.Dialogs {
       InitializeComponent();
     }
 
-    public static new Rotation Show() {
-      var result = Rotation.Rotate0;
+    public static new MediaOrientation Show() {
+      var result = MediaOrientation.Normal;
       var rd = new RotationDialog { Owner = Application.Current.MainWindow };
 
       rd.Btn270.Click += delegate {
         rd.Close();
-        result = Rotation.Rotate270;
+        result = MediaOrientation.Rotate270;
       };
 
       rd.Btn180.Click += delegate {
         rd.Close();
-        result = Rotation.Rotate180;
+        result = MediaOrientation.Rotate180;
       };
 
       rd.Btn90.Click += delegate {
         rd.Close();
-        result = Rotation.Rotate90;
+        result = MediaOrientation.Rotate90;
       };
 
       rd.ShowDialog();
