@@ -437,5 +437,53 @@ namespace PictureManager.Domain.Models {
       progress.Start();
       Core.DialogHostShow(progress);
     }
+
+    public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
+      var progress = new ProgressBarDialog("Changing orientation ...", true, Environment.ProcessorCount);
+      progress.AddEvents(
+        mediaItems,
+        null,
+        // action
+        async mi => {
+          var newOrientation = mi.RotationAngle;
+
+          if (mi.MediaType == MediaType.Image) {
+            switch (orientation) {
+              case MediaOrientation.Rotate90: newOrientation += 90; break;
+              case MediaOrientation.Rotate180: newOrientation += 180; break;
+              case MediaOrientation.Rotate270: newOrientation += 270; break;
+            }
+          }
+          else if (mi.MediaType == MediaType.Video) {
+            // images have switched 90 and 270 angles and all application is made with this in mind
+            // so I switched orientation just for video
+            switch (orientation) {
+              case MediaOrientation.Rotate90: newOrientation += 270; break;
+              case MediaOrientation.Rotate180: newOrientation += 180; break;
+              case MediaOrientation.Rotate270: newOrientation += 90; break;
+            }
+          }
+
+          if (newOrientation >= 360) newOrientation -= 360;
+
+          switch (newOrientation) {
+            case 0: mi.Orientation = (int)MediaOrientation.Normal; break;
+            case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
+            case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
+            case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
+          }
+
+          TryWriteMetadata(mi);
+          mi.SetThumbSize(true);
+          File.Delete(mi.FilePathCache);
+          await Core.RunOnUiThread(() => DataAdapter.IsModified = true);
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (o, e) => _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems());
+
+      progress.Start();
+      Core.DialogHostShow(progress);
+    }
   }
 }

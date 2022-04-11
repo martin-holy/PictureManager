@@ -102,8 +102,8 @@ namespace PictureManager.ViewModels {
 
     private void Rotate() {
       var rotation = RotationDialog.Show();
-      if (rotation == Rotation.Rotate0) return;
-      SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
+      if (rotation == MediaOrientation.Normal) return;
+      Model.SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
       if (_coreVM.MediaViewerVM.IsVisible)
         _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
@@ -361,54 +361,6 @@ namespace PictureManager.ViewModels {
       catch (Exception) {
         // ignored
       }
-    }
-
-    public void SetOrientation(MediaItemM[] mediaItems, Rotation rotation) {
-      var progress = new ProgressBarDialog("Changing orientation ...", true, Environment.ProcessorCount);
-      progress.AddEvents(
-        mediaItems,
-        null,
-        // action
-        async mi => {
-          var newOrientation = mi.RotationAngle;
-
-          if (mi.MediaType == MediaType.Image) {
-            switch (rotation) {
-              case Rotation.Rotate90: newOrientation += 90; break;
-              case Rotation.Rotate180: newOrientation += 180; break;
-              case Rotation.Rotate270: newOrientation += 270; break;
-            }
-          }
-          else if (mi.MediaType == MediaType.Video) {
-            // images have switched 90 and 270 angles and all application is made with this in mind
-            // so I switched orientation just for video
-            switch (rotation) {
-              case Rotation.Rotate90: newOrientation += 270; break;
-              case Rotation.Rotate180: newOrientation += 180; break;
-              case Rotation.Rotate270: newOrientation += 90; break;
-            }
-          }
-
-          if (newOrientation >= 360) newOrientation -= 360;
-
-          switch (newOrientation) {
-            case 0: mi.Orientation = (int)MediaOrientation.Normal; break;
-            case 90: mi.Orientation = (int)MediaOrientation.Rotate90; break;
-            case 180: mi.Orientation = (int)MediaOrientation.Rotate180; break;
-            case 270: mi.Orientation = (int)MediaOrientation.Rotate270; break;
-          }
-
-          Model.TryWriteMetadata(mi);
-          mi.SetThumbSize(true);
-          File.Delete(mi.FilePathCache);
-          await Core.RunOnUiThread(() => Model.DataAdapter.IsModified = true);
-        },
-        mi => mi.FilePath,
-        // onCompleted
-        (o, e) => _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems());
-
-      progress.Start();
-      Core.DialogHostShow(progress);
     }
 
     private static bool WriteMetadata(MediaItemM mi) {
