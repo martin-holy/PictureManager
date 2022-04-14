@@ -83,7 +83,7 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       ReloadMetadataInFolderCommand = new(
-        ReloadMetadataInFolder,
+        x => Model.ReloadMetadata(x.Model.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
         x => x != null);
 
       RebuildThumbnailsCommand = new(
@@ -533,11 +533,6 @@ namespace PictureManager.ViewModels {
       Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
       Model.TryWriteMetadata(Model.Current);
       Model.DataAdapter.IsModified = true;
-    }
-
-    private void ReloadMetadataInFolder(FolderTreeVM folder) {
-      var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      Model.ReloadMetadata(folder.Model.GetMediaItems(recursive), true);
     }
 
     private void Compare() {
