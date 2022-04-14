@@ -128,8 +128,6 @@ namespace PictureManager.ViewModels {
         if (Current.MediaType == MediaType.Image && Current.IsPanoramic)
           PresentationPanel.Start(true);
       }
-
-      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     public bool CanPrevious() =>
@@ -140,7 +138,6 @@ namespace PictureManager.ViewModels {
         PresentationPanel.Stop();
 
       SetMediaItemSource(MediaItems[--_indexOfCurrent]);
-      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private void Navigate(MouseWheelEventArgs e) {

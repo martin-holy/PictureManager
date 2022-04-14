@@ -120,10 +120,13 @@ namespace PictureManager.ViewModels {
       var model = Model.AddThumbnailsGrid(_core.MediaItemsM, _core.TitleProgressBarM);
       var viewModel = new ThumbnailsGridVM(_coreVM, model, tabTitle);
 
-      // TODO check all usage and use it less
       model.SelectionChangedEventHandler += (_, _) => {
         _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
         _coreVM.StatusPanelVM.OnPropertyChanged(nameof(_coreVM.StatusPanelVM.FileSize));
+      };
+
+      model.FilteredChangedEventHandler += (_, _) => {
+        _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
       };
 
       _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
@@ -151,8 +154,6 @@ namespace PictureManager.ViewModels {
 
       AddThumbnailsGridIfNotActive(tabTitle);
       await Model.Current.LoadMediaItems(items, and, hide);
-      // TODO move this up, check for changes before update
-      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
@@ -169,15 +170,11 @@ namespace PictureManager.ViewModels {
         var items = folders.SelectMany(x => x.MediaItems).ToList();
         AddThumbnailsGridIfNotActive(null);
         await Model.Current.LoadMediaItems(items, and, hide);
-        // TODO move this up, check for changes before update
-        App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
         return;
       }
 
       AddThumbnailsGridIfNotActive(folders[0].Name);
       await Model.Current.LoadAsync(null, folders);
-      // TODO move this up, check for changes before update
-      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
@@ -190,8 +187,6 @@ namespace PictureManager.ViewModels {
         Model.Current.ReloadFilteredItems();
         await Model.Current.ThumbsGridReloadItems();
       }
-
-      _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private async Task ClearFilters() {

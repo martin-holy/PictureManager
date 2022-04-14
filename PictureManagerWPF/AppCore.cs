@@ -89,6 +89,10 @@ namespace PictureManager {
         App.Core.SegmentsM.Reload();
       };
 
+      App.Core.MediaItemsM.MetadataChangedEventHandler += (_, _) => {
+        TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
+      };
+
       MainWindowVM.PropertyChanged += (_, e) => {
         if (nameof(MainWindowVM.IsFullScreen).Equals(e.PropertyName)) {
           var isFullScreen = MainWindowVM.IsFullScreen;
@@ -119,10 +123,8 @@ namespace PictureManager {
       };
 
       MainTabsVM.PropertyChanged += async (_, e) => {
-        if (nameof(MainTabsVM.Selected).Equals(e.PropertyName)) {
+        if (nameof(MainTabsVM.Selected).Equals(e.PropertyName))
           await ThumbnailsGridsVM.SetCurrentGrid(MainTabsVM.Selected?.Content as ThumbnailsGridVM);
-          TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
-        }
       };
     }
 
