@@ -43,6 +43,7 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
+    public event EventHandler MetadataChangedEventHandler = delegate { };
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
@@ -481,6 +482,78 @@ namespace PictureManager.Domain.Models {
         mi => mi.FilePath,
         // onCompleted
         (o, e) => _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems());
+
+      progress.Start();
+      Core.DialogHostShow(progress);
+    }
+
+    public void SaveEdit() {
+      var progress = new ProgressBarDialog("Saving metadata ...", true, Environment.ProcessorCount);
+      progress.AddEvents(
+        ModifiedItems.ToArray(),
+        null,
+        // action
+        async mi => {
+          TryWriteMetadata(mi);
+          await Core.RunOnUiThread(() => SetModified(mi, false));
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (o, e) => {
+          if (e.Cancelled)
+            CancelEdit();
+          else
+            IsEditModeOn = false;
+
+          // TODO changing current on MediaItemsM should change current in ThumbnailsGridsM
+          _core.ThumbnailsGridsM.Current.OnPropertyChanged(nameof(_core.ThumbnailsGridsM.Current.ActiveFileSize));
+        });
+
+      progress.Start();
+      Core.DialogHostShow(progress);
+    }
+
+    public void CancelEdit() {
+      var progress = new ProgressBarDialog("Reloading metadata ...", false, Environment.ProcessorCount);
+      progress.AddEvents(
+        ModifiedItems.ToArray(),
+        null,
+        // action
+        async mi => {
+          await ReadMetadata(mi, false);
+
+          await Core.RunOnUiThread(() => {
+            SetModified(mi, false);
+            mi.SetInfoBox();
+          });
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (o, e) => {
+          MetadataChangedEventHandler(this, EventArgs.Empty);
+          IsEditModeOn = false;
+        });
+
+      progress.Start();
+      Core.DialogHostShow(progress);
+    }
+
+    public void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
+      var progress = new ProgressBarDialog("Reloading metadata ...", true, Environment.ProcessorCount);
+      progress.AddEvents(
+        mediaItems.ToArray(),
+        null,
+        // action
+        async (mi) => {
+          await ReadMetadata(mi, false);
+
+          // set info box just for loaded media items
+          if (updateInfoBox)
+            await Core.RunOnUiThread(mi.SetInfoBox);
+        },
+        mi => mi.FilePath,
+        // onCompleted
+        (_, _) => MetadataChangedEventHandler(this, EventArgs.Empty));
 
       progress.Start();
       Core.DialogHostShow(progress);

@@ -36,6 +36,7 @@ namespace PictureManager.Domain.Models {
     private object _scrollToItem;
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
+    public event EventHandler FilteredChangedEventHandler = delegate { };
 
     public List<MediaItemM> SelectedItems => _selectedItems;
     public List<MediaItemM> LoadedItems { get; } = new();
@@ -105,6 +106,7 @@ namespace PictureManager.Domain.Models {
       FilteredItems.Clear();
       FilteredGrouped.Clear();
       SelectionChanged();
+      FilteredChangedEventHandler(this, EventArgs.Empty);
       CurrentMediaItem = null;
     }
 
@@ -156,8 +158,10 @@ namespace PictureManager.Domain.Models {
 
       if (FilteredItems.Remove(item)) {
         NeedReload = true;
-        if (isCurrent)
+        if (isCurrent) {
           UpdatePositionSlashCount();
+          FilteredChangedEventHandler(this, EventArgs.Empty);
+        }
       }
 
       if (item == CurrentMediaItem)
@@ -210,6 +214,7 @@ namespace PictureManager.Domain.Models {
       FilteredItems.RemoveAt(oldIndex);
       FilteredItems.Insert(newIndex, mi);
       UpdatePositionSlashCount();
+      FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
     public void ReloadFilteredItems() {
@@ -237,6 +242,7 @@ namespace PictureManager.Domain.Models {
         CurrentMediaItem = null;
 
       UpdatePositionSlashCount();
+      FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
     public static ThumbnailsGridM ActivateThumbnailsGrid(ThumbnailsGridM oldGrid, ThumbnailsGridM newGrid) {
@@ -460,6 +466,7 @@ namespace PictureManager.Domain.Models {
             // delete corrupted MediaItems
             LoadedItems.Remove(mi);
             FilteredItems.Remove(mi);
+            FilteredChangedEventHandler(this, EventArgs.Empty);
             UpdatePositionSlashCount();
             _mediaItemsM.Delete(mi);
             progress.Report(percent);

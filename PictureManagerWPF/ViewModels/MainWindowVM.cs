@@ -80,7 +80,7 @@ namespace PictureManager.ViewModels {
             "Some Media Items are modified, do you want to save them?",
             "IconQuestion",
             true)) == 0) {
-        _coreVM.MediaItemsVM.SaveEdit();
+        _core.MediaItemsM.SaveEdit();
       }
 
       if (_core.Sdb.Changes > 0 &&

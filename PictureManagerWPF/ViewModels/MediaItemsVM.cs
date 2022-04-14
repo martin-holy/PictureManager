@@ -67,11 +67,11 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       SaveEditCommand = new(
-        SaveEdit,
+        Model.SaveEdit,
         () => Model.IsEditModeOn && Model.ModifiedItems.Count > 0);
 
       CancelEditCommand = new(
-        CancelEdit,
+        Model.CancelEdit,
         () => Model.IsEditModeOn);
 
       CommentCommand = new(
@@ -79,7 +79,7 @@ namespace PictureManager.ViewModels {
         () => Model.Current != null);
 
       ReloadMetadataCommand = new(
-        () => ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
+        () => Model.ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       ReloadMetadataInFolderCommand = new(
@@ -507,57 +507,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public void SaveEdit() {
-      var progress = new ProgressBarDialog("Saving metadata ...", true, Environment.ProcessorCount);
-      progress.AddEvents(
-        Model.ModifiedItems.ToArray(),
-        null,
-        // action
-        async mi => {
-          Model.TryWriteMetadata(mi);
-          await Core.RunOnUiThread(() => Model.SetModified(mi, false));
-        },
-        mi => mi.FilePath,
-        // onCompleted
-        (o, e) => {
-          if (e.Cancelled)
-            CancelEdit();
-          else
-            Model.IsEditModeOn = false;
-
-          // TODO changing current on MediaItemsM should change current in ThumbnailsGridsM
-          _core.ThumbnailsGridsM.Current.OnPropertyChanged(nameof(_core.ThumbnailsGridsM.Current.ActiveFileSize));
-        });
-
-      progress.Start();
-      Core.DialogHostShow(progress);
-    }
-
-    private void CancelEdit() {
-      var progress = new ProgressBarDialog("Reloading metadata ...", false, Environment.ProcessorCount);
-      progress.AddEvents(
-        Model.ModifiedItems.ToArray(),
-        null,
-        // action
-        async mi => {
-          await Model.ReadMetadata(mi, false);
-
-          await Core.RunOnUiThread(() => {
-            Model.SetModified(mi, false);
-            mi.SetInfoBox();
-          });
-        },
-        mi => mi.FilePath,
-        // onCompleted
-        (o, e) => {
-          _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
-          Model.IsEditModeOn = false;
-        });
-
-      progress.Start();
-      Core.DialogHostShow(progress);
-    }
-
     private void Comment() {
       var inputDialog = new InputDialog {
         Owner = App.MainWindowV,
@@ -588,28 +537,7 @@ namespace PictureManager.ViewModels {
 
     private void ReloadMetadataInFolder(FolderTreeVM folder) {
       var recursive = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-      ReloadMetadata(folder.Model.GetMediaItems(recursive), true);
-    }
-
-    private void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
-      var progress = new ProgressBarDialog("Reloading metadata ...", true, Environment.ProcessorCount);
-      progress.AddEvents(
-        mediaItems.ToArray(),
-        null,
-        // action
-        async (mi) => {
-          await Model.ReadMetadata(mi, false);
-
-          // set info box just for loaded media items
-          if (updateInfoBox)
-            await Core.RunOnUiThread(mi.SetInfoBox);
-        },
-        mi => mi.FilePath,
-        // onCompleted
-        (_, _) => _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople());
-
-      progress.Start();
-      Core.DialogHostShow(progress);
+      Model.ReloadMetadata(folder.Model.GetMediaItems(recursive), true);
     }
 
     private void Compare() {

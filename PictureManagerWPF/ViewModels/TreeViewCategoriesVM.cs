@@ -238,6 +238,7 @@ namespace PictureManager.ViewModels {
 
         if (_coreVM.MediaItemsVM.SetMetadata(item) == 0) return;
 
+        // TODO remove this when SetMetadata is in model and add MetadataChangedEventHandler to SetMetadata
         MarkUsedKeywordsAndPeople();
         if (item is RatingTreeVM)
           _coreVM.StatusPanelVM.UpdateRating();

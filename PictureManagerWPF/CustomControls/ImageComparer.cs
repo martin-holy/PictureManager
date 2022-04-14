@@ -88,7 +88,6 @@ namespace PictureManager.CustomControls {
 
       thumbsGrid.CurrentMediaItem = null;
       await App.Core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
-      App.Ui.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
     }
 
     private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, HashMethod hashMethod) {
