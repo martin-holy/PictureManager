@@ -217,6 +217,11 @@ namespace PictureManager.Domain.Models {
       FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
+    public async Task ReapplyFilter() {
+      ReloadFilteredItems();
+      await ThumbsGridReloadItems();
+    }
+
     public void ReloadFilteredItems() {
       FilteredItems.Clear();
       var filtered = Filter(LoadedItems);
@@ -264,9 +269,16 @@ namespace PictureManager.Domain.Models {
       FilterSize.SetLoadedRange(min, max);
     }
 
-    public void ClearFilters() {
+    public async Task ClearFilters() {
       foreach (var item in _filterAll.Keys.ToArray())
         SetDisplayFilter(item, DisplayFilter.None);
+
+      await ReapplyFilter();
+    }
+
+    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
+      SetDisplayFilter(item, displayFilter);
+      await ReapplyFilter();
     }
 
     public void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {

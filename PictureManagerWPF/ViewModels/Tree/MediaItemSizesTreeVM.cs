@@ -10,7 +10,7 @@ namespace PictureManager.ViewModels.Tree {
       RangeChangedCommand = new(
         () => {
           tgvm.Model.Current.FilterSize.AllSizes = false;
-          _ = tgvm.ReapplyFilter();
+          _ = tgvm.Model.Current.ReapplyFilter();
         },
         () => tgvm.Model.Current != null);
 

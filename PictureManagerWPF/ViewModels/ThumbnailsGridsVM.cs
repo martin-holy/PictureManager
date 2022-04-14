@@ -47,10 +47,10 @@ namespace PictureManager.ViewModels {
       #region Commands
       AddThumbnailsGridCommand = new(AddThumbnailsGrid);
 
-      ActivateFilterAndCommand = new(item => _ = ActivateFilter(item, DisplayFilter.And), item => item != null);
-      ActivateFilterOrCommand = new(item => _ = ActivateFilter(item, DisplayFilter.Or), item => item != null);
-      ActivateFilterNotCommand = new(item => _ = ActivateFilter(item, DisplayFilter.Not), item => item != null);
-      ClearFiltersCommand = new(() => _ = ClearFilters());
+      ActivateFilterAndCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.And), item => item != null);
+      ActivateFilterOrCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.Or), item => item != null);
+      ActivateFilterNotCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.Not), item => item != null);
+      ClearFiltersCommand = new(() => _ = Model.Current?.ClearFilters());
 
       LoadByTagCommand = new(
         async item => {
@@ -86,7 +86,7 @@ namespace PictureManager.ViewModels {
         () => Clipboard.SetText(string.Join("\n", Model.Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
         () => Model.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
 
-      ReapplyFilterCommand = new(async () => await ReapplyFilter());
+      ReapplyFilterCommand = new(async () => await Model.Current?.ReapplyFilter());
       #endregion
     }
 
@@ -177,23 +177,6 @@ namespace PictureManager.ViewModels {
       await Model.Current.LoadAsync(null, folders);
     }
 
-    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
-      Model.Current?.SetDisplayFilter(item, displayFilter);
-      await ReapplyFilter();
-    }
-
-    public async Task ReapplyFilter() {
-      if (Model.Current != null) {
-        Model.Current.ReloadFilteredItems();
-        await Model.Current.ThumbsGridReloadItems();
-      }
-    }
-
-    private async Task ClearFilters() {
-      Model.Current?.ClearFilters();
-      await ReapplyFilter();
-    }
-
     private void ImagesToVideo() {
       ImagesToVideoDialog.Show(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (folder, fileName) => {
@@ -208,7 +191,7 @@ namespace PictureManager.ViewModels {
           // reload grid
           Model.Current.LoadedItems.AddInOrder(mi,
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          await ReapplyFilter();
+          await Model.Current.ReapplyFilter();
           Model.Current.ScrollToItem = mi;
         }
       );
