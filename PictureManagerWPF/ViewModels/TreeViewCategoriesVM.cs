@@ -248,7 +248,7 @@ namespace PictureManager.ViewModels {
 
       switch (item) {
         case RatingTreeVM r:
-          _ = _coreVM.ThumbnailsGridsVM.ActivateFilter(r, DisplayFilter.Or);
+          _ = _core.ThumbnailsGridsM.Current?.ActivateFilter(r, DisplayFilter.Or);
           break;
 
         case KeywordTreeVM k:
