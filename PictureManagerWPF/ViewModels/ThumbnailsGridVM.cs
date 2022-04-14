@@ -39,7 +39,7 @@ namespace PictureManager.ViewModels {
 
       ShowVideoPreviewCommand = new(ShowVideoPreview);
       HideVideoPreviewCommand = new(HideVideoPreview);
-      RefreshCommand = new(Refresh);
+      RefreshCommand = new(async () => await Model.ReapplyFilter());
       SelectAllCommand = new(() => Model.SelectAll());
       PanelLoadedCommand = new(PanelLoaded);
       PanelSizeChangedCommand = new(PanelSizeChanged);
@@ -122,11 +122,6 @@ namespace PictureManager.ViewModels {
 
       _coreVM.MainWindowVM.IsFullScreen = true;
       _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
-    }
-
-    private async void Refresh() {
-      Model.ReloadFilteredItems();
-      await Model.ThumbsGridReloadItems();
     }
   }
 }
