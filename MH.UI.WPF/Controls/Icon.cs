@@ -7,7 +7,7 @@ namespace MH.UI.WPF.Controls {
     public static readonly DependencyProperty SourceProperty =
       DependencyProperty.Register(nameof(Source), typeof(PathGeometry), typeof(Icon));
     public static readonly DependencyProperty FillProperty =
-      DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(Icon));
+      DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(Icon), new PropertyMetadata(Brushes.White));
     public static readonly DependencyProperty SizeProperty =
      DependencyProperty.Register(nameof(Size), typeof(double), typeof(Icon), new PropertyMetadata(18.0));
     public static readonly DependencyProperty IsIconVisibleProperty =
