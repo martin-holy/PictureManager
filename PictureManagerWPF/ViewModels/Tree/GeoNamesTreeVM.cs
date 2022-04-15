@@ -2,7 +2,6 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using MH.UI.WPF.BaseClasses;
-using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -12,13 +11,11 @@ namespace PictureManager.ViewModels.Tree {
   public sealed class GeoNamesTreeVM : CatTreeViewCategoryBase {
     public GeoNamesM Model { get; }
     public readonly Dictionary<int, GeoNameTreeVM> All = new();
-
-    public static RelayCommand<GeoNamesTreeVM> NewGeoNameFromGpsCommand { get; } =
-      new(NewGeoNameFromGps, cat => cat != null);
+    public RelayCommand<GeoNamesTreeVM> NewGeoNameFromGpsCommand { get; }
 
     public GeoNamesTreeVM(GeoNamesM model) : base(Category.GeoNames, "GeoNames") {
       Model = model;
-
+      NewGeoNameFromGpsCommand = new(() => Model.NewGeoNameFromGps(Settings.Default.GeoNamesUserName));
       Model.Items.CollectionChanged += ModelItems_CollectionChanged;
 
       // load items
@@ -32,19 +29,5 @@ namespace PictureManager.ViewModels.Tree {
       MH.Utils.Tree.SyncCollection<GeoNameM, GeoNameTreeVM>(src, dest, parent,
         (model, treeVM) => treeVM.Model.Equals(model),
         model => MH.Utils.Tree.GetDestItem(model, model.Id, All, () => new(model, parent), onItemsChanged));
-
-    private static void NewGeoNameFromGps(GeoNamesTreeVM treeVM) {
-      if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
-
-      var inputDialog = new InputDialog(
-        "GeoName latitude and longitude",
-        "Enter in format: N36.75847,W3.84609",
-        "IconLocationCheckin",
-        string.Empty,
-        _ => null);
-
-      if (Core.DialogHostShow(inputDialog) != 0) return;
-      treeVM.Model.New(inputDialog.Answer, Settings.Default.GeoNamesUserName);
-    }
   }
 }
