@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
@@ -19,41 +20,52 @@ namespace PictureManager.Domain.Models {
     public Dictionary<int, GeoNameM> AllDic { get; set; }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
-      var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={userName}".Replace(",", ".");
-      var xml = new XmlDocument();
-      xml.Load(url);
-      var geonames = xml.SelectNodes("/geonames/geoname");
-      if (geonames == null) return null;
+      try {
+        var url = $"http://api.geonames.org/extendedFindNearby?lat={lat}&lng={lng}&username={userName}".Replace(",", ".");
+        var xml = new XmlDocument();
+        xml.Load(url);
+        var geonames = xml.SelectNodes("/geonames/geoname");
+        if (geonames == null) return null;
 
-      GeoNameM parentGeoName = null;
-      foreach (XmlNode geoname in geonames) {
-        var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-        var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
+        GeoNameM parentGeoName = null;
+        foreach (XmlNode geoname in geonames) {
+          var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
+          var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
 
-        if (dbGeoName == null) {
-          dbGeoName = new(
-            geoNameId,
-            geoname.SelectSingleNode("name")?.InnerText,
-            geoname.SelectSingleNode("toponymName")?.InnerText,
-            geoname.SelectSingleNode("fcode")?.InnerText,
-            parentGeoName);
+          if (dbGeoName == null) {
+            dbGeoName = new(
+              geoNameId,
+              geoname.SelectSingleNode("name")?.InnerText,
+              geoname.SelectSingleNode("toponymName")?.InnerText,
+              geoname.SelectSingleNode("fcode")?.InnerText,
+              parentGeoName);
 
-          All.Add(dbGeoName);
-          parentGeoName?.Items.Add(dbGeoName);
-          Core.RunOnUiThread(() => DataAdapter.IsModified = true);
+            All.Add(dbGeoName);
+            parentGeoName?.Items.Add(dbGeoName);
+            Core.RunOnUiThread(() => DataAdapter.IsModified = true);
+          }
+
+          parentGeoName = dbGeoName;
         }
 
-        parentGeoName = dbGeoName;
+        return parentGeoName;
       }
-
-      return parentGeoName;
+      catch (Exception ex) {
+        Core.Instance.LogError(ex);
+        return null;
+      }
     }
 
-    public void New(string latLng, string userName) {
-      var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-").Replace(",", "."), CultureInfo.InvariantCulture);
-      var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-").Replace(",", "."), CultureInfo.InvariantCulture);
+    private (double, double) ParseLatLng(string latLng) {
+      try {
+        var lat = double.Parse(latLng.Split(',')[0].Replace("N", "").Replace("S", "-"), CultureInfo.InvariantCulture);
+        var lng = double.Parse(latLng.Split(',')[1].Replace("E", "").Replace("W", "-"), CultureInfo.InvariantCulture);
 
-      InsertGeoNameHierarchy(lat, lng, userName);
+        return (lat, lng);
+      }
+      catch {
+        return (0, 0);
+      }
     }
 
     public static bool IsGeoNamesUserNameInSettings(string userName) {
@@ -76,10 +88,17 @@ namespace PictureManager.Domain.Models {
         "Enter in format: N36.75847,W3.84609",
         "IconLocationCheckin",
         string.Empty,
-        _ => null);
+        answer => {
+          var (lat, lng) = ParseLatLng(answer);
+          return lat == 0 && lng == 0
+            ? "Incorrect format"
+            : string.Empty;
+        });
 
       if (Core.DialogHostShow(inputDialog) != 0) return;
-      New(inputDialog.Answer, userName);
+
+      var (lat, lng) = ParseLatLng(inputDialog.Answer);
+      InsertGeoNameHierarchy(lat, lng, userName);
     }
   }
 }
