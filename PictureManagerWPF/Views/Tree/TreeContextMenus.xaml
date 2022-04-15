@@ -71,7 +71,8 @@
                DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
                              RelativeSource={RelativeSource Self}}">
     <MenuItem Header="New"
-              Command="tree:GeoNamesTreeVM.NewGeoNameFromGpsCommand"
+              Command="{Binding TreeViewCategoriesVM.GeoNamesTreeVM.NewGeoNameFromGpsCommand,
+                        Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
   </ContextMenu>
 

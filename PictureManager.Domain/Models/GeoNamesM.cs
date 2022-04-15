@@ -67,5 +67,19 @@ namespace PictureManager.Domain.Models {
 
       return false;
     }
+
+    public void NewGeoNameFromGps(string userName) {
+      if (!IsGeoNamesUserNameInSettings(userName)) return;
+
+      var inputDialog = new InputDialog(
+        "GeoName latitude and longitude",
+        "Enter in format: N36.75847,W3.84609",
+        "IconLocationCheckin",
+        string.Empty,
+        _ => null);
+
+      if (Core.DialogHostShow(inputDialog) != 0) return;
+      New(inputDialog.Answer, userName);
+    }
   }
 }
