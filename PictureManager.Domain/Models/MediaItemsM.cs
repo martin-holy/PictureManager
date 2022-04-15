@@ -559,5 +559,38 @@ namespace PictureManager.Domain.Models {
       progress.Start();
       Core.DialogHostShow(progress);
     }
+
+    public async void Rename() {
+      var inputDialog = new InputDialog(
+        "Rename",
+        "Add a new name.",
+        "IconNotification",
+        Path.GetFileNameWithoutExtension(Current.FileName),
+        answer => {
+          var newFileName = answer + Path.GetExtension(Current.FileName);
+
+          if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1))
+            return "New file name contains invalid character!";
+
+          if (File.Exists(IOExtensions.PathCombine(Current.Folder.FullPath, newFileName)))
+            return "New file name already exists!";
+
+          return string.Empty;
+        });
+        
+      if (Core.DialogHostShow(inputDialog) != 0) return;
+
+      try {
+        Rename(Current, inputDialog.Answer + Path.GetExtension(Current.FileName));
+        if (_core.ThumbnailsGridsM.Current != null) {
+          _core.ThumbnailsGridsM.Current.FilteredItemsSetInPlace(Current);
+          await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
+        }
+        OnPropertyChanged(nameof(Current));
+      }
+      catch (Exception ex) {
+        _core.LogError(ex);
+      }
+    }
   }
 }
