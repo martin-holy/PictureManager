@@ -87,7 +87,8 @@ namespace PictureManager.CustomControls {
           thumbsGrid.FilteredItems.Add(mi);
 
       thumbsGrid.CurrentMediaItem = null;
-      await App.Core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
+      if (App.Core.ThumbnailsGridsM.Current != null)
+        await App.Core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
     }
 
     private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, HashMethod hashMethod) {
