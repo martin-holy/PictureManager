@@ -36,6 +36,7 @@ namespace PictureManager {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
       Core.DialogHostShow = (dialog) => DialogHost.Show(dialog);
+      MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this);
       MainWindowContentVM = new();
