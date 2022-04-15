@@ -140,8 +140,10 @@ namespace PictureManager.ViewModels {
 
       try {
         Model.Rename(Model.Current, inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName));
-        _core.ThumbnailsGridsM.Current?.FilteredItemsSetInPlace(Model.Current);
-        await _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
+        if (_core.ThumbnailsGridsM.Current != null) {
+          _core.ThumbnailsGridsM.Current.FilteredItemsSetInPlace(Model.Current);
+          await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
+        }
         _coreVM.StatusPanelVM.CurrentMediaItemM = Model.Current;
       }
       catch (Exception ex) {
@@ -168,7 +170,8 @@ namespace PictureManager.ViewModels {
         items);
 
       Model.Delete(items, AppCore.FileOperationDelete);
-      await _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
+      if (currentThumbsGrid != null)
+        await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
 
       // TODO do it in event
       if (_coreVM.MainTabsVM.Selected?.Content is SegmentsVM)

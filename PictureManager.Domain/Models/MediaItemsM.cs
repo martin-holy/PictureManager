@@ -149,6 +149,8 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItemM item) {
       if (item == null) return;
 
+      MediaItemDeletedEventHandler(this, new(item));
+
       item.People = null;
       item.Keywords = null;
       item.GeoName = null;
@@ -160,7 +162,6 @@ namespace PictureManager.Domain.Models {
       // remove from DB
       All.Remove(item);
 
-      MediaItemDeletedEventHandler(this, new(item));
       OnPropertyChanged(nameof(MediaItemsCount));
 
       SetModified(item, false);
