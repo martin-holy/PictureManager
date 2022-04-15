@@ -103,15 +103,16 @@ namespace PictureManager.ViewModels.Tree {
       var question = string.IsNullOrEmpty(oldName)
         ? $"Enter the name of the new {target}."
         : $"Enter the new name for the {target}.";
-      var result = InputDialog.Open(
-        icon,
+      var inputDialog = new InputDialog(
         $"{action} {target}",
         question,
+        icon,
         oldName,
-        answer => validator(item, answer),
-        out newName);
+        answer => validator(item, answer));
+      var result = Core.DialogHostShow(inputDialog);
+      newName = inputDialog.Answer;
 
-      return result;
+      return result == 0;
     }
 
     private static bool DeleteAccepted(string name) =>

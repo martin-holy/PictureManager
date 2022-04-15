@@ -2,8 +2,8 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using MH.UI.WPF.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
@@ -36,16 +36,15 @@ namespace PictureManager.ViewModels.Tree {
     private static void NewGeoNameFromGps(GeoNamesTreeVM treeVM) {
       if (!GeoNamesM.IsGeoNamesUserNameInSettings(Settings.Default.GeoNamesUserName)) return;
 
-      var result = InputDialog.Open(
-        "IconLocationCheckin",
+      var inputDialog = new InputDialog(
         "GeoName latitude and longitude",
         "Enter in format: N36.75847,W3.84609",
+        "IconLocationCheckin",
         string.Empty,
-        _ => null,
-        out var output);
+        _ => null);
 
-      if (!result) return;
-      treeVM.Model.New(output, Settings.Default.GeoNamesUserName);
+      if (Core.DialogHostShow(inputDialog) != 0) return;
+      treeVM.Model.New(inputDialog.Answer, Settings.Default.GeoNamesUserName);
     }
   }
 }

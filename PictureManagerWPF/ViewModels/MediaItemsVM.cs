@@ -110,36 +110,27 @@ namespace PictureManager.ViewModels {
     }
 
     private async void Rename() {
-      var inputDialog = new InputDialog {
-        Owner = Application.Current.MainWindow,
-        IconName = "IconNotification",
-        Title = "Rename",
-        Question = "Add a new name.",
-        Answer = Path.GetFileNameWithoutExtension(Model.Current.FileName)
-      };
+      var inputDialog = new InputDialog(
+        "Rename",
+        "Add a new name.",
+        "IconNotification",
+        Path.GetFileNameWithoutExtension(Model.Current.FileName),
+        answer => {
+          var newFileName = answer + Path.GetExtension(Model.Current.FileName);
 
-      inputDialog.BtnDialogOk.Click += delegate {
-        var newFileName = inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName);
+          if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1))
+            return "New file name contains invalid character!";
 
-        if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1)) {
-          inputDialog.ShowErrorMessage("New file name contains invalid character!");
-          return;
-        }
+          if (File.Exists(IOExtensions.PathCombine(Model.Current.Folder.FullPath, newFileName)))
+            return "New file name already exists!";
 
-        if (File.Exists(IOExtensions.PathCombine(Model.Current.Folder.FullPath, newFileName))) {
-          inputDialog.ShowErrorMessage("New file name already exists!");
-          return;
-        }
-
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (!(inputDialog.ShowDialog() ?? true)) return;
+          return string.Empty;
+        });
+        
+      if (Core.DialogHostShow(inputDialog) != 0) return;
 
       try {
-        Model.Rename(Model.Current, inputDialog.TxtAnswer.Text + Path.GetExtension(Model.Current.FileName));
+        Model.Rename(Model.Current, inputDialog.Answer + Path.GetExtension(Model.Current.FileName));
         if (_core.ThumbnailsGridsM.Current != null) {
           _core.ThumbnailsGridsM.Current.FilteredItemsSetInPlace(Model.Current);
           await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
@@ -511,27 +502,20 @@ namespace PictureManager.ViewModels {
     }
 
     private void Comment() {
-      var inputDialog = new InputDialog {
-        Owner = App.MainWindowV,
-        IconName = "IconNotification",
-        Title = "Comment",
-        Question = "Add a comment.",
-        Answer = Model.Current.Comment
-      };
+      var inputDialog = new InputDialog(
+        "Comment",
+        "Add a comment.",
+        "IconNotification",
+        Model.Current.Comment,
+        answer => {
+          return answer.Length > 256
+            ? "Comment is too long!"
+            : string.Empty;
+        });
 
-      inputDialog.BtnDialogOk.Click += delegate {
-        if (inputDialog.TxtAnswer.Text.Length > 256) {
-          inputDialog.ShowErrorMessage("Comment is too long!");
-          return;
-        }
+      if (Core.DialogHostShow(inputDialog) != 0) return;
 
-        inputDialog.DialogResult = true;
-      };
-
-      inputDialog.TxtAnswer.SelectAll();
-
-      if (!(inputDialog.ShowDialog() ?? true)) return;
-      Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.TxtAnswer.Text);
+      Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
       Model.Current.SetInfoBox();
       Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
       Model.TryWriteMetadata(Model.Current);
