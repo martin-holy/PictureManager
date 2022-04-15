@@ -55,7 +55,7 @@ namespace PictureManager.ViewModels {
           x => x.IsSelected && x.MediaType == MediaType.Image) > 0);
 
       RenameCommand = new(
-        Rename,
+        Model.Rename,
         () => Model.Current != null);
 
       DeleteCommand = new(
@@ -107,39 +107,6 @@ namespace PictureManager.ViewModels {
 
       if (_coreVM.MediaViewerVM.IsVisible)
         _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
-    }
-
-    private async void Rename() {
-      var inputDialog = new InputDialog(
-        "Rename",
-        "Add a new name.",
-        "IconNotification",
-        Path.GetFileNameWithoutExtension(Model.Current.FileName),
-        answer => {
-          var newFileName = answer + Path.GetExtension(Model.Current.FileName);
-
-          if (Path.GetInvalidFileNameChars().Any(x => newFileName.IndexOf(x) != -1))
-            return "New file name contains invalid character!";
-
-          if (File.Exists(IOExtensions.PathCombine(Model.Current.Folder.FullPath, newFileName)))
-            return "New file name already exists!";
-
-          return string.Empty;
-        });
-        
-      if (Core.DialogHostShow(inputDialog) != 0) return;
-
-      try {
-        Model.Rename(Model.Current, inputDialog.Answer + Path.GetExtension(Model.Current.FileName));
-        if (_core.ThumbnailsGridsM.Current != null) {
-          _core.ThumbnailsGridsM.Current.FilteredItemsSetInPlace(Model.Current);
-          await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
-        }
-        _coreVM.StatusPanelVM.CurrentMediaItemM = Model.Current;
-      }
-      catch (Exception ex) {
-        _core.LogError(ex);
-      }
     }
 
     private async void Delete() {
