@@ -6,8 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace MH.Utils.Dialogs {
-  public delegate int ProgressBarDialogShow(ProgressBarDialog dialog);
-
   public class ProgressBarDialog : ObservableObject, IDialog {
     private readonly BackgroundWorker _worker;
     private readonly CancellationTokenSource _cts;

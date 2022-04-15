@@ -2,8 +2,6 @@
 using MH.Utils.Interfaces;
 
 namespace MH.Utils.Dialogs {
-  public delegate int MessageDialogShow(string title, string message, string icon, bool canCancel, string[] buttons = null);
-
   public class MessageDialog : ObservableObject, IDialog {
     private string _title;
     private string _message;
