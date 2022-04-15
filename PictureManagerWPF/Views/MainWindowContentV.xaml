@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <DataTemplate DataType="{x:Type vm:MainWindowContentVM}">
     <DataTemplate.Resources>
@@ -14,25 +14,25 @@
           <ResourceDictionary Source="StatusPanelV.xaml" />
           <ResourceDictionary Source="ToolsTabsV.xaml" />
           <ResourceDictionary Source="TreeViewCategoriesV.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelStyle.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/SlidePanelsGridStyle.xaml" />
+          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelStyle.xaml" />
+          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelsGridStyle.xaml" />
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
     
     <Grid>
-      <cc:SlidePanelsGrid FocusVisualStyle="{x:Null}">
+      <mhc:SlidePanelsGrid FocusVisualStyle="{x:Null}">
       
         <!-- Tree View Categories -->
-        <cc:SlidePanelsGrid.ContentLeft>
-          <cc:SlidePanel
+        <mhc:SlidePanelsGrid.ContentLeft>
+          <mhc:SlidePanel
             DataContext="{Binding TreeViewCategoriesVM, Source={x:Static pm:App.Ui}}"
             IsOpen="{Binding IsOpen, Mode=TwoWay}"
             IsPinned="{Binding IsPinned}"
             Position="Left"
             Width="380">
 
-            <cc:SlidePanel.Content>
+            <mhc:SlidePanel.Content>
               <Grid>
                 <Grid.RowDefinitions>
                   <RowDefinition Height="*" />
@@ -49,11 +49,11 @@
                   Grid.Row="1"
                   Height="{Binding ActualHeight, ElementName=StatusPanel}" />
               </Grid>
-            </cc:SlidePanel.Content>
-          </cc:SlidePanel>
-        </cc:SlidePanelsGrid.ContentLeft>
+            </mhc:SlidePanel.Content>
+          </mhc:SlidePanel>
+        </mhc:SlidePanelsGrid.ContentLeft>
 
-        <cc:SlidePanelsGrid.ContentMiddle>
+        <mhc:SlidePanelsGrid.ContentMiddle>
           <Grid>
             <!-- Main Tabs -->
             <ContentPresenter
@@ -70,11 +70,11 @@
                            Source={x:Static pm:App.Ui},
                            Converter={StaticResource AllToVisibilityConverter}}"/>
           </Grid>
-        </cc:SlidePanelsGrid.ContentMiddle>
+        </mhc:SlidePanelsGrid.ContentMiddle>
       
         <!-- Tools Tabs -->
-        <cc:SlidePanelsGrid.ContentRight>
-          <cc:SlidePanel
+        <mhc:SlidePanelsGrid.ContentRight>
+          <mhc:SlidePanel
             DataContext="{Binding ToolsTabsVM, Source={x:Static pm:App.Ui}}"
             Position="Right"
             Width="360"
@@ -82,12 +82,12 @@
             IsPinned="{Binding IsPinned}"
             IsOpen="{Binding IsOpen, Mode=TwoWay}">
           
-            <cc:SlidePanel.Content>
+            <mhc:SlidePanel.Content>
               <ContentPresenter Content="{Binding}" />
-            </cc:SlidePanel.Content>
-          </cc:SlidePanel>
-        </cc:SlidePanelsGrid.ContentRight>
-      </cc:SlidePanelsGrid>
+            </mhc:SlidePanel.Content>
+          </mhc:SlidePanel>
+        </mhc:SlidePanelsGrid.ContentRight>
+      </mhc:SlidePanelsGrid>
 
       <!-- Status Panel -->
       <ContentPresenter
