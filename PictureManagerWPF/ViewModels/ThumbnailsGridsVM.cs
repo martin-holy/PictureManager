@@ -86,7 +86,9 @@ namespace PictureManager.ViewModels {
         () => Clipboard.SetText(string.Join("\n", Model.Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
         () => Model.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
 
-      ReapplyFilterCommand = new(async () => await Model.Current?.ReapplyFilter());
+      ReapplyFilterCommand = new(
+        async () => await Model.Current.ReapplyFilter(),
+        () => Model.Current != null);
       #endregion
     }
 
