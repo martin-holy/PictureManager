@@ -592,5 +592,26 @@ namespace PictureManager.Domain.Models {
         _core.LogError(ex);
       }
     }
+
+    public void Comment() {
+      var inputDialog = new InputDialog(
+        "Comment",
+        "Add a comment.",
+        "IconNotification",
+        Current.Comment,
+        answer => {
+          return answer.Length > 256
+            ? "Comment is too long!"
+            : string.Empty;
+        });
+
+      if (Core.DialogHostShow(inputDialog) != 0) return;
+
+      Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
+      Current.SetInfoBox();
+      Current.OnPropertyChanged(nameof(Current.Comment));
+      TryWriteMetadata(Current);
+      DataAdapter.IsModified = true;
+    }
   }
 }

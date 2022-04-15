@@ -75,7 +75,7 @@ namespace PictureManager.ViewModels {
         () => Model.IsEditModeOn);
 
       CommentCommand = new(
-        Comment,
+        Model.Comment,
         () => Model.Current != null);
 
       ReloadMetadataCommand = new(
@@ -466,27 +466,6 @@ namespace PictureManager.ViewModels {
         _core.ThumbnailsGridsM.Current.RemoveSelected();
         _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
       }
-    }
-
-    private void Comment() {
-      var inputDialog = new InputDialog(
-        "Comment",
-        "Add a comment.",
-        "IconNotification",
-        Model.Current.Comment,
-        answer => {
-          return answer.Length > 256
-            ? "Comment is too long!"
-            : string.Empty;
-        });
-
-      if (Core.DialogHostShow(inputDialog) != 0) return;
-
-      Model.Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
-      Model.Current.SetInfoBox();
-      Model.Current.OnPropertyChanged(nameof(Model.Current.Comment));
-      Model.TryWriteMetadata(Model.Current);
-      Model.DataAdapter.IsModified = true;
     }
 
     private void Compare() {
