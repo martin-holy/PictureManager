@@ -149,7 +149,7 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItemM item) {
       if (item == null) return;
 
-      MediaItemDeletedEventHandler(this, new(item));
+      Core.RunOnUiThread(() => MediaItemDeletedEventHandler(this, new(item))).GetAwaiter().GetResult();
 
       item.People = null;
       item.Keywords = null;
@@ -259,11 +259,14 @@ namespace PictureManager.Domain.Models {
             Directory.CreateDirectory(Path.GetDirectoryName(mi.FilePathCache) ?? throw new ArgumentNullException());
             // Thumbnail
             File.Delete(mi.FilePathCache);
-            File.Move(srcFilePathCache, mi.FilePathCache);
+            if (File.Exists(srcFilePathCache))
+              File.Move(srcFilePathCache, mi.FilePathCache);
             // Segments
             foreach (var segment in mi.Segments ?? Enumerable.Empty<SegmentM>()) {
               File.Delete(segment.FilePathCache);
-              File.Move(Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg"), segment.FilePathCache);
+              var srcSegmentPath = Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg");
+              if (File.Exists(srcSegmentPath))
+                File.Move(srcSegmentPath, segment.FilePathCache);
             }
 
             break;
