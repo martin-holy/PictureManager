@@ -22,10 +22,11 @@
           Content="OK"
           MinWidth="60"
           MinHeight="28"
-          Margin="5">
+          Margin="5"
+          IsDefault="True">
           
           <b:Interaction.Triggers>
-            <b:EventTrigger EventName="PreviewMouseUp">
+            <b:EventTrigger EventName="Click">
               <b:ChangePropertyAction
                 PropertyName="Tag"
                 TargetObject="{Binding ElementName=Root}"
@@ -38,10 +39,11 @@
           Content="CANCEL"
           MinWidth="60"
           MinHeight="28"
-          Margin="5">
+          Margin="5"
+          IsCancel="True">
           
           <b:Interaction.Triggers>
-            <b:EventTrigger EventName="PreviewMouseUp">
+            <b:EventTrigger EventName="Click">
               <b:ChangePropertyAction
                 PropertyName="Tag"
                 TargetObject="{Binding ElementName=Root}"
