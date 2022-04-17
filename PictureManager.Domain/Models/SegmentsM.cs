@@ -20,7 +20,7 @@ namespace PictureManager.Domain.Models {
     private int _similarityLimitMin = 80;
     private bool _groupSegments;
     private bool _groupConfirmedSegments;
-    private bool _matchingAutoSort;
+    private bool _matchingAutoSort = true;
     private readonly List<SegmentM> _selected = new();
     private readonly IProgress<int> _progress;
 
