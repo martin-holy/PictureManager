@@ -2,7 +2,7 @@
   public class ListItem<T> : ObservableObject {
     private T _content;
     private bool _isSelected;
-    private bool _isHidden = true;
+    private bool _isHidden;
 
     public T Content { get => _content; set { _content = value; OnPropertyChanged(); } }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
