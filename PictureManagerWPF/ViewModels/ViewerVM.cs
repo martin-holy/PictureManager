@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using MH.UI.WPF.BaseClasses;
+using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.CustomControls;
 using PictureManager.Domain.Models;

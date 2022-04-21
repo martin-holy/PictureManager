@@ -7,6 +7,7 @@ using System.Windows.Media;
 using MahApps.Metro.Controls;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
+using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
