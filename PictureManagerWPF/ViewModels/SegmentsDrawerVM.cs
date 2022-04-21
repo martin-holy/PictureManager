@@ -5,6 +5,7 @@ using System.Windows.Input;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
+using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
