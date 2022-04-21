@@ -37,22 +37,6 @@ namespace PictureManager {
       }
     }
 
-    public static T FindTemplatedParent<T>(FrameworkElement child) where T : FrameworkElement {
-      while (true) {
-        if (child?.TemplatedParent == null) return null;
-        if (child.TemplatedParent is T parent) return parent;
-        child = (FrameworkElement)child.TemplatedParent;
-      }
-    }
-
-    public static T FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
-      while (true) {
-        if (child == null) return null;
-        if (child is T element && element.Name.Equals(name, StringComparison.Ordinal)) return element;
-        child = (FrameworkElement)(child.Parent ?? child.TemplatedParent);
-      }
-    }
-
     public static bool TryParseDoubleUniversal(this string s, out double result) {
       result = 0.0;
       if (string.IsNullOrEmpty(s)) return false;
