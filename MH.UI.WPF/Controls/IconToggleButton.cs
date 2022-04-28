@@ -7,7 +7,7 @@ namespace MH.UI.WPF.Controls {
     public static readonly DependencyProperty SourceProperty = Icon.SourceProperty.AddOwner(typeof(IconToggleButton));
     public static readonly DependencyProperty FillProperty = Icon.FillProperty.AddOwner(typeof(IconToggleButton));
     public static readonly DependencyProperty SizeProperty = Icon.SizeProperty.AddOwner(typeof(IconToggleButton));
-    public static readonly DependencyProperty ShowShadowProperty = Icon.ShowShadowProperty.AddOwner(typeof(IconToggleButton), new PropertyMetadata(true));
+    public static readonly DependencyProperty ShowShadowProperty = Icon.ShowShadowProperty.AddOwner(typeof(IconToggleButton), new(true));
 
     public PathGeometry Source {
       get => (PathGeometry)GetValue(SourceProperty);
@@ -30,7 +30,9 @@ namespace MH.UI.WPF.Controls {
     }
 
     static IconToggleButton() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(IconToggleButton), new FrameworkPropertyMetadata(typeof(IconToggleButton)));
+      DefaultStyleKeyProperty.OverrideMetadata(
+        typeof(IconToggleButton),
+        new FrameworkPropertyMetadata(typeof(IconToggleButton)));
     }
   }
 }

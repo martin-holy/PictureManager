@@ -7,7 +7,7 @@ namespace MH.UI.WPF.Controls {
     public static readonly DependencyProperty SourceProperty = Icon.SourceProperty.AddOwner(typeof(IconButton));
     public static readonly DependencyProperty FillProperty = Icon.FillProperty.AddOwner(typeof(IconButton));
     public static readonly DependencyProperty SizeProperty = Icon.SizeProperty.AddOwner(typeof(IconButton));
-    public static readonly DependencyProperty ShowShadowProperty = Icon.ShowShadowProperty.AddOwner(typeof(IconButton), new PropertyMetadata(true));
+    public static readonly DependencyProperty ShowShadowProperty = Icon.ShowShadowProperty.AddOwner(typeof(IconButton), new(true));
 
     public PathGeometry Source {
       get => (PathGeometry)GetValue(SourceProperty);
@@ -30,7 +30,9 @@ namespace MH.UI.WPF.Controls {
     }
 
     static IconButton() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(IconButton), new FrameworkPropertyMetadata(typeof(IconButton)));
+      DefaultStyleKeyProperty.OverrideMetadata(
+        typeof(IconButton),
+        new FrameworkPropertyMetadata(typeof(IconButton)));
     }
   }
 }

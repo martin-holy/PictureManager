@@ -92,7 +92,7 @@ namespace MH.UI.WPF.Controls {
     private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
       if (d is not SlidePanel panel) return;
 
-      var value = e.NewValue as bool? == true;
+      var value = (e.NewValue as bool?) == true;
 
       if (value && panel.CanOpen?.Invoke() == false)
         return;

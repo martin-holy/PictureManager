@@ -17,9 +17,11 @@ namespace MH.UI.WPF.Utils {
       set => SetValue(PropertyNameProperty, value);
     }
 
-    public static readonly DependencyProperty PropertyNameProperty =
-      DependencyProperty.Register(nameof(PropertyName), typeof(string), typeof(SetterAction),
-        new(string.Empty));
+    public static readonly DependencyProperty PropertyNameProperty = DependencyProperty.Register(
+      nameof(PropertyName),
+      typeof(string),
+      typeof(SetterAction),
+      new(string.Empty));
 
 
     /// <summary>
@@ -30,8 +32,10 @@ namespace MH.UI.WPF.Utils {
       set => SetValue(ValueProperty, value);
     }
 
-    public static readonly DependencyProperty ValueProperty =
-      DependencyProperty.Register(nameof(Value), typeof(object), typeof(SetterAction));
+    public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
+      nameof(Value),
+      typeof(object),
+      typeof(SetterAction));
 
     protected override void Invoke(object parameter) {
       var target = TargetObject ?? AssociatedObject;

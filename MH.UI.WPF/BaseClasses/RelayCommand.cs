@@ -44,8 +44,8 @@ namespace MH.UI.WPF.BaseClasses {
     }
 
     public void Execute(object parameter) {
-      if (_command != null) _command();
-      if (_commandWithParameter != null) _commandWithParameter((T)parameter);
+      _command?.Invoke();
+      _commandWithParameter?.Invoke((T)parameter);
     }
 
     public event EventHandler CanExecuteChanged {

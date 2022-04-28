@@ -4,16 +4,34 @@ using System.Windows.Media;
 
 namespace MH.UI.WPF.Controls {
   public class Icon : Control {
-    public static readonly DependencyProperty SourceProperty =
-      DependencyProperty.Register(nameof(Source), typeof(PathGeometry), typeof(Icon));
-    public static readonly DependencyProperty FillProperty =
-      DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(Icon), new PropertyMetadata(Brushes.White));
-    public static readonly DependencyProperty SizeProperty =
-     DependencyProperty.Register(nameof(Size), typeof(double), typeof(Icon), new PropertyMetadata(18.0));
-    public static readonly DependencyProperty IsIconVisibleProperty =
-      DependencyProperty.Register(nameof(IsIconVisible), typeof(bool), typeof(Icon), new PropertyMetadata(true));
-    public static readonly DependencyProperty ShowShadowProperty =
-      DependencyProperty.Register(nameof(ShowShadow), typeof(bool), typeof(Icon), new PropertyMetadata(false));
+    public static readonly DependencyProperty SourceProperty = DependencyProperty.Register(
+      nameof(Source),
+      typeof(PathGeometry),
+      typeof(Icon));
+
+    public static readonly DependencyProperty FillProperty = DependencyProperty.Register(
+      nameof(Fill),
+      typeof(Brush),
+      typeof(Icon),
+      new(Brushes.White));
+
+    public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
+      nameof(Size),
+      typeof(double),
+      typeof(Icon),
+      new(18.0));
+
+    public static readonly DependencyProperty IsIconVisibleProperty = DependencyProperty.Register(
+      nameof(IsIconVisible),
+      typeof(bool),
+      typeof(Icon),
+      new(true));
+
+    public static readonly DependencyProperty ShowShadowProperty = DependencyProperty.Register(
+      nameof(ShowShadow),
+      typeof(bool),
+      typeof(Icon),
+      new(false));
 
     public PathGeometry Source {
       get => (PathGeometry)GetValue(SourceProperty);
@@ -41,7 +59,9 @@ namespace MH.UI.WPF.Controls {
     }
 
     static Icon() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(Icon), new FrameworkPropertyMetadata(typeof(Icon)));
+      DefaultStyleKeyProperty.OverrideMetadata(
+        typeof(Icon),
+        new FrameworkPropertyMetadata(typeof(Icon)));
     }
   }
 }

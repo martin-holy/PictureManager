@@ -1,4 +1,5 @@
-﻿using MH.Utils.Interfaces;
+﻿using System;
+using MH.Utils.Interfaces;
 using System.Windows;
 
 namespace MH.UI.WPF.Controls {
@@ -16,7 +17,7 @@ namespace MH.UI.WPF.Controls {
       WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
       content.PropertyChanged += (_, e) => {
-        if (nameof(content.Result).Equals(e.PropertyName))
+        if (nameof(content.Result).Equals(e.PropertyName, StringComparison.Ordinal))
           Close();
       };
     }

@@ -22,7 +22,8 @@ namespace MH.UI.WPF.Converters {
       if (value == null) return null;
       if (parameter is Dictionary<object, object> dict) {
         if (!dict.TryGetValue(value, out var dicValue))
-          dict.TryGetValue(value.GetType(), out dicValue);
+          if (!dict.TryGetValue(value.GetType(), out dicValue))
+            dict.TryGetValue("default", out dicValue);
 
         return dicValue;
       }
@@ -30,7 +31,7 @@ namespace MH.UI.WPF.Converters {
       return value;
     }
 
-    private static object TryFindResource(ResourceDictionary dictionary, object value) {
+    public static object TryFindResource(ResourceDictionary dictionary, object value) {
       if (dictionary.Contains(value))
         return dictionary[value];
 

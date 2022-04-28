@@ -23,7 +23,7 @@ namespace MH.UI.WPF.Controls {
       nameof(GridSplitterWidth),
       typeof(int),
       typeof(SlidePanelsGrid),
-      new PropertyMetadata(3));
+      new(3));
 
     public SlidePanel ContentLeft {
       get => (SlidePanel)GetValue(ContentLeftProperty);
@@ -51,14 +51,16 @@ namespace MH.UI.WPF.Controls {
     private Grid _mainGrid;
 
     static SlidePanelsGrid() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(SlidePanelsGrid), new FrameworkPropertyMetadata(typeof(SlidePanelsGrid)));
+      DefaultStyleKeyProperty.OverrideMetadata(
+        typeof(SlidePanelsGrid),
+        new FrameworkPropertyMetadata(typeof(SlidePanelsGrid)));
     }
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
       // open SlidePanel if is not open and mouse cursor is close to left or right edge of SlidePanelsGrid
-      MouseMove += (o, e) => {
+      MouseMove += (_, e) => {
         var pos = e.GetPosition(this);
 
         // to stop opening/closing panel by it self in some cases
