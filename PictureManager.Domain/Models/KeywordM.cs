@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Parent
   /// </summary>
-  public sealed class KeywordM : ObservableObject, IEquatable<KeywordM>, IRecord, ITreeBranch {
+  public sealed class KeywordM : TreeItem, IEquatable<KeywordM>, IRecord, IFilterItem {
     #region IEquatable implementation
     public bool Equals(KeywordM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as KeywordM);
@@ -23,19 +23,16 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     #endregion
 
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
+    #region IFilterItem implementation
+    private DisplayFilter _displayFilter;
+    public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }
     #endregion
     
-    private string _name;
-    
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public string FullName => Tree.GetFullName(this, "/", x => x.Name);
 
     public KeywordM() { }
 
-    public KeywordM(int id, string name, ITreeBranch parent) {
+    public KeywordM(int id, string name, ITreeItem parent) : base(Res.IconTag, name) {
       Id = id;
       Name = name;
       Parent = parent;

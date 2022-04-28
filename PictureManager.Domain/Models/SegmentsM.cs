@@ -78,7 +78,7 @@ namespace PictureManager.Domain.Models {
       if (!add && Core.DialogHostShow(new MessageDialog(
             "Segments Drawer",
             "Do you want to remove segments from drawer?",
-            "IconQuestion",
+            Res.IconQuestion,
             true)) != 0)
         return;
 
@@ -192,7 +192,7 @@ namespace PictureManager.Domain.Models {
       var msgCount = Selected.Count > 1 ? $"'s ({Selected.Count})" : string.Empty;
       var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}??";
 
-      if (Core.DialogHostShow(new MessageDialog("Set Person", msg, "IconQuestion", true)) == 0)
+      if (Core.DialogHostShow(new MessageDialog("Set Person", msg, Res.IconQuestion, true)) == 0)
         SetSelectedAsPerson(person);
     }
 
@@ -200,7 +200,7 @@ namespace PictureManager.Domain.Models {
     /// Sets new Person to all Segments that are selected or that have the same PersonId (less than 0) as some of the selected.
     /// </summary>
     /// <param name="person"></param>
-    public void SetSelectedAsPerson(PersonM person) {
+    private void SetSelectedAsPerson(PersonM person) {
       var unknownPeople = Selected.Select(x => x.PersonId).Distinct().Where(x => x < 0).ToDictionary(x => x);
       var segments = Selected.Where(x => x.PersonId >= 0).Concat(All.Where(x => unknownPeople.ContainsKey(x.PersonId)));
 
@@ -407,7 +407,7 @@ namespace PictureManager.Domain.Models {
         else {
           // add segments in group
           var itemsGroup = new ItemsGroup();
-          itemsGroup.Info.Add(new ItemsGroupInfoItem { Icon = "IconTag", Title = group.Key });
+          itemsGroup.Info.Add(new ItemsGroupInfoItem { Icon = Res.IconTag, Title = group.Key });
           allSegmentsGrouped.Add(itemsGroup);
 
           foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
@@ -476,13 +476,13 @@ namespace PictureManager.Domain.Models {
 
       if (!GroupSegments) {
         group = new();
-        group.Info.Add(new ItemsGroupInfoItem("IconPeople", "?"));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, "?"));
         LoadedGrouped.Add(group);
 
         foreach (var segment in Loaded)
           group.Items.Add(segment);
 
-        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
 
         return;
       }
@@ -499,7 +499,7 @@ namespace PictureManager.Domain.Models {
             : s.PersonId.ToString();
 
         group = new();
-        group.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, groupTitle));
         LoadedGrouped.Add(group);
 
         foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
@@ -518,7 +518,7 @@ namespace PictureManager.Domain.Models {
           group.Items.Add(segment);
         }
 
-        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
       }
 
       // add segments with PersonId == 0 ordered by similar
@@ -529,7 +529,7 @@ namespace PictureManager.Domain.Models {
         .OrderByDescending(x => x.SimMax);
 
       group = new();
-      group.Info.Add(new ItemsGroupInfoItem("IconPeople", "0"));
+      group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, "0"));
       LoadedGrouped.Add(group);
 
       foreach (var segment in withSimilar) {
@@ -547,7 +547,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
         group.Items.Add(segment);
 
-      group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
+      group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
     }
 
     /// <summary>
@@ -604,7 +604,7 @@ namespace PictureManager.Domain.Models {
             : personId.ToString();
 
           var group = new ItemsGroup();
-          group.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
+          group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, groupTitle));
           ConfirmedGrouped.Add(group);
           group.Items.Add(segment);
 
@@ -631,8 +631,8 @@ namespace PictureManager.Domain.Models {
             var itemsGroup = new ItemsGroup();
             itemsGroup.Info.Add(new ItemsGroupInfoItem(
               "Unknown".Equals(group.Key)
-                ? "IconPeople"
-                : "IconTag",
+                ? Res.IconPeople
+                : Res.IconTag,
               group.Key));
             ConfirmedGrouped.Add(itemsGroup);
 

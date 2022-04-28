@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using MH.UI.WPF.Interfaces;
 
 namespace PictureManager {
   public static class Convertors {
@@ -63,34 +62,5 @@ namespace PictureManager {
       value == null ? string.Empty : $"{Math.Round((double)value / 1000000, 1)} MPx";
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
-  }
-
-  public class CatTreeViewMarginConverter : IValueConverter {
-    public double Length { get; set; }
-
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      if (value is not ICatTreeViewItem tvi) return new Thickness(0.0);
-
-      var levels = 1.5;
-      var parent = tvi.Parent;
-      while (parent != null) {
-        levels++;
-        parent = parent.Parent;
-      }
-
-      var offset = parameter == null ? 0 : int.Parse((string)parameter);
-
-      return new Thickness((Length * levels) + offset, 0.0, 0.0, 0.0);
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
-  }
-
-  public class DataTypeConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-      value?.GetType() ?? Binding.DoNothing;
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
+  }  
 }

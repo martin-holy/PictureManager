@@ -13,12 +13,12 @@ namespace PictureManager {
     protected override async void OnStartup(StartupEventArgs e) {
       base.OnStartup(e);
 
-      AppDomain.CurrentDomain.UnhandledException += delegate (object o, UnhandledExceptionEventArgs exArgs) {
+      AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs exArgs) {
         var wError = new UnhandledErrorDialog { TbError = { Text = ((Exception)exArgs.ExceptionObject).ToString() } };
         wError.ShowDialog();
       };
 
-      var splashScreen = new Views.SplashScreenV();
+      var splashScreen = new SplashScreenV();
       MainWindow = splashScreen;
       splashScreen.Show();
 

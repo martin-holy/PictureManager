@@ -5,9 +5,10 @@
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <DataTemplate DataType="{x:Type vm:StatusPanelVM}">
+  <DataTemplate DataType="{x:Type m:StatusPanelM}">
     <Grid
       VerticalAlignment="Top"
       Background="#88000000">
@@ -65,7 +66,7 @@
         <b:EventTrigger
           EventName="PreviewMouseLeftButtonUp">
           <b:InvokeCommandAction
-            Command="{Binding PinCommand}" />
+            Command="vm:StatusPanelVM.PinCommand" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
 

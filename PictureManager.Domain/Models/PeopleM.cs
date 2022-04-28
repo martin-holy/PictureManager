@@ -7,15 +7,13 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.HelperClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.HelperClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class PeopleM : ObservableObject, ITreeBranch {
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
+  public sealed class PeopleM : TreeCategoryBase {
+    private readonly CategoryGroupsM _categoryGroupsM;
 
     public DataAdapter DataAdapter { get; set; }
     public List<PersonM> All { get; } = new();
@@ -26,40 +24,27 @@ namespace PictureManager.Domain.Models {
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler PeopleKeywordChangedEvent = delegate { };
 
-    private static string GetItemName(object item) => item is PersonM p ? p.Name : string.Empty;
-
-    public IEnumerable<PersonM> GetAll() {
-      foreach (var cg in Items.OfType<CategoryGroupM>())
-        foreach (var personM in cg.Items.Cast<PersonM>())
-          yield return personM;
-
-      foreach (var personM in Items.OfType<PersonM>())
-        yield return personM;
+    public PeopleM(CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
+      _categoryGroupsM = categoryGroupsM;
+      CanMoveItem = true;
     }
 
-    public PersonM ItemCreate(ITreeBranch root, string name) {
+    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
-      root.Items.SetInOrder(item, GetItemName);
+      root.Items.SetInOrder(item, x => x.Name);
       All.Add(item);
 
       return item;
     }
 
-    public void ItemMove(ITreeLeaf item, ITreeLeaf dest, bool aboveDest) {
-      Tree.ItemMove(item, dest, aboveDest, GetItemName);
-      DataAdapter.IsModified = true;
-    }
-
-    public bool ItemCanRename(string name) =>
-      !All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-    public void ItemRename(PersonM item, string name) {
+    protected override void ModelItemRename(ITreeItem item, string name) {
       item.Name = name;
-      item.Parent.Items.SetInOrder(item, GetItemName);
+      item.Parent.Items.SetInOrder(item, x => x.Name);
       DataAdapter.IsModified = true;
     }
 
-    public void ItemDelete(PersonM person) {
+    protected override void ModelItemDelete(ITreeItem item) {
+      var person = (PersonM)item;
       person.Parent.Items.Remove(person);
       person.Parent = null;
       person.Segment = null;
@@ -70,9 +55,47 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
+    public override void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
+      Tree.ItemMove(item, dest, aboveDest);
+      DataAdapter.IsModified = true;
+    }
+
+    protected override string ValidateNewItemName(ITreeItem root, string name) =>
+      All.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+        ? $"{name} item already exists!"
+        : null;
+
+    protected override void ModelGroupCreate(ITreeItem root, string name) =>
+      _categoryGroupsM.GroupCreate(name, Category);
+
+    protected override void ModelGroupRename(ITreeGroup group, string name) =>
+      _categoryGroupsM.GroupRename(group, name);
+
+    protected override void ModelGroupDelete(ITreeGroup group) =>
+      _categoryGroupsM.GroupDelete(group);
+
+    public override void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) =>
+      _categoryGroupsM.GroupMove(group, dest, aboveDest);
+
+    protected override string ValidateNewGroupName(ITreeItem root, string name) =>
+      CategoryGroupsM.ItemCanRename(root, name)
+        ? null
+        : $"{name} group already exists!";
+
+    public IEnumerable<PersonM> GetAll() {
+      foreach (var cg in Items.OfType<CategoryGroupM>())
+        foreach (var personM in cg.Items.Cast<PersonM>())
+          yield return personM;
+
+      foreach (var personM in Items.OfType<PersonM>())
+        yield return personM;
+    }
+
     public PersonM GetPerson(string name, bool create) =>
-      All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) ??
-      (create ? ItemCreate(this, name) : null);
+      All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      ?? (create
+        ? (PersonM)ModelItemCreate(this, name)
+        : null);
 
     public void DeleteNotUsed(IEnumerable<PersonM> list, IEnumerable<MediaItemM> mediaItems) {
       var people = new HashSet<PersonM>(list);
@@ -89,7 +112,7 @@ namespace PictureManager.Domain.Models {
       }
 
       foreach (var person in people)
-        ItemDelete(person);
+        ModelItemDelete(person);
     }
 
     public void SegmentPersonChange(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
@@ -118,7 +141,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void ToggleKeyword(PersonM person, KeywordM keyword) {
+    private void ToggleKeyword(PersonM person, KeywordM keyword) {
       person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
       DataAdapter.IsModified = true;
     }
@@ -171,16 +194,16 @@ namespace PictureManager.Domain.Models {
 
         var itemsGroup = new ItemsGroup();
         if (!string.IsNullOrEmpty(groupTitle))
-          itemsGroup.Info.Add(new ItemsGroupInfoItem("IconPeople", groupTitle));
+          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, groupTitle));
         if (!group.Key.Equals(string.Empty))
-          itemsGroup.Info.Add(new ItemsGroupInfoItem("IconTag", group.Key));
+          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconTag, group.Key));
 
         PeopleInGroups.Add(itemsGroup);
 
         foreach (var person in group.OrderBy(p => p.Name))
           itemsGroup.Items.Add(person);
 
-        itemsGroup.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", itemsGroup.Items.Count.ToString()));
+        itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, itemsGroup.Items.Count.ToString()));
       }
     }
   }

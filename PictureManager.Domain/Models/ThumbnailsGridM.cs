@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
@@ -16,7 +15,6 @@ namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
     private readonly MediaItemsM _mediaItemsM;
     private readonly TitleProgressBarM _progressBar;
-    private readonly WorkTask _workTask = new();
     private readonly List<MediaItemM> _selectedItems = new();
     private readonly List<object> _filterAnd = new();
     private readonly List<object> _filterOr = new();
@@ -43,7 +41,7 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> FilteredItems { get; } = new();
     public ObservableCollection<object> FilteredGrouped { get; } = new();
     public MediaItemFilterSizeM FilterSize { get; } = new();
-    public Func<object, int> ItemWidthGetter { get; } = (o) => ((MediaItemM)o).ThumbWidth + 6;
+    public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
 
     public int FilterAndCount => _filterAnd.Count;
@@ -187,7 +185,7 @@ namespace PictureManager.Domain.Models {
       ResetThumbsSize();
     }
 
-    public void ResetThumbsSize() {
+    private void ResetThumbsSize() {
       foreach (var item in LoadedItems)
         item.SetThumbSize(true);
     }
@@ -222,7 +220,7 @@ namespace PictureManager.Domain.Models {
       await ThumbsGridReloadItems();
     }
 
-    public void ReloadFilteredItems() {
+    private void ReloadFilteredItems() {
       FilteredItems.Clear();
       var filtered = Filter(LoadedItems);
 
@@ -262,7 +260,7 @@ namespace PictureManager.Domain.Models {
       return newGrid;
     }
 
-    public void SetMediaItemFilterSizeRange() {
+    private void SetMediaItemFilterSizeRange() {
       var zeroItems = FilteredItems.Count == 0;
       var min = zeroItems ? 0 : FilteredItems.Min(x => x.Width * x.Height);
       var max = zeroItems ? 0 : FilteredItems.Max(x => x.Width * x.Height);
@@ -281,15 +279,14 @@ namespace PictureManager.Domain.Models {
       await ReapplyFilter();
     }
 
-    public void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
+    private void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
       item.DisplayFilter = item.DisplayFilter != DisplayFilter.None
         ? DisplayFilter.None
         : displayFilter;
 
-      var m = (item as IViewModel<object>)?.ToModel()
-        ?? (item as IViewModel<int>)?.ToModel();
-
-      if (m == null) return;
+      object m = item is RatingTreeM r
+        ? r.Value
+        : item;
 
       _filterAll.Remove(item);
       if (item.DisplayFilter != DisplayFilter.None)
@@ -469,9 +466,7 @@ namespace PictureManager.Domain.Models {
         var percent = Convert.ToInt32((double)workingOn / count * 100);
 
         if (mi.IsNew) {
-          var success = await Task.Run(async () => {
-            return await _mediaItemsM.ReadMetadata(mi, false);
-          });
+          var success = await Task.Run(async () => await _mediaItemsM.ReadMetadata(mi, false));
 
           mi.IsNew = false;
           if (!success) {
@@ -493,7 +488,7 @@ namespace PictureManager.Domain.Models {
       }
 
       foreach (var group in FilteredGrouped.OfType<ItemsGroup>())
-        group.Info.Add(new ItemsGroupInfoItem("IconImageMultiple", group.Items.Count.ToString()));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
     }
 
     private void AddMediaItemToGrid(MediaItemM mi) {
@@ -506,13 +501,13 @@ namespace PictureManager.Domain.Models {
         var toolTip = mi.Folder.FolderKeyword != null
           ? mi.Folder.FolderKeyword.FullPath
           : mi.Folder.FullPath;
-        group.Info.Add(new ItemsGroupInfoItem("IconFolder", title, toolTip));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconFolder, title, toolTip));
       }
 
       if (GroupByDate) {
         var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
         if (!string.IsNullOrEmpty(title))
-          group.Info.Add(new ItemsGroupInfoItem("IconCalendar", title));
+          group.Info.Add(new ItemsGroupInfoItem(Res.IconCalendar, title));
       }
 
       var lastGroup = FilteredGrouped.LastOrDefault() as ItemsGroup;

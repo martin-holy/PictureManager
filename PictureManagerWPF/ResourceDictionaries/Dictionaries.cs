@@ -1,75 +1,65 @@
 ﻿using System.Collections.Generic;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.ViewModels;
 
 namespace PictureManager.ResourceDictionaries {
   public static class Dictionaries {
-    public static Dictionary<object, object> IconNameToBrush = new() {
-      { "IconFolder", "ColorBrushFolder" },
-      { "IconFolderStar", "ColorBrushFolder" },
-      { "IconFolderLock", "ColorBrushFolder" },
-      { "IconFolderPuzzle", "ColorBrushFolder" },
-      { "IconFolderOpen", "ColorBrushFolder" },
-      { "IconTag", "ColorBrushTag" },
-      { "IconTagLabel", "ColorBrushTag" },
-      { "IconPeople", "ColorBrushPeople" },
-      { "IconPeopleMultiple", "ColorBrushPeople" },
-      { "IconDrive", "ColorBrushDrive" },
-      { "IconDriveError", "ColorBrushDrive" },
-      { "IconCd", "ColorBrushDrive" }
+    public static readonly Dictionary<object, object> IconNameToBrush = new() {
+      { "default", "ColorBrushWhite" },
+      { Res.IconFolder, "ColorBrushFolder" },
+      { Res.IconFolderStar, "ColorBrushFolder" },
+      { Res.IconFolderLock, "ColorBrushFolder" },
+      { Res.IconFolderPuzzle, "ColorBrushFolder" },
+      { Res.IconFolderOpen, "ColorBrushFolder" },
+      { Res.IconTag, "ColorBrushTag" },
+      { Res.IconTagLabel, "ColorBrushTag" },
+      { Res.IconPeople, "ColorBrushPeople" },
+      { Res.IconPeopleMultiple, "ColorBrushPeople" },
+      { Res.IconDrive, "ColorBrushDrive" },
+      { Res.IconDriveError, "ColorBrushDrive" },
+      { Res.IconCd, "ColorBrushDrive" }
     };
 
-    public static Dictionary<object, object> CategoryToBrush = new() {
-      { Category.Folders, "ColorBrushFolder" },
-      { Category.FavoriteFolders, "ColorBrushFolder" },
-      { Category.FolderKeywords, "ColorBrushFolder" },
-      { Category.People, "ColorBrushPeople" },
-      { Category.Keywords, "ColorBrushTag" }
+    public static readonly Dictionary<object, object> TypeToTreeContextMenu = new() {
+      { typeof(DriveM), "TreeContextMenuDrive" },
+      { typeof(FolderM), "TreeContextMenuFolder" },
+      { typeof(FavoriteFolderM), "TreeContextMenuFavoriteFolder" },
+      { typeof(PeopleM), "TreeContextMenuPeople" },
+      { typeof(PersonM), "TreeContextMenuPerson" },
+      { typeof(FolderKeywordsM), "TreeContextMenuFolderKeywords" },
+      { typeof(KeywordsM), "TreeContextMenuKeywords" },
+      { typeof(KeywordM), "TreeContextMenuKeyword" },
+      { typeof(GeoNamesM), "TreeContextMenuGeoNames" },
+      { typeof(GeoNameM), "TreeContextMenuGeoName" },
+      { typeof(ViewersM), "TreeContextMenuViewers" },
+      { typeof(ViewerM), "TreeContextMenuViewer" },
+      { typeof(VideoClipsM), "TreeContextMenuVideoClips" },
+      { typeof(CategoryGroupM), "TreeContextMenuGroup" },
+      { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
     };
 
-    public static Dictionary<object, object> CategoryToContextMenu = new() {
-      { Category.People, "CatPeopleContextMenu" },
-      { Category.FolderKeywords, "CatFolderKeywordsContextMenu" },
-      { Category.Keywords, "CatKeywordsContextMenu" },
-      { Category.GeoNames, "CatGeoNamesContextMenu" },
-      { Category.Viewers, "CatViewersContextMenu" },
-      { Category.VideoClips, "CatVideoClipsContextMenu" }
-    };
-
-    public static Dictionary<object, object> CategoryToIconName = new() {
-      { Category.FavoriteFolders, "IconFolderStar" },
-      { Category.Folders, "IconFolder" },
-      { Category.Ratings, "IconStar" },
-      { Category.MediaItemSizes, "IconRuler" },
-      { Category.People, "IconPeopleMultiple" },
-      { Category.FolderKeywords, "IconFolderPuzzle" },
-      { Category.Keywords, "IconTagLabel" },
-      { Category.GeoNames, "IconLocationCheckin" },
-      { Category.Viewers, "IconEye" },
-      { Category.VideoClips, "IconMovieClapper" }
-    };
-
-    public static Dictionary<object, object> DisplayFilterToBrush = new() {
+    public static readonly Dictionary<object, object> DisplayFilterToBrush = new() {
       { DisplayFilter.And, "DisplayFilterAndBrush" },
       { DisplayFilter.Or, "DisplayFilterOrBrush" },
       { DisplayFilter.Not, "DisplayFilterNotBrush" }
     };
 
-    public static Dictionary<object, object> MainTabsTypeToIcon = new() {
-      { typeof(PeopleVM), "IconPeople" },
-      { typeof(SegmentsVM), "IconEquals" },
-      { typeof(ViewerVM), "IconEye" },
-      { typeof(ThumbnailsGridVM), "IconFolder" }
+    public static readonly Dictionary<object, object> MainTabsTypeToIcon = new() {
+      { typeof(PeopleVM), Res.IconPeople },
+      { typeof(SegmentsVM), Res.IconEquals },
+      { typeof(ViewerVM), Res.IconEye },
+      { typeof(ThumbnailsGridVM), Res.IconFolder }
     };
 
-    public static Dictionary<object, object> MainTabsTypeToIconBrush = new() {
+    public static readonly Dictionary<object, object> MainTabsTypeToIconBrush = new() {
       { typeof(PeopleVM), "ColorBrushPeople" },
       { typeof(SegmentsVM), "ColorBrushWhite" },
       { typeof(ViewerVM), "ColorBrushWhite" },
       { typeof(ThumbnailsGridVM), "ColorBrushFolder" }
     };
 
-    public static Dictionary<object, object> MainTabsTypeToContextMenu = new() {
+    public static readonly Dictionary<object, object> MainTabsTypeToContextMenu = new() {
       { typeof(ThumbnailsGridVM), "ThumbnailsGridContextMenu" }
     };
   }

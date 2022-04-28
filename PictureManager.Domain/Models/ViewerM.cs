@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
   /// </summary>
-  public sealed class ViewerM : ObservableObject, IEquatable<ViewerM>, IRecord, ITreeLeaf {
+  public sealed class ViewerM : TreeItem, IEquatable<ViewerM>, IRecord {
     #region IEquatable implementation
     public bool Equals(ViewerM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as ViewerM);
@@ -25,13 +25,6 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     #endregion
 
-    #region ITreeLeaf implementation
-    public ITreeBranch Parent { get; set; }
-    #endregion
-
-    private string _name;
-
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public bool IsDefault { get; set; }
     public ObservableCollection<FolderM> IncludedFolders { get; } = new();
     public ObservableCollection<FolderM> ExcludedFolders { get; } = new();
@@ -43,9 +36,8 @@ namespace PictureManager.Domain.Models {
     private readonly HashSet<int> _excFoIds = new();
     private readonly HashSet<int> _excKeywordsIds = new();
 
-    public ViewerM(int id, string name, ITreeBranch parent) {
+    public ViewerM(int id, string name, ITreeItem parent) : base(Res.IconEye, name) {
       Id = id;
-      Name = name;
       Parent = parent;
     }
 
@@ -103,7 +95,7 @@ namespace PictureManager.Domain.Models {
       if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
       if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
 
-      var keywords = new List<ITreeLeaf>();
+      var keywords = new List<ITreeItem>();
       if (mi.Keywords != null)
         foreach (var keyword in mi.Keywords)
           Tree.GetThisAndParentRecursive(keyword, ref keywords);
@@ -114,7 +106,7 @@ namespace PictureManager.Domain.Models {
           Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
       if (keywords.OfType<CategoryGroupM>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
-      if (keywords.OfType<KeywordM>().Any(k => ExcludedKeywords.Contains(k))) return false;
+      if (keywords.OfType<KeywordM>().Any(k => _excKeywordsIds.Contains(k.Id))) return false;
 
       return true;
     }

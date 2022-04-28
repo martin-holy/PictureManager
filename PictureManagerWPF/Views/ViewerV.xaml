@@ -102,13 +102,11 @@
             Background="Transparent">
 
             <mhc:Icon
-              Source="{Binding Category,
-                       Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
-              Fill="{Binding Category,
-                     Converter={StaticResource ResourceConverter},
-                     ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
-                     FallbackValue={StaticResource ColorBrushWhite}}" />
+              Source="{Binding IconName,
+                       Converter={StaticResource ResourceConverter}}"
+                  Fill="{Binding IconName,
+                         Converter={StaticResource ResourceConverter},
+                         ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}" />
 
             <TextBlock
               Text="{Binding Name}"
@@ -266,7 +264,7 @@
 
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <ContentPresenter Content="{Binding Content}">
+                <ContentPresenter Content="{Binding}">
                   <ContentPresenter.InputBindings>
                     <MouseBinding
                       MouseAction="LeftClick"
@@ -287,10 +285,16 @@
                 <Setter
                   Property="IsSelected"
                   Value="{Binding IsSelected}" />
-                <Setter
-                  Property="Visibility"
-                  Value="{Binding IsVisible,
-                          Converter={StaticResource AllToVisibilityConverter}}" />
+
+                <Style.Triggers>
+                  <DataTrigger
+                    Binding="{Binding IsHidden}"
+                    Value="True">
+                    <Setter
+                      Property="Visibility"
+                      Value="Collapsed" />
+                  </DataTrigger>
+                </Style.Triggers>
               </Style>
             </ListBox.ItemContainerStyle>
           </ListBox>

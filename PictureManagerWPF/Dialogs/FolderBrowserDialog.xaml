@@ -45,7 +45,7 @@
                       FallbackValue={StaticResource ColorBrushWhite}}"
               ShowShadow="False"
               HorizontalAlignment="Center" />
-            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Title}" />
+            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}" />
           </StackPanel>
         </HierarchicalDataTemplate>
       </TreeView.ItemTemplate>

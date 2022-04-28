@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using MH.UI.WPF.BaseClasses;
-using MH.UI.WPF.Interfaces;
-using MH.Utils;
+using MH.Utils.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Dialogs;
@@ -14,7 +11,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
-using PictureManager.ViewModels.Tree;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridsVM : ObservableObject {
@@ -29,7 +25,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
     public RelayCommand<IFilterItem> ActivateFilterOrCommand { get; }
     public RelayCommand<IFilterItem> ActivateFilterNotCommand { get; }
-    public RelayCommand<ICatTreeViewItem> LoadByTagCommand { get; }
+    public RelayCommand<ITreeItem> LoadByTagCommand { get; }
     public RelayCommand<object> ClearFiltersCommand { get; }
     public RelayCommand<object> SelectNotModifiedCommand { get; }
     public RelayCommand<object> ShuffleCommand { get; }
@@ -44,8 +40,15 @@ namespace PictureManager.ViewModels {
       _coreVM = coreVM;
       Model = model;
 
+      Model.ThumbnailsGridAddedEventHandler += (_, e) => {
+        var viewModel = new ThumbnailsGridVM(_coreVM, e.Data.Item1, e.Data.Item2);
+        _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
+      };
+
+      Model.AddThumbnailsGridIfNotActive = AddThumbnailsGridIfNotActive;
+
       #region Commands
-      AddThumbnailsGridCommand = new(AddThumbnailsGrid);
+      AddThumbnailsGridCommand = new(Model.AddThumbnailsGrid);
 
       ActivateFilterAndCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.And), item => item != null);
       ActivateFilterOrCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.Or), item => item != null);
@@ -55,7 +58,7 @@ namespace PictureManager.ViewModels {
       LoadByTagCommand = new(
         async item => {
           var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
-          await LoadByTag(item, and, hide, recursive);
+          await Model.LoadByTag(item, and, hide, recursive);
         },
         item => item != null);
       
@@ -71,7 +74,7 @@ namespace PictureManager.ViewModels {
         () => Model.Current?.FilteredItems.Count > 0);
 
       CompressCommand = new(
-        () => CompressDialog.Open(),
+        CompressDialog.Open,
         () => Model.Current?.FilteredItems.Count > 0);
 
       ResizeImagesCommand = new(
@@ -115,68 +118,7 @@ namespace PictureManager.ViewModels {
         return;
       }
 
-      AddThumbnailsGrid(tabTitle);
-    }
-
-    private void AddThumbnailsGrid(string tabTitle) {
-      var model = Model.AddThumbnailsGrid(_core.MediaItemsM, _core.TitleProgressBarM);
-      var viewModel = new ThumbnailsGridVM(_coreVM, model, tabTitle);
-
-      model.SelectionChangedEventHandler += (_, _) => {
-        _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
-        _coreVM.StatusPanelVM.OnPropertyChanged(nameof(_coreVM.StatusPanelVM.FileSize));
-      };
-
-      model.FilteredChangedEventHandler += (_, _) => {
-        _coreVM.TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
-      };
-
-      _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
-    }
-
-    public async Task LoadByTag(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      // TODO move getting items and tabTitle to model
-      var items = item switch {
-        RatingTreeVM rating => _core.MediaItemsM.All.Where(x => x.Rating == rating.Value).ToList(),
-        PersonTreeVM person => _core.MediaItemsM.GetMediaItems(person.Model),
-        KeywordTreeVM keyword => _core.MediaItemsM.GetMediaItems(keyword.Model, recursive),
-        GeoNameTreeVM geoName => _core.MediaItemsM.GetMediaItems(geoName.Model, recursive),
-        _ => new()
-      };
-
-      var tabTitle = and || hide
-        ? null
-        : item switch {
-          RatingTreeVM rating => rating.Value.ToString(),
-          PersonTreeVM person => person.Model.Name,
-          KeywordTreeVM keyword => keyword.Model.Name,
-          GeoNameTreeVM geoName => geoName.Model.Name,
-          _ => string.Empty
-        };
-
-      AddThumbnailsGridIfNotActive(tabTitle);
-      await Model.Current.LoadMediaItems(items, and, hide);
-    }
-
-    public async Task LoadByFolder(ICatTreeViewItem item, bool and, bool hide, bool recursive) {
-      if (item is FolderTreeVM folder && !folder.Model.IsAccessible) return;
-
-      item.IsSelected = true;
-
-      var roots = (item as FolderKeywordTreeVM)?.Model.Folders ?? new List<FolderM> { ((FolderTreeVM)item).Model };
-      var folders = FoldersM.GetFolders(roots, recursive)
-        .Where(f => _core.FoldersM.IsFolderVisible(f))
-        .ToList();
-
-      if (and || hide) {
-        var items = folders.SelectMany(x => x.MediaItems).ToList();
-        AddThumbnailsGridIfNotActive(null);
-        await Model.Current.LoadMediaItems(items, and, hide);
-        return;
-      }
-
-      AddThumbnailsGridIfNotActive(folders[0].Name);
-      await Model.Current.LoadAsync(null, folders);
+      Model.AddThumbnailsGrid(tabTitle);
     }
 
     private void ImagesToVideo() {

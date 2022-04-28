@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -26,10 +25,20 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var folder = new FolderM(int.Parse(props[0]), props[1], null) {
-        Csv = props,
-        IsFolderKeyword = props[3] == "1"
-      };
+
+      var folder = string.IsNullOrEmpty(props[2])
+        ? new DriveM(int.Parse(props[0]), props[1], null) {
+            Csv = props,
+            IsFolderKeyword = props[3] == "1"
+          }
+        : new FolderM(int.Parse(props[0]), props[1], null) {
+            Csv = props,
+            IsFolderKeyword = props[3] == "1"
+          };
+
+      folder.ExpandedChangedEventHandler += (o, _) =>
+        _model.HandleItemExpandedChanged((FolderM)o);
+
       _model.All.Add(folder);
       _model.AllDic.Add(folder.Id, folder);
     }
@@ -44,7 +53,7 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Empty);
 
     public override void LinkReferences() {
-      foreach (var folder in _model.All.Cast<FolderM>()) {
+      foreach (var folder in _model.All) {
         // reference to Parent and back reference from Parent to SubFolder
         folder.Parent = !string.IsNullOrEmpty(folder.Csv[2])
           ? _model.AllDic[int.Parse(folder.Csv[2])]

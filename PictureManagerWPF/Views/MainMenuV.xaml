@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels">
 
   <mhc:Icon
     x:Key="EyeIcon"
@@ -185,8 +186,7 @@
               Value="{Binding Path=(models:ViewerM.Name)}" />
             <Setter
               Property="Command"
-              Value="{Binding ViewersVM.SetCurrentCommand,
-                      Source={x:Static pm:App.Ui}}" />
+              Value="{Binding Source={x:Static vm:ViewersVM.SetCurrentCommand}}" />
             <Setter
               Property="CommandParameter"
               Value="{Binding}" />

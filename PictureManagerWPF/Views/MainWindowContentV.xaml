@@ -27,8 +27,8 @@
         <mhc:SlidePanelsGrid.ContentLeft>
           <mhc:SlidePanel
             DataContext="{Binding TreeViewCategoriesVM, Source={x:Static pm:App.Ui}}"
-            IsOpen="{Binding IsOpen, Mode=TwoWay}"
-            IsPinned="{Binding IsPinned}"
+            IsOpen="{Binding Model.IsOpen, Mode=TwoWay}"
+            IsPinned="{Binding Model.IsPinned}"
             Position="Left"
             Width="380">
 
@@ -92,7 +92,7 @@
       <!-- Status Panel -->
       <ContentPresenter
         x:Name="StatusPanel"
-        Content="{Binding StatusPanelVM, Source={x:Static pm:App.Ui}}"
+        Content="{Binding StatusPanelM, Source={x:Static pm:App.Core}}"
         VerticalAlignment="Bottom" />
     </Grid>
   </DataTemplate>

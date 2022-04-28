@@ -63,6 +63,7 @@
   <Style BasedOn="{StaticResource MahApps.Styles.Label}" TargetType="{x:Type Label}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.TabItem}" TargetType="{x:Type TabItem}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.TabControl}" TargetType="{x:Type TabControl}"/>
+  <Style BasedOn="{StaticResource MahApps.Styles.TextBlock}" TargetType="{x:Type TextBlock}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.ScrollBar}" TargetType="{x:Type ScrollBar}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.RadioButton}" TargetType="{x:Type RadioButton}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.ProgressBar}" TargetType="{x:Type ProgressBar}"/>
@@ -76,7 +77,7 @@
   <!--<Style BasedOn="{StaticResource MahApps.Styles.Expander}" TargetType="{x:Type Expander}"/>-->
   <Style BasedOn="{StaticResource MahApps.Styles.GroupBox}" TargetType="{x:Type GroupBox}"/>
   <Style BasedOn="{StaticResource MahApps.Styles.ListBox}" TargetType="{x:Type ListBox}"/>
-  <Style BasedOn="{StaticResource MahApps.Styles.ListBoxItem}" TargetType="{x:Type ListBoxItem}"/>
+  <!--<Style BasedOn="{StaticResource MahApps.Styles.ListBoxItem}" TargetType="{x:Type ListBoxItem}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.GridViewColumnHeader}" TargetType="{x:Type GridViewColumnHeader}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.ListView}" TargetType="{x:Type ListView}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.ListViewItem}" TargetType="{x:Type ListViewItem}"/>-->

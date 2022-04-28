@@ -8,7 +8,7 @@
   <DataTemplate DataType="{x:Type vm:TreeViewSearchVM}">
     <Grid
       Margin="4"
-      Visibility="{Binding IsVisible,
+      Visibility="{Binding Model.IsVisible,
                    Converter={StaticResource AllToVisibilityConverter}}">
 
       <Grid.RowDefinitions>
@@ -19,7 +19,7 @@
       <!-- Search Box -->
       <Grid Grid.Row="0">
         <TextBox
-          Text="{Binding SearchText,
+          Text="{Binding Model.SearchText,
                  UpdateSourceTrigger=PropertyChanged}" 
           FontSize="16">
 
@@ -54,9 +54,9 @@
       <!-- Search Result -->
       <ListBox
         Grid.Row="1"
-        ItemsSource="{Binding SearchResult}"
+        ItemsSource="{Binding Model.SearchResult}"
         MaxHeight="400"
-        Visibility="{Binding SearchResult.Count,
+        Visibility="{Binding Model.SearchResult.Count,
                      Converter={StaticResource AllToVisibilityConverter}}">
 
         <ListBox.ItemTemplate>

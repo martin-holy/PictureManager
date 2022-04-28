@@ -1,54 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.BaseClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class ViewersM : ObservableObject, ITreeBranch {
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
-
+  public sealed class ViewersM : TreeCategoryBase {
     private ViewerM _current;
 
     public DataAdapter DataAdapter { get; set; }
     public List<ViewerM> All { get; } = new();
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public event EventHandler<ObjectEventArgs<ViewerM>> ViewerDeletedEventHandler = delegate { };
+    public ViewersM() : base(Res.IconEye, Category.Viewers, "Viewers") { }
 
-    public ViewerM ItemCreate(ITreeBranch root, string name) {
+    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
-      root.Items.SetInOrder(item, x => ((ViewerM)x).Name);
+      root.Items.SetInOrder(item, x => x.Name);
       All.Add(item);
 
       return item;
     }
 
-    public bool ItemCanRename(string name) =>
-      !All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-    public void ItemRename(ViewerM item, string name) {
+    protected override void ModelItemRename(ITreeItem item, string name) {
       item.Name = name;
-      item.Parent.Items.SetInOrder(item, x => ((ViewerM)x).Name);
+      item.Parent.Items.SetInOrder(item, x => x.Name);
       DataAdapter.IsModified = true;
     }
 
-    public void ItemDelete(ViewerM viewer) {
+    protected override void ModelItemDelete(ITreeItem item) {
+      var viewer = (ViewerM)item;
       viewer.Parent.Items.Remove(viewer);
       viewer.Parent = null;
       viewer.IncludedFolders.Clear();
       viewer.ExcludedFolders.Clear();
       viewer.ExcludedKeywords.Clear();
       All.Remove(viewer);
-      ViewerDeletedEventHandler(this, new(viewer));
       DataAdapter.IsModified = true;
     }
+
+    protected override string ValidateNewItemName(ITreeItem root, string name) =>
+      All.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+        ? $"{name} item already exists!"
+        : null;
 
     public void ToggleCategoryGroup(ViewerM viewer, int groupId) {
       viewer.ExcCatGroupsIds.Toggle(groupId);
@@ -56,7 +52,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void AddFolder(ViewerM viewer, FolderM folder, bool included) {
-      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).SetInOrder(folder, (x) => x.FullPath);
+      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).SetInOrder(folder, x => x.FullPath);
       DataAdapter.IsModified = true;
     }
 
@@ -66,7 +62,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void AddKeyword(ViewerM viewer, KeywordM keyword) {
-      viewer.ExcludedKeywords.SetInOrder(keyword, (x) => x.FullName);
+      viewer.ExcludedKeywords.SetInOrder(keyword, x => x.FullName);
       DataAdapter.IsModified = true;
     }
 

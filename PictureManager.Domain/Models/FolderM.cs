@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,10 +10,7 @@ using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  /// <summary>
-  /// DB fields: ID|Name|Parent|IsFolderKeyword
-  /// </summary>
-  public sealed class FolderM : ObservableObject, IEquatable<FolderM>, IRecord, ITreeBranch {
+  public class FolderM : TreeItem, IEquatable<FolderM>, IRecord {
     #region IEquatable implementation
     public bool Equals(FolderM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as FolderM);
@@ -28,32 +24,32 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     #endregion
 
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
-
     public List<MediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
 
-    private string _name;
     private bool _isAccessible;
     private bool _isAvailable;
     private bool _isFolderKeyword;
-    private string _iconName;
 
-    public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); } }
+    public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIconName(); } }
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
     public bool IsFolderKeyword { get => _isFolderKeyword; set { _isFolderKeyword = value; OnPropertyChanged(); } }
-    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
 
-    public FolderM(int id, string name, ITreeBranch parent) {
+    public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {
       Id = id;
-      Name = name;
       Parent = parent;
+    }
+
+    public void UpdateIconName() {
+      if (Parent is FoldersM) return;
+
+      IconName = IsExpanded
+        ? Res.IconFolderOpen
+        : !IsAccessible
+          ? Res.IconFolderLock
+          : Res.IconFolder;
     }
 
     public async void LoadSubFolders(bool recursive) {
@@ -73,7 +69,7 @@ namespace PictureManager.Domain.Models {
         dirNames.Add(dirName);
 
         // get existing Folder in the tree
-        var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.OrdinalIgnoreCase));
+        var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.CurrentCultureIgnoreCase));
         if (folder != null) continue;
 
         // add new Folder to the database
@@ -123,21 +119,10 @@ namespace PictureManager.Domain.Models {
       Items.Sort(x => ((FolderM)x).Name);
     }
 
-    public bool HasThisParent(FolderM parent) {
-      var p = Parent as FolderM;
-      while (p != null) {
-        if (p.Id.Equals(parent.Id))
-          return true;
-        p = p.Parent as FolderM;
-      }
-
-      return false;
-    }
-
     /// <param name="path">full or partial folder path with no directory separator on the end</param>
     public FolderM GetByPath(string path) {
       if (string.IsNullOrEmpty(path)) return null;
-      if (FullPath.Equals(path, StringComparison.Ordinal)) return this;
+      if (FullPath.Equals(path, StringComparison.CurrentCultureIgnoreCase)) return this;
 
       var root = this;
       var pathParts = (path.StartsWith(FullPath, StringComparison.CurrentCultureIgnoreCase)
@@ -146,7 +131,7 @@ namespace PictureManager.Domain.Models {
         .Split(Path.DirectorySeparatorChar);
 
       foreach (var pathPart in pathParts) {
-        var folder = root.Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(pathPart, StringComparison.OrdinalIgnoreCase));
+        var folder = root.Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(pathPart, StringComparison.CurrentCultureIgnoreCase));
         if (folder == null) return null;
         root = folder;
       }

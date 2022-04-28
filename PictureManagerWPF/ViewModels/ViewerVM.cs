@@ -5,15 +5,10 @@ using System.Windows.Controls;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.CustomControls;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
-using PictureManager.ViewModels.Tree;
-using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class ViewerVM : ObservableObject {
-    private readonly CatTreeView _catTvCategories;
     private readonly ViewersM _viewersM;
     private readonly CategoryGroupsM _categoryGroupsM;
     private ViewerM _viewer;
@@ -23,13 +18,12 @@ namespace PictureManager.ViewModels {
     public ListBox LbIncludedFolders { get; }
     public ListBox LbExcludedFolders { get; }
     public ListBox LbExcludedKeywords { get; }
-    public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
-    public RelayCommand<ListItem<CategoryGroupM>> CategoryGroupsSelectCommand { get; }
+    public ObservableCollection<CategoryGroupM> CategoryGroups { get; } = new();
+    public RelayCommand<CategoryGroupM> CategoryGroupsSelectCommand { get; }
 
-    public ViewerVM(ViewersM viewersM, CategoryGroupsM categoryGroupsM, CatTreeView catTvCategories) {
+    public ViewerVM(ViewersM viewersM, CategoryGroupsM categoryGroupsM) {
       _viewersM = viewersM;
       _categoryGroupsM = categoryGroupsM;
-      _catTvCategories = catTvCategories;
 
       MainTabsItem = new(this, "Viewer");
 
@@ -60,16 +54,16 @@ namespace PictureManager.ViewModels {
       DragDropFactory.SetDrop(LbExcludedKeywords, CanDropKeyword, DoDropKeyword);
     }
 
-    private void CategoryGroupsSelect(ListItem<CategoryGroupM> item) {
+    private void CategoryGroupsSelect(CategoryGroupM item) {
       item.IsSelected = !item.IsSelected;
-      _viewersM.ToggleCategoryGroup(Viewer, item.Content.Id);
+      _viewersM.ToggleCategoryGroup(Viewer, item.Id);
     }
 
     private void Reload() {
       ReloadCategoryGroups();
 
       foreach (var licg in CategoryGroups)
-        licg.IsSelected = !Viewer.ExcCatGroupsIds.Contains(licg.Content.Id);
+        licg.IsSelected = !Viewer.ExcCatGroupsIds.Contains(licg.Id);
     }
 
     private void ReloadCategoryGroups() {
@@ -80,24 +74,23 @@ namespace PictureManager.ViewModels {
       CategoryGroups.Clear();
 
       foreach (var cg in groups)
-        CategoryGroups.Add(new(cg));
+        CategoryGroups.Add(cg);
     }
 
     private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
-      if (FolderToModel(data) is not { } model) return DragDropEffects.None;
+      if (data is not FolderM folder)
+        return DragDropEffects.None;
 
-      if (source.Equals(_catTvCategories)) {
+      if (!source.Equals(LbIncludedFolders) && !source.Equals(LbExcludedFolders))
         return (included
-            ? Viewer.IncludedFolders
-            : Viewer.ExcludedFolders)
-          .Contains(model)
+          ? Viewer.IncludedFolders
+          : Viewer.ExcludedFolders)
+          .Contains(folder)
             ? DragDropEffects.None
             : DragDropEffects.Copy;
-      }
 
-      if ((source.Equals(LbIncludedFolders) || source.Equals(LbExcludedFolders))
-          && (e.Source as FrameworkElement)?.TemplatedParent == source)
-        return model.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
+      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
+        return folder.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
           ? DragDropEffects.None
           : DragDropEffects.Move;
 
@@ -105,49 +98,31 @@ namespace PictureManager.ViewModels {
     }
 
     private void DoDropFolder(DragEventArgs e, object source, object data, bool included) {
-      if (source.Equals(_catTvCategories))
-        _viewersM.AddFolder(Viewer, FolderToModel(data), included);
-
       if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        _viewersM.RemoveFolder(Viewer, FolderToModel(data), included);
+        _viewersM.RemoveFolder(Viewer, (FolderM)data, included);
+      else
+        _viewersM.AddFolder(Viewer, (FolderM)data, included);
     }
 
     private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
-      if (KeywordToModel(data) is not { } model) return DragDropEffects.None;
+      if (data is not KeywordM keyword)
+        return DragDropEffects.None;
 
-      if (source.Equals(_catTvCategories))
-        return Viewer.ExcludedKeywords.Contains(model)
-          ? DragDropEffects.None
-          : DragDropEffects.Copy;
-
-      if (source.Equals(LbExcludedKeywords))
-        return model.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
+      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
+        return keyword.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
           ? DragDropEffects.None
           : DragDropEffects.Move;
-
-      return DragDropEffects.None;
+      else
+        return Viewer.ExcludedKeywords.Contains(keyword)
+          ? DragDropEffects.None
+          : DragDropEffects.Copy;
     }
 
     private void DoDropKeyword(DragEventArgs e, object source, object data) {
-      if (source.Equals(_catTvCategories))
-        _viewersM.AddKeyword(Viewer, KeywordToModel(data));
-
       if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        _viewersM.RemoveKeyword(Viewer, KeywordToModel(data));
+        _viewersM.RemoveKeyword(Viewer, (KeywordM)data);
+      else
+        _viewersM.AddKeyword(Viewer, (KeywordM)data);
     }
-
-    private static KeywordM KeywordToModel(object item) =>
-      item switch {
-        KeywordTreeVM x => x.Model,
-        KeywordM x => x,
-        _ => null
-      };
-
-    private static FolderM FolderToModel(object item) =>
-      item switch {
-        FolderTreeVM x => x.Model,
-        FolderM x => x,
-        _ => null
-      };
   }
 }

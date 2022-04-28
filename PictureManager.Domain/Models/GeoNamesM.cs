@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
 using MH.Utils.Dialogs;
-using MH.Utils.Interfaces;
+using PictureManager.Domain.BaseClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class GeoNamesM : ITreeBranch {
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
-
+  public sealed class GeoNamesM : TreeCategoryBase {
     public DataAdapter DataAdapter { get; set; }
     public List<GeoNameM> All { get; } = new();
     public Dictionary<int, GeoNameM> AllDic { get; set; }
+
+    public GeoNamesM() : base(Res.IconLocationCheckin, Category.GeoNames, "GeoNames") { }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
       try {
@@ -74,7 +70,7 @@ namespace PictureManager.Domain.Models {
       Core.DialogHostShow(new MessageDialog(
         "GeoNames User Name",
         "GeoNames user name was not found.\nPlease register at geonames.org and set your user name in the settings.",
-        "IconInformation",
+        Res.IconInformation,
         false));
 
       return false;
@@ -86,11 +82,11 @@ namespace PictureManager.Domain.Models {
       var inputDialog = new InputDialog(
         "GeoName latitude and longitude",
         "Enter in format: N36.75847,W3.84609",
-        "IconLocationCheckin",
+        Res.IconLocationCheckin,
         string.Empty,
         answer => {
-          var (lat, lng) = ParseLatLng(answer);
-          return lat == 0 && lng == 0
+          var (a, b) = ParseLatLng(answer);
+          return a == 0 && b == 0
             ? "Incorrect format"
             : string.Empty;
         });

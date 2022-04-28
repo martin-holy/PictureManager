@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Windows;
-using MH.UI.WPF.BaseClasses;
-using MH.UI.WPF.Interfaces;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.Dialogs {
-  public partial class FolderBrowserDialog : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
+  public partial class FolderBrowserDialog {
     public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
     public string SelectedPath => ((FolderTreeViewItem)TreeViewFolders.SelectedValue)?.FullPath;
 
@@ -55,18 +49,13 @@ namespace PictureManager.Dialogs {
     }
   }
 
-  public class FolderTreeViewItem : CatTreeViewItem {
-    private string _iconName;
+  public class FolderTreeViewItem : TreeItem {
+    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
 
-    public string Title { get; }
-    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
-    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Title);
-
-    public FolderTreeViewItem(ITreeBranch parent, string title) {
+    public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
       Parent = parent;
-      Title = title;
 
-      OnExpandedChanged += (_, _) => {
+      ExpandedChangedEventHandler += (_, _) => {
         if (IsExpanded)
           LoadSubFolders();
         UpdateIconName();
@@ -75,17 +64,17 @@ namespace PictureManager.Dialogs {
 
     private void UpdateIconName() {
       if (Parent != null) // not Drive Folder
-        IconName = IsExpanded ? "IconFolderOpen" : "IconFolder";
+        IconName = IsExpanded
+          ? Res.IconFolderOpen
+          : Res.IconFolder;
     }
 
-    public void LoadSubFolders() {
-      // remove placeholder
-      if (Items.Count == 1 && ((ICatTreeViewItem)Items[0]).Parent == null) Items.Clear();
-
+    private void LoadSubFolders() {
       var fullPath = FullPath + Path.DirectorySeparatorChar;
+      Items.Clear();
 
       foreach (var dir in Directory.EnumerateDirectories(fullPath)) {
-        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]) { IconName = "IconFolder" };
+        var folder = new FolderTreeViewItem(this, dir[fullPath.Length..]);
 
         try {
           // add placeholder so the folder can be expanded

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using PictureManager.Domain.Utils;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
-using System.Windows;
 
 namespace PictureManager.Converters {
   public class MediaItemThumbnailSourceConverter : IValueConverter {

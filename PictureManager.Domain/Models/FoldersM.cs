@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,15 +7,11 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.BaseClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FoldersM : ITreeBranch {
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
-
+  public class FoldersM : TreeCategoryBase {
     private readonly Core _core;
     private readonly ViewersM _viewersM;
 
@@ -25,11 +20,140 @@ namespace PictureManager.Domain.Models {
     public Dictionary<int, FolderM> AllDic { get; set; }
     public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
+    public Action<object, ITreeItem, bool, bool> OnDropAction { get; set; }
 
-    public FoldersM(Core core, ViewersM viewersM) {
+    public FoldersM(Core core, ViewersM viewersM) : base(Res.IconFolder, Category.Folders, "Folders") {
       _core = core;
       _viewersM = viewersM;
+
+      CanMoveItem = true;
+      CanCopyItem = true;
+      IsExpanded = true;
     }
+
+    public void HandleItemExpandedChanged(FolderM item) {
+      item.UpdateIconName();
+
+      if (item.IsExpanded)
+        item.LoadSubFolders(false);
+    }
+
+    public override bool CanDrop(object src, ITreeItem dest) {
+      switch (src) {
+        case FolderM srcData: { // Folder
+          if (dest is FolderM destData
+            && !destData.HasThisParent(srcData)
+            && !Equals(srcData, destData)
+            && destData.IsAccessible
+            && !Equals(srcData.Parent, destData))
+            return true;
+
+          break;
+        }
+        case string[] dragged: { // MediaItems
+          if (_core.ThumbnailsGridsM.Current == null) break;
+
+          var selected = _core.ThumbnailsGridsM.Current.FilteredItems
+            .Where(x => x.IsSelected)
+            .Select(p => p.FilePath)
+            .OrderBy(p => p)
+            .ToArray();
+
+          if (selected.SequenceEqual(dragged.OrderBy(x => x))
+              && dest is FolderM { IsAccessible: true })
+            return true;
+
+          break;
+        }
+      }
+
+      return false;
+    }
+
+    public override void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
+      OnDropAction(src, dest, aboveDest, copy);
+    }
+
+    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
+      var rootFolder = (FolderM)root;
+      // create Folder
+      Directory.CreateDirectory(IOExtensions.PathCombine(rootFolder.FullPath, name));
+      var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
+
+      item.ExpandedChangedEventHandler += (o, _) =>
+        HandleItemExpandedChanged((FolderM)o);
+
+      // add new Folder to the database
+      All.Add(item);
+
+      // add new Folder to the tree
+      root.Items.SetInOrder(item, x => x.Name);
+
+      // reload FolderKeywords
+      if (rootFolder.IsFolderKeyword || rootFolder.FolderKeyword != null)
+        _core.FolderKeywordsM.Load(All);
+
+      return item;
+    }
+
+    protected override void ModelItemRename(ITreeItem item, string name) {
+      var folder = (FolderM)item;
+      var parent = (FolderM)item.Parent;
+
+      Directory.Move(folder.FullPath, IOExtensions.PathCombine(parent.FullPath, name));
+      if (Directory.Exists(folder.FullPathCache))
+        Directory.Move(folder.FullPathCache, IOExtensions.PathCombine(parent.FullPathCache, name));
+
+      folder.Name = name;
+      folder.Parent.Items.SetInOrder(folder, x => x.Name);
+      DataAdapter.IsModified = true;
+
+      // reload FolderKeywords
+      if (folder.IsFolderKeyword || folder.FolderKeyword != null)
+        _core.FolderKeywordsM.Load(All);
+    }
+
+    protected override void ModelItemDelete(ITreeItem item) {
+      item.Parent.Items.Remove(item);
+
+      // get all folders recursive
+      var folders = new List<FolderM>();
+      Tree.GetThisAndItemsRecursive(item, ref folders);
+
+      foreach (var f in folders) {
+        All.Remove(f);
+        FolderDeletedEventHandler(this, new(f));
+
+        f.Parent = null;
+        f.Items.Clear();
+        DataAdapter.IsModified = true;
+      }
+
+      _core.FolderKeywordsM.Load(All);
+
+      // delete folder, sub folders and mediaItems from cache
+      if (Directory.Exists(((FolderM)item).FullPathCache))
+        Directory.Delete(((FolderM)item).FullPathCache, true);
+
+      // delete folder, sub folders and mediaItems from file system
+      // TODO it should be in Model
+      // done in OnAfterItemDelete (FoldersTreeVM)
+    }
+
+    protected override string ValidateNewItemName(ITreeItem root, string name) {
+      // check if folder already exists
+      if (Directory.Exists(IOExtensions.PathCombine(((FolderM)root).FullPath, name)))
+        return "Folder already exists!";
+
+      // check if is correct folder name
+      if (Path.GetInvalidPathChars().Any(name.Contains))
+        return "New folder's name contains incorrect character(s)!";
+
+      return null;
+    }
+
+    public void ItemDelete(FolderM item) =>
+      ModelItemDelete(item);
 
     public void AddDrives() {
       var drives = Environment.GetLogicalDrives();
@@ -41,8 +165,8 @@ namespace PictureManager.Domain.Models {
         drivesNames.Add(driveName);
 
         // add Drive to the database and to the tree if not already exists
-        if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.OrdinalIgnoreCase)) is not { } item) {
-          item = new(DataAdapter.GetNextId(), driveName, this);
+        if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.CurrentCultureIgnoreCase)) is not { } item) {
+          item = new DriveM(DataAdapter.GetNextId(), driveName, this);
           All.Add(item);
           Items.Add(item);
         }
@@ -56,16 +180,18 @@ namespace PictureManager.Domain.Models {
       }
 
       // set available drives
-      foreach (var item in Items.Cast<FolderM>())
-        item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.OrdinalIgnoreCase));
+      foreach (var item in Items.Cast<FolderM>()) {
+        item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.CurrentCultureIgnoreCase));
+        item.IsHidden = !IsFolderVisible(item);
+      }
     }
 
     public static string GetDriveIconName(DriveType type) =>
       type switch {
-        DriveType.CDRom => "IconCd",
-        DriveType.Network => "IconDrive",
-        DriveType.NoRootDirectory or DriveType.Unknown => "IconDriveError",
-        _ => "IconDrive",
+        DriveType.CDRom => Res.IconCd,
+        DriveType.Network => Res.IconDrive,
+        DriveType.NoRootDirectory or DriveType.Unknown => Res.IconDriveError,
+        _ => Res.IconDrive,
       };
 
     public MediaItemM GetMediaItemByPath(string path) {
@@ -87,7 +213,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetTopParent(folder)?.IsAvailable == true && _viewersM.CanViewerSee(folder);
 
     public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
-      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token, Core core) {
+      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
 
@@ -304,69 +430,7 @@ namespace PictureManager.Domain.Models {
 
       // delete if src folder was moved completely and the target folder was already in DB
       if (deleteSrc)
-        ItemDelete(src);
-    }
-
-    public FolderM ItemCreate(ITreeBranch root, string name) {
-      // create Folder
-      Directory.CreateDirectory(IOExtensions.PathCombine(((FolderM)root).FullPath, name));
-      var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
-
-      // add new Folder to the database
-      All.Add(item);
-
-      // add new Folder to the tree
-      root.Items.SetInOrder(item, x => ((FolderM)x).Name);
-
-      // reload FolderKeywords
-      if (((FolderM)root).IsFolderKeyword || ((FolderM)root).FolderKeyword != null)
-        _core.FolderKeywordsM.Load(All);
-
-      return item;
-    }
-
-    public void ItemRename(FolderM item, string name) {
-      var parent = (FolderM)item.Parent;
-
-      Directory.Move(item.FullPath, IOExtensions.PathCombine(parent.FullPath, name));
-      if (Directory.Exists(item.FullPathCache))
-        Directory.Move(item.FullPathCache, IOExtensions.PathCombine(parent.FullPathCache, name));
-
-      item.Name = name;
-
-      item.Parent.Items.SetInOrder(item, x => ((FolderM)x).Name);
-      DataAdapter.IsModified = true;
-
-      // reload FolderKeywords
-      if (item.IsFolderKeyword || item.FolderKeyword != null)
-        _core.FolderKeywordsM.Load(All);
-    }
-
-    public void ItemDelete(FolderM item) {
-      item.Parent.Items.Remove(item);
-
-      // get all folders recursive
-      var folders = new List<FolderM>();
-      Tree.GetThisAndItemsRecursive(item, ref folders);
-
-      foreach (var f in folders) {
-        All.Remove(f);
-        FolderDeletedEventHandler(this, new(f));
-
-        f.Parent = null;
-        f.Items.Clear();
-        DataAdapter.IsModified = true;
-      }
-
-      _core.FolderKeywordsM.Load(All);
-
-      // delete folder, sub folders and mediaItems from cache
-      if (Directory.Exists(item.FullPathCache))
-        Directory.Delete(item.FullPathCache, true);
-
-      // delete folder, sub folders and mediaItems from file system
-      // TODO it should be in Model
-      // done in OnAfterItemDelete (FoldersTreeVM)
+        ModelItemDelete(src);
     }
 
     public static List<FolderM> GetFolders(List<FolderM> roots, bool recursive) {

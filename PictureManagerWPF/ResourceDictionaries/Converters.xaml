@@ -1,19 +1,22 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:pm="clr-namespace:PictureManager"
-                    xmlns:converters="clr-namespace:PictureManager.Converters"
-                    xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:converters="clr-namespace:PictureManager.Converters"
+  xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF"
+  xmlns:mhconv="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
   <pm:RatingConverter x:Key="RatingConverter" />
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
   <pm:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
   <pm:AllToBoolConverter x:Key="AllToBoolConverter" />
-  <pm:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
-  <pm:DataTypeConverter x:Key="DataTypeConverter" />
+  <mhconv:DataTypeConverter x:Key="DataTypeConverter" />
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <mhConverters:ClickConverter x:Key="ClickConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
   <mhConverters:EqualityConverter x:Key="EqualityConverter" />
   <mhConverters:ResourceConverter x:Key="ResourceConverter" />
+  <mhconv:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
+  <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
 </ResourceDictionary>

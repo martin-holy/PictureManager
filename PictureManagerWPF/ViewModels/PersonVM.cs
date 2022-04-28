@@ -9,7 +9,6 @@ using MH.UI.WPF.Converters;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class PersonVM : ObservableObject {

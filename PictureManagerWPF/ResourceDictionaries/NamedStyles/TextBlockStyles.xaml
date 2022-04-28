@@ -19,9 +19,6 @@
     TargetType="{x:Type TextBlock}">
 
     <Setter
-      Property="DataContext"
-      Value="{Binding}" />
-    <Setter
       Property="Visibility"
       Value="Visible" />
     <Setter
@@ -41,11 +38,9 @@
       <Setter.Value>
         <MultiBinding Converter="{StaticResource MarkedTagsItemsCountConverter}">
           <Binding
-            Path="TreeViewCategoriesVM.MarkedTags"
+            Path="TreeViewCategoriesVM.Model.MarkedTags"
             Source="{x:Static pm:App.Ui}" />
-          <Binding
-            Path="DataContext"
-            RelativeSource="{RelativeSource Self}"/>
+          <Binding />
         </MultiBinding>
       </Setter.Value>
     </Setter>

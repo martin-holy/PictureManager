@@ -1,6 +1,5 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
@@ -23,9 +22,13 @@ namespace PictureManager.Domain {
     public GeoNamesM GeoNamesM { get; }
     public KeywordsM KeywordsM { get; }
     public MediaItemsM MediaItemsM { get; }
+    public MediaItemSizesTreeM MediaItemSizesTreeM { get; }
     public PeopleM PeopleM { get; }
+    public RatingsTreeM RatingsTreeM { get; }
     public SegmentsM SegmentsM { get; }
+    public StatusPanelM StatusPanelM { get; }
     public ThumbnailsGridsM ThumbnailsGridsM { get; }
+    public TreeViewCategoriesM TreeViewCategoriesM { get; }
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
 
@@ -45,10 +48,14 @@ namespace PictureManager.Domain {
       FolderKeywordsM = new();
       FoldersM = new(this, ViewersM); // FolderKeywordsM, MediaItemsM
       GeoNamesM = new();
-      KeywordsM = new();
+      KeywordsM = new(CategoryGroupsM);
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
-      PeopleM = new();
-      ThumbnailsGridsM = new();
+      MediaItemSizesTreeM = new();
+      PeopleM = new(CategoryGroupsM);
+      RatingsTreeM = new();
+      StatusPanelM = new(this);
+      ThumbnailsGridsM = new(this);
+      TreeViewCategoriesM = new(this);
       VideoClipsM = new();
 
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
@@ -132,18 +139,9 @@ namespace PictureManager.Domain {
         ThumbnailsGridsM.RemoveMediaItem(e.Data);
       };
 
-      CategoryGroupsM.CategoryGroupDeletedEventHandler += (_, e) => {
-        // move all group items to root
-        foreach (var item in e.Data.Items.ToArray()) {
-          switch (e.Data.Category) {
-            case Category.Keywords:
-              KeywordsM.ItemMove(item, KeywordsM, false);
-              break;
-            case Category.People:
-              PeopleM.ItemMove(item, PeopleM, false);
-              break;
-          }
-        }
+      MediaItemsM.MetadataChangedEventHandler += (_, _) => {
+        TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        StatusPanelM.UpdateRating();
       };
 
       SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
@@ -166,23 +164,22 @@ namespace PictureManager.Domain {
       if (sCount == 0 && pCount == 0) return;
 
       var title = "Toggle Keyword";
-      var icon = "IconQuestion";
       var msgA = $"Do you want to toggle #{keyword.FullName} on selected";
       var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
       var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
 
       if (sCount > 0 && pCount > 0) {
-        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", icon, true, new[] { msgS, msgP }))) {
+        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", Res.IconQuestion, true, new[] { msgS, msgP }))) {
           case 0: SegmentsM.ToggleKeywordOnSelected(keyword); break;
           case 1: PeopleM.ToggleKeywordOnSelected(keyword); break;
         }
       }
       else if (sCount > 0) {
-        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgS}?", icon, true)) == 0)
+        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgS}?", Res.IconQuestion, true)) == 0)
           SegmentsM.ToggleKeywordOnSelected(keyword);
       }
       else if (pCount > 0) {
-        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgP}?", icon, true)) == 0)
+        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgP}?", Res.IconQuestion, true)) == 0)
           PeopleM.ToggleKeywordOnSelected(keyword);
       }
     }
