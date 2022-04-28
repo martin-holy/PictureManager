@@ -33,15 +33,15 @@ namespace PictureManager.CustomControls {
 
     public override void OnApplyTemplate() {
       if (Template.FindName("PART_RbAvgHash", this) is RadioButton rbAvgHash) {
-        rbAvgHash.Checked += async (o, e) => await Compare();
+        rbAvgHash.Checked += async (_, _) => await Compare();
         _rbAvgHash = rbAvgHash;
       }
 
       if (Template.FindName("PART_RbPHash", this) is RadioButton rbpHash)
-        rbpHash.Checked += async (o, e) => await Compare();
+        rbpHash.Checked += async (_, _) => await Compare();
 
       if (Template.FindName("PART_SliderDiff", this) is Slider sliderDiff)
-        sliderDiff.ValueChanged += async (o, e) => await Compare();
+        sliderDiff.ValueChanged += async (_, _) => await Compare();
 
       if (Template.FindName("PART_BtnClose", this) is Button btnClose)
         btnClose.Click += delegate { Close(); };
@@ -106,7 +106,7 @@ namespace PictureManager.CustomControls {
         items,
         null,
         // action
-        (MediaItemM mi) => {
+        (mi) => {
           if (!hashes.ContainsKey(mi))
             hashes.Add(mi, hashMethod(mi.FilePathCache, Int32Rect.Empty));
         },

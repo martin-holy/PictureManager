@@ -15,12 +15,12 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
+    private readonly HeaderedListItem<object, string> _mainTabsItem;
     private double _segmentUiSize;
     private double _confirmedPanelWidth;
     private VirtualizingWrapPanel _matchingPanel;
@@ -29,11 +29,9 @@ namespace PictureManager.ViewModels {
     private readonly WorkTask _workTask = new();
     private List<MediaItemM> _mediaItems;
 
-    public SegmentsM SegmentsM { get; set; }
-    public SegmentsDrawerVM SegmentsDrawerVM { get; }
+    public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
     public double ConfirmedPanelWidth { get => _confirmedPanelWidth; private set { _confirmedPanelWidth = value; OnPropertyChanged(); } }
-    public HeaderedListItem<object, string> MainTabsItem { get; }
     public double SegmentUiFullWidth { get; set; }
 
     public double SegmentUiSize {
@@ -68,8 +66,8 @@ namespace PictureManager.ViewModels {
       _coreVM = coreVM;
       SegmentsM = segmentsM;
 
-      MainTabsItem = new(this, "Segment Matching");
-      SegmentsDrawerVM = new(SegmentsM);
+      _mainTabsItem = new(this, "Segment Matching");
+      var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
       SegmentsRectsVM = new(segmentsM.SegmentsRectsM);
 
       SetSelectedAsSamePersonCommand = new(SegmentsM.SetSelectedAsSamePerson);
@@ -85,7 +83,7 @@ namespace PictureManager.ViewModels {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-      OpenSegmentsDrawerCommand = new(() => App.Ui.ToolsTabsVM.Activate(SegmentsDrawerVM.ToolsTabsItem, true));
+      OpenSegmentsDrawerCommand = new(() => App.Ui.ToolsTabsVM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
       GroupMatchingPanelCommand = new(() => SegmentsM.Reload(true, false));
 
       MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
@@ -119,7 +117,7 @@ namespace PictureManager.ViewModels {
         : null;
 
     private void ViewMediaItemsWithSegment(SegmentM segmentM) {
-      var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _coreVM.MainTabsVM.Selected == MainTabsItem);
+      var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _coreVM.MainTabsVM.Selected == _mainTabsItem);
       if (items == null) return;
 
       _coreVM.MediaViewerVM.SetMediaItems(items, segmentM.MediaItem);
@@ -147,14 +145,14 @@ namespace PictureManager.ViewModels {
       var result = Core.DialogHostShow(new MessageDialog(
         "Segment Matching",
         "Do you want to load all segments, segments with person \nor one segment from each person?",
-        "IconQuestion",
+        Res.IconQuestion,
         true,
         new[] { "All segments", "Segments with person", "One from each" }));
 
       if (result == -1) return;
 
       _mediaItems = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
-      _coreVM.MainTabsVM.Activate(MainTabsItem);
+      _coreVM.MainTabsVM.Activate(_mainTabsItem);
 
       SegmentsM.LoadSegments(_mediaItems, result);
     }

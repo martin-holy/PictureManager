@@ -31,8 +31,9 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
+      var category = (Category)int.Parse(props[2]);
       _model.All.Add(
-        new(int.Parse(props[0]), props[1], (Category)int.Parse(props[2])) {
+        new(int.Parse(props[0]), props[1], category, Res.CategoryToIconName(category)) {
           Csv = props
         });
     }

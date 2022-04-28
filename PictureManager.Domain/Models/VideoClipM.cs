@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipM : ObservableObject, IRecord, ITreeLeaf {
-    #region ITreeLeaf implementation
-    public ITreeBranch Parent { get; set; }
-    #endregion
-
-    private string _name;
+  public sealed class VideoClipM : TreeItem, IRecord {
+    private string _title;
     private int _timeStart;
     private int _timeEnd;
     private double _volume;
@@ -23,7 +18,7 @@ namespace PictureManager.Domain.Models {
     public MediaItemM MediaItem { get; set; }
     public int TimeStart { get => _timeStart; set { _timeStart = value; OnPropertyChanged(); } }
     public int TimeEnd { get => _timeEnd; set { _timeEnd = value; OnPropertyChanged(); } }
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public double Volume { get => _volume; set { _volume = value; OnPropertyChanged(); } }
     public double Speed { get => _speed; set { _speed = value; OnPropertyChanged(); } }
     public int? Rating { get; set; }

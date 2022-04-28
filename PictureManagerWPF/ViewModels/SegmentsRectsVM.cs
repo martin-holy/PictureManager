@@ -2,7 +2,6 @@
 using System.Windows.Input;
 using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
-using PictureManager.Dialogs;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
@@ -43,7 +42,7 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public void Edit(MouseEventArgs e) {
+    private void Edit(MouseEventArgs e) {
       if (SegmentsRectsM.Current == null) return;
 
       if (e.RightButton != MouseButtonState.Pressed && e.LeftButton != MouseButtonState.Pressed) {

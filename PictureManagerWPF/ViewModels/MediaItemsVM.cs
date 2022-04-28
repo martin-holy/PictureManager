@@ -9,16 +9,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MH.UI.WPF.BaseClasses;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.Extensions;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.Utils;
-using PictureManager.ViewModels.Tree;
-using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsVM : ObservableObject {
@@ -35,7 +32,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> CancelEditCommand { get; }
     public RelayCommand<object> CommentCommand { get; }
     public RelayCommand<object> ReloadMetadataCommand { get; }
-    public RelayCommand<FolderTreeVM> ReloadMetadataInFolderCommand { get; }
+    public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
     public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
@@ -83,7 +80,7 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       ReloadMetadataInFolderCommand = new(
-        x => Model.ReloadMetadata(x.Model.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
+        x => Model.ReloadMetadata(x.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
         x => x != null);
 
       RebuildThumbnailsCommand = new(
@@ -119,7 +116,7 @@ namespace PictureManager.ViewModels {
       if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
-        "IconQuestion",
+        Res.IconQuestion,
         true)) != 0) return;
 
       Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
@@ -144,51 +141,13 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public int SetMetadata(object item) {
-      var count = 0;
-
-      foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
-        var modified = true;
-
-        switch (item) {
-          case PersonTreeVM p:
-            mi.People = ListExtensions.Toggle(mi.People, p.Model, true);
-            break;
-
-          case KeywordTreeVM k:
-            mi.Keywords = KeywordsM.Toggle(mi.Keywords, k.Model);
-            break;
-
-          case RatingTreeVM r:
-            mi.Rating = r.Value;
-            break;
-
-          case GeoNameTreeVM g:
-            mi.GeoName = g.Model;
-            break;
-
-          default:
-            modified = false;
-            break;
-        }
-
-        if (!modified) continue;
-
-        Model.SetModified(mi, true);
-        mi.SetInfoBox();
-        count++;
-      }
-
-      return count;
-    }
-
-    public async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
+    private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
           await Core.RunOnUiThread(() => ReadVideoMetadata(mi));
         }
         else {
-          using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+          await using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
           var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
           var frame = decoder.Frames[0];
           mi.Width = frame.PixelWidth;
@@ -312,11 +271,11 @@ namespace PictureManager.ViewModels {
         }
 
         // GeoNameId
-        var tmpGId = GetQuery("/xmp/GeoNames:GeoNameId");
+        var tmpGId = GetQuery("/xmp/GeoNames:GeoNameId") as string;
         // TODO change condition
-        if (!string.IsNullOrEmpty(tmpGId as string)) {
+        if (!string.IsNullOrEmpty(tmpGId)) {
           // TODO find/create GeoName
-          mi.GeoName = _core.GeoNamesM.All.SingleOrDefault(x => x.Id == int.Parse(tmpGId.ToString()));
+          mi.GeoName = _core.GeoNamesM.All.SingleOrDefault(x => x.Id == int.Parse(tmpGId));
         }
       }
       catch (Exception) {

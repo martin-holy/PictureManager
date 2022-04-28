@@ -1,34 +1,26 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
-using MH.UI.WPF.Interfaces;
 using MH.Utils.BaseClasses;
-using PictureManager.CustomControls;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
-using PictureManager.ViewModels.Tree;
-using ObservableObject = MH.Utils.BaseClasses.ObservableObject;
 
 namespace PictureManager.ViewModels {
   public sealed class VideoClipsVM : ObservableObject {
     private VideoPlayer _videoPlayer;
-    private readonly VideoClipsM _model;
-    private readonly VideoClipsTreeVM _treeVM;
 
-    public CatTreeView CtvClips { get; set; }
-    public HeaderedListItem<object, string> ToolsTabsItem;
-    public ObservableCollection<ICatTreeViewCategory> MediaItemClips { get; }
+    public VideoClipsM Model { get; }
+    public readonly HeaderedListItem<object, string> ToolsTabsItem;
     public bool ShowRepeatSlider => VideoPlayer?.PlayType is PlayType.Clips or PlayType.Group;
 
     public VideoPlayer VideoPlayer {
       get => _videoPlayer;
       set {
         _videoPlayer = value;
-        _videoPlayer.SelectNextClip = SelectNext;
+        _videoPlayer.SelectNextClip = Model.SelectNext;
 
         _videoPlayer.PropertyChanged += (_, e) => {
           if (nameof(_videoPlayer.PlayType).Equals(e.PropertyName))
@@ -39,22 +31,18 @@ namespace PictureManager.ViewModels {
 
     public RelayCommand<bool> SetMarkerCommand { get; }
     public RelayCommand<PlayType> SetPlayTypeCommand { get; }
-    public RelayCommand<CatTreeViewItem> SetCurrentVideoClipCommand { get; }
+    public RelayCommand<VideoClipM> SetCurrentVideoClipCommand { get; }
     public RelayCommand<object> SplitCommand { get; }
     public RelayCommand<object> SaveCommand { get; }
     public RelayCommand<int> SeekToPositionCommand { get; }
-    public RelayCommand<CatTreeView> SetCatTreeViewCommand { get; }
 
-    public VideoClipsVM(VideoClipsM model, VideoClipsTreeVM treeVM) {
-      _model = model;
-      _treeVM = treeVM;
-
+    public VideoClipsVM(VideoClipsM model) {
+      Model = model;
       ToolsTabsItem = new(this, "Clips");
-      MediaItemClips = new() { _treeVM };
-
-      _treeVM.ItemCreatedEventHandler += (_, e) => {
+      
+      Model.ItemCreatedEventHandler += (_, e) => {
         SetMarker(true);
-        CtvClips.ScrollTo(e.Data);
+        Model.ScrollToItem = e.Data;
       };
 
       SetMarkerCommand = new(
@@ -65,8 +53,8 @@ namespace PictureManager.ViewModels {
         pt => VideoPlayer.PlayType = pt);
       
       SetCurrentVideoClipCommand = new(
-        item => SetCurrentVideoClip(((VideoClipTreeVM)item).Model),
-        item => item is VideoClipTreeVM);
+        SetCurrentVideoClip,
+        item => item != null);
       
       SplitCommand = new(
         VideoClipSplit,
@@ -74,25 +62,23 @@ namespace PictureManager.ViewModels {
       
       SaveCommand = new(
         () => {
-          _model.DataAdapter.Save();
-          _model.GroupsM.DataAdapter.Save();
+          Model.DataAdapter.Save();
+          Model.GroupsM.DataAdapter.Save();
         },
         () =>
-          _model.DataAdapter.IsModified ||
-          _model.GroupsM.DataAdapter.IsModified
+          Model.DataAdapter.IsModified ||
+          Model.GroupsM.DataAdapter.IsModified
       );
 
       SeekToPositionCommand = new(position => {
         VideoPlayer.TimelinePosition = position;
       });
-
-      SetCatTreeViewCommand = new(ctv => CtvClips = ctv);
     }
 
     private void SetMarker(bool start) {
-      var vc = _model.CurrentVideoClip;
+      var vc = Model.CurrentVideoClip;
 
-      _model.SetMarker(
+      Model.SetMarker(
         vc,
         start,
         (int)Math.Round(VideoPlayer.TimelinePosition),
@@ -110,14 +96,14 @@ namespace PictureManager.ViewModels {
     }
 
     private void VideoClipSplit() {
-      if (_model.CurrentVideoClip?.TimeEnd == 0)
+      if (Model.CurrentVideoClip?.TimeEnd == 0)
         SetMarker(false);
       else
-        _treeVM.ItemCreate(_treeVM);
+        Model.ItemCreate(Model);
     }
 
     private void SetCurrentVideoClip(VideoClipM vc) {
-      _model.CurrentVideoClip = vc;
+      Model.CurrentVideoClip = vc;
       VideoPlayer.ClipTimeStart = vc.TimeStart;
       VideoPlayer.ClipTimeEnd = vc.TimeEnd;
 
@@ -128,15 +114,6 @@ namespace PictureManager.ViewModels {
 
       if (VideoPlayer.IsPlaying)
         VideoPlayer.StartClipTimer();
-    }
-
-    private void SelectNext(bool inGroup, bool selectFirst) {
-      var clip = _model.GetNextClip(inGroup, selectFirst);
-      if (clip == null) return;
-      var clipTreeVM = _treeVM.All[clip.Id];
-      if (Equals(clip, _model.CurrentVideoClip))
-        clipTreeVM.IsSelected = false;
-      clipTreeVM.IsSelected = true;
     }
 
     private static void CreateThumbnail(VideoClipM vc, FrameworkElement visual, bool reCreate = false) {

@@ -128,7 +128,7 @@ namespace PictureManager.Dialogs {
         Core.DialogHostShow(new MessageDialog(
           "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",
-          "IconInformation",
+          Res.IconInformation,
           false));
         Close();
         return;

@@ -137,7 +137,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void Rename(MediaItemM mi, string newFileName) {
+    private void Rename(MediaItemM mi, string newFileName) {
       var oldFilePath = mi.FilePath;
       var oldFilePathCache = mi.FilePathCache;
       mi.FileName = newFileName;
@@ -149,7 +149,7 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItemM item) {
       if (item == null) return;
 
-      Core.RunOnUiThread(() => MediaItemDeletedEventHandler(this, new(item))).GetAwaiter().GetResult();
+      Core.RunOnUiThread(() => MediaItemDeletedEventHandler(this, new(item)));
 
       item.People = null;
       item.Keywords = null;
@@ -157,7 +157,7 @@ namespace PictureManager.Domain.Models {
 
       // remove item from Folder
       item.Folder.MediaItems.Remove(item);
-      item.Folder = null;
+      //item.Folder = null;
 
       // remove from DB
       All.Remove(item);
@@ -191,7 +191,7 @@ namespace PictureManager.Domain.Models {
       cache.ForEach(File.Delete);
     }
 
-    public void SetModified(MediaItemM mi, bool value) {
+    private void SetModified(MediaItemM mi, bool value) {
       if (value) {
         ModifiedItems.Add(mi);
         DataAdapter.IsModified = true;
@@ -292,7 +292,7 @@ namespace PictureManager.Domain.Models {
       return items;
     }
 
-    public async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders) {
+    private async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders) {
       var output = new List<MediaItemM>();
 
       await Task.Run(() => {
@@ -336,7 +336,7 @@ namespace PictureManager.Domain.Models {
       return output;
     }
 
-    public async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items) {
+    private async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items) {
       var output = new List<MediaItemM>();
 
       await Task.Run(() => {
@@ -503,7 +503,7 @@ namespace PictureManager.Domain.Models {
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => {
+        (_, e) => {
           if (e.Cancelled)
             CancelEdit();
           else
@@ -533,7 +533,7 @@ namespace PictureManager.Domain.Models {
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => {
+        (_, _) => {
           MetadataChangedEventHandler(this, EventArgs.Empty);
           IsEditModeOn = false;
         });
@@ -567,7 +567,7 @@ namespace PictureManager.Domain.Models {
       var inputDialog = new InputDialog(
         "Rename",
         "Add a new name.",
-        "IconNotification",
+        Res.IconNotification,
         Path.GetFileNameWithoutExtension(Current.FileName),
         answer => {
           var newFileName = answer + Path.GetExtension(Current.FileName);
@@ -600,13 +600,11 @@ namespace PictureManager.Domain.Models {
       var inputDialog = new InputDialog(
         "Comment",
         "Add a comment.",
-        "IconNotification",
+        Res.IconNotification,
         Current.Comment,
-        answer => {
-          return answer.Length > 256
-            ? "Comment is too long!"
-            : string.Empty;
-        });
+        answer => answer.Length > 256
+          ? "Comment is too long!"
+          : string.Empty);
 
       if (Core.DialogHostShow(inputDialog) != 0) return;
 
@@ -615,6 +613,45 @@ namespace PictureManager.Domain.Models {
       Current.OnPropertyChanged(nameof(Current.Comment));
       TryWriteMetadata(Current);
       DataAdapter.IsModified = true;
+    }
+
+    public void SetMetadata(object item) {
+      var count = 0;
+
+      foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
+        var modified = true;
+
+        switch (item) {
+          case PersonM p:
+            mi.People = ListExtensions.Toggle(mi.People, p, true);
+            break;
+
+          case KeywordM k:
+            mi.Keywords = KeywordsM.Toggle(mi.Keywords, k);
+            break;
+
+          case RatingTreeM r:
+            mi.Rating = r.Value;
+            break;
+
+          case GeoNameM g:
+            mi.GeoName = g;
+            break;
+
+          default:
+            modified = false;
+            break;
+        }
+
+        if (!modified) continue;
+
+        SetModified(mi, true);
+        mi.SetInfoBox();
+        count++;
+      }
+
+      if (count > 0)
+        MetadataChangedEventHandler(this, EventArgs.Empty);
     }
   }
 }

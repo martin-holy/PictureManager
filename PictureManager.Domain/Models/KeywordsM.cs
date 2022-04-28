@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.BaseClasses;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class KeywordsM : ITreeBranch {
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
+  public sealed class KeywordsM : TreeCategoryBase {
+    private readonly CategoryGroupsM _categoryGroupsM;
 
     public DataAdapter DataAdapter { get; set; }
     public List<KeywordM> All { get; } = new();
@@ -22,7 +19,65 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<ObjectEventArgs<KeywordM>> KeywordDeletedEventHandler = delegate { };
 
-    private static string GetItemName(object item) => item is KeywordM k ? k.Name : string.Empty;
+    public KeywordsM(CategoryGroupsM categoryGroupsM) : base(Res.IconTagLabel, Category.Keywords, "Keywords") {
+      _categoryGroupsM = categoryGroupsM;
+      CanMoveItem = true;
+    }
+
+    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
+      var item = new KeywordM(DataAdapter.GetNextId(), name, root);
+      root.Items.SetInOrder(item, x => x.Name);
+      All.Add(item);
+
+      return item;
+    }
+
+    protected override void ModelItemRename(ITreeItem item, string name) {
+      item.Name = name;
+      item.Parent.Items.SetInOrder(item, x => x.Name);
+      DataAdapter.IsModified = true;
+    }
+
+    protected override void ModelItemDelete(ITreeItem item) {
+      var keywords = new List<KeywordM>();
+      Tree.GetThisAndItemsRecursive(item, ref keywords);
+      item.Parent.Items.Remove(item);
+
+      foreach (var keyword in keywords) {
+        keyword.Parent = null;
+        keyword.Items = null;
+        All.Remove(keyword);
+        KeywordDeletedEventHandler(this, new(keyword));
+        DataAdapter.IsModified = true;
+      }
+    }
+
+    public override void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
+      Tree.ItemMove(item, dest, aboveDest);
+      DataAdapter.IsModified = true;
+    }
+
+    protected override string ValidateNewItemName(ITreeItem root, string name) =>
+      root.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+        ? $"{name} item already exists!"
+        : null;
+
+    protected override void ModelGroupCreate(ITreeItem root, string name) =>
+      _categoryGroupsM.GroupCreate(name, Category);
+
+    protected override void ModelGroupRename(ITreeGroup group, string name) =>
+      _categoryGroupsM.GroupRename(group, name);
+
+    protected override void ModelGroupDelete(ITreeGroup group) =>
+      _categoryGroupsM.GroupDelete(group);
+
+    public override void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) =>
+      _categoryGroupsM.GroupMove(group, dest, aboveDest);
+
+    protected override string ValidateNewGroupName(ITreeItem root, string name) =>
+      CategoryGroupsM.ItemCanRename(root, name)
+        ? null
+        : $"{name} group already exists!";
 
     // TODO refactor using Items and not All
     public KeywordM GetByFullPath(string fullPath) {
@@ -42,45 +97,10 @@ namespace PictureManager.Domain.Models {
 
       // for each keyword in pathNames => find or create
       foreach (var name in pathNames)
-        root = root.Items.OfType<KeywordM>().SingleOrDefault(x => x.Name.Equals(name)) ?? ItemCreate(root, name);
+        root = root.Items.OfType<KeywordM>().SingleOrDefault(x => x.Name.Equals(name))
+          ?? ModelItemCreate(root, name);
 
       return root as KeywordM;
-    }
-
-    public KeywordM ItemCreate(ITreeBranch root, string name) {
-      var item = new KeywordM(DataAdapter.GetNextId(), name, root);
-      root.Items.SetInOrder(item, GetItemName);
-      All.Add(item);
-
-      return item;
-    }
-
-    public void ItemMove(ITreeLeaf item, ITreeLeaf dest, bool aboveDest) {
-      Tree.ItemMove(item, dest, aboveDest, GetItemName);
-      DataAdapter.IsModified = true;
-    }
-
-    public static bool ItemCanRename(ITreeBranch root, string name) =>
-      !root.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-    public void ItemRename(KeywordM item, string name) {
-      item.Name = name;
-      item.Parent.Items.SetInOrder(item, GetItemName);
-      DataAdapter.IsModified = true;
-    }
-
-    public void ItemDelete(KeywordM item) {
-      var keywords = new List<KeywordM>();
-      Tree.GetThisAndItemsRecursive(item, ref keywords);
-      item.Parent.Items.Remove(item);
-
-      foreach (var keyword in keywords) {
-        keyword.Parent = null;
-        keyword.Items = null;
-        All.Remove(keyword);
-        KeywordDeletedEventHandler(this, new(keyword));
-        DataAdapter.IsModified = true;
-      }
     }
 
     public static List<KeywordM> Toggle(List<KeywordM> list, KeywordM keyword) {
@@ -144,7 +164,7 @@ namespace PictureManager.Domain.Models {
           keywords.Remove(keyword);
 
       foreach (var keywordM in keywords)
-        ItemDelete(keywordM);
+        ModelItemDelete(keywordM);
     }
   }
 }

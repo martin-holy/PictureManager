@@ -5,9 +5,7 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:mhbc="clr-namespace:MH.UI.WPF.BaseClasses;assembly=MH.UI.WPF">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <DataTemplate DataType="{x:Type vm:TreeViewCategoriesVM}">
     <DataTemplate.Resources>
@@ -15,19 +13,10 @@
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
           <ResourceDictionary Source="TreeViewSearchV.xaml" />
-          <ResourceDictionary Source="Tree/CategoryGroupTreeV.xaml" />
-          <ResourceDictionary Source="Tree/CategoryTreeV.xaml" />
-          <ResourceDictionary Source="Tree/DriveTreeV.xaml" />
-          <ResourceDictionary Source="Tree/FavoriteFolderTreeV.xaml" />
-          <ResourceDictionary Source="Tree/FolderKeywordTreeV.xaml" />
-          <ResourceDictionary Source="Tree/FolderTreeV.xaml" />
-          <ResourceDictionary Source="Tree/GeoNameTreeV.xaml" />
-          <ResourceDictionary Source="Tree/KewordTreeV.xaml" />
-          <ResourceDictionary Source="Tree/MediaItemSizeTreeV.xaml" />
-          <ResourceDictionary Source="Tree/PersonTreeV.xaml" />
-          <ResourceDictionary Source="Tree/RatingTreeV.xaml" />
-          <ResourceDictionary Source="Tree/TreeContextMenus.xaml" />
-          <ResourceDictionary Source="Tree/ViewerTreeV.xaml" />
+          <ResourceDictionary Source="TreeItemV.xaml" />
+          <ResourceDictionary Source="MediaItemSizeTreeV.xaml" />
+          <ResourceDictionary Source="RatingTreeV.xaml" />
+          <ResourceDictionary Source="TreeContextMenus.xaml" />
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -48,7 +37,7 @@
 
           <!-- TreeView Categories Navigation Bar -->
           <ItemsControl
-            ItemsSource="{Binding Items}"
+            ItemsSource="{Binding Model.Items}"
             DockPanel.Dock="Left">
 
             <ItemsControl.ItemsPanel>
@@ -66,13 +55,11 @@
                   Command="{Binding TreeViewCategoriesVM.ScrollToCommand,
                             Source={x:Static pm:App.Ui}}"
                   CommandParameter="{Binding}"
-                  Source="{Binding Category,
-                           Converter={StaticResource ResourceConverter},
-                           ConverterParameter={x:Static rd:Dictionaries.CategoryToIconName}}"
-                  Fill="{Binding Category,
+                  Source="{Binding IconName,
+                           Converter={StaticResource ResourceConverter}}"
+                  Fill="{Binding IconName,
                          Converter={StaticResource ResourceConverter},
-                         ConverterParameter={x:Static rd:Dictionaries.CategoryToBrush},
-                         FallbackValue={StaticResource ColorBrushWhite}}" />
+                         ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}" />
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
@@ -97,80 +84,30 @@
               Size="14"
               IsThreeState="False"
               ShowShadow="False"
-              IsChecked="{Binding IsPinned}"
+              IsChecked="{Binding Model.IsPinned}"
               ToolTip="Pin panel" />
           </StackPanel>
         </DockPanel>
       </Border>
 
       <!-- CatTreeView Categories -->
-      <ContentPresenter
+      <mhc:CatTreeView
         Grid.Row="1"
-        Content="{Binding TvCategories}">
+        ItemsSource="{Binding Model.Items}"
+        ScrollToItem="{Binding Model.ScrollToItem}">
         
-        <ContentPresenter.Resources>
+        <mhc:CatTreeView.Style>
           <Style
-            TargetType="{x:Type cc:CatTreeView}"
+            TargetType="{x:Type mhc:CatTreeView}"
             BasedOn="{StaticResource CatTreeView}">
-
-            <Setter
-              Property="FocusManager.IsFocusScope"
-              Value="True" />
-            <Setter
-              Property="ItemsSource"
-              Value="{Binding Items}" />
-            <Setter
-              Property="VirtualizingPanel.IsVirtualizing"
-              Value="True" />
-            <Setter
-              Property="VirtualizingPanel.VirtualizationMode"
-              Value="Recycling" />
-            <Setter
-              Property="ScrollViewer.HorizontalScrollBarVisibility"
-              Value="Auto" />
-    
-            <Setter
-              Property="ItemContainerStyle">
-              <Setter.Value>
-                <Style
-                  TargetType="{x:Type TreeViewItem}"
-                  BasedOn="{StaticResource CatTreeViewItem}">
-
-                  <Setter
-                    Property="VerticalContentAlignment"
-                    Value="Stretch" />
-                  <Setter
-                    Property="HorizontalContentAlignment"
-                    Value="Stretch" />
-                  <Setter
-                    Property="VirtualizingPanel.IsVirtualizing"
-                    Value="True" />
-                  <Setter
-                    Property="VirtualizingPanel.VirtualizationMode"
-                    Value="Recycling" />
-
-                  <Style.Triggers>
-                    <DataTrigger
-                      Binding="{Binding Path=(mhbc:CatTreeViewItem.IsHidden)}"
-                      Value="True">
-
-                      <Setter
-                        Property="Visibility"
-                        Value="Collapsed" />
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Setter.Value>
-            </Setter>
-
+            
             <!-- BlurEffect when Search is visible -->
             <Style.Triggers>
               <DataTrigger
-                Binding="{Binding TreeViewSearchVM.IsVisible}"
+                Binding="{Binding TreeViewSearchVM.Model.IsVisible}"
                 Value="True">
 
-                <Setter
-                  Property="Effect">
+                <Setter Property="Effect">
                   <Setter.Value>
                     <BlurEffect
                       Radius="4"
@@ -180,8 +117,8 @@
               </DataTrigger>
             </Style.Triggers>
           </Style>
-        </ContentPresenter.Resources>
-
+        </mhc:CatTreeView.Style>
+        
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="MouseLeftButtonUp">
             <b:InvokeCommandAction
@@ -189,7 +126,8 @@
               PassEventArgsToCommand="True" />
           </b:EventTrigger>
         </b:Interaction.Triggers>
-      </ContentPresenter>
+        
+      </mhc:CatTreeView>
 
       <!-- Search -->
       <ContentPresenter

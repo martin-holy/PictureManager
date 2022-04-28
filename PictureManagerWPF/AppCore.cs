@@ -5,14 +5,13 @@ using PictureManager.Domain;
 using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
-using PictureManager.ViewModels.Tree;
 using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
-using MH.Utils.Dialogs;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public static double ScrollBarSize;
+    public FoldersVM FoldersVM { get; }
     public MainWindowVM MainWindowVM { get; }
     public MainWindowContentVM MainWindowContentVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
@@ -21,21 +20,18 @@ namespace PictureManager {
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
-    public ViewersVM ViewersVM { get; }
     public PersonVM PersonVM { get; }
     public ViewerVM ViewerVM { get; }
-    public VideoClipsTreeVM VideoClipsTreeVM { get; }
 
     public TreeViewCategoriesVM TreeViewCategoriesVM { get; }
 
     public MainTabsVM MainTabsVM { get; }
     public ToolsTabsVM ToolsTabsVM { get; }
-    public StatusPanelVM StatusPanelVM { get; }
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-      Core.DialogHostShow = (dialog) => DialogHost.Show(dialog);
+      Core.DialogHostShow = DialogHost.Show;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this);
@@ -43,22 +39,20 @@ namespace PictureManager {
       MainTabsVM = new();
       ToolsTabsVM = new();
 
+      FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new();
       PeopleVM = new(this, App.Core.PeopleM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
-      VideoClipsTreeVM = new(App.Core.VideoClipsM);
-      VideoClipsVM = new(App.Core.VideoClipsM, VideoClipsTreeVM);
-      ViewersVM = new(this, App.Core.ViewersM);
+      VideoClipsVM = new(App.Core.VideoClipsM);
 
-      TreeViewCategoriesVM = new(App.Core, this);
+      TreeViewCategoriesVM = new(App.Core, this, App.Core.TreeViewCategoriesM);
 
-      StatusPanelVM = new(App.Core);
       PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
-      ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM, TreeViewCategoriesVM.TvCategories);
+      ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM);
 
-      ViewersVM.SetCurrent(null);
+      App.Core.ViewersM.SetCurrent(null);
       VideoClipsVM.VideoPlayer = MediaViewerVM.FullVideo;
 
       AttachEvents();
@@ -90,20 +84,16 @@ namespace PictureManager {
         App.Core.SegmentsM.Reload();
       };
 
-      App.Core.MediaItemsM.MetadataChangedEventHandler += (_, _) => {
-        TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
-      };
-
       MainWindowVM.PropertyChanged += (_, e) => {
         if (nameof(MainWindowVM.IsFullScreen).Equals(e.PropertyName)) {
           var isFullScreen = MainWindowVM.IsFullScreen;
 
-          TreeViewCategoriesVM.SetIsPinned(isFullScreen);
+          App.Core.TreeViewCategoriesM.SetIsPinned(isFullScreen);
           MediaViewerVM.IsVisible = isFullScreen;
 
           if (!isFullScreen) {
             App.Core.ThumbnailsGridsM.Current?.ScrollToCurrentMediaItem();
-            TreeViewCategoriesVM.MarkUsedKeywordsAndPeople();
+            App.Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
             MediaViewerVM.Deactivate();
             ToolsTabsVM.Deactivate(VideoClipsVM.ToolsTabsItem);
           }
@@ -112,7 +102,7 @@ namespace PictureManager {
 
       MediaViewerVM.PropertyChanged += (_, e) => {
         if (nameof(MediaViewerVM.IsVisible).Equals(e.PropertyName))
-          StatusPanelVM.OnPropertyChanged(nameof(StatusPanelVM.FilePath));
+          App.Core.StatusPanelM.OnPropertyChanged(nameof(App.Core.StatusPanelM.FilePath));
 
         if (nameof(MediaViewerVM.Current).Equals(e.PropertyName))
           App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;

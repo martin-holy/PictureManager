@@ -35,7 +35,6 @@ namespace PictureManager.ViewModels {
 
     public void AddItem(HeaderedListItem<object, string> item) {
       Items.Add(item);
-      OnPropertyChanged(nameof(TabMaxHeight));
       Selected = item;
     }
 
@@ -45,7 +44,6 @@ namespace PictureManager.ViewModels {
       if (item.Equals(Selected))
         Selected = Items.FirstOrDefault();
 
-      OnPropertyChanged(nameof(TabMaxHeight));
       TabClosedEventHandler(this, new(item));
     }
 

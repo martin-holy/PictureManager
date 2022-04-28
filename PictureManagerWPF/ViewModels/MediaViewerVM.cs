@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Input;
 using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
@@ -96,7 +95,7 @@ namespace PictureManager.ViewModels {
       switch (mediaItem.MediaType) {
         case MediaType.Image: {
           FullImage.SetSource(mediaItem.FilePath, Imaging.MediaOrientation2Rotation((MediaOrientation)mediaItem.Orientation));
-          App.Ui.VideoClipsTreeVM.SetMediaItem(null);
+          App.Core.VideoClipsM.SetMediaItem(null);
           FullVideo.SetNullSource();
           App.Ui.ToolsTabsVM.Deactivate(App.Ui.VideoClipsVM.ToolsTabsItem);
           break;
@@ -106,7 +105,7 @@ namespace PictureManager.ViewModels {
           var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
           var smallChange = Math.Round(1000 / fps, 0);
 
-          App.Ui.VideoClipsTreeVM.SetMediaItem(mediaItem);
+          App.Core.VideoClipsM.SetMediaItem(mediaItem);
           FullVideo.SetSource(mediaItem.FilePath, mediaItem.RotationAngle, smallChange);
           App.Ui.ToolsTabsVM.Activate(App.Ui.VideoClipsVM.ToolsTabsItem);
           break;

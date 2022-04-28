@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using MH.Utils;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -34,23 +36,24 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void ItemRename(VideoClipsGroupM group, string name) {
+    public void ItemRename(ITreeGroup group, string name) {
       group.Name = name;
       DataAdapter.IsModified = true;
     }
 
-    public void ItemDelete(VideoClipsGroupM group) {
+    public void ItemDelete(ITreeItem group) {
       // move all group items to root
-      foreach (var item in group.Items.Cast<VideoClipM>().ToArray())
-        _videoClips.ItemMove(item, _videoClips, false);
+      if (Tree.GetTopParent(group) is ITreeCategory cat)
+        foreach (var item in group.Items.ToArray())
+          cat.ItemMove(item, cat, false);
 
       group.Parent.Items.Remove(group);
-      group.MediaItem.HasVideoClips = _videoClips.Items.Count != 0;
-      All.Remove(group);
+      ((VideoClipsGroupM)group).MediaItem.HasVideoClips = _videoClips.Items.Count != 0;
+      All.Remove((VideoClipsGroupM)group);
       DataAdapter.IsModified = true;
     }
 
-    public void GroupMove(VideoClipsGroupM group, VideoClipsGroupM dest, bool aboveDest) {
+    public void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) {
       group.Parent.Items.Move(group, dest, aboveDest);
       DataAdapter.IsModified = true;
     }

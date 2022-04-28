@@ -1,6 +1,4 @@
-﻿using MH.Utils.Dialogs;
-using PictureManager.Dialogs;
-using PictureManager.Domain;
+﻿using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -50,7 +48,8 @@ namespace PictureManager {
       //TestFaceCompare2();
       //TestTryParseDoubleUniversal();
 
-      var x = PictureManager.Domain.Core.DialogHostShow(new MessageDialog("test", "test message která je delší a delší a delší", "IconPeople", true));
+      //var x = PictureManager.Domain.Core.DialogHostShow(new MessageDialog("test", "test message která je delší a delší a delší", Res.IconPeople, true));
+      var x = PictureManager.Domain.Core.DialogHostShow(new MH.Utils.Dialogs.InputDialog("Test title", "Test message bla bla bla la la la", Res.IconEye, "bla bla", (s) => { return "Error message"; }));
     }
 
 

@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using SimpleDB;
 
@@ -7,27 +6,16 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Category|GroupItems
   /// </summary>
-  public sealed class CategoryGroupM : ObservableObject, IRecord, ITreeBranch {
+  public sealed class CategoryGroupM : TreeItem, ITreeGroup, IRecord {
     #region IRecord implementation
     public int Id { get; }
     public string[] Csv { get; set; }
     #endregion
 
-    #region ITreeBranch implementation
-    public ITreeBranch Parent { get; set; }
-    public ObservableCollection<ITreeLeaf> Items { get; set; } = new();
-    #endregion
-
-    private string _name;
-    private bool _isHidden;
-
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
-    public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
     public Category Category { get; }
 
-    public CategoryGroupM(int id, string name, Category category) {
+    public CategoryGroupM(int id, string name, Category category, string iconName) : base(iconName, name) {
       Id = id;
-      Name = name;
       Category = category;
     }
   }

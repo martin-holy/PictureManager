@@ -28,8 +28,7 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
       _model.All.Add(
-        new(int.Parse(props[0])) {
-          Title = props[2],
+        new(int.Parse(props[0]), props[2]) {
           Csv = props
         });
     }
@@ -38,7 +37,7 @@ namespace PictureManager.Domain.DataAdapters {
       string.Join("|",
         ff.Id.ToString(),
         ff.Folder.Id.ToString(),
-        ff.Title);
+        ff.Name);
 
     public override void LinkReferences() {
       _model.Items.Clear();

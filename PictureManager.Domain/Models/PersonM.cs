@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+using PictureManager.Domain.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
-  public sealed class PersonM : ObservableObject, IEquatable<PersonM>, IRecord, ITreeLeaf, ISelectable {
+  public sealed class PersonM : TreeItem, IEquatable<PersonM>, IRecord, IFilterItem {
     #region IEquatable implementation
     public bool Equals(PersonM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as PersonM);
@@ -24,20 +24,14 @@ namespace PictureManager.Domain.Models {
     public string[] Csv { get; set; }
     #endregion
 
-    #region ITreeLeaf implementation
-    public ITreeBranch Parent { get; set; }
+    #region IFilterItem implementation
+    private DisplayFilter _displayFilter;
+    public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }
     #endregion
 
-    #region ISelectable implementation
-    private bool _isSelected;
-    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    #endregion
-
-    private string _name;
     private SegmentM _segment;
     private ObservableCollection<KeywordM> _displayKeywords;
 
-    public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
     public ObservableCollection<object> TopSegments { get; set; }
     public List<KeywordM> Keywords { get; set; }
@@ -45,9 +39,8 @@ namespace PictureManager.Domain.Models {
 
     public PersonM() { }
 
-    public PersonM(int id, string name) {
+    public PersonM(int id, string name) : base(Res.IconPeople, name) {
       Id = id;
-      Name = name;
     }
 
     public void UpdateDisplayKeywords() {

@@ -4,11 +4,6 @@ using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Properties;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace PictureManager.ViewModels {
@@ -28,7 +23,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public RelayCommand<object> SwitchToFullScreenCommand { get; }
     public RelayCommand<object> SwitchToBrowserCommand { get; }
     public RelayCommand<object> OpenSettingsCommand { get; }
     public RelayCommand<object> OpenAboutCommand { get; }
@@ -42,7 +36,6 @@ namespace PictureManager.ViewModels {
       _core = core;
       _coreVM = coreVM;
 
-      SwitchToFullScreenCommand = new(() => IsFullScreen = true);
       SwitchToBrowserCommand = new(() => IsFullScreen = false);
       OpenSettingsCommand = new(OpenSettings);
       OpenAboutCommand = new(OpenAbout);
@@ -78,7 +71,7 @@ namespace PictureManager.ViewModels {
           Core.DialogHostShow(new MessageDialog(
             "Metadata Edit",
             "Some Media Items are modified, do you want to save them?",
-            "IconQuestion",
+            Res.IconQuestion,
             true)) == 0) {
         _core.MediaItemsM.SaveEdit();
       }
@@ -87,7 +80,7 @@ namespace PictureManager.ViewModels {
           Core.DialogHostShow(new MessageDialog(
             "Database changes",
             "There are some changes in database, do you want to save them?",
-            "IconQuestion",
+            Res.IconQuestion,
             true)) == 0) {
         _core.Sdb.SaveAllTables();
       }
@@ -96,10 +89,13 @@ namespace PictureManager.ViewModels {
     }
 
     private void Loaded() {
-      var windowsDisplayScale = PresentationSource.FromVisual(Application.Current.MainWindow)
+      var windowsDisplayScale = 1.0;
+      AppCore.ScrollBarSize = 14;
+
+      if (Application.Current.MainWindow != null)
+        windowsDisplayScale = PresentationSource.FromVisual(Application.Current.MainWindow)
         ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
 
-      AppCore.ScrollBarSize = 14;
       _core.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
       _coreVM.SegmentsVM.SegmentUiSize = _core.SegmentsM.SegmentSize / windowsDisplayScale;
     }
