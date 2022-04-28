@@ -1,45 +1,41 @@
 # Bugs
 ##
   - disky identifikovat podle ID a ne podle pismena
+    - or store drive related data in \Temp\PictureManagerCache
   - mhc:IconToggleButton need VerticalAlignment="Center" even if parent have this property set
 ## WorkTask
   - unexpected error, task was canceled. problem when returning false from catch
 ## MediaItems
-  - pri otoceni obrazku se neprenacte nahled, musi se znovu nacist slozka
-    (neni to tim ze se dela ReloadThumbnail v jinem vlakne? => neni)
   - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
   - kdyz ma obrazek metadata jen v DB, tak se rotace neaplikuje na vytvoreni thumbnail
+  - ReadMetadata and ThumbInfoBox: only person is visible in info box even if keyword is on image too when loading new images
+  - ErrorDialog in CopyMove (MediaItemsVM) doesn't open
 ## MediaViewer
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
   - 15% CPU usage on media item delete from full screen
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
-## DB
-  - one new media item raised two changes in DB
-  - remove IsModified = true; from ItemCreate because GetNextId() is doing same thing
 ## Video Clips
   - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac 
     a je to na restart appky (do OnMediaEnded se to nedostane)
   - ulozeni v klipech nezmeni modifed v main toolbaru
   - RadioButtons default value and IsChecked binding
 ## TreeViewCategories
-  - drag&drop se chova divne, kdyz zobrazim context menu a pak kliknu na jinej item
-  - search => show tool tip on full row
-  - TreeViewSearch XAML error
-  - Rating filter
+  - TreeViewSearch XAML error (need help)
+    (Cannot save value from target back to source. KeyNotFoundException: The given key '1' was not present in the dictionary.)
   - Folder reload after folder move => reload is maybe to soon
-## ToolsTabs
-  - switching tabs causes binding errors because at switching time there is new Content but old ContentTemplate
+  - newly created folder is expanded
 ## FolderKeywords
   - do not show expand buttons in TreeView when there is nothing to expand
 ## Segments
   - SegmentControl ToolTip: kdyz je person name delsi nez image => segment rect je mimo (nevim co s tim)
     mozna to samy jak jsem pouzil asi na PersonEditControl ale se sloupcema. udelat 3 sloupce (*, auto, *)
-  - reload PersonControl and Drawer when Segment rect is deleted
-  - SegmentRectsControl resize on slide panel IsPinned changed
   - media item thumbnail in tool tip is enlarged by windows display scaling
-  - Confirmed segments grid width resets to 1 column when moved to different tab and back
+  - multi select: find ItemsGroup in WrappedItems above VirtualizingWrapPanelRow with selected segment to get ItemsGroup.Items
+## PeopleV
+  - reload when opened and person or group is created/renamed/moved in the tree
+  - reload when keyword is toggled on person
 
 
 # Update
@@ -47,33 +43,26 @@
   - pri overovani existence souboru pri nacitani, overovat pred FileInfo a zaroven doplnovat MediaItem o file size, ... do nullable props
   - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
     nebo nastavit FocusVisualStyle na null
-  - check strings Equals and decide which StringComparison use
+  - check strings Equals and set StringComparison Ordinal for strings from code and CurrentCulture for string for/from user
   - GetPerceptualHash a GetAvgHash ma podobnej kod, mozna bych to pouzil i jinde az po CopyPixels
   - static delegates
   - remove Folder Browser
   - Rethink hierarchical keywords moving
   - similar code in Imaging.GetThumbSize and ZoomImageBoxV.GetFitScale
-  - replace functions with references to .NET Win with functions attached in runtime with only .NET Core references
   - comment out MahApps styles that I don't use for app start speed up
 ## DB
   - remove direct access to Helper.IsModified
-  - should I use private fields in FromCsv and LinkReferences to avoid calling OnPropertyChanged?
 ## TreeViewCategories
   - MarkUsedKeywordsAndPeople add People and Keywords from Segments
+  - select/mark searched item after selecting item in search result
 ## VideoClips:
   - recreate video thumbnails button
 ## Folders
   - remove IsFolderKeyword from Folder, store info in separate db file
-## MediaItems
-  - Converter for Async Thumbnail Create for MediaItem like in Segments
 ## Segments
-  - confirmed segments reload is slow when it has to much columns (9)
   - remove DisplayKeywords from Person and use Keywords.GetAllKeywords
-  - show "select as same person" only if different peopleIds are selected
-  - don't show "Set selected as same person" on segment when it is all same person
-  - render segments rects on tooltip media item thumbnail under infobox
-
-
+## XAML
+  - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
 
 
 # New
@@ -89,7 +78,7 @@
 ## CatTreeView
   - TODO GeoNames, user name dat do prop na GeoNames, user name checkovat OnBeforeItemCreate, menuitem GeoNameNewCommand udelat obecne
   - ItemCreate na People a Keywords je skoro stejny
-  - IListBoxItem as ancestor of ICatTreeViewItem
+  - IListBoxItem as ancestor of ITreeItem
   - filter na delku videa
   - nova kategorie "keywords groups" kde budou kombinace keywords, people, ... ktery se vyskytujou na jednom MediaItem
 ## Video Clips
@@ -126,13 +115,12 @@
     - not all GroupItems have to be active from the first load
   - group is expander
   - try to not scroll to top on reload
-## MessageDialog:
-  - Extend
 ## Segments
   - keywords:
     - sort like in the tree
     - disable/enable available
   - count of segments on person
+  - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
 
 
 Domain WPF references:
