@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 
 namespace MH.Utils {
   public static class Tree {
-    public delegate void OnItemsChanged(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest, ITreeBranch parent, OnItemsChanged onItemsChanged);
-
-    public static T GetTopParent<T>(T item) where T : ITreeLeaf {
+    public static T GetTopParent<T>(T item) where T : ITreeItem {
       var top = item;
       var parent = item?.Parent;
 
@@ -23,12 +20,12 @@ namespace MH.Utils {
 
     public static void GetThisAndItemsRecursive<T>(object root, ref List<T> output) {
       output.Add((T)root);
-      if (root is not ITreeBranch branch) return;
-      foreach (var item in branch.Items)
+      if (root is not ITreeItem treeItem) return;
+      foreach (var item in treeItem.Items)
         GetThisAndItemsRecursive(item, ref output);
     }
 
-    public static void GetThisAndParentRecursive<T>(T self, ref List<T> output) where T : ITreeLeaf {
+    public static void GetThisAndParentRecursive<T>(T self, ref List<T> output) where T : ITreeItem {
       output.Add(self);
       var parent = self.Parent;
       while (parent is T t) {
@@ -37,18 +34,18 @@ namespace MH.Utils {
       }
     }
 
-    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) where T : ITreeLeaf {
+    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) where T : ITreeItem {
       var list = new List<T>();
       GetThisAndParentRecursive(self, ref list);
       list.Reverse();
       return string.Join(separator, list.Select(nameSelector));
     }
 
-    public static void ItemMove<T>(T item, ITreeLeaf dest, bool aboveDest, Func<object, string> keySelector) where T : ITreeLeaf {
+    public static void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
       var relative = item.GetType() == dest.GetType();
       var newParent = relative
         ? dest.Parent
-        : dest as ITreeBranch;
+        : dest;
 
       if (newParent == null) return;
 
@@ -60,44 +57,7 @@ namespace MH.Utils {
       if (relative)
         newParent.Items.SetRelativeTo(item, dest, aboveDest);
       else
-        newParent.Items.SetInOrder(item, keySelector);
-    }
-
-    public static void SyncCollection<TSrc, TDest>(ObservableCollection<ITreeLeaf> src, ObservableCollection<ITreeLeaf> dest,
-      ITreeBranch parent, Func<TSrc, TDest, bool> itemsEquals, Func<TSrc, TDest> getDestItem) where TDest : class, ITreeLeaf {
-      // Remove
-      foreach (var o in dest.OfType<TDest>().Where(d => !src.OfType<TSrc>().Any(s => itemsEquals(s, d))).ToArray()) {
-        dest.Remove(o);
-        o.Parent = null;
-      }
-
-      // Insert or Move
-      for (var i = 0; i < src.Count; i++) {
-        if (src[i] is not TSrc srcItem) continue;
-        if (i < dest.Count && itemsEquals(srcItem, (TDest)dest[i])) continue;
-        var destItem = getDestItem(srcItem);
-        var oldIdx = dest.IndexOf(destItem);
-        if (oldIdx < 0) {
-          dest.Insert(i, destItem);
-          destItem.Parent = parent;
-        }
-        else
-          dest.Move(oldIdx, i);
-      }
-    }
-
-    public static TDest GetDestItem<TSrc, TDest>(TSrc src, int srcIdx, Dictionary<int, TDest> destSrc, Func<TDest> createNew, OnItemsChanged onItemsChanged) {
-      if (destSrc.TryGetValue(srcIdx, out var dest)) return dest;
-
-      dest = createNew();
-      destSrc.Add(srcIdx, dest);
-
-      if (onItemsChanged == null || src is not ITreeBranch s || dest is not ITreeBranch d) return dest;
-
-      s.Items.CollectionChanged += (_, _) => onItemsChanged(s.Items, d.Items, d, onItemsChanged);
-      onItemsChanged(s.Items, d.Items, d, onItemsChanged);
-
-      return dest;
+        newParent.Items.SetInOrder(item, x => x.Name);
     }
   }
 }
