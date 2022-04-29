@@ -12,9 +12,9 @@ namespace MH.Utils.BaseClasses {
     public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
 
-    protected ListItem() { }
+    public ListItem() { }
 
-    protected ListItem(string iconName, string name) {
+    public ListItem(string iconName, string name) {
       IconName = iconName;
       Name = name;
     }
@@ -25,11 +25,11 @@ namespace MH.Utils.BaseClasses {
 
     public T Content { get => _content; set { _content = value; OnPropertyChanged(); } }
 
-    protected ListItem(T content) {
+    public ListItem(T content) {
       Content = content;
     }
 
-    protected ListItem(T content, string iconName, string name) : base(iconName, name) {
+    public ListItem(T content, string iconName, string name) : base(iconName, name) {
       Content = content;
     }
   }
