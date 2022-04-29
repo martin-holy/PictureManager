@@ -31,7 +31,7 @@ namespace PictureManager.Domain.Models {
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
-      root.Items.SetInOrder(item, x => x.Name);
+      Tree.SetInOrder(root.Items, item, x => x.Name);
       All.Add(item);
 
       return item;
@@ -39,7 +39,7 @@ namespace PictureManager.Domain.Models {
 
     protected override void ModelItemRename(ITreeItem item, string name) {
       item.Name = name;
-      item.Parent.Items.SetInOrder(item, x => x.Name);
+      Tree.SetInOrder(item.Parent.Items, item, x => x.Name);
       DataAdapter.IsModified = true;
     }
 

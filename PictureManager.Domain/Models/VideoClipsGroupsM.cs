@@ -26,7 +26,7 @@ namespace PictureManager.Domain.Models {
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       group.MediaItem = mi;
       group.MediaItem.HasVideoClips = true;
-      _videoClips.Items.SetInOrder(group, x => x is VideoClipsGroupM g ? g.Name : string.Empty);
+      Tree.SetInOrder(_videoClips.Items, group, x => x.Name);
       All.Add(group);
 
       return group;
@@ -54,7 +54,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) {
-      group.Parent.Items.Move(group, dest, aboveDest);
+      group.Parent.Items.SetRelativeTo(group, dest, aboveDest);
       DataAdapter.IsModified = true;
     }
   }
