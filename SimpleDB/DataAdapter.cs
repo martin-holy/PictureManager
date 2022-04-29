@@ -6,8 +6,6 @@ using System.Linq;
 namespace SimpleDB {
   public abstract class DataAdapter {
     private readonly ILogger _logger;
-    private readonly string _tableFilePath;
-    private readonly string _tablePropsFilePath;
     private readonly SimpleDB _db;
 
     private bool _isModified;
@@ -32,6 +30,8 @@ namespace SimpleDB {
     }
 
     public string TableName { get; }
+    public string TableFilePath { get; }
+    public string TablePropsFilePath { get; }
     public int MaxId { get; set; }
     public Dictionary<string, string> TableProps { get; } = new();
 
@@ -45,8 +45,8 @@ namespace SimpleDB {
       TableName = tableName;
       _db = db;
       _logger = db.Logger;
-      _tableFilePath = Path.Combine("db", $"{tableName}.csv");
-      _tablePropsFilePath = Path.Combine("db", $"{tableName}_props.csv");
+      TableFilePath = Path.Combine("db", $"{tableName}.csv");
+      TablePropsFilePath = Path.Combine("db", $"{tableName}_props.csv");
     }
 
     public int GetNextId() {
@@ -54,10 +54,10 @@ namespace SimpleDB {
       return ++MaxId;
     }
 
-    public void LoadFromFile() => SimpleDB.LoadFromFile(FromCsv, _tableFilePath, _logger);
+    public void LoadFromFile() => SimpleDB.LoadFromFile(FromCsv, TableFilePath, _logger);
 
     public void SaveToFile<T>(IEnumerable<T> items, Func<T, string> toCsv) {
-      if (SimpleDB.SaveToFile(items, toCsv, _tableFilePath, _logger))
+      if (SimpleDB.SaveToFile(items, toCsv, TableFilePath, _logger))
         IsModified = false;
     }
 
@@ -68,13 +68,13 @@ namespace SimpleDB {
           if (prop.Length != 2)
             throw new ArgumentException("Incorrect number of values.", line);
           TableProps.Add(prop[0], prop[1]);
-        }, _tablePropsFilePath, _logger);
+        }, TablePropsFilePath, _logger);
 
     public void SaveProps() {
       PropsToCsv();
       if (TableProps.Count == 0) return;
 
-      if (SimpleDB.SaveToFile(TableProps.Select(x => $"{x.Key}|{x.Value}"), (x) => x, _tablePropsFilePath, _logger))
+      if (SimpleDB.SaveToFile(TableProps.Select(x => $"{x.Key}|{x.Value}"), (x) => x, TablePropsFilePath, _logger))
         AreTablePropsModified = false;
     }
   }
