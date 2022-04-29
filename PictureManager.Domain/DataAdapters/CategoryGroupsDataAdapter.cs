@@ -47,10 +47,9 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void LinkReferences() {
       foreach (var cg in _model.All) {
-        if (string.IsNullOrEmpty(cg.Csv[3])) continue;
-
         var items = new List<int>();
-        items.AddRange(cg.Csv[3].Split(',').Select(int.Parse));
+        if (!string.IsNullOrEmpty(cg.Csv[3]))
+          items.AddRange(cg.Csv[3].Split(',').Select(int.Parse));
 
         switch (cg.Category) {
           case Category.People:
