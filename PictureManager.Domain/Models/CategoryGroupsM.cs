@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using SimpleDB;
@@ -18,7 +19,7 @@ namespace PictureManager.Domain.Models {
       ITreeItem parent = Categories[category];
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIconName(category)) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
-      parent.Items.SetInOrder(group, x => x.Name);
+      Tree.SetInOrder(parent.Items, group, x => x.Name);
       All.Add(group);
 
       return group;
@@ -33,12 +34,12 @@ namespace PictureManager.Domain.Models {
 
     public void GroupRename(ITreeGroup group, string name) {
       group.Name = name;
-      group.Parent.Items.SetInOrder(group, x => x.Name);
+      Tree.SetInOrder(group.Parent.Items, group, x => x.Name);
       DataAdapter.IsModified = true;
     }
 
     public void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) {
-      group.Parent.Items.Move(group, dest, aboveDest);
+      group.Parent.Items.SetRelativeTo(group, dest, aboveDest);
       DataAdapter.IsModified = true;
     }
 
