@@ -79,9 +79,6 @@ namespace PictureManager.Domain.DataAdapters {
           foreach (var keywordId in viewer.Csv[5].Split(','))
             viewer.ExcludedKeywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
 
-        if (viewer.IsDefault)
-          viewer.UpdateHashSets();
-
         // adding Viewer to Viewers
         _model.Items.Add(viewer);
 

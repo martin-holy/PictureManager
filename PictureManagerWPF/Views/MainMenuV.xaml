@@ -145,12 +145,20 @@
 
       <!-- Viewers -->
       <MenuItem
-        Icon="{StaticResource EyeIcon}"
-        ItemsSource="{Binding ViewersM.Items,
-                      Source={x:Static pm:App.Core}}"
-        Visibility="{Binding ViewersM.Items.Count,
-                     Source={x:Static pm:App.Core},
-                     Converter={StaticResource AllToVisibilityConverter}}">
+        Icon="{StaticResource EyeIcon}">
+        
+        <MenuItem.ItemsSource>
+          <CompositeCollection>
+            <MenuItem
+              Icon="{StaticResource EyeIcon}"
+              Header="All"
+              Command="{Binding Source={x:Static vm:ViewersVM.SetCurrentCommand}}" />
+            
+            <CollectionContainer
+              Collection="{Binding ViewersM.Items,
+                           Source={x:Static pm:App.Core}}" />
+          </CompositeCollection>
+        </MenuItem.ItemsSource>
         
         <MenuItem.Style>
           <Style
@@ -170,7 +178,7 @@
 
                 <Setter
                   Property="Header"
-                  Value="Viewer" />
+                  Value="All" />
               </DataTrigger>
             </Style.Triggers>
           </Style>

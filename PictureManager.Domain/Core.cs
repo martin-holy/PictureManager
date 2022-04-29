@@ -91,12 +91,9 @@ namespace PictureManager.Domain {
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
 
-        progress.Report("Loading Drives");
-        FoldersM.AddDrives();
-        progress.Report("Loading Folder Keywords");
-        FolderKeywordsM.Load(FoldersM.All);
-
         AttachEvents();
+
+        ViewersM.SetCurrent(ViewersM.Current);
 
         // TODO better
         // cleanup

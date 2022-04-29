@@ -52,7 +52,6 @@ namespace PictureManager {
       PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM);
 
-      App.Core.ViewersM.SetCurrent(null);
       VideoClipsVM.VideoPlayer = MediaViewerVM.FullVideo;
 
       AttachEvents();
