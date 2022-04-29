@@ -34,10 +34,10 @@ namespace MH.Utils.Extensions {
 
     public static int SetInOrder<T>(this ObservableCollection<T> collection, T item, Func<T, string> keySelector) {
       int newIdx;
+      var strB = keySelector(item);
       for (newIdx = 0; newIdx < collection.Count; newIdx++) {
-        var strA = keySelector.Invoke(collection[newIdx]);
-        var strB = keySelector.Invoke(item);
-        var cRes = string.Compare(strA, strB, StringComparison.InvariantCultureIgnoreCase);
+        var strA = keySelector(collection[newIdx]);
+        var cRes = string.Compare(strA, strB, StringComparison.CurrentCultureIgnoreCase);
         if (collection[newIdx].Equals(item) || cRes < 0) continue;
 
         break;
@@ -52,17 +52,6 @@ namespace MH.Utils.Extensions {
       }
 
       return newIdx;
-    }
-
-    public static void Move<T>(this ObservableCollection<T> collection, T item, T dest, bool aboveDest) {
-      var oldIndex = collection.IndexOf(item);
-      var newIndex = collection.IndexOf(dest);
-
-      if (newIndex > oldIndex && aboveDest) newIndex--;
-      if (newIndex < oldIndex && !aboveDest) newIndex++;
-      if (newIndex == oldIndex) return;
-
-      collection.Move(oldIndex, newIndex);
     }
 
     public static bool Toggle<T>(this ObservableCollection<T> collection, T item) {
