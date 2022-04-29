@@ -9,9 +9,9 @@ using System.Text;
 
 namespace SimpleDB {
   public class SimpleDB : INotifyPropertyChanged {
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+      PropertyChanged(this, new PropertyChangedEventArgs(name));
 
     private readonly List<DataAdapter> _dataAdapters = new();
     private readonly Dictionary<string, int> _idSequences = new();
@@ -141,6 +141,40 @@ namespace SimpleDB {
         logger.LogError(ex);
         return false;
       }
+    }
+
+    public static void Migrate(int newVersion, Action<int, int> migrationResolver, ILogger logger) {
+      try {
+        var oldVersion = 0;
+        var vFilePath = Path.Combine("db", "SchemaVersion");
+      
+        if (File.Exists(vFilePath))
+          oldVersion = int.Parse(File.ReadAllLines(vFilePath, Encoding.UTF8)[0]);
+
+        if (oldVersion != newVersion) {
+          migrationResolver(oldVersion, newVersion);
+          File.WriteAllText(vFilePath, newVersion.ToString(), Encoding.UTF8);
+        }
+      }
+      catch (Exception ex) {
+        logger.LogError(ex);
+      }
+    }
+
+    public static void MigrateFile(string filePath, Func<string, string> migrateRecord) {
+      if (!File.Exists(filePath)) return;
+      
+      var newFilePath = filePath + "_tmpFile";
+      string line;
+      using var sr = new StreamReader(filePath, Encoding.UTF8);
+      using var sw = new StreamWriter(newFilePath, false, Encoding.UTF8, 65536);
+        
+      while ((line = sr.ReadLine()) != null)
+        sw.WriteLine(migrateRecord(line));
+
+      sr.Close();
+      sw.Close();
+      File.Move(newFilePath, filePath, true);
     }
   }
 }
