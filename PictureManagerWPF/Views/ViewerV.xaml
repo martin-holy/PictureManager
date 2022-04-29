@@ -264,7 +264,7 @@
 
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <ContentPresenter Content="{Binding}">
+                <ContentPresenter Content="{Binding Content}">
                   <ContentPresenter.InputBindings>
                     <MouseBinding
                       MouseAction="LeftClick"
@@ -285,16 +285,6 @@
                 <Setter
                   Property="IsSelected"
                   Value="{Binding IsSelected}" />
-
-                <Style.Triggers>
-                  <DataTrigger
-                    Binding="{Binding IsHidden}"
-                    Value="True">
-                    <Setter
-                      Property="Visibility"
-                      Value="Collapsed" />
-                  </DataTrigger>
-                </Style.Triggers>
               </Style>
             </ListBox.ItemContainerStyle>
           </ListBox>
