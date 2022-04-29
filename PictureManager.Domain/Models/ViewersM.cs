@@ -72,16 +72,30 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetCurrent(ViewerM viewer) {
-      if (viewer == null) viewer = Current;
-      if (viewer == null) return;
+      if (Current != null && Current == viewer) {
+        Current.UpdateHashSets();
+        OnPropertyChanged(nameof(Current));
+        return;
+      }
 
-      if (Current != null)
+      var save = false;
+
+      if (Current != null) {
         Current.IsDefault = false;
+        save = true;
+      }
 
-      viewer.IsDefault = true;
-      viewer.UpdateHashSets();
-      DataAdapter.Save();
-      Current = viewer;
+      if (viewer != null) {
+        viewer.IsDefault = true;
+        save = true;
+        viewer.UpdateHashSets();
+        Current = viewer;
+      }
+      else
+        Current = null;
+
+      if (save)
+        DataAdapter.Save();
     }
 
     public bool CanViewerSee(FolderM folder) =>
