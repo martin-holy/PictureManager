@@ -76,6 +76,8 @@ namespace PictureManager.Domain {
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
+        SimpleDB.SimpleDB.Migrate(1, DatabaseMigration.Resolver, this);
+
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
         Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers and FavoriteFolders
