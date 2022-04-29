@@ -18,8 +18,8 @@ namespace PictureManager.ViewModels {
     public ListBox LbIncludedFolders { get; }
     public ListBox LbExcludedFolders { get; }
     public ListBox LbExcludedKeywords { get; }
-    public ObservableCollection<CategoryGroupM> CategoryGroups { get; } = new();
-    public RelayCommand<CategoryGroupM> CategoryGroupsSelectCommand { get; }
+    public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
+    public RelayCommand<ListItem<CategoryGroupM>> CategoryGroupsSelectCommand { get; }
 
     public ViewerVM(ViewersM viewersM, CategoryGroupsM categoryGroupsM) {
       _viewersM = viewersM;
@@ -54,16 +54,16 @@ namespace PictureManager.ViewModels {
       DragDropFactory.SetDrop(LbExcludedKeywords, CanDropKeyword, DoDropKeyword);
     }
 
-    private void CategoryGroupsSelect(CategoryGroupM item) {
+    private void CategoryGroupsSelect(ListItem<CategoryGroupM> item) {
       item.IsSelected = !item.IsSelected;
-      _viewersM.ToggleCategoryGroup(Viewer, item.Id);
+      _viewersM.ToggleCategoryGroup(Viewer, item.Content.Id);
     }
 
     private void Reload() {
       ReloadCategoryGroups();
 
       foreach (var licg in CategoryGroups)
-        licg.IsSelected = !Viewer.ExcCatGroupsIds.Contains(licg.Id);
+        licg.IsSelected = !Viewer.ExcCatGroupsIds.Contains(licg.Content.Id);
     }
 
     private void ReloadCategoryGroups() {
@@ -74,7 +74,7 @@ namespace PictureManager.ViewModels {
       CategoryGroups.Clear();
 
       foreach (var cg in groups)
-        CategoryGroups.Add(cg);
+        CategoryGroups.Add(new ListItem<CategoryGroupM>(cg));
     }
 
     private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
