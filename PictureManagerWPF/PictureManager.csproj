@@ -14,7 +14,7 @@
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2021)</Copyright>
+    <Copyright>Martin Holý (2015 - 2022)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
