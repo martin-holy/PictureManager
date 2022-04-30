@@ -5,13 +5,14 @@
     <UseWPF>true</UseWPF>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.16.0</AssemblyVersion>
-    <FileVersion>1.16.0</FileVersion>
-    <Version>1.16.0</Version>
+    <AssemblyVersion>1.17.0</AssemblyVersion>
+    <FileVersion>1.17.0</FileVersion>
+    <Version>1.17.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 
   <ItemGroup>
