@@ -36,9 +36,6 @@ namespace PictureManager.Domain.DataAdapters {
             IsFolderKeyword = props[3] == "1"
           };
 
-      folder.ExpandedChangedEventHandler += (o, _) =>
-        _model.HandleItemExpandedChanged((FolderM)o);
-
       _model.All.Add(folder);
       _model.AllDic.Add(folder.Id, folder);
     }
