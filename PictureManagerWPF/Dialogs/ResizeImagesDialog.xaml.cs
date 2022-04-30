@@ -1,6 +1,6 @@
-﻿using PictureManager.Domain;
+﻿using MH.UI.WPF.Utils;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 using System;
 using System.Collections.Generic;

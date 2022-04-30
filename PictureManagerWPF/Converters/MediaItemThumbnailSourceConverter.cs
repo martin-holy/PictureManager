@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using PictureManager.Domain.Utils;
+using PictureManager.Utils;
 using PictureManager.Domain.Models;
 using PictureManager.Properties;
 

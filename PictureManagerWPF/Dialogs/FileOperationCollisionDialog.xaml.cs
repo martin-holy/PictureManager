@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
@@ -58,7 +57,7 @@ namespace PictureManager.Dialogs {
     }
 
     private static string GetDimensions(string filePath) {
-      var size = Imaging.GetImageDimensionsAsync(filePath).Result;
+      var size = MH.UI.WPF.Utils.Imaging.GetImageDimensionsAsync(filePath).Result;
       return size == null ? string.Empty : $"Dimensions: {size[0]} x {size[1]}";
     }
 
@@ -66,7 +65,7 @@ namespace PictureManager.Dialogs {
       var thumbPath = filePath.Replace(Path.VolumeSeparatorChar.ToString(), Settings.Default.CachePath);
       if (!File.Exists(thumbPath)) {
         _tempThumbs.Add(thumbPath);
-        await Imaging.CreateThumbnailAsync(Imaging.GetMediaType(filePath), filePath, thumbPath,
+        await Utils.Imaging.CreateThumbnailAsync(Domain.Utils.Imaging.GetMediaType(filePath), filePath, thumbPath,
           Settings.Default.ThumbnailSize, 0, Settings.Default.JpegQualityLevel);
       }
 
