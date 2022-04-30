@@ -78,7 +78,7 @@ namespace PictureManager {
       var m3 = tm.ProcessImage(faceR1, faceR2).Max(x => x.Similarity);
     }
 
-    private async static void TestFaceCompare() {
+    /*private async static void TestFaceCompare() {
       var facesA = (App.Core.PeopleM.All.Single(x => x.Id == 479)).TopSegments.Cast<SegmentM>().ToArray();
       var facesB = App.Core.SegmentsM.All.Where(x => x.PersonId == -44).ToArray();
       var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
@@ -103,7 +103,7 @@ namespace PictureManager {
           if (faceA.SimMax < sim) faceA.SimMax = sim;
         }
       }
-    }
+    }*/
 
     private static void ChangeDate() {
       var progress = new MH.Utils.Dialogs.ProgressBarDialog("Change date", true, 1);
