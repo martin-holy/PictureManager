@@ -80,9 +80,6 @@ namespace PictureManager.Domain.Models {
       Directory.CreateDirectory(IOExtensions.PathCombine(rootFolder.FullPath, name));
       var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
-      item.ExpandedChangedEventHandler += (o, _) =>
-        HandleItemExpandedChanged((FolderM)o);
-
       // add new Folder to the database
       All.Add(item);
 

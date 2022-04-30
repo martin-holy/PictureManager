@@ -40,6 +40,9 @@ namespace PictureManager.Domain.Models {
     public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {
       Id = id;
       Parent = parent;
+
+      ExpandedChangedEventHandler += (o, _) =>
+        Core.Instance.FoldersM.HandleItemExpandedChanged((FolderM)o);
     }
 
     public void UpdateIconName() {
