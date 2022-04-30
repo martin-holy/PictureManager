@@ -144,10 +144,10 @@ namespace PictureManager.ViewModels {
     private void SegmentMatching() {
       var result = Core.DialogHostShow(new MessageDialog(
         "Segment Matching",
-        "Do you want to load all segments, segments with person \nor one segment from each person?",
+        "Do you want to load all segments, segments with persons \nor one segment from each person?",
         Res.IconQuestion,
         true,
-        new[] { "All segments", "Segments with person", "One from each" }));
+        new[] { "All segments", "Segments with persons", "One from each" }));
 
       if (result == -1) return;
 
