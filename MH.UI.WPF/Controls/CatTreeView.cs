@@ -1,6 +1,6 @@
-﻿using MH.UI.WPF.BaseClasses;
-using MH.UI.WPF.Utils;
+﻿using MH.UI.WPF.Utils;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using System.Collections.Generic;
 using System.Windows;

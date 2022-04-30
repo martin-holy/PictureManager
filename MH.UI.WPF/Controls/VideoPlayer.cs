@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
-using MH.UI.WPF.BaseClasses;
+using MH.Utils.BaseClasses;
 
 namespace MH.UI.WPF.Controls {
   public enum TimelineShift { Beginning, LargeBack, SmallBack, SmallForward, LargeForward, End }
