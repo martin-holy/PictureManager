@@ -1,5 +1,4 @@
-﻿using MH.UI.WPF.BaseClasses;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;

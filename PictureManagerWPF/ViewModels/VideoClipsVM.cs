@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Windows;
-using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;

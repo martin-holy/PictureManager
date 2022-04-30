@@ -1,4 +1,4 @@
-﻿using MH.UI.WPF.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 
 namespace PictureManager.ViewModels {
   public static class MediaItemSizesTreeVM {

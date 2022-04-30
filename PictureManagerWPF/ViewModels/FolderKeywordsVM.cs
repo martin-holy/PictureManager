@@ -1,4 +1,4 @@
-﻿using MH.UI.WPF.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Dialogs;
 
 namespace PictureManager.ViewModels {

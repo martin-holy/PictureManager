@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using MH.UI.WPF.BaseClasses;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using MH.UI.WPF.BaseClasses;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
