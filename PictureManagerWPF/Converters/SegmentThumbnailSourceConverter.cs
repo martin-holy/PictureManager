@@ -8,20 +8,22 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.Converters {
   public class SegmentThumbnailSourceConverter : IMultiValueConverter {
+    public static SegmentM IgnoreImageCacheSegment { get; set; }
+
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
       try {
         if (values?.Length != 2 || values[1] is not SegmentM segment) return null;
-
+        
         if (!File.Exists(segment.FilePathCache))
-          segment.CreateThumbnail();
+          App.Ui.SegmentsVM.CreateThumbnail(segment);
 
         var src = new BitmapImage();
         src.BeginInit();
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(segment.FilePathCache);
 
-        if (segment.Equals(App.Core.SegmentsM.IgnoreImageCacheSegment)) {
-          App.Core.SegmentsM.IgnoreImageCacheSegment = null;
+        if (segment.Equals(IgnoreImageCacheSegment)) {
+          IgnoreImageCacheSegment = null;
           src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
         }
 

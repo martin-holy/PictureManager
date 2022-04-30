@@ -109,42 +109,6 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
     #endregion IEquatable implementation
 
-    public async Task SetComparePictureAsync(int size) {
-      ComparePicture ??= await Task.Run(() => {
-        try {
-          if (!File.Exists(FilePathCache))
-            CreateThumbnail();
-
-          return File.Exists(FilePathCache)
-            ? Imaging.GetBitmapSource(FilePathCache)?.ToGray().Resize(size).ToBitmap()
-            : null;
-        }
-        catch (Exception ex) {
-          Core.Instance.LogError(ex, FilePathCache);
-          return null;
-        }
-      });
-    }
-
-    public void CreateThumbnail() {
-      var filePath = MediaItem.MediaType == MediaType.Image
-        ? MediaItem.FilePath
-        : MediaItem.FilePathCache;
-
-      try {
-        Imaging.GetCroppedBitmapSource(filePath, ToRect(), Core.Instance.SegmentsM.SegmentSize)
-          ?.SaveAsJpg(80, FilePathCache);
-
-        Core.Instance.SegmentsM.IgnoreImageCacheSegment = this;
-        OnPropertyChanged(nameof(FilePathCache));
-      }
-      catch (Exception ex) {
-        Core.Instance.LogError(ex, filePath);
-      }
-    }
-
-    public Int32Rect ToRect() => new Int32Rect(X - Radius, Y - Radius, Radius * 2, Radius * 2);
-
     #region RotateTransform X, Y
     public int RotateTransformGetX(int x) =>
       MediaItem.Orientation switch {

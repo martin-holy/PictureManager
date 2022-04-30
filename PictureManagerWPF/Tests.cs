@@ -89,11 +89,11 @@ namespace PictureManager {
       }
 
       foreach (var faceA in facesA) {
-        await faceA.SetComparePictureAsync(32);
+        await SegmentsM.SetComparePictureAsync(faceA, 32);
         faceA.Similar ??= new();
 
         foreach (var faceB in facesB) {
-          await faceB.SetComparePictureAsync(32);
+          await SegmentsM.SetComparePictureAsync(faceB, 32);
 
           var matchings = tm.ProcessImage(faceB.ComparePicture, faceA.ComparePicture);
           var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,8 +15,10 @@ using MH.UI.WPF.Utils;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
@@ -65,6 +69,8 @@ namespace PictureManager.ViewModels {
       _core = core;
       _coreVM = coreVM;
       SegmentsM = segmentsM;
+
+      SegmentsM.SetComparePictureAsync = SetComparePictureAsync;
 
       _mainTabsItem = new(this, "Segment Matching");
       var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
@@ -155,6 +161,45 @@ namespace PictureManager.ViewModels {
       _coreVM.MainTabsVM.Activate(_mainTabsItem);
 
       SegmentsM.LoadSegments(_mediaItems, result);
+    }
+
+    private async Task SetComparePictureAsync(SegmentM segment, int size) {
+      segment.ComparePicture ??= await Task.Run(() => {
+        try {
+          if (!File.Exists(segment.FilePathCache))
+            CreateThumbnail(segment);
+
+          return File.Exists(segment.FilePathCache)
+            ? Imaging.GetBitmapSource(segment.FilePathCache)?.ToGray().Resize(size).ToBitmap()
+            : null;
+        }
+        catch (Exception ex) {
+          Core.Instance.LogError(ex, segment.FilePathCache);
+          return null;
+        }
+      });
+    }
+
+    public void CreateThumbnail(SegmentM segment) {
+      var filePath = segment.MediaItem.MediaType == MediaType.Image
+        ? segment.MediaItem.FilePath
+        : segment.MediaItem.FilePathCache;
+      var rect = new Int32Rect(
+        segment.X - segment.Radius,
+        segment.Y - segment.Radius,
+        segment.Radius * 2,
+        segment.Radius * 2);
+
+      try {
+        Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+          ?.SaveAsJpg(80, segment.FilePathCache);
+
+        SegmentThumbnailSourceConverter.IgnoreImageCacheSegment = segment;
+        segment.OnPropertyChanged(nameof(segment.FilePathCache));
+      }
+      catch (Exception ex) {
+        _core.LogError(ex, filePath);
+      }
     }
   }
 }
