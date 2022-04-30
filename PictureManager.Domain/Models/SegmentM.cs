@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Utils;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
@@ -84,7 +80,6 @@ namespace PictureManager.Domain.Models {
     }
     #endregion DB Properties
 
-    public Bitmap ComparePicture { get; set; }
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public bool IsNotUnknown => PersonId != 0;
     public Dictionary<SegmentM, double> Similar { get; set; }
