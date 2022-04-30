@@ -1,5 +1,6 @@
 ﻿using MH.Utils.Dialogs;
 using System;
+using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -97,7 +98,8 @@ namespace PictureManager.Domain.Models {
 
       if (_isCurrentModified) {
         SegmentsM.DataAdapter.IsModified = true;
-        Current.Segment.CreateThumbnail();
+        File.Delete(Current.Segment.FilePathCache);
+        Current.Segment.OnPropertyChanged(nameof(Current.Segment.FilePathCache));
         _isCurrentModified = false;
         IsEditOn = false;
       }

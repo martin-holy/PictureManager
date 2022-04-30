@@ -27,7 +27,6 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
     public Dictionary<int, SegmentM> AllDic { get; set; }
-    public SegmentM IgnoreImageCacheSegment { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public ObservableCollection<object> LoadedGrouped { get; } = new();
@@ -50,6 +49,8 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
+
+    public static Func<SegmentM, int, Task> SetComparePictureAsync { get; set; }
 
     public SegmentsM() {
       SegmentsRectsM = new(this);
@@ -145,7 +146,7 @@ namespace PictureManager.Domain.Models {
 
         foreach (var segmentA in segments) {
           if (token.IsCancellationRequested) break;
-          await segmentA.SetComparePictureAsync(CompareSegmentSize);
+          await SetComparePictureAsync(segmentA, CompareSegmentSize);
           _progress.Report(++done);
         }
 
