@@ -6,7 +6,7 @@ using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
+using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class MediaViewerVM : ObservableObject {

@@ -119,7 +119,7 @@ namespace PictureManager.ViewModels {
     private static void CreateThumbnail(VideoClipM vc, FrameworkElement visual, bool reCreate = false) {
       if (File.Exists(vc.ThumbPath) && !reCreate) return;
 
-      Imaging.CreateVideoThumbnailFromVisual(
+      Utils.Imaging.CreateThumbnailFromVisual(
         visual,
         vc.ThumbPath,
         Settings.Default.ThumbnailSize,

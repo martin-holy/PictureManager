@@ -233,7 +233,7 @@ namespace PictureManager.ViewModels {
             CreateThumbnail(segment);
 
           return File.Exists(segment.FilePathCache)
-            ? Imaging.GetBitmapSource(segment.FilePathCache)?.ToGray().Resize(size).ToBitmap()
+            ? MH.UI.WPF.Utils.Imaging.GetBitmapSource(segment.FilePathCache)?.ToGray().Resize(size).ToBitmap()
             : null;
         }
         catch (Exception ex) {
@@ -257,7 +257,7 @@ namespace PictureManager.ViewModels {
         segment.Radius * 2);
 
       try {
-        Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+        MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
           ?.SaveAsJpg(80, segment.FilePathCache);
 
         SegmentThumbnailSourceConverter.IgnoreImageCacheSegment = segment;
