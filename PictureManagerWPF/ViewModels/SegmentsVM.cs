@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
-using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.UI.WPF.Utils;

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using MH.UI.WPF.BaseClasses;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils.BaseClasses;

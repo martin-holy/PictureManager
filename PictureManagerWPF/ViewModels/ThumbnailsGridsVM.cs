@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using MH.UI.WPF.BaseClasses;
 using MH.Utils.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
