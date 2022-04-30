@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,6 +26,8 @@ namespace PictureManager.ViewModels {
     private readonly Core _core;
     private readonly AppCore _coreVM;
     private readonly HeaderedListItem<object, string> _mainTabsItem;
+    private readonly IProgress<int> _progress;
+    private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
     private double _segmentUiSize;
     private double _confirmedPanelWidth;
     private VirtualizingWrapPanel _matchingPanel;
@@ -69,8 +72,11 @@ namespace PictureManager.ViewModels {
       _core = core;
       _coreVM = coreVM;
       SegmentsM = segmentsM;
-
-      SegmentsM.SetComparePictureAsync = SetComparePictureAsync;
+      
+      _progress = new Progress<int>(x => {
+        _core.TitleProgressBarM.ValueA = x;
+        _core.TitleProgressBarM.ValueB = x;
+      });
 
       _mainTabsItem = new(this, "Segment Matching");
       var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
@@ -140,13 +146,6 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    private async Task CompareAsync() {
-      await _workTask.Cancel();
-      SegmentsM.AddSegmentsForComparison();
-      _core.TitleProgressBarM.ResetProgressBars(SegmentsM.Loaded.Count);
-      await _workTask.Start(SegmentsM.FindSimilaritiesAsync(SegmentsM.Loaded, _workTask.Token));
-    }
-
     private void SegmentMatching() {
       var result = Core.DialogHostShow(new MessageDialog(
         "Segment Matching",
@@ -163,8 +162,72 @@ namespace PictureManager.ViewModels {
       SegmentsM.LoadSegments(_mediaItems, result);
     }
 
+    private async Task CompareAsync() {
+      await _workTask.Cancel();
+      SegmentsM.AddSegmentsForComparison();
+      _core.TitleProgressBarM.ResetProgressBars(SegmentsM.Loaded.Count);
+      await _workTask.Start(FindSimilaritiesAsync(SegmentsM.Loaded, _workTask.Token));
+    }
+
+    private Task FindSimilaritiesAsync(List<SegmentM> segments, CancellationToken token) {
+      return Task.Run(async () => {
+        // clear previous loaded similar
+        // clear needs to be for Loaded!
+        foreach (var segment in segments) {
+          segment.Similar?.Clear();
+          segment.SimMax = 0;
+        }
+
+        var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
+        var done = 0;
+
+        foreach (var segmentA in segments) {
+          if (token.IsCancellationRequested) break;
+          await SetComparePictureAsync(segmentA, SegmentsM.CompareSegmentSize);
+          _progress.Report(++done);
+        }
+
+        done = 0;
+        _progress.Report(done);
+
+        foreach (var segmentA in segments) {
+          if (token.IsCancellationRequested) break;
+          if (!_compareBitmaps.ContainsKey(segmentA)) {
+            _progress.Report(++done);
+            continue;
+          }
+
+          segmentA.Similar ??= new();
+          foreach (var segmentB in segments) {
+            if (token.IsCancellationRequested) break;
+            if (!_compareBitmaps.ContainsKey(segmentB)) continue;
+            // do not compare segment with it self or with segment that have same person
+            if (segmentA == segmentB || (segmentA.PersonId != 0 && segmentA.PersonId == segmentB.PersonId)) continue;
+            // do not compare segment with PersonId > 0 with segment with also PersonId > 0
+            if (segmentA.PersonId > 0 && segmentB.PersonId > 0) continue;
+
+            var matchings = tm.ProcessImage(_compareBitmaps[segmentB], _compareBitmaps[segmentA]);
+            var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
+            if (sim < SegmentsM.SimilarityLimitMin) continue;
+
+            segmentA.Similar.Add(segmentB, sim);
+            if (segmentA.SimMax < sim) segmentA.SimMax = sim;
+          }
+
+          if (segmentA.Similar.Count == 0) {
+            segmentA.Similar = null;
+            segmentA.SimMax = 0;
+          }
+
+          _progress.Report(++done);
+        }
+      }, token);
+    }
+
     private async Task SetComparePictureAsync(SegmentM segment, int size) {
-      segment.ComparePicture ??= await Task.Run(() => {
+      if (_compareBitmaps.ContainsKey(segment)) return;
+
+      var bitmap = await Task.Run(() => {
         try {
           if (!File.Exists(segment.FilePathCache))
             CreateThumbnail(segment);
@@ -178,6 +241,9 @@ namespace PictureManager.ViewModels {
           return null;
         }
       });
+
+      if (bitmap != null)
+        _compareBitmaps.Add(segment, bitmap);
     }
 
     public void CreateThumbnail(SegmentM segment) {

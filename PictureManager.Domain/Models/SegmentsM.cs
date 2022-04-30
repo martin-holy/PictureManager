@@ -22,7 +22,6 @@ namespace PictureManager.Domain.Models {
     private bool _groupConfirmedSegments;
     private bool _matchingAutoSort = true;
     private readonly List<SegmentM> _selected = new();
-    private readonly IProgress<int> _progress;
 
     public DataAdapter DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
@@ -50,15 +49,8 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
-    public static Func<SegmentM, int, Task> SetComparePictureAsync { get; set; }
-
     public SegmentsM() {
       SegmentsRectsM = new(this);
-
-      _progress = new Progress<int>(x => {
-        Core.Instance.TitleProgressBarM.ValueA = x;
-        Core.Instance.TitleProgressBarM.ValueB = x;
-      });
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));
@@ -130,61 +122,6 @@ namespace PictureManager.Domain.Models {
 
       foreach (var segment in newSegments)
         Loaded.Add(segment);
-    }
-
-    public Task FindSimilaritiesAsync(List<SegmentM> segments, CancellationToken token) {
-      return Task.Run(async () => {
-        // clear previous loaded similar
-        // clear needs to be for Loaded!
-        foreach (var segment in Loaded) {
-          segment.Similar?.Clear();
-          segment.SimMax = 0;
-        }
-
-        var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
-        var done = 0;
-
-        foreach (var segmentA in segments) {
-          if (token.IsCancellationRequested) break;
-          await SetComparePictureAsync(segmentA, CompareSegmentSize);
-          _progress.Report(++done);
-        }
-
-        done = 0;
-        _progress.Report(done);
-
-        foreach (var segmentA in segments) {
-          if (token.IsCancellationRequested) break;
-          if (segmentA.ComparePicture == null) {
-            _progress.Report(++done);
-            continue;
-          }
-
-          segmentA.Similar ??= new();
-          foreach (var segmentB in segments) {
-            if (token.IsCancellationRequested) break;
-            if (segmentB.ComparePicture == null) continue;
-            // do not compare segment with it self or with segment that have same person
-            if (segmentA == segmentB || (segmentA.PersonId != 0 && segmentA.PersonId == segmentB.PersonId)) continue;
-            // do not compare segment with PersonId > 0 with segment with also PersonId > 0
-            if (segmentA.PersonId > 0 && segmentB.PersonId > 0) continue;
-
-            var matchings = tm.ProcessImage(segmentB.ComparePicture, segmentA.ComparePicture);
-            var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
-            if (sim < SimilarityLimitMin) continue;
-
-            segmentA.Similar.Add(segmentB, sim);
-            if (segmentA.SimMax < sim) segmentA.SimMax = sim;
-          }
-
-          if (segmentA.Similar.Count == 0) {
-            segmentA.Similar = null;
-            segmentA.SimMax = 0;
-          }
-
-          _progress.Report(++done);
-        }
-      }, token);
     }
 
     public void SetPerson(PersonM person) {
@@ -318,7 +255,6 @@ namespace PictureManager.Domain.Models {
         segment.MediaItem.Segments = null;
 
       segment.Similar?.Clear();
-      segment.ComparePicture = null;
 
       All.Remove(segment);
       if (Loaded.Remove(segment))
