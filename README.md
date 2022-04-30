@@ -1,10 +1,17 @@
 # Picture Manager
 
-version always 1.0 :)
+### What is new?
+- People view with people grouped by category and keywords.
+- A person can have keywords.
+- Segments of images (something like face tagging).
+- Database backup.
+- Loading thumbnails is 10x faster.
+- Thumbnail tabs have options to group by folder/date and sort.
+- And more ...
 
 _Usable but not tested by others yet!_
 
-Picture Manager is a simple image and video viewer with the ability of editing keywords like rating, people, hierarchical keywords, comments and geo names.
+Picture Manager is a simple image and video viewer with the ability of creating clips from video, tagging faces and editing keywords like rating, people, hierarchical keywords, comments and geo names.
 
 ![](./screenshot0.jpg)
 ![](./screenshot1.jpg)
@@ -78,3 +85,20 @@ The presentation can be turned on/off with `Ctrl + P`.
    - Clip: plays selected clip in infinite loop
    - Clips: plays all clips regardless of location (in groups or not)
    - Groups: plays clips in a group
+
+
+## Segments
+A segment is a square selection from an image that can be connected to a person and can have multiple keywords. Segment is used as a tool tip on the person in the tree and as a profile photo in the People view for each person. Segment used for this can be changed by dragging one of the person's segments to the top segments in the person's detail (select People category in the tree and click on `i` button on person).
+
+Segments can be created, edited or deleted in the viewer by clicking on the toggle button from the top toolbar. To create new segments use `Ctrl + left-mouse-button` or just `right-mouse-button`.
+
+You can set a person to a selected segment from the tree one by one or select multiple images in the browser (if nothing is selected => all images are taken) and select `Media Items => Segments Matching` from the top menu.
+
+### Segments Matching
+This is just experimental! I tried an automatic face detection and face recognition, but the detection is not 100% and I want a nice looking face selection so I ended up with removing the detection (so just a manual selection is available) and keeping recognition for now even if it has also very poor results (I tried serval methods).
+
+Selected segments can be set as the same person with the `=` button on the selected segments. These segments get a new temporary person with a negative ID and this person can be later changed to a named person by selecting any segment and selecting the person from the tree.
+
+All segments linked to one named person can be viewed by clicking on `i` button on the segment.
+
+All source images with segments linked to the same person as is the person on the segment can be viewed by `double-click` on the segment.
