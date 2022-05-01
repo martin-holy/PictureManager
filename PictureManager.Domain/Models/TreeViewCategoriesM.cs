@@ -29,10 +29,18 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public RelayCommand<object> ShowSearchCommand { get; }
+    public RelayCommand<ITreeItem> ScrollToCommand { get; }
+    public RelayCommand<ITreeItem> TagItemDeleteNotUsedCommand { get; }
+
     public TreeViewCategoriesM(Core core) {
       _core = core;
 
       TreeViewSearchM = new(_core);
+
+      ShowSearchCommand = new(ShowSearch);
+      ScrollToCommand = new(ScrollTo);
+      TagItemDeleteNotUsedCommand = new(TagItemDeleteNotUsed);
 
       Items = new() {
         _core.FavoriteFoldersM,
@@ -46,12 +54,15 @@ namespace PictureManager.Domain.Models {
         _core.ViewersM };
     }
 
+    private void ScrollTo(ITreeItem item) =>
+      ScrollToItem = item;
+
     public void SetIsPinned(bool inViewer) =>
       IsPinned = inViewer
         ? IsPinnedInViewer
         : IsPinnedInBrowser;
 
-    public void ShowSearch() {
+    private void ShowSearch() {
       TreeViewSearchM.SearchText = string.Empty;
       TreeViewSearchM.IsVisible = true;
     }
