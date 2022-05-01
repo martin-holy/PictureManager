@@ -54,7 +54,7 @@
             IsThreeState="False"
             Source="{StaticResource IconPeopleMultiple}"
             IsChecked="{Binding SegmentsM.GroupConfirmedSegments}"
-            Command="{Binding GroupConfirmedCommand}" />
+            Command="{Binding SegmentsM.GroupConfirmedCommand}" />
         </Grid>
 
         <GridSplitter
@@ -107,12 +107,12 @@
           IsThreeState="False"
           Source="{StaticResource IconPeopleMultiple}"
           IsChecked="{Binding SegmentsM.GroupSegments}"
-          Command="{Binding GroupMatchingPanelCommand}" />
+          Command="{Binding SegmentsM.GroupMatchingPanelCommand}" />
 
         <mhc:IconButton
           ToolTip="Set selected as Unknown"
           Source="{StaticResource IconQuestion}"
-          Command="{Binding SetSelectedAsUnknownCommand}" />
+          Command="{Binding SegmentsM.SetSelectedAsUnknownCommand}" />
         <mhc:IconButton
           ToolTip="Open Segments drawer"
           Source="{StaticResource IconDrawer}"
@@ -120,7 +120,7 @@
         <mhc:IconButton
           ToolTip="Compare all groups of segments"
           Source="{StaticResource IconCompare}"
-          Command="{Binding CompareAllGroupsCommand}" />
+          Command="{Binding SegmentsM.CompareAllGroupsCommand}" />
         <mhc:IconButton
           ToolTip="Compare"
           Source="{StaticResource IconCompare}"
@@ -128,7 +128,7 @@
         <mhc:IconButton
           ToolTip="Sort"
           Source="{StaticResource IconSort}"
-          Command="{Binding SortCommand}" />
+          Command="{Binding SegmentsM.SortCommand}" />
 
         <CheckBox
           IsChecked="{Binding SegmentsM.MatchingAutoSort}"

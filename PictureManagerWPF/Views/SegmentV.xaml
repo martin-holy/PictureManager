@@ -30,8 +30,8 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="ToolTipOpening">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentToolTipReloadCommand,
-                      Source={x:Static pm:App.Ui}}"
+            Command="{Binding SegmentsM.SegmentToolTipReloadCommand,
+                      Source={x:Static pm:App.Core}}"
             CommandParameter="{Binding}" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
@@ -253,8 +253,8 @@
               Source="{StaticResource IconEquals}"
               Size="14"
               ToolTip="Set selected as same person"
-              Command="{Binding SegmentsVM.SetSelectedAsSamePersonCommand,
-                        Source={x:Static pm:App.Ui}}" />
+              Command="{Binding SegmentsM.SetSelectedAsSamePersonCommand,
+                        Source={x:Static pm:App.Core}}" />
           </StackPanel>
 
           <!-- Open Person Detail Control -->
