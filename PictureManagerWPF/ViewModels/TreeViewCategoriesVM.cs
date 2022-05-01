@@ -14,10 +14,7 @@ namespace PictureManager.ViewModels {
     public TreeViewCategoriesM Model { get; }
     public TreeViewSearchVM TreeViewSearchVM { get; }
 
-    public RelayCommand<object> ShowSearchCommand { get; }
-    public RelayCommand<ITreeItem> ScrollToCommand { get; }
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
-    public RelayCommand<ITreeItem> TagItemDeleteNotUsedCommand { get; }
     public RelayCommand<object> ToggleIsPinnedCommand { get; }
 
     public TreeViewCategoriesVM(Core core, AppCore coreVM, TreeViewCategoriesM model) {
@@ -27,10 +24,7 @@ namespace PictureManager.ViewModels {
 
       TreeViewSearchVM = new(Model.TreeViewSearchM);
 
-      ShowSearchCommand = new(Model.ShowSearch);
-      ScrollToCommand = new(ScrollTo);
       SelectCommand = new(Select);
-      TagItemDeleteNotUsedCommand = new(Model.TagItemDeleteNotUsed);
       ToggleIsPinnedCommand = new(ToggleIsPinned);
 
       _core.FoldersM.AfterItemCreateEventHandler += (o, _) =>
@@ -53,9 +47,6 @@ namespace PictureManager.ViewModels {
       else
         Model.IsPinnedInBrowser = !Model.IsPinnedInBrowser;
     }
-
-    private void ScrollTo(ITreeItem item) =>
-      Model.ScrollToItem = item;
 
     private void Select(MouseButtonEventArgs e) =>
       Select((e.OriginalSource as FrameworkElement)?.DataContext as ITreeItem);

@@ -52,8 +52,8 @@
                   Size="22"
                   ShowShadow="False"
                   ToolTip="{Binding Name}"
-                  Command="{Binding TreeViewCategoriesVM.ScrollToCommand,
-                            Source={x:Static pm:App.Ui}}"
+                  Command="{Binding TreeViewCategoriesM.ScrollToCommand,
+                            Source={x:Static pm:App.Core}}"
                   CommandParameter="{Binding}"
                   Source="{Binding IconName,
                            Converter={StaticResource ResourceConverter}}"
@@ -74,7 +74,7 @@
               Size="22"
               Source="{StaticResource IconMagnify}"
               ToolTip="Search"
-              Command="{Binding ShowSearchCommand}"
+              Command="{Binding Model.ShowSearchCommand}"
               ShowShadow="False" />
 
             <!-- Button to pin slide panel -->
