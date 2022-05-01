@@ -31,6 +31,8 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/themes/dark.blue.xaml" />
         
         <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml" />
+        
+        <ResourceDictionary Source="Dialogs/CompressDialogV.xaml" />
 
         <ResourceDictionary Source="Views/MainWindowContentV.xaml" />
       </ResourceDictionary.MergedDictionaries>
