@@ -61,8 +61,17 @@ namespace PictureManager {
 
     private void AttachEvents() {
       Settings.Default.PropertyChanged += (o, e) => {
-        if (nameof(Settings.Default.GeoNamesUserName).Equals(e.PropertyName))
-          GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
+        switch (e.PropertyName) {
+          case nameof(Settings.Default.CachePath):
+            App.Core.CachePath = Settings.Default.CachePath;
+            break;
+          case nameof(Settings.Default.ThumbnailSize):
+            App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
+            break;
+          case nameof(Settings.Default.GeoNamesUserName):
+            GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
+            break;
+        }
       };
 
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, _) => {

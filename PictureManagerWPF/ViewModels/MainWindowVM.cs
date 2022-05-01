@@ -49,8 +49,8 @@ namespace PictureManager.ViewModels {
     }
 
     private static void OpenSettings() {
-      var settings = new SettingsDialog { Owner = Application.Current.MainWindow };
-      if (settings.ShowDialog() ?? true)
+      var result = Core.DialogHostShow(new SettingsDialogM());
+      if (result == 0)
         Settings.Default.Save();
       else
         Settings.Default.Reload();
