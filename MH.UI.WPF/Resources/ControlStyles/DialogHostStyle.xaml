@@ -16,9 +16,6 @@
       Property="SizeToContent"
       Value="WidthAndHeight" />
     <Setter
-      Property="MinWidth"
-      Value="300" />
-    <Setter
       Property="ShowInTaskbar"
       Value="False" />
     
