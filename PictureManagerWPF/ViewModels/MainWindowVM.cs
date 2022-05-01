@@ -2,6 +2,7 @@
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Properties;
 using System.Windows;
 
@@ -56,8 +57,7 @@ namespace PictureManager.ViewModels {
     }
 
     private static void OpenAbout() {
-      var about = new AboutDialog { Owner = Application.Current.MainWindow };
-      about.ShowDialog();
+      Core.DialogHostShow(new AboutDialog());
     }
 
     private static void OpenLog() {
