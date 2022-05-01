@@ -4,7 +4,6 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
@@ -66,7 +65,7 @@
         <b:EventTrigger
           EventName="PreviewMouseLeftButtonUp">
           <b:InvokeCommandAction
-            Command="vm:StatusPanelVM.PinCommand" />
+            Command="{Binding PinCommand}" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
