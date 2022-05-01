@@ -28,8 +28,8 @@
         </MenuItem>
         <MenuItem
           Header="GeoNames"
-          Command="{Binding MediaItemsVM.AddGeoNamesFromFilesCommand,
-                    Source={x:Static pm:App.Ui}}">
+          Command="{Binding MediaItemsM.AddGeoNamesFromFilesCommand,
+                    Source={x:Static pm:App.Core}}">
           <MenuItem.Icon>
             <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
           </MenuItem.Icon>
@@ -84,8 +84,8 @@
         <MenuItem
           Header="Rename"
           InputGestureText="F2"
-          Command="{Binding MediaItemsVM.RenameCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.RenameCommand,
+                    Source={x:Static pm:App.Core}}" />
         <MenuItem
           Header="Segment Matching"
           Command="{Binding SegmentsVM.SegmentMatchingCommand,
@@ -104,8 +104,8 @@
         <MenuItem
           Header="Edit"
           InputGestureText="Ctrl+E"
-          Command="{Binding MediaItemsVM.EditCommand,
-                    Source={x:Static pm:App.Ui}}">
+          Command="{Binding MediaItemsM.EditCommand,
+                    Source={x:Static pm:App.Core}}">
           <MenuItem.Icon>
             <mhc:Icon Source="{StaticResource IconEdit}" />
           </MenuItem.Icon>
@@ -113,8 +113,8 @@
         <MenuItem
           Header="Save"
           InputGestureText="Ctrl+S"
-          Command="{Binding MediaItemsVM.SaveEditCommand,
-                    Source={x:Static pm:App.Ui}}">
+          Command="{Binding MediaItemsM.SaveEditCommand,
+                    Source={x:Static pm:App.Core}}">
           <MenuItem.Icon>
             <mhc:Icon Source="{StaticResource IconSave}" />
           </MenuItem.Icon>
@@ -122,8 +122,8 @@
         <MenuItem
           Header="Cancel"
           InputGestureText="Ctrl+Q"
-          Command="{Binding MediaItemsVM.CancelEditCommand,
-                    Source={x:Static pm:App.Ui}}">
+          Command="{Binding MediaItemsM.CancelEditCommand,
+                    Source={x:Static pm:App.Core}}">
           <MenuItem.Icon>
             <mhc:Icon Source="{StaticResource IconCancel}" />
           </MenuItem.Icon>
@@ -131,16 +131,16 @@
         <MenuItem
           Header="Comment"
           InputGestureText="Ctrl+K"
-          Command="{Binding MediaItemsVM.CommentCommand,
-                    Source={x:Static pm:App.Ui}}">
+          Command="{Binding MediaItemsM.CommentCommand,
+                    Source={x:Static pm:App.Core}}">
           <MenuItem.Icon>
             <mhc:Icon Source="{StaticResource IconNotification}" />
           </MenuItem.Icon>
         </MenuItem>
         <MenuItem
           Header="Reload"
-          Command="{Binding MediaItemsVM.ReloadMetadataCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.ReloadMetadataCommand,
+                    Source={x:Static pm:App.Core}}" />
       </MenuItem>
 
       <!-- Viewers -->

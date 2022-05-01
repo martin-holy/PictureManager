@@ -58,13 +58,13 @@
           Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
         <KeyBinding
           Key="F2"
-          Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}" />
         <KeyBinding
           Key="Delete"
           Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
         <KeyBinding
           Modifiers="Control" Key="K"
-          Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}" />
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>

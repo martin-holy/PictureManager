@@ -47,10 +47,46 @@ namespace PictureManager.Domain.Models {
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
+    public RelayCommand<object> RenameCommand { get; }
+    public RelayCommand<object> EditCommand { get; }
+    public RelayCommand<object> SaveEditCommand { get; }
+    public RelayCommand<object> CancelEditCommand { get; }
+    public RelayCommand<object> CommentCommand { get; }
+    public RelayCommand<object> ReloadMetadataCommand { get; }
+    public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
+
     public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {
       _core = core;
       _segmentsM = segmentsM;
       _viewersM = viewersM;
+
+      RenameCommand = new(
+        Rename,
+        () => Current != null);
+
+      EditCommand = new(
+        () => IsEditModeOn = true,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      SaveEditCommand = new(
+        SaveEdit,
+        () => IsEditModeOn && ModifiedItems.Count > 0);
+
+      CancelEditCommand = new(
+        CancelEdit,
+        () => IsEditModeOn);
+
+      CommentCommand = new(
+        Comment,
+        () => Current != null);
+
+      ReloadMetadataCommand = new(
+        () => ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      AddGeoNamesFromFilesCommand = new(
+        () => AddGeoNamesFromFiles(GeoNamesM.GeoNamesUserName),
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
     }
 
     /// <summary>

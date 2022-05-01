@@ -24,17 +24,10 @@ namespace PictureManager.ViewModels {
     public MediaItemsM Model { get; }
 
     public RelayCommand<object> RotateCommand { get; }
-    public RelayCommand<object> RenameCommand { get; }
     public RelayCommand<object> DeleteCommand { get; }
-    public RelayCommand<object> EditCommand { get; }
-    public RelayCommand<object> SaveEditCommand { get; }
-    public RelayCommand<object> CancelEditCommand { get; }
-    public RelayCommand<object> CommentCommand { get; }
-    public RelayCommand<object> ReloadMetadataCommand { get; }
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
-    public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
 
     public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
@@ -44,39 +37,14 @@ namespace PictureManager.ViewModels {
       Model.ReadMetadata = ReadMetadata;
       Model.WriteMetadata = WriteMetadata;
 
-      #region Commands
       RotateCommand = new(
         Rotate,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(
           x => x.IsSelected && x.MediaType == MediaType.Image) > 0);
 
-      RenameCommand = new(
-        Model.Rename,
-        () => Model.Current != null);
-
       DeleteCommand = new(
         Delete,
         () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || Model.Current != null);
-
-      EditCommand = new(
-        () => Model.IsEditModeOn = true,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-
-      SaveEditCommand = new(
-        Model.SaveEdit,
-        () => Model.IsEditModeOn && Model.ModifiedItems.Count > 0);
-
-      CancelEditCommand = new(
-        Model.CancelEdit,
-        () => Model.IsEditModeOn);
-
-      CommentCommand = new(
-        Model.Comment,
-        () => Model.Current != null);
-
-      ReloadMetadataCommand = new(
-        () => Model.ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       ReloadMetadataInFolderCommand = new(
         x => Model.ReloadMetadata(x.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
@@ -89,11 +57,6 @@ namespace PictureManager.ViewModels {
       CompareCommand = new(
         Compare,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-
-      AddGeoNamesFromFilesCommand = new(
-        () => Model.AddGeoNamesFromFiles(GeoNamesM.GeoNamesUserName),
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
-      #endregion
     }
 
     private void Rotate() {
