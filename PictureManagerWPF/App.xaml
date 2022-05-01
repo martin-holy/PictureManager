@@ -35,6 +35,7 @@
         <ResourceDictionary Source="Dialogs/AboutDialogV.xaml" />
         <ResourceDictionary Source="Dialogs/CompressDialogV.xaml" />
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml" />
+        <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml" />
 
         <ResourceDictionary Source="Views/MainWindowContentV.xaml" />
       </ResourceDictionary.MergedDictionaries>
