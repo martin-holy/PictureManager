@@ -12,7 +12,6 @@ namespace PictureManager.ViewModels {
     private readonly AppCore _coreVM;
     
     public TreeViewCategoriesM Model { get; }
-    public TreeViewSearchVM TreeViewSearchVM { get; }
 
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> ToggleIsPinnedCommand { get; }
@@ -21,8 +20,6 @@ namespace PictureManager.ViewModels {
       _core = core;
       _coreVM = coreVM;
       Model = model;
-
-      TreeViewSearchVM = new(Model.TreeViewSearchM);
 
       SelectCommand = new(Select);
       ToggleIsPinnedCommand = new(ToggleIsPinned);

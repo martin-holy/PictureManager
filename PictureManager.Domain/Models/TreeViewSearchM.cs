@@ -14,8 +14,14 @@ namespace PictureManager.Domain.Models {
     public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
     public ObservableCollection<TreeViewSearchItemM> SearchResult { get; } = new();
 
+    public RelayCommand<TreeViewSearchItemM> NavigateToCommand { get; }
+    public RelayCommand<object> CloseCommand { get; }
+
     public TreeViewSearchM(Core core) {
       _core = core;
+
+      NavigateToCommand = new(NavigateTo);
+      CloseCommand = new(() => IsVisible = false);
     }
 
     public void NavigateTo(TreeViewSearchItemM item) {
