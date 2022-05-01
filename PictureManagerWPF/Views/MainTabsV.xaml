@@ -51,8 +51,8 @@
                       ShowShadow="False"
                       ToolTip="Add Thumbnails Grid Tab"
                       HorizontalAlignment="Center"
-                      Command="{Binding ThumbnailsGridsVM.AddThumbnailsGridCommand,
-                                Source={x:Static pm:App.Ui}}" />
+                      Command="{Binding ThumbnailsGridsM.AddThumbnailsGridCommand,
+                                Source={x:Static pm:App.Core}}" />
 
                     <TabPanel
                       IsItemsHost="True"

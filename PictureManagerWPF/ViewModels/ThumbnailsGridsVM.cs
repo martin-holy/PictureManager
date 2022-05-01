@@ -22,19 +22,11 @@ namespace PictureManager.ViewModels {
     public ThumbnailsGridsM Model { get; }
     public ThumbnailsGridVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public RelayCommand<string> AddThumbnailsGridCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterOrCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterNotCommand { get; }
     public RelayCommand<ITreeItem> LoadByTagCommand { get; }
-    public RelayCommand<object> ClearFiltersCommand { get; }
-    public RelayCommand<object> SelectNotModifiedCommand { get; }
-    public RelayCommand<object> ShuffleCommand { get; }
     public RelayCommand<object> CompressCommand { get; }
     public RelayCommand<object> ResizeImagesCommand { get; }
     public RelayCommand<object> ImagesToVideoCommand { get; }
     public RelayCommand<object> CopyPathsCommand { get; }
-    public RelayCommand<object> ReapplyFilterCommand { get; }
 
     public ThumbnailsGridsVM(Core core, AppCore coreVM, ThumbnailsGridsM model) {
       _core = core;
@@ -49,30 +41,12 @@ namespace PictureManager.ViewModels {
       Model.AddThumbnailsGridIfNotActive = AddThumbnailsGridIfNotActive;
 
       #region Commands
-      AddThumbnailsGridCommand = new(Model.AddThumbnailsGrid);
-
-      ActivateFilterAndCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.And), item => item != null);
-      ActivateFilterOrCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.Or), item => item != null);
-      ActivateFilterNotCommand = new(item => _ = Model.Current?.ActivateFilter(item, DisplayFilter.Not), item => item != null);
-      ClearFiltersCommand = new(() => _ = Model.Current?.ClearFilters());
-
       LoadByTagCommand = new(
         async item => {
           var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
           await Model.LoadByTag(item, and, hide, recursive);
         },
         item => item != null);
-      
-      SelectNotModifiedCommand = new(
-        () => Model.Current?.SelectNotModified(_core.MediaItemsM.ModifiedItems),
-        () => Model.Current?.FilteredItems.Count > 0);
-      
-      ShuffleCommand = new(
-        () => {
-          Model.Current.Shuffle();
-          _ = Model.Current.ThumbsGridReloadItems();
-        },
-        () => Model.Current?.FilteredItems.Count > 0);
 
       CompressCommand = new(
         () => {
@@ -95,10 +69,6 @@ namespace PictureManager.ViewModels {
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Model.Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
         () => Model.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
-
-      ReapplyFilterCommand = new(
-        async () => await Model.Current.ReapplyFilter(),
-        () => Model.Current != null);
       #endregion
     }
 

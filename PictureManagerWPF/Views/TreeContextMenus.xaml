@@ -12,13 +12,13 @@
               Command="{Binding ThumbnailsGridsVM.LoadByTagCommand, Source={x:Static pm:App.Ui}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter And"
-              Command="{Binding ThumbnailsGridsVM.ActivateFilterAndCommand, Source={x:Static pm:App.Ui}}"
+              Command="{Binding ThumbnailsGridsM.ActivateFilterAndCommand, Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter Or"
-              Command="{Binding ThumbnailsGridsVM.ActivateFilterOrCommand, Source={x:Static pm:App.Ui}}"
+              Command="{Binding ThumbnailsGridsM.ActivateFilterOrCommand, Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter Not"
-              Command="{Binding ThumbnailsGridsVM.ActivateFilterNotCommand, Source={x:Static pm:App.Ui}}"
+              Command="{Binding ThumbnailsGridsM.ActivateFilterNotCommand, Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding}" />
   </x:Array>
 

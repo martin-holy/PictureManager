@@ -59,12 +59,12 @@
                     Source={x:Static pm:App.Ui}}" />
         <MenuItem
           Header="Select Not Modified"
-          Command="{Binding ThumbnailsGridsVM.SelectNotModifiedCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding ThumbnailsGridsM.SelectNotModifiedCommand,
+                    Source={x:Static pm:App.Core}}" />
         <MenuItem
           Header="Shuffle"
-          Command="{Binding ThumbnailsGridsVM.ShuffleCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding ThumbnailsGridsM.ShuffleCommand,
+                    Source={x:Static pm:App.Core}}" />
         <MenuItem
           Header="Resize Images"
           Command="{Binding ThumbnailsGridsVM.ResizeImagesCommand,

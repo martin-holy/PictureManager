@@ -103,8 +103,8 @@
         <StackPanel.InputBindings>
           <MouseBinding
             MouseAction="LeftClick"
-            Command="{Binding ThumbnailsGridsVM.ClearFiltersCommand,
-                      Source={x:Static pm:App.Ui}}" />
+            Command="{Binding ThumbnailsGridsM.ClearFiltersCommand,
+                      Source={x:Static pm:App.Core}}" />
         </StackPanel.InputBindings>
 
         <!-- And -->

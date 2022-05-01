@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridsM : ObservableObject {
@@ -17,8 +18,41 @@ namespace PictureManager.Domain.Models {
     public event EventHandler<ObjectEventArgs<(ThumbnailsGridM, string)>> ThumbnailsGridAddedEventHandler = delegate { };
     public Action<string> AddThumbnailsGridIfNotActive { get; set; }
 
+    public RelayCommand<string> AddThumbnailsGridCommand { get; }
+    public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
+    public RelayCommand<IFilterItem> ActivateFilterOrCommand { get; }
+    public RelayCommand<IFilterItem> ActivateFilterNotCommand { get; }
+    public RelayCommand<object> ClearFiltersCommand { get; }
+    public RelayCommand<object> SelectNotModifiedCommand { get; }
+    public RelayCommand<object> ShuffleCommand { get; }
+    public RelayCommand<object> ReapplyFilterCommand { get; }
+
     public ThumbnailsGridsM(Core core) {
       _core = core;
+
+      AddThumbnailsGridCommand = new(AddThumbnailsGrid);
+      ActivateFilterAndCommand = new(
+        item => _ = Current?.ActivateFilter(item, DisplayFilter.And),
+        item => item != null);
+      ActivateFilterOrCommand = new(
+        item => _ = Current?.ActivateFilter(item, DisplayFilter.Or),
+        item => item != null);
+      ActivateFilterNotCommand = new(
+        item => _ = Current?.ActivateFilter(item, DisplayFilter.Not),
+        item => item != null);
+      ClearFiltersCommand = new(() => _ = Current?.ClearFilters());
+      SelectNotModifiedCommand = new(
+        () => Current?.SelectNotModified(_core.MediaItemsM.ModifiedItems),
+        () => Current?.FilteredItems.Count > 0);
+      ShuffleCommand = new(
+        () => {
+          Current.Shuffle();
+          _ = Current.ThumbsGridReloadItems();
+        },
+        () => Current?.FilteredItems.Count > 0);
+      ReapplyFilterCommand = new(
+        async () => await Current.ReapplyFilter(),
+        () => Current != null);
     }
 
     private ThumbnailsGridM AddThumbnailsGrid(MediaItemsM mediaItemsM, TitleProgressBarM progressBar) {
