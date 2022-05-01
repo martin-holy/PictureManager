@@ -44,12 +44,12 @@
   </mahApps:MetroWindow.Resources>
 
   <mahApps:MetroWindow.InputBindings>
-    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsVM.EditCommand, Source={x:Static pm:App.Ui}}" />
-    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsVM.SaveEditCommand, Source={x:Static pm:App.Ui}}" />
-    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsVM.CancelEditCommand, Source={x:Static pm:App.Ui}}" />
-    <KeyBinding Key="F2" Command="{Binding MediaItemsVM.RenameCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsM.EditCommand, Source={x:Static pm:App.Core}}" />
+    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsM.SaveEditCommand, Source={x:Static pm:App.Core}}" />
+    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsM.CancelEditCommand, Source={x:Static pm:App.Core}}" />
+    <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}" />
     <KeyBinding Key="Delete" Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
-    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsVM.CommentCommand, Source={x:Static pm:App.Ui}}" />
+    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}" />
     <KeyBinding Modifiers="Control" Key="R" Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
   </mahApps:MetroWindow.InputBindings>
   
