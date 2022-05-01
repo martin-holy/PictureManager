@@ -155,6 +155,11 @@ namespace PictureManager.Domain {
           CategoryGroupsM.UpdateVisibility(ViewersM.Current);
         }
       };
+
+      ThumbnailsGridsM.PropertyChanged += (o, e) => {
+        if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName))
+          MediaItemSizesTreeM.Size.CurrentGrid = ThumbnailsGridsM.Current;
+      };
     }
 
     public void ToggleKeyword(KeywordM keyword) {
