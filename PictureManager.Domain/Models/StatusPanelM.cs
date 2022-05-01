@@ -78,8 +78,11 @@ namespace PictureManager.Domain.Models {
 
     public string DateAndTime => DateTimeExtensions.DateTimeFromString(CurrentMediaItemM?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<int> Rating { get; } = new();
+    public RelayCommand<object> PinCommand { get; }
 
     public StatusPanelM(Core core) {
+      PinCommand = new(() => IsPinned = !IsPinned);
+
       core.MediaItemsM.PropertyChanged += (_, e) => {
         if (nameof(core.MediaItemsM.Current).Equals(e.PropertyName)) {
           CurrentMediaItemM = null;
