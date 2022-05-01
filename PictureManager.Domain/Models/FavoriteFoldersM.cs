@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -12,8 +13,11 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public ObservableCollection<FavoriteFolderM> All { get; } = new();
 
+    public RelayCommand<FolderM> AddToFavoritesCommand { get; }
+
     public FavoriteFoldersM() : base(Res.IconFolderStar, Category.FavoriteFolders, "Favorites") {
       CanMoveItem = true;
+      AddToFavoritesCommand = new(item => ItemCreate(this, item));
     }
 
     protected override void ModelItemRename(ITreeItem item, string name) {
