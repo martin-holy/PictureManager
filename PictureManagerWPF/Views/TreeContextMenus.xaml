@@ -87,7 +87,8 @@
   <!-- GeoNames -->
   <ContextMenu x:Key="TreeContextMenuGeoNames">
     <MenuItem Header="New"
-              Command="vm:GeoNamesVM.NewGeoNameFromGpsCommand" />
+              Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand,
+                        Source={x:Static pm:App.Core}}" />
   </ContextMenu>
 
   <!-- Viewers -->

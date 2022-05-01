@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.BaseClasses;
 using SimpleDB;
@@ -12,8 +13,13 @@ namespace PictureManager.Domain.Models {
     public DataAdapter DataAdapter { get; set; }
     public List<GeoNameM> All { get; } = new();
     public Dictionary<int, GeoNameM> AllDic { get; set; }
+    public static string GeoNamesUserName { get; set; }
 
-    public GeoNamesM() : base(Res.IconLocationCheckin, Category.GeoNames, "GeoNames") { }
+    public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
+
+    public GeoNamesM() : base(Res.IconLocationCheckin, Category.GeoNames, "GeoNames") {
+      NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(GeoNamesUserName));
+    }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
       try {
