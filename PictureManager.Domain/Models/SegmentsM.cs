@@ -28,6 +28,7 @@ namespace PictureManager.Domain.Models {
     public Dictionary<int, SegmentM> AllDic { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
+    public List<MediaItemM> MediaItemsForMatching { get; set; }
     public ObservableCollection<object> LoadedGrouped { get; } = new();
     public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
@@ -49,8 +50,24 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
+    public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
+    public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
+    public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
+    public RelayCommand<object> GroupConfirmedCommand { get; }
+    public RelayCommand<object> CompareAllGroupsCommand { get; }
+    public RelayCommand<object> SortCommand { get; }
+    public RelayCommand<object> GroupMatchingPanelCommand { get; }
+
     public SegmentsM() {
       SegmentsRectsM = new(this);
+
+      SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
+      SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown);
+      SegmentToolTipReloadCommand = new(SegmentToolTipReload);
+      GroupConfirmedCommand = new(() => Reload(false, true));
+      CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
+      SortCommand = new(() => Reload(true, true));
+      GroupMatchingPanelCommand = new(() => Reload(true, false));
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));

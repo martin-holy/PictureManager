@@ -33,7 +33,6 @@ namespace PictureManager.ViewModels {
     private VirtualizingWrapPanel _confirmedMatchingPanel;
 
     private readonly WorkTask _workTask = new();
-    private List<MediaItemM> _mediaItems;
 
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
@@ -50,18 +49,11 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
-    public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
-    public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
-    public RelayCommand<object> GroupConfirmedCommand { get; }
-    public RelayCommand<object> CompareAllGroupsCommand { get; }
-    public RelayCommand<object> SortCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
-    public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<RoutedEventArgs> MatchingPanelLoadedCommand { get; }
     public RelayCommand<RoutedEventArgs> ConfirmedMatchingPanelLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> MatchingPanelSizeChangedCommand { get; }
@@ -81,22 +73,16 @@ namespace PictureManager.ViewModels {
       var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
       SegmentsRectsVM = new(segmentsM.SegmentsRectsM);
 
-      SetSelectedAsSamePersonCommand = new(SegmentsM.SetSelectedAsSamePerson);
-      SetSelectedAsUnknownCommand = new(SegmentsM.SetSelectedAsUnknown);
-      SegmentToolTipReloadCommand = new(SegmentsM.SegmentToolTipReload);
       ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
       SelectCommand = new(Select);
-      SegmentMatchingCommand = new(SegmentMatching, () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-      GroupConfirmedCommand = new(() => SegmentsM.Reload(false, true));
-      CompareAllGroupsCommand = new(() => SegmentsM.LoadSegments(_mediaItems, 1));
-      SortCommand = new(() => SegmentsM.Reload(true, true));
+      SegmentMatchingCommand = new(
+        SegmentMatching,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       CompareCommand = new(async () => {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
       OpenSegmentsDrawerCommand = new(() => App.Ui.ToolsTabsVM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
-      GroupMatchingPanelCommand = new(() => SegmentsM.Reload(true, false));
-
       MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
       ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
       MatchingPanelSizeChangedCommand = new(
@@ -155,10 +141,10 @@ namespace PictureManager.ViewModels {
 
       if (result == -1) return;
 
-      _mediaItems = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
+      SegmentsM.MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       _coreVM.MainTabsVM.Activate(_mainTabsItem);
 
-      SegmentsM.LoadSegments(_mediaItems, result);
+      SegmentsM.LoadSegments(SegmentsM.MediaItemsForMatching, result);
     }
 
     private async Task CompareAsync() {
