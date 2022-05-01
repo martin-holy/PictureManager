@@ -168,7 +168,8 @@
     <Separator />
     <MenuItem
       Header="Add to Favorites"
-      Command="vm:FavoriteFoldersVM.AddToFavoritesCommand"
+      Command="{Binding FavoriteFoldersM.AddToFavoritesCommand,
+                Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}" />
     <MenuItem
       Header="Set as Folder Keyword"
