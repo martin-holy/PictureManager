@@ -1,5 +1,4 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+﻿using MH.Utils.Interfaces;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -15,9 +14,6 @@ namespace PictureManager.ViewModels {
     private readonly AppCore _coreVM;
 
     public FoldersM Model { get; }
-
-    public static RelayCommand<FolderM> SetAsFolderKeywordCommand { get; } = new(
-      App.Core.FoldersM.SetAsFolderKeyword);
 
     public FoldersVM(Core core, AppCore coreVM, FoldersM model) {
       _core = core;

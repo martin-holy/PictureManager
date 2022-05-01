@@ -22,6 +22,8 @@ namespace PictureManager.Domain.Models {
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
     public Action<object, ITreeItem, bool, bool> OnDropAction { get; set; }
 
+    public RelayCommand<FolderM> SetAsFolderKeywordCommand { get; }
+
     public FoldersM(Core core, ViewersM viewersM) : base(Res.IconFolder, Category.Folders, "Folders") {
       _core = core;
       _viewersM = viewersM;
@@ -29,6 +31,8 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
       CanCopyItem = true;
       IsExpanded = true;
+
+      SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
     }
 
     public void HandleItemExpandedChanged(FolderM item) {
