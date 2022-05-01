@@ -12,6 +12,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -60,7 +61,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void Rotate() {
-      var rotation = RotationDialog.Show();
+      var rotation = (MediaOrientation)Core.DialogHostShow(new RotationDialogM());
       if (rotation == MediaOrientation.Normal) return;
       Model.SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
 
