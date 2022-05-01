@@ -10,6 +10,8 @@ using PictureManager.Domain;
 using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
+using PictureManager.Domain.Dialogs;
+using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridsVM : ObservableObject {
@@ -73,7 +75,13 @@ namespace PictureManager.ViewModels {
         () => Model.Current?.FilteredItems.Count > 0);
 
       CompressCommand = new(
-        CompressDialog.Open,
+        () => {
+          Core.DialogHostShow(
+            new CompressDialogM(
+              Model.Current.GetSelectedOrAll()
+                .Where(x => x.MediaType == MediaType.Image).ToList(),
+              Settings.Default.JpegQualityLevel));
+        },
         () => Model.Current?.FilteredItems.Count > 0);
 
       ResizeImagesCommand = new(
