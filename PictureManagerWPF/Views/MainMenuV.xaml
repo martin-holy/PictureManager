@@ -152,7 +152,8 @@
             <MenuItem
               Icon="{StaticResource EyeIcon}"
               Header="All"
-              Command="{Binding Source={x:Static vm:ViewersVM.SetCurrentCommand}}" />
+              Command="{Binding ViewersM.SetCurrentCommand,
+                        Source={x:Static pm:App.Core}}" />
             
             <CollectionContainer
               Collection="{Binding ViewersM.Items,
@@ -194,7 +195,8 @@
               Value="{Binding Path=(models:ViewerM.Name)}" />
             <Setter
               Property="Command"
-              Value="{Binding Source={x:Static vm:ViewersVM.SetCurrentCommand}}" />
+              Value="{Binding ViewersM.SetCurrentCommand,
+                      Source={x:Static pm:App.Core}}" />
             <Setter
               Property="CommandParameter"
               Value="{Binding}" />
