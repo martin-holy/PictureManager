@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -14,7 +15,11 @@ namespace PictureManager.Domain.Models {
     public List<ViewerM> All { get; } = new();
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public ViewersM() : base(Res.IconEye, Category.Viewers, "Viewers") { }
+    public RelayCommand<ViewerM> SetCurrentCommand { get; }
+
+    public ViewersM() : base(Res.IconEye, Category.Viewers, "Viewers") {
+      SetCurrentCommand = new(SetCurrent);
+    }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
