@@ -104,7 +104,7 @@
             <!-- BlurEffect when Search is visible -->
             <Style.Triggers>
               <DataTrigger
-                Binding="{Binding TreeViewSearchVM.Model.IsVisible}"
+                Binding="{Binding Model.TreeViewSearchM.IsVisible}"
                 Value="True">
 
                 <Setter Property="Effect">
