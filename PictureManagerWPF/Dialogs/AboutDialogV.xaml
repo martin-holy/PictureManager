@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
   
-  <DataTemplate DataType="{x:Type md:AboutDialog}">
+  <DataTemplate DataType="{x:Type md:AboutDialogM}">
     <DataTemplate.Resources>
       <Style
         TargetType="{x:Type Button}"

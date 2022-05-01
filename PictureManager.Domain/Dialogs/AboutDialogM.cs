@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Reflection;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class AboutDialog : ObservableObject, IDialog {
+  public sealed class AboutDialogM : ObservableObject, IDialog {
     private const string _donateUrl = @"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=9FDUA6VBNWMB2&lc=CZ&item_name=Martin%20Holy&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted";
     private FileVersionInfo _version;
     private string _title;
@@ -18,7 +18,7 @@ namespace PictureManager.Domain.Dialogs {
     public RelayCommand<object> OpenHomePageCommand { get; }
     public RelayCommand<object> DonanteCommand { get; }
     
-    public AboutDialog() {
+    public AboutDialogM() {
       Title = "About";
       Version = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 

@@ -57,7 +57,7 @@ namespace PictureManager.ViewModels {
     }
 
     private static void OpenAbout() {
-      Core.DialogHostShow(new AboutDialog());
+      Core.DialogHostShow(new AboutDialogM());
     }
 
     private static void OpenLog() {
