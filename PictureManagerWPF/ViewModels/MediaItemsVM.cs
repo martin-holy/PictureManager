@@ -91,7 +91,7 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       AddGeoNamesFromFilesCommand = new(
-        () => Model.AddGeoNamesFromFiles(Settings.Default.GeoNamesUserName),
+        () => Model.AddGeoNamesFromFiles(GeoNamesM.GeoNamesUserName),
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
       #endregion
     }
