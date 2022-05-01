@@ -7,6 +7,7 @@ using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
+using PictureManager.Domain.Models;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -31,6 +32,7 @@ namespace PictureManager {
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
+      GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
       Core.DialogHostShow = DialogHost.Show;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
@@ -58,6 +60,11 @@ namespace PictureManager {
     }
 
     private void AttachEvents() {
+      Settings.Default.PropertyChanged += (o, e) => {
+        if (nameof(Settings.Default.GeoNamesUserName).Equals(e.PropertyName))
+          GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
+      };
+
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, _) => {
         PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
