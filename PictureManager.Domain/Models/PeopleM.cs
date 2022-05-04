@@ -133,7 +133,11 @@ namespace PictureManager.Domain.Models {
     public void ToggleTopSegment(PersonM person, SegmentM segment) {
       if (segment == null) return;
 
+      var collectionIsNull = person.TopSegments == null;
       person.TopSegments = ObservableCollectionExtensions.Toggle(person.TopSegments, segment, true);
+
+      if (collectionIsNull)
+        person.OnPropertyChanged(nameof(person.TopSegments));
 
       if (person.TopSegments?.Count > 0)
         person.Segment = (SegmentM)person.TopSegments[0];
