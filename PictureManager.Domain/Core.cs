@@ -173,7 +173,7 @@ namespace PictureManager.Domain {
       var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
 
       if (sCount > 0 && pCount > 0) {
-        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", Res.IconQuestion, true, new[] { msgS, msgP }))) {
+        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", Res.IconQuestion, true, new DialogButton[] { new(msgS), new(msgP) }))) {
           case 0: SegmentsM.ToggleKeywordOnSelected(keyword); break;
           case 1: PeopleM.ToggleKeywordOnSelected(keyword); break;
         }
