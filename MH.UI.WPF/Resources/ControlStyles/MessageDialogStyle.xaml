@@ -27,7 +27,11 @@
 
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <Button Content="{Binding}">
+            <Button
+              Content="{Binding Text}"
+              IsDefault="{Binding IsDefault}"
+              IsCancel="{Binding IsCancel}">
+              
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="Click">
                   <b:ChangePropertyAction
