@@ -151,6 +151,7 @@ namespace MH.UI.WPF.Controls {
           group.Items.CollectionChanged -= ItemsGroupItemsCollectionChanged;
 
         WrappedItems.Clear();
+        _rowsScrollViewer.ScrollToTop();
         break;
 
         default:
