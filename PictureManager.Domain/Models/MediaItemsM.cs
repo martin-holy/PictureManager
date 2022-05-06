@@ -185,7 +185,7 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItemM item) {
       if (item == null) return;
 
-      Core.RunOnUiThread(() => MediaItemDeletedEventHandler(this, new(item)));
+      MediaItemDeletedEventHandler(this, new(item));
 
       item.People = null;
       item.Keywords = null;
