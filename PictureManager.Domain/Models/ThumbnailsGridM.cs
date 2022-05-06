@@ -409,10 +409,6 @@ namespace PictureManager.Domain.Models {
 
       _loadIsRunning = true;
 
-      // scroll to top
-      if (FilteredItems.Count > 0)
-        ScrollToItem = FilteredItems[0];
-
       ClearItBeforeLoad();
       _progressBar.IsIndeterminate = true;
 
