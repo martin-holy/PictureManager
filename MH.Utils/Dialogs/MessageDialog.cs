@@ -7,25 +7,25 @@ namespace MH.Utils.Dialogs {
     private string _message;
     private string _icon;
     private bool _canCancel;
-    private string[] _buttons;
+    private DialogButton[] _buttons;
     private int _result = -1;
 
     public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
     public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
     public bool CanCancel { get => _canCancel; set { _canCancel = value; OnPropertyChanged(); } }
-    public string[] Buttons { get => _buttons; set { _buttons = value; OnPropertyChanged(); } }
+    public DialogButton[] Buttons { get => _buttons; set { _buttons = value; OnPropertyChanged(); } }
     public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
 
-    public MessageDialog(string title, string message, string icon, bool canCancel, string[] buttons = null) {
+    public MessageDialog(string title, string message, string icon, bool canCancel, DialogButton[] buttons = null) {
       Title = title;
       Message = message;
       Icon = icon;
       CanCancel = canCancel;
       Buttons = buttons
         ?? (canCancel
-          ? new[] { "YES", "NO" }
-          : new[] { "OK" });
+          ? new DialogButton[] { new("YES", true), new("NO", false, true) }
+          : new DialogButton[] { new("OK", true) });
     }
   }
 }
