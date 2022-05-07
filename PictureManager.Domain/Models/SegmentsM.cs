@@ -145,7 +145,7 @@ namespace PictureManager.Domain.Models {
       if (Selected.Count == 0) return;
 
       var msgCount = Selected.Count > 1 ? $"'s ({Selected.Count})" : string.Empty;
-      var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}??";
+      var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}?";
 
       if (Core.DialogHostShow(new MessageDialog("Set Person", msg, Res.IconQuestion, true)) == 0)
         SetSelectedAsPerson(person);
