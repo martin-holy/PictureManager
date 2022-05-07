@@ -94,7 +94,7 @@
       <mhc:CatTreeView
         Grid.Row="1"
         ItemsSource="{Binding Model.Items}"
-        ScrollToItem="{Binding Model.ScrollToItem}">
+        ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}">
         
         <mhc:CatTreeView.Style>
           <Style
