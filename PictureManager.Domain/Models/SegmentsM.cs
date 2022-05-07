@@ -506,20 +506,16 @@ namespace PictureManager.Domain.Models {
 
     /// <summary>
     /// Compares segments with same person id to other segments with same person id
-    /// and select random segment from each group for display
+    /// and select top segment from each group for display
     /// </summary>
     private void ReloadConfirmedGrouped() {
       var groupsA = Loaded.Where(x => x.PersonId > 0).GroupBy(x => x.PersonId).OrderBy(x => x.First().Person.Name);
       var groupsB = Loaded.Where(x => x.PersonId < 0).GroupBy(x => x.PersonId).OrderByDescending(x => x.Key);
       var groups = groupsA.Concat(groupsB).ToArray();
-      var random = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
       var tmp = new List<(int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar)>();
 
-      SegmentM GetRandomSegment(IEnumerable<SegmentM> segments) {
-        var tmpSegments = (segments.First().Person?.TopSegments?.Cast<SegmentM>() ?? segments).ToArray();
-        var segment = tmpSegments.ToArray()[random.Next(tmpSegments.Length - 1)];
-        return segment;
-      }
+      SegmentM GetTopSegment(IEnumerable<SegmentM> segments) =>
+        (segments.First().Person?.TopSegments?.Cast<SegmentM>() ?? segments).First();
 
       ConfirmedGrouped.Clear();
 
@@ -527,7 +523,7 @@ namespace PictureManager.Domain.Models {
       foreach (var gA in groups) {
         (int personId, SegmentM segment, List<(int personId, SegmentM segment, double sim)> similar) confirmedSegment = new() {
           personId = gA.Key,
-          segment = GetRandomSegment(gA),
+          segment = GetTopSegment(gA),
           similar = new()
         };
 
@@ -547,7 +543,7 @@ namespace PictureManager.Domain.Models {
           if (sims.Count == 0) continue;
 
           var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
-          confirmedSegment.similar.Add(new(gB.Key, GetRandomSegment(gB), simMedian));
+          confirmedSegment.similar.Add(new(gB.Key, GetTopSegment(gB), simMedian));
         }
       }
 
