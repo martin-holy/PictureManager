@@ -14,10 +14,11 @@ namespace MH.UI.WPF.Controls {
 
   public class VirtualizingWrapPanel : ItemsControl {
     private UIElement _rowToScrollToTop;
-    private ScrollViewer _rowsScrollViewer;
     private VirtualizingStackPanel _rowsStackPanel;
     private object _topItem;
     private object _topItemBeforeReload;
+
+    public ScrollViewer RowsScrollViewer { get; set; }
 
     public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register(
       nameof(ItemWidth),
@@ -41,6 +42,12 @@ namespace MH.UI.WPF.Controls {
       typeof(VirtualizingWrapPanel),
       new(ScrollToItemChanged));
 
+    public static readonly DependencyProperty ScrollToTopProperty = DependencyProperty.Register(
+      nameof(ScrollToTop),
+      typeof(bool),
+      typeof(VirtualizingWrapPanel),
+      new(ScrollToTopChanged));
+
     public static readonly DependencyProperty WrappedItemsProperty = DependencyProperty.Register(
       nameof(WrappedItems),
       typeof(ObservableCollection<object>),
@@ -51,6 +58,12 @@ namespace MH.UI.WPF.Controls {
       typeof(double),
       typeof(VirtualizingWrapPanel),
       new(2.5));
+
+    public static readonly DependencyProperty ReloadAutoScrollProperty = DependencyProperty.Register(
+      nameof(ReloadAutoScroll),
+      typeof(bool),
+      typeof(VirtualizingWrapPanel),
+      new(true));
 
     public double ItemWidth {
       get => (double)GetValue(ItemWidthProperty);
@@ -72,6 +85,11 @@ namespace MH.UI.WPF.Controls {
       set => SetValue(ScrollToItemProperty, value);
     }
 
+    public bool ScrollToTop {
+      get => (bool)GetValue(ScrollToTopProperty);
+      set => SetValue(ScrollToTopProperty, value);
+    }
+
     public ObservableCollection<object> WrappedItems {
       get => (ObservableCollection<object>)GetValue(WrappedItemsProperty);
       set => SetValue(WrappedItemsProperty, value);
@@ -80,6 +98,11 @@ namespace MH.UI.WPF.Controls {
     public double ScrollViewerSpeedFactor {
       get => (double)GetValue(ScrollViewerSpeedFactorProperty);
       set => SetValue(ScrollViewerSpeedFactorProperty, value);
+    }
+
+    public bool ReloadAutoScroll {
+      get => (bool)GetValue(ReloadAutoScrollProperty);
+      set => SetValue(ReloadAutoScrollProperty, value);
     }
 
     static VirtualizingWrapPanel() {
@@ -95,7 +118,7 @@ namespace MH.UI.WPF.Controls {
       itemsPresenter.ApplyTemplate();
 
       _rowsStackPanel = VisualTreeHelper.GetChild(itemsPresenter, 0) as VirtualizingStackPanel;
-      _rowsScrollViewer = (ScrollViewer)Template.FindName("PART_RowsScrollViewer", this);
+      RowsScrollViewer = (ScrollViewer)Template.FindName("PART_RowsScrollViewer", this);
 
       LayoutUpdated += (_, _) => {
         if (_topItemBeforeReload != null) {
@@ -104,11 +127,11 @@ namespace MH.UI.WPF.Controls {
         }
 
         if (_rowToScrollToTop == null) return;
-        _rowsScrollViewer?.ScrollToVerticalOffset(_rowsStackPanel.GetItemOffset(_rowToScrollToTop));
+        RowsScrollViewer?.ScrollToVerticalOffset(_rowsStackPanel.GetItemOffset(_rowToScrollToTop));
         _rowToScrollToTop = null;
       };
 
-      _rowsScrollViewer.ScrollChanged += (_, _) => {
+      RowsScrollViewer.ScrollChanged += (_, _) => {
         _topItem = null;
 
         if (Items.Count > 0) {
@@ -131,6 +154,13 @@ namespace MH.UI.WPF.Controls {
       vwp.ScrollTo(e.NewValue);
       // reset so that scroll to same item is possible
       vwp.ScrollToItem = null;
+    }
+
+    private static void ScrollToTopChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not VirtualizingWrapPanel vwp || !(bool)e.NewValue) return;
+      vwp.RowsScrollViewer?.ScrollToTop();
+      vwp.RowsScrollViewer?.UpdateLayout();
+      vwp.ScrollToTop = false;
     }
 
     private static void ItemsToWrapChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -162,7 +192,9 @@ namespace MH.UI.WPF.Controls {
         foreach (var group in WrappedItems.OfType<ItemsGroup>())
           group.Items.CollectionChanged -= ItemsGroupItemsCollectionChanged;
 
-        _topItemBeforeReload = _topItem;
+        if (ReloadAutoScroll)
+          _topItemBeforeReload = _topItem;
+
         WrappedItems.Clear();
         break;
 
@@ -232,11 +264,8 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void ScrollTo(int index) {
-      if (Items.Count - 1 < index || index < 0) {
-        _rowsScrollViewer.ScrollToTop();
-        _rowsScrollViewer.UpdateLayout();
+      if (Items.Count - 1 < index || index < 0)
         return;
-      }
 
       _rowsStackPanel.BringIndexIntoViewPublic(index);
 
@@ -245,10 +274,9 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void ScrollTo(object item) {
-      if (item == null)
-        _rowsScrollViewer.ScrollToTop();
-      else
-        ScrollTo(GetRowIndex(item));
+      if (item == null) return;
+
+      ScrollTo(GetRowIndex(item));
     }
 
     private int GetRowIndex(object item) {
