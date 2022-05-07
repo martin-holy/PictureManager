@@ -51,8 +51,12 @@ namespace MH.UI.WPF.Controls {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
     }
 
-    private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-      (d as CatTreeView)?.ScrollTo((ITreeItem)e.NewValue);
+    private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not CatTreeView ctv) return;
+      ctv.ScrollTo((ITreeItem)e.NewValue);
+      // reset so that scroll to same item is possible
+      ctv.ScrollToItem = null;
+    }
 
     private static ITreeCategory GetCategory(ITreeItem item) =>
       Tree.GetTopParent(item) as ITreeCategory;
