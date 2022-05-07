@@ -32,6 +32,7 @@ namespace PictureManager.Domain.Models {
     private bool _sortByFileFirst = true;
     private string _positionSlashCount;
     private object _scrollToItem;
+    private object _scrollToTop;
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
     public event EventHandler FilteredChangedEventHandler = delegate { };
@@ -43,6 +44,7 @@ namespace PictureManager.Domain.Models {
     public MediaItemFilterSizeM FilterSize { get; } = new();
     public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public object ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
 
     public int FilterAndCount => _filterAnd.Count;
     public int FilterOrCount => _filterOr.Count;
@@ -409,6 +411,7 @@ namespace PictureManager.Domain.Models {
 
       _loadIsRunning = true;
 
+      ScrollToTop = true;
       ClearItBeforeLoad();
       _progressBar.IsIndeterminate = true;
 

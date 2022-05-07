@@ -85,6 +85,8 @@
       ItemWidthGetter="{Binding Model.ItemWidthGetter}"
       ItemsToWrap="{Binding Model.FilteredGrouped}"
       ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
+      ScrollToTop="{Binding Model.ScrollToTop, Mode=TwoWay}"
+      ReloadAutoScroll="False"
       Tag="{Binding}">
       
       <mhc:VirtualizingWrapPanel.InputBindings>
