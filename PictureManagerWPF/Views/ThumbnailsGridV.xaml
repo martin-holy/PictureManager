@@ -84,7 +84,7 @@
     <mhc:VirtualizingWrapPanel
       ItemWidthGetter="{Binding Model.ItemWidthGetter}"
       ItemsToWrap="{Binding Model.FilteredGrouped}"
-      ScrollToItem="{Binding Model.ScrollToItem}"
+      ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
       Tag="{Binding}">
       
       <mhc:VirtualizingWrapPanel.InputBindings>
