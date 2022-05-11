@@ -20,9 +20,9 @@ namespace PictureManager.ViewModels {
       _coreVM = coreVM;
       Model = model;
 
-      Model.AfterItemDeleteEventHandler += (o, _) => {
+      Model.AfterItemDeleteEventHandler += (_, e) => {
         // delete folder, sub folders and mediaItems from file system
-        if (o is FolderM folder && Directory.Exists(folder.FullPath))
+        if (e.Data is FolderM folder && Directory.Exists(folder.FullPath))
           AppCore.FileOperationDelete(new() { folder.FullPath }, true, false);
       };
 
