@@ -396,6 +396,16 @@ namespace PictureManager.Domain.Models {
       return output;
     }
 
+    public void UpdateInfoBoxWithPerson(PersonM person) {
+      foreach (var mi in All.Where(mi => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true))
+        mi.SetInfoBox();
+    }
+
+    public void UpdateInfoBoxWithKeyword(KeywordM keyword) {
+      foreach (var mi in All.Where(mi => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true))
+        mi.SetInfoBox();
+    }
+
     public void RemovePersonFromMediaItems(PersonM person) {
       foreach (var mi in All.Where(mi => mi.People?.Contains(person) == true)) {
         mi.People = ListExtensions.Toggle(mi.People, person, true);
