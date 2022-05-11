@@ -5,9 +5,9 @@ using System;
 
 namespace PictureManager.Domain.BaseClasses {
   public class TreeCategoryBase : TreeCategory {
-    public event EventHandler AfterItemCreateEventHandler = delegate { };
-    public event EventHandler AfterItemRenameEventHandler = delegate { };
-    public event EventHandler AfterItemDeleteEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemCreateEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemRenameEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemDeleteEventHandler = delegate { };
 
     public Category Category { get; }
 
@@ -32,7 +32,7 @@ namespace PictureManager.Domain.BaseClasses {
       try {
         root.IsExpanded = true;
         var item = ModelItemCreate(root, newName);
-        AfterItemCreateEventHandler(item, EventArgs.Empty);
+        AfterItemCreateEventHandler(this, new(item));
       }
       catch (Exception ex) {
         Core.Instance.LogError(ex);
@@ -45,7 +45,7 @@ namespace PictureManager.Domain.BaseClasses {
 
       try {
         ModelItemRename(item, newName);
-        AfterItemRenameEventHandler(item, EventArgs.Empty);
+        AfterItemRenameEventHandler(this, new(item));
       }
       catch (Exception ex) {
         Core.Instance.LogError(ex);
@@ -62,7 +62,7 @@ namespace PictureManager.Domain.BaseClasses {
         if (item.Parent is { } parent && parent.Items.Count == 0)
           parent.IsExpanded = false;
 
-        AfterItemDeleteEventHandler(item, EventArgs.Empty);
+        AfterItemDeleteEventHandler(this, new(item));
       }
       catch (Exception ex) {
         Core.Instance.LogError(ex);
