@@ -66,7 +66,7 @@ namespace PictureManager.Domain.Models {
 
       EditCommand = new(
         () => IsEditModeOn = true,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0 && !IsEditModeOn);
 
       SaveEditCommand = new(
         SaveEdit,
