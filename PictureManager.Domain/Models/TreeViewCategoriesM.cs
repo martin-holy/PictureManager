@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -115,11 +116,25 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in mediaItems) {
 
         // People
-        if (mi.People != null)
-          foreach (var person in mi.People) {
+        if (mi.People != null || mi.Segments != null) {
+          var people = (
+              mi.People == null
+                ? Array.Empty<PersonM>()
+                : mi.People.ToArray())
+            .Concat(
+              mi.Segments == null
+                ? Array.Empty<PersonM>()
+                : mi.Segments
+                  .Where(x => x.Person != null)
+                  .Select(x => x.Person)
+                  .ToArray())
+            .Distinct();
+
+          foreach (var person in people) {
             MarkedTagsAddWithIncrease(person);
             MarkedTagsAddWithIncrease(person.Parent as CategoryGroupM);
           }
+        }
 
         // Keywords
         if (mi.Keywords != null) {
