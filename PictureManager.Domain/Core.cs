@@ -122,9 +122,17 @@ namespace PictureManager.Domain {
         MediaItemsM.Delete(e.Data.MediaItems.ToArray());
       };
 
+      PeopleM.AfterItemRenameEventHandler += (_, e) => {
+        MediaItemsM.UpdateInfoBoxWithPerson((PersonM)e.Data);
+      };
+
       PeopleM.PersonDeletedEventHandler += (_, e) => {
         MediaItemsM.RemovePersonFromMediaItems(e.Data);
         SegmentsM.RemovePersonFromSegments(e.Data);
+      };
+
+      KeywordsM.AfterItemRenameEventHandler += (_, e) => {
+        MediaItemsM.UpdateInfoBoxWithKeyword((KeywordM)e.Data);
       };
 
       KeywordsM.KeywordDeletedEventHandler += (_, e) => {
