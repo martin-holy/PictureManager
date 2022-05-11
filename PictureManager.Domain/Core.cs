@@ -157,8 +157,10 @@ namespace PictureManager.Domain {
       };
 
       ThumbnailsGridsM.PropertyChanged += (o, e) => {
-        if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName))
+        if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
           MediaItemSizesTreeM.Size.CurrentGrid = ThumbnailsGridsM.Current;
+          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        }
       };
     }
 
