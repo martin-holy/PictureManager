@@ -253,6 +253,7 @@ namespace PictureManager.Domain.Models {
       SegmentPersonChangeEventHandler(this, new((segment, segment.Person, person)));
       segment.Person = person;
       segment.PersonId = personId;
+      segment.MediaItem.SetInfoBox();
       DataAdapter.IsModified = true;
     }
 
