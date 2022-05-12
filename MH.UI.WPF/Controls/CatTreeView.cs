@@ -77,7 +77,10 @@ namespace MH.UI.WPF.Controls {
         if (panel == null) break;
         panel.BringIndexIntoViewPublic(index);
         if (parent.ItemContainerGenerator.ContainerFromIndex(index) is not TreeViewItem tvi) break;
-        tvi.IsExpanded = true;
+
+        if (treeItem.Items.Count > 0)
+          tvi.IsExpanded = true;
+
         parent = tvi;
         offset += panel.GetItemOffset(tvi);
       }
