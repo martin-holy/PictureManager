@@ -15,6 +15,7 @@ using MH.UI.WPF.Utils;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.HelperClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -123,10 +124,21 @@ namespace PictureManager.ViewModels {
 
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM } image) {
-        var list = image.TryFindParent<StackPanel>()
-          ?.DataContext is VirtualizingWrapPanelRow { Items: { } } row
-            ? row.Items.Cast<SegmentM>().ToList()
-            : new() { segmentM };
+        var rowStackPanel = image.TryFindParent<StackPanel>();
+        var wrapPanel = image.TryFindParent<VirtualizingWrapPanel>();
+        var rowIndex = wrapPanel.WrappedItems.IndexOf(rowStackPanel.DataContext);
+        var itemsGroup = wrapPanel.WrappedItems
+          .OfType<ItemsGroup>()
+          .Where(x => wrapPanel.WrappedItems.IndexOf(x) < rowIndex)
+          .LastOrDefault();
+        var list = itemsGroup != null
+          ? itemsGroup.Items.Cast<SegmentM>().ToList()
+          : wrapPanel.WrappedItems
+             .OfType<VirtualizingWrapPanelRow>()
+             .Where(x => wrapPanel.WrappedItems.IndexOf(x) <= rowIndex)
+             .SelectMany(x => x.Items.Cast<SegmentM>())
+             .ToList();
+
         SegmentsM.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
       }
     }
