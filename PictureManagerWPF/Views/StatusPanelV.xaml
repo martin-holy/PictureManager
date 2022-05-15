@@ -190,7 +190,14 @@
             <mhc:Icon Source="{StaticResource IconRuler}" />
 
             <Border>
-              <TextBlock Text="{Binding CurrentMediaItemM.Dimensions}" />
+              <TextBlock>
+                <TextBlock.Text>
+                  <MultiBinding StringFormat="{}{0}x{1}">
+                    <Binding Path="CurrentMediaItemM.Width" />
+                    <Binding Path="CurrentMediaItemM.Height" />
+                  </MultiBinding>
+                </TextBlock.Text>
+              </TextBlock>
             </Border>
           </StackPanel>
         </Border>

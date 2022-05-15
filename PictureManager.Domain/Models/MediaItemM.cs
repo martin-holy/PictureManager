@@ -52,7 +52,6 @@ namespace PictureManager.Domain.Models {
     public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
     public int ThumbSize { get; set; }
-    public string Dimensions => $"{Width}x{Height}";
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
     public bool HasVideoClips { get => _hasVideoClips; set { _hasVideoClips = value; OnPropertyChanged(); } }
     public ObservableCollection<SegmentM> Segments { get; set; }
