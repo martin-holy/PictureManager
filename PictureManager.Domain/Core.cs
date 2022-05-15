@@ -95,6 +95,7 @@ namespace PictureManager.Domain {
 
         AttachEvents();
 
+        progress.Report("Loading drives");
         ViewersM.SetCurrent(ViewersM.Current);
 
         // TODO better
