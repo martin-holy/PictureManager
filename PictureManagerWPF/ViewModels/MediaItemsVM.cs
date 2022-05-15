@@ -123,7 +123,7 @@ namespace PictureManager.ViewModels {
           // true because only media item dimensions are required
           if (frame.Metadata is not BitmapMetadata bm) return true;
 
-          ReadImageMetadata(mi, bm, gpsOnly);
+          await ReadImageMetadata(mi, bm, gpsOnly);
 
           mi.SetThumbSize(true);
         }
@@ -166,7 +166,7 @@ namespace PictureManager.ViewModels {
       }
     }
 
-    private async void ReadImageMetadata(MediaItemM mi, BitmapMetadata bm, bool gpsOnly) {
+    private async Task ReadImageMetadata(MediaItemM mi, BitmapMetadata bm, bool gpsOnly) {
       object GetQuery(string query) {
         try {
           return bm.GetQuery(query);
