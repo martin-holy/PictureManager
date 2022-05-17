@@ -6,7 +6,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Folder|Title
   /// </summary>
-  public class FavoriteFoldersDataAdapter : DataAdapter {
+  public class FavoriteFoldersDataAdapter : DataAdapter<FavoriteFolderM> {
     private readonly FavoriteFoldersM _model;
     private readonly FoldersM _foldersM;
 
@@ -27,10 +27,9 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      _model.All.Add(
-        new(int.Parse(props[0]), props[2]) {
-          Csv = props
-        });
+      var favoriteFolder = new FavoriteFolderM(int.Parse(props[0]), props[2]);
+      _model.All.Add(favoriteFolder);
+      AllCsv.Add(favoriteFolder, props);
     }
 
     private static string ToCsv(FavoriteFolderM ff) =>
@@ -42,13 +41,10 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       _model.Items.Clear();
 
-      foreach (var item in _model.All) {
-        item.Folder = _foldersM.AllDic[int.Parse(item.Csv[1])];
-        item.Parent = _model;
-        _model.Items.Add(item);
-
-        // csv array is not needed any more
-        item.Csv = null;
+      foreach (var (ff, csv) in AllCsv) {
+        ff.Folder = _foldersM.DataAdapter.AllId[int.Parse(csv[1])];
+        ff.Parent = _model;
+        _model.Items.Add(ff);
       }
     }
   }

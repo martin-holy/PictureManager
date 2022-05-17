@@ -8,7 +8,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Name|Category|GroupItems
   /// </summary>
-  public class CategoryGroupsDataAdapter : DataAdapter {
+  public class CategoryGroupsDataAdapter : DataAdapter<CategoryGroupM> {
     private readonly CategoryGroupsM _model;
     private readonly KeywordsM _keywordsM;
     private readonly PeopleM _peopleM;
@@ -32,10 +32,9 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
       var category = (Category)int.Parse(props[2]);
-      _model.All.Add(
-        new(int.Parse(props[0]), props[1], category, Res.CategoryToIconName(category)) {
-          Csv = props
-        });
+      var group = new CategoryGroupM(int.Parse(props[0]), props[1], category, Res.CategoryToIconName(category));
+      _model.All.Add(group);
+      AllCsv.Add(group, props);
     }
 
     private static string ToCsv(CategoryGroupM categoryGroup) =>
@@ -43,19 +42,23 @@ namespace PictureManager.Domain.DataAdapters {
         categoryGroup.Id.ToString(),
         categoryGroup.Name,
         (int)categoryGroup.Category,
-        string.Join(",", categoryGroup.Items.Select(x => ((IRecord)x).Id)));
+        string.Join(",", categoryGroup.Items.Select(x => x switch {
+          KeywordM k => k.Id.ToString(),
+          PersonM p => p.Id.ToString(),
+          _ => throw new ArgumentException("Unexpected item in an group", x.Name)
+        })));
 
     public override void LinkReferences() {
-      foreach (var cg in _model.All) {
+      foreach (var (cg, csv) in AllCsv) {
         var items = new List<int>();
-        if (!string.IsNullOrEmpty(cg.Csv[3]))
-          items.AddRange(cg.Csv[3].Split(',').Select(int.Parse));
+        if (!string.IsNullOrEmpty(csv[3]))
+          items.AddRange(csv[3].Split(',').Select(int.Parse));
 
         switch (cg.Category) {
           case Category.People:
             cg.Parent = _peopleM;
             _peopleM.Items.Add(cg);
-            foreach (var item in items.Select(id => _peopleM.AllDic[id])) {
+            foreach (var item in items.Select(id => _peopleM.DataAdapter.AllId[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }
@@ -65,7 +68,7 @@ namespace PictureManager.Domain.DataAdapters {
           case Category.Keywords:
             cg.Parent = _keywordsM;
             _keywordsM.Items.Add(cg);
-            foreach (var item in items.Select(id => _keywordsM.AllDic[id])) {
+            foreach (var item in items.Select(id => _keywordsM.DataAdapter.AllId[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }

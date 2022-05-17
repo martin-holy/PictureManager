@@ -7,10 +7,9 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class FolderM : TreeItem, IEquatable<FolderM>, IRecord {
+  public class FolderM : TreeItem, IEquatable<FolderM> {
     #region IEquatable implementation
     public bool Equals(FolderM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as FolderM);
@@ -19,18 +18,13 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(FolderM a, FolderM b) => !(a == b);
     #endregion
 
-    #region IRecord implementation
-    public int Id { get; }
-    public string[] Csv { get; set; }
-    #endregion
-
-    public List<MediaItemM> MediaItems { get; } = new();
-    public FolderKeywordM FolderKeyword { get; set; }
-
     private bool _isAccessible;
     private bool _isAvailable;
     private bool _isFolderKeyword;
 
+    public int Id { get; }
+    public List<MediaItemM> MediaItems { get; } = new();
+    public FolderKeywordM FolderKeyword { get; set; }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIconName(); } }
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
     public bool IsFolderKeyword { get => _isFolderKeyword; set { _isFolderKeyword = value; OnPropertyChanged(); } }

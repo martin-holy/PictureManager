@@ -7,7 +7,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Name|Parent
   /// </summary>
-  public class KeywordsDataAdapter : DataAdapter {
+  public class KeywordsDataAdapter : DataAdapter<KeywordM> {
     private readonly KeywordsM _model;
     private readonly CategoryGroupsM _categoryGroupsM;
 
@@ -19,7 +19,6 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new();
       LoadFromFile();
     }
 
@@ -29,11 +28,10 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      var keyword = new KeywordM(int.Parse(props[0]), props[1], null) {
-        Csv = props
-      };
+      var keyword = new KeywordM(int.Parse(props[0]), props[1], null);
       _model.All.Add(keyword);
-      _model.AllDic.Add(keyword.Id, keyword);
+      AllCsv.Add(keyword, props);
+      AllId.Add(keyword.Id, keyword);
     }
 
     private static string ToCsv(KeywordM keyword) =>
@@ -44,15 +42,12 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void LinkReferences() {
       // link hierarchical keywords
-      foreach (var keyword in _model.All) {
+      foreach (var (keyword, csv) in AllCsv) {
         // reference to parent and back reference to children
-        if (!string.IsNullOrEmpty(keyword.Csv[2])) {
-          keyword.Parent = _model.AllDic[int.Parse(keyword.Csv[2])];
+        if (!string.IsNullOrEmpty(csv[2])) {
+          keyword.Parent = AllId[int.Parse(csv[2])];
           keyword.Parent.Items.Add(keyword);
         }
-
-        // csv array is not needed any more
-        keyword.Csv = null;
       }
 
       // add loose keywords

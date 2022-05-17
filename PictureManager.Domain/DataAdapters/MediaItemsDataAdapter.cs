@@ -8,7 +8,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
   /// </summary>
-  public class MediaItemsDataAdapter : DataAdapter {
+  public class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
     private readonly MediaItemsM _model;
     private readonly FoldersM _foldersM;
     private readonly PeopleM _peopleM;
@@ -26,7 +26,6 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new();
       LoadFromFile();
       _model.OnPropertyChanged(nameof(_model.MediaItemsCount));
     }
@@ -38,7 +37,6 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 12) throw new ArgumentException("Incorrect number of values.", csv);
       var mi = new MediaItemM(int.Parse(props[0]), null, props[2]) {
-        Csv = props,
         Width = props[3].IntParseOrDefault(0),
         Height = props[4].IntParseOrDefault(0),
         Orientation = props[5].IntParseOrDefault(1),
@@ -47,7 +45,8 @@ namespace PictureManager.Domain.DataAdapters {
         IsOnlyInDb = props[11] == "1"
       };
       _model.All.Add(mi);
-      _model.AllDic.Add(mi.Id, mi);
+      AllCsv.Add(mi, props);
+      AllId.Add(mi.Id, mi);
     }
 
     public static string ToCsv(MediaItemM mediaItem) =>
@@ -72,33 +71,30 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Empty);
 
     public override void LinkReferences() {
-      foreach (var mi in _model.All.Cast<MediaItemM>()) {
+      foreach (var (mi, csv) in AllCsv) {
         // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = _foldersM.AllDic[int.Parse(mi.Csv[1])];
+        mi.Folder = _foldersM.DataAdapter.AllId[int.Parse(csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
         // reference to People
-        if (!string.IsNullOrEmpty(mi.Csv[9])) {
-          var ids = mi.Csv[9].Split(',');
+        if (!string.IsNullOrEmpty(csv[9])) {
+          var ids = csv[9].Split(',');
           mi.People = new(ids.Length);
           foreach (var id in ids)
-            mi.People.Add(_peopleM.AllDic[int.Parse(id)]);
+            mi.People.Add(_peopleM.DataAdapter.AllId[int.Parse(id)]);
         }
 
         // reference to Keywords
-        if (!string.IsNullOrEmpty(mi.Csv[10])) {
-          var ids = mi.Csv[10].Split(',');
+        if (!string.IsNullOrEmpty(csv[10])) {
+          var ids = csv[10].Split(',');
           mi.Keywords = new(ids.Length);
           foreach (var id in ids)
-            mi.Keywords.Add(_keywordsM.AllDic[int.Parse(id)]);
+            mi.Keywords.Add(_keywordsM.DataAdapter.AllId[int.Parse(id)]);
         }
 
         // reference to GeoName
-        if (!string.IsNullOrEmpty(mi.Csv[8]))
-          mi.GeoName = _geoNamesM.AllDic[int.Parse(mi.Csv[8])];
-
-        // CSV array is not needed any more
-        mi.Csv = null;
+        if (!string.IsNullOrEmpty(csv[8]))
+          mi.GeoName = _geoNamesM.DataAdapter.AllId[int.Parse(csv[8])];
       }
     }
   }

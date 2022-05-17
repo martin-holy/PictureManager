@@ -7,13 +7,12 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Utils;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
   /// </summary>
-  public sealed class MediaItemM : ObservableObject, IEquatable<MediaItemM>, IRecord, ISelectable {
+  public sealed class MediaItemM : ObservableObject, IEquatable<MediaItemM>, ISelectable {
     #region IEquatable implementation
     public bool Equals(MediaItemM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as MediaItemM);
@@ -22,16 +21,12 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(MediaItemM a, MediaItemM b) => !(a == b);
     #endregion
 
-    #region IRecord implementation
-    public int Id { get; }
-    public string[] Csv { get; set; }
-    #endregion
-
     #region ISelectable implementation
     private bool _isSelected;
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     #endregion
 
+    public int Id { get; }
     public FolderM Folder { get; set; }
     public string FileName { get; set; }
     public int Width { get; set; }

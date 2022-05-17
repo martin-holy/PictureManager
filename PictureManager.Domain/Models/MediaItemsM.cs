@@ -20,9 +20,8 @@ namespace PictureManager.Domain.Models {
     private bool _isEditModeOn;
     private MediaItemM _current;
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<MediaItemM> DataAdapter { get; set; }
     public List<MediaItemM> All { get; } = new();
-    public Dictionary<int, MediaItemM> AllDic { get; set; }
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
 
     public MediaItemM Current {

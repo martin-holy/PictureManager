@@ -92,28 +92,12 @@ namespace PictureManager.Domain {
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
+        Sdb.ClearDataAdapters();
 
         AttachEvents();
 
         progress.Report("Loading drives");
         ViewersM.SetCurrent(ViewersM.Current);
-
-        // TODO better
-        // cleanup
-        FoldersM.AllDic.Clear();
-        FoldersM.AllDic = null;
-        GeoNamesM.AllDic.Clear();
-        GeoNamesM.AllDic = null;
-        KeywordsM.AllDic.Clear();
-        KeywordsM.AllDic = null;
-        MediaItemsM.AllDic.Clear();
-        MediaItemsM.AllDic = null;
-        PeopleM.AllDic.Clear();
-        PeopleM.AllDic = null;
-        VideoClipsM.AllDic.Clear();
-        VideoClipsM.AllDic = null;
-        SegmentsM.AllDic.Clear();
-        SegmentsM.AllDic = null;
       });
     }
 
@@ -165,7 +149,7 @@ namespace PictureManager.Domain {
         }
       };
 
-      ThumbnailsGridsM.PropertyChanged += (o, e) => {
+      ThumbnailsGridsM.PropertyChanged += (_, e) => {
         if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
           MediaItemSizesTreeM.Size.CurrentGrid = ThumbnailsGridsM.Current;
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();

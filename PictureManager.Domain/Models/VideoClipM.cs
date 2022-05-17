@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using MH.Utils.BaseClasses;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipM : TreeItem, IRecord {
+  public sealed class VideoClipM : TreeItem {
     private string _title;
     private int _timeStart;
     private int _timeEnd;
     private double _volume;
     private double _speed;
-
-    public string[] Csv { get; set; }
 
     // DB Fields
     public int Id { get; }

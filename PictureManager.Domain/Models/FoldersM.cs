@@ -15,9 +15,8 @@ namespace PictureManager.Domain.Models {
     private readonly Core _core;
     private readonly ViewersM _viewersM;
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<FolderM> DataAdapter { get; set; }
     public List<FolderM> All { get; } = new();
-    public Dictionary<int, FolderM> AllDic { get; set; }
     public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
     public Action<object, ITreeItem, bool, bool> OnDropAction { get; set; }

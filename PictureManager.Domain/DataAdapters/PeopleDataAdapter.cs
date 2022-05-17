@@ -7,7 +7,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
-  public class PeopleDataAdapter : DataAdapter {
+  public class PeopleDataAdapter : DataAdapter<PersonM> {
     private readonly PeopleM _model;
     private readonly SegmentsM _segmentsM;
     private readonly KeywordsM _keywordsM;
@@ -21,7 +21,6 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new();
       LoadFromFile();
     }
 
@@ -31,9 +30,10 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var person = new PersonM(int.Parse(props[0]), props[1]) { Csv = props };
+      var person = new PersonM(int.Parse(props[0]), props[1]);
       _model.All.Add(person);
-      _model.AllDic.Add(person.Id, person);
+      AllCsv.Add(person, props);
+      AllId.Add(person.Id, person);
     }
 
     private static string ToCsv(PersonM person) =>
@@ -48,22 +48,22 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Join(",", person.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
-      foreach (var person in _model.All) {
+      foreach (var (person, csv) in AllCsv) {
         // Persons top segments
-        if (!string.IsNullOrEmpty(person.Csv[2])) {
-          var ids = person.Csv[2].Split(',');
+        if (!string.IsNullOrEmpty(csv[2])) {
+          var ids = csv[2].Split(',');
           person.TopSegments = new();
           foreach (var segmentId in ids)
-            person.TopSegments.Add(_segmentsM.AllDic[int.Parse(segmentId)]);
+            person.TopSegments.Add(_segmentsM.DataAdapter.AllId[int.Parse(segmentId)]);
           person.Segment = (SegmentM)person.TopSegments[0];
         }
 
         // reference to Keywords
-        if (!string.IsNullOrEmpty(person.Csv[3])) {
-          var ids = person.Csv[3].Split(',');
+        if (!string.IsNullOrEmpty(csv[3])) {
+          var ids = csv[3].Split(',');
           person.Keywords = new(ids.Length);
           foreach (var keywordId in ids)
-            person.Keywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
+            person.Keywords.Add(_keywordsM.DataAdapter.AllId[int.Parse(keywordId)]);
         }
 
         // add loose people
@@ -71,9 +71,6 @@ namespace PictureManager.Domain.DataAdapters {
           personM.Parent = _model;
           _model.Items.Add(personM);
         }
-
-        // CSV array is not needed any more
-        person.Csv = null;
       }
     }
   }

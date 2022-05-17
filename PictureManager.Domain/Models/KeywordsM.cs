@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using SimpleDB;
@@ -12,9 +11,8 @@ namespace PictureManager.Domain.Models {
   public sealed class KeywordsM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<KeywordM> DataAdapter { get; set; }
     public List<KeywordM> All { get; } = new();
-    public Dictionary<int, KeywordM> AllDic { get; set; }
     public CategoryGroupM AutoAddedGroup { get; set; }
 
     public event EventHandler<ObjectEventArgs<KeywordM>> KeywordDeletedEventHandler = delegate { };

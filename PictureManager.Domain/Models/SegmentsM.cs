@@ -21,9 +21,8 @@ namespace PictureManager.Domain.Models {
     private bool _matchingAutoSort = true;
     private readonly List<SegmentM> _selected = new();
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<SegmentM> DataAdapter { get; set; }
     public List<SegmentM> All { get; } = new();
-    public Dictionary<int, SegmentM> AllDic { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public List<MediaItemM> MediaItemsForMatching { get; set; }
