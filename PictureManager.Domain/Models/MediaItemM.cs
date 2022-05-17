@@ -56,7 +56,7 @@ namespace PictureManager.Domain.Models {
     public bool HasVideoClips { get => _hasVideoClips; set { _hasVideoClips = value; OnPropertyChanged(); } }
     public ObservableCollection<SegmentM> Segments { get; set; }
     public ObservableCollection<string> InfoBoxThumb { get; set; }
-    public ObservableCollection<string> InfoBoxPeople { get; set; }
+    public ObservableCollection<PersonM> InfoBoxPeople { get; set; }
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
     public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
     public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
@@ -134,20 +134,23 @@ namespace PictureManager.Domain.Models {
 
       if (People != null || Segments != null) {
         var people = (
-            People == null
-              ? Array.Empty<string>()
-              : People.Select(x => x.Name))
-          .Concat(
+          People == null
+            ? Array.Empty<PersonM>()
+            : People.ToArray())
+        .Concat(
             Segments == null
-              ? Array.Empty<string>()
-              : Segments.Select(x => x.Person == null ? $"S {x.PersonId}" : x.Person.Name)).ToArray();
+              ? Array.Empty<PersonM>()
+              : Segments
+                  .Where(x => x.Person != null)
+                  .Select(x => x.Person))
+        .ToArray();
 
         if (people.Any()) {
           InfoBoxPeople = new();
 
-          foreach (var p in people.Distinct().OrderBy(x => x)) {
+          foreach (var p in people.Distinct().OrderBy(x => x.Name)) {
             InfoBoxPeople.Add(p);
-            InfoBoxThumb.Add(p);
+            InfoBoxThumb.Add(p.Name);
           }
         }
       }
