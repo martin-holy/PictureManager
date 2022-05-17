@@ -75,7 +75,7 @@
 
               <Setter
                 Property="ToolTip"
-                Value="{Binding Segment.PersonId}" />
+                Value="0" />
             </DataTrigger>
 
           </Style.Triggers>

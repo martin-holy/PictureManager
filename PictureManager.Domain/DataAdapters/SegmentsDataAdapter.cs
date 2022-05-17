@@ -35,7 +35,7 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[3].Split(',');
-      var segment = new SegmentM(int.Parse(props[0]), int.Parse(props[2]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
+      var segment = new SegmentM(int.Parse(props[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
         Csv = props
       };
 
@@ -47,7 +47,9 @@ namespace PictureManager.Domain.DataAdapters {
       string.Join("|",
         segment.Id.ToString(),
         segment.MediaItem.Id.ToString(),
-        segment.PersonId.ToString(),
+        segment.Person == null
+          ? "0"
+          : segment.Person.Id.ToString(),
         string.Join(",", segment.X, segment.Y, segment.Radius),
         segment.Keywords == null
           ? string.Empty
@@ -71,7 +73,14 @@ namespace PictureManager.Domain.DataAdapters {
           mi.Segments ??= new();
           mi.Segments.Add(segment);
 
-          if (segment.PersonId > 0 && _peopleM.AllDic.TryGetValue(segment.PersonId, out var person)) {
+          var personId = int.Parse(segment.Csv[2]);
+
+          if (personId != 0) {
+            if (!_peopleM.AllDic.TryGetValue(personId, out var person)) {
+              person = new(personId, $"P {personId}");
+              _peopleM.AllDic.Add(person.Id, person);
+            }
+
             segment.Person = person;
             person.Segment ??= segment;
           }
