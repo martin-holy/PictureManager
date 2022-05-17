@@ -4,8 +4,7 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:StatusPanelM}">
     <Grid
@@ -60,14 +59,12 @@
           </Style.Triggers>
         </Style>
       </Grid.Style>
-
-      <b:Interaction.Triggers>
-        <b:EventTrigger
-          EventName="PreviewMouseLeftButtonUp">
-          <b:InvokeCommandAction
-            Command="{Binding PinCommand}" />
-        </b:EventTrigger>
-      </b:Interaction.Triggers>
+      
+      <Grid.InputBindings>
+        <MouseBinding
+          MouseAction="LeftClick"
+          Command="{Binding PinCommand}" />         
+      </Grid.InputBindings>
 
       <WrapPanel
         VerticalAlignment="Bottom"
@@ -380,7 +377,36 @@
               Source="{StaticResource IconPeople}"
               Fill="{StaticResource ColorBrushPeople}"/>
 
-            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxPeople}" />
+            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxPeople}">
+              
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border
+                    Style="{StaticResource SBorderText}"
+                    Cursor="Hand">
+                    
+                    <Border.InputBindings>
+                      <MouseBinding
+                        MouseAction="LeftClick"
+                        Command="{Binding PersonVM.SetPersonCommand,
+                                  Source={x:Static pm:App.Ui}}"
+                        CommandParameter="{Binding}" />         
+                    </Border.InputBindings>
+
+                    <TextBlock
+                      Text="{Binding Name}"
+                      Style="{StaticResource STextBlock}" />
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+              
+            </ItemsControl>
           </StackPanel>
         </Border>
 
