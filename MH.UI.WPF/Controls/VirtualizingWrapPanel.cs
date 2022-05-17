@@ -137,9 +137,9 @@ namespace MH.UI.WPF.Controls {
         if (Items.Count > 0) {
           var item = Items[GetTopRowIndex()];
 
-          _topItem = item is VirtualizingWrapPanelRow row
+          _topItem = item is VirtualizingWrapPanelRow row && row.Items.Count > 0
             ? row.Items[0]
-            : item is ItemsGroup group
+            : item is ItemsGroup group && group.Items.Count > 0
               ? group.Items[0]
               : null;
         }
