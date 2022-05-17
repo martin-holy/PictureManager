@@ -150,7 +150,7 @@
 
                           <Setter
                             Property="Text"
-                            Value="{Binding PersonId}" />
+                            Value="0" />
                         </DataTrigger>
                       </Style.Triggers>
                     </Style>
@@ -203,8 +203,8 @@
                   
               <Style.Triggers>
                 <DataTrigger
-                  Binding="{Binding PersonId}"
-                  Value="0">
+                  Binding="{Binding Person}"
+                  Value="{x:Null}">
                       
                   <Setter
                     Property="Visibility"

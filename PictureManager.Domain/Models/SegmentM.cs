@@ -12,7 +12,6 @@ namespace PictureManager.Domain.Models {
 
     #region DB Properties
     private PersonM _person;
-    private int _personId;
     private int _x;
     private int _y;
     private int _radius;
@@ -22,15 +21,6 @@ namespace PictureManager.Domain.Models {
     public MediaItemM MediaItem { get; set; }
     public PersonM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
     public List<KeywordM> Keywords { get; set; }
-
-    public int PersonId { // < 0 for unknown people, 0 for unknown, > 0 for known people
-      get => _personId;
-      set {
-        _personId = value;
-        OnPropertyChanged();
-        OnPropertyChanged(nameof(IsNotUnknown));
-      }
-    }
 
     public int X {
       get => _x;
@@ -81,16 +71,14 @@ namespace PictureManager.Domain.Models {
     #endregion DB Properties
 
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public bool IsNotUnknown => PersonId != 0;
     public Dictionary<SegmentM, double> Similar { get; set; }
     public double SimMax { get; set; }
     public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
 
     public SegmentM() { }
 
-    public SegmentM(int id, int personId, int x, int y, int radius) {
+    public SegmentM(int id, int x, int y, int radius) {
       Id = id;
-      PersonId = personId;
       X = x;
       Y = y;
       Radius = radius;

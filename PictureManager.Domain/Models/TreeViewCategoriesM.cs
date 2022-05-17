@@ -68,7 +68,7 @@ namespace PictureManager.Domain.Models {
       TreeViewSearchM.IsVisible = true;
     }
 
-    public void TagItemDeleteNotUsed(ITreeItem root) {
+    private void TagItemDeleteNotUsed(ITreeItem root) {
       if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
         $"Do you really want to delete not used items in '{root.Name}'?",
@@ -125,7 +125,7 @@ namespace PictureManager.Domain.Models {
               mi.Segments == null
                 ? Array.Empty<PersonM>()
                 : mi.Segments
-                  .Where(x => x.Person != null)
+                  .Where(x => x.Person?.Id > 0)
                   .Select(x => x.Person)
                   .ToArray())
             .Distinct();

@@ -19,7 +19,6 @@ using MH.Utils.HelperClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
@@ -129,8 +128,7 @@ namespace PictureManager.ViewModels {
         var rowIndex = wrapPanel.WrappedItems.IndexOf(rowStackPanel.DataContext);
         var itemsGroup = wrapPanel.WrappedItems
           .OfType<ItemsGroup>()
-          .Where(x => wrapPanel.WrappedItems.IndexOf(x) < rowIndex)
-          .LastOrDefault();
+          .LastOrDefault(x => wrapPanel.WrappedItems.IndexOf(x) < rowIndex);
         var list = itemsGroup != null
           ? itemsGroup.Items.Cast<SegmentM>().ToList()
           : wrapPanel.WrappedItems
@@ -199,9 +197,9 @@ namespace PictureManager.ViewModels {
             if (token.IsCancellationRequested) break;
             if (!_compareBitmaps.ContainsKey(segmentB)) continue;
             // do not compare segment with it self or with segment that have same person
-            if (segmentA == segmentB || (segmentA.PersonId != 0 && segmentA.PersonId == segmentB.PersonId)) continue;
-            // do not compare segment with PersonId > 0 with segment with also PersonId > 0
-            if (segmentA.PersonId > 0 && segmentB.PersonId > 0) continue;
+            if (segmentA == segmentB || (segmentA.Person != null && segmentA.Person == segmentB.Person)) continue;
+            // do not compare segment with Person.Id > 0 with segment with also Person.Id > 0
+            if (segmentA.Person?.Id > 0 && segmentB.Person?.Id > 0) continue;
 
             var matchings = tm.ProcessImage(_compareBitmaps[segmentB], _compareBitmaps[segmentA]);
             var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
@@ -230,7 +228,7 @@ namespace PictureManager.ViewModels {
             CreateThumbnail(segment);
 
           return File.Exists(segment.FilePathCache)
-            ? MH.UI.WPF.Utils.Imaging.GetBitmapSource(segment.FilePathCache)?.ToGray().Resize(size).ToBitmap()
+            ? Imaging.GetBitmapSource(segment.FilePathCache)?.ToGray().Resize(size).ToBitmap()
             : null;
         }
         catch (Exception ex) {
@@ -254,7 +252,7 @@ namespace PictureManager.ViewModels {
         segment.Radius * 2);
 
       try {
-        MH.UI.WPF.Utils.Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+        Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
           ?.SaveAsJpg(80, segment.FilePathCache);
 
         SegmentThumbnailSourceConverter.IgnoreImageCacheSegment = segment;
