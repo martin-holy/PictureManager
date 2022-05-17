@@ -10,8 +10,7 @@ using System.Text;
 namespace SimpleDB {
   public class SimpleDB : INotifyPropertyChanged {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
-    public void OnPropertyChanged([CallerMemberName] string name = null) =>
-      PropertyChanged(this, new PropertyChangedEventArgs(name));
+    public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
 
     private readonly List<DataAdapter> _dataAdapters = new();
     private readonly Dictionary<string, int> _idSequences = new();
@@ -35,6 +34,11 @@ namespace SimpleDB {
 
       dataAdapter.MaxId = maxId;
       _dataAdapters.Add(dataAdapter);
+    }
+
+    public void ClearDataAdapters() {
+      foreach (var da in _dataAdapters.Cast<IGenericDataAdapter>())
+        da.Clear();
     }
 
     public void LoadAllTables(IProgress<string> progress) {

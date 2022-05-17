@@ -4,6 +4,24 @@ using System.IO;
 using System.Linq;
 
 namespace SimpleDB {
+  public interface IGenericDataAdapter {
+    void Clear();
+  }
+
+  public abstract class DataAdapter<T> : DataAdapter, IGenericDataAdapter {
+    public Dictionary<T, string[]> AllCsv { get; set; } = new();
+    public Dictionary<int, T> AllId { get; set; } = new();
+
+    protected DataAdapter(string tableName, SimpleDB db) : base(tableName, db) { }
+
+    public void Clear() {
+      AllCsv.Clear();
+      AllCsv = null;
+      AllId.Clear();
+      AllId = null;
+    }
+  }
+
   public abstract class DataAdapter {
     private readonly ILogger _logger;
     private readonly SimpleDB _db;
@@ -54,7 +72,8 @@ namespace SimpleDB {
       return ++MaxId;
     }
 
-    public void LoadFromFile() => SimpleDB.LoadFromFile(FromCsv, TableFilePath, _logger);
+    public void LoadFromFile() =>
+      SimpleDB.LoadFromFile(FromCsv, TableFilePath, _logger);
 
     public void SaveToFile<T>(IEnumerable<T> items, Func<T, string> toCsv) {
       if (SimpleDB.SaveToFile(items, toCsv, TableFilePath, _logger))
@@ -74,7 +93,7 @@ namespace SimpleDB {
       PropsToCsv();
       if (TableProps.Count == 0) return;
 
-      if (SimpleDB.SaveToFile(TableProps.Select(x => $"{x.Key}|{x.Value}"), (x) => x, TablePropsFilePath, _logger))
+      if (SimpleDB.SaveToFile(TableProps.Select(x => $"{x.Key}|{x.Value}"), x => x, TablePropsFilePath, _logger))
         AreTablePropsModified = false;
     }
   }
