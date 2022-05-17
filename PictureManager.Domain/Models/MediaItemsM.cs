@@ -662,6 +662,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetMetadata(object item) {
+      if (_core.ThumbnailsGridsM.Current == null) return;
+
       var count = 0;
 
       foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
