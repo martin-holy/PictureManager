@@ -3,13 +3,12 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Interfaces;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|ToponymName|FCode|Parent
   /// </summary>
-  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM>, IRecord, IFilterItem {
+  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM>, IFilterItem {
     #region IEquatable implementation
     public bool Equals(GeoNameM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as GeoNameM);
@@ -18,16 +17,12 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(GeoNameM a, GeoNameM b) => !(a == b);
     #endregion
 
-    #region IRecord implementation
-    public int Id { get; } // this is GeoNameId not just DB Id
-    public string[] Csv { get; set; }
-    #endregion
-
     #region IFilterItem implementation
     private DisplayFilter _displayFilter;
     public DisplayFilter DisplayFilter { get => _displayFilter; set { _displayFilter = value; OnPropertyChanged(); } }
     #endregion
 
+    public int Id { get; } // this is GeoNameId not just DB Id
     public string ToponymName { get; }
     public string Fcode { get; }
     public string FullName => Tree.GetFullName(this, "\n", x => x.Name);

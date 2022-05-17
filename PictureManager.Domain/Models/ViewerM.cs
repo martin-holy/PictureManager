@@ -5,13 +5,12 @@ using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
   /// </summary>
-  public sealed class ViewerM : TreeItem, IEquatable<ViewerM>, IRecord {
+  public sealed class ViewerM : TreeItem, IEquatable<ViewerM> {
     #region IEquatable implementation
     public bool Equals(ViewerM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as ViewerM);
@@ -20,11 +19,7 @@ namespace PictureManager.Domain.Models {
     public static bool operator !=(ViewerM a, ViewerM b) => !(a == b);
     #endregion
 
-    #region IRecord implementation
     public int Id { get; }
-    public string[] Csv { get; set; }
-    #endregion
-
     public bool IsDefault { get; set; }
     public ObservableCollection<FolderM> IncludedFolders { get; } = new();
     public ObservableCollection<FolderM> ExcludedFolders { get; } = new();

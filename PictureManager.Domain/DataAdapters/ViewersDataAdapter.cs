@@ -8,7 +8,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
   /// </summary>
-  public class ViewersDataAdapter : DataAdapter {
+  public class ViewersDataAdapter : DataAdapter<ViewerM> {
     private readonly ViewersM _model;
     private readonly FoldersM _foldersM;
     private readonly KeywordsM _keywordsM;
@@ -31,12 +31,12 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 7) throw new ArgumentException("Incorrect number of values.", csv);
       var viewer = new ViewerM(int.Parse(props[0]), props[1], _model) {
-        Csv = props,
         IsDefault = props[6] == "1"
       };
       if (viewer.IsDefault)
         _model.Current = viewer;
       _model.All.Add(viewer);
+      AllCsv.Add(viewer, props);
     }
 
     public static string ToCsv(ViewerM viewer) =>
@@ -54,36 +54,33 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       _model.Items.Clear();
 
-      foreach (var viewer in _model.All.OrderBy(x => x.Name)) {
+      foreach (var (viewer, csv) in AllCsv.OrderBy(x => x.Key.Name)) {
         // reference to IncludedFolders
-        if (!string.IsNullOrEmpty(viewer.Csv[2]))
-          foreach (var folderId in viewer.Csv[2].Split(',')) {
-            var f = _foldersM.AllDic[int.Parse(folderId)];
+        if (!string.IsNullOrEmpty(csv[2]))
+          foreach (var folderId in csv[2].Split(',')) {
+            var f = _foldersM.DataAdapter.AllId[int.Parse(folderId)];
             viewer.IncludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
         // reference to ExcludedFolders
-        if (!string.IsNullOrEmpty(viewer.Csv[3]))
-          foreach (var folderId in viewer.Csv[3].Split(',')) {
-            var f = _foldersM.AllDic[int.Parse(folderId)];
+        if (!string.IsNullOrEmpty(csv[3]))
+          foreach (var folderId in csv[3].Split(',')) {
+            var f = _foldersM.DataAdapter.AllId[int.Parse(folderId)];
             viewer.ExcludedFolders.SetInOrder(f, x => x.FullPath);
           }
 
         // ExcludedCategoryGroups
-        if (!string.IsNullOrEmpty(viewer.Csv[4]))
-          foreach (var groupId in viewer.Csv[4].Split(','))
+        if (!string.IsNullOrEmpty(csv[4]))
+          foreach (var groupId in csv[4].Split(','))
             viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
 
         // ExcKeywords
-        if (!string.IsNullOrEmpty(viewer.Csv[5]))
-          foreach (var keywordId in viewer.Csv[5].Split(','))
-            viewer.ExcludedKeywords.Add(_keywordsM.AllDic[int.Parse(keywordId)]);
+        if (!string.IsNullOrEmpty(csv[5]))
+          foreach (var keywordId in csv[5].Split(','))
+            viewer.ExcludedKeywords.Add(_keywordsM.DataAdapter.AllId[int.Parse(keywordId)]);
 
         // adding Viewer to Viewers
         _model.Items.Add(viewer);
-
-        // CSV array is not needed any more
-        viewer.Csv = null;
       }
     }
   }

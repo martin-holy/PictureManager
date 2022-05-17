@@ -11,7 +11,7 @@ namespace PictureManager.Domain.Models {
   public sealed class ViewersM : TreeCategoryBase {
     private ViewerM _current;
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<ViewerM> DataAdapter { get; set; }
     public List<ViewerM> All { get; } = new();
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 

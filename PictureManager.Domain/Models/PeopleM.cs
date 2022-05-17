@@ -15,10 +15,9 @@ namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<PersonM> DataAdapter { get; set; }
     public List<PersonM> All { get; } = new();
     public List<PersonM> Selected { get; } = new();
-    public Dictionary<int, PersonM> AllDic { get; set; }
     public ObservableCollection<object> PeopleInGroups { get; } = new();
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };

@@ -8,7 +8,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
   /// </summary>
-  public class SegmentsDataAdapter : DataAdapter {
+  public class SegmentsDataAdapter : DataAdapter<SegmentM> {
     private readonly SegmentsM _model;
     private readonly MediaItemsM _mediaItemsM;
     private readonly PeopleM _peopleM;
@@ -24,7 +24,6 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new();
       LoadFromFile();
     }
 
@@ -35,12 +34,11 @@ namespace PictureManager.Domain.DataAdapters {
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
       var rect = props[3].Split(',');
-      var segment = new SegmentM(int.Parse(props[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2])) {
-        Csv = props
-      };
+      var segment = new SegmentM(int.Parse(props[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]));
 
       _model.All.Add(segment);
-      _model.AllDic.Add(segment.Id, segment);
+      AllCsv.Add(segment, props);
+      AllId.Add(segment.Id, segment);
     }
 
     public static string ToCsv(SegmentM segment) =>
@@ -67,18 +65,18 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       var withoutMediaItem = new List<SegmentM>();
 
-      foreach (var segment in _model.All) {
-        if (_mediaItemsM.AllDic.TryGetValue(int.Parse(segment.Csv[1]), out var mi)) {
+      foreach (var (segment, csv) in AllCsv) {
+        if (_mediaItemsM.DataAdapter.AllId.TryGetValue(int.Parse(csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
           mi.Segments.Add(segment);
 
-          var personId = int.Parse(segment.Csv[2]);
+          var personId = int.Parse(csv[2]);
 
           if (personId != 0) {
-            if (!_peopleM.AllDic.TryGetValue(personId, out var person)) {
+            if (!_peopleM.DataAdapter.AllId.TryGetValue(personId, out var person)) {
               person = new(personId, $"P {personId}");
-              _peopleM.AllDic.Add(person.Id, person);
+              _peopleM.DataAdapter.AllId.Add(person.Id, person);
             }
 
             segment.Person = person;
@@ -90,17 +88,14 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         // reference to Keywords
-        if (!string.IsNullOrEmpty(segment.Csv[4])) {
-          var ids = segment.Csv[4].Split(',');
+        if (!string.IsNullOrEmpty(csv[4])) {
+          var ids = csv[4].Split(',');
           segment.Keywords = new(ids.Length);
           foreach (var keywordId in ids) {
-            var k = _keywordsM.AllDic[int.Parse(keywordId)];
+            var k = _keywordsM.DataAdapter.AllId[int.Parse(keywordId)];
             segment.Keywords.Add(k);
           }
         }
-
-        // CSV array is not needed any more
-        segment.Csv = null;
       }
 
       // in case MediaItem was deleted
@@ -119,7 +114,7 @@ namespace PictureManager.Domain.DataAdapters {
         _model.SimilarityLimitMin = int.Parse(similarityLimitMin);
       if (TableProps.TryGetValue(nameof(_model.SegmentsDrawer), out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
         foreach (var segmentId in segmentsDrawer.Split(','))
-          _model.SegmentsDrawer.Add(_model.AllDic[int.Parse(segmentId)]);
+          _model.SegmentsDrawer.Add(AllId[int.Parse(segmentId)]);
       }
 
       // table props are not needed any more

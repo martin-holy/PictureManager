@@ -14,9 +14,8 @@ namespace PictureManager.Domain.Models {
     private ITreeItem _scrollToItem;
 
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<VideoClipM> DataAdapter { get; set; }
     public List<VideoClipM> All { get; } = new();
-    public Dictionary<int, VideoClipM> AllDic { get; set; }
     public ObservableCollection<ITreeCategory> MediaItemClips { get; }
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }

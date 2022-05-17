@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -7,7 +6,7 @@ namespace PictureManager.Domain.DataAdapters {
   /// <summary>
   /// DB fields: ID|Name|ToponymName|FCode|Parent
   /// </summary>
-  public class GeoNamesDataAdapter : DataAdapter {
+  public class GeoNamesDataAdapter : DataAdapter<GeoNameM> {
     private readonly GeoNamesM _model;
 
     public GeoNamesDataAdapter(SimpleDB.SimpleDB db, GeoNamesM model) : base("GeoNames", db) {
@@ -16,7 +15,6 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void Load() {
       _model.All.Clear();
-      _model.AllDic = new();
       LoadFromFile();
     }
 
@@ -26,11 +24,10 @@ namespace PictureManager.Domain.DataAdapters {
     public override void FromCsv(string csv) {
       var props = csv.Split('|');
       if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var geoName = new GeoNameM(int.Parse(props[0]), props[1], props[2], props[3], null) {
-        Csv = props
-      };
+      var geoName = new GeoNameM(int.Parse(props[0]), props[1], props[2], props[3], null);
       _model.All.Add(geoName);
-      _model.AllDic.Add(geoName.Id, geoName);
+      AllCsv.Add(geoName, props);
+      AllId.Add(geoName.Id, geoName);
     }
 
     private static string ToCsv(GeoNameM geoName) =>
@@ -42,15 +39,12 @@ namespace PictureManager.Domain.DataAdapters {
         (geoName.Parent as GeoNameM)?.Id.ToString());
 
     public override void LinkReferences() {
-      foreach (var geoName in _model.All.Cast<GeoNameM>()) {
+      foreach (var (geoName, csv) in AllCsv) {
         // reference to parent and back reference to children
-        geoName.Parent = !string.IsNullOrEmpty(geoName.Csv[4])
-          ? _model.AllDic[int.Parse(geoName.Csv[4])]
+        geoName.Parent = !string.IsNullOrEmpty(csv[4])
+          ? AllId[int.Parse(csv[4])]
           : _model;
         geoName.Parent.Items.Add(geoName);
-        
-        // csv array is not needed any more
-        geoName.Csv = null;
       }
     }
   }

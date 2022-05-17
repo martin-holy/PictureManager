@@ -10,7 +10,7 @@ using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class FavoriteFoldersM : TreeCategoryBase {
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<FavoriteFolderM> DataAdapter { get; set; }
     public ObservableCollection<FavoriteFolderM> All { get; } = new();
 
     public RelayCommand<FolderM> AddToFavoritesCommand { get; }

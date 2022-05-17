@@ -4,14 +4,13 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils;
-using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class CategoryGroupsM {
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<CategoryGroupM> DataAdapter { get; set; }
     public ObservableCollection<CategoryGroupM> All { get; } = new();
     public Dictionary<Category, ITreeItem> Categories { get; } = new();
 

@@ -10,9 +10,8 @@ using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class GeoNamesM : TreeCategoryBase {
-    public DataAdapter DataAdapter { get; set; }
+    public DataAdapter<GeoNameM> DataAdapter { get; set; }
     public List<GeoNameM> All { get; } = new();
-    public Dictionary<int, GeoNameM> AllDic { get; set; }
     public static string GeoNamesUserName { get; set; }
 
     public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
