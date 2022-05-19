@@ -4,7 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Utils;
 
 namespace PictureManager.Converters {
   public class SegmentThumbnailSourceConverter : IMultiValueConverter {
@@ -21,6 +23,7 @@ namespace PictureManager.Converters {
         src.BeginInit();
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(segment.FilePathCache);
+        src.Rotation = Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
 
         if (segment.Equals(IgnoreImageCacheSegment)) {
           IgnoreImageCacheSegment = null;
