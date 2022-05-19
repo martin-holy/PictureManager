@@ -95,7 +95,7 @@
                   <DataTemplate>
                     <Rectangle
                       Width="{Binding Item3}"
-                      Height="{Binding Item4}" 
+                      Height="{Binding Item3}" 
                       StrokeThickness="1"
                       Effect="{StaticResource Res_ShadowEffect}">
 
@@ -107,7 +107,7 @@
 
                           <Style.Triggers>
                             <DataTrigger
-                              Binding="{Binding Item5}"
+                              Binding="{Binding Item4}"
                               Value="True">
 
                               <Setter

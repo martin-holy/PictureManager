@@ -30,7 +30,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
     public ObservableCollection<object> SegmentsDrawer { get; } = new();
-    public ObservableCollection<Tuple<int, int, int, int, bool>> SegmentToolTipRects { get; } = new();
+    public ObservableCollection<Tuple<int, int, int, bool>> SegmentToolTipRects { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
@@ -311,15 +311,20 @@ namespace PictureManager.Domain.Models {
       segment.MediaItem.SetThumbSize();
       segment.MediaItem.SetInfoBox();
 
-      var scale = segment.MediaItem.Width / (double)segment.MediaItem.ThumbWidth;
+      var rotated = segment.MediaItem.Orientation is 6 or 8;
+      var scale = rotated
+        ? segment.MediaItem.Height / (double)segment.MediaItem.ThumbWidth
+        : segment.MediaItem.Width / (double)segment.MediaItem.ThumbWidth;
 
-      foreach (var s in segment.MediaItem.Segments)
+      foreach (var s in segment.MediaItem.Segments) {
+        var (newX, newY) = SegmentsRectsM.ConvertPos(s.X, s.Y, 1, segment.MediaItem, true);
+
         SegmentToolTipRects.Add(new(
-          (int)((s.X - s.Radius) / scale),
-          (int)((s.Y - s.Radius) / scale),
-          (int)((s.Radius * 2) / scale),
+          (int)((newX - s.Radius) / scale),
+          (int)((newY - s.Radius) / scale),
           (int)((s.Radius * 2) / scale),
           s == segment));
+      }
     }
 
     public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM, bool inGroups) {
