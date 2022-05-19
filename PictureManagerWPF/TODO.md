@@ -9,11 +9,11 @@
   - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
   - kdyz ma obrazek metadata jen v DB, tak se rotace neaplikuje na vytvoreni thumbnail
-  - ReadMetadata and ThumbInfoBox: only person is visible in info box even if keyword is on image too when loading new images
   - ErrorDialog in CopyMove (MediaItemsVM) doesn't open
 ## MediaViewer
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
   - 15% CPU usage on media item delete from full screen
+  - mouse cursor doesn't hide when mouse doesn't move for more than 3 seconds
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
 ## Video Clips
@@ -25,14 +25,13 @@
   - TreeViewSearch XAML error (need help)
     (Cannot save value from target back to source. KeyNotFoundException: The given key '1' was not present in the dictionary.)
   - Folder reload after folder move => reload is maybe to soon
-  - newly created folder is expanded
+  - Person or Keyword setting to MediaItem, Person or Segment while EditMode is on
 ## FolderKeywords
   - do not show expand buttons in TreeView when there is nothing to expand
 ## Segments
   - SegmentControl ToolTip: kdyz je person name delsi nez image => segment rect je mimo (nevim co s tim)
     mozna to samy jak jsem pouzil asi na PersonEditControl ale se sloupcema. udelat 3 sloupce (*, auto, *)
   - media item thumbnail in tool tip is enlarged by windows display scaling
-  - multi select: find ItemsGroup in WrappedItems above VirtualizingWrapPanelRow with selected segment to get ItemsGroup.Items
 ## PeopleV
   - reload when opened and person or group is created/renamed/moved in the tree
   - reload when keyword is toggled on person
@@ -46,15 +45,15 @@
   - check strings Equals and set StringComparison Ordinal for strings from code and CurrentCulture for string for/from user
   - GetPerceptualHash a GetAvgHash ma podobnej kod, mozna bych to pouzil i jinde az po CopyPixels
   - static delegates
-  - remove Folder Browser
   - Rethink hierarchical keywords moving
   - similar code in Imaging.GetThumbSize and ZoomImageBoxV.GetFitScale
   - comment out MahApps styles that I don't use for app start speed up
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
-  - MarkUsedKeywordsAndPeople add People and Keywords from Segments
+  - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
+  - Items can be null, to save memory
 ## VideoClips:
   - recreate video thumbnails button
 ## Folders
@@ -63,6 +62,10 @@
   - remove DisplayKeywords from Person and use Keywords.GetAllKeywords
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
+  - replace behaviors with InputBindings where possible
+## WPF Controls
+  - ZoomAndPanImage update to MVVM
+  - VideoPlayer update to MVVM
 
 
 # New
@@ -70,17 +73,18 @@
   - copy app settings from older app version
   - statickou tridu Prefs v App, ktera bude odkazovat na Settings.Default, takze se bude psat App.Prefs.FfmpegPath
   - Log to file
+  - change Dictionaries for object with implementation IEquatable and replace them with HashSets
 ## Folders
   - Folders a Folder GetByPath udelat univerzalni pro CatTreeView
+  - GeoNames for Folders
 ## MediaItems
   - pridat k rotate taky flip H a V
   - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 ## CatTreeView
   - TODO GeoNames, user name dat do prop na GeoNames, user name checkovat OnBeforeItemCreate, menuitem GeoNameNewCommand udelat obecne
-  - ItemCreate na People a Keywords je skoro stejny
-  - IListBoxItem as ancestor of ITreeItem
   - filter na delku videa
   - nova kategorie "keywords groups" kde budou kombinace keywords, people, ... ktery se vyskytujou na jednom MediaItem
+  - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
 ## Video Clips
   - akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
   - lock na volume a speed, aby se ignorovalo to co je u clipu
@@ -92,6 +96,9 @@
   - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
   - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
   - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
+  - click on person in status bar opens person info
+## Person Info
+  - add load all media items for person in new thumbnails tab
 ## ThumbnailsGrid
   - Auto groups from People and Keywords
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
@@ -105,9 +112,10 @@
 ## DB
   - save in user profile
   - new table for MediaItems hashes for comparison
-  - changes counter: if count is > 999 format as 1,x
-    - ToolTip with number of changes of each table
+  - ToolTip or dialog with number of changes of each table
   - keep list of modified, make MediaItems implementation universal
+  - listen in DataAdapter on OnPropertyChanged and on ObservableCollection to log changes for overview
+    and automatic setting IsModified
 ## VirtualizingWrapPanel
   - find item for scroll to with combination group|items
   - filter or group by GroupItems
@@ -121,13 +129,8 @@
     - disable/enable available
   - count of segments on person
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
+  - add groups to SegmentDrawer
 
-
-Domain WPF references:
- - PresentationCore
- - PresentationFramework
- - System.Xaml
- - WindowsBase
 
 #Shortcuts:
 - ALT+S => Split video clip (create new video clip or finish selected without TimeEnd)
