@@ -68,11 +68,50 @@ namespace PictureManager.Domain.Models {
     }
 
     public void CreateNew(double x, double y) {
-      var segment = SegmentsM.AddNewSegment((int)(x / Scale), (int)(y / Scale), 0, MediaItem);
+      var (newX, newY) = ConvertPos(x, y, Scale, MediaItem);
+      var segment = SegmentsM.AddNewSegment(newX, newY, 0, MediaItem);
       _isEditModeMove = false;
       _isCurrentModified = true;
       Current = new(segment, Scale);
       MediaItemSegmentsRects.Add(Current);
+    }
+
+    public static (int, int) ConvertPos(double x, double y, double scale, MediaItemM mediaItem, bool reverseMode = false) {
+      double rX;
+      double rY;
+
+      switch ((MediaOrientation)mediaItem.Orientation) {
+        case MediaOrientation.Rotate180:
+          rX = mediaItem.Width * scale - x;
+          rY = mediaItem.Height * scale - y;
+          break;
+        case MediaOrientation.Rotate270:
+          if (reverseMode) {
+            rX = mediaItem.Height * scale - y;
+            rY = x;
+          }
+          else {
+            rX = y;
+            rY = mediaItem.Height * scale - x;
+          }
+          break;
+        case MediaOrientation.Rotate90:
+          if (reverseMode) {
+            rX = y;
+            rY = mediaItem.Width * scale - x;
+          }
+          else {
+            rX = mediaItem.Width * scale - y;
+            rY = x;
+          }
+          break;
+        default:
+          rX = x;
+          rY = y;
+          break;
+      }
+
+      return ((int)(rX / scale), (int)(rY / scale));
     }
 
     public void StartEdit(int x, int y) {
