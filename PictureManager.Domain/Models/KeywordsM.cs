@@ -127,17 +127,13 @@ namespace PictureManager.Domain.Models {
       return list;
     }
 
-    public static List<KeywordM> GetAllKeywords(List<KeywordM> keywords) {
-      var outKeywords = new List<KeywordM>();
-      if (keywords == null) return outKeywords;
+    public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) {
       var allKeywords = new List<KeywordM>();
 
       foreach (var keyword in keywords)
         Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
 
-      outKeywords.AddRange(allKeywords.Distinct().OrderBy(x => x.FullName));
-
-      return outKeywords;
+      return allKeywords.Distinct().OrderBy(x => x.FullName);
     }
 
     public void DeleteNotUsed(IEnumerable<KeywordM> list, List<MediaItemM> mediaItems, List<PersonM> people) {
