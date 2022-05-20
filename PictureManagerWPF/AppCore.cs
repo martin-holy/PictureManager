@@ -124,13 +124,23 @@ namespace PictureManager {
       };
 
       MainTabsVM.TabClosedEventHandler += (_, e) => {
-        if (e.Data.Content is ThumbnailsGridVM grid)
-          ThumbnailsGridsVM.CloseGrid(grid);
+        switch (e.Data.Content) {
+          case ThumbnailsGridVM grid:
+            ThumbnailsGridsVM.CloseGrid(grid);
+            break;
+          case PeopleVM people:
+            people.PeopleM.DeselectAll();
+            break;
+        }
       };
 
       MainTabsVM.PropertyChanged += async (_, e) => {
-        if (nameof(MainTabsVM.Selected).Equals(e.PropertyName))
+        if (nameof(MainTabsVM.Selected).Equals(e.PropertyName)) {
           await ThumbnailsGridsVM.SetCurrentGrid(MainTabsVM.Selected?.Content as ThumbnailsGridVM);
+
+          if (MainTabsVM.Selected is not { Content: ViewModels.PeopleVM })
+            App.Core.PeopleM.DeselectAll();
+        }
       };
     }
 
