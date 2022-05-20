@@ -55,7 +55,6 @@ namespace PictureManager.ViewModels {
       if (item == null) return;
 
       if (_core.MediaItemsM.IsEditModeOn && item is RatingTreeM or PersonM or KeywordM or GeoNameM) {
-        item.IsSelected = false;
         _core.MediaItemsM.SetMetadata(item);
 
         return;
@@ -101,8 +100,6 @@ namespace PictureManager.ViewModels {
           }
           break;
       }
-
-      item.IsSelected = false;
     }
   }
 }
