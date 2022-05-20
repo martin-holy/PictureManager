@@ -95,6 +95,33 @@
         Grid.Row="1"
         ItemsSource="{Binding Model.Items}"
         ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}">
+
+        <!-- Disable Selecting -->
+        <mhc:CatTreeView.ItemContainerStyle>
+          <Style
+            TargetType="{x:Type TreeViewItem}"
+            BasedOn="{StaticResource CatTreeViewItem}">
+
+            <Setter
+              Property="IsSelected"
+              Value="False" />
+
+            <Style.Triggers>
+              <EventTrigger RoutedEvent="Selected">
+                <BeginStoryboard>
+                  <Storyboard>
+                    <BooleanAnimationUsingKeyFrames
+                      Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
+                      <DiscreteBooleanKeyFrame
+                        KeyTime="00:00:00"
+                        Value="False" />
+                    </BooleanAnimationUsingKeyFrames>
+                  </Storyboard>
+                </BeginStoryboard>
+              </EventTrigger>
+            </Style.Triggers>
+          </Style>
+        </mhc:CatTreeView.ItemContainerStyle>
         
         <mhc:CatTreeView.Style>
           <Style
