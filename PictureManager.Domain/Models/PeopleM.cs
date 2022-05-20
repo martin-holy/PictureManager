@@ -192,7 +192,7 @@ namespace PictureManager.Domain.Models {
       foreach (var group in people
                  .GroupBy(p => p.DisplayKeywords == null
                    ? string.Empty
-                   : string.Join(", ", p.DisplayKeywords.Select(dk => dk.FullName)))
+                   : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Name)))
                  .OrderBy(g => g.Key)) {
 
         var itemsGroup = new ItemsGroup();

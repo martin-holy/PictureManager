@@ -52,7 +52,7 @@ namespace PictureManager.Domain.Models {
       var allKeywords = new List<KeywordM>();
 
       foreach (var keyword in Keywords)
-        MH.Utils.Tree.GetThisAndItemsRecursive(keyword, ref allKeywords);
+        MH.Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
 
       foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName))
         DisplayKeywords.Add(keyword);
