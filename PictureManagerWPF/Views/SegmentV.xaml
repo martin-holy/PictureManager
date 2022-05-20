@@ -135,26 +135,9 @@
 
                 <TextBlock
                   FontSize="18"
-                  Margin="5,2">
-
-                  <TextBlock.Style>
-                    <Style TargetType="{x:Type TextBlock}">
-                      <Setter
-                        Property="Text"
-                        Value="{Binding Person.Name}" />
-
-                      <Style.Triggers>
-                        <DataTrigger
-                          Binding="{Binding Person}"
-                          Value="{x:Null}">
-
-                          <Setter
-                            Property="Text"
-                            Value="0" />
-                        </DataTrigger>
-                      </Style.Triggers>
-                    </Style>
-                  </TextBlock.Style>
+                  Margin="5,2"
+                  Text="{Binding
+                         Converter={StaticResource SegmentTitleConverter}}">
                 </TextBlock>
               </Border>
 

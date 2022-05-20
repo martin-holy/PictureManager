@@ -19,4 +19,5 @@
   <mhConverters:ResourceConverter x:Key="ResourceConverter" />
   <mhconv:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
+  <converters:SegmentTitleConverter x:Key="SegmentTitleConverter" />
 </ResourceDictionary>

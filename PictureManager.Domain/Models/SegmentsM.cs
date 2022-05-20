@@ -81,6 +81,20 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
+    public static string GetSegmentTitle(SegmentM segment) {
+      if (segment.Person?.Id > 0)
+        return segment.Person.Name;
+
+      var title = $"P {(segment.Person == null ? "?" : segment.Person.Id)}";
+
+      if (segment.Keywords != null)
+        return string.Join(' ',
+          title,
+          string.Join(' ', KeywordsM.GetAllKeywords(segment.Keywords).Select(x => x.Name)));
+
+      return title;
+    }
+
     public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
       if (!add && Core.DialogHostShow(new MessageDialog(
             "Segments Drawer",
