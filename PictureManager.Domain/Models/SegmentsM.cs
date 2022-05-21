@@ -157,22 +157,12 @@ namespace PictureManager.Domain.Models {
         Loaded.Add(segment);
     }
 
-    public void SetPerson(PersonM person) {
-      if (Selected.Count == 0) return;
-
-      var msgCount = Selected.Count > 1 ? $"'s ({Selected.Count})" : string.Empty;
-      var msg = $"Do you want to set ({person.Name}) to selected segment{msgCount}?";
-
-      if (Core.DialogHostShow(new MessageDialog("Set Person", msg, Res.IconQuestion, true)) == 0)
-        SetSelectedAsPerson(person);
-    }
-
     /// <summary>
     /// Sets new Person to all Segments that are selected 
     /// or that have the same Person (with id less than 0) as some of the selected.
     /// </summary>
     /// <param name="person"></param>
-    private void SetSelectedAsPerson(PersonM person) {
+    public void SetSelectedAsPerson(PersonM person) {
       var unknownPeople = Selected
         .Where(x => x.Person?.Id < 0)
         .Select(x => x.Person)
