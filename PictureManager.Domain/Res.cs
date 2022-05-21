@@ -22,9 +22,12 @@
     public const string IconNotification = "IconNotification";
     public const string IconQuestion = "IconQuestion";
     public const string IconBug = "IconBug";
+    public const string IconImage = "IconImage";
     public const string IconImageMultiple = "IconImageMultiple";
     public const string IconCalendar = "IconCalendar";
     public const string IconEquals = "IconEquals";
+    public const string IconCheckMark = "IconCheckMark";
+    public const string IconXCross = "IconXCross";
 
     public static string CategoryToIconName(Category category) =>
       category switch {
