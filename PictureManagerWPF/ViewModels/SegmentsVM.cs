@@ -147,7 +147,7 @@ namespace PictureManager.ViewModels {
         "Do you want to load all segments, segments with persons \nor one segment from each person?",
         Res.IconQuestion,
         true,
-        new DialogButton[] { new("All segments", true), new("Segments with persons"), new("One from each") }));
+        new DialogButton[] { new("All segments", 0, null, true), new("Segments with persons", 1), new("One from each", 2) }));
 
       if (result == -1) return;
 
