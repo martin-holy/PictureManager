@@ -24,8 +24,8 @@ namespace MH.Utils.Dialogs {
       CanCancel = canCancel;
       Buttons = buttons
         ?? (canCancel
-          ? new DialogButton[] { new("YES", true), new("NO", false, true) }
-          : new DialogButton[] { new("OK", true) });
+          ? new DialogButton[] { new("YES", 0, "IconCheckMark", true), new("NO", 1, "IconXCross", false, true) }
+          : new DialogButton[] { new("OK", 0, "IconCheckMark", true) });
     }
   }
 }
