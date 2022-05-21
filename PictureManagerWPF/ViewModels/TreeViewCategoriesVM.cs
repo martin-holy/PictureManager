@@ -54,23 +54,25 @@ namespace PictureManager.ViewModels {
 
       if (item == null) return;
 
-      if (_core.MediaItemsM.IsEditModeOn && item is RatingTreeM or PersonM or KeywordM or GeoNameM) {
-        _core.MediaItemsM.SetMetadata(item);
-
-        return;
-      }
-
       switch (item) {
         case RatingTreeM r:
-          _ = _core.ThumbnailsGridsM.Current?.ActivateFilter(r, DisplayFilter.Or);
+          if (_core.MediaItemsM.IsEditModeOn)
+            _core.MediaItemsM.SetMetadata(item);
+          else
+            _ = _core.ThumbnailsGridsM.Current?.ActivateFilter(r, DisplayFilter.Or);
+          break;
+
+        case GeoNameM:
+          if (_core.MediaItemsM.IsEditModeOn)
+            _core.MediaItemsM.SetMetadata(item);
           break;
 
         case KeywordM k:
-          App.Core.ToggleKeyword(k);
+          _core.ToggleKeyword(k);
           break;
 
         case PersonM p:
-          _core.SegmentsM.SetPerson(p);
+          _core.TogglePerson(p);
           break;
 
         case FavoriteFolderM ff:

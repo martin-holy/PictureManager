@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
@@ -157,29 +159,60 @@ namespace PictureManager.Domain {
       };
     }
 
-    public void ToggleKeyword(KeywordM keyword) {
+    private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {
       var sCount = SegmentsM.Selected.Count;
-      var pCount = PeopleM.Selected.Count;
-      if (sCount == 0 && pCount == 0) return;
+      var pCount = item is PersonM ? 0 : PeopleM.Selected.Count;
+      var miCount = MediaItemsM.IsEditModeOn ? ThumbnailsGridsM.Current?.SelectedCount ?? 0 : 0;
+      if (sCount == 0 && pCount == 0 && miCount == 0) return null;
 
-      var title = "Toggle Keyword";
-      var msgA = $"Do you want to toggle #{keyword.FullName} on selected";
+      var msgA = $"Do you want to toggle #{itemName} on selected";
+      var msgB = new List<string>();
       var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
       var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
+      var msgMi = miCount > 1 ? $"Media Items ({miCount})" : "Media Item";
+      var oneOption = new[] { sCount, pCount, miCount }.Count(x => x > 0) == 1;
+      var buttons = new List<DialogButton>();
 
-      if (sCount > 0 && pCount > 0) {
-        switch (DialogHostShow(new MessageDialog(title, $"{msgA} {msgS} or {msgP}?", Res.IconQuestion, true, new DialogButton[] { new(msgS), new(msgP) }))) {
-          case 0: SegmentsM.ToggleKeywordOnSelected(keyword); break;
-          case 1: PeopleM.ToggleKeywordOnSelected(keyword); break;
-        }
+      void AddOption(string msg, int result, string icon) {
+        buttons.Add(oneOption
+          ? new("YES", result, Res.IconCheckMark, true)
+          : new(msg, result, icon));
+        msgB.Add(msg);
       }
-      else if (sCount > 0) {
-        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgS}?", Res.IconQuestion, true)) == 0)
-          SegmentsM.ToggleKeywordOnSelected(keyword);
+
+      if (sCount > 0) AddOption(msgS, 1, Res.IconEquals);
+      if (pCount > 0) AddOption(msgP, 2, Res.IconPeople);
+      if (miCount > 0) AddOption(msgMi, 3, Res.IconImage);
+      if (oneOption) buttons.Add(new("NO", 0, Res.IconXCross, false, true));
+
+      if (oneOption && miCount > 0) {
+        MediaItemsM.SetMetadata(item);
+        return null;
       }
-      else if (pCount > 0) {
-        if (DialogHostShow(new MessageDialog("Toggle Keyword", $"{msgA} {msgP}?", Res.IconQuestion, true)) == 0)
-          PeopleM.ToggleKeywordOnSelected(keyword);
+
+      var msg = oneOption
+        ? $"{msgA} {msgB[0]}?"
+        : $"{msgA} {string.Join(" or ", msgB)}?";
+
+      return new(title, msg, Res.IconQuestion, true, buttons.ToArray());
+    }
+
+    public void ToggleKeyword(KeywordM keyword) {
+      if (ToggleOrGetDialog("Toggle Keyword", keyword, keyword.FullName) is not { } md) return;
+
+      switch (DialogHostShow(md)) {
+        case 1: SegmentsM.ToggleKeywordOnSelected(keyword); break;
+        case 2: PeopleM.ToggleKeywordOnSelected(keyword); break;
+        case 3: MediaItemsM.SetMetadata(keyword); break;
+      }
+    }
+
+    public void TogglePerson(PersonM person) {
+      if (ToggleOrGetDialog("Toggle Person", person, person.Name) is not { } md) return;
+
+      switch (DialogHostShow(md)) {
+        case 1: SegmentsM.SetSelectedAsPerson(person); break;
+        case 3: MediaItemsM.SetMetadata(person); break;
       }
     }
 
