@@ -66,6 +66,10 @@ namespace PictureManager.ViewModels {
       _peopleM.ToggleTopSegment(PersonM, data as SegmentM);
 
     private void SetPerson(PersonM person) {
+      _peopleM.DeselectAll();
+      if (person.Id > 0)
+        _peopleM.Select(null, person, false, false);
+
       PersonM = person;
       ReloadPersonSegments();
       App.Ui.ToolsTabsVM.Activate(_toolsTabsItem, true);
