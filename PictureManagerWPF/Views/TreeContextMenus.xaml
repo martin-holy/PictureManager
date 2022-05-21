@@ -47,6 +47,11 @@
     <ContextMenu.ItemsSource>
       <CompositeCollection>
         <MenuItem
+          Header="Detail"
+          Command="{Binding PersonVM.SetPersonCommand,
+                    Source={x:Static pm:App.Ui}}"
+          CommandParameter="{Binding}" />
+        <MenuItem
           Header="Rename"
           Command="mhc:CatTreeView.ItemRenameCommand"
           CommandParameter="{Binding}" />
