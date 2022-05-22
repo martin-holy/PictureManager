@@ -4,7 +4,6 @@ using System.Windows;
 using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
@@ -30,7 +29,7 @@ namespace PictureManager.ViewModels {
 
     public RelayCommand<bool> SetMarkerCommand { get; }
     public RelayCommand<PlayType> SetPlayTypeCommand { get; }
-    public RelayCommand<VideoClipM> SetCurrentVideoClipCommand { get; }
+    public RelayCommand<object> SetCurrentVideoClipCommand { get; }
     public RelayCommand<object> SplitCommand { get; }
     public RelayCommand<object> SaveCommand { get; }
     public RelayCommand<int> SeekToPositionCommand { get; }
@@ -52,8 +51,8 @@ namespace PictureManager.ViewModels {
         pt => VideoPlayer.PlayType = pt);
       
       SetCurrentVideoClipCommand = new(
-        SetCurrentVideoClip,
-        item => item != null);
+        item => SetCurrentVideoClip(item as VideoClipM),
+        item => item is VideoClipM);
       
       SplitCommand = new(
         VideoClipSplit,
