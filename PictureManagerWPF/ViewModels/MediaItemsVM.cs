@@ -226,7 +226,7 @@ namespace PictureManager.ViewModels {
           await Core.RunOnUiThread(() => {
             mi.Keywords = new();
             foreach (var k in bm.Keywords.OrderByDescending(x => x).Distinct()) {
-              var keyword = _core.KeywordsM.GetByFullPath(k);
+              var keyword = _core.KeywordsM.GetByFullPath(k.Replace('|', ' '));
               if (keyword != null)
                 mi.Keywords.Add(keyword);
             }
