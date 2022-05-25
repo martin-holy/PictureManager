@@ -533,19 +533,20 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    /// Compares segments with same person id to other segments with same person id
-    /// and select top segment from each group for display
+    /// Compares segments with same person to other segments with same person
+    /// and select top segment from each person for display
     /// </summary>
     private void ReloadConfirmedGrouped() {
-      var groupsA = Loaded
+      var groups = Loaded
         .Where(x => x.Person?.Id > 0)
         .GroupBy(x => x.Person)
-        .OrderBy(x => x.First().Person.Name);
-      var groupsB = Loaded
-        .Where(x => x.Person?.Id < 0)
-        .GroupBy(x => x.Person)
-        .OrderByDescending(x => x.Key.Id);
-      var groups = groupsA.Concat(groupsB).ToArray();
+        .OrderBy(x => x.First().Person.Name)
+        .Concat(Loaded
+          .Where(x => x.Person?.Id < 0)
+          .GroupBy(x => x.Person)
+          .OrderByDescending(x => x.Key.Id))
+        .ToArray();
+
       var tmp = new List<(PersonM person, SegmentM segment, List<(PersonM person, SegmentM segment, double sim)> similar)>();
 
       SegmentM GetTopSegment(IEnumerable<SegmentM> segments) =>
@@ -594,31 +595,18 @@ namespace PictureManager.Domain.Models {
       }
       else {
         foreach (var group in tmp
-          .GroupBy(x => {
-            if (x.segment.Person == null) return "Unknown";
-            return x.segment.Person.DisplayKeywords == null
-              ? string.Empty
-              : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name));
-          })
+          .GroupBy(x =>  x.person.DisplayKeywords == null
+            ? string.Empty
+            : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name)))
           .OrderBy(g => g.First().person.Id < 0)
           .ThenBy(g => g.Key)) {
 
-          if (string.IsNullOrEmpty(group.Key)) {
-            foreach (var (_, segment, _) in group)
-              ConfirmedGrouped.Add(segment);
-          }
-          else {
-            var itemsGroup = new ItemsGroup();
-            itemsGroup.Info.Add(new ItemsGroupInfoItem(
-              "Unknown".Equals(group.Key)
-                ? Res.IconPeople
-                : Res.IconTag,
-              group.Key));
-            ConfirmedGrouped.Add(itemsGroup);
+          var itemsGroup = new ItemsGroup();
+          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconTag, group.Key));
+          ConfirmedGrouped.Add(itemsGroup);
 
-            foreach (var (_, segment, _) in group)
-              itemsGroup.Items.Add(segment);
-          }
+          foreach (var (_, segment, _) in group)
+            ConfirmedGrouped.Add(segment);
         }
       }
     }
