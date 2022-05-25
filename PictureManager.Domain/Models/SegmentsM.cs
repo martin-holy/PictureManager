@@ -504,6 +504,7 @@ namespace PictureManager.Domain.Models {
 
       // add segments with Person == null ordered by similar
       var unknown = Loaded.Where(x => x.Person == null).ToArray();
+      if (unknown.Length == 0) return;
       var set = new HashSet<int>();
       var withSimilar = unknown
         .Where(x => x.Similar != null)
