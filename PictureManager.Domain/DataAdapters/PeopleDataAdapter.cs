@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -12,31 +11,19 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly SegmentsM _segmentsM;
     private readonly KeywordsM _keywordsM;
 
-    public PeopleDataAdapter(SimpleDB.SimpleDB db, PeopleM model, SegmentsM s, KeywordsM k)
-      : base("People", db) {
+    public PeopleDataAdapter(PeopleM model, SegmentsM s, KeywordsM k) : base("People", 4) {
       _model = model;
       _segmentsM = s;
       _keywordsM = k;
     }
 
-    public override void Load() {
-      _model.All.Clear();
-      LoadFromFile();
-    }
-
     public override void Save() =>
-      SaveToFile(_model.GetAll(), ToCsv);
+      SaveToFile(_model.GetAll());
 
-    public override void FromCsv(string csv) {
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var person = new PersonM(int.Parse(props[0]), props[1]);
-      _model.All.Add(person);
-      AllCsv.Add(person, props);
-      AllId.Add(person.Id, person);
-    }
+    public override PersonM FromCsv(string[] csv) =>
+      new(int.Parse(csv[0]), csv[1]);
 
-    private static string ToCsv(PersonM person) =>
+    public override string ToCsv(PersonM person) =>
       string.Join("|",
         person.Id.ToString(),
         person.Name,
@@ -48,26 +35,20 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Join(",", person.Keywords.Select(x => x.Id)));
 
     public override void LinkReferences() {
+      // clear done in CategoryGroups
+      //_model.Items.Clear();
+
       foreach (var (person, csv) in AllCsv) {
         // Persons top segments
-        if (!string.IsNullOrEmpty(csv[2])) {
-          var ids = csv[2].Split(',');
-          person.TopSegments = new();
-          foreach (var segmentId in ids)
-            person.TopSegments.Add(_segmentsM.DataAdapter.AllId[int.Parse(segmentId)]);
+        person.TopSegments = LinkObservableCollection(csv[2], _segmentsM.DataAdapter.All);
+        if (person.TopSegments != null)
           person.Segment = (SegmentM)person.TopSegments[0];
-        }
 
         // reference to Keywords
-        if (!string.IsNullOrEmpty(csv[3])) {
-          var ids = csv[3].Split(',');
-          person.Keywords = new(ids.Length);
-          foreach (var keywordId in ids)
-            person.Keywords.Add(_keywordsM.DataAdapter.AllId[int.Parse(keywordId)]);
-        }
+        person.Keywords = LinkList(csv[3], _keywordsM.DataAdapter.All);
 
         // add loose people
-        foreach (var personM in _model.All.Where(x => x.Parent == null)) {
+        foreach (var personM in All.Values.Where(x => x.Parent == null)) {
           personM.Parent = _model;
           _model.Items.Add(personM);
         }

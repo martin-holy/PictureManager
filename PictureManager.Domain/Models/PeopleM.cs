@@ -8,15 +8,14 @@ using MH.Utils.Extensions;
 using MH.Utils.HelperClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.HelperClasses;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public DataAdapter<PersonM> DataAdapter { get; set; }
-    public List<PersonM> All { get; } = new();
+    public PeopleDataAdapter DataAdapter { get; set; }
     public List<PersonM> Selected { get; } = new();
     public ObservableCollection<object> PeopleInGroups { get; } = new();
 
@@ -31,7 +30,7 @@ namespace PictureManager.Domain.Models {
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
       Tree.SetInOrder(root.Items, item, x => x.Name);
-      All.Add(item);
+      DataAdapter.All.Add(item.Id, item);
 
       return item;
     }
@@ -49,7 +48,7 @@ namespace PictureManager.Domain.Models {
       person.Segment = null;
       person.TopSegments = null;
       person.Keywords = null;
-      All.Remove(person);
+      DataAdapter.All.Remove(person.Id);
       PersonDeletedEventHandler(this, new(person));
       DataAdapter.IsModified = true;
     }
@@ -60,7 +59,7 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      All.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
         ? $"{name} item already exists!"
         : null;
 
@@ -91,7 +90,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public PersonM GetPerson(string name, bool create) =>
-      All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      DataAdapter.All.Values.SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCulture))
       ?? (create
         ? (PersonM)ModelItemCreate(this, name)
         : null);
@@ -150,7 +149,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void RemoveKeywordFromPeople(KeywordM keyword) {
-      foreach (var person in All.Where(x => x.Keywords?.Contains(keyword) == true))
+      foreach (var person in DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true))
         ToggleKeyword(person, keyword);
 
       PeopleKeywordChangedEvent(this, EventArgs.Empty);

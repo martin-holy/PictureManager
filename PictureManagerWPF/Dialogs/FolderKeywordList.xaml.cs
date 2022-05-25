@@ -16,7 +16,7 @@ namespace PictureManager.Dialogs {
     public ObservableCollection<FolderM> Items { get; } = new();
 
     public FolderKeywordList() {
-      foreach (var folder in App.Core.FoldersM.All.Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
+      foreach (var folder in App.Core.FoldersM.DataAdapter.All.Values.Where(x => x.IsFolderKeyword).OrderBy(x => x.FullPath)) {
         Items.Add(folder);
       }
 
@@ -38,7 +38,7 @@ namespace PictureManager.Dialogs {
       }
 
       App.Core.FoldersM.DataAdapter.IsModified = true;
-      App.Core.FolderKeywordsM.Load(App.Core.FoldersM.All);
+      App.Core.FolderKeywordsM.Load(App.Core.FoldersM.DataAdapter.All.Values);
     }
   }
 }

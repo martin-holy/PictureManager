@@ -8,15 +8,14 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public class FoldersM : TreeCategoryBase {
     private readonly Core _core;
     private readonly ViewersM _viewersM;
 
-    public DataAdapter<FolderM> DataAdapter { get; set; }
-    public List<FolderM> All { get; } = new();
+    public FoldersDataAdapter DataAdapter { get; set; }
     public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
     public Action<object, ITreeItem, bool, bool> OnDropAction { get; set; }
@@ -84,14 +83,14 @@ namespace PictureManager.Domain.Models {
       var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
-      All.Add(item);
+      DataAdapter.All.Add(item.Id, item);
 
       // add new Folder to the tree
       root.Items.SetInOrder(item, x => x.Name);
 
       // reload FolderKeywords
       if (rootFolder.IsFolderKeyword || rootFolder.FolderKeyword != null)
-        _core.FolderKeywordsM.Load(All);
+        _core.FolderKeywordsM.Load(DataAdapter.All.Values);
 
       return item;
     }
@@ -110,7 +109,7 @@ namespace PictureManager.Domain.Models {
 
       // reload FolderKeywords
       if (folder.IsFolderKeyword || folder.FolderKeyword != null)
-        _core.FolderKeywordsM.Load(All);
+        _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
 
     protected override void ModelItemDelete(ITreeItem item) {
@@ -121,7 +120,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(item, ref folders);
 
       foreach (var f in folders) {
-        All.Remove(f);
+        DataAdapter.All.Remove(f.Id);
         FolderDeletedEventHandler(this, new(f));
 
         f.Parent = null;
@@ -129,7 +128,7 @@ namespace PictureManager.Domain.Models {
         DataAdapter.IsModified = true;
       }
 
-      _core.FolderKeywordsM.Load(All);
+      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
 
       // delete folder, sub folders and mediaItems from cache
       if (Directory.Exists(((FolderM)item).FullPathCache))
@@ -167,7 +166,7 @@ namespace PictureManager.Domain.Models {
         // add Drive to the database and to the tree if not already exists
         if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.CurrentCultureIgnoreCase)) is not { } item) {
           item = new DriveM(DataAdapter.GetNextId(), driveName, this);
-          All.Add(item);
+          DataAdapter.All.Add(item.Id, item);
           Items.Add(item);
         }
 
@@ -242,7 +241,7 @@ namespace PictureManager.Domain.Models {
         }
       }
 
-      _core.FolderKeywordsM.Load(All);
+      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
@@ -448,7 +447,7 @@ namespace PictureManager.Domain.Models {
     public void SetAsFolderKeyword(FolderM folder) {
       folder.IsFolderKeyword = true;
       DataAdapter.IsModified = true;
-      _core.FolderKeywordsM.Load(All);
+      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
   }
 }

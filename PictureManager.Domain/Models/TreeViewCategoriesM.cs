@@ -79,14 +79,14 @@ namespace PictureManager.Domain.Models {
         case PeopleM:
           _core.PeopleM.DeleteNotUsed(
             root.Items.OfType<PersonM>(),
-            _core.MediaItemsM.All);
+            _core.MediaItemsM.DataAdapter.All.Values);
           break;
 
         case KeywordsM:
           _core.KeywordsM.DeleteNotUsed(
             root.Items.OfType<KeywordM>(),
-            _core.MediaItemsM.All,
-            _core.PeopleM.All);
+            _core.MediaItemsM.DataAdapter.All.Values,
+            _core.PeopleM.DataAdapter.All.Values);
           break;
       }
     }

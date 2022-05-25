@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using MH.Utils;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -14,34 +14,24 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly PeopleM _peopleM;
     private readonly KeywordsM _keywordsM;
 
-    public SegmentsDataAdapter(SimpleDB.SimpleDB db, SegmentsM model, MediaItemsM mi, PeopleM p, KeywordsM k)
-      : base("Segments", db) {
+    public SegmentsDataAdapter(SegmentsM model, MediaItemsM mi, PeopleM p, KeywordsM k) : base("Segments", 5) {
       _model = model;
       _mediaItemsM = mi;
       _peopleM = p;
       _keywordsM = k;
     }
 
-    public override void Load() {
-      _model.All.Clear();
-      LoadFromFile();
-    }
-
     public override void Save() =>
-      SaveToFile(_model.All, ToCsv);
+      SaveDriveRelated(All.Values
+        .GroupBy(x => Tree.GetTopParent(x.MediaItem.Folder))
+        .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
-    public override void FromCsv(string csv) {
-      var props = csv.Split('|');
-      if (props.Length != 5) throw new ArgumentException("Incorrect number of values.", csv);
-      var rect = props[3].Split(',');
-      var segment = new SegmentM(int.Parse(props[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]));
-
-      _model.All.Add(segment);
-      AllCsv.Add(segment, props);
-      AllId.Add(segment.Id, segment);
+    public override SegmentM FromCsv(string[] csv) {
+      var rect = csv[3].Split(',');
+      return new(int.Parse(csv[0]), int.Parse(rect[0]), int.Parse(rect[1]), int.Parse(rect[2]));
     }
 
-    public static string ToCsv(SegmentM segment) =>
+    public override string ToCsv(SegmentM segment) =>
       string.Join("|",
         segment.Id.ToString(),
         segment.MediaItem.Id.ToString(),
@@ -66,7 +56,7 @@ namespace PictureManager.Domain.DataAdapters {
       var withoutMediaItem = new List<SegmentM>();
 
       foreach (var (segment, csv) in AllCsv) {
-        if (_mediaItemsM.DataAdapter.AllId.TryGetValue(int.Parse(csv[1]), out var mi)) {
+        if (_mediaItemsM.DataAdapter.All.TryGetValue(int.Parse(csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
           mi.Segments.Add(segment);
@@ -74,9 +64,9 @@ namespace PictureManager.Domain.DataAdapters {
           var personId = int.Parse(csv[2]);
 
           if (personId != 0) {
-            if (!_peopleM.DataAdapter.AllId.TryGetValue(personId, out var person)) {
+            if (!_peopleM.DataAdapter.All.TryGetValue(personId, out var person)) {
               person = new(personId, $"P {personId}");
-              _peopleM.DataAdapter.AllId.Add(person.Id, person);
+              _peopleM.DataAdapter.All.Add(person.Id, person);
             }
 
             segment.Person = person;
@@ -88,19 +78,12 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         // reference to Keywords
-        if (!string.IsNullOrEmpty(csv[4])) {
-          var ids = csv[4].Split(',');
-          segment.Keywords = new(ids.Length);
-          foreach (var keywordId in ids) {
-            var k = _keywordsM.DataAdapter.AllId[int.Parse(keywordId)];
-            segment.Keywords.Add(k);
-          }
-        }
+        segment.Keywords = LinkList(csv[4], _keywordsM.DataAdapter.All);
       }
 
       // in case MediaItem was deleted
       foreach (var segment in withoutMediaItem)
-        _ = _model.All.Remove(segment);
+        _ = All.Remove(segment.Id);
 
       // Table Properties
       if (TableProps == null) return;
@@ -113,8 +96,10 @@ namespace PictureManager.Domain.DataAdapters {
       if (TableProps.TryGetValue(nameof(_model.SimilarityLimitMin), out var similarityLimitMin))
         _model.SimilarityLimitMin = int.Parse(similarityLimitMin);
       if (TableProps.TryGetValue(nameof(_model.SegmentsDrawer), out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
+        _model.SegmentsDrawer.Clear();
+
         foreach (var segmentId in segmentsDrawer.Split(','))
-          _model.SegmentsDrawer.Add(AllId[int.Parse(segmentId)]);
+          _model.SegmentsDrawer.Add(All[int.Parse(segmentId)]);
       }
 
       // table props are not needed any more

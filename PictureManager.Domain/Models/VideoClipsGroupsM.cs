@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroupsM {
     private readonly VideoClipsM _videoClips;
 
-    public DataAdapter DataAdapter { get; set; }
-    public List<VideoClipsGroupM> All { get; } = new();
+    public VideoClipsGroupsDataAdapter DataAdapter { get; set; }
 
     public VideoClipsGroupsM(VideoClipsM vc) {
       _videoClips = vc;
     }
 
     public bool ItemCanRename(string name, MediaItemM mi) =>
-      !All.Any(x => x.MediaItem.Equals(mi) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+      !DataAdapter.All.Values.Any(x => x.MediaItem.Equals(mi) && x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
 
     public VideoClipsGroupM ItemCreate(string name, MediaItemM mi) {
       var group = new VideoClipsGroupM(DataAdapter.GetNextId(), name);
@@ -27,7 +25,7 @@ namespace PictureManager.Domain.Models {
       group.MediaItem = mi;
       group.MediaItem.HasVideoClips = true;
       Tree.SetInOrder(_videoClips.Items, group, x => x.Name);
-      All.Add(group);
+      DataAdapter.All.Add(group.Id, group);
 
       return group;
     }
@@ -49,7 +47,7 @@ namespace PictureManager.Domain.Models {
 
       group.Parent.Items.Remove(group);
       ((VideoClipsGroupM)group).MediaItem.HasVideoClips = _videoClips.Items.Count != 0;
-      All.Remove((VideoClipsGroupM)group);
+      DataAdapter.All.Remove(((VideoClipsGroupM)group).Id);
       DataAdapter.IsModified = true;
     }
 

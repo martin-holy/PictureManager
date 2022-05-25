@@ -1,7 +1,8 @@
 ﻿using MH.Utils.BaseClasses;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFolderM : TreeItem {
+  public sealed class FavoriteFolderM : TreeItem, IRecord {
     private FolderM _folder;
 
     public int Id { get; }

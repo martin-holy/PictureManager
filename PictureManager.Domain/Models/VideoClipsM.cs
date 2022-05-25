@@ -7,15 +7,14 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsM : TreeCategoryBase {
     private ITreeItem _scrollToItem;
 
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    public DataAdapter<VideoClipM> DataAdapter { get; set; }
-    public List<VideoClipM> All { get; } = new();
+    public VideoClipsDataAdapter DataAdapter { get; set; }
     public ObservableCollection<ITreeCategory> MediaItemClips { get; }
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }
@@ -40,7 +39,7 @@ namespace PictureManager.Domain.Models {
       root.Items.Add(item);
       CurrentVideoClip = item;
       CurrentMediaItem.HasVideoClips = true;
-      All.Add(item);
+      DataAdapter.All.Add(item.Id, item);
       UpdateClipsTitles();
       ItemCreatedEventHandler(this, new(item));
 
@@ -64,7 +63,7 @@ namespace PictureManager.Domain.Models {
       vc.People = null;
       vc.Keywords = null;
 
-      All.Remove(vc);
+      DataAdapter.All.Remove(vc.Id);
       DataAdapter.IsModified = true;
       UpdateClipsTitles();
     }
@@ -110,10 +109,10 @@ namespace PictureManager.Domain.Models {
       Items.Clear();
       if (mi == null) return;
 
-      foreach (var group in GroupsM.All.Where(x => x.MediaItem.Equals(mi)))
+      foreach (var group in GroupsM.DataAdapter.All.Values.Where(x => x.MediaItem.Equals(mi)))
         Items.Add(group);
 
-      foreach (var clip in All.Where(x => Equals(x.Parent, this) && x.MediaItem.Equals(mi)))
+      foreach (var clip in DataAdapter.All.Values.Where(x => Equals(x.Parent, this) && x.MediaItem.Equals(mi)))
         Items.Add(clip);
     }
 

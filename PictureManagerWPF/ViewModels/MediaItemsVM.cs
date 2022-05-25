@@ -238,7 +238,7 @@ namespace PictureManager.ViewModels {
         // TODO change condition
         if (!string.IsNullOrEmpty(tmpGId)) {
           // TODO find/create GeoName
-          mi.GeoName = _core.GeoNamesM.All.SingleOrDefault(x => x.Id == int.Parse(tmpGId));
+          mi.GeoName = _core.GeoNamesM.DataAdapter.All.Values.SingleOrDefault(x => x.Id == int.Parse(tmpGId));
         }
       }
       catch (Exception) {

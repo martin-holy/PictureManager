@@ -7,8 +7,8 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.HelperClasses;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
@@ -21,8 +21,7 @@ namespace PictureManager.Domain.Models {
     private bool _matchingAutoSort = true;
     private readonly List<SegmentM> _selected = new();
 
-    public DataAdapter<SegmentM> DataAdapter { get; set; }
-    public List<SegmentM> All { get; } = new();
+    public SegmentsDataAdapter DataAdapter { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public List<MediaItemM> MediaItemsForMatching { get; set; }
@@ -130,7 +129,7 @@ namespace PictureManager.Domain.Models {
       var newSegment = new SegmentM(DataAdapter.GetNextId(), x, y, radius) { MediaItem = mediaItem };
       mediaItem.Segments ??= new();
       mediaItem.Segments.Add(newSegment);
-      All.Add(newSegment);
+      DataAdapter.All.Add(newSegment.Id, newSegment);
       Loaded.Add(newSegment);
 
       return newSegment;
@@ -149,7 +148,7 @@ namespace PictureManager.Domain.Models {
         .Select(x => x.Person)
         .Distinct()
         .ToHashSet();
-      var newSegments = All
+      var newSegments = DataAdapter.All.Values
         .Where(x => people.Contains(x.Person))
         .Except(Loaded);
 
@@ -170,7 +169,7 @@ namespace PictureManager.Domain.Models {
         .ToHashSet();
       var segments = Selected
         .Where(x => x.Person == null || x.Person.Id > 0)
-        .Concat(All.Where(x => unknownPeople.Contains(x.Person)));
+        .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)));
 
       foreach (var segment in segments)
         ChangePerson(segment, person);
@@ -199,7 +198,7 @@ namespace PictureManager.Domain.Models {
 
       if (newPerson == null) {
         // create person with unused min ID
-        var usedIds = All
+        var usedIds = DataAdapter.All.Values
           .Where(x => x.Person?.Id < 0)
           .Select(x => x.Person.Id)
           .Distinct()
@@ -221,7 +220,7 @@ namespace PictureManager.Domain.Models {
           .Select(x => x.Person)
           .Distinct()
           .ToHashSet();
-        toUpdate = All
+        toUpdate = DataAdapter.All.Values
           .Where(x => x.Person?.Id < 0 && x.Person != newPerson && selectedUnknown.Contains(x.Person))
           .Concat(Selected.Where(x => x.Person == null))
           .ToArray();
@@ -255,14 +254,14 @@ namespace PictureManager.Domain.Models {
     }
 
     public void RemoveKeywordFromSegments(KeywordM keyword) {
-      foreach (var segment in All.Where(x => x.Keywords?.Contains(keyword) == true))
+      foreach (var segment in DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true))
         ToggleKeyword(segment, keyword);
 
       SegmentsKeywordChangedEvent(this, EventArgs.Empty);
     }
 
     public void RemovePersonFromSegments(PersonM person) {
-      foreach (var segment in All.Where(s => s.Person?.Equals(person) == true)) {
+      foreach (var segment in DataAdapter.All.Values.Where(s => s.Person?.Equals(person) == true)) {
         segment.Person = null;
         DataAdapter.IsModified = true;
       }
@@ -292,7 +291,7 @@ namespace PictureManager.Domain.Models {
 
       segment.Similar?.Clear();
 
-      All.Remove(segment);
+      DataAdapter.All.Remove(segment.Id);
       if (Loaded.Remove(segment))
         Reload();
 
@@ -351,7 +350,7 @@ namespace PictureManager.Domain.Models {
           items = new() { segmentM.MediaItem };
       }
       else {
-        items = All
+        items = DataAdapter.All.Values
           .Where(x => x.Person == segmentM.Person)
           .Select(x => x.MediaItem)
           .Distinct()
@@ -368,7 +367,7 @@ namespace PictureManager.Domain.Models {
 
       if (person == null) return;
 
-      foreach (var group in All
+      foreach (var group in DataAdapter.All.Values
         .Where(x => x.Person == person)
         .GroupBy(x => x.Keywords == null
           ? string.Empty
@@ -434,12 +433,12 @@ namespace PictureManager.Domain.Models {
             .Distinct()
             .ToHashSet();
 
-          return All
+          return DataAdapter.All.Values
             .Where(x => x.Person != null && people.Contains(x.Person))
             .OrderBy(x => x.MediaItem.FileName)
             .ToArray();
         case 2: // one segment from each person
-          return All
+          return DataAdapter.All.Values
             .Where(x => x.Person != null)
             .GroupBy(x => x.Person.Id)
             .Select(x => x.First())

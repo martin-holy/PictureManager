@@ -97,6 +97,7 @@ namespace PictureManager.ViewModels {
 
       _core.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
       _coreVM.SegmentsVM.SegmentUiSize = _core.SegmentsM.SegmentSize / windowsDisplayScale;
+      _core.MediaItemsM.OnPropertyChanged(nameof(_core.MediaItemsM.MediaItemsCount));
     }
   }
 }

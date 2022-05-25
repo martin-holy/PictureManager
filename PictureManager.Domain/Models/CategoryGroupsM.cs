@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class CategoryGroupsM {
-    public DataAdapter<CategoryGroupM> DataAdapter { get; set; }
-    public ObservableCollection<CategoryGroupM> All { get; } = new();
+    public CategoryGroupsDataAdapter DataAdapter { get; set; }
     public Dictionary<Category, ITreeItem> Categories { get; } = new();
 
     public CategoryGroupM GroupCreate(string name, Category category) {
@@ -19,7 +17,7 @@ namespace PictureManager.Domain.Models {
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIconName(category)) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       Tree.SetInOrder(parent.Items, group, x => x.Name);
-      All.Add(group);
+      DataAdapter.All.Add(group.Id, group);
 
       return group;
     }
@@ -49,13 +47,13 @@ namespace PictureManager.Domain.Models {
           cat.ItemMove(item, cat, false);
 
       group.Parent.Items.Remove(group);
-      All.Remove((CategoryGroupM)group);
+      DataAdapter.All.Remove(((CategoryGroupM)group).Id);
       DataAdapter.IsModified = true;
     }
 
     public void UpdateVisibility(ViewerM viewer) {
-      foreach (var group in All)
-        group.IsHidden = viewer?.ExcCatGroupsIds.Contains(group.Id) == true;
+      foreach (var (id, group) in DataAdapter.All)
+        group.IsHidden = viewer?.ExcCatGroupsIds.Contains(id) == true;
     }
   }
 }

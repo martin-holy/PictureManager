@@ -4,9 +4,10 @@ using System.IO;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable {
+  public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IRecord {
     private bool _isSelected;
 
     #region DB Properties

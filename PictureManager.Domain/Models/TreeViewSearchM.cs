@@ -40,22 +40,22 @@ namespace PictureManager.Domain.Models {
       }
 
       // People
-      AddToSearchResult(_core.PeopleM.All
+      AddToSearchResult(_core.PeopleM.DataAdapter.All.Values
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, (x.Parent as CategoryGroupM)?.Name, x)));
 
       // Keywords
-      AddToSearchResult(_core.KeywordsM.All
+      AddToSearchResult(_core.KeywordsM.DataAdapter.All.Values
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x.FullName, x)));
 
       // GeoNames
-      AddToSearchResult(_core.GeoNamesM.All
+      AddToSearchResult(_core.GeoNamesM.DataAdapter.All.Values
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x.FullName, x)));
 
       // Folders
-      var result = _core.FoldersM.All
+      var result = _core.FoldersM.DataAdapter.All.Values
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
                 && _core.ViewersM.CanViewerSee(x))
         .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x.FullPath, x)).ToList();

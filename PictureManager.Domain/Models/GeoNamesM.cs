@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.BaseClasses;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class GeoNamesM : TreeCategoryBase {
-    public DataAdapter<GeoNameM> DataAdapter { get; set; }
-    public List<GeoNameM> All { get; } = new();
+    public GeoNamesDataAdapter DataAdapter { get; set; }
     public static string GeoNamesUserName { get; set; }
 
     public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
@@ -31,7 +29,7 @@ namespace PictureManager.Domain.Models {
         GeoNameM parentGeoName = null;
         foreach (XmlNode geoname in geonames) {
           var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-          var dbGeoName = All.SingleOrDefault(x => x.Id == geoNameId);
+          var dbGeoName = DataAdapter.All.Values.SingleOrDefault(x => x.Id == geoNameId);
 
           if (dbGeoName == null) {
             dbGeoName = new(
@@ -41,7 +39,7 @@ namespace PictureManager.Domain.Models {
               geoname.SelectSingleNode("fcode")?.InnerText,
               parentGeoName);
 
-            All.Add(dbGeoName);
+            DataAdapter.All.Add(dbGeoName.Id, dbGeoName);
             parentGeoName?.Items.Add(dbGeoName);
             Core.RunOnUiThread(() => DataAdapter.IsModified = true);
           }

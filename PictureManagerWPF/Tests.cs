@@ -7,6 +7,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using MH.Utils;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager {
   /*public interface IBranch : ILeaf {
@@ -49,7 +51,10 @@ namespace PictureManager {
       //TestTryParseDoubleUniversal();
 
       //var x = PictureManager.Domain.Core.DialogHostShow(new MessageDialog("test", "test message která je delší a delší a delší", Res.IconPeople, true));
-      var x = PictureManager.Domain.Core.DialogHostShow(new MH.Utils.Dialogs.InputDialog("Test title", "Test message bla bla bla la la la", Res.IconEye, "bla bla", (s) => { return "Error message"; }));
+      //var x = PictureManager.Domain.Core.DialogHostShow(new MH.Utils.Dialogs.InputDialog("Test title", "Test message bla bla bla la la la", Res.IconEye, "bla bla", (s) => { return "Error message"; }));
+      //App.Core.FoldersM.DataAdapter.Save();
+
+      //App.Core.VideoClipsM.DataAdapter.Save();
     }
 
 

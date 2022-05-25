@@ -7,12 +7,13 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Utils;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Folder|Name|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
   /// </summary>
-  public sealed class MediaItemM : ObservableObject, IEquatable<MediaItemM>, ISelectable {
+  public sealed class MediaItemM : ObservableObject, IEquatable<MediaItemM>, ISelectable, IRecord {
     #region IEquatable implementation
     public bool Equals(MediaItemM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as MediaItemM);

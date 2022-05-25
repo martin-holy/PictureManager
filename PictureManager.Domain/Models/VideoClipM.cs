@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using MH.Utils.BaseClasses;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipM : TreeItem {
+  public sealed class VideoClipM : TreeItem, IRecord {
     private string _title;
     private int _timeStart;
     private int _timeEnd;

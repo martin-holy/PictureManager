@@ -12,7 +12,7 @@ namespace PictureManager.Domain.Models {
 
     public FolderKeywordsM() : base(Res.IconFolderPuzzle, Category.FolderKeywords, "Folder Keywords") { }
 
-    public void Load(List<FolderM> folders) {
+    public void Load(IEnumerable<FolderM> folders) {
       foreach (var fk in All) {
         fk.Folders.Clear();
         fk.Items.Clear();
