@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using PictureManager.Domain.Models;
 using SimpleDB;
@@ -29,11 +28,9 @@ namespace PictureManager.Domain.DataAdapters {
         categoryGroup.Id.ToString(),
         categoryGroup.Name,
         (int)categoryGroup.Category,
-        string.Join(",", categoryGroup.Items.Select(x => x switch {
-          KeywordM k => k.Id.ToString(),
-          PersonM p => p.Id.ToString(),
-          _ => throw new ArgumentException("Unexpected item in an group", x.Name)
-        })));
+        string.Join(",", categoryGroup.Items
+          .OfType<IRecord>()
+          .Select(x => x.Id.ToString())));
 
     public override void LinkReferences() {
       _peopleM.Items.Clear();
