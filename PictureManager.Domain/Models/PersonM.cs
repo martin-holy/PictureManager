@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Interfaces;
 using SimpleDB;
@@ -50,12 +49,8 @@ namespace PictureManager.Domain.Models {
       }
 
       DisplayKeywords ??= new();
-      var allKeywords = new List<KeywordM>();
 
-      foreach (var keyword in Keywords)
-        MH.Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
-
-      foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName))
+      foreach (var keyword in KeywordsM.GetAllKeywords(Keywords))
         DisplayKeywords.Add(keyword);
     }
   }
