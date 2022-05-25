@@ -3,12 +3,13 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Interfaces;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|ToponymName|FCode|Parent
   /// </summary>
-  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM>, IFilterItem {
+  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM>, IFilterItem, IRecord {
     #region IEquatable implementation
     public bool Equals(GeoNameM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as GeoNameM);

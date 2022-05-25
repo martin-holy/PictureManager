@@ -94,7 +94,7 @@ namespace PictureManager.ViewModels {
       });
 
       // TODO do it just when needed
-      foreach (var person in App.Core.PeopleM.All)
+      foreach (var person in App.Core.PeopleM.DataAdapter.All.Values)
         person.UpdateDisplayKeywords();
     }
 

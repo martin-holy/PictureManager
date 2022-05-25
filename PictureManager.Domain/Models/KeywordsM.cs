@@ -5,14 +5,13 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class KeywordsM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public DataAdapter<KeywordM> DataAdapter { get; set; }
-    public List<KeywordM> All { get; } = new();
+    public KeywordsDataAdapter DataAdapter { get; set; }
     public CategoryGroupM AutoAddedGroup { get; set; }
 
     public event EventHandler<ObjectEventArgs<KeywordM>> KeywordDeletedEventHandler = delegate { };
@@ -25,7 +24,7 @@ namespace PictureManager.Domain.Models {
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new KeywordM(DataAdapter.GetNextId(), name, root);
       Tree.SetInOrder(root.Items, item, x => x.Name);
-      All.Add(item);
+      DataAdapter.All.Add(item.Id, item);
 
       return item;
     }
@@ -44,7 +43,7 @@ namespace PictureManager.Domain.Models {
       foreach (var keyword in keywords) {
         keyword.Parent = null;
         keyword.Items = null;
-        All.Remove(keyword);
+        DataAdapter.All.Remove(keyword.Id);
         KeywordDeletedEventHandler(this, new(keyword));
         DataAdapter.IsModified = true;
       }
@@ -84,7 +83,7 @@ namespace PictureManager.Domain.Models {
       var pathNames = fullPath.Split('/');
 
       // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
-      var keyword = All.SingleOrDefault(x => x.Parent is not KeywordM && x.Name.Equals(pathNames[0]));
+      var keyword = DataAdapter.All.Values.SingleOrDefault(x => x.Parent is not KeywordM && x.Name.Equals(pathNames[0]));
 
       // return Keyword if it was found and is 1 level type
       if (keyword != null && pathNames.Length == 1)
@@ -136,7 +135,7 @@ namespace PictureManager.Domain.Models {
       return allKeywords.Distinct().OrderBy(x => x.FullName);
     }
 
-    public void DeleteNotUsed(IEnumerable<KeywordM> list, List<MediaItemM> mediaItems, List<PersonM> people) {
+    public void DeleteNotUsed(IEnumerable<KeywordM> list, IEnumerable<MediaItemM> mediaItems, IEnumerable<PersonM> people) {
       var keywords = new HashSet<KeywordM>(list);
       foreach (var mi in mediaItems) {
         if (mi.Keywords != null)
@@ -144,7 +143,7 @@ namespace PictureManager.Domain.Models {
             keywords.Remove(keyword);
 
         if (mi.Segments != null)
-          foreach (var segment in mi.Segments?.Where(x => x.Keywords != null))
+          foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
             foreach (var keyword in segment.Keywords.Where(x => keywords.Contains(x)))
               keywords.Remove(keyword);
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -9,36 +11,32 @@ namespace PictureManager.Domain.DataAdapters {
   public class FoldersDataAdapter : DataAdapter<FolderM> {
     private readonly FoldersM _model;
 
-    public FoldersDataAdapter(SimpleDB.SimpleDB db, FoldersM model) : base("Folders", db) {
+    public FoldersDataAdapter(FoldersM model) : base("Folders", 4) {
       _model = model;
     }
 
-    public override void Load() {
-      _model.All.Clear();
-      LoadFromFile();
+    public static IEnumerable<T> GetAll<T>(ITreeItem root) {
+      yield return (T)root;
+
+      foreach (var item in root.Items)
+        foreach (var subItem in GetAll<T>(item))
+          if (!FoldersM.FolderPlaceHolder.Equals(subItem))
+            yield return subItem;
     }
 
     public override void Save() =>
-      SaveToFile(_model.All, ToCsv);
+      SaveDriveRelated(_model.Items.ToDictionary(x => x.Name, GetAll<FolderM>));
 
-    public override void FromCsv(string csv) {
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
+    public override FolderM FromCsv(string[] csv) =>
+      string.IsNullOrEmpty(csv[2])
+        ? new DriveM(int.Parse(csv[0]), csv[1], null) {
+          IsFolderKeyword = csv[3] == "1"
+        }
+        : new FolderM(int.Parse(csv[0]), csv[1], null) {
+          IsFolderKeyword = csv[3] == "1"
+        };
 
-      var folder = string.IsNullOrEmpty(props[2])
-        ? new DriveM(int.Parse(props[0]), props[1], null) {
-            IsFolderKeyword = props[3] == "1"
-          }
-        : new FolderM(int.Parse(props[0]), props[1], null) {
-            IsFolderKeyword = props[3] == "1"
-          };
-
-      _model.All.Add(folder);
-      AllCsv.Add(folder, props);
-      AllId.Add(folder.Id, folder);
-    }
-
-    private static string ToCsv(FolderM folder) =>
+    public override string ToCsv(FolderM folder) =>
       string.Join("|",
         folder.Id.ToString(),
         folder.Name,
@@ -48,10 +46,12 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Empty);
 
     public override void LinkReferences() {
+      _model.Items.Clear();
+
       foreach (var (folder, csv) in AllCsv) {
         // reference to Parent and back reference from Parent to SubFolder
         folder.Parent = !string.IsNullOrEmpty(csv[2])
-          ? AllId[int.Parse(csv[2])]
+          ? All[int.Parse(csv[2])]
           : _model;
         folder.Parent.Items.Add(folder);
       }

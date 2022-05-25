@@ -66,14 +66,14 @@ namespace PictureManager.ViewModels {
     }
 
     private void ReloadCategoryGroups() {
-      var groups = _categoryGroupsM.All
+      var groups = _categoryGroupsM.DataAdapter.All.Values
         .OrderBy(x => x.Category)
         .ThenBy(x => x.Name);
 
       CategoryGroups.Clear();
 
       foreach (var cg in groups)
-        CategoryGroups.Add(new ListItem<CategoryGroupM>(cg));
+        CategoryGroups.Add(new(cg));
     }
 
     private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {

@@ -444,7 +444,7 @@ namespace PictureManager.Domain.Models {
       await ReadMetadataAndListThumbs(items, progress);
 
       if (_cancelLoad)
-        _mediaItemsM.Delete(_mediaItemsM.All.Where(x => x.IsNew).ToArray());
+        _mediaItemsM.Delete(_mediaItemsM.DataAdapter.All.Values.Where(x => x.IsNew).ToArray());
 
       // TODO: is this necessary?
       if (CurrentMediaItem != null) {

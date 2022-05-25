@@ -63,23 +63,21 @@ namespace PictureManager.Domain {
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
 
-      CategoryGroupsM.DataAdapter = new CategoryGroupsDataAdapter(Sdb, CategoryGroupsM, KeywordsM, PeopleM);
-      FavoriteFoldersM.DataAdapter = new FavoriteFoldersDataAdapter(Sdb, FavoriteFoldersM, FoldersM);
-      FoldersM.DataAdapter = new FoldersDataAdapter(Sdb, FoldersM);
-      GeoNamesM.DataAdapter = new GeoNamesDataAdapter(Sdb, GeoNamesM);
-      KeywordsM.DataAdapter = new KeywordsDataAdapter(Sdb, KeywordsM, CategoryGroupsM);
-      MediaItemsM.DataAdapter = new MediaItemsDataAdapter(Sdb, MediaItemsM, FoldersM, PeopleM, KeywordsM, GeoNamesM);
-      PeopleM.DataAdapter = new PeopleDataAdapter(Sdb, PeopleM, SegmentsM, KeywordsM);
-      SegmentsM.DataAdapter = new SegmentsDataAdapter(Sdb, SegmentsM, MediaItemsM, PeopleM, KeywordsM);
-      VideoClipsM.DataAdapter = new VideoClipsDataAdapter(Sdb, VideoClipsM, MediaItemsM, KeywordsM, PeopleM);
-      VideoClipsM.GroupsM.DataAdapter = new VideoClipsGroupsDataAdapter(Sdb, VideoClipsM.GroupsM, VideoClipsM, MediaItemsM);
-      ViewersM.DataAdapter = new ViewersDataAdapter(Sdb, ViewersM, FoldersM, KeywordsM);
+      CategoryGroupsM.DataAdapter = new(CategoryGroupsM, KeywordsM, PeopleM);
+      FavoriteFoldersM.DataAdapter = new(FavoriteFoldersM, FoldersM);
+      FoldersM.DataAdapter = new(FoldersM);
+      GeoNamesM.DataAdapter = new(GeoNamesM);
+      KeywordsM.DataAdapter = new(KeywordsM, CategoryGroupsM);
+      MediaItemsM.DataAdapter = new(FoldersM, PeopleM, KeywordsM, GeoNamesM);
+      PeopleM.DataAdapter = new(PeopleM, SegmentsM, KeywordsM);
+      SegmentsM.DataAdapter = new(SegmentsM, MediaItemsM, PeopleM, KeywordsM);
+      VideoClipsM.DataAdapter = new(VideoClipsM, MediaItemsM, KeywordsM, PeopleM);
+      VideoClipsM.GroupsM.DataAdapter = new(VideoClipsM.GroupsM, VideoClipsM, MediaItemsM);
+      ViewersM.DataAdapter = new(ViewersM, FoldersM, KeywordsM, FolderKeywordsM, CategoryGroupsM);
     }
 
     public Task InitAsync(IProgress<string> progress) {
       return Task.Run(() => {
-        SimpleDB.SimpleDB.Migrate(1, DatabaseMigration.Resolver, this);
-
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
         Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers and FavoriteFolders
@@ -92,6 +90,8 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(SegmentsM.DataAdapter);
 
+        SimpleDB.SimpleDB.Migrate(2, DatabaseMigration.Resolver, this);
+
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
         Sdb.ClearDataAdapters();
@@ -99,7 +99,6 @@ namespace PictureManager.Domain {
         AttachEvents();
 
         progress.Report("Loading drives");
-        ViewersM.SetCurrent(ViewersM.Current);
       });
     }
 
@@ -141,14 +140,6 @@ namespace PictureManager.Domain {
       SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
         PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
         e.Data.Item1.MediaItem.SetInfoBox();
-      };
-
-      ViewersM.PropertyChanged += (_, e) => {
-        if (nameof(ViewersM.Current).Equals(e.PropertyName)) {
-          FoldersM.AddDrives();
-          FolderKeywordsM.Load(FoldersM.All);
-          CategoryGroupsM.UpdateVisibility(ViewersM.Current);
-        }
       };
 
       ThumbnailsGridsM.PropertyChanged += (_, e) => {

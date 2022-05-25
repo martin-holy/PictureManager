@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Interfaces;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
-  public sealed class PersonM : TreeItem, IEquatable<PersonM>, IFilterItem {
+  public sealed class PersonM : TreeItem, IEquatable<PersonM>, IFilterItem, IRecord {
     #region IEquatable implementation
     public bool Equals(PersonM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as PersonM);

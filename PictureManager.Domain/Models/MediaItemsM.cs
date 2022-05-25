@@ -8,8 +8,8 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
+using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Utils;
-using SimpleDB;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaItemsM : ObservableObject {
@@ -20,8 +20,7 @@ namespace PictureManager.Domain.Models {
     private bool _isEditModeOn;
     private MediaItemM _current;
 
-    public DataAdapter<MediaItemM> DataAdapter { get; set; }
-    public List<MediaItemM> All { get; } = new();
+    public MediaItemsDataAdapter DataAdapter { get; set; }
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
 
     public MediaItemM Current {
@@ -34,7 +33,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public int MediaItemsCount => All.Count;
+    public int MediaItemsCount => DataAdapter.All.Count;
     public int ModifiedItemsCount => ModifiedItems.Count;
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
 
@@ -104,7 +103,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public List<MediaItemM> GetMediaItems(PersonM person) =>
-      All.Where(mi =>
+      DataAdapter.All.Values.Where(mi =>
           mi.People?.Contains(person) == true ||
           mi.Segments?.Any(s => s.Person == person) == true)
         .OrderBy(mi => mi.FileName).ToList();
@@ -114,7 +113,7 @@ namespace PictureManager.Domain.Models {
       if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
       var set = new HashSet<KeywordM>(keywords);
 
-      return All.Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true).ToList();
+      return DataAdapter.All.Values.Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true).ToList();
     }
 
     public List<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
@@ -122,7 +121,7 @@ namespace PictureManager.Domain.Models {
       if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
       var set = new HashSet<GeoNameM>(geoNames);
 
-      return All.Where(mi => set.Contains(mi.GeoName))
+      return DataAdapter.All.Values.Where(mi => set.Contains(mi.GeoName))
         .OrderBy(x => x.FileName).ToList();
     }
 
@@ -154,7 +153,7 @@ namespace PictureManager.Domain.Models {
       }
 
       copy.Folder.MediaItems.Add(copy);
-      All.Add(copy);
+      DataAdapter.All.Add(copy.Id, copy);
       OnPropertyChanged(nameof(MediaItemsCount));
 
       return copy;
@@ -195,7 +194,7 @@ namespace PictureManager.Domain.Models {
       //item.Folder = null;
 
       // remove from DB
-      All.Remove(item);
+      DataAdapter.All.Remove(item.Id);
 
       OnPropertyChanged(nameof(MediaItemsCount));
 
@@ -347,7 +346,7 @@ namespace PictureManager.Domain.Models {
             fmis.TryGetValue(fileName, out var inDbFile);
             if (inDbFile == null) {
               inDbFile = new(DataAdapter.GetNextId(), folder, fileName, true);
-              All.Add(inDbFile);
+              DataAdapter.All.Add(inDbFile.Id, inDbFile);
               OnPropertyChanged(nameof(MediaItemsCount));
               folder.MediaItems.Add(inDbFile);
             }
@@ -396,24 +395,26 @@ namespace PictureManager.Domain.Models {
     }
 
     public void UpdateInfoBoxWithPerson(PersonM person) {
-      foreach (var mi in All.Where(mi => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true))
+      foreach (var mi in DataAdapter.All.Values
+                 .Where(mi => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true))
         mi.SetInfoBox();
     }
 
     public void UpdateInfoBoxWithKeyword(KeywordM keyword) {
-      foreach (var mi in All.Where(mi => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true))
+      foreach (var mi in DataAdapter.All.Values
+                 .Where(mi => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true))
         mi.SetInfoBox();
     }
 
     public void RemovePersonFromMediaItems(PersonM person) {
-      foreach (var mi in All.Where(mi => mi.People?.Contains(person) == true)) {
+      foreach (var mi in DataAdapter.All.Values.Where(mi => mi.People?.Contains(person) == true)) {
         mi.People = ListExtensions.Toggle(mi.People, person, true);
         DataAdapter.IsModified = true;
       }
     }
 
     public void RemoveKeywordFromMediaItems(KeywordM keyword) {
-      foreach (var mi in All.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
+      foreach (var mi in DataAdapter.All.Values.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
         mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
         DataAdapter.IsModified = true;
       }

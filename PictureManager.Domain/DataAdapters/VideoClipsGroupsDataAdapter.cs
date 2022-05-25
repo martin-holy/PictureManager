@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using MH.Utils;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -12,30 +12,21 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly VideoClipsM _videoClipsM;
     private readonly MediaItemsM _mediaItemsM;
 
-    public VideoClipsGroupsDataAdapter(SimpleDB.SimpleDB db, VideoClipsGroupsM model, VideoClipsM vc, MediaItemsM mi)
-      : base("VideoClipsGroups", db) {
+    public VideoClipsGroupsDataAdapter(VideoClipsGroupsM model, VideoClipsM vc, MediaItemsM mi) : base("VideoClipsGroups", 4) {
       _model = model;
       _videoClipsM = vc;
       _mediaItemsM = mi;
     }
 
-    public override void Load() {
-      _model.All.Clear();
-      LoadFromFile();
-    }
-
     public override void Save() =>
-      SaveToFile(_model.All, ToCsv);
+      SaveDriveRelated(All.Values
+        .GroupBy(x => Tree.GetTopParent(x.MediaItem.Folder))
+        .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
-    public override void FromCsv(string csv) {
-      var props = csv.Split('|');
-      if (props.Length != 4) throw new ArgumentException("Incorrect number of values.", csv);
-      var group = new VideoClipsGroupM(int.Parse(props[0]), props[1]);
-      _model.All.Add(group);
-      AllCsv.Add(group, props);
-    }
+    public override VideoClipsGroupM FromCsv(string[] csv) =>
+      new(int.Parse(csv[0]), csv[1]);
 
-    private static string ToCsv(VideoClipsGroupM vcg) =>
+    public override string ToCsv(VideoClipsGroupM vcg) =>
       string.Join("|",
         vcg.Id.ToString(),
         vcg.Name ?? string.Empty,
@@ -46,7 +37,7 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void LinkReferences() {
       foreach (var (group, csv) in AllCsv) {
-        group.MediaItem = _mediaItemsM.DataAdapter.AllId[int.Parse(csv[2])];
+        group.MediaItem = _mediaItemsM.DataAdapter.All[int.Parse(csv[2])];
         group.MediaItem.HasVideoClips = true;
         group.Parent = _videoClipsM;
 
@@ -54,7 +45,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = csv[3].Split(',');
 
           foreach (var vcId in ids) {
-            var vc = _videoClipsM.DataAdapter.AllId[int.Parse(vcId)];
+            var vc = _videoClipsM.DataAdapter.All[int.Parse(vcId)];
             vc.Parent = group;
             group.Items.Add(vc);
           }

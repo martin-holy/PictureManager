@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Linq;
+using MH.Utils;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -10,29 +11,21 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly FavoriteFoldersM _model;
     private readonly FoldersM _foldersM;
 
-    public FavoriteFoldersDataAdapter(SimpleDB.SimpleDB db, FavoriteFoldersM model, FoldersM f)
-      : base("FavoriteFolders", db) {
+    public FavoriteFoldersDataAdapter(FavoriteFoldersM model, FoldersM folders) : base("FavoriteFolders", 3) {
       _model = model;
-      _foldersM = f;
-    }
-
-    public override void Load() {
-      _model.All.Clear();
-      LoadFromFile();
+      _foldersM = folders;
     }
 
     public override void Save() =>
-      SaveToFile(_model.All, ToCsv);
+      SaveDriveRelated(_model.Items
+        .Cast<FavoriteFolderM>()
+        .GroupBy(x => Tree.GetTopParent(x.Folder))
+        .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
-    public override void FromCsv(string csv) {
-      var props = csv.Split('|');
-      if (props.Length != 3) throw new ArgumentException("Incorrect number of values.", csv);
-      var favoriteFolder = new FavoriteFolderM(int.Parse(props[0]), props[2]);
-      _model.All.Add(favoriteFolder);
-      AllCsv.Add(favoriteFolder, props);
-    }
+    public override FavoriteFolderM FromCsv(string[] csv) =>
+      new(int.Parse(csv[0]), csv[2]);
 
-    private static string ToCsv(FavoriteFolderM ff) =>
+    public override string ToCsv(FavoriteFolderM ff) =>
       string.Join("|",
         ff.Id.ToString(),
         ff.Folder.Id.ToString(),
@@ -42,7 +35,7 @@ namespace PictureManager.Domain.DataAdapters {
       _model.Items.Clear();
 
       foreach (var (ff, csv) in AllCsv) {
-        ff.Folder = _foldersM.DataAdapter.AllId[int.Parse(csv[1])];
+        ff.Folder = _foldersM.DataAdapter.All[int.Parse(csv[1])];
         ff.Parent = _model;
         _model.Items.Add(ff);
       }

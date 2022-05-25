@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
 
     public async Task LoadByTag(ITreeItem item, bool and, bool hide, bool recursive) {
       var items = item switch {
-        RatingTreeM rating => _core.MediaItemsM.All.Where(x => x.Rating == rating.Value).ToList(),
+        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value).ToList(),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
         KeywordM keyword => _core.MediaItemsM.GetMediaItems(keyword, recursive),
         GeoNameM geoName => _core.MediaItemsM.GetMediaItems(geoName, recursive),

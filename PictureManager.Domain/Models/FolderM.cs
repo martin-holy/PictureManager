@@ -7,9 +7,10 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using SimpleDB;
 
 namespace PictureManager.Domain.Models {
-  public class FolderM : TreeItem, IEquatable<FolderM> {
+  public class FolderM : TreeItem, IEquatable<FolderM>, IRecord {
     #region IEquatable implementation
     public bool Equals(FolderM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as FolderM);
@@ -71,7 +72,7 @@ namespace PictureManager.Domain.Models {
 
         // add new Folder to the database
         folder = new(Core.Instance.FoldersM.DataAdapter.GetNextId(), dirName, this);
-        Core.Instance.FoldersM.All.Add(folder);
+        Core.Instance.FoldersM.DataAdapter.All.Add(folder.Id, folder);
 
         // add new Folder to the tree
         Items.Add(folder);

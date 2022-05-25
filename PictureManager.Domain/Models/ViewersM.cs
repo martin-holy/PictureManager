@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
-using SimpleDB;
+using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class ViewersM : TreeCategoryBase {
     private ViewerM _current;
 
-    public DataAdapter<ViewerM> DataAdapter { get; set; }
-    public List<ViewerM> All { get; } = new();
+    public ViewersDataAdapter DataAdapter { get; set; }
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
     public RelayCommand<ViewerM> SetCurrentCommand { get; }
@@ -24,7 +22,7 @@ namespace PictureManager.Domain.Models {
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
       root.Items.SetInOrder(item, x => x.Name);
-      All.Add(item);
+      DataAdapter.All.Add(item.Id, item);
 
       return item;
     }
@@ -42,12 +40,12 @@ namespace PictureManager.Domain.Models {
       viewer.IncludedFolders.Clear();
       viewer.ExcludedFolders.Clear();
       viewer.ExcludedKeywords.Clear();
-      All.Remove(viewer);
+      DataAdapter.All.Remove(viewer.Id);
       DataAdapter.IsModified = true;
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      All.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
         ? $"{name} item already exists!"
         : null;
 
@@ -77,30 +75,19 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetCurrent(ViewerM viewer) {
-      if (Current != null && Current == viewer) {
-        Current.UpdateHashSets();
-        OnPropertyChanged(nameof(Current));
-        return;
-      }
-
-      var save = false;
-
-      if (Current != null) {
+      if (Current != null)
         Current.IsDefault = false;
-        save = true;
-      }
 
-      if (viewer != null) {
+      if (viewer != null)
         viewer.IsDefault = true;
-        save = true;
-        viewer.UpdateHashSets();
-        Current = viewer;
-      }
-      else
-        Current = null;
 
-      if (save)
+      if (Current != null || viewer != null)
         DataAdapter.Save();
+
+      DataAdapter.DB.SaveAllTables();
+      DataAdapter.DB.LoadAllTables(null);
+      DataAdapter.DB.LinkReferences(null);
+      DataAdapter.DB.ClearDataAdapters();
     }
 
     public bool CanViewerSee(FolderM folder) =>

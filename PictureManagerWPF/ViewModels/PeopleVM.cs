@@ -24,7 +24,7 @@ namespace PictureManager.ViewModels {
       PanelSizeChangedCommand = new(PanelSizeChanged);
 
       // TODO do it just for loaded
-      foreach (var person in App.Core.PeopleM.All)
+      foreach (var person in PeopleM.DataAdapter.All.Values)
         person.UpdateDisplayKeywords();
     }
 

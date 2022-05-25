@@ -7,7 +7,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Interfaces;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using PictureManager.Domain.Dialogs;
@@ -103,7 +102,7 @@ namespace PictureManager.ViewModels {
         async (folder, fileName) => {
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = new MediaItemM(_core.MediaItemsM.DataAdapter.GetNextId(), folder, fileName);
-          _core.MediaItemsM.All.Add(mi);
+          _core.MediaItemsM.DataAdapter.All.Add(mi.Id, mi);
           _core.MediaItemsM.OnPropertyChanged(nameof(_core.MediaItemsM.MediaItemsCount));
           folder.MediaItems.Add(mi);
           await _core.MediaItemsM.ReadMetadata(mi, false);
