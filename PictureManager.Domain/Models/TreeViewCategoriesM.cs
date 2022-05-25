@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -32,7 +31,6 @@ namespace PictureManager.Domain.Models {
 
     public RelayCommand<object> ShowSearchCommand { get; }
     public RelayCommand<ITreeItem> ScrollToCommand { get; }
-    public RelayCommand<ITreeItem> TagItemDeleteNotUsedCommand { get; }
 
     public TreeViewCategoriesM(Core core) {
       _core = core;
@@ -41,7 +39,6 @@ namespace PictureManager.Domain.Models {
 
       ShowSearchCommand = new(ShowSearch);
       ScrollToCommand = new(ScrollTo);
-      TagItemDeleteNotUsedCommand = new(TagItemDeleteNotUsed);
 
       Items = new() {
         _core.FavoriteFoldersM,
@@ -66,29 +63,6 @@ namespace PictureManager.Domain.Models {
     private void ShowSearch() {
       TreeViewSearchM.SearchText = string.Empty;
       TreeViewSearchM.IsVisible = true;
-    }
-
-    private void TagItemDeleteNotUsed(ITreeItem root) {
-      if (Core.DialogHostShow(new MessageDialog(
-        "Delete Confirmation",
-        $"Do you really want to delete not used items in '{root.Name}'?",
-        Res.IconQuestion,
-        true)) != 0) return;
-
-      switch (MH.Utils.Tree.GetTopParent(root)) {
-        case PeopleM:
-          _core.PeopleM.DeleteNotUsed(
-            root.Items.OfType<PersonM>(),
-            _core.MediaItemsM.DataAdapter.All.Values);
-          break;
-
-        case KeywordsM:
-          _core.KeywordsM.DeleteNotUsed(
-            root.Items.OfType<KeywordM>(),
-            _core.MediaItemsM.DataAdapter.All.Values,
-            _core.PeopleM.DataAdapter.All.Values);
-          break;
-      }
     }
 
     // TODO rename, check usage, use it less

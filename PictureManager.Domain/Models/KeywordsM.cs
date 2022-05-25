@@ -134,30 +134,5 @@ namespace PictureManager.Domain.Models {
 
       return allKeywords.Distinct().OrderBy(x => x.FullName);
     }
-
-    public void DeleteNotUsed(IEnumerable<KeywordM> list, IEnumerable<MediaItemM> mediaItems, IEnumerable<PersonM> people) {
-      var keywords = new HashSet<KeywordM>(list);
-      foreach (var mi in mediaItems) {
-        if (mi.Keywords != null)
-          foreach (var keyword in mi.Keywords.Where(x => keywords.Contains(x)))
-            keywords.Remove(keyword);
-
-        if (mi.Segments != null)
-          foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
-            foreach (var keyword in segment.Keywords.Where(x => keywords.Contains(x)))
-              keywords.Remove(keyword);
-
-        if (keywords.Count == 0) break;
-      }
-
-      if (keywords.Count == 0) return;
-
-      foreach (var person in people.Where(p => p.Keywords != null))
-        foreach (var keyword in person.Keywords)
-          keywords.Remove(keyword);
-
-      foreach (var keywordM in keywords)
-        ModelItemDelete(keywordM);
-    }
   }
 }
