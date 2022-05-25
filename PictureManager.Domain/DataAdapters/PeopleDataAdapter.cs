@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using PictureManager.Domain.Models;
 using SimpleDB;
 
@@ -17,8 +18,17 @@ namespace PictureManager.Domain.DataAdapters {
       _keywordsM = k;
     }
 
+    public IEnumerable<PersonM> GetAll() {
+      foreach (var cg in _model.Items.OfType<CategoryGroupM>())
+      foreach (var personM in cg.Items.Cast<PersonM>())
+        yield return personM;
+
+      foreach (var personM in _model.Items.OfType<PersonM>())
+        yield return personM;
+    }
+
     public override void Save() =>
-      SaveToFile(_model.GetAll());
+      SaveToFile(GetAll());
 
     public override PersonM FromCsv(string[] csv) =>
       new(int.Parse(csv[0]), csv[1]);
