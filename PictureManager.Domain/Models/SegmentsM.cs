@@ -16,7 +16,7 @@ namespace PictureManager.Domain.Models {
     private int _compareSegmentSize = 32;
     private int _similarityLimit = 90;
     private int _similarityLimitMin = 80;
-    private bool _groupSegments;
+    private bool _groupSegments = true;
     private bool _groupConfirmedSegments;
     private bool _matchingAutoSort = true;
     private readonly List<SegmentM> _selected = new();
@@ -396,7 +396,6 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
-      GroupSegments = false;
       DeselectAll();
       Loaded.Clear();
 
