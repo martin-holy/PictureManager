@@ -48,7 +48,7 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       _model.Items.Clear();
 
-      foreach (var (viewer, csv) in AllCsv.OrderBy(x => x.Key.Name)) {
+      foreach (var (viewer, csv) in AllCsv.OrderBy(x => x.Item1.Name)) {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(csv[2]))
           foreach (var folderId in csv[2].Split(',').Select(int.Parse)) {
