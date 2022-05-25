@@ -18,6 +18,12 @@ namespace PictureManager.Domain.DataAdapters {
       _peopleM = p;
     }
 
+    public override void Save() =>
+      SaveToFile(_keywordsM.Items
+        .OfType<CategoryGroupM>()
+        .Concat(_peopleM.Items
+          .OfType<CategoryGroupM>()));
+
     public override CategoryGroupM FromCsv(string[] csv) {
       var category = (Category)int.Parse(csv[2]);
       return new(int.Parse(csv[0]), csv[1], category, Res.CategoryToIconName(category));
