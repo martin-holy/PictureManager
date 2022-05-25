@@ -80,15 +80,6 @@ namespace PictureManager.Domain.Models {
         ? null
         : $"{name} group already exists!";
 
-    public IEnumerable<PersonM> GetAll() {
-      foreach (var cg in Items.OfType<CategoryGroupM>())
-        foreach (var personM in cg.Items.Cast<PersonM>())
-          yield return personM;
-
-      foreach (var personM in Items.OfType<PersonM>())
-        yield return personM;
-    }
-
     public PersonM GetPerson(string name, bool create) =>
       DataAdapter.All.Values.SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCulture))
       ?? (create
