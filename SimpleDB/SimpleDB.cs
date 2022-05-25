@@ -12,7 +12,7 @@ namespace SimpleDB {
     public event PropertyChangedEventHandler PropertyChanged = delegate { };
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
 
-    private readonly List<DataAdapter> _dataAdapters = new();
+    private readonly List<IDataAdapter> _dataAdapters = new();
     private readonly Dictionary<string, int> _idSequences = new();
     private readonly string _isSequencesFilePath;
     private int _changes;
@@ -28,22 +28,24 @@ namespace SimpleDB {
       LoadIdSequences();
     }
 
-    public void AddDataAdapter(DataAdapter dataAdapter) {
+    public void AddDataAdapter(IDataAdapter dataAdapter) {
       if (!_idSequences.TryGetValue(dataAdapter.TableName, out var maxId))
         _idSequences.Add(dataAdapter.TableName, 0);
 
+      dataAdapter.DB = this;
+      dataAdapter.Logger = Logger;
       dataAdapter.MaxId = maxId;
       _dataAdapters.Add(dataAdapter);
     }
 
     public void ClearDataAdapters() {
-      foreach (var da in _dataAdapters.Cast<IGenericDataAdapter>())
+      foreach (var da in _dataAdapters)
         da.Clear();
     }
 
     public void LoadAllTables(IProgress<string> progress) {
       foreach (var da in _dataAdapters) {
-        progress.Report($"Loading data for {da.TableName}");
+        progress?.Report($"Loading data for {da.TableName}");
         da.Load();
         da.LoadProps();
       }
@@ -51,7 +53,7 @@ namespace SimpleDB {
 
     public void LinkReferences(IProgress<string> progress) {
       foreach (var da in _dataAdapters) {
-        progress.Report($"Loading data for {da.TableName}");
+        progress?.Report($"Loading data for {da.TableName}");
         try {
           da.LinkReferences();
         }
@@ -73,8 +75,8 @@ namespace SimpleDB {
     }
 
     private void LoadIdSequences() {
-      SimpleDB.LoadFromFile(
-        (line) => {
+      LoadFromFile(
+        line => {
           var vals = line.Split('|');
           if (vals.Length != 2)
             throw new ArgumentException("Incorrect number of values.", line);
@@ -97,7 +99,7 @@ namespace SimpleDB {
 
       SaveToFile(
         _dataAdapters,
-        (x) => string.Join("|", x.TableName, x.MaxId),
+        x => string.Join("|", x.TableName, x.MaxId),
         _isSequencesFilePath,
         Logger);
     }
@@ -120,16 +122,19 @@ namespace SimpleDB {
       }
     }
 
-    public static void LoadFromFile(Action<string> parseLine, string filePath, ILogger logger) {
-      if (!File.Exists(filePath)) return;
+    public static bool LoadFromFile(Action<string> parseLine, string filePath, ILogger logger) {
+      if (!File.Exists(filePath)) return false;
       try {
         using var sr = new StreamReader(filePath, Encoding.UTF8);
         string line;
         while ((line = sr.ReadLine()) != null)
           parseLine(line);
+
+        return true;
       }
       catch (Exception ex) {
         logger.LogError(ex);
+        return false;
       }
     }
 
