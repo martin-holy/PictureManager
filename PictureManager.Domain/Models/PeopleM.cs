@@ -95,24 +95,6 @@ namespace PictureManager.Domain.Models {
         ? (PersonM)ModelItemCreate(this, name)
         : null);
 
-    public void DeleteNotUsed(IEnumerable<PersonM> list, IEnumerable<MediaItemM> mediaItems) {
-      var people = new HashSet<PersonM>(list);
-      foreach (var mi in mediaItems) {
-        if (mi.People != null)
-          foreach (var personM in mi.People.Where(x => people.Contains(x)))
-            people.Remove(personM);
-
-        if (mi.Segments != null)
-          foreach (var segment in mi.Segments.Where(x => people.Contains(x.Person)))
-            people.Remove(segment.Person);
-
-        if (people.Count == 0) break;
-      }
-
-      foreach (var person in people)
-        ModelItemDelete(person);
-    }
-
     public void SegmentPersonChange(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
       if (newPerson != null)
         newPerson.Segment ??= segment;

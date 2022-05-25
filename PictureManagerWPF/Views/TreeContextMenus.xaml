@@ -32,10 +32,6 @@
     <MenuItem Header="New Group"
               Command="mhc:CatTreeView.GroupCreateCommand"
               CommandParameter="{Binding}" />
-    <MenuItem Header="Delete not used"
-              Command="{Binding TreeViewCategoriesM.TagItemDeleteNotUsedCommand,
-                        Source={x:Static pm:App.Core}}"
-              CommandParameter="{Binding}" />
 
     <!--TODO: Sort-->
   </ContextMenu>
@@ -80,10 +76,6 @@
               CommandParameter="{Binding}" />
     <MenuItem Header="New Group"
               Command="mhc:CatTreeView.GroupCreateCommand"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="Delete not used"
-              Command="{Binding TreeViewCategoriesM.TagItemDeleteNotUsedCommand,
-                        Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding}" />
 
     <!--TODO: Sort-->
@@ -133,11 +125,6 @@
     <MenuItem
       Header="Delete Group"
       Command="mhc:CatTreeView.GroupDeleteCommand"
-      CommandParameter="{Binding}" />
-    <MenuItem
-      Header="Delete not used"
-      Command="{Binding TreeViewCategoriesM.TagItemDeleteNotUsedCommand,
-                Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}" />
 
     <!--TODO: Sort-->
@@ -234,11 +221,6 @@
           CommandParameter="{Binding}" />
         <Separator />
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
-        <MenuItem
-          Header="Delete not used"
-          Command="{Binding TreeViewCategoriesM.TagItemDeleteNotUsedCommand,
-                    Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding}" />
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
