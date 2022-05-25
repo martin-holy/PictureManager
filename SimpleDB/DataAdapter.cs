@@ -36,7 +36,7 @@ namespace SimpleDB {
     public int PropsCount { get; }
     public Dictionary<string, string> TableProps { get; } = new();
     public Dictionary<int, T> All { get; } = new();
-    public Dictionary<T, string[]> AllCsv { get; } = new();
+    public List<(T, string[])> AllCsv { get; } = new();
 
     public DataAdapter(string tableName, int propsCount) {
       TableName = tableName;
@@ -95,7 +95,7 @@ namespace SimpleDB {
       var record = FromCsv(props);
 
       All.Add(record.Id, record);
-      AllCsv.Add(record, props);
+      AllCsv.Add(new(record, props));
     }
 
     public int GetNextId() {
