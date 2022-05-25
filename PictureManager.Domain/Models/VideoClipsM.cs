@@ -11,6 +11,7 @@ using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsM : TreeCategoryBase {
+    private readonly MediaItemsM _mediaItemsM;
     private ITreeItem _scrollToItem;
 
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
@@ -22,11 +23,12 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<ObjectEventArgs<VideoClipM>> ItemCreatedEventHandler = delegate { };
 
-    public VideoClipsM() : base(Res.IconMovieClapper, Category.VideoClips, "Clips") {
+    public VideoClipsM(MediaItemsM mi) : base(Res.IconMovieClapper, Category.VideoClips, "Clips") {
+      _mediaItemsM = mi;
       IsExpanded = true;
       CanMoveItem = true;
       MediaItemClips = new() { this };
-      GroupsM = new(this);
+      GroupsM = new(this, _mediaItemsM);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -35,6 +37,9 @@ namespace PictureManager.Domain.Models {
         Name = name,
         IsSelected = true
       };
+
+      if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(CurrentMediaItem))
+        _mediaItemsM.MediaItemVideoClips.Add(CurrentMediaItem, Items);
 
       root.Items.Add(item);
       CurrentVideoClip = item;
@@ -106,14 +111,11 @@ namespace PictureManager.Domain.Models {
 
     private void SetCurrentMediaItem(MediaItemM mi) {
       CurrentMediaItem = mi;
-      Items.Clear();
-      if (mi == null) return;
+      Items = mi != null && _mediaItemsM.MediaItemVideoClips.ContainsKey(mi)
+        ? _mediaItemsM.MediaItemVideoClips[mi]
+        : new();
 
-      foreach (var group in GroupsM.DataAdapter.All.Values.Where(x => x.MediaItem.Equals(mi)))
-        Items.Add(group);
-
-      foreach (var clip in DataAdapter.All.Values.Where(x => Equals(x.Parent, this) && x.MediaItem.Equals(mi)))
-        Items.Add(clip);
+      OnPropertyChanged(nameof(Items));
     }
 
     private void UpdateClipsTitles() {

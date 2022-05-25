@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,6 +9,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Utils;
 
@@ -22,6 +24,7 @@ namespace PictureManager.Domain.Models {
 
     public MediaItemsDataAdapter DataAdapter { get; set; }
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
+    public Dictionary<MediaItemM, ObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
 
     public MediaItemM Current {
       get => _current;

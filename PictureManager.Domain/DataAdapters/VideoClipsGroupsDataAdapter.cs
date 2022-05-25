@@ -19,7 +19,8 @@ namespace PictureManager.Domain.DataAdapters {
     }
 
     public override void Save() =>
-      SaveDriveRelated(All.Values
+      SaveDriveRelated(_mediaItemsM.MediaItemVideoClips.Values
+        .SelectMany(x => x.OfType<VideoClipsGroupM>())
         .GroupBy(x => Tree.GetTopParent(x.MediaItem.Folder))
         .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
@@ -36,6 +37,8 @@ namespace PictureManager.Domain.DataAdapters {
           : string.Join(",", vcg.Items.Cast<VideoClipM>().Select(x => x.Id)));
 
     public override void LinkReferences() {
+      _mediaItemsM.MediaItemVideoClips.Clear();
+
       foreach (var (group, csv) in AllCsv) {
         group.MediaItem = _mediaItemsM.DataAdapter.All[int.Parse(csv[2])];
         group.MediaItem.HasVideoClips = true;
@@ -52,6 +55,10 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         group.Items.CollectionChanged += _model.GroupItems_CollectionChanged;
+
+        if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(group.MediaItem))
+          _mediaItemsM.MediaItemVideoClips.Add(group.MediaItem, new());
+        _mediaItemsM.MediaItemVideoClips[group.MediaItem].Add(group);
       }
     }
   }
