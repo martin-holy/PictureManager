@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using MH.Utils;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
@@ -21,8 +22,22 @@ namespace PictureManager.Domain.DataAdapters {
       _peopleM = p;
     }
 
+    public IEnumerable<VideoClipM> GetAll() {
+      foreach (var item in _mediaItemsM.MediaItemVideoClips.Values.SelectMany(x => x))
+        switch (item) {
+          case VideoClipsGroupM vcg:
+            foreach (var vc in vcg.Items.Cast<VideoClipM>())
+              yield return vc;
+            break;
+
+          case VideoClipM vc:
+            yield return vc;
+            break;
+        }
+    }
+
     public override void Save() =>
-      SaveDriveRelated(All.Values
+      SaveDriveRelated(GetAll()
         .GroupBy(x => Tree.GetTopParent(x.MediaItem.Folder))
         .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
@@ -64,7 +79,13 @@ namespace PictureManager.Domain.DataAdapters {
         vc.MediaItem.HasVideoClips = true;
 
         // set parent for clips not in an group
-        vc.Parent ??= _model;
+        if (vc.Parent == null) {
+          vc.Parent = _model;
+
+          if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(vc.MediaItem))
+            _mediaItemsM.MediaItemVideoClips.Add(vc.MediaItem, new());
+          _mediaItemsM.MediaItemVideoClips[vc.MediaItem].Add(vc);
+        }
 
         // reference to People
         vc.People = LinkList(csv[9], _peopleM.DataAdapter.All);

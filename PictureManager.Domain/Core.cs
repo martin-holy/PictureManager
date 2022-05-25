@@ -58,7 +58,7 @@ namespace PictureManager.Domain {
       StatusPanelM = new(this);
       ThumbnailsGridsM = new(this);
       TreeViewCategoriesM = new(this);
-      VideoClipsM = new();
+      VideoClipsM = new(MediaItemsM);
 
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);

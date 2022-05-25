@@ -9,11 +9,13 @@ using PictureManager.Domain.DataAdapters;
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroupsM {
     private readonly VideoClipsM _videoClips;
+    private readonly MediaItemsM _mediaItemsM;
 
     public VideoClipsGroupsDataAdapter DataAdapter { get; set; }
 
-    public VideoClipsGroupsM(VideoClipsM vc) {
+    public VideoClipsGroupsM(VideoClipsM vc, MediaItemsM mi) {
       _videoClips = vc;
+      _mediaItemsM = mi;
     }
 
     public bool ItemCanRename(string name, MediaItemM mi) =>
@@ -26,6 +28,9 @@ namespace PictureManager.Domain.Models {
       group.MediaItem.HasVideoClips = true;
       Tree.SetInOrder(_videoClips.Items, group, x => x.Name);
       DataAdapter.All.Add(group.Id, group);
+
+      if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(mi))
+        _mediaItemsM.MediaItemVideoClips.Add(mi, _videoClips.Items);
 
       return group;
     }
