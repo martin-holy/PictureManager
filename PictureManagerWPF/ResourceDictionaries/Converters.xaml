@@ -11,7 +11,6 @@
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
-  <converters:SegmentTitleConverter x:Key="SegmentTitleConverter" />
   
   <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter" />
   <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
