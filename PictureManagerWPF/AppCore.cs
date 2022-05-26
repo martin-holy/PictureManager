@@ -109,6 +109,12 @@ namespace PictureManager {
           if (!isFullScreen) {
             App.Core.ThumbnailsGridsM.Current?.ScrollToCurrentMediaItem();
             App.Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+            
+            if (App.Core.SegmentsM.NeedReload) {
+              App.Core.SegmentsM.NeedReload = false;
+              App.Core.SegmentsM.Reload();
+            }
+            
             MediaViewerVM.Deactivate();
             ToolsTabsVM.Deactivate(VideoClipsVM.ToolsTabsItem);
           }
