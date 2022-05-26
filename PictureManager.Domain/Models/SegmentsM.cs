@@ -242,7 +242,9 @@ namespace PictureManager.Domain.Models {
         for (var i = -1; i > usedIds.Min() - 2; i--) {
           if (usedIds.Contains(i)) continue;
           newPerson = new(i, $"P {i}");
-          Core.Instance.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
+
+          if (!Core.Instance.PeopleM.DataAdapter.All.ContainsKey(newPerson.Id))
+            Core.Instance.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
           break;
         }
 
