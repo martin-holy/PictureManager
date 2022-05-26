@@ -633,15 +633,19 @@ namespace PictureManager.Domain.Models {
         }
       }
       else {
+        const string zzzz = "zzzz";
         foreach (var group in tmp
-          .GroupBy(x =>  x.person.DisplayKeywords == null
-            ? string.Empty
+          .GroupBy(x => x.person.DisplayKeywords == null
+            ? zzzz
             : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name)))
-          .OrderBy(g => g.First().person.Id < 0)
-          .ThenBy(g => g.Key)) {
+          .OrderBy(g => g.Key)
+          .ThenBy(g => g.First().person.Name)) {
 
           var itemsGroup = new ItemsGroup();
-          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconTag, group.Key));
+          var infoItem = group.Key.Equals(zzzz)
+            ? new ItemsGroupInfoItem(Res.IconEmpty, string.Empty)
+            : new ItemsGroupInfoItem(Res.IconTag, group.Key);
+          itemsGroup.Info.Add(infoItem);
           ConfirmedGrouped.Add(itemsGroup);
 
           foreach (var (_, segment, _) in group)
