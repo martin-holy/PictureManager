@@ -123,22 +123,22 @@
               </ItemsControl>
             </Grid>
             
-            <!-- Name and FileName -->
+            <!-- Name and TopSegments -->
             <StackPanel
               Orientation="Vertical"
-              Margin="1">
+              MaxWidth="{Binding MediaItem.ThumbWidth}">
 
               <Border
                 BorderThickness="1"
                 BorderBrush="Black"
-                Background="#88000000">
+                Background="#88000000"
+                Visibility="{Binding Person,
+                             Converter={StaticResource AllToVisibilityConverter}}">
 
                 <TextBlock
                   FontSize="18"
                   Margin="5,2"
-                  Text="{Binding
-                         Converter={StaticResource SegmentTitleConverter}}">
-                </TextBlock>
+                  Text="{Binding Person.Name}" />
               </Border>
 
               <ItemsControl
@@ -153,10 +153,6 @@
                 </ItemsControl.ItemsPanel>
               </ItemsControl>
 
-              <TextBlock
-                Text="{Binding MediaItem.FileName}"
-                TextWrapping="Wrap"
-                MaxWidth="{Binding MediaItem.ThumbWidth}" />
             </StackPanel>
           </DockPanel>
         </ToolTip>
