@@ -83,14 +83,15 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetThumbSize(bool reload = false) {
-      
+
       if (ThumbSize != 0 && !reload) return;
       if (Width == 0 || Height == 0) return;
 
       // TODO pass core as parameter
       var core = Core.Instance;
       // TODO pass scale as parameter
-      var thumbScale = core.ThumbnailsGridsM.Current?.ThumbScale ?? 1.0;
+      var thumbScale = core.ThumbnailsGridsM.Current?.ThumbScale
+                       ?? core.ThumbnailsGridsM.DefaultThumbScale;
 
       // TODO: move next and last line calculation elsewhere
       var desiredSize = (int)(core.ThumbnailSize * thumbScale);
