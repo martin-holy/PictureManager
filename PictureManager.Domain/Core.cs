@@ -117,6 +117,11 @@ namespace PictureManager.Domain {
         SegmentsM.RemovePersonFromSegments(e.Data);
       };
 
+      PeopleM.PersonTopSegmentsChangedEventHandler += (_, e) => {
+        if (SegmentsM.MatchingAutoSort && SegmentsM.Loaded.Any(x => e.Data.Equals(x.Person)))
+          SegmentsM.Reload(false, true);
+      };
+
       KeywordsM.AfterItemRenameEventHandler += (_, e) => {
         MediaItemsM.UpdateInfoBoxWithKeyword((KeywordM)e.Data);
       };
