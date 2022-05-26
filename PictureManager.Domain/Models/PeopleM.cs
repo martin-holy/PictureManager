@@ -20,6 +20,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<object> PeopleInGroups { get; } = new();
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
     public event EventHandler PeopleKeywordChangedEvent = delegate { };
 
     public PeopleM(CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
@@ -112,6 +113,8 @@ namespace PictureManager.Domain.Models {
 
       if (person.TopSegments?.Count > 0)
         person.Segment = (SegmentM)person.TopSegments[0];
+
+      PersonTopSegmentsChangedEventHandler(this, new(person));
 
       DataAdapter.IsModified = true;
     }
