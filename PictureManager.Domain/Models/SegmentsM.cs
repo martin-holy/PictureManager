@@ -39,6 +39,7 @@ namespace PictureManager.Domain.Models {
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
     public bool MultiplePeopleSelected => Selected.GroupBy(x => x.Person).Count() > 1 || Selected.Count(x => x.Person == null) > 1;
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
+    public bool NeedReload { get; set; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler SegmentsPersonChangedEvent = delegate { };
@@ -131,6 +132,7 @@ namespace PictureManager.Domain.Models {
       mediaItem.Segments.Add(newSegment);
       DataAdapter.All.Add(newSegment.Id, newSegment);
       Loaded.Add(newSegment);
+      NeedReload = true;
 
       return newSegment;
     }
