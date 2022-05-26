@@ -141,6 +141,18 @@
                 </TextBlock>
               </Border>
 
+              <ItemsControl
+                ItemsSource="{Binding Person.TopSegments}"
+                Visibility="{Binding Person.TopSegments,
+                             Converter={StaticResource AllToVisibilityConverter}}">
+
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+
               <TextBlock
                 Text="{Binding MediaItem.FileName}"
                 TextWrapping="Wrap"
