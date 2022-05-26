@@ -20,10 +20,13 @@ namespace PictureManager.Domain.DataAdapters {
 
     public IEnumerable<PersonM> GetAll() {
       foreach (var cg in _model.Items.OfType<CategoryGroupM>())
-      foreach (var personM in cg.Items.Cast<PersonM>())
-        yield return personM;
+        foreach (var personM in cg.Items.Cast<PersonM>())
+          yield return personM;
 
       foreach (var personM in _model.Items.OfType<PersonM>())
+        yield return personM;
+
+      foreach (var personM in All.Values.Where(x => x.Id < 0))
         yield return personM;
     }
 
@@ -58,7 +61,7 @@ namespace PictureManager.Domain.DataAdapters {
         person.Keywords = LinkList(csv[3], _keywordsM.DataAdapter.All);
 
         // add loose people
-        foreach (var personM in All.Values.Where(x => x.Parent == null)) {
+        foreach (var personM in All.Values.Where(x => x.Parent == null && x.Id > 0)) {
           personM.Parent = _model;
           _model.Items.Add(personM);
         }

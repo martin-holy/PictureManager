@@ -65,6 +65,8 @@ namespace PictureManager.Domain.DataAdapters {
 
           if (personId != 0) {
             if (!_peopleM.DataAdapter.All.TryGetValue(personId, out var person)) {
+              // this needs to stay because not all segments have to be loaded
+              // (segments from other drives)
               person = new(personId, $"P {personId}");
               _peopleM.DataAdapter.All.Add(person.Id, person);
             }

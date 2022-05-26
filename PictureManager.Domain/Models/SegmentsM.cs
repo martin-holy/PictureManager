@@ -171,12 +171,46 @@ namespace PictureManager.Domain.Models {
         .Where(x => x.Person == null || x.Person.Id > 0)
         .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)));
 
+      MergePeople(person, unknownPeople);
+
       foreach (var segment in segments)
         ChangePerson(segment, person);
 
       DeselectAll();
 
       SegmentsPersonChangedEvent(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Update Person TopSegments and Keywords from Persons
+    /// and than remove not used Persons from DB
+    /// </summary>
+    /// <param name="person"></param>
+    /// <param name="persons"></param>
+    private void MergePeople(PersonM person, IEnumerable<PersonM> persons) {
+      var topSegments = persons
+        .Where(x => x.TopSegments != null)
+        .SelectMany(x => x.TopSegments)
+        .Distinct();
+      var keywords = persons
+        .Where(x => x.Keywords != null)
+        .SelectMany(x => x.Keywords)
+        .Distinct();
+
+      if (topSegments.Any()) {
+        person.TopSegments ??= new();
+        foreach (var segment in topSegments)
+          person.TopSegments.Add(segment);
+      }
+
+      if (keywords.Any()) {
+        person.Keywords ??= new();
+        foreach (var keyword in keywords)
+          person.Keywords.Add(keyword);
+      }
+
+      foreach (var oldPerson in persons)
+        Core.Instance.PeopleM.DataAdapter.All.Remove(oldPerson.Id);
     }
 
     /// <summary>
@@ -208,6 +242,7 @@ namespace PictureManager.Domain.Models {
         for (var i = -1; i > usedIds.Min() - 2; i--) {
           if (usedIds.Contains(i)) continue;
           newPerson = new(i, $"P {i}");
+          Core.Instance.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
           break;
         }
 
@@ -224,6 +259,9 @@ namespace PictureManager.Domain.Models {
           .Where(x => x.Person?.Id < 0 && x.Person != newPerson && selectedUnknown.Contains(x.Person))
           .Concat(Selected.Where(x => x.Person == null))
           .ToArray();
+
+        // remove not used not named people (id < 0)
+        MergePeople(newPerson, selectedUnknown.Where(x => !x.Equals(newPerson)));
       }
 
       foreach (var segment in toUpdate)
