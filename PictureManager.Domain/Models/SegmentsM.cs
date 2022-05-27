@@ -203,6 +203,8 @@ namespace PictureManager.Domain.Models {
         person.TopSegments ??= new();
         foreach (var segment in topSegments)
           person.TopSegments.Add(segment);
+
+        person.Segment = (SegmentM)person.TopSegments[0];
       }
 
       if (keywords.Any()) {
