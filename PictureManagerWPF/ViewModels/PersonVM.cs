@@ -67,7 +67,7 @@ namespace PictureManager.ViewModels {
 
     private void SetPerson(PersonM person) {
       _peopleM.DeselectAll();
-      if (person?.Id > 0)
+      if (person != null)
         _peopleM.Select(null, person, false, false);
 
       PersonM = person;
