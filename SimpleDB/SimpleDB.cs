@@ -114,6 +114,9 @@ namespace SimpleDB {
 
       try {
         using var zip = ZipFile.Open(Path.Combine("db", DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip"), ZipArchiveMode.Create);
+        var schemaFilePath = Path.Combine("db", "SchemaVersion");
+        zip.CreateEntryFromFile(schemaFilePath, schemaFilePath);
+
         foreach (var file in Directory.EnumerateFiles("db", "*.csv"))
           _ = zip.CreateEntryFromFile(file, file);
       }
