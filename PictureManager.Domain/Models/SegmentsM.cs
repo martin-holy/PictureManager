@@ -323,6 +323,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Delete(SegmentM segment) {
+      DataAdapter.All.Remove(segment.Id);
+
       SegmentDeletedEventHandler(this, new(segment));
       SetSelected(segment, false);
       ChangePerson(segment, null);
@@ -332,8 +334,7 @@ namespace PictureManager.Domain.Models {
         segment.MediaItem.Segments = null;
 
       segment.Similar?.Clear();
-
-      DataAdapter.All.Remove(segment.Id);
+      
       if (Loaded.Remove(segment))
         Reload();
 
