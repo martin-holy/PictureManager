@@ -7,6 +7,9 @@
     <AssemblyVersion>1.10.0</AssemblyVersion>
     <FileVersion>1.10.0</FileVersion>
     <Version>1.10.0</Version>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    <EnableNETAnalyzers>False</EnableNETAnalyzers>
   </PropertyGroup>
 
 </Project>
