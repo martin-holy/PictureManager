@@ -8,6 +8,8 @@
     <FileVersion>1.3.2</FileVersion>
     <Version>1.3.2</Version>
     <Description>DB using CSV files for storage</Description>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <EnableNETAnalyzers>False</EnableNETAnalyzers>
   </PropertyGroup>
 
 </Project>
