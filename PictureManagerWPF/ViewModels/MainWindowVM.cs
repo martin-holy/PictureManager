@@ -3,6 +3,7 @@ using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.Models;
 using PictureManager.Properties;
 using System.Windows;
 
@@ -10,18 +11,8 @@ namespace PictureManager.ViewModels {
   public sealed class MainWindowVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
-    private bool _isFullScreen;
 
-    public bool IsFullScreenIsChanging { get; private set; }
-    public bool IsFullScreen {
-      get => _isFullScreen;
-      set {
-        IsFullScreenIsChanging = true;
-        _isFullScreen = value;
-        OnPropertyChanged();
-        IsFullScreenIsChanging = false;
-      }
-    }
+    public MainWindowM Model { get; }
 
     public RelayCommand<object> SwitchToBrowserCommand { get; }
     public RelayCommand<object> OpenSettingsCommand { get; }
@@ -32,11 +23,12 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> ClosingCommand { get; }
     public RelayCommand<object> LoadedCommand { get; }
 
-    public MainWindowVM(Core core, AppCore coreVM) {
+    public MainWindowVM(Core core, AppCore coreVM, MainWindowM model) {
       _core = core;
       _coreVM = coreVM;
+      Model = model;
 
-      SwitchToBrowserCommand = new(() => IsFullScreen = false);
+      SwitchToBrowserCommand = new(() => Model.IsFullScreen = false);
       OpenSettingsCommand = new(OpenSettings);
       OpenAboutCommand = new(OpenAbout);
       OpenLogCommand = new(OpenLog);

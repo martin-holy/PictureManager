@@ -3,19 +3,20 @@ using System.Windows.Controls;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
 using MH.Utils.BaseClasses;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
   public sealed class PeopleVM : ObservableObject {
-    private readonly AppCore _coreVM;
+    private readonly Core _core;
 
     public PeopleM PeopleM { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
 
-    public PeopleVM(AppCore coreVM, PeopleM peopleM) {
-      _coreVM = coreVM;
+    public PeopleVM(Core core, PeopleM peopleM) {
+      _core = core;
       PeopleM = peopleM;
 
       MainTabsItem = new(this, "People");
@@ -37,7 +38,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging && e.Source is VirtualizingWrapPanel panel)
+      if (e.WidthChanged && !_core.MainWindowM.IsFullScreenIsChanging && e.Source is VirtualizingWrapPanel panel)
         panel.ReWrap();
     }
   }

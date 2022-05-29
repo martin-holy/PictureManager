@@ -36,7 +36,7 @@ namespace PictureManager {
       Core.DialogHostShow = DialogHost.Show;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
-      MainWindowVM = new(App.Core, this);
+      MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowContentVM = new();
       MainTabsVM = new();
       ToolsTabsVM = new();
@@ -44,7 +44,7 @@ namespace PictureManager {
       FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new();
-      PeopleVM = new(this, App.Core.PeopleM);
+      PeopleVM = new(App.Core, App.Core.PeopleM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsVM = new(App.Core.VideoClipsM);
@@ -99,9 +99,9 @@ namespace PictureManager {
         App.Core.SegmentsM.Reload();
       };
 
-      MainWindowVM.PropertyChanged += (_, e) => {
-        if (nameof(MainWindowVM.IsFullScreen).Equals(e.PropertyName)) {
-          var isFullScreen = MainWindowVM.IsFullScreen;
+      App.Core.MainWindowM.PropertyChanged += (_, e) => {
+        if (nameof(App.Core.MainWindowM.IsFullScreen).Equals(e.PropertyName)) {
+          var isFullScreen = App.Core.MainWindowM.IsFullScreen;
 
           App.Core.TreeViewCategoriesM.SetIsPinned(isFullScreen);
           MediaViewerVM.IsVisible = isFullScreen;

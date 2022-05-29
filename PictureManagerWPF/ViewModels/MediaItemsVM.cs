@@ -100,7 +100,7 @@ namespace PictureManager.ViewModels {
         if (Model.Current != null)
           _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
         else
-          _coreVM.MainWindowVM.IsFullScreen = false;
+          _core.MainWindowM.IsFullScreen = false;
       }
     }
 
