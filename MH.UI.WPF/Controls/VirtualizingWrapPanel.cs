@@ -194,6 +194,8 @@ namespace MH.UI.WPF.Controls {
 
         if (ReloadAutoScroll)
           _topItemBeforeReload = _topItem;
+        else
+          RowsScrollViewer.ScrollToTop();
 
         WrappedItems.Clear();
         break;
