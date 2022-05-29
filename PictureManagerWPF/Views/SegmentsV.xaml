@@ -36,8 +36,7 @@
         
         <Grid Grid.Column="0">
           <mhc:VirtualizingWrapPanel
-            ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                        Source={x:Static pm:App.Ui}}"
+            ItemWidth="{Binding SegmentUiFullWidth}"
             ItemsToWrap="{Binding SegmentsM.ConfirmedGrouped}">
         
             <b:Interaction.Triggers>
@@ -74,9 +73,9 @@
         
         <mhc:VirtualizingWrapPanel
           Grid.Column="2"
-          ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                      Source={x:Static pm:App.Ui}}"
-          ItemsToWrap="{Binding SegmentsM.LoadedGrouped}">
+          ItemWidth="{Binding SegmentUiFullWidth}"
+          ItemsToWrap="{Binding SegmentsM.LoadedGrouped}"
+          ReloadAutoScroll="{Binding SegmentsM.ReloadAutoScroll}">
         
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="Loaded">

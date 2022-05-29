@@ -19,6 +19,7 @@ namespace PictureManager.Domain.Models {
     private bool _groupSegments = true;
     private bool _groupConfirmedSegments;
     private bool _matchingAutoSort = true;
+    private bool _reloadAutoScroll = true;
     private readonly List<SegmentM> _selected = new();
 
     public SegmentsDataAdapter DataAdapter { get; set; }
@@ -39,6 +40,7 @@ namespace PictureManager.Domain.Models {
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
     public bool MultiplePeopleSelected => Selected.GroupBy(x => x.Person).Count() > 1 || Selected.Count(x => x.Person == null) > 1;
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
+    public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
     public bool NeedReload { get; set; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
@@ -441,6 +443,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
+      ReloadAutoScroll = false;
       DeselectAll();
       Loaded.Clear();
 
@@ -448,6 +451,7 @@ namespace PictureManager.Domain.Models {
         Loaded.Add(segment);
 
       Reload(true, true);
+      ReloadAutoScroll = true;
     }
 
     public void Reload() =>
