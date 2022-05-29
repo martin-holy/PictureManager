@@ -23,6 +23,7 @@ namespace PictureManager.Domain {
     public FoldersM FoldersM { get; }
     public GeoNamesM GeoNamesM { get; }
     public KeywordsM KeywordsM { get; }
+    public MainWindowM MainWindowM { get; }
     public MediaItemsM MediaItemsM { get; }
     public MediaItemSizesTreeM MediaItemSizesTreeM { get; }
     public PeopleM PeopleM { get; }
@@ -51,6 +52,7 @@ namespace PictureManager.Domain {
       FoldersM = new(this, ViewersM); // FolderKeywordsM, MediaItemsM
       GeoNamesM = new();
       KeywordsM = new(CategoryGroupsM);
+      MainWindowM = new();
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       MediaItemSizesTreeM = new();
       PeopleM = new(CategoryGroupsM);

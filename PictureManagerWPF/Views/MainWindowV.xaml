@@ -8,8 +8,8 @@
   xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   DataContext="{Binding MainWindowVM, Source={x:Static pm:App.Ui}}"
-  UseNoneWindowStyle="{Binding IsFullScreen}"
-  IgnoreTaskbarOnMaximize="{Binding IsFullScreen}"
+  UseNoneWindowStyle="{Binding Model.IsFullScreen}"
+  IgnoreTaskbarOnMaximize="{Binding Model.IsFullScreen}"
   Title="Picture Manager"
   TitleAlignment="Center"
   WindowState="Maximized" 
@@ -21,8 +21,8 @@
     <Style TargetType="{x:Type mahApps:MetroWindow}">
       <Style.Triggers>
         <DataTrigger
-          Binding="{Binding MainWindowVM.IsFullScreen,
-                    Source={x:Static pm:App.Ui}}"
+          Binding="{Binding MainWindowM.IsFullScreen,
+                    Source={x:Static pm:App.Core}}"
           Value="False">
           
           <Setter

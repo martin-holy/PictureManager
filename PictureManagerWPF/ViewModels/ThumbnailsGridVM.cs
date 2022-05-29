@@ -79,7 +79,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.IsFullScreenIsChanging)
+      if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.Model.IsFullScreenIsChanging)
         _panel.ReWrap();
     }
 
@@ -120,7 +120,7 @@ namespace PictureManager.ViewModels {
         _videoPreview.Source = null;
       }
 
-      _coreVM.MainWindowVM.IsFullScreen = true;
+      _coreVM.MainWindowVM.Model.IsFullScreen = true;
       _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
     }
   }

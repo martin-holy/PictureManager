@@ -87,7 +87,7 @@ namespace PictureManager.ViewModels {
       ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
       MatchingPanelSizeChangedCommand = new(
         () => _matchingPanel.ReWrap(),
-        e => e.WidthChanged && !_coreVM.MainWindowVM.IsFullScreenIsChanging);
+        e => e.WidthChanged && !_core.MainWindowM.IsFullScreenIsChanging);
       ConfirmedMatchingPanelSizeChangedCommand = new(() => {
         _confirmedMatchingPanel.UpdateLayout();
         _confirmedMatchingPanel.ReWrap();
@@ -118,7 +118,7 @@ namespace PictureManager.ViewModels {
       if (items == null) return;
 
       _coreVM.MediaViewerVM.SetMediaItems(items, segmentM.MediaItem);
-      _coreVM.MainWindowVM.IsFullScreen = true;
+      _core.MainWindowM.IsFullScreen = true;
     }
 
     private void Select(ClickEventArgs e) {
