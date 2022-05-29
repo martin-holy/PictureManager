@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 
 namespace PictureManager.Domain.Models {
   public sealed class StatusPanelM : ObservableObject {
+    private readonly Core _core;
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
     private bool _isPinned = true;
     private MediaItemM _currentMediaItemM;
@@ -27,15 +29,13 @@ namespace PictureManager.Domain.Models {
 
     public string FileSize {
       get {
-        var fileSize = Core.Instance.ThumbnailsGridsM.Current?.ActiveFileSize;
-        if (fileSize != null)
-          return fileSize;
-
-        if (CurrentMediaItemM == null)
-          return string.Empty;
-
         try {
-          var size = new FileInfo(CurrentMediaItemM.FilePath).Length;
+          var size = _core.MainWindowM.IsFullScreen
+            ? new FileInfo(_core.MediaItemsM.Current.FilePath).Length
+            : _core.ThumbnailsGridsM.Current != null
+              ? _core.ThumbnailsGridsM.Current.SelectedItems
+                  .Sum(mi => new FileInfo(mi.FilePath).Length)
+              : 0;
 
           return size == 0
             ? string.Empty
@@ -81,6 +81,7 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> PinCommand { get; }
 
     public StatusPanelM(Core core) {
+      _core = core;
       PinCommand = new(() => IsPinned = !IsPinned);
 
       core.MediaItemsM.PropertyChanged += (_, e) => {

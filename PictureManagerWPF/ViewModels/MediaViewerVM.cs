@@ -16,13 +16,11 @@ namespace PictureManager.ViewModels {
     public MediaItemM Current {
       get => _current;
       set {
-        if (_current != null)
-          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current, false);
         _current = value;
-        if (_current != null)
-          App.Core.ThumbnailsGridsM.Current?.SetSelected(_current, true);
+
         if (App.Core.MediaItemsM.Current != value)
           App.Core.MediaItemsM.Current = value;
+
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
       }

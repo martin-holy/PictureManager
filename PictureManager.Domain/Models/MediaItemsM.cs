@@ -25,17 +25,7 @@ namespace PictureManager.Domain.Models {
     public MediaItemsDataAdapter DataAdapter { get; set; }
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
     public Dictionary<MediaItemM, ObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
-
-    public MediaItemM Current {
-      get => _current;
-      set {
-        _current = value;
-        if (_core.ThumbnailsGridsM.Current != null && _core.ThumbnailsGridsM.Current.CurrentMediaItem != value)
-          _core.ThumbnailsGridsM.Current.CurrentMediaItem = value;
-        OnPropertyChanged();
-      }
-    }
-
+    public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public int MediaItemsCount => DataAdapter.All.Count;
     public int ModifiedItemsCount => ModifiedItems.Count;
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
@@ -558,8 +548,7 @@ namespace PictureManager.Domain.Models {
           else
             IsEditModeOn = false;
 
-          // TODO changing current on MediaItemsM should change current in ThumbnailsGridsM
-          _core.ThumbnailsGridsM.Current.OnPropertyChanged(nameof(_core.ThumbnailsGridsM.Current.ActiveFileSize));
+          _core.StatusPanelM.OnPropertyChanged(nameof(_core.StatusPanelM.FileSize));
         });
 
       progress.Start();

@@ -75,19 +75,6 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public string ActiveFileSize {
-      get {
-        try {
-          var size = SelectedItems.Sum(mi => new FileInfo(mi.FilePath).Length);
-
-          return size == 0 ? string.Empty : IOExtensions.FileSizeToString(size);
-        }
-        catch {
-          return string.Empty;
-        }
-      }
-    }
-
     public ThumbnailsGridM(MediaItemsM mediaItemsM, TitleProgressBarM progressBar, double thumbScale) {
       _mediaItemsM = mediaItemsM;
       _progressBar = progressBar;
@@ -113,7 +100,6 @@ namespace PictureManager.Domain.Models {
     private void SelectionChanged() {
       SelectionChangedEventHandler.Invoke(this, EventArgs.Empty);
       OnPropertyChanged(nameof(SelectedCount));
-      OnPropertyChanged(nameof(ActiveFileSize));
     }
 
     public void SetSelected(MediaItemM mi, bool value) => Selecting.SetSelected(_selectedItems, mi, value, SelectionChanged);
@@ -387,7 +373,9 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ScrollToCurrentMediaItem() {
-      ScrollToItem = _mediaItemsM.Current;
+      ScrollToItem = FilteredItems.Contains(_mediaItemsM.Current)
+        ? _mediaItemsM.Current
+        : CurrentMediaItem;
     }
 
     public async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide) {
