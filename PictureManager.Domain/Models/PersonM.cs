@@ -48,7 +48,10 @@ namespace PictureManager.Domain.Models {
         return;
       }
 
-      DisplayKeywords ??= new();
+      if (DisplayKeywords == null) {
+        DisplayKeywords = new();
+        OnPropertyChanged(nameof(DisplayKeywords));
+      }
 
       foreach (var keyword in KeywordsM.GetAllKeywords(Keywords))
         DisplayKeywords.Add(keyword);
