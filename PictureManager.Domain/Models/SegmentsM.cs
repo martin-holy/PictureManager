@@ -520,21 +520,29 @@ namespace PictureManager.Domain.Models {
       }
 
       // add segments with Person != null with all similar segments with Person == null
-      var groupsA = Loaded
+      string GetKeywords(SegmentM segment) =>
+        segment.Keywords == null
+          ? string.Empty
+          : string.Join(", ", KeywordsM.GetAllKeywords(segment.Keywords).Select(k => k.Name));
+
+      var samePerson = Loaded
         .Where(x => x.Person?.Id > 0)
-        .GroupBy(x => x.Person.Id)
-        .OrderBy(x => x.First().Person.Name);
-      var groupsB = Loaded
-        .Where(x => x.Person?.Id < 0)
-        .GroupBy(x => x.Person.Id)
-        .OrderByDescending(x => x.Key);
-      var samePerson = groupsA.Concat(groupsB);
+        .GroupBy(x => new { x.Person, dk = GetKeywords(x) })
+        .OrderBy(x => x.Key.Person.Name)
+        .ThenBy(x => x.Key.dk)
+        .Concat(Loaded
+          .Where(x => x.Person?.Id < 0)
+          .GroupBy(x => new { x.Person, dk = GetKeywords(x) })
+          .OrderByDescending(x => x.Key.Person.Id)
+          .ThenBy(x => x.Key.dk));
 
       foreach (var segments in samePerson) {
         var sims = new List<(SegmentM segment, double sim)>();
 
         group = new();
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, segments.First().Person.Name));
+        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, segments.Key.Person.Name));
+        if (!segments.Key.dk.Equals(string.Empty))
+          group.Info.Add(new ItemsGroupInfoItem(Res.IconTag, segments.Key.dk));
         LoadedGrouped.Add(group);
 
         foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
