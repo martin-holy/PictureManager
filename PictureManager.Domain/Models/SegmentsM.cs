@@ -202,7 +202,11 @@ namespace PictureManager.Domain.Models {
         .Distinct();
 
       if (topSegments.Any()) {
-        person.TopSegments ??= new();
+        if (person.TopSegments == null) {
+          person.TopSegments = new();
+          person.OnPropertyChanged(nameof(person.TopSegments));
+        }
+        
         foreach (var segment in topSegments)
           person.TopSegments.Add(segment);
 
@@ -213,6 +217,8 @@ namespace PictureManager.Domain.Models {
         person.Keywords ??= new();
         foreach (var keyword in keywords)
           person.Keywords.Add(keyword);
+
+        person.UpdateDisplayKeywords();
       }
 
       foreach (var oldPerson in persons)
