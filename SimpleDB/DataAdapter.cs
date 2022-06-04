@@ -120,24 +120,30 @@ namespace SimpleDB {
         AreTablePropsModified = false;
     }
 
-    public static List<TI> LinkList<TI>(string items, Dictionary<int, TI> source) {
-      if (string.IsNullOrEmpty(items)) return null;
+    public static IEnumerable<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) =>
+      string.IsNullOrEmpty(csv)
+        ? Enumerable.Empty<TI>()
+        : csv
+          .Split(',')
+          .Select(x => int.Parse(x))
+          .Where(x => source.ContainsKey(x))
+          .Select(x => source[x]);
 
-      var ids = items.Split(',');
-      var list = new List<TI>(ids.Length);
-      list.AddRange(ids.Select(id => source[int.Parse(id)]));
-
-      return list;
+    public static List<TI> LinkList<TI>(string csv, Dictionary<int, TI> source) {
+      var records = IdToRecord(csv, source);
+      return records.Any()
+        ? records.ToList()
+        : null;
     }
 
-    public static ObservableCollection<object> LinkObservableCollection<TI>(string items, Dictionary<int, TI> source) {
-      if (string.IsNullOrEmpty(items)) return null;
+    public static ObservableCollection<object> LinkObservableCollection<TI>(string csv, Dictionary<int, TI> source) {
+      var records = IdToRecord(csv, source);
+      if (!records.Any()) return null;
 
-      var ids = items.Split(',');
       var collection = new ObservableCollection<object>();
-      
-      foreach (var id in ids)
-        collection.Add(source[int.Parse(id)]);
+
+      foreach (var item in records)
+        collection.Add(item);
 
       return collection;
     }
