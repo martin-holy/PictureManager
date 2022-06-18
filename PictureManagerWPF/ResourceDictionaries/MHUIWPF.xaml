@@ -11,6 +11,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/InputDialogStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/MessageDialogStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ProgressBarDialogStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/TreeWrapViewStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VirtualizingWrapPanelStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
@@ -51,6 +52,10 @@
     <Setter Property="Background"
       Value="White" />
   </Style>
+
+  <Style
+    TargetType="{x:Type mhc:TreeWrapView}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.TreeWrapView}" />
 
   <Style
     TargetType="{x:Type mhc:VideoPlayer}"
