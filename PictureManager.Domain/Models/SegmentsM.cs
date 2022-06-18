@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
     public bool NeedReload { get; set; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
-    public event EventHandler SegmentsPersonChangedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
     public event EventHandler SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
@@ -168,7 +168,7 @@ namespace PictureManager.Domain.Models {
 
       DeselectAll();
 
-      SegmentsPersonChangedEvent(this, EventArgs.Empty);
+      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(segments)));
     }
 
     /// <summary>
@@ -270,15 +270,22 @@ namespace PictureManager.Domain.Models {
         ChangePerson(segment, newPerson);
 
       DeselectAll();
-      SegmentsPersonChangedEvent(this, EventArgs.Empty);
+      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(toUpdate)));
     }
+
+    private PersonM[] GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
+      segments
+        .Where(x => x.Person != null)
+        .Select(x => x.Person)
+        .Distinct()
+        .ToArray();
 
     private void SetSelectedAsUnknown() {
       foreach (var segment in Selected)
         ChangePerson(segment, null);
 
       DeselectAll();
-      SegmentsPersonChangedEvent(this, EventArgs.Empty);
+      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(Selected)));
     }
 
     public void ToggleKeywordOnSelected(KeywordM keyword) {
