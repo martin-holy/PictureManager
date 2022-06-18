@@ -11,16 +11,16 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="PersonThumbnailV.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml" />
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
-    <mhc:VirtualizingWrapPanel
+
+    <mhc:TreeWrapView
       ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
                   Source={x:Static pm:App.Ui}}"
-      ItemsToWrap="{Binding PeopleM.PeopleInGroups}">
-      
+      Root="{Binding PeopleRoot}"
+      ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
@@ -28,14 +28,14 @@
             EventArgsConverter="{StaticResource ClickConverter}"
             EventArgsConverterParameter="{StaticResource True}" />
         </b:EventTrigger>
-        
+
         <b:EventTrigger EventName="SizeChanged">
           <b:InvokeCommandAction
             Command="{Binding PanelSizeChangedCommand}"
             PassEventArgsToCommand="True" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
-    </mhc:VirtualizingWrapPanel>
+    </mhc:TreeWrapView>
   </DataTemplate>
   
 </ResourceDictionary>
