@@ -17,7 +17,7 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
-    public event EventHandler PeopleKeywordChangedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
     public PeopleM(CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
       _categoryGroupsM = categoryGroupsM;
@@ -117,24 +117,23 @@ namespace PictureManager.Domain.Models {
 
     private void ToggleKeyword(PersonM person, KeywordM keyword) {
       person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
+      person.UpdateDisplayKeywords();
       DataAdapter.IsModified = true;
     }
 
-    public void RemoveKeywordFromPeople(KeywordM keyword) {
-      foreach (var person in DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true))
+    private void ToggleKeyword(IEnumerable<PersonM> people, KeywordM keyword) {
+      foreach (var person in people)
         ToggleKeyword(person, keyword);
 
-      PeopleKeywordChangedEvent(this, EventArgs.Empty);
+      PeopleKeywordChangedEvent(this, new(people.ToArray()));
     }
 
-    public void ToggleKeywordOnSelected(KeywordM keyword) {
-      foreach (var person in Selected) {
-        ToggleKeyword(person, keyword);
-        person.UpdateDisplayKeywords();
-      }
+    public void RemoveKeywordFromPeople(KeywordM keyword) =>
+      ToggleKeyword(DataAdapter.All.Values
+        .Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
-      PeopleKeywordChangedEvent(this, EventArgs.Empty);
-    }
+    public void ToggleKeywordOnSelected(KeywordM keyword) =>
+      ToggleKeyword(Selected, keyword);
 
     public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>
       Selecting.Select(Selected, list, p, isCtrlOn, isShiftOn, null);
