@@ -16,7 +16,7 @@ namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridVM: ObservableObject {
     private readonly AppCore _coreVM;
     private readonly MediaElement _videoPreview;
-    private VirtualizingWrapPanel _panel;
+    private TreeWrapView _panel;
 
     public ThumbnailsGridM Model { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
@@ -74,7 +74,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelLoaded(RoutedEventArgs e) {
-      _panel = e.Source as VirtualizingWrapPanel;
+      _panel = e.Source as TreeWrapView;
       DragDropFactory.SetDrag(_panel, CanDrag, DataFormats.FileDrop);
     }
 

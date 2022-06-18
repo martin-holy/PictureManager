@@ -50,28 +50,28 @@
               <b:EventTrigger EventName="MouseEnter">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.ShowVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
                   CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeave">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.HideVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
                   CommandParameter="{Binding}" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="PreviewMouseUp">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.SelectMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
                   PassEventArgsToCommand="True" />
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeftButtonDown">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.OpenMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:VirtualizingWrapPanel}}}"
+                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
                   PassEventArgsToCommand="True" />
               </b:EventTrigger>
             </b:Interaction.Triggers>
@@ -80,16 +80,16 @@
         
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
-    <mhc:VirtualizingWrapPanel
+
+    <mhc:TreeWrapView
       ItemWidthGetter="{Binding Model.ItemWidthGetter}"
-      ItemsToWrap="{Binding Model.FilteredGrouped}"
+      Root="{Binding Model.FilteredRoot}"
       ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
-      ScrollToTop="{Binding Model.ScrollToTop, Mode=TwoWay}"
       ReloadAutoScroll="False"
+      ScrollViewerSpeedFactor="2.5"
       Tag="{Binding}">
-      
-      <mhc:VirtualizingWrapPanel.InputBindings>
+
+      <mhc:TreeWrapView.InputBindings>
         <KeyBinding
           Modifiers="Control"
           Key="A"
@@ -112,7 +112,7 @@
           Key="K"
           Command="{Binding MediaItemsM.CommentCommand,
                     Source={x:Static pm:App.Core}}" />
-      </mhc:VirtualizingWrapPanel.InputBindings>
+      </mhc:TreeWrapView.InputBindings>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseWheel">
@@ -120,20 +120,20 @@
             Command="{Binding ZoomCommand}"
             PassEventArgsToCommand="True" />
         </b:EventTrigger>
-        
+
         <b:EventTrigger EventName="Loaded">
-            <b:InvokeCommandAction
+          <b:InvokeCommandAction
               Command="{Binding PanelLoadedCommand}"
               PassEventArgsToCommand="True" />
-          </b:EventTrigger>
-        
+        </b:EventTrigger>
+
         <b:EventTrigger EventName="SizeChanged">
           <b:InvokeCommandAction
             Command="{Binding PanelSizeChangedCommand}"
             PassEventArgsToCommand="True" />
         </b:EventTrigger>
       </b:Interaction.Triggers>
-    </mhc:VirtualizingWrapPanel>
+    </mhc:TreeWrapView>
 
   </DataTemplate>
     
