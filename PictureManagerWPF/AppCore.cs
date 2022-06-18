@@ -84,8 +84,9 @@ namespace PictureManager {
           MediaViewerVM.Current?.SetInfoBox();
       };
 
-      App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, _) => {
-        PersonVM.ReloadPersonSegments();
+      App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
+        if (e.Data.Any(x => x.Equals(PersonVM.PersonM)))
+          PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
       };
 
@@ -97,7 +98,6 @@ namespace PictureManager {
       };
 
       App.Core.PeopleM.PeopleKeywordChangedEvent += (_, _) => {
-        PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
       };
 
