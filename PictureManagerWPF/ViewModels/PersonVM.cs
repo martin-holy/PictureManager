@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,13 +15,18 @@ namespace PictureManager.ViewModels {
     private readonly PeopleM _peopleM;
     private readonly SegmentsM _segmentsM;
     private PersonM _personM;
+    private object _scrollToItem;
+    private TreeWrapGroup _allSegmentsRoot;
+
     private readonly HeaderedListItem<object, string> _toolsTabsItem;
     private VirtualizingWrapPanel _topSegmentsPanel;
-    private VirtualizingWrapPanel _allSegmentsPanel;
+    private TreeWrapView _allSegmentsPanel;
 
     public List<SegmentM> AllSegments { get; } = new();
     public ObservableCollection<object> AllSegmentsGrouped { get; } = new();
     public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
+    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
     public RelayCommand<RoutedEventArgs> TopSegmentsLoadedCommand { get; }
     public RelayCommand<RoutedEventArgs> AllSegmentsLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
@@ -46,7 +52,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void OnAllSegmentsLoaded(RoutedEventArgs e) {
-      _allSegmentsPanel = e.Source as VirtualizingWrapPanel;
+      _allSegmentsPanel = e.Source as TreeWrapView;
       DragDropFactory.SetDrag(_allSegmentsPanel, CanDrag);
     }
 
@@ -76,7 +82,9 @@ namespace PictureManager.ViewModels {
     }
 
     public void ReloadPersonSegments() {
-      _segmentsM.ReloadPersonSegments(PersonM, AllSegments, AllSegmentsGrouped);
+      if (PersonM == null) return;
+      AllSegmentsRoot = PersonM.GetSegments(_segmentsM.DataAdapter.All.Values, AllSegments);
+      ScrollToItem = (AllSegmentsRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
       OnPropertyChanged(nameof(AllSegments)); // this is for the count
     }
 

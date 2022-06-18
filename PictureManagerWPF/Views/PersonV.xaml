@@ -11,7 +11,6 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="SegmentV.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml" />
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -81,14 +80,14 @@
         <TextBlock
           Text="Top Segments:"
           Margin="5" />
-        
+
         <mhc:VirtualizingWrapPanel
           Margin="2,0,0,0"
           MinHeight="106"
           ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
                       Source={x:Static pm:App.Ui}}"
           ItemsToWrap="{Binding PersonM.TopSegments}">
-          
+
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="Loaded">
               <b:InvokeCommandAction
@@ -97,22 +96,18 @@
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
-        
-        <!-- All Segments -->
-        <TextBlock
-          Text="{Binding AllSegments.Count, StringFormat='All Segments ({0}):'}"
-          Margin="5" />
-
       </StackPanel>
       
       <!-- All Segments -->
-      <mhc:VirtualizingWrapPanel
+      <mhc:TreeWrapView
         Grid.Row="1"
         Margin="2,0,0,0"
+        ShowRoot="True"
         ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
                     Source={x:Static pm:App.Ui}}"
-        ItemsToWrap="{Binding AllSegmentsGrouped}">
-        
+        Root="{Binding AllSegmentsRoot}"
+        ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="Loaded">
             <b:InvokeCommandAction
@@ -120,7 +115,7 @@
               PassEventArgsToCommand="True" />
           </b:EventTrigger>
         </b:Interaction.Triggers>
-      </mhc:VirtualizingWrapPanel>
+      </mhc:TreeWrapView>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
