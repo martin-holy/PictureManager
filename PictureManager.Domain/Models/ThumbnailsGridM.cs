@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.HelperClasses;
-using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
@@ -32,7 +29,7 @@ namespace PictureManager.Domain.Models {
     private bool _sortByFileFirst = true;
     private string _positionSlashCount;
     private object _scrollToItem;
-    private object _scrollToTop;
+    private TreeWrapGroup _filteredRoot = new();
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
     public event EventHandler FilteredChangedEventHandler = delegate { };
@@ -44,7 +41,7 @@ namespace PictureManager.Domain.Models {
     public MediaItemFilterSizeM FilterSize { get; } = new();
     public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    public object ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
+    public TreeWrapGroup FilteredRoot { get => _filteredRoot; private set { _filteredRoot = value; OnPropertyChanged(); } }
 
     public int FilterAndCount => _filterAnd.Count;
     public int FilterOrCount => _filterOr.Count;
@@ -92,6 +89,8 @@ namespace PictureManager.Domain.Models {
       LoadedItems.Clear();
       FilteredItems.Clear();
       FilteredGrouped.Clear();
+      FilteredRoot.Items.Clear();
+      FilteredRoot = new();
       SelectionChanged();
       FilteredChangedEventHandler(this, EventArgs.Empty);
       CurrentMediaItem = null;
@@ -398,8 +397,6 @@ namespace PictureManager.Domain.Models {
       }
 
       _loadIsRunning = true;
-
-      ScrollToTop = true;
       ClearItBeforeLoad();
       _progressBar.IsIndeterminate = true;
 
@@ -407,6 +404,7 @@ namespace PictureManager.Domain.Models {
       LoadedItems.AddRange(items);
       ReloadFilteredItems();
       await LoadThumbnails(FilteredItems.ToArray());
+      ScrollToItem = (FilteredRoot.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
       SetMediaItemFilterSizeRange();
 
       _loadIsRunning = false;
@@ -449,6 +447,7 @@ namespace PictureManager.Domain.Models {
       var workingOn = 0;
 
       FilteredGrouped.Clear();
+      FilteredRoot = new();
 
       foreach (var mi in items) {
         if (_cancelLoad) break;
@@ -478,12 +477,12 @@ namespace PictureManager.Domain.Models {
         progress.Report(percent);
       }
 
-      foreach (var group in FilteredGrouped.OfType<ItemsGroup>())
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
+      foreach (var group in FilteredRoot.Items.OfType<TreeWrapGroup>())
+        group.Info.Add(new(Res.IconImageMultiple, group.Items.Count.ToString()));
     }
 
     private void AddMediaItemToGrid(MediaItemM mi) {
-      ItemsGroup group = new();
+      TreeWrapGroup group = new() { IsExpanded = true };
 
       if (GroupByFolders) {
         var folderName = mi.Folder.Name;
@@ -492,23 +491,23 @@ namespace PictureManager.Domain.Models {
         var toolTip = mi.Folder.FolderKeyword != null
           ? mi.Folder.FolderKeyword.FullPath
           : mi.Folder.FullPath;
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconFolder, title, toolTip));
+        group.Info.Add(new(Res.IconFolder, title, toolTip));
       }
 
       if (GroupByDate) {
         var title = DateTimeExtensions.DateTimeFromString(mi.FileName, _dateFormats, null);
         if (!string.IsNullOrEmpty(title))
-          group.Info.Add(new ItemsGroupInfoItem(Res.IconCalendar, title));
+          group.Info.Add(new(Res.IconCalendar, title));
       }
 
-      var lastGroup = FilteredGrouped.LastOrDefault() as ItemsGroup;
-      var groupA = group.Info.Cast<ItemsGroupInfoItem>().ToArray();
-      var groupB = lastGroup?.Info.Cast<ItemsGroupInfoItem>().ToArray();
-      
-      if (lastGroup != null && ItemsGroupInfoItem.AreEqual(groupA, groupB))
+      var lastGroup = FilteredRoot.Items.LastOrDefault() as TreeWrapGroup;
+      var groupA = group.Info.ToArray();
+      var groupB = lastGroup?.Info.ToArray();
+
+      if (lastGroup != null && TreeWrapGroupInfoItem.AreEqual(groupA, groupB))
         group = lastGroup;
       else
-        FilteredGrouped.Add(group);
+        FilteredRoot.Items.Add(group);
 
       group.Items.Add(mi);
     }
