@@ -45,7 +45,7 @@ namespace PictureManager.Domain.Models {
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
-    public event EventHandler SegmentsKeywordChangedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
@@ -288,24 +288,23 @@ namespace PictureManager.Domain.Models {
       SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(Selected)));
     }
 
-    public void ToggleKeywordOnSelected(KeywordM keyword) {
-      foreach (var segment in Selected)
-        ToggleKeyword(segment, keyword);
-
-      SegmentsKeywordChangedEvent(this, EventArgs.Empty);
-    }
-
     private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
       segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
       DataAdapter.IsModified = true;
     }
 
-    public void RemoveKeywordFromSegments(KeywordM keyword) {
-      foreach (var segment in DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true))
+    private void ToggleKeyword(IEnumerable<SegmentM> segments, KeywordM keyword) {
+      foreach (var segment in segments)
         ToggleKeyword(segment, keyword);
 
-      SegmentsKeywordChangedEvent(this, EventArgs.Empty);
+      SegmentsKeywordChangedEvent(this, new(GetPeopleFromSegments(segments)));
     }
+
+    public void RemoveKeywordFromSegments(KeywordM keyword) =>
+      ToggleKeyword(DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true), keyword);
+
+    public void ToggleKeywordOnSelected(KeywordM keyword) =>
+      ToggleKeyword(Selected, keyword);
 
     public void RemovePersonFromSegments(PersonM person) {
       foreach (var segment in DataAdapter.All.Values.Where(s => s.Person?.Equals(person) == true)) {
