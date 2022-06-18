@@ -83,20 +83,6 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
-    public static string GetSegmentTitle(SegmentM segment) {
-      if (segment.Person?.Id > 0)
-        return segment.Person.Name;
-
-      var title = $"P {(segment.Person == null ? "?" : segment.Person.Id)}";
-
-      if (segment.Keywords != null)
-        return string.Join(' ',
-          title,
-          string.Join(' ', KeywordsM.GetAllKeywords(segment.Keywords).Select(x => x.Name)));
-
-      return title;
-    }
-
     public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
       if (!add && Core.DialogHostShow(new MessageDialog(
             "Segments Drawer",
@@ -175,7 +161,7 @@ namespace PictureManager.Domain.Models {
         .Where(x => x.Person == null || x.Person.Id > 0)
         .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)));
 
-      MergePeople(person, unknownPeople);
+      MergePeople(person, unknownPeople.ToArray());
 
       foreach (var segment in segments)
         ChangePerson(segment, person);
@@ -191,15 +177,17 @@ namespace PictureManager.Domain.Models {
     /// </summary>
     /// <param name="person"></param>
     /// <param name="persons"></param>
-    private void MergePeople(PersonM person, IEnumerable<PersonM> persons) {
+    private void MergePeople(PersonM person, PersonM[] persons) {
       var topSegments = persons
         .Where(x => x.TopSegments != null)
         .SelectMany(x => x.TopSegments)
-        .Distinct();
+        .Distinct()
+        .ToArray();
       var keywords = persons
         .Where(x => x.Keywords != null)
         .SelectMany(x => x.Keywords)
-        .Distinct();
+        .Distinct()
+        .ToArray();
 
       if (topSegments.Any()) {
         if (person.TopSegments == null) {
@@ -275,7 +263,7 @@ namespace PictureManager.Domain.Models {
           .ToArray();
 
         // remove not used not named people (id < 0)
-        MergePeople(newPerson, selectedUnknown.Where(x => !x.Equals(newPerson)));
+        MergePeople(newPerson, selectedUnknown.Where(x => !x.Equals(newPerson)).ToArray());
       }
 
       foreach (var segment in toUpdate)
@@ -412,40 +400,6 @@ namespace PictureManager.Domain.Models {
       }
 
       return items;
-    }
-
-    public void ReloadPersonSegments(PersonM person, List<SegmentM> allSegments, ObservableCollection<object> allSegmentsGrouped) {
-      allSegments.Clear();
-      allSegmentsGrouped.Clear();
-
-      if (person == null) return;
-
-      foreach (var group in DataAdapter.All.Values
-        .Where(x => x.Person == person)
-        .GroupBy(x => x.Keywords == null
-          ? string.Empty
-          : string.Join(", ", KeywordsM.GetAllKeywords(x.Keywords).Select(k => k.Name)))
-        .OrderBy(x => x.Key)) {
-
-        if (string.IsNullOrEmpty(group.Key)) {
-          // add segments without group
-          foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
-            allSegments.Add(segment);
-            allSegmentsGrouped.Add(segment);
-          }
-        }
-        else {
-          // add segments in group
-          var itemsGroup = new ItemsGroup();
-          itemsGroup.Info.Add(new ItemsGroupInfoItem { Icon = Res.IconTag, Title = group.Key });
-          allSegmentsGrouped.Add(itemsGroup);
-
-          foreach (var segment in group.OrderBy(x => x.MediaItem.FileName)) {
-            allSegments.Add(segment);
-            itemsGroup.Items.Add(segment);
-          }
-        }
-      }
     }
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
@@ -672,7 +626,7 @@ namespace PictureManager.Domain.Models {
           ConfirmedGrouped.Add(itemsGroup);
 
           foreach (var (_, segment, _) in group)
-            ConfirmedGrouped.Add(segment);
+            itemsGroup.Items.Add(segment);
         }
       }
     }
