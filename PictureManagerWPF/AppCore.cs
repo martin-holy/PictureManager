@@ -8,6 +8,7 @@ using PictureManager.ViewModels;
 using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
 using PictureManager.Domain.Models;
+using System.Linq;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -74,8 +75,9 @@ namespace PictureManager {
         }
       };
 
-      App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, _) => {
-        PersonVM.ReloadPersonSegments();
+      App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
+        if (e.Data.Any(x => x.Equals(PersonVM.PersonM)))
+          PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
 
         if (MediaViewerVM.IsVisible)
