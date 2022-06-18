@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using MH.Utils.HelperClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.HelperClasses;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
@@ -17,7 +14,6 @@ namespace PictureManager.Domain.Models {
 
     public PeopleDataAdapter DataAdapter { get; set; }
     public List<PersonM> Selected { get; } = new();
-    public ObservableCollection<object> PeopleInGroups { get; } = new();
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
@@ -149,40 +145,62 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(PersonM p, bool value) =>
       Selecting.SetSelected(Selected, p, value, null);
 
-    public void ReloadPeopleInGroups() {
-      PeopleInGroups.Clear();
+    public TreeWrapGroup Reload() {
+      var root = new TreeWrapGroup();
 
       // add people in groups
       foreach (var group in Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden))
-        AddPeopleToGroups(group.Name, group.Items.Cast<PersonM>());
+        AddPeopleToGroups(root, group.Name, group.Items.Cast<PersonM>());
 
       // add people without group
       var peopleWithoutGroup = Items.OfType<PersonM>().ToArray();
       if (peopleWithoutGroup.Any())
-        AddPeopleToGroups(string.Empty, peopleWithoutGroup);
+        AddPeopleToGroups(root, string.Empty, peopleWithoutGroup);
+
+      return root;
     }
 
-    private void AddPeopleToGroups(string groupTitle, IEnumerable<PersonM> people) {
-      // group people by keywords
-      foreach (var group in people
-                 .GroupBy(p => p.DisplayKeywords == null
-                   ? string.Empty
-                   : string.Join(", ", p.DisplayKeywords.Select(dk => dk.Name)))
-                 .OrderBy(g => g.Key)) {
+    private static void AddPeopleToGroups(TreeWrapGroup root, string groupTitle, IEnumerable<PersonM> people) {
+      var pGroup = new TreeWrapGroup();
+      root.Items.Add(pGroup);
+      pGroup.Info.Add(new(Res.IconPeople, groupTitle));
 
-        var itemsGroup = new ItemsGroup();
-        if (!string.IsNullOrEmpty(groupTitle))
-          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, groupTitle));
+      var groupedByKeywords = people
+            .GroupBy(x => x.DisplayKeywords == null
+              ? string.Empty
+              : string.Join(", ", x.DisplayKeywords.Select(dk => dk.Name)))
+            .OrderBy(x => x.Key)
+            .ToArray();
+
+      switch (groupedByKeywords.Length) {
+        case 0:
+          return;
+        case 1: {
+          foreach (var person in groupedByKeywords[0].OrderBy(x => x.Name))
+            pGroup.Items.Add(person);
+
+          pGroup.Info.Add(new(Res.IconImageMultiple, pGroup.Items.Count.ToString()));
+
+          return;
+        }
+      }
+
+      var count = 0;
+      foreach (var group in groupedByKeywords) {
+        var kGroup = new TreeWrapGroup();
+        pGroup.Items.Add(kGroup);
+
         if (!group.Key.Equals(string.Empty))
-          itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconTag, group.Key));
-
-        PeopleInGroups.Add(itemsGroup);
+          kGroup.Info.Add(new(Res.IconTag, group.Key));
 
         foreach (var person in group.OrderBy(p => p.Name))
-          itemsGroup.Items.Add(person);
+          kGroup.Items.Add(person);
 
-        itemsGroup.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, itemsGroup.Items.Count.ToString()));
+        kGroup.Info.Add(new(Res.IconImageMultiple, kGroup.Items.Count.ToString()));
+        count += kGroup.Items.Count;
       }
+
+      pGroup.Info.Add(new(Res.IconImageMultiple, count.ToString()));
     }
   }
 }

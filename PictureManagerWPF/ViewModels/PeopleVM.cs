@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Converters;
@@ -9,9 +10,13 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels {
   public sealed class PeopleVM : ObservableObject {
     private readonly Core _core;
+    private object _scrollToItem;
+    private TreeWrapGroup _peopleRoot;
 
     public PeopleM PeopleM { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
+    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
 
@@ -38,8 +43,13 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_core.MainWindowM.IsFullScreenIsChanging && e.Source is VirtualizingWrapPanel panel)
-        panel.ReWrap();
+      if (e.WidthChanged && !_core.MainWindowM.IsFullScreenIsChanging && e.Source is TreeWrapView twv)
+        twv.ReWrap();
+    }
+
+    public void Reload() {
+      PeopleRoot = PeopleM.Reload();
+      ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
     }
   }
 }
