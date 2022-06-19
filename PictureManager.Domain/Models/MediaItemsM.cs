@@ -657,11 +657,17 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetMetadata(object item) {
-      if (_core.ThumbnailsGridsM.Current == null) return;
+      var items = _core.MainWindowM.IsFullScreen
+        ? new MediaItemM[] { Current }
+        : _core.ThumbnailsGridsM.Current == null
+          ? Array.Empty<MediaItemM>()
+          : _core.ThumbnailsGridsM.Current.SelectedItems.ToArray();
+
+      if (items.Length == 0) return;
 
       var count = 0;
 
-      foreach (var mi in _core.ThumbnailsGridsM.Current.SelectedItems) {
+      foreach (var mi in items) {
         var modified = true;
 
         switch (item) {
