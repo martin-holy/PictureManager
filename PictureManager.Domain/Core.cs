@@ -144,6 +144,13 @@ namespace PictureManager.Domain {
         StatusPanelM.UpdateRating();
       };
 
+      MediaItemsM.PropertyChanged += (_, e) => {
+        if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
+          if (MainWindowM.IsFullScreen)
+            TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+        }
+      };
+
       SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
         PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
         e.Data.Item1.MediaItem.SetInfoBox();
