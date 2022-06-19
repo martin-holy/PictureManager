@@ -82,12 +82,13 @@ namespace PictureManager.ViewModels {
         Res.IconQuestion,
         true)) != 0) return;
 
-      Model.Current = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
-          ? currentThumbsGrid.LoadedItems
-          : _coreVM.MediaViewerVM.MediaItems,
+      var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
+        ? currentThumbsGrid.LoadedItems
+        : _coreVM.MediaViewerVM.MediaItems,
         items);
-
       Model.Delete(items, AppCore.FileOperationDelete);
+      Model.Current = newCurrent;
+
       if (currentThumbsGrid != null)
         await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
 
