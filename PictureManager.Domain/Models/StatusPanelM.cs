@@ -31,7 +31,9 @@ namespace PictureManager.Domain.Models {
       get {
         try {
           var size = _core.MainWindowM.IsFullScreen
-            ? new FileInfo(_core.MediaItemsM.Current.FilePath).Length
+            ? _core.MediaItemsM.Current != null
+              ? new FileInfo(_core.MediaItemsM.Current.FilePath).Length
+              : 0
             : _core.ThumbnailsGridsM.Current != null
               ? _core.ThumbnailsGridsM.Current.SelectedItems
                   .Sum(mi => new FileInfo(mi.FilePath).Length)
