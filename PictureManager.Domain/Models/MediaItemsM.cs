@@ -106,7 +106,10 @@ namespace PictureManager.Domain.Models {
       if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
       var set = new HashSet<KeywordM>(keywords);
 
-      return DataAdapter.All.Values.Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true).ToList();
+      return DataAdapter.All.Values
+        .Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true
+          || mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true)
+        .ToList();
     }
 
     public List<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
