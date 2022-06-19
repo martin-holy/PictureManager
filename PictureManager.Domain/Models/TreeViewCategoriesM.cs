@@ -81,14 +81,18 @@ namespace PictureManager.Domain.Models {
       // clear previous marked tags
       MarkedTags.Clear();
 
-      if (_core.ThumbnailsGridsM.Current == null) {
+      var mediaItems = _core.MainWindowM.IsFullScreen
+        ? new MediaItemM[] { _core.MediaItemsM.Current }
+        : _core.ThumbnailsGridsM.Current == null
+          ? Array.Empty<MediaItemM>()
+          : _core.ThumbnailsGridsM.Current.GetSelectedOrAll().ToArray();
+
+      if (mediaItems.Length == 0) {
         OnPropertyChanged(nameof(MarkedTags));
         return;
       }
 
-      var mediaItems = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       foreach (var mi in mediaItems) {
-
         // People
         if (mi.People != null || mi.Segments != null) {
           var people = (
