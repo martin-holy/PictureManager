@@ -658,7 +658,9 @@ namespace PictureManager.Domain.Models {
 
     public void SetMetadata(object item) {
       var items = _core.MainWindowM.IsFullScreen
-        ? new MediaItemM[] { Current }
+        ? Current == null
+          ? Array.Empty<MediaItemM>()
+          : new[] { Current }
         : _core.ThumbnailsGridsM.Current == null
           ? Array.Empty<MediaItemM>()
           : _core.ThumbnailsGridsM.Current.SelectedItems.ToArray();
