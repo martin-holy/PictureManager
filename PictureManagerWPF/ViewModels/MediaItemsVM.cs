@@ -40,8 +40,7 @@ namespace PictureManager.ViewModels {
 
       RotateCommand = new(
         Rotate,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(
-          x => x.IsSelected && x.MediaType == MediaType.Image) > 0);
+        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || Model.Current != null);
 
       DeleteCommand = new(
         Delete,
@@ -63,10 +62,13 @@ namespace PictureManager.ViewModels {
     private void Rotate() {
       var rotation = (MediaOrientation)Core.DialogHostShow(new RotationDialogM());
       if (rotation == MediaOrientation.Normal) return;
-      Model.SetOrientation(_core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(), rotation);
-
-      if (_coreVM.MediaViewerVM.IsVisible)
+      
+      if (_coreVM.MediaViewerVM.IsVisible) {
+        Model.SetOrientation(new[] { Model.Current }, rotation);
         _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
+      }
+      else
+        Model.SetOrientation(_core.ThumbnailsGridsM.Current.SelectedItems.ToArray(), rotation);
     }
 
     private async void Delete() {
