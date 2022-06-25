@@ -82,7 +82,9 @@ namespace PictureManager.Domain.Models {
       MarkedTags.Clear();
 
       var mediaItems = _core.MainWindowM.IsFullScreen
-        ? new MediaItemM[] { _core.MediaItemsM.Current }
+        ? _core.MediaItemsM.Current == null
+          ? Array.Empty<MediaItemM>()
+          : new[] { _core.MediaItemsM.Current }
         : _core.ThumbnailsGridsM.Current == null
           ? Array.Empty<MediaItemM>()
           : _core.ThumbnailsGridsM.Current.GetSelectedOrAll().ToArray();
