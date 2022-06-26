@@ -139,5 +139,15 @@ namespace PictureManager.Domain.Models {
       AddThumbnailsGridIfNotActive(folders[0].Name);
       await Current.LoadAsync(null, folders);
     }
+
+    public async Task ReloadGridsIfContains(MediaItemM[] mediaItems) {
+      foreach (var tg in All) {
+        if (!tg.FilteredItems.Any(mediaItems.Contains)) continue;
+        if (tg.Equals(Current))
+          await tg.ThumbsGridReloadItems();
+        else
+          tg.NeedReload = true;
+      }
+    }
   }
 }
