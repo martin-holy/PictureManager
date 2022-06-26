@@ -97,8 +97,8 @@
         <KeyBinding
           Modifiers="Control"
           Key="R"
-          Command="{Binding MediaItemsVM.RotateCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.RotateCommand,
+                    Source={x:Static pm:App.Core}}" />
         <KeyBinding
           Key="F2"
           Command="{Binding MediaItemsM.RenameCommand,

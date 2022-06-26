@@ -11,6 +11,7 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Utils;
 
 namespace PictureManager.Domain.Models {
@@ -34,10 +35,12 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
     public event EventHandler MetadataChangedEventHandler = delegate { };
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
+    public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> RenameCommand { get; }
     public RelayCommand<object> EditCommand { get; }
     public RelayCommand<object> SaveEditCommand { get; }
@@ -50,6 +53,10 @@ namespace PictureManager.Domain.Models {
       _core = core;
       _segmentsM = segmentsM;
       _viewersM = viewersM;
+
+      RotateCommand = new(
+        Rotate,
+        () => GetActive().Any());
 
       RenameCommand = new(
         Rename,
@@ -491,7 +498,7 @@ namespace PictureManager.Domain.Models {
         mediaItems,
         null,
         // action
-        async mi => {
+        mi => {
           var newOrientation = mi.RotationAngle;
 
           if (mi.MediaType == MediaType.Image) {
@@ -523,11 +530,10 @@ namespace PictureManager.Domain.Models {
           TryWriteMetadata(mi);
           mi.SetThumbSize(true);
           File.Delete(mi.FilePathCache);
-          await Core.RunOnUiThread(() => DataAdapter.IsModified = true);
         },
         mi => mi.FilePath,
         // onCompleted
-        (o, e) => _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems());
+        (_, _) => MediaItemsOrientationChangedEventHandler(this, new(mediaItems)));
 
       progress.Start();
       Core.DialogHostShow(progress);
@@ -602,6 +608,13 @@ namespace PictureManager.Domain.Models {
 
       progress.Start();
       Core.DialogHostShow(progress);
+    }
+
+    private void Rotate() {
+      var rotation = (MediaOrientation)Core.DialogHostShow(new RotationDialogM());
+      if (rotation == MediaOrientation.Normal) return;
+
+      SetOrientation(GetActive(), rotation);
     }
 
     public async void Rename() {

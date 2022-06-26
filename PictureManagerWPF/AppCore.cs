@@ -150,6 +150,11 @@ namespace PictureManager {
             App.Core.PeopleM.DeselectAll();
         }
       };
+
+      App.Core.MediaItemsM.MediaItemsOrientationChangedEventHandler += (_, e) => {
+        if (MediaViewerVM.IsVisible && e.Data.Contains(App.Core.MediaItemsM.Current))
+          MediaViewerVM.SetMediaItemSource(App.Core.MediaItemsM.Current);
+      };
     }
 
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
