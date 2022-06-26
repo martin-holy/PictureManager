@@ -30,18 +30,12 @@ namespace PictureManager.Domain.Models {
     public string FileSize {
       get {
         try {
-          var size = _core.MainWindowM.IsFullScreen
-            ? _core.MediaItemsM.Current != null
-              ? new FileInfo(_core.MediaItemsM.Current.FilePath).Length
-              : 0
-            : _core.ThumbnailsGridsM.Current != null
-              ? _core.ThumbnailsGridsM.Current.SelectedItems
-                  .Sum(mi => new FileInfo(mi.FilePath).Length)
-              : 0;
+          var items = _core.MediaItemsM.GetActive();
 
-          return size == 0
-            ? string.Empty
-            : IOExtensions.FileSizeToString(size);
+          return items.Any()
+            ? IOExtensions.FileSizeToString(
+              items.Sum(mi => new FileInfo(mi.FilePath).Length))
+            : string.Empty;
         }
         catch {
           return string.Empty;
