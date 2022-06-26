@@ -3,8 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels">
+  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <mhc:Icon
     x:Key="EyeIcon"
@@ -55,8 +54,8 @@
                     Source={x:Static pm:App.Ui}}" />
         <MenuItem
           Header="Rotate"
-          Command="{Binding MediaItemsVM.RotateCommand,
-                    Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsM.RotateCommand,
+                    Source={x:Static pm:App.Core}}" />
         <MenuItem
           Header="Select Not Modified"
           Command="{Binding ThumbnailsGridsM.SelectNotModifiedCommand,

@@ -139,6 +139,13 @@ namespace PictureManager.Domain {
         ThumbnailsGridsM.RemoveMediaItem(e.Data);
       };
 
+      MediaItemsM.MediaItemsOrientationChangedEventHandler += async (_, e) => {
+        foreach (var __ in e.Data)
+          MediaItemsM.DataAdapter.IsModified = true;
+
+        await ThumbnailsGridsM.ReloadGridsIfContains(e.Data);
+      };
+
       MediaItemsM.MetadataChangedEventHandler += (_, _) => {
         TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
         StatusPanelM.UpdateRating();

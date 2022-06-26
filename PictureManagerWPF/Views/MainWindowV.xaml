@@ -50,7 +50,6 @@
     <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}" />
     <KeyBinding Key="Delete" Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}" />
-    <KeyBinding Modifiers="Control" Key="R" Command="{Binding MediaItemsVM.RotateCommand, Source={x:Static pm:App.Ui}}" />
   </mahApps:MetroWindow.InputBindings>
   
   <b:Interaction.Triggers>

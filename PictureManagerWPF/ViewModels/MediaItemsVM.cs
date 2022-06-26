@@ -12,7 +12,6 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -24,7 +23,6 @@ namespace PictureManager.ViewModels {
 
     public MediaItemsM Model { get; }
 
-    public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
@@ -37,10 +35,6 @@ namespace PictureManager.ViewModels {
 
       Model.ReadMetadata = ReadMetadata;
       Model.WriteMetadata = WriteMetadata;
-
-      RotateCommand = new(
-        Rotate,
-        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || Model.Current != null);
 
       DeleteCommand = new(
         Delete,
@@ -57,18 +51,6 @@ namespace PictureManager.ViewModels {
       CompareCommand = new(
         Compare,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-    }
-
-    private void Rotate() {
-      var rotation = (MediaOrientation)Core.DialogHostShow(new RotationDialogM());
-      if (rotation == MediaOrientation.Normal) return;
-      
-      if (_coreVM.MediaViewerVM.IsVisible) {
-        Model.SetOrientation(new[] { Model.Current }, rotation);
-        _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
-      }
-      else
-        Model.SetOrientation(_core.ThumbnailsGridsM.Current.SelectedItems.ToArray(), rotation);
     }
 
     private async void Delete() {
