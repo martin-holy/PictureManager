@@ -38,7 +38,7 @@ namespace PictureManager.ViewModels {
 
       DeleteCommand = new(
         Delete,
-        () => _core.ThumbnailsGridsM.Current?.SelectedItems.Count > 0 || Model.Current != null);
+        () => Model.GetActive().Any());
 
       ReloadMetadataInFolderCommand = new(
         x => Model.ReloadMetadata(x.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
@@ -53,12 +53,9 @@ namespace PictureManager.ViewModels {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
     }
 
-    private async void Delete() {
-      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
-      var items = _coreVM.MediaViewerVM.IsVisible
-        ? new() { Model.Current }
-        : currentThumbsGrid.FilteredItems.Where(x => x.IsSelected).ToList();
-      var count = items.Count;
+    private void Delete() {
+      var items = Model.GetActive();
+      var count = items.Length;
 
       if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
@@ -66,27 +63,12 @@ namespace PictureManager.ViewModels {
         Res.IconQuestion,
         true)) != 0) return;
 
+      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
       var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
         ? currentThumbsGrid.LoadedItems
         : _coreVM.MediaViewerVM.MediaItems,
-        items);
-      Model.Delete(items, AppCore.FileOperationDelete);
-      Model.Current = newCurrent;
-
-      if (currentThumbsGrid != null)
-        await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
-
-      // TODO do it in event
-      if (_coreVM.MainTabsVM.Selected?.Content is SegmentsVM)
-        _core.SegmentsM.Reload();
-
-      if (_coreVM.MediaViewerVM.IsVisible) {
-        _ = _coreVM.MediaViewerVM.MediaItems.Remove(items[0]);
-        if (Model.Current != null)
-          _coreVM.MediaViewerVM.SetMediaItemSource(Model.Current);
-        else
-          _core.MainWindowM.IsFullScreen = false;
-      }
+        items.ToList());
+      Model.Delete(items, AppCore.FileOperationDelete, newCurrent);
     }
 
     private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
