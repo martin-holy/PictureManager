@@ -35,6 +35,7 @@ namespace PictureManager.Domain.Models {
     public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
     public event EventHandler MetadataChangedEventHandler = delegate { };
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
@@ -212,8 +213,8 @@ namespace PictureManager.Domain.Models {
         Delete(mi);
     }
 
-    public void Delete(List<MediaItemM> items, FileOperationDelete fileOperationDelete) {
-      if (items.Count == 0) return;
+    public void Delete(MediaItemM[] items, FileOperationDelete fileOperationDelete, MediaItemM newCurrent) {
+      if (items.Length == 0) return;
 
       var files = new List<string>();
       var cache = new List<string>();
@@ -226,6 +227,9 @@ namespace PictureManager.Domain.Models {
 
       fileOperationDelete.Invoke(files, true, false);
       cache.ForEach(File.Delete);
+
+      Current = newCurrent;
+      MediaItemsDeletedEventHandler(this, new(items));
     }
 
     private void SetModified(MediaItemM mi, bool value) {

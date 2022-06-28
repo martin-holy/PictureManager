@@ -149,9 +149,6 @@ namespace PictureManager.Domain.Models {
         }
       }
 
-      if (item == CurrentMediaItem)
-        CurrentMediaItem = null;
-
       if (isCurrent)
         SetSelected(item, false);
       else

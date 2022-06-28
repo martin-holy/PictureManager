@@ -155,6 +155,19 @@ namespace PictureManager {
         if (MediaViewerVM.IsVisible && e.Data.Contains(App.Core.MediaItemsM.Current))
           MediaViewerVM.SetMediaItemSource(App.Core.MediaItemsM.Current);
       };
+
+      App.Core.MediaItemsM.MediaItemsDeletedEventHandler += async (_, e) => {
+        if (App.Core.ThumbnailsGridsM.Current?.NeedReload == true)
+          await App.Core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
+
+        if (MediaViewerVM.IsVisible) {
+          MediaViewerVM.MediaItems.Remove(e.Data[0]);
+          if (App.Core.MediaItemsM.Current != null)
+            MediaViewerVM.SetMediaItemSource(App.Core.MediaItemsM.Current);
+          else
+            App.Core.MainWindowM.IsFullScreen = false;
+        }
+      };
     }
 
     public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
