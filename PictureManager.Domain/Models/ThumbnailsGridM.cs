@@ -94,6 +94,9 @@ namespace PictureManager.Domain.Models {
       SelectionChanged();
       FilteredChangedEventHandler(this, EventArgs.Empty);
       CurrentMediaItem = null;
+
+      // TODO temporary
+      Core.Instance.StatusPanelM.CurrentMediaItemM = null;
     }
 
     private void SelectionChanged() {
