@@ -18,9 +18,6 @@ namespace PictureManager.ViewModels {
       set {
         _current = value;
 
-        if (App.Core.MediaItemsM.Current != value)
-          App.Core.MediaItemsM.Current = value;
-
         OnPropertyChanged();
         OnPropertyChanged(nameof(PositionSlashCount));
       }
@@ -69,6 +66,11 @@ namespace PictureManager.ViewModels {
       FullVideo.SetNullSource();
       MediaItems.Clear();
       Current = null;
+    }
+
+    public void SetCurrent(MediaItemM current) {
+      if (IsVisible && Current != current)
+        Current = current;
     }
 
     public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {

@@ -93,7 +93,6 @@ namespace PictureManager.Domain.Models {
       FilteredRoot = new();
       SelectionChanged();
       FilteredChangedEventHandler(this, EventArgs.Empty);
-      CurrentMediaItem = null;
 
       // TODO temporary
       Core.Instance.StatusPanelM.CurrentMediaItemM = null;
@@ -102,6 +101,9 @@ namespace PictureManager.Domain.Models {
     private void SelectionChanged() {
       SelectionChangedEventHandler.Invoke(this, EventArgs.Empty);
       OnPropertyChanged(nameof(SelectedCount));
+      CurrentMediaItem = SelectedItems.Count == 1
+        ? SelectedItems[0]
+        : null;
     }
 
     public void SetSelected(MediaItemM mi, bool value) =>
@@ -114,20 +116,16 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems.Except(SelectedItems))
         mi.IsSelected = false;
 
-      CurrentMediaItem = SelectedItems.Count == 1 ? SelectedItems[0] : null;
       SelectionChanged();
     }
 
-    public void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) {
+    public void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) =>
       Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, SelectionChanged);
-      CurrentMediaItem = SelectedItems.Count == 1 ? SelectedItems[0] : null;
-    }
 
     public void DeselectAll() {
       foreach (var mi in SelectedItems)
         mi.IsSelected = false;
 
-      CurrentMediaItem = null;
       SelectedItems.Clear();
       SelectionChanged();
     }
@@ -136,7 +134,6 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in FilteredItems)
         mi.IsSelected = true;
 
-      CurrentMediaItem = null;
       SelectedItems.Clear();
       SelectedItems.AddRange(FilteredItems);
       SelectionChanged();
@@ -161,10 +158,12 @@ namespace PictureManager.Domain.Models {
 
     public void RemoveSelected() {
       var items = FilteredItems.Where(x => x.IsSelected).ToList();
-      CurrentMediaItem = MediaItemsM.GetNewCurrent(FilteredItems, items);
+      var newCurrent = MediaItemsM.GetNewCurrent(FilteredItems, items);
 
       foreach (var mi in items)
         Remove(mi, true);
+
+      CurrentMediaItem = newCurrent;
     }
 
     public void Zoom(int delta) {
@@ -183,8 +182,6 @@ namespace PictureManager.Domain.Models {
     public void SelectNotModified(HashSet<MediaItemM> modifiedItems) {
       foreach (var mi in FilteredItems)
         SetSelected(mi, !modifiedItems.Contains(mi));
-
-      CurrentMediaItem = null;
     }
 
     public void Shuffle() {
@@ -381,7 +378,6 @@ namespace PictureManager.Domain.Models {
       if (mi == null) return;
 
       SetSelected(mi, true);
-      CurrentMediaItem = mi;
       ScrollToItem = mi;
     }
 
