@@ -109,9 +109,9 @@ namespace PictureManager {
           MediaViewerVM.IsVisible = isFullScreen;
 
           if (!isFullScreen) {
-            App.Core.ThumbnailsGridsM.Current?.ScrollToCurrentMediaItem();
+            App.Core.ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
             App.Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-            
+
             if (App.Core.SegmentsM.NeedReload) {
               App.Core.SegmentsM.NeedReload = false;
               App.Core.SegmentsM.Reload();
@@ -119,6 +119,8 @@ namespace PictureManager {
             
             MediaViewerVM.Deactivate();
             ToolsTabsVM.Deactivate(VideoClipsVM.ToolsTabsItem);
+
+            App.Core.StatusPanelM.CurrentMediaItemM = App.Core.ThumbnailsGridsM.Current?.CurrentMediaItem;
           }
         }
       };

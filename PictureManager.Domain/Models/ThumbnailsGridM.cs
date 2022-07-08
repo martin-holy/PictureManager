@@ -101,7 +101,8 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(SelectedCount));
     }
 
-    public void SetSelected(MediaItemM mi, bool value) => Selecting.SetSelected(_selectedItems, mi, value, SelectionChanged);
+    public void SetSelected(MediaItemM mi, bool value) =>
+      Selecting.SetSelected(_selectedItems, mi, value, SelectionChanged);
 
     public void UpdateSelected() {
       foreach (var mi in SelectedItems)
@@ -368,10 +369,17 @@ namespace PictureManager.Domain.Models {
       return mediaItems;
     }
 
-    public void ScrollToCurrentMediaItem() {
-      ScrollToItem = FilteredItems.Contains(_mediaItemsM.Current)
+    public void SelectAndScrollToCurrentMediaItem() {
+      var mi = FilteredItems.Contains(_mediaItemsM.Current)
         ? _mediaItemsM.Current
         : CurrentMediaItem;
+
+      DeselectAll();
+      if (mi == null) return;
+
+      SetSelected(mi, true);
+      CurrentMediaItem = mi;
+      ScrollToItem = mi;
     }
 
     public async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide) {
@@ -411,7 +419,7 @@ namespace PictureManager.Domain.Models {
     public async Task ThumbsGridReloadItems() {
       await LoadThumbnails(FilteredItems.ToArray());
       NeedReload = false;
-      ScrollToCurrentMediaItem();
+      SelectAndScrollToCurrentMediaItem();
     }
 
     private async Task LoadThumbnails(IReadOnlyCollection<MediaItemM> items) {
