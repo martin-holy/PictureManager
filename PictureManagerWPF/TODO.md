@@ -15,6 +15,7 @@
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
   - 15% CPU usage on media item delete from full screen
   - mouse cursor doesn't hide when mouse doesn't move for more than 3 seconds
+  - can't view 20170313_140708_Martin.jpg
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
 ## Video Clips
@@ -32,6 +33,8 @@
 ## PeopleV
   - reload when opened and person or group is created/renamed/moved in the tree
   - reload when keyword is toggled on person
+## Person
+  - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## ToolsTabs
   - reloading of Segments and ThumbnailsGrids doesn't work on IsPinned changed in full screen
     VirtualizingWrapPanel doesn't have the correct width when IsFullScreen is changing
