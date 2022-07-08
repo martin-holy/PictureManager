@@ -126,11 +126,17 @@ namespace PictureManager {
       };
 
       MediaViewerVM.PropertyChanged += (_, e) => {
-        if (nameof(MediaViewerVM.IsVisible).Equals(e.PropertyName))
-          App.Core.StatusPanelM.OnPropertyChanged(nameof(App.Core.StatusPanelM.FilePath));
+        switch (e.PropertyName) {
+          case nameof(MediaViewerVM.IsVisible):
+            App.Core.StatusPanelM.OnPropertyChanged(nameof(App.Core.StatusPanelM.FilePath));
+            break;
+          case nameof(MediaViewerVM.Current):
+            App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
 
-        if (nameof(MediaViewerVM.Current).Equals(e.PropertyName))
-          App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
+            if (App.Core.MediaItemsM.Current != MediaViewerVM.Current)
+              App.Core.MediaItemsM.Current = MediaViewerVM.Current;
+            break;
+        }
       };
 
       MainTabsVM.TabClosedEventHandler += (_, e) => {
@@ -150,6 +156,14 @@ namespace PictureManager {
 
           if (MainTabsVM.Selected is not { Content: ViewModels.PeopleVM })
             App.Core.PeopleM.DeselectAll();
+        }
+      };
+
+      App.Core.MediaItemsM.PropertyChanged += (_, e) => {
+        switch (e.PropertyName) {
+          case nameof(App.Core.MediaItemsM.Current):
+            MediaViewerVM.SetCurrent(App.Core.MediaItemsM.Current);
+            break;
         }
       };
 
