@@ -422,7 +422,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private async Task LoadThumbnails(IReadOnlyCollection<MediaItemM> items) {
-      var progress = new Progress<int>((x) => {
+      var progress = new Progress<int>(x => {
         _progressBar.ValueA = x;
         _progressBar.ValueB = x;
       });
@@ -435,12 +435,6 @@ namespace PictureManager.Domain.Models {
 
       if (_cancelLoad)
         _mediaItemsM.Delete(_mediaItemsM.DataAdapter.All.Values.Where(x => x.IsNew).ToArray());
-
-      // TODO: is this necessary?
-      if (CurrentMediaItem != null) {
-        SetSelected(CurrentMediaItem, false);
-        SetSelected(CurrentMediaItem, true);
-      }
 
       _progressBar.ValueA = 100;
       _progressBar.ValueB = 100;
