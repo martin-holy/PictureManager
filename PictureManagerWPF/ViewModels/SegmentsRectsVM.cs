@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using MH.Utils.BaseClasses;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
@@ -12,7 +13,7 @@ namespace PictureManager.ViewModels {
     public bool AreVisible { get => _areVisible; set { _areVisible = value; OnPropertyChanged(); } }
 
     public RelayCommand<RoutedEventArgs> SetViewCommand { get; }
-    public RelayCommand<RoutedEventArgs> SetCurrentCommand { get; }
+    public RelayCommand<MouseEventArgs> SetCurrentCommand { get; }
     public RelayCommand<MouseButtonEventArgs> CreateCommand { get; }
     public RelayCommand<MouseEventArgs> EditCommand { get; }
     public RelayCommand<object> EndEditCommand { get; }
@@ -29,9 +30,11 @@ namespace PictureManager.ViewModels {
       DeleteCommand = new(SegmentsRectsM.Delete);
     }
 
-    private void SetCurrent(RoutedEventArgs e) {
-      if (e.Source is FrameworkElement fe && (fe.Name.Equals("MovePoint") || fe.Name.Equals("ResizeBorder")))
-        SegmentsRectsM.SetCurrent((SegmentRectM)fe.DataContext, fe.Name.Equals("MovePoint"));
+    private void SetCurrent(MouseEventArgs e) {
+      if (e.Source is FrameworkElement fe && (fe.Name.Equals("MovePoint") || fe.Name.Equals("ResizeBorder"))) {
+        var pos = e.GetPosition(_view);
+        SegmentsRectsM.SetCurrent((SegmentRectM)fe.DataContext, pos.X, pos.Y);
+      }
     }
 
     private void Create(MouseButtonEventArgs e) {

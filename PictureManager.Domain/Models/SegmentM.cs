@@ -12,16 +12,16 @@ namespace PictureManager.Domain.Models {
 
     #region DB Properties
     private PersonM _person;
-    private int _x;
-    private int _y;
-    private int _radius;
+    private double _x;
+    private double _y;
+    private double _radius;
 
     public int Id { get; }
     public MediaItemM MediaItem { get; set; }
     public PersonM Person { get => _person; set { _person = value; OnPropertyChanged(); } }
     public List<KeywordM> Keywords { get; set; }
 
-    public int X {
+    public double X {
       get => _x;
       set {
         _x = value;
@@ -36,7 +36,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public int Y {
+    public double Y {
       get => _y;
       set {
         _y = value;
@@ -51,7 +51,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public int Radius {
+    public double Radius {
       get => _radius;
       set {
         _radius = value;
@@ -76,7 +76,7 @@ namespace PictureManager.Domain.Models {
 
     public SegmentM() { }
 
-    public SegmentM(int id, int x, int y, int radius) {
+    public SegmentM(int id, double x, double y, double radius) {
       Id = id;
       X = x;
       Y = y;
@@ -92,7 +92,7 @@ namespace PictureManager.Domain.Models {
     #endregion IEquatable implementation
 
     #region RotateTransform X, Y
-    public int RotateTransformGetX(int x) =>
+    public double RotateTransformGetX(double x) =>
       MediaItem.Orientation switch {
         (int)MediaOrientation.Rotate90 => Y,
         (int)MediaOrientation.Rotate180 => MediaItem.Width - x,
@@ -100,7 +100,7 @@ namespace PictureManager.Domain.Models {
         _ => x
       };
 
-    public void RotateTransformSetX(int x) {
+    public void RotateTransformSetX(double x) {
       switch (MediaItem.Orientation) {
         case (int)MediaOrientation.Rotate90: Y = x; break;
         case (int)MediaOrientation.Rotate180: X = MediaItem.Width - x; break;
@@ -109,7 +109,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public int RotateTransformGetY(int y) =>
+    public double RotateTransformGetY(double y) =>
       MediaItem.Orientation switch {
         (int)MediaOrientation.Rotate90 => MediaItem.Width - X,
         (int)MediaOrientation.Rotate180 => MediaItem.Height - y,
@@ -117,7 +117,7 @@ namespace PictureManager.Domain.Models {
         _ => y
       };
 
-    public void RotateTransformSetY(int y) {
+    public void RotateTransformSetY(double y) {
       switch (MediaItem.Orientation) {
         case (int)MediaOrientation.Rotate90: X = MediaItem.Width - y; break;
         case (int)MediaOrientation.Rotate180: Y = MediaItem.Height - y; break;

@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsRectsM : INotifyPropertyChanged {
@@ -33,7 +34,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private bool _isEditModeMove;
+    private SegmentEditMode _editMode;
     private bool _isCurrentModified;
 
     public SegmentsM SegmentsM { get; }
@@ -44,11 +45,24 @@ namespace PictureManager.Domain.Models {
       SegmentsM = segmentsM;
     }
 
-    public void SetCurrent(SegmentRectM current, bool isEditModeMove) {
+    public void SetCurrent(SegmentRectM current, double x, double y) {
       Current = current;
-      _isEditModeMove = isEditModeMove;
+      _editMode = GetEditMode(Current, x, y);
       SegmentsM.DeselectAll();
       SegmentsM.SetSelected(current.Segment, true);
+    }
+
+    private static SegmentEditMode GetEditMode(SegmentRectM current, double x, double y) {
+      var xDiff = Math.Abs(current.X + current.Radius - x);
+      var yDiff = Math.Abs(current.Y + current.Radius - y);
+
+      if (xDiff < 10 && yDiff < 10)
+        return SegmentEditMode.Move;
+
+      if (Math.Abs(xDiff - yDiff) < 10)
+        return SegmentEditMode.ResizeCorner;
+      else
+        return SegmentEditMode.ResizeEdge;
     }
 
     private void ReloadMediaItemSegmentRects() {
@@ -70,7 +84,7 @@ namespace PictureManager.Domain.Models {
     public void CreateNew(double x, double y) {
       var (newX, newY) = ConvertPos(x, y, Scale, MediaItem);
       var segment = SegmentsM.AddNewSegment(newX, newY, 0, MediaItem);
-      _isEditModeMove = false;
+      _editMode = SegmentEditMode.ResizeCorner;
       _isCurrentModified = true;
       Current = new(segment, Scale);
       MediaItemSegmentsRects.Add(Current);
@@ -115,17 +129,60 @@ namespace PictureManager.Domain.Models {
     }
 
     public void StartEdit(int x, int y) {
+      var centerX = Current.X + Current.Radius;
+      var centerY = Current.Y + Current.Radius;
+
       _isCurrentModified = true;
       IsEditOn = true;
 
-      if (_isEditModeMove) {
+      switch (_editMode) {
+        case SegmentEditMode.Move:
         Current.X = x;
         Current.Y = y;
-      }
-      else {
-        var centerX = Current.X + Current.Radius;
-        var centerY = Current.Y + Current.Radius;
+        break;
+
+        case SegmentEditMode.ResizeEdge:
+        var newCenterX = centerX;
+        var newCenterY = centerY;
+        var newRadius = Current.Radius;
+        var xHalfDiff = (x - Current.X) / 2;
+        var yHalfDiff = (y - Current.Y) / 2;
+        var lDiff = Math.Abs(x - Current.X);
+        var rDiff = Math.Abs(x - Current.X - Current.Size);
+        var tDiff = Math.Abs(y - Current.Y);
+        var bDiff = Math.Abs(y - Current.Y - Current.Size);
+        var minDiff = (new double[] { lDiff, rDiff, tDiff, bDiff }).Min();
+
+        if (lDiff == minDiff) {
+          // left edge
+          newRadius = Current.Radius - xHalfDiff;
+          newCenterX = x + newRadius;
+        }
+        else if (bDiff == minDiff) {
+          // bottom edge
+          newRadius = yHalfDiff;
+          newCenterY = Current.Y + newRadius;
+        }
+        else if (tDiff == minDiff) {
+          // top edge
+          newRadius = Current.Radius - yHalfDiff;
+          newCenterY = y + newRadius;
+        }
+        else if (rDiff == minDiff) {
+          // right edge
+          newRadius = xHalfDiff;
+          newCenterX = Current.X + newRadius;
+        }
+
+        Current.X = newCenterX;
+        Current.Y = newCenterY;
+        Current.Radius = newRadius;
+
+        break;
+
+        case SegmentEditMode.ResizeCorner:
         Current.Radius = Math.Max(Math.Abs(centerX - x), Math.Abs(centerY - y));
+        break;
       }
     }
 
