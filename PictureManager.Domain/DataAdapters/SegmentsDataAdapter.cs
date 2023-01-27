@@ -38,7 +38,7 @@ namespace PictureManager.Domain.DataAdapters {
         segment.Person == null
           ? "0"
           : segment.Person.Id.ToString(),
-        string.Join(",", segment.X, segment.Y, segment.Radius),
+        string.Join(",", (int)segment.X, (int)segment.Y, (int)segment.Radius),
         segment.Keywords == null
           ? string.Empty
           : string.Join(",", segment.Keywords.Select(x => x.Id)));

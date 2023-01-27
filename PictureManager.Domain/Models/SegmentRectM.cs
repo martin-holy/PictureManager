@@ -8,28 +8,28 @@ namespace PictureManager.Domain.Models {
 
     private double _scale;
 
-    public int X {
-      get => (int)((Segment.RotateTransformGetX(Segment.X) - Segment.Radius) * Scale);
+    public double X {
+      get => (Segment.RotateTransformGetX(Segment.X) - Segment.Radius) * Scale;
       set {
-        Segment.RotateTransformSetX((int)(value / Scale));
+        Segment.RotateTransformSetX(value / Scale);
         OnPropertyChanged();
       }
     }
 
-    public int Y {
-      get => (int)((Segment.RotateTransformGetY(Segment.Y) - Segment.Radius) * Scale);
+    public double Y {
+      get => (Segment.RotateTransformGetY(Segment.Y) - Segment.Radius) * Scale;
       set {
-        Segment.RotateTransformSetY((int)(value / Scale));
+        Segment.RotateTransformSetY(value / Scale);
         OnPropertyChanged();
       }
     }
 
     public int Size => (int)(Segment.Radius * 2 * Scale);
 
-    public int Radius {
-      get => (int)(Segment.Radius * Scale);
+    public double Radius {
+      get => Segment.Radius * Scale;
       set {
-        Segment.Radius = (int)(value / Scale);
+        Segment.Radius = value / Scale;
         OnPropertyChanged();
         OnPropertyChanged(nameof(X));
         OnPropertyChanged(nameof(Y));
