@@ -34,11 +34,22 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center" />
 
-          <mhc:Icon
-            Source="{StaticResource IconPeople}"
-            Fill="{StaticResource ColorBrushPeople}"
-            HorizontalAlignment="Left"
-            Margin="6,0" />
+          <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
+            <mhc:Icon
+              Source="{StaticResource IconPeople}"
+              Fill="{StaticResource ColorBrushPeople}"
+              HorizontalAlignment="Left"
+              Margin="6,0" />
+
+            <mhc:IconButton
+              ToolTip="Load Media items in new tab"
+              Source="{StaticResource IconImageMultiple}"
+              Command="{Binding ThumbnailsGridsVM.LoadByTagCommand,
+                        Source={x:Static pm:App.Ui}}"
+              CommandParameter="{Binding PersonM}" />
+          </StackPanel>
         </Grid>
           
         <!-- Keywords -->
