@@ -21,7 +21,7 @@ namespace PictureManager.ViewModels {
     public ThumbnailsGridsM Model { get; }
     public ThumbnailsGridVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
 
-    public RelayCommand<ITreeItem> LoadByTagCommand { get; }
+    public RelayCommand<object> LoadByTagCommand { get; }
     public RelayCommand<object> CompressCommand { get; }
     public RelayCommand<object> ResizeImagesCommand { get; }
     public RelayCommand<object> ImagesToVideoCommand { get; }
