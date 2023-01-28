@@ -187,10 +187,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void EndEdit() {
-      if (Current == null) {
-        SegmentsM.DeselectAll();
+      if (Current == null)
         return;
-      }
 
       if (_isCurrentModified) {
         SegmentsM.DataAdapter.IsModified = true;

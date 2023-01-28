@@ -101,15 +101,32 @@
         <TextBlock Text="Play Panoramic Images" />
         <CheckBox IsChecked="{Binding PlayPanoramicImages}" />
 
-        <!-- Segments edit -->
-        <mhc:IconToggleButton
-          ToolTip="Segments edit"
-          IsThreeState="False"
+        <!-- Segments ToolBar -->
+        <StackPanel
           VerticalAlignment="Center"
-          ShowShadow="False"
-          Source="{StaticResource IconPeople}"
-          IsChecked="{Binding SegmentsVM.SegmentsRectsVM.AreVisible,
-                      Source={x:Static pm:App.Ui}}" />
+          Orientation="Horizontal"
+          DataContext="{Binding SegmentsVM,
+                        Source={x:Static pm:App.Ui}}">
+
+          <mhc:IconToggleButton
+            ToolTip="Segments edit"
+            IsThreeState="False"
+            VerticalAlignment="Center"
+            ShowShadow="False"
+            Source="{StaticResource IconPeople}"
+            IsChecked="{Binding SegmentsRectsVM.AreVisible}" />
+
+          <mhc:IconButton
+            ToolTip="Open Segments drawer"
+            Source="{StaticResource IconDrawer}"
+            Command="{Binding OpenSegmentsDrawerCommand}" />
+
+          <mhc:IconButton
+            ToolTip="Add selected to Segments drawer"
+            Source="{StaticResource IconPlus}"
+            Command="{Binding SegmentsM.AddSelectedToDrawerCommand}" />
+        </StackPanel>
+
       </StackPanel>
     </Grid>
   </DataTemplate>

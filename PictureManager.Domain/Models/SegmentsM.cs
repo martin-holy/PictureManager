@@ -49,6 +49,7 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
+    public RelayCommand<object> AddSelectedToDrawerCommand { get; }
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
     public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
@@ -60,6 +61,9 @@ namespace PictureManager.Domain.Models {
     public SegmentsM() {
       SegmentsRectsM = new(this);
 
+      AddSelectedToDrawerCommand = new(
+        () => SegmentsDrawerUpdate(Selected.ToArray(), true),
+        () => Selected.Count > 0);
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
       SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown);
       SegmentToolTipReloadCommand = new(SegmentToolTipReload);
