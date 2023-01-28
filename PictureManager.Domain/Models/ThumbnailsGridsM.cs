@@ -96,7 +96,7 @@ namespace PictureManager.Domain.Models {
       ThumbnailsGridAddedEventHandler(this, new((model, tabTitle)));
     }
 
-    public async Task LoadByTag(ITreeItem item, bool and, bool hide, bool recursive) {
+    public async Task LoadByTag(object item, bool and, bool hide, bool recursive) {
       var items = item switch {
         RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value).ToList(),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
@@ -115,7 +115,7 @@ namespace PictureManager.Domain.Models {
           _ => string.Empty
         };
 
-      AddThumbnailsGridIfNotActive(tabTitle);
+      AddThumbnailsGrid(tabTitle);
       await Current.LoadMediaItems(items, and, hide);
     }
 
