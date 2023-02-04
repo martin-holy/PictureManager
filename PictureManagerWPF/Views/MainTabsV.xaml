@@ -105,6 +105,11 @@
             Command="{Binding UpdateTabHeadersSizeCommand}"
             CommandParameter="{Binding ActualHeight, ElementName=Tabs}"/>
         </b:EventTrigger>
+        <b:EventTrigger EventName="Loaded">
+          <b:InvokeCommandAction
+            Command="{Binding UpdateTabHeadersSizeCommand}"
+            CommandParameter="{Binding ActualHeight, ElementName=Tabs}"/>
+        </b:EventTrigger>
       </b:Interaction.Triggers>
 
       <TabControl.ItemContainerStyle>
