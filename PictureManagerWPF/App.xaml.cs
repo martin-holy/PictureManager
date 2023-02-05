@@ -34,6 +34,7 @@ namespace PictureManager {
       Current.Properties[nameof(AppProperty.Ui)] = new AppCore();
       Current.Properties[nameof(AppProperty.MainWindowV)] = new MainWindowV();
 
+      ShutdownMode = ShutdownMode.OnMainWindowClose;
       MainWindow = MainWindowV;
       MainWindowV.Show();
 
