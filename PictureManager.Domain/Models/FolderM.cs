@@ -68,8 +68,11 @@ namespace PictureManager.Domain.Models {
 
         // get existing Folder in the tree
         var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.CurrentCultureIgnoreCase));
-        folder.IsHidden = !Core.Instance.FoldersM.IsFolderVisible(folder);
-        if (folder != null) continue;
+        
+        if (folder != null) {
+          folder.IsHidden = !Core.Instance.FoldersM.IsFolderVisible(folder);
+          continue;
+        }
 
         // add new Folder to the database
         folder = new(Core.Instance.FoldersM.DataAdapter.GetNextId(), dirName, this);
