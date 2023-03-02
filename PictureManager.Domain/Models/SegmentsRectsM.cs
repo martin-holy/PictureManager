@@ -157,21 +157,25 @@ namespace PictureManager.Domain.Models {
           // left edge
           newRadius = Current.Radius - xHalfDiff;
           newCenterX = x + newRadius;
+          newCenterY = y;
         }
         else if (bDiff == minDiff) {
           // bottom edge
           newRadius = yHalfDiff;
+          newCenterX = x;
           newCenterY = Current.Y + newRadius;
         }
         else if (tDiff == minDiff) {
           // top edge
           newRadius = Current.Radius - yHalfDiff;
+          newCenterX = x;
           newCenterY = y + newRadius;
         }
         else if (rDiff == minDiff) {
           // right edge
           newRadius = xHalfDiff;
           newCenterX = Current.X + newRadius;
+          newCenterY = y;
         }
 
         Current.X = newCenterX;
