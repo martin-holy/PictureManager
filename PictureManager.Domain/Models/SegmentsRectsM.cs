@@ -12,7 +12,10 @@ namespace PictureManager.Domain.Models {
     public void OnPropertyChanged([CallerMemberName] string name = null) => PropertyChanged(this, new(name));
 
     private double _scale;
+    private double _startX;
+    private double _startY;
     private bool _isEditOn;
+    private bool _isNew;
     private MediaItemM _mediaItemM;
 
     public double Scale {
@@ -84,7 +87,8 @@ namespace PictureManager.Domain.Models {
     public void CreateNew(double x, double y) {
       var (newX, newY) = ConvertPos(x, y, Scale, MediaItem);
       var segment = SegmentsM.AddNewSegment(newX, newY, 0, MediaItem);
-      _editMode = SegmentEditMode.ResizeCorner;
+      _isNew = true;
+      _editMode = SegmentEditMode.ResizeEdge;
       _isCurrentModified = true;
       Current = new(segment, Scale);
       MediaItemSegmentsRects.Add(Current);
@@ -133,60 +137,82 @@ namespace PictureManager.Domain.Models {
       var centerY = Current.Y + Current.Radius;
 
       _isCurrentModified = true;
-      IsEditOn = true;
+
+      if (!IsEditOn) {
+        _startX = x;
+        _startY = y;
+        IsEditOn = true;
+      }
 
       switch (_editMode) {
         case SegmentEditMode.Move:
-        Current.X = x;
-        Current.Y = y;
-        break;
+          Current.X = x;
+          Current.Y = y;
+          break;
 
         case SegmentEditMode.ResizeEdge:
-        var newCenterX = centerX;
-        var newCenterY = centerY;
-        var newRadius = Current.Radius;
-        var xHalfDiff = (x - Current.X) / 2;
-        var yHalfDiff = (y - Current.Y) / 2;
-        var lDiff = Math.Abs(x - Current.X);
-        var rDiff = Math.Abs(x - Current.X - Current.Size);
-        var tDiff = Math.Abs(y - Current.Y);
-        var bDiff = Math.Abs(y - Current.Y - Current.Size);
-        var minDiff = (new double[] { lDiff, rDiff, tDiff, bDiff }).Min();
+          // left top right bottom
+          var edge = 0;
+          var newCenterX = centerX;
+          var newCenterY = centerY;
+          var newRadius = Current.Radius;
+          var xHalfDiff = (x - Current.X) / 2;
+          var yHalfDiff = (y - Current.Y) / 2;
 
-        if (lDiff == minDiff) {
-          // left edge
-          newRadius = Current.Radius - xHalfDiff;
-          newCenterX = x + newRadius;
-          newCenterY = y;
-        }
-        else if (bDiff == minDiff) {
-          // bottom edge
-          newRadius = yHalfDiff;
-          newCenterX = x;
-          newCenterY = Current.Y + newRadius;
-        }
-        else if (tDiff == minDiff) {
-          // top edge
-          newRadius = Current.Radius - yHalfDiff;
-          newCenterX = x;
-          newCenterY = y + newRadius;
-        }
-        else if (rDiff == minDiff) {
-          // right edge
-          newRadius = xHalfDiff;
-          newCenterX = Current.X + newRadius;
-          newCenterY = y;
-        }
+          if (_isNew) {
+            edge = Math.Abs(_startX - x) > Math.Abs(_startY - y)
+              ? _startX > x ? 0 : 2
+              : _startY > y ? 1 : 3;
+          }
+          else {
+            var lDiff = Math.Abs(x - Current.X);
+            var rDiff = Math.Abs(x - Current.X - Current.Size);
+            var tDiff = Math.Abs(y - Current.Y);
+            var bDiff = Math.Abs(y - Current.Y - Current.Size);
+            var minDiff = (new double[] { lDiff, rDiff, tDiff, bDiff }).Min();
 
-        Current.X = newCenterX;
-        Current.Y = newCenterY;
-        Current.Radius = newRadius;
+            if (lDiff == minDiff)
+              edge = 0;
+            else if (bDiff == minDiff)
+              edge = 3;
+            else if (tDiff == minDiff)
+              edge = 1;
+            else if (rDiff == minDiff)
+              edge = 2;
+          }
 
-        break;
+          switch (edge) {
+            case 0:
+              newRadius = Current.Radius - xHalfDiff;
+              newCenterX = x + newRadius;
+              newCenterY = y;
+              break;
+            case 1:
+              newRadius = Current.Radius - yHalfDiff;
+              newCenterX = x;
+              newCenterY = y + newRadius;
+              break;
+            case 2:
+              newRadius = xHalfDiff;
+              newCenterX = Current.X + newRadius;
+              newCenterY = y;
+              break;
+            case 3:
+              newRadius = yHalfDiff;
+              newCenterX = x;
+              newCenterY = Current.Y + newRadius;
+              break;
+          }
+
+          Current.X = newCenterX;
+          Current.Y = newCenterY;
+          Current.Radius = newRadius;
+
+          break;
 
         case SegmentEditMode.ResizeCorner:
-        Current.Radius = Math.Max(Math.Abs(centerX - x), Math.Abs(centerY - y));
-        break;
+          Current.Radius = Math.Max(Math.Abs(centerX - x), Math.Abs(centerY - y));
+          break;
       }
     }
 
@@ -199,6 +225,7 @@ namespace PictureManager.Domain.Models {
         File.Delete(Current.Segment.FilePathCache);
         Current.Segment.OnPropertyChanged(nameof(Current.Segment.FilePathCache));
         _isCurrentModified = false;
+        _isNew = false;
         IsEditOn = false;
       }
 
