@@ -283,6 +283,7 @@ namespace MH.UI.WPF.Controls {
 
       foreach (var treeItem in items) {
         var index = parent.Items.IndexOf(treeItem);
+        if (index < 0) break;
         var panel = parent.GetChildOfType<VirtualizingStackPanel>();
         if (panel == null) break;
         panel.BringIndexIntoViewPublic(index);
