@@ -1,0 +1,259 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:cc="clr-namespace:PictureManager.CustomControls">
+
+  <DataTemplate DataType="{x:Type vm:MainWindowToolBarVM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="ViewersToolBarV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <Grid Height="30" Background="Transparent">
+      <Grid.InputBindings>
+        <MouseBinding
+          MouseAction="LeftClick"
+          Command="{Binding PinCommand, RelativeSource=
+                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}" />
+      </Grid.InputBindings>
+
+      <StackPanel
+        Orientation="Horizontal"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Center"
+        Background="#40000000"
+        WindowChrome.IsHitTestVisibleInChrome="True">
+
+        <Grid WindowChrome.IsHitTestVisibleInChrome="False">
+          <!-- Progress bar -->
+          <ContentPresenter Content="{Binding TitleProgressBarM, Source={x:Static pm:App.Core}}"/>
+
+          <!-- App Icon -->
+          <mhc:Icon
+            Source="{StaticResource IconImage}"
+            Margin="5 -1 0 0"
+            Fill="White"
+            ShowShadow="True"
+            HorizontalAlignment="Left"/>
+
+          <!-- App Title -->
+          <TextBlock
+            Text="Picture Manager"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            FontWeight="Bold"/>
+
+          <!-- Main Menu -->
+          <ContentPresenter
+            ContentTemplate="{StaticResource Views.MainMenu}"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            WindowChrome.IsHitTestVisibleInChrome="True"/>
+        </Grid>
+
+        <StackPanel Orientation="Horizontal">
+          <StackPanel.Resources>
+            <Style
+              TargetType="{x:Type Separator}"
+              BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}">
+              <Setter Property="Height" Value="15" />
+            </Style>
+          </StackPanel.Resources>
+
+          <!-- Viewers -->
+          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" />
+
+          <Separator />
+
+          <!-- Media Items Count -->
+          <mhc:Icon
+            Source="{StaticResource IconImageMultiple}"
+            Margin="3 0 0 0" />
+          <TextBlock
+            Text="{Binding MediaItemsM.MediaItemsCount, Source={x:Static pm:App.Core}}"
+            VerticalAlignment="Center"
+            Margin="5 0" />
+
+          <Separator />
+
+          <!-- Filters Panel -->
+          <StackPanel
+            Orientation="Horizontal"
+            VerticalAlignment="Center"
+            Margin="0 2 2 0"
+            DataContext="{Binding ThumbnailsGridsM, Source={x:Static pm:App.Core}}"
+            ToolTip="Clear filters"
+            Cursor="Hand">
+
+            <StackPanel.Resources>
+              <Style
+                TargetType="{x:Type Border}"
+                BasedOn="{StaticResource SBorderActiveFilter}" />
+              <Style
+                TargetType="{x:Type Label}"
+                BasedOn="{StaticResource SShadowLabel}" />
+            </StackPanel.Resources>
+
+            <StackPanel.InputBindings>
+              <MouseBinding
+                MouseAction="LeftClick"
+                Command="{Binding ClearFiltersCommand}" />
+            </StackPanel.InputBindings>
+
+            <!-- And -->
+            <Border Background="{StaticResource DisplayFilterAndBrush}">
+              <Label
+                Content="{Binding Current.FilterAndCount}"
+                Visibility="{Binding Current.FilterAndCount,
+                            Converter={StaticResource AllToVisibilityConverter}}" />
+            </Border>
+
+            <!-- Or -->
+            <Border Background="{StaticResource DisplayFilterOrBrush}">
+              <Label
+                Content="{Binding Current.FilterOrCount}"
+                Visibility="{Binding Current.FilterOrCount,
+                            Converter={StaticResource AllToVisibilityConverter}}"/>
+            </Border>
+
+            <!-- Not -->
+            <Border Background="{StaticResource DisplayFilterNotBrush}">
+              <Label
+                Content="{Binding Current.FilterNotCount}"
+                Visibility="{Binding Current.FilterNotCount,
+                            Converter={StaticResource AllToVisibilityConverter}}"/>
+            </Border>
+          </StackPanel>
+
+          <!-- Media Types -->
+          <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            DataContext="{Binding ThumbnailsGridsVM, Source={x:Static pm:App.Ui}}">
+
+            <mhc:IconToggleButton
+              Source="{StaticResource IconImage}"
+              ToolTip="Image"
+              Margin="0"
+              IsChecked="{Binding Current.Model.ShowImages}"
+              Command="{Binding Model.ReapplyFilterCommand}" />
+
+            <mhc:IconToggleButton
+              Source="{StaticResource IconMovieClapper}"
+              ToolTip="Video"
+              Margin="0"
+              IsChecked="{Binding Current.Model.ShowVideos}"
+              Command="{Binding Model.ReapplyFilterCommand}" />
+          </StackPanel>
+
+          <Separator />
+
+          <!-- DB Button -->
+          <mhc:IconTextButton
+            Icon="{StaticResource IconDatabase}"
+            Text="{Binding Sdb.Changes, Source={x:Static pm:App.Core}}"
+            Command="{Binding MainWindowVM.SaveDbCommand, Source={x:Static pm:App.Ui}}"
+            Effect="{StaticResource Res_ShadowEffect}"/>
+
+          <!-- Log Button -->
+          <Button
+            Background="Red"
+            Command="{Binding MainWindowVM.OpenLogCommand, Source={x:Static pm:App.Ui}}"
+            Height="24"
+            Margin="2 0 2 0"
+            Visibility="{Binding Log.Count,
+                         Source={x:Static pm:App.Core},
+                         Converter={StaticResource AllToVisibilityConverter}}">
+
+            <TextBlock
+              Text="{Binding Log.Count, StringFormat='Log {0}', Source={x:Static pm:App.Core}}" />
+          </Button>
+
+          <Separator />
+
+          <!-- Segments ToolBar -->
+          <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            DataContext="{Binding SegmentsVM, Source={x:Static pm:App.Ui}}">
+
+            <mhc:IconToggleButton
+              ToolTip="Segments edit"
+              IsThreeState="False"
+              VerticalAlignment="Center"
+              Source="{StaticResource IconPeople}"
+              IsChecked="{Binding SegmentsRectsVM.AreVisible}" />
+
+            <mhc:IconButton
+              ToolTip="Open Segments drawer"
+              Source="{StaticResource IconDrawer}"
+              Command="{Binding OpenSegmentsDrawerCommand}" />
+
+            <mhc:IconButton
+              ToolTip="Add selected to Segments drawer"
+              Source="{StaticResource IconPlus}"
+              Command="{Binding SegmentsM.AddSelectedToDrawerCommand}" />
+
+            <mhc:IconButton
+              ToolTip="Segment Matching"
+              Source="{StaticResource IconEquals}"
+              Command="{Binding SegmentMatchingCommand}" />
+          </StackPanel>
+
+          <Separator />
+
+          <!-- Presentation ToolBar -->
+          <StackPanel
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            DataContext="{Binding MediaViewerVM.PresentationPanel, Source={x:Static pm:App.Ui}}"
+            IsEnabled="{Binding MediaViewerVM.Current, Source={x:Static pm:App.Ui}, Converter={StaticResource AllToBoolConverter}}">
+
+            <!-- Play/Stop -->
+            <mhc:IconButton Command="{Binding PresentationCommand}">
+              <mhc:IconButton.Style>
+                <Style
+                  TargetType="{x:Type mhc:IconButton}"
+                  BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
+                  <Setter Property="Background" Value="White" />
+                  <Setter Property="Source" Value="{StaticResource IconPlay}" />
+                  <Setter Property="ToolTip" Value="Stop presentation" />
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                      <Setter Property="Source" Value="{StaticResource IconStop}" />
+                      <Setter Property="ToolTip" Value="Start presentation" />
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </mhc:IconButton.Style>
+            </mhc:IconButton>
+
+            <!-- Interval -->
+            <mhc:PopupSlider
+              Minimum="1"
+              Maximum="10"
+              Value="{Binding Interval, Mode=TwoWay}"
+              Icon="{StaticResource IconTimer}"
+              Effect="{StaticResource Res_ShadowEffect}"
+              ToolTip="Presentation interval"/>
+
+            <!-- Play Panoramic Images -->
+            <CheckBox
+              IsChecked="{Binding PlayPanoramicImages}"
+              ToolTip="Play Panoramic Images"/>
+          </StackPanel>
+        </StackPanel>
+
+        <cc:ImageComparer x:Name="ImageComparerTool" Visibility="Collapsed"/>
+      </StackPanel>
+
+      <mhc:WindowButtons Window="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+    </Grid>
+  </DataTemplate>
+</ResourceDictionary>
