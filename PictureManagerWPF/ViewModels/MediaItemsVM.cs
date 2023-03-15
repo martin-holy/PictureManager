@@ -359,10 +359,10 @@ namespace PictureManager.ViewModels {
 
     private void Compare() {
       // TODO
-      App.MainWindowV.ImageComparerTool.Visibility = Visibility.Visible;
-      App.MainWindowV.UpdateLayout();
-      App.MainWindowV.ImageComparerTool.SelectDefaultMethod();
-      _ = App.MainWindowV.ImageComparerTool.Compare();
+      //App.MainWindowV.ImageComparerTool.Visibility = Visibility.Visible;
+      //App.MainWindowV.UpdateLayout();
+      //App.MainWindowV.ImageComparerTool.SelectDefaultMethod();
+      //_ = App.MainWindowV.ImageComparerTool.Compare();
     }
   }
 }
