@@ -1,8 +1,9 @@
 # Bugs
 ##
-  - disky identifikovat podle ID a ne podle pismena
+  - disky identifikovat podle ID a ne podle pismena (cmd dir command shows volume serial number)
     - or store drive related data in \Temp\PictureManagerCache
   - mhc:IconToggleButton need VerticalAlignment="Center" even if parent have this property set
+  - reload media items count in title bar on viewer change
 ## WorkTask
   - unexpected error, task was canceled. problem when returning false from catch
 ## MediaItems
@@ -11,13 +12,19 @@
   - kdyz ma obrazek metadata jen v DB, tak se rotace neaplikuje na vytvoreni thumbnail
   - ErrorDialog in CopyMove (MediaItemsVM) doesn't open
   - Compare: after deleted remove items from list
+  - Move Dialog removes first "_" from output folder and from file name
 ## MediaViewer
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
   - 15% CPU usage on media item delete from full screen
   - mouse cursor doesn't hide when mouse doesn't move for more than 3 seconds
   - can't view 20170313_140708_Martin.jpg
+  - can't add keyword when opened from video thumb
+    video also doesn't have file size
+  - jump to wrong file after delete when items where shuffled
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
+  - Display aspect ratio different from video width and height ratio
+    use DB width and height for aspect ratio and add way to change it
 ## Video Clips
   - kdyz klip konci az ke konci videa, tak se nekolikrat opakuje a pak zamrzne prehravac 
     a je to na restart appky (do OnMediaEnded se to nedostane)
@@ -28,6 +35,7 @@
     (Cannot save value from target back to source. KeyNotFoundException: The given key '1' was not present in the dictionary.)
   - Folder reload after folder move => reload is maybe to soon
   - ScrollTo in TreeViewSearch doesn't work when People category is collapsed just for the first time
+  - can't delete folder from file system
 ## FolderKeywords
   - do not show expand buttons in TreeView when there is nothing to expand
 ## PeopleV
@@ -40,6 +48,15 @@
     VirtualizingWrapPanel doesn't have the correct width when IsFullScreen is changing
 ## StackPanel
   - newly created video from images doesn't have file size when opened from thumbnail
+## ThumbnailsGrid
+  - reload or close when folder is deleted in TreeViewCategories
+## Person Detail
+  - remove segments after changing person
+## Segment matching
+  - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
+  - segment with person doesn't show number of selected segments
+## ImageComparerTool
+  - rewrite UI
 
 
 # Update
@@ -53,12 +70,15 @@
   - Rethink hierarchical keywords moving
   - similar code in Imaging.GetThumbSize and ZoomImageBoxV.GetFitScale
   - comment out MahApps styles that I don't use for app start speed up
+  - check how many RAM consumes referencing objects like Folder have list of MediaItems or MediaItem have list of keywords and people, ...
+  - check if mhu:SetterAction can be replaced by b:ChangePropertyAction
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
   - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
   - Items can be null, to save memory
+  - Folder move: rethink selecting target folder after move
 ## VideoClips:
   - recreate video thumbnails button
 ## Folders
@@ -68,17 +88,23 @@
   - rename Confirmed Segments to Persons (People) and use PersonThumbnailV instead of SegmentV
     - how to deal with selection. it is use full to select confirmed segment and other segment
   - check if segments are sorted by mediaItem fileName and not just by id
+  - remove add to drawer button from drawer
+  - change icon on add to drawer
 ## PersonV
   - add button "set as unknown" for selected segments
   - count of segments on group with keywords
+  - when loading media items for person => open first media item when mediaViewer is visible
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - replace behaviors with InputBindings where possible
 ## WPF Controls
   - ZoomAndPanImage update to MVVM
   - VideoPlayer update to MVVM
+  - use button foreground and background for icon in IconButton and IconToggleButton
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
+## Compress dialog
+   - smaller font size for file size
 
 
 # New
@@ -87,6 +113,13 @@
   - statickou tridu Prefs v App, ktera bude odkazovat na Settings.Default, takze se bude psat App.Prefs.FfmpegPath
   - Log to file
   - change Dictionaries for object with implementation IEquatable and replace them with HashSets
+  - Virtual images from video:
+    - media type: VideoImage
+    - props: timestamp of image and media item (video) id
+    - can have keywords, people, comment, ... 
+    - has own thumbnail icon
+    - opening from thumbnail will show paused video 
+      - so I need another video player mode to scroll thru VideoImages and than to next media item or MediaViewer will have mix of images, videos and videoImages?
 ## Folders
   - Folders a Folder GetByPath udelat univerzalni pro CatTreeView
   - GeoNames for Folders
@@ -98,6 +131,7 @@
   - filter na delku videa
   - nova kategorie "keywords groups" kde budou kombinace keywords, people, ... ktery se vyskytujou na jednom MediaItem
   - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
+  - show small segment next to person icon or show just small segment
 ## Video Clips
   - akce na (ukoncit clip -> presun na dalsi snimek -> zacit novy clip)
   - lock na volume a speed, aby se ignorovalo to co je u clipu
@@ -109,9 +143,7 @@
   - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
   - zmensovat hodne velky obrazky pri prohlizeni <= je to nekvalitni :(
   - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
-  - click on person in status bar opens person info
-## Person Info
-  - add load all media items for person in new thumbnails tab
+  - func to zoom to segment
 ## ThumbnailsGrid
   - Auto groups from People and Keywords
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
@@ -147,6 +179,9 @@
   - count of segments on person
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - add groups to SegmentDrawer
+  - open from SegmentDrawer will open media item and load all other segments from SegmentDrawer
+  - tagging keyword on segment will show options to set it to segment or person
+  - filter for segment resolution
 
 
 #Shortcuts:
