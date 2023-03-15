@@ -17,7 +17,7 @@
     <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.DatePicker.xaml"/>-->
     <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.DataGrid.xaml"/>-->
     <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Expander.xaml"/>-->
-    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.GridSplitter.xaml"/>
+    <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.GridSplitter.xaml"/>-->
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.GroupBox.xaml"/>
     <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListBox.xaml"/>
     <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.PasswordBox.xaml"/>-->
@@ -90,7 +90,7 @@
   <!--<Style BasedOn="{StaticResource MahApps.Styles.StatusBar}" TargetType="{x:Type StatusBar}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.StatusBarItem}" TargetType="{x:Type StatusBarItem}"/>-->
   <Style BasedOn="{StaticResource MahApps.Styles.ScrollViewer}" TargetType="{x:Type ScrollViewer}"/>
-  <Style BasedOn="{StaticResource MahApps.Styles.GridSplitter}" TargetType="{x:Type GridSplitter}"/>
+  <!--<Style BasedOn="{StaticResource MahApps.Styles.GridSplitter}" TargetType="{x:Type GridSplitter}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.ToolBar}" TargetType="{x:Type ToolBar}"/>-->
   <!--<Style BasedOn="{StaticResource MahApps.Styles.ToolBarTray}" TargetType="{x:Type ToolBarTray}"/>-->
 </ResourceDictionary>
