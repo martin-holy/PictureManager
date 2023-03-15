@@ -79,12 +79,12 @@
 
             <!-- Button to pin slide panel -->
             <mhc:IconToggleButton
-              Command="{Binding ToggleIsPinnedCommand}"
               Source="{StaticResource IconPin}"
               Size="14"
               IsThreeState="False"
               ShowShadow="False"
-              IsChecked="{Binding Model.IsPinned}"
+              IsChecked="{Binding IsPinned, RelativeSource=
+                         {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
               ToolTip="Pin panel" />
           </StackPanel>
         </DockPanel>
