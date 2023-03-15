@@ -37,6 +37,7 @@
   <SolidColorBrush Color="#FFC7C7C7" x:Key="ColorBrushDrive" />
   <SolidColorBrush Color="#FFFFFFFF" x:Key="ColorBrushWhite" />
   <SolidColorBrush Color="#FF252525" x:Key="ColorBrushBackground" />
+  <SolidColorBrush Color="#FFFFFFFF" x:Key="ColorBrushForeground" />
 
   <SolidColorBrush x:Key="TextBrush" Color="{StaticResource WhiteColor}" />
   <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource WhiteColor}" />
