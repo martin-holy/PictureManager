@@ -1,210 +1,131 @@
-﻿<mahApps:MetroWindow 
+﻿<Window
   x:Class="PictureManager.Views.MainWindowV"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:mahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-  xmlns:pm="clr-namespace:PictureManager"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:pm="clr-namespace:PictureManager"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   DataContext="{Binding MainWindowVM, Source={x:Static pm:App.Ui}}"
-  UseNoneWindowStyle="{Binding Model.IsFullScreen}"
-  IgnoreTaskbarOnMaximize="{Binding Model.IsFullScreen}"
   Title="Picture Manager"
-  TitleAlignment="Center"
-  WindowState="Maximized" 
-  FontSize="13.333"
-  SaveWindowPosition="True"
-  LeftWindowCommandsOverlayBehavior="Never">
-  
-  <mahApps:MetroWindow.Style>
-    <Style TargetType="{x:Type mahApps:MetroWindow}">
-      <Style.Triggers>
-        <DataTrigger
-          Binding="{Binding MainWindowM.IsFullScreen,
-                    Source={x:Static pm:App.Core}}"
-          Value="False">
-          
-          <Setter
-            Property="ShowTitleBar"
-            Value="True" />
-        </DataTrigger>
-      </Style.Triggers>
-    </Style>
-  </mahApps:MetroWindow.Style>
+  WindowState="Maximized"
+  WindowStyle="SingleBorderWindow"
+  UseLayoutRounding="True"
+  Background="{StaticResource ColorBrushBackground}"
+  FontSize="14"
+  Foreground="{StaticResource WhiteBrush}">
 
-  <mahApps:MetroWindow.Resources>
-    <ResourceDictionary>
-      <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="MainMenuV.xaml" />
-        <ResourceDictionary Source="TitleProgressBarV.xaml" />
-        <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml" />
-      </ResourceDictionary.MergedDictionaries>
-    </ResourceDictionary>
-  </mahApps:MetroWindow.Resources>
+  <Window.InputBindings>
+    <KeyBinding Modifiers="Control" Key="E" Command="{Binding CoreM.MediaItemsM.EditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="S" Command="{Binding CoreM.MediaItemsM.SaveEditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding CoreM.MediaItemsM.CancelEditCommand}"/>
+    <KeyBinding Key="F2" Command="{Binding CoreM.MediaItemsM.RenameCommand}"/>
+    <KeyBinding Key="Delete" Command="{Binding CoreVM.MediaItemsVM.DeleteCommand}"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
+  </Window.InputBindings>
 
-  <mahApps:MetroWindow.InputBindings>
-    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsM.EditCommand, Source={x:Static pm:App.Core}}" />
-    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsM.SaveEditCommand, Source={x:Static pm:App.Core}}" />
-    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsM.CancelEditCommand, Source={x:Static pm:App.Core}}" />
-    <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}" />
-    <KeyBinding Key="Delete" Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
-    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}" />
-  </mahApps:MetroWindow.InputBindings>
-  
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closing">
-      <b:InvokeCommandAction Command="{Binding ClosingCommand}" />
+      <b:InvokeCommandAction Command="{Binding ClosingCommand}"/>
     </b:EventTrigger>
     <b:EventTrigger EventName="Loaded">
-      <b:InvokeCommandAction Command="{Binding LoadedCommand}" />
+      <b:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+    </b:EventTrigger>
+    <b:EventTrigger EventName="StateChanged">
+      <b:InvokeCommandAction
+        Command="{Binding WindowStateChangedCommand}"
+        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
     </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <!-- Title -->
-  <mahApps:MetroWindow.TitleTemplate>
-    <DataTemplate>
-      <ContentPresenter Content="{Binding TitleProgressBarM, Source={x:Static pm:App.Core}}" />
-    </DataTemplate>
-  </mahApps:MetroWindow.TitleTemplate>
+  <!-- WindowChrome blocks controls like buttons on SlidePanel.
+   I need to find the way how to set CaptionHeight to 0 or 30.
+   It is ok when the WindowStyle is none. like in full screen mode.
+   But WindowStyle none hides TaskBar
+   try something with z-index
+   TODO delete WindowChrome and create custom window control with WindowStyle is none -->
+  <WindowChrome.WindowChrome>
+    <WindowChrome CaptionHeight="10" />
+  </WindowChrome.WindowChrome>
 
-  <mahApps:MetroWindow.LeftWindowCommands>
-    <mahApps:WindowCommands>
-      <!-- Main Menu -->
-      <ContentPresenter
-        ContentTemplate="{StaticResource Views.MainMenu}" />
+  <Border BorderBrush="Black">
+    <Border.Style>
+      <Style TargetType="{x:Type Border}">
+        <Setter Property="BorderThickness" Value="7"/>
+        <Style.Triggers>
+          <DataTrigger Binding="{Binding FixWindowSize}" Value="False">
+            <Setter Property="BorderThickness" Value="0"/>
+          </DataTrigger>
+        </Style.Triggers>
+      </Style>
+    </Border.Style>
 
-      <!-- Media Items Count -->
-      <TextBlock
-        Text="{Binding MediaItemsM.MediaItemsCount,
-               Source={x:Static pm:App.Core}}"
-        VerticalAlignment="Center"
-        Margin="5,0" />
-      
-      <!-- Filters Panel -->
-      <StackPanel
-        Orientation="Horizontal"
-        VerticalAlignment="Center"
-        Margin="0,2,2,0"
-        DataContext="{x:Static pm:App.Core}"
-        ToolTip="Clear filters"
-        Cursor="Hand">
+    <mhc:SlidePanelsGrid ActiveLayout="{Binding Model.ActiveLayout}">
+      <mhc:SlidePanelsGrid.PinLayouts>
+        <!-- Left, Top, Right, Bottom -->
+        <x:Array Type="{x:Type sys:Array}">
+          <!-- Browser -->
+          <x:Array Type="{x:Type sys:Boolean}">
+            <sys:Boolean>True</sys:Boolean>
+            <sys:Boolean>True</sys:Boolean>
+            <sys:Boolean>False</sys:Boolean>
+            <sys:Boolean>True</sys:Boolean>
+          </x:Array>
+          <!-- Viewer -->
+          <x:Array Type="{x:Type sys:Boolean}">
+            <sys:Boolean>False</sys:Boolean>
+            <sys:Boolean>False</sys:Boolean>
+            <sys:Boolean>False</sys:Boolean>
+            <sys:Boolean>True</sys:Boolean>
+          </x:Array>
+        </x:Array>
+      </mhc:SlidePanelsGrid.PinLayouts>
 
-        <StackPanel.Resources>
-          <Style
-            TargetType="{x:Type Border}"
-            BasedOn="{StaticResource SBorderActiveFilter}" />
-          <Style
-            TargetType="{x:Type Label}"
-            BasedOn="{StaticResource SShadowLabel}" />
-        </StackPanel.Resources>
-        
-        <StackPanel.InputBindings>
-          <MouseBinding
-            MouseAction="LeftClick"
-            Command="{Binding ThumbnailsGridsM.ClearFiltersCommand,
-                      Source={x:Static pm:App.Core}}" />
-        </StackPanel.InputBindings>
+      <!-- Main Window Tool Bar -->
+      <mhc:SlidePanelsGrid.PanelTop>
+        <mhc:SlidePanel
+          Content="{Binding CoreVM.MainWindowToolBarVM}"
+          Height="30"/>
+      </mhc:SlidePanelsGrid.PanelTop>
 
-        <!-- And -->
-        <Border Background="{StaticResource DisplayFilterAndBrush}">
-          <Label
-            Content="{Binding ThumbnailsGridsM.Current.FilterAndCount}"
-            Visibility="{Binding ThumbnailsGridsM.Current.FilterAndCount,
-                         Converter={StaticResource AllToVisibilityConverter}}" />
-        </Border>
+      <!-- Tree View Categories -->
+      <mhc:SlidePanelsGrid.PanelLeft>
+        <mhc:SlidePanel
+          Content="{Binding CoreVM.TreeViewCategoriesVM}"
+          Width="380"/>
+      </mhc:SlidePanelsGrid.PanelLeft>
 
-        <!-- Or -->
-        <Border Background="{StaticResource DisplayFilterOrBrush}">
-          <Label
-            Content="{Binding ThumbnailsGridsM.Current.FilterOrCount}"
-            Visibility="{Binding ThumbnailsGridsM.Current.FilterOrCount,
-                         Converter={StaticResource AllToVisibilityConverter}}"/>
-        </Border>
+      <mhc:SlidePanelsGrid.PanelMiddle>
+        <Grid>
+          <!-- Main Tabs -->
+          <ContentPresenter
+            Content="{Binding CoreVM.MainTabsVM}"
+            Visibility="{Binding MediaViewerVM.IsVisible,
+                         Source={x:Static pm:App.Ui},
+                         Converter={StaticResource AllToVisibilityConverter}, 
+                         ConverterParameter={StaticResource False}}"/>
 
-        <!-- Not -->
-        <Border Background="{StaticResource DisplayFilterNotBrush}">
-          <Label
-            Content="{Binding ThumbnailsGridsM.Current.FilterNotCount}"
-            Visibility="{Binding ThumbnailsGridsM.Current.FilterNotCount,
-                         Converter={StaticResource AllToVisibilityConverter}}"/>
-        </Border>
-      </StackPanel>
-
-      <!-- Media Types -->
-      <StackPanel
-        VerticalAlignment="Center"
-        Orientation="Horizontal"
-        DataContext="{Binding ThumbnailsGridsVM,
-                      Source={x:Static pm:App.Ui}}">
-
-        <mhc:IconToggleButton
-          Source="{StaticResource IconImage}"
-          ToolTip="Image"
-          Margin="0"
-          IsChecked="{Binding Current.Model.ShowImages}"
-          Command="{Binding Model.ReapplyFilterCommand}" />
-
-        <mhc:IconToggleButton
-          Source="{StaticResource IconMovieClapper}"
-          ToolTip="Video"
-          Margin="0"
-          IsChecked="{Binding Current.Model.ShowVideos}"
-          Command="{Binding Model.ReapplyFilterCommand}" />
-      </StackPanel>
-
-      <!-- DB Button -->
-      <Button
-        Height="24"
-        MinWidth="24"
-        Margin="2,0,2,0"
-        Style="{StaticResource StyleBaseButtonBase}"
-        Command="{Binding SaveDbCommand}"
-        Background="Transparent"
-        BorderThickness="0"
-        VerticalContentAlignment="Stretch"
-        HorizontalContentAlignment="Stretch">
-        
-        <Grid >
-          <TextBlock
-            Text="DB"
-            VerticalAlignment="Top" />
-          <Label
-            Content="{Binding Sdb.Changes,
-                      Source={x:Static pm:App.Core}}" 
-            Style="{StaticResource SShadowLabel}"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Bottom"/>
+          <!-- Media Viewer -->
+          <ContentPresenter Content="{Binding CoreVM.MediaViewerVM}"/>
         </Grid>
-      </Button>
+      </mhc:SlidePanelsGrid.PanelMiddle>
 
-      <!-- Log Button -->
-      <Button
-        Background="Red"
-        Command="{Binding OpenLogCommand}"
-        Height="24"
-        Margin="2,0,2,0"
-        Visibility="{Binding Log.Count,
-                     Source={x:Static pm:App.Core},
-                     Converter={StaticResource AllToVisibilityConverter}}">
-        <StackPanel Orientation="Horizontal">
-          <TextBlock Text="Log " />
-          <TextBlock Text="{Binding Log.Count,
-                            Source={x:Static pm:App.Core}}" />
-        </StackPanel>
-      </Button>
+      <!-- Tools Tabs -->
+      <mhc:SlidePanelsGrid.PanelRight>
+        <mhc:SlidePanel
+          IsOpen="{Binding CoreVM.ToolsTabsVM.IsOpen, Mode=TwoWay}"
+          CanOpen="{Binding CoreVM.ToolsTabsVM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
+          Content="{Binding CoreVM.ToolsTabsVM}"
+          Width="360"/>
+      </mhc:SlidePanelsGrid.PanelRight>
 
-    </mahApps:WindowCommands>
-  </mahApps:MetroWindow.LeftWindowCommands>
-
-  <mahApps:MetroWindow.RightWindowCommands>
-    <mahApps:WindowCommands>
-      <cc:ImageComparer
-        x:Name="ImageComparerTool"
-        Visibility="Collapsed" />
-    </mahApps:WindowCommands>
-  </mahApps:MetroWindow.RightWindowCommands>
-
-  <ContentPresenter Content="{Binding MainWindowContentVM, Source={x:Static pm:App.Ui}}" />
-  
-</mahApps:MetroWindow>
+      <!-- Status Panel -->
+      <mhc:SlidePanelsGrid.PanelBottom>
+        <mhc:SlidePanel
+          Content="{Binding CoreM.StatusPanelM}"
+          CanOpen="{Binding CanOpenStatusPanel}"
+          MinHeight="30"/>
+      </mhc:SlidePanelsGrid.PanelBottom>
+    </mhc:SlidePanelsGrid>
+  </Border>
+</Window>
