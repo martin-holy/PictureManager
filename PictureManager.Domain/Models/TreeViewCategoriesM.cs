@@ -9,26 +9,11 @@ namespace PictureManager.Domain.Models {
   public sealed class TreeViewCategoriesM : ObservableObject {
     private readonly Core _core;
     private ITreeItem _scrollToItem;
-    private bool _isOpen = true;
-    private bool _isPinned = true;
     
     public ObservableCollection<TreeCategory> Items { get; }
     public TreeViewSearchM TreeViewSearchM { get; }
     public Dictionary<object, int> MarkedTags { get; } = new();
-    public bool IsPinnedInViewer { get; set; }
-    public bool IsPinnedInBrowser { get; set; } = true;
-    
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    public bool IsOpen { get => _isOpen; set { _isOpen = value; OnPropertyChanged(); } }
-    public bool IsPinned {
-      get => _isPinned;
-      set {
-        _isPinned = value;
-        IsOpen = value;
-        OnPropertyChanged();
-      }
-    }
-
     public RelayCommand<object> ShowSearchCommand { get; }
     public RelayCommand<ITreeItem> ScrollToCommand { get; }
 
@@ -54,11 +39,6 @@ namespace PictureManager.Domain.Models {
 
     private void ScrollTo(ITreeItem item) =>
       ScrollToItem = item;
-
-    public void SetIsPinned(bool inViewer) =>
-      IsPinned = inViewer
-        ? IsPinnedInViewer
-        : IsPinnedInBrowser;
 
     private void ShowSearch() {
       TreeViewSearchM.SearchText = string.Empty;
