@@ -14,6 +14,7 @@
         <ResourceDictionary Source="ResourceDictionaries/Converters.xaml" />
 
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/GridSplitter.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/MenuStyles.xaml" />
         <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/TextBoxStyles.xaml" />
 
@@ -37,7 +38,15 @@
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml" />
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml" />
 
-        <ResourceDictionary Source="Views/MainWindowContentV.xaml" />
+        <ResourceDictionary Source="Views/MainMenuV.xaml"/>
+        <ResourceDictionary Source="Views/MainTabsV.xaml"/>
+        <ResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
+        <ResourceDictionary Source="Views/MediaViewerV.xaml"/>
+        <ResourceDictionary Source="Views/StatusPanelV.xaml"/>
+        <ResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
+        <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
+        <ResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
