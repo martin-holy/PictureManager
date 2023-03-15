@@ -8,7 +8,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="PresentationPanelV.xaml" />
     <ResourceDictionary Source="SegmentsRectsV.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
@@ -19,7 +18,8 @@
       x:Name="Root"
       Background="Transparent"
       Focusable="True"
-      FocusVisualStyle="{x:Null}">
+      FocusVisualStyle="{x:Null}"
+      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
 
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">
@@ -96,25 +96,19 @@
       </b:Interaction.Triggers>
 
       <!-- Full Media Image -->
-      <Grid
+      <ContentPresenter
+        Content="{Binding FullImage}"
         Visibility="{Binding Current.MediaType,
                      Converter={StaticResource AllToVisibilityConverter},
-                     ConverterParameter={x:Static pmd:MediaType.Image}}" >
+                     ConverterParameter={x:Static pmd:MediaType.Image}}"
+        Focusable="False">
 
-        <ContentPresenter
-          Content="{Binding FullImage}"
-          Focusable="False">
-          
-          <ContentPresenter.Resources>
-            <Style
-              TargetType="{x:Type mhc:ZoomAndPanImage}"
-              BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
-          </ContentPresenter.Resources>
-        </ContentPresenter>
-        
-        <!-- Presentation Panel -->
-        <ContentPresenter Content="{Binding PresentationPanel}" />
-      </Grid>
+        <ContentPresenter.Resources>
+          <Style
+            TargetType="{x:Type mhc:ZoomAndPanImage}"
+            BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
+        </ContentPresenter.Resources>
+      </ContentPresenter>
 
       <!-- Full Media Video -->
       <ContentPresenter
