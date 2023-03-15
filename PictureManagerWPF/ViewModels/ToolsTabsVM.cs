@@ -4,11 +4,9 @@ using MH.Utils.BaseClasses;
 
 namespace PictureManager.ViewModels {
   public sealed class ToolsTabsVM : ObservableObject {
-    private bool _isPinned;
     private bool _isOpen;
     private HeaderedListItem<object, string> _selected;
 
-    public bool IsPinned { get => _isPinned; set { _isPinned = value; OnPropertyChanged(); } }
     public bool IsOpen { get => _isOpen; set { _isOpen = value; OnPropertyChanged(); } }
     public HeaderedListItem<object, string> Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public ObservableCollection<HeaderedListItem<object, string>> Items { get; } = new();
@@ -29,12 +27,8 @@ namespace PictureManager.ViewModels {
     }
 
     public void Deactivate(HeaderedListItem<object, string> item) {
-      if (Items.Remove(item))
-        if (Selected == item)
-          Selected = Items.FirstOrDefault();
-
-      if (Selected == null)
-        IsPinned = false;
+      if (Items.Remove(item) && Selected == item)
+        Selected = Items.FirstOrDefault();
     }
   }
 }
