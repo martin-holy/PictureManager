@@ -60,7 +60,8 @@
                         ShowShadow="False"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
-                        IsChecked="{Binding IsPinned}"
+                        IsChecked="{Binding IsPinned, RelativeSource=
+                                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
                         ToolTip="Pin panel" />
                      </StackPanel>
                     
