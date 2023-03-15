@@ -7,51 +7,57 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/DialogHostStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconTextButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/InputDialogStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/MessageDialogStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/PopupSliderStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ProgressBarDialogStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelsGridStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/TreeWrapViewStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VirtualizingWrapPanelStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/WindowButtonsStyle.xaml" />
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
   </ResourceDictionary.MergedDictionaries>
   
   <Style
     TargetType="{x:Type mhc:DialogHost}"
     BasedOn="{StaticResource MH.UI.WPF.Controls.DialogHost}">
-    <Setter
-      Property="Background"
-      Value="{StaticResource ColorBrushBackground}" />
-    <Setter
-      Property="Foreground"
-      Value="White" />
+    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}" />
+    <Setter Property="Foreground" Value="White" />
   </Style>
   
   <Style
     TargetType="{x:Type mhc:Icon}"
     BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-    <Setter Property="Fill"
-      Value="White" />
+    <Setter Property="Fill" Value="White" />
   </Style>
   
   <Style
     TargetType="{x:Type mhc:IconButton}"
     BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
-    <Setter Property="Fill"
-      Value="White" />
-    <Setter Property="Background"
-      Value="White" />
+    <Setter Property="Fill" Value="White" />
+    <Setter Property="Background" Value="White" />
   </Style>
-  
+
+  <Style
+    TargetType="{x:Type mhc:IconTextButton}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.IconTextButton}">
+    <Setter Property="Background" Value="White" />
+  </Style>
+
   <Style
     TargetType="{x:Type mhc:IconToggleButton}"
     BasedOn="{StaticResource MH.UI.WPF.Controls.IconToggleButton}">
-    <Setter Property="Fill"
-      Value="White" />
-    <Setter Property="Background"
-      Value="White" />
+    <Setter Property="Fill" Value="White" />
+    <Setter Property="Background" Value="White" />
   </Style>
+
+  <Style
+    TargetType="{x:Type mhc:PopupSlider}"
+    BasedOn="{StaticResource MH.UI.WPF.Controls.PopupSlider}" />
 
   <Style
     TargetType="{x:Type mhc:TreeWrapView}"
