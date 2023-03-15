@@ -80,10 +80,10 @@ namespace PictureManager.Domain.Models {
 
       if (viewer != null)
         viewer.IsDefault = true;
+      else
+        Current = null;
 
-      if (Current != null || viewer != null)
-        DataAdapter.Save();
-
+      DataAdapter.Save();
       DataAdapter.DB.SaveAllTables();
       DataAdapter.DB.LoadAllTables(null);
       DataAdapter.DB.LinkReferences(null);
