@@ -9,10 +9,7 @@ namespace PictureManager.Domain.Models {
   public sealed class StatusPanelM : ObservableObject {
     private readonly Core _core;
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
-    private bool _isPinned = true;
     private MediaItemM _currentMediaItemM;
-
-    public bool IsPinned { get => _isPinned; set { _isPinned = value; OnPropertyChanged(); } }
 
     // TODO remove this
     public MediaItemM CurrentMediaItemM {
@@ -74,11 +71,9 @@ namespace PictureManager.Domain.Models {
 
     public string DateAndTime => DateTimeExtensions.DateTimeFromString(CurrentMediaItemM?.FileName, _dateFormats, "H:mm:ss");
     public ObservableCollection<int> Rating { get; } = new();
-    public RelayCommand<object> PinCommand { get; }
 
     public StatusPanelM(Core core) {
       _core = core;
-      PinCommand = new(() => IsPinned = !IsPinned);
 
       core.MediaItemsM.PropertyChanged += (_, e) => {
         if (nameof(core.MediaItemsM.Current).Equals(e.PropertyName)) {
