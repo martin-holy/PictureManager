@@ -1,50 +1,26 @@
-﻿using System;
+﻿using MH.Utils.BaseClasses;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 
 namespace MH.UI.WPF.Controls {
-  public class SlidePanel : Control {
-    private ThicknessAnimation _openAnimation;
-    private ThicknessAnimation _closeAnimation;
-    public Storyboard SbOpen { get; set; }
-    public Storyboard SbClose { get; set; }
+  public class SlidePanel : ContentControl {
+    public static readonly DependencyProperty CanOpenProperty =
+      DependencyProperty.Register(nameof(CanOpen), typeof(bool), typeof(SlidePanel), new(true, CanOpenChanged));
 
-    public static readonly DependencyProperty BorderMarginProperty = DependencyProperty.Register(
-      nameof(BorderMargin),
-      typeof(Thickness),
-      typeof(SlidePanel));
+    public static readonly DependencyProperty IsPinnedProperty =
+      DependencyProperty.Register(nameof(IsPinned), typeof(bool), typeof(SlidePanel), new(IsPinnedChanged));
 
-    public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
-      nameof(Content),
-      typeof(FrameworkElement),
-      typeof(SlidePanel));
+    public static readonly DependencyProperty IsOpenProperty =
+      DependencyProperty.Register(nameof(IsOpen), typeof(bool), typeof(SlidePanel), new(IsOpenChanged));
 
-    public static readonly DependencyProperty IsPinnedProperty = DependencyProperty.Register(
-      nameof(IsPinned),
-      typeof(bool),
-      typeof(SlidePanel),
-      new(IsPinnedChanged));
+    public static readonly DependencyProperty PositionProperty =
+      DependencyProperty.Register(nameof(Position), typeof(Dock), typeof(SlidePanel));
 
-    public static readonly DependencyProperty IsOpenProperty = DependencyProperty.Register(
-      nameof(IsOpen),
-      typeof(bool),
-      typeof(SlidePanel),
-      new(IsOpenChanged));
-
-    public static readonly DependencyProperty PositionProperty = DependencyProperty.Register(
-      nameof(Position),
-      typeof(Dock),
-      typeof(SlidePanel));
-
-    public Thickness BorderMargin {
-      get => (Thickness)GetValue(BorderMarginProperty);
-      set => SetValue(BorderMarginProperty, value);
-    }
-
-    public FrameworkElement Content {
-      get => (FrameworkElement)GetValue(ContentProperty);
-      set => SetValue(ContentProperty, value);
+    public bool CanOpen {
+      get => (bool)GetValue(CanOpenProperty);
+      set => SetValue(CanOpenProperty, value);
     }
 
     public bool IsPinned {
@@ -63,7 +39,12 @@ namespace MH.UI.WPF.Controls {
     }
 
     public event EventHandler IsPinnedChangedEventHandler = delegate { };
-    public Func<bool> CanOpen { get; set; }
+    public Storyboard SbOpen { get; set; }
+    public Storyboard SbClose { get; set; }
+    public RelayCommand<object> PinCommand { get; set; }
+
+    private ThicknessAnimation _openAnimation;
+    private ThicknessAnimation _closeAnimation;
 
     static SlidePanel() {
       DefaultStyleKeyProperty.OverrideMetadata(
@@ -73,7 +54,12 @@ namespace MH.UI.WPF.Controls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-      UpdateAnimation();
+      PinCommand = new(() => IsPinned = !IsPinned);
+      MouseLeave += delegate { if (!IsPinned) IsOpen = false; };
+      SizeChanged += (o, e) => { UpdateAnimation(e); };
+
+      _openAnimation = new();
+      _closeAnimation = new();
 
       Storyboard.SetTargetProperty(_openAnimation, new(MarginProperty));
       SbOpen = new();
@@ -82,47 +68,100 @@ namespace MH.UI.WPF.Controls {
       Storyboard.SetTargetProperty(_closeAnimation, new(MarginProperty));
       SbClose = new();
       SbClose.Children.Add(_closeAnimation);
-
-      IsPinnedChangedEventHandler(this, EventArgs.Empty);
     }
 
-    private static void IsPinnedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) =>
-      (d as SlidePanel)?.IsPinnedChangedEventHandler(d, EventArgs.Empty);
+    private static void CanOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not SlidePanel panel) return;
+
+      if (panel.CanOpen) {
+        if (panel.IsPinned && !panel.IsOpen) {
+          panel.IsOpen = true;
+          panel.IsPinnedChangedEventHandler(d, EventArgs.Empty);
+        }
+      }
+      else if (panel.IsOpen) {
+        panel.IsOpen = false;
+        panel.IsPinnedChangedEventHandler(d, EventArgs.Empty);
+      }
+    }
+
+    private static void IsPinnedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not SlidePanel panel) return;
+
+      if (panel.IsOpen != panel.IsPinned)
+        panel.IsOpen = panel.IsPinned;
+
+      if (!panel.IsInitialized) return;
+
+      panel.IsPinnedChangedEventHandler(d, EventArgs.Empty);
+    }
 
     private static void IsOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
       if (d is not SlidePanel panel) return;
 
-      var value = (e.NewValue as bool?) == true;
-
-      if (value && panel.CanOpen?.Invoke() == false)
-        return;
-
-      if (value)
+      if (panel.IsOpen)
         panel.SbOpen?.Begin(panel);
       else
         panel.SbClose?.Begin(panel);
     }
 
-    // creates new or update existing animation if panel width changes
-    public void UpdateAnimation() {
-      _openAnimation ??= new() {
-        Duration = new(TimeSpan.FromMilliseconds(250)),
-        To = new(0, Margin.Top, 0, Margin.Bottom)
-      };
+    public void SetWidth(double width) {
+      if (width == 0 || width == Width) return;
 
-      _closeAnimation ??= new() {
-        Duration = new(TimeSpan.FromMilliseconds(250)),
-        From = new(0, Margin.Top, 0, Margin.Bottom)
-      };
+      Width = width;
+    }
 
-      Thickness th = Position switch {
-        Dock.Left => new(Width * -1, Margin.Top, 0, Margin.Bottom),
-        Dock.Right => new(0, Margin.Top, Width * -1, Margin.Bottom),
-        _ => new()
-      };
+    public void UpdateAnimation(SizeChangedEventArgs e) {
+      if (((Position == Dock.Top || Position == Dock.Bottom) && !e.HeightChanged) ||
+        ((Position == Dock.Left || Position == Dock.Right) && !e.WidthChanged))
+        return;
 
-      _openAnimation.From = th;
-      _closeAnimation.To = th;
+      double size = 0;
+      Thickness openFrom = new(0);
+      Thickness openTo = new(0);
+      Thickness closeFrom = new(0);
+      Thickness closeTo = new(0);
+
+      if (Position == Dock.Top || Position == Dock.Bottom) {
+        if (ActualHeight != 0) size = ActualHeight;
+        else if (!double.IsNaN(Height)) size = Height;
+        else if (MinHeight != 0) size = MinHeight;
+
+        if (Position == Dock.Top) {
+          openFrom.Top = size * -1;
+          closeTo.Top = size * -1;
+        }
+        else {
+          openFrom.Bottom = size * -1;
+          closeTo.Bottom = size * -1;
+        }
+      }
+      else {
+        if (ActualWidth != 0) size = ActualWidth;
+        else if (!double.IsNaN(Width)) size = Width;
+        else if (MinWidth != 0) size = MinWidth;
+
+        if (Position == Dock.Left) {
+          openFrom.Left = size * -1;
+          closeTo.Left = size * -1;
+        }
+        else {
+          openFrom.Right = size * -1;
+          closeTo.Right = size * -1;
+        }
+      }
+
+      var duration = new Duration(TimeSpan.FromMilliseconds(size * 0.7));
+
+      _openAnimation.Duration = duration;
+      _openAnimation.From = openFrom;
+      _openAnimation.To = openTo;
+      _closeAnimation.Duration = duration;
+      _closeAnimation.From = closeFrom;
+      _closeAnimation.To = closeTo;
+
+      if (!IsOpen)
+        SbClose?.Begin(this);
     }
   }
 }
