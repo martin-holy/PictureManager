@@ -7,63 +7,13 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:StatusPanelM}">
-    <Grid
-      VerticalAlignment="Top"
-      Background="#88000000">
+    <Grid Background="#40000000">
 
-      <Grid.Style>
-        <Style TargetType="{x:Type Grid}">
-          <Setter
-            Property="Opacity"
-            Value="0" />
-          <Setter
-            Property="Visibility"
-            Value="Visible" />
-
-          <Style.Triggers>
-            <MultiDataTrigger>
-              <MultiDataTrigger.Conditions>
-                <Condition
-                  Binding="{Binding ThumbnailsGridsM.Current,
-                            Source={x:Static pm:App.Core},
-                            Converter={StaticResource AllToBoolConverter}}"
-                  Value="False" />
-                <Condition
-                  Binding="{Binding MediaViewerVM.IsVisible,
-                            Source={x:Static pm:App.Ui}}"
-                  Value="False" />
-              </MultiDataTrigger.Conditions>
-
-              <Setter
-                Property="Visibility"
-                Value="Collapsed" />
-            </MultiDataTrigger>
-
-            <Trigger
-              Property="IsMouseOver"
-              Value="True">
-
-              <Setter
-                Property="Opacity"
-                Value="1" />
-            </Trigger>
-
-            <DataTrigger
-              Binding="{Binding IsPinned}"
-              Value="True">
-
-              <Setter
-                Property="Opacity"
-                Value="1" />
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Grid.Style>
-      
       <Grid.InputBindings>
         <MouseBinding
           MouseAction="LeftClick"
-          Command="{Binding PinCommand}" />         
+          Command="{Binding PinCommand, RelativeSource=
+                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}" />         
       </Grid.InputBindings>
 
       <WrapPanel
