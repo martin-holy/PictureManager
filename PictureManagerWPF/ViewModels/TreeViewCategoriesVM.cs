@@ -14,7 +14,6 @@ namespace PictureManager.ViewModels {
     public TreeViewCategoriesM Model { get; }
 
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
-    public RelayCommand<object> ToggleIsPinnedCommand { get; }
 
     public TreeViewCategoriesVM(Core core, AppCore coreVM, TreeViewCategoriesM model) {
       _core = core;
@@ -22,8 +21,11 @@ namespace PictureManager.ViewModels {
       Model = model;
 
       SelectCommand = new(Select);
-      ToggleIsPinnedCommand = new(ToggleIsPinned);
 
+      AttachEvents();
+    }
+
+    private void AttachEvents() {
       _core.FoldersM.AfterItemCreateEventHandler += (_, e) =>
         Model.ScrollToItem = e.Data;
       _core.PeopleM.AfterItemCreateEventHandler += (_, e) =>
@@ -36,13 +38,6 @@ namespace PictureManager.ViewModels {
         if (e.Data is FolderM { IsSelected: true } folder)
           Select(folder);
       };
-    }
-
-    private void ToggleIsPinned() {
-      if (_coreVM.MediaViewerVM.IsVisible)
-        Model.IsPinnedInViewer = !Model.IsPinnedInViewer;
-      else
-        Model.IsPinnedInBrowser = !Model.IsPinnedInBrowser;
     }
 
     private void Select(MouseButtonEventArgs e) =>
