@@ -9,13 +9,14 @@ using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
 using PictureManager.Domain.Models;
 using System.Linq;
+using PictureManager.Views;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public static double ScrollBarSize;
     public FoldersVM FoldersVM { get; }
     public MainWindowVM MainWindowVM { get; }
-    public MainWindowContentVM MainWindowContentVM { get; }
+    public MainWindowToolBarVM MainWindowToolBarVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
     public PeopleVM PeopleVM { get; }
@@ -38,7 +39,7 @@ namespace PictureManager {
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
-      MainWindowContentVM = new();
+      MainWindowToolBarVM = new();
       MainTabsVM = new();
       ToolsTabsVM = new();
 
@@ -105,7 +106,6 @@ namespace PictureManager {
         if (nameof(App.Core.MainWindowM.IsFullScreen).Equals(e.PropertyName)) {
           var isFullScreen = App.Core.MainWindowM.IsFullScreen;
 
-          App.Core.TreeViewCategoriesM.SetIsPinned(isFullScreen);
           MediaViewerVM.IsVisible = isFullScreen;
 
           if (!isFullScreen) {
@@ -125,10 +125,16 @@ namespace PictureManager {
         }
       };
 
+      App.Core.ThumbnailsGridsM.PropertyChanged += (_, e) => {
+        if (nameof(App.Core.ThumbnailsGridsM.Current).Equals(e.PropertyName))
+          MainWindowVM.OnPropertyChanged(nameof(MainWindowVM.CanOpenStatusPanel));
+      };
+
       MediaViewerVM.PropertyChanged += (_, e) => {
         switch (e.PropertyName) {
           case nameof(MediaViewerVM.IsVisible):
             App.Core.StatusPanelM.OnPropertyChanged(nameof(App.Core.StatusPanelM.FilePath));
+            MainWindowVM.OnPropertyChanged(nameof(MainWindowVM.CanOpenStatusPanel));
             break;
           case nameof(MediaViewerVM.Current):
             App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
