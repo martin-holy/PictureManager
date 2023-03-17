@@ -15,7 +15,7 @@
       MinHeight="{Binding Size}"
       Background="Transparent"
       ToolTipService.InitialShowDelay="0"
-      Effect="{StaticResource Res_ShadowEffect}"
+      Effect="{StaticResource MH.Effects.DropShadow}"
       HorizontalAlignment="Left"
       VerticalAlignment="Top">
 
@@ -24,7 +24,7 @@
           <b:InvokeCommandAction
             Command="{Binding SegmentsVM.SegmentsRectsVM.SetCurrentCommand,
                       Source={x:Static pm:App.Ui}}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
       
@@ -35,19 +35,19 @@
             <Setter.Value>
               <TranslateTransform
                 X="{Binding X}"
-                Y="{Binding Y}" />
+                Y="{Binding Y}"/>
             </Setter.Value>
           </Setter>
           
           <Setter
             Property="BorderBrush"
-            Value="White" />
+            Value="White"/>
           <Setter
             Property="BorderThickness"
-            Value="1" />
+            Value="1"/>
           <Setter
             Property="ToolTip"
-            Value="{Binding Segment.Person.Name}" />
+            Value="{Binding Segment.Person.Name}"/>
 
           <Style.Triggers>
             
@@ -57,7 +57,7 @@
 
               <Setter
                 Property="BorderBrush"
-                Value="LimeGreen" />
+                Value="LimeGreen"/>
             </DataTrigger>
             
             <DataTrigger
@@ -66,7 +66,7 @@
 
               <Setter
                 Property="BorderThickness"
-                Value="2" />
+                Value="2"/>
             </DataTrigger>
             
             <DataTrigger
@@ -75,7 +75,7 @@
 
               <Setter
                 Property="ToolTip"
-                Value="0" />
+                Value="0"/>
             </DataTrigger>
 
           </Style.Triggers>
@@ -88,7 +88,7 @@
           x:Name="ResizeBorder"
           BorderThickness="5"
           BorderBrush="Transparent"
-          Cursor="SizeAll" />
+          Cursor="SizeAll"/>
         
         <!-- Move Point and Delete -->
         <Grid Margin="0,2,0,0">
@@ -98,7 +98,7 @@
               
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <MultiDataTrigger>
@@ -107,16 +107,16 @@
                     <Condition
                       Binding="{Binding SegmentsVM.SegmentsRectsVM.SegmentsRectsM.IsEditOn,
                                 Source={x:Static pm:App.Ui}}"
-                      Value="False" />
+                      Value="False"/>
                     <Condition
                       Binding="{Binding IsMouseOver,
                                 RelativeSource={RelativeSource AncestorType={x:Type Border}}}"
-                      Value="True" />
+                      Value="True"/>
                   </MultiDataTrigger.Conditions>
 
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </MultiDataTrigger>
               </Style.Triggers>
 
@@ -124,19 +124,22 @@
           </Grid.Style>
           
           <!-- Move Point -->
-          <mhc:Icon
+          <Path
             x:Name="MovePoint"
-            Size="12"
-            Source="{StaticResource IconDot}"
+            Style="{StaticResource MH.Styles.Icon}"
+            Width="12"
+            Height="12"
+            Data="{StaticResource IconDot}"
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
-            Cursor="SizeAll" />
+            Cursor="SizeAll"/>
 
           <!-- Delete Segment -->
           <mhc:IconButton
             x:Name="BtnDelete"
-            Source="{StaticResource IconXCross}"
-            Size="10"
+            Icon="{StaticResource IconXCross}"
+            Width="16"
+            Height="16"
             VerticalAlignment="Top"
             HorizontalAlignment="Right"
             ToolTip="Delete"

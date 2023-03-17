@@ -2,7 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:sys="clr-namespace:System;assembly=mscorlib"
   xmlns:converters="clr-namespace:PictureManager.Converters"
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
@@ -12,15 +11,15 @@
       <ResourceDictionary>
         
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/Converters.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/Icons.xaml" />
-          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/Converters.xaml"/>
+          <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
+          <ResourceDictionary Source="../ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
+          <ResourceDictionary Source="../ResourceDictionaries/Icons.xaml"/>
+          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
         </ResourceDictionary.MergedDictionaries>
         
         <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
-        <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter" />
+        <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
         
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -36,7 +35,7 @@
         <Style TargetType="{x:Type Border}">
           <Setter
             Property="BorderBrush"
-            Value="Black" />
+            Value="Black"/>
 
           <Style.Triggers>
             <DataTrigger
@@ -45,7 +44,7 @@
 
               <Setter
                 Property="BorderBrush"
-                Value="{DynamicResource AccentColorBrush}" />
+                Value="{DynamicResource AccentColorBrush}"/>
             </DataTrigger>
           </Style.Triggers>
         </Style>
@@ -57,7 +56,7 @@
           Source="{Binding
                    IsAsync=True,
                    Converter={StaticResource MediaItemThumbnailSourceConverter}}"
-          Stretch="Fill" />
+          Stretch="Fill"/>
 
         <!-- Video over layer -->
         <ContentControl
@@ -73,14 +72,16 @@
         </ContentControl>
 
         <!-- Video Clips over layer -->
-        <mhc:Icon
-          Source="{StaticResource IconImageMultiple}"
-          Size="20"
+        <Path
+          Style="{StaticResource MH.Styles.Icon}"
+          Data="{StaticResource IconImageMultiple}"
+          Width="20"
+          Height="20"
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Margin="5"
           Visibility="{Binding HasVideoClips,
-                       Converter={StaticResource AllToVisibilityConverter}}" />
+                       Converter={StaticResource AllToVisibilityConverter}}"/>
 
         <!-- Thumbnail Info Box -->
         <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
@@ -94,21 +95,21 @@
 
                   <Setter
                     Property="Visibility"
-                    Value="Hidden" />
+                    Value="Hidden"/>
                 </DataTrigger>
 
                 <DataTrigger Value="True">
                   <DataTrigger.Binding>
                     <MultiBinding Converter="{StaticResource EqualityConverter}">
-                      <Binding Path="ThumbWidth" />
-                      <Binding Source="{StaticResource SignLessThan}" />
-                      <Binding Source="{StaticResource ThumbnailInfoMinSize}" />
+                      <Binding Path="ThumbWidth"/>
+                      <Binding Source="{StaticResource SignLessThan}"/>
+                      <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
                     </MultiBinding>
                   </DataTrigger.Binding>
 
                   <Setter
                     Property="Visibility"
-                    Value="Hidden" />
+                    Value="Hidden"/>
                 </DataTrigger>
 
               </Style.Triggers>
@@ -117,7 +118,7 @@
 
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal" />
+              <WrapPanel Orientation="Horizontal"/>
             </ItemsPanelTemplate>
           </ItemsControl.ItemsPanel>
 
@@ -127,7 +128,7 @@
                 <TextBlock
                   Style="{StaticResource STextBlock}"
                   TextWrapping="Wrap"
-                  Text="{Binding}" />
+                  Text="{Binding}"/>
               </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
@@ -146,13 +147,13 @@
             StrokeThickness="2"
             HorizontalAlignment="Right"
             VerticalAlignment="Top"
-            Fill="{DynamicResource AccentColorBrush}" />
+            Fill="{DynamicResource AccentColorBrush}"/>
 
           <Border
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             BorderThickness="2"
-            BorderBrush="Black" />
+            BorderBrush="Black"/>
         </Grid>
 
       </Grid>

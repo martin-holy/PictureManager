@@ -4,7 +4,6 @@
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
   xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   mc:Ignorable="d"
   Title="Folder Keywords" SizeToContent="Height" Width="400"
   BorderBrush="{DynamicResource AccentColorBrush}" 
@@ -18,10 +17,10 @@
       <ListBox.ItemTemplate>
         <DataTemplate>
           <StackPanel Orientation="Horizontal" Background="Transparent" >
-            <mhc:Icon
-              Source="{StaticResource IconFolder}"
-              Fill="{StaticResource ColorBrushFolder}"
-              ShowShadow="False" />
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{StaticResource IconFolder}"
+              Fill="{StaticResource ColorBrushFolder}" />
             <TextBlock Text="{Binding FullPath}" Margin="5,0,0,0" />
           </StackPanel>
         </DataTemplate>

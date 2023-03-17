@@ -4,75 +4,36 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/DialogHostStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconTextButtonStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/InputDialogStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/MessageDialogStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/PopupSliderStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ProgressBarDialogStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/SlidePanelsGridStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/TreeWrapViewStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VirtualizingWrapPanelStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/WindowButtonsStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconButton.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextButton.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconToggleButton.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/InputDialog.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MessageDialog.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBarDialog.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanel.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGrid.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TreeWrapView.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/VideoPlayer.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/VirtualizingWrapPanel.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPanImage.xaml"/>
   </ResourceDictionary.MergedDictionaries>
-  
-  <Style
-    TargetType="{x:Type mhc:DialogHost}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.DialogHost}">
-    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}" />
-    <Setter Property="Foreground" Value="White" />
-  </Style>
-  
-  <Style
-    TargetType="{x:Type mhc:Icon}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-    <Setter Property="Fill" Value="White" />
-  </Style>
-  
-  <Style
-    TargetType="{x:Type mhc:IconButton}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
-    <Setter Property="Fill" Value="White" />
-    <Setter Property="Background" Value="White" />
-  </Style>
 
-  <Style
-    TargetType="{x:Type mhc:IconTextButton}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.IconTextButton}">
-    <Setter Property="Background" Value="White" />
-  </Style>
-
-  <Style
-    TargetType="{x:Type mhc:IconToggleButton}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.IconToggleButton}">
-    <Setter Property="Fill" Value="White" />
-    <Setter Property="Background" Value="White" />
-  </Style>
-
-  <Style
-    TargetType="{x:Type mhc:PopupSlider}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.PopupSlider}" />
-
-  <Style
-    TargetType="{x:Type mhc:TreeWrapView}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.TreeWrapView}" />
-
-  <Style
-    TargetType="{x:Type mhc:VideoPlayer}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.VideoPlayer}" />
-
-  <Style
-    TargetType="{x:Type mhc:VirtualizingWrapPanel}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.VirtualizingWrapPanel}" />
-
-  <Style
-    TargetType="{x:Type mhc:ZoomAndPanImage}"
-    BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
-  
+  <Style TargetType="{x:Type mhc:DialogHost}" BasedOn="{StaticResource MH.Styles.Controls.DialogHost}"/>
+  <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}"/>
+  <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
+  <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
+  <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
+  <Style TargetType="{x:Type mhc:SlidePanel}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanel}"/>
+  <Style TargetType="{x:Type mhc:SlidePanelsGrid}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGrid}"/>
+  <Style TargetType="{x:Type mhc:TreeWrapView}" BasedOn="{StaticResource MH.Styles.Controls.TreeWrapView}"/>
+  <Style TargetType="{x:Type mhc:VideoPlayer}" BasedOn="{StaticResource MH.Styles.Controls.VideoPlayer}"/>
+  <Style TargetType="{x:Type mhc:VirtualizingWrapPanel}" BasedOn="{StaticResource MH.Styles.Controls.VirtualizingWrapPanel}"/>
+  <Style TargetType="{x:Type mhc:WindowButtons}" BasedOn="{StaticResource MH.Styles.Controls.WindowButtons}"/>
+  <Style TargetType="{x:Type mhc:ZoomAndPanImage}" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPanImage}"/>
 </ResourceDictionary>

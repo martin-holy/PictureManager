@@ -2,7 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager">
 
   <DataTemplate DataType="{x:Type m:PersonM}">
@@ -10,7 +9,7 @@
       <ResourceDictionary>
         
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="SegmentV.xaml" />
+          <ResourceDictionary Source="SegmentV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
         
         <DataTemplate x:Key="NoSegmentIcon">
@@ -18,17 +17,18 @@
             BorderThickness="2"
             BorderBrush="Black"
             Margin="1"
+            Padding="15"
             Background="Transparent"
-            FocusVisualStyle="{x:Null}">
+            FocusVisualStyle="{x:Null}"
+            Width="{Binding SegmentsVM.SegmentUiSize,
+                    Source={x:Static pm:App.Ui}}"
+            Height="{Binding SegmentsVM.SegmentUiSize,
+                     Source={x:Static pm:App.Ui}}">
 
-            <mhc:Icon
-              Source="{StaticResource IconPeople}"
-              Fill="Gray"
-              Size="50"
-              Width="{Binding SegmentsVM.SegmentUiSize,
-                      Source={x:Static pm:App.Ui}}"
-              Height="{Binding SegmentsVM.SegmentUiSize,
-                       Source={x:Static pm:App.Ui}}" />
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{StaticResource IconPeople}"
+              Fill="Gray"/>
           </Border>
         </DataTemplate>
         
@@ -42,7 +42,7 @@
           <Style TargetType="{x:Type ContentControl}">
             <Setter
               Property="Content"
-              Value="{Binding Segment}" />
+              Value="{Binding Segment}"/>
 
             <Style.Triggers>
               <DataTrigger
@@ -51,10 +51,10 @@
 
                 <Setter
                   Property="Content"
-                  Value="{Binding}" />
+                  Value="{Binding}"/>
                 <Setter
                   Property="ContentTemplate"
-                  Value="{StaticResource NoSegmentIcon}" />
+                  Value="{StaticResource NoSegmentIcon}"/>
               </DataTrigger>
             </Style.Triggers>
           </Style>
@@ -67,7 +67,7 @@
           <Style TargetType="{x:Type Border}">
             <Setter
               Property="BorderBrush"
-              Value="Transparent" />
+              Value="Transparent"/>
             
             <Style.Triggers>
               <DataTrigger
@@ -76,7 +76,7 @@
 
                 <Setter
                   Property="BorderBrush"
-                  Value="{DynamicResource AccentColorBrush}" />
+                  Value="{DynamicResource AccentColorBrush}"/>
               </DataTrigger>
             </Style.Triggers>
           </Style>

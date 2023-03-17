@@ -11,10 +11,10 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="PeopleV.xaml" />
-          <ResourceDictionary Source="SegmentsV.xaml" />
-          <ResourceDictionary Source="ThumbnailsGridV.xaml" />
-          <ResourceDictionary Source="ViewerV.xaml" />
+          <ResourceDictionary Source="PeopleV.xaml"/>
+          <ResourceDictionary Source="SegmentsV.xaml"/>
+          <ResourceDictionary Source="ThumbnailsGridV.xaml"/>
+          <ResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -45,19 +45,19 @@
                     Width="46">
 
                     <mhc:IconButton
-                      Source="{StaticResource IconPlus}"
-                      Size="12"
+                      Icon="{StaticResource IconPlus}"
+                      Width="24"
+                      Height="24"
                       Padding="6"
-                      ShowShadow="False"
                       ToolTip="Add Thumbnails Grid Tab"
                       HorizontalAlignment="Center"
                       Command="{Binding ThumbnailsGridsM.AddThumbnailsGridCommand,
-                                Source={x:Static pm:App.Core}}" />
+                                Source={x:Static pm:App.Core}}"/>
 
                     <TabPanel
                       IsItemsHost="True"
                       KeyboardNavigation.TabIndex="1"
-                      Margin="0" />
+                      Margin="0"/>
                   </StackPanel>
 
                   <ItemsControl
@@ -66,13 +66,13 @@
                     
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate>
-                        <Grid />
+                        <Grid/>
                       </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
-                        <ContentPresenter Content="{Binding Content}" />
+                        <ContentPresenter Content="{Binding Content}"/>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
 
@@ -85,7 +85,7 @@
 
                             <Setter
                               Property="ContentPresenter.Visibility"
-                              Value="Hidden" />
+                              Value="Hidden"/>
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
@@ -119,13 +119,13 @@
 
           <Setter
             Property="MaxHeight"
-            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight), ElementName=Tabs}" />
+            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight), ElementName=Tabs}"/>
           <Setter
             Property="IsSelected"
-            Value="{Binding IsSelected, Mode=TwoWay}" />
+            Value="{Binding IsSelected, Mode=TwoWay}"/>
           <Setter
             Property="Header"
-            Value="{Binding}" />
+            Value="{Binding}"/>
           
           <Setter Property="HeaderTemplate">
             <Setter.Value>
@@ -141,10 +141,10 @@
                   <Grid Height="28">
                     <!-- Close button -->
                     <mhc:IconButton
-                      Source="{StaticResource IconXCross}"
-                      Size="12"
+                      Icon="{StaticResource IconXCross}"
+                      Width="24"
+                      Height="24"
                       Padding="6"
-                      ShowShadow="False"
                       ToolTip="Close"
                       HorizontalAlignment="Center"
                       Command="{Binding Path=DataContext.(vm:MainTabsVM.CloseTabCommand), ElementName=Tabs}"
@@ -154,39 +154,34 @@
                                    Converter={StaticResource AllToVisibilityConverter}}"/>
                     
                     <!-- Tab Icon -->
-                    <mhc:Icon
-                      Source="{Binding Content,
-                               Converter={StaticResource ResourceConverter},
-                               ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToIcon}}"
+                    <Path
+                      Data="{Binding Content,
+                             Converter={StaticResource ResourceConverter},
+                             ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToIcon}}"
                       Fill="{Binding Content,
                              Converter={StaticResource ResourceConverter},
                              ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToIconBrush}}"
-                      Size="16"
-                      ShowShadow="False"
+                      Effect="{StaticResource MH.Effects.DropShadow}"
+                      Width="16"
+                      Height="16"
                       HorizontalAlignment="Center">
 
-                      <mhc:Icon.Style>
-                        <Style
-                          TargetType="{x:Type mhc:Icon}"
-                          BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-
+                      <Path.Style>
+                        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
                           <Style.Triggers>
                             <DataTrigger
                               Binding="{Binding IsMouseOver, ElementName=TabHeader}"
                               Value="True">
-
-                              <Setter
-                                Property="Visibility"
-                                Value="Hidden" />
+                              <Setter Property="Visibility" Value="Hidden"/>
                             </DataTrigger>
                           </Style.Triggers>
                         </Style>
-                      </mhc:Icon.Style>
+                      </Path.Style>
 
-                      <mhc:Icon.LayoutTransform>
-                        <RotateTransform Angle="270" />
-                      </mhc:Icon.LayoutTransform>
-                    </mhc:Icon>
+                      <Path.LayoutTransform>
+                        <RotateTransform Angle="270"/>
+                      </Path.LayoutTransform>
+                    </Path>
 
                   </Grid>
 
@@ -194,10 +189,11 @@
                   <TextBlock
                     Text="{Binding ContentHeader}"
                     Margin="0,8"
+                    Effect="{StaticResource MH.Effects.DropShadow}"
                     FontSize="{DynamicResource MahApps.Font.Size.TabItem}">
 
                     <TextBlock.LayoutTransform>
-                      <RotateTransform Angle="270" />
+                      <RotateTransform Angle="270"/>
                     </TextBlock.LayoutTransform>
                   </TextBlock>
                   

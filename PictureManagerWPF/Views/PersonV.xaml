@@ -10,15 +10,15 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="SegmentV.xaml" />
+          <ResourceDictionary Source="SegmentV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
     
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
       <StackPanel Grid.Row="0">
@@ -32,23 +32,25 @@
             FontSize="20"
             Padding="8"
             HorizontalAlignment="Center"
-            VerticalAlignment="Center" />
+            VerticalAlignment="Center"/>
 
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal">
-            <mhc:Icon
-              Source="{StaticResource IconPeople}"
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Effect="{StaticResource MH.Effects.DropShadow}"
+              Data="{StaticResource IconPeople}"
               Fill="{StaticResource ColorBrushPeople}"
               HorizontalAlignment="Left"
-              Margin="6,0" />
+              Margin="6,0"/>
 
             <mhc:IconButton
               ToolTip="Load Media items in new tab"
-              Source="{StaticResource IconImageMultiple}"
+              Icon="{StaticResource IconImageMultiple}"
               Command="{Binding ThumbnailsGridsVM.LoadByTagCommand,
                         Source={x:Static pm:App.Ui}}"
-              CommandParameter="{Binding PersonM}" />
+              CommandParameter="{Binding PersonM}"/>
           </StackPanel>
         </Grid>
           
@@ -62,15 +64,17 @@
                        Converter={StaticResource AllToVisibilityConverter}}">
 
           <StackPanel Orientation="Horizontal">
-            <mhc:Icon
-              Source="{StaticResource IconTag}"
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Effect="{StaticResource MH.Effects.DropShadow}"
+              Data="{StaticResource IconTag}"
               Fill="{StaticResource ColorBrushTag}"
-              Margin="0,0,4,0" />
+              Margin="0,0,4,0"/>
               
             <ItemsControl ItemsSource="{Binding PersonM.DisplayKeywords}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
+                  <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               
@@ -79,7 +83,7 @@
                   <Border Style="{StaticResource SBorderText}">
                     <TextBlock
                       Text="{Binding Name}"
-                      Style="{StaticResource STextBlock}" />
+                      Style="{StaticResource STextBlock}"/>
                   </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -90,7 +94,7 @@
         <!-- Top Segments -->
         <TextBlock
           Text="Top Segments:"
-          Margin="5" />
+          Margin="5"/>
 
         <mhc:VirtualizingWrapPanel
           Margin="2,0,0,0"
@@ -103,7 +107,7 @@
             <b:EventTrigger EventName="Loaded">
               <b:InvokeCommandAction
                 Command="{Binding TopSegmentsLoadedCommand}"
-                PassEventArgsToCommand="True" />
+                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
@@ -123,7 +127,7 @@
           <b:EventTrigger EventName="Loaded">
             <b:InvokeCommandAction
               Command="{Binding AllSegmentsLoadedCommand}"
-              PassEventArgsToCommand="True" />
+              PassEventArgsToCommand="True"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
       </mhc:TreeWrapView>
@@ -133,13 +137,13 @@
           <b:InvokeCommandAction
             Command="{Binding SelectCommand}"
             EventArgsConverter="{StaticResource ClickConverter}"
-            EventArgsConverterParameter="{StaticResource True}" />
+            EventArgsConverterParameter="{StaticResource True}"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="SizeChanged">
           <b:InvokeCommandAction
             Command="{Binding PanelSizeChangedCommand}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 

@@ -2,7 +2,6 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
   
   <DataTemplate DataType="{x:Type md:RotationDialogM}">
@@ -15,6 +14,8 @@
         <Setter Property="MinHeight" Value="60" />
         <Setter Property="Margin" Value="5" />
       </Style>
+
+      <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}"/>
     </DataTemplate.Resources>
     
     <StackPanel
@@ -25,19 +26,19 @@
       <Button
         Command="{Binding RotationCommand}"
         CommandParameter="{x:Static pmd:MediaOrientation.Rotate90}">
-        <mhc:Icon Source="{StaticResource IconRotateLeft}" />
+        <Path Data="{StaticResource IconRotateLeft}" />
       </Button>
       
       <Button
         Command="{Binding RotationCommand}"
         CommandParameter="{x:Static pmd:MediaOrientation.Rotate180}">
-        <mhc:Icon Source="{StaticResource IconRotateClockwise}" />
+        <Path Data="{StaticResource IconRotateClockwise}" />
       </Button>
       
       <Button
         Command="{Binding RotationCommand}"
         CommandParameter="{x:Static pmd:MediaOrientation.Rotate270}">
-        <mhc:Icon Source="{StaticResource IconRotateRight}" />
+        <Path Data="{StaticResource IconRotateRight}" />
       </Button>
       
     </StackPanel>

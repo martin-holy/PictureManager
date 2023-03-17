@@ -13,7 +13,7 @@
         <MouseBinding
           MouseAction="LeftClick"
           Command="{Binding PinCommand, RelativeSource=
-                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}" />         
+                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"/>         
       </Grid.InputBindings>
 
       <WrapPanel
@@ -28,7 +28,7 @@
             <Setter Property="ItemsPanel">
               <Setter.Value>
                 <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
+                  <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
               </Setter.Value>
             </Setter>
@@ -39,7 +39,7 @@
                   <Border Style="{StaticResource SBorderText}">
                     <TextBlock
                       Text="{Binding}"
-                      Style="{StaticResource STextBlock}" />
+                      Style="{StaticResource STextBlock}"/>
                   </Border>
                 </DataTemplate>
               </Setter.Value>
@@ -55,21 +55,25 @@
               <Style TargetType="{x:Type StackPanel}">
                 <Setter
                   Property="Orientation"
-                  Value="Horizontal" />
+                  Value="Horizontal"/>
               </Style>
 
               <Style
                 TargetType="{x:Type Border}"
-                BasedOn="{StaticResource SBorderText}" />
+                BasedOn="{StaticResource SBorderText}"/>
 
               <Style
                 TargetType="{x:Type TextBlock}"
-                BasedOn="{StaticResource STextBlock}" />
+                BasedOn="{StaticResource STextBlock}"/>
 
               <Style
                 TargetType="{x:Type ItemsControl}"
-                BasedOn="{StaticResource _itemsControlStyle}" />
+                BasedOn="{StaticResource _itemsControlStyle}"/>
             </Style.Resources>
+          </Style>
+
+          <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+            <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
           </Style>
         </WrapPanel.Resources>
 
@@ -79,7 +83,7 @@
           DataContext="{x:Static pm:App.Ui}">
 
           <StackPanel Orientation="Horizontal">
-            <mhc:Icon Source="{StaticResource IconImageMultiple}" />
+            <Path Data="{StaticResource IconImageMultiple}"/>
 
             <!-- PositionSlashCount -->
             <!--TODO store PositionSlashCount just in one location-->
@@ -92,7 +96,7 @@
 
                     <Setter
                       Property="Text"
-                      Value="{Binding ThumbnailsGridsVM.Model.Current.PositionSlashCount}" />
+                      Value="{Binding ThumbnailsGridsVM.Model.Current.PositionSlashCount}"/>
                     
                     <Style.Triggers>
                       <DataTrigger
@@ -101,7 +105,7 @@
                         
                         <Setter
                           Property="Text"
-                          Value="{Binding MediaViewerVM.PositionSlashCount}" />
+                          Value="{Binding MediaViewerVM.PositionSlashCount}"/>
                       </DataTrigger>
                     </Style.Triggers>
                   </Style>
@@ -115,7 +119,7 @@
               Visibility="{Binding MediaViewerVM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding ThumbnailsGridsVM.Model.Current.SelectedCount}" />
+              <TextBlock Text="{Binding ThumbnailsGridsVM.Model.Current.SelectedCount}"/>
             </Border>
 
             <!-- Modified -->
@@ -123,7 +127,7 @@
               Background="#CA5100" 
               Visibility="{Binding MediaItemsVM.Model.IsEditModeOn,
                            Converter={StaticResource AllToVisibilityConverter}}">
-              <TextBlock Text="{Binding MediaItemsVM.Model.ModifiedItemsCount}" />
+              <TextBlock Text="{Binding MediaItemsVM.Model.ModifiedItemsCount}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -134,14 +138,14 @@
           Visibility="{Binding CurrentMediaItemM,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon Source="{StaticResource IconRuler}" />
+            <Path Data="{StaticResource IconRuler}"/>
 
             <Border>
               <TextBlock>
                 <TextBlock.Text>
                   <MultiBinding StringFormat="{}{0}x{1}">
-                    <Binding Path="CurrentMediaItemM.Width" />
-                    <Binding Path="CurrentMediaItemM.Height" />
+                    <Binding Path="CurrentMediaItemM.Width"/>
+                    <Binding Path="CurrentMediaItemM.Height"/>
                   </MultiBinding>
                 </TextBlock.Text>
               </TextBlock>
@@ -155,10 +159,10 @@
           Visibility="{Binding FileSize,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon Source="{StaticResource IconPageUpload}" />
+            <Path Data="{StaticResource IconPageUpload}"/>
 
             <Border>
-              <TextBlock Text="{Binding FileSize}" />
+              <TextBlock Text="{Binding FileSize}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -172,7 +176,7 @@
 
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <MultiDataTrigger>
@@ -180,27 +184,27 @@
                     <Condition
                       Binding="{Binding MediaViewerVM.IsVisible,
                                 Source={x:Static pm:App.Ui}}"
-                      Value="True" />
+                      Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.MediaType}"
-                      Value="{x:Static pmd:MediaType.Image}" />
+                      Value="{x:Static pmd:MediaType.Image}"/>
                   </MultiDataTrigger.Conditions>
                   
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </MultiDataTrigger>
               </Style.Triggers>
             </Style>
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon Source="{StaticResource IconMagnify}" />
+            <Path Data="{StaticResource IconMagnify}"/>
 
             <Border>
               <TextBlock Text="{Binding MediaViewerVM.FullImage.ActualZoom,
                                 Source={x:Static pm:App.Ui},
-                                StringFormat={}{0:####}%}" />
+                                StringFormat={}{0:####}%}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -215,13 +219,13 @@
 
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal" />
+                  <StackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <mhc:Icon Source="{StaticResource IconStar}" />
+                  <Path Data="{StaticResource IconStar}"/>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
@@ -240,7 +244,7 @@
 
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <DataTrigger
@@ -250,13 +254,13 @@
 
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </DataTrigger>
               </Style.Triggers>
             </Style>
           </Border.Style>
 
-          <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
+          <Path Data="{StaticResource IconLocationCheckin}"/>
         </Border>
 
         <!-- FilePath -->
@@ -267,11 +271,11 @@
           ToolTip="{Binding CurrentMediaItemM.FilePath}">
 
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconFolder}"
+            <Path
+              Data="{StaticResource IconFolder}"
               Fill="{StaticResource ColorBrushFolder}"/>
 
-            <ItemsControl ItemsSource="{Binding FilePath}" />
+            <ItemsControl ItemsSource="{Binding FilePath}"/>
           </StackPanel>
         </Border>
 
@@ -281,10 +285,10 @@
           Visibility="{Binding DateAndTime,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
-            <mhc:Icon Source="{StaticResource IconCalendar}" />
+            <Path Data="{StaticResource IconCalendar}"/>
 
             <Border>
-              <TextBlock Text="{Binding DateAndTime}" />
+              <TextBlock Text="{Binding DateAndTime}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -298,7 +302,7 @@
 
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <MultiDataTrigger>
@@ -306,16 +310,16 @@
                     <Condition
                       Binding="{Binding MediaViewerVM.IsVisible,
                                 Source={x:Static pm:App.Ui}}"
-                      Value="True" />
+                      Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.InfoBoxPeople, 
                                 Converter={StaticResource AllToBoolConverter}}"
-                      Value="True" />
+                      Value="True"/>
                   </MultiDataTrigger.Conditions>
 
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </MultiDataTrigger>
               </Style.Triggers>
               
@@ -323,15 +327,15 @@
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconPeople}"
+            <Path
+              Data="{StaticResource IconPeople}"
               Fill="{StaticResource ColorBrushPeople}"/>
 
             <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxPeople}">
               
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <WrapPanel Orientation="Horizontal" />
+                  <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               
@@ -346,12 +350,12 @@
                         MouseAction="LeftClick"
                         Command="{Binding PersonVM.SetPersonCommand,
                                   Source={x:Static pm:App.Ui}}"
-                        CommandParameter="{Binding}" />         
+                        CommandParameter="{Binding}"/>         
                     </Border.InputBindings>
 
                     <TextBlock
                       Text="{Binding Name}"
-                      Style="{StaticResource STextBlock}" />
+                      Style="{StaticResource STextBlock}"/>
                   </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
@@ -369,7 +373,7 @@
 
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <MultiDataTrigger>
@@ -377,16 +381,16 @@
                     <Condition
                       Binding="{Binding MediaViewerVM.IsVisible,
                                 Source={x:Static pm:App.Ui}}"
-                      Value="True" />
+                      Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.InfoBoxKeywords, 
                                 Converter={StaticResource AllToBoolConverter}}"
-                      Value="True" />
+                      Value="True"/>
                   </MultiDataTrigger.Conditions>
 
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </MultiDataTrigger>
               </Style.Triggers>
               
@@ -394,11 +398,11 @@
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon
-              Source="{StaticResource IconTag}"
+            <Path
+              Data="{StaticResource IconTag}"
               Fill="{StaticResource ColorBrushTag}"/>
 
-            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxKeywords}" />
+            <ItemsControl ItemsSource="{Binding CurrentMediaItemM.InfoBoxKeywords}"/>
           </StackPanel>
         </Border>
 
@@ -411,7 +415,7 @@
 
               <Setter
                 Property="Visibility"
-                Value="Collapsed" />
+                Value="Collapsed"/>
 
               <Style.Triggers>
                 <MultiDataTrigger>
@@ -419,26 +423,26 @@
                     <Condition
                       Binding="{Binding MediaViewerVM.IsVisible,
                                 Source={x:Static pm:App.Ui}}"
-                      Value="True" />
+                      Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.Comment, 
                                 Converter={StaticResource AllToBoolConverter}}"
-                      Value="True" />
+                      Value="True"/>
                   </MultiDataTrigger.Conditions>
                   
                   <Setter
                     Property="Visibility"
-                    Value="Visible" />
+                    Value="Visible"/>
                 </MultiDataTrigger>
               </Style.Triggers>
             </Style>
           </Border.Style>
 
           <StackPanel>
-            <mhc:Icon Source="{StaticResource IconNotification}" />
+            <Path Data="{StaticResource IconNotification}"/>
 
             <Border>
-              <TextBlock Text="{Binding CurrentMediaItemM.Comment}" />
+              <TextBlock Text="{Binding CurrentMediaItemM.Comment}"/>
             </Border>
           </StackPanel>
         </Border>

@@ -1,14 +1,15 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <mhc:Icon
+  <Path
     x:Key="EyeIcon"
     x:Shared="False"
-    Source="{StaticResource IconEye}" />
+    Style="{StaticResource MH.Styles.Icon}"
+    Data="{StaticResource IconEye}"
+    Effect="{StaticResource MH.Effects.DropShadow}"/>
 
   <DataTemplate x:Key="Views.ViewersToolBarV">
     <Menu Background="Transparent">
@@ -20,10 +21,10 @@
               Header="All"
               DataContext="{x:Null}"
               Command="{Binding ViewersM.SetCurrentCommand,
-                        Source={x:Static pm:App.Core}}" />
+                        Source={x:Static pm:App.Core}}"/>
 
             <CollectionContainer
-              Collection="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}" />
+              Collection="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
 
@@ -34,13 +35,13 @@
             <Setter
               Property="Header"
               Value="{Binding ViewersM.Current.Name,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
             <Style.Triggers>
               <DataTrigger
                 Binding="{Binding ViewersM.Current,
                           Source={x:Static pm:App.Core}}"
                 Value="{x:Null}">
-                <Setter Property="Header" Value="All" />
+                <Setter Property="Header" Value="All"/>
               </DataTrigger>
             </Style.Triggers>
           </Style>
@@ -50,10 +51,10 @@
           <Style
             TargetType="{x:Type MenuItem}"
             BasedOn="{StaticResource StyleBaseMenuItem}">
-            <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}" />
-            <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}" />
-            <Setter Property="CommandParameter" Value="{Binding}" />
-            <Setter Property="Icon" Value="{StaticResource EyeIcon}" />
+            <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}"/>
+            <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
+            <Setter Property="CommandParameter" Value="{Binding}"/>
+            <Setter Property="Icon" Value="{StaticResource EyeIcon}"/>
           </Style>
         </MenuItem.ItemContainerStyle>
       </MenuItem>

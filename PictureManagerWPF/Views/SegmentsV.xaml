@@ -3,15 +3,14 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <DataTemplate DataType="{x:Type vm:SegmentsVM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="SegmentV.xaml" />
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml" />
+          <ResourceDictionary Source="SegmentV.xaml"/>
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -20,9 +19,9 @@
       <!-- Segments Grids -->
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="{Binding ConfirmedPanelWidth, Mode=OneWay}" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="{Binding ConfirmedPanelWidth, Mode=OneWay}"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <b:Interaction.Triggers>
@@ -30,7 +29,7 @@
             <b:InvokeCommandAction
               Command="{Binding SelectCommand}"
               EventArgsConverter="{StaticResource ClickConverter}"
-              EventArgsConverterParameter="{StaticResource True}" />
+              EventArgsConverterParameter="{StaticResource True}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
         
@@ -43,7 +42,7 @@
               <b:EventTrigger EventName="Loaded">
                 <b:InvokeCommandAction
                   Command="{Binding ConfirmedMatchingPanelLoadedCommand}"
-                  PassEventArgsToCommand="True" />
+                  PassEventArgsToCommand="True"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
           </mhc:VirtualizingWrapPanel>
@@ -51,9 +50,9 @@
           <mhc:IconToggleButton
             ToolTip="Groups with similarities"
             IsThreeState="False"
-            Source="{StaticResource IconPeopleMultiple}"
+            Icon="{StaticResource IconPeopleMultiple}"
             IsChecked="{Binding SegmentsM.GroupConfirmedSegments}"
-            Command="{Binding SegmentsM.GroupConfirmedCommand}" />
+            Command="{Binding SegmentsM.GroupConfirmedCommand}"/>
         </Grid>
 
         <GridSplitter
@@ -66,7 +65,7 @@
             <b:EventTrigger EventName="DragCompleted">
               <b:InvokeCommandAction
                 Command="{Binding ConfirmedMatchingPanelSizeChangedCommand}"
-                PassEventArgsToCommand="True" />
+                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </GridSplitter>
@@ -81,13 +80,13 @@
             <b:EventTrigger EventName="Loaded">
               <b:InvokeCommandAction
                 Command="{Binding MatchingPanelLoadedCommand}"
-                PassEventArgsToCommand="True" />
+                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
             
             <b:EventTrigger EventName="SizeChanged">
               <b:InvokeCommandAction
                 Command="{Binding MatchingPanelSizeChangedCommand}"
-                PassEventArgsToCommand="True" />
+                PassEventArgsToCommand="True"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
@@ -104,35 +103,35 @@
         <mhc:IconToggleButton
           ToolTip="Group by Person or sort by file name"
           IsThreeState="False"
-          Source="{StaticResource IconPeopleMultiple}"
+          Icon="{StaticResource IconPeopleMultiple}"
           IsChecked="{Binding SegmentsM.GroupSegments}"
-          Command="{Binding SegmentsM.GroupMatchingPanelCommand}" />
+          Command="{Binding SegmentsM.GroupMatchingPanelCommand}"/>
 
         <mhc:IconButton
           ToolTip="Set selected as Unknown"
-          Source="{StaticResource IconQuestion}"
-          Command="{Binding SegmentsM.SetSelectedAsUnknownCommand}" />
+          Icon="{StaticResource IconQuestion}"
+          Command="{Binding SegmentsM.SetSelectedAsUnknownCommand}"/>
         <mhc:IconButton
           ToolTip="Open Segments drawer"
-          Source="{StaticResource IconDrawer}"
-          Command="{Binding OpenSegmentsDrawerCommand}" />
+          Icon="{StaticResource IconDrawer}"
+          Command="{Binding OpenSegmentsDrawerCommand}"/>
         <mhc:IconButton
           ToolTip="Compare all groups of segments"
-          Source="{StaticResource IconCompare}"
-          Command="{Binding SegmentsM.CompareAllGroupsCommand}" />
+          Icon="{StaticResource IconCompare}"
+          Command="{Binding SegmentsM.CompareAllGroupsCommand}"/>
         <mhc:IconButton
           ToolTip="Compare"
-          Source="{StaticResource IconCompare}"
-          Command="{Binding CompareCommand}" />
+          Icon="{StaticResource IconCompare}"
+          Command="{Binding CompareCommand}"/>
         <mhc:IconButton
           ToolTip="Sort"
-          Source="{StaticResource IconSort}"
-          Command="{Binding SegmentsM.SortCommand}" />
+          Icon="{StaticResource IconSort}"
+          Command="{Binding SegmentsM.SortCommand}"/>
 
         <CheckBox
           IsChecked="{Binding SegmentsM.MatchingAutoSort}"
           Content="Auto Sort"
-          IsThreeState="False" />
+          IsThreeState="False"/>
         
         <Slider
           Value="{Binding SegmentsM.SimilarityLimit}" 
@@ -140,7 +139,7 @@
           Maximum="100"
           Width="100"
           AutoToolTipPlacement="BottomRight"
-          Margin="8,0" />
+          Margin="8,0"/>
       </StackPanel>
 
     </Grid>

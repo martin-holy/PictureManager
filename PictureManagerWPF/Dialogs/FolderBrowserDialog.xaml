@@ -37,13 +37,12 @@
       <TreeView.ItemTemplate>
         <HierarchicalDataTemplate DataType="{x:Type dialogs:FolderTreeViewItem}" ItemsSource="{Binding Items}">
           <StackPanel Orientation="Horizontal" Background="Transparent">
-            <mhc:Icon
-              Source="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
               Fill="{Binding IconName,
-                      Converter={StaticResource ResourceConverter},
-                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
-                      FallbackValue={StaticResource ColorBrushWhite}}"
-              ShowShadow="False"
+                     Converter={StaticResource ResourceConverter},
+                     ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
               HorizontalAlignment="Center" />
             <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}" />
           </StackPanel>

@@ -6,14 +6,12 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconStyle.xaml" />
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconButtonStyle.xaml" />
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/IconToggleButtonStyle.xaml" />
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Control/IconButton.xaml" />
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Control/IconToggleButton.xaml" />
       </ResourceDictionary.MergedDictionaries>
       
-      <Style TargetType="{x:Type mhc:Icon}" BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}" />
-      <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}" />
-      <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.UI.WPF.Controls.IconToggleButton}" />
+      <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}" />
+      <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>
