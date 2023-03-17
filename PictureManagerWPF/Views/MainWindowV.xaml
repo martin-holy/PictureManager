@@ -11,6 +11,7 @@
   WindowState="Maximized"
   WindowStyle="SingleBorderWindow"
   UseLayoutRounding="True"
+  SnapsToDevicePixels="True"
   Background="{StaticResource ColorBrushBackground}"
   FontSize="14"
   Foreground="{StaticResource WhiteBrush}">
