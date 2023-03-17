@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 
 namespace MH.UI.WPF.Controls {
   public class IconTextButton : Button {
@@ -24,15 +23,6 @@ namespace MH.UI.WPF.Controls {
       DefaultStyleKeyProperty.OverrideMetadata(
         typeof(IconTextButton),
         new FrameworkPropertyMetadata(typeof(IconTextButton)));
-    }
-
-    public override void OnApplyTemplate() {
-      base.OnApplyTemplate();
-
-      if (Effect == null) return;
-      (Template.FindName("PART_Icon", this) as UIElement).Effect = Effect;
-      (Template.FindName("PART_Text", this) as UIElement).Effect = Effect;
-      Effect = null;
     }
   }
 }

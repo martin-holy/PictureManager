@@ -3,16 +3,12 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style
-    x:Key="MH.UI.WPF.Controls.VideoPlayer"
-    TargetType="{x:Type c:VideoPlayer}">
-
+  <Style x:Key="MH.Styles.Controls.VideoPlayer" TargetType="{x:Type c:VideoPlayer}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:VideoPlayer}">
-          <Grid
-            DataContext="{Binding RelativeSource=
-                         {RelativeSource AncestorType={x:Type c:VideoPlayer}}}">
+          <Grid DataContext="{Binding RelativeSource=
+                             {RelativeSource AncestorType={x:Type c:VideoPlayer}}}">
 
             <!-- MediaElement -->
             <MediaElement
@@ -26,7 +22,7 @@
 
               <MediaElement.LayoutTransform>
                 <TransformGroup>
-                  <RotateTransform Angle="{Binding Rotation}" />
+                  <RotateTransform Angle="{Binding Rotation}"/>
                 </TransformGroup>
               </MediaElement.LayoutTransform>
             </MediaElement>
@@ -39,19 +35,10 @@
 
               <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
-                  <Setter
-                    Property="Opacity"
-                    Value="0.3" />
-
+                  <Setter Property="Opacity" Value="0.3"/>
                   <Style.Triggers>
-                    <Trigger
-                      Property="IsMouseOver"
-                      Value="True">
-
-                      <Setter
-                        Property="Opacity"
-                        Value="1" />
-
+                    <Trigger Property="IsMouseOver" Value="True">
+                      <Setter Property="Opacity" Value="1"/>
                     </Trigger>
                   </Style.Triggers>
                 </Style>
@@ -60,18 +47,14 @@
               <Grid.Resources>
                 <!-- TextBlock style -->
                 <Style TargetType="{x:Type TextBlock}">
-                  <Setter
-                    Property="Margin"
-                    Value="5" />
-                  <Setter
-                    Property="VerticalAlignment"
-                    Value="Center" />
+                  <Setter Property="Margin" Value="5"/>
+                  <Setter Property="VerticalAlignment" Value="Center"/>
                 </Style>
               </Grid.Resources>
 
               <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
               </Grid.ColumnDefinitions>
 
               <DockPanel
@@ -80,7 +63,7 @@
                 LastChildFill="True">
 
                 <!-- Seek To -->
-                <TextBlock Text="Seek To" />
+                <TextBlock Text="Seek To"/>
                 <Slider
                   x:Name="PART_TimelineSlider"
                   Margin="5"
@@ -102,10 +85,10 @@
                 Orientation="Horizontal">
 
                 <!-- Time -->
-                <TextBlock Text="{Binding PositionSlashDuration}" />
+                <TextBlock Text="{Binding PositionSlashDuration}"/>
 
                 <!-- Volume -->
-                <TextBlock Text="Volume" />
+                <TextBlock Text="Volume"/>
                 <Slider
                   Minimum="0"
                   Maximum="1"
@@ -117,7 +100,7 @@
                   Value="{Binding Volume}"/>
 
                 <!-- Speed -->
-                <TextBlock Text="Speed" />
+                <TextBlock Text="Speed"/>
                 <Slider
                   Minimum="0.1"
                   Maximum="3"
@@ -137,62 +120,51 @@
                   VerticalAlignment="Center">
 
                   <StackPanel.Resources>
-                    <PathGeometry x:Key="IconTimelineShift.Beginning" Figures="M896 0v896l-640-448zM128 896h128v-896h-128v896z" />
-                    <PathGeometry x:Key="IconTimelineShift.LargeBack" Figures="M11.4,6.9L11.4,17.2 6.1,12.1 11.4,6.9z M6.0,6.9L6.0,17.2 0.7,12.1 6.0,6.9z" />
-                    <PathGeometry x:Key="IconTimelineShift.SmallBack" Figures="M9.3,6.9L9.3,17.2 4,12.1 9.3,6.9z" />
-                    <PathGeometry x:Key="IconTimelineShift.SmallForward" Figures="M6,6.9L11.3,12.1 6,17.2 6,6.9z" />
-                    <PathGeometry x:Key="IconTimelineShift.LargeForward" Figures="M6.1,6.9L11.4,12.1 6.1,17.2 6.1,6.9z M0.7,6.9L6.1,12.1 0.7,17.2 0.7,6.9z" />
-                    <PathGeometry x:Key="IconTimelineShift.End" Figures="M128 896v-896l640 448zM768 896h128v-896h-128v896z" />
-                    <PathGeometry x:Key="IconPlay" Figures="M1.2,5.0L12.8,11.5 1.2,17.9 1.2,5.0z" />
-                    <PathGeometry x:Key="IconPause" Figures="M8.8,7.4L11.1,7.4 11.1,17.7 8.8,17.7 8.8,7.4z M4.8,7.4L7.1,7.4 7.1,17.7 4.8,17.7 4.8,7.4z" />
+                    <PathGeometry x:Key="IconTimelineShift.Beginning" Figures="M896 0v896l-640-448zM128 896h128v-896h-128v896z"/>
+                    <PathGeometry x:Key="IconTimelineShift.LargeBack" Figures="M11.4,6.9L11.4,17.2 6.1,12.1 11.4,6.9z M6.0,6.9L6.0,17.2 0.7,12.1 6.0,6.9z"/>
+                    <PathGeometry x:Key="IconTimelineShift.SmallBack" Figures="M9.3,6.9L9.3,17.2 4,12.1 9.3,6.9z"/>
+                    <PathGeometry x:Key="IconTimelineShift.SmallForward" Figures="M6,6.9L11.3,12.1 6,17.2 6,6.9z"/>
+                    <PathGeometry x:Key="IconTimelineShift.LargeForward" Figures="M6.1,6.9L11.4,12.1 6.1,17.2 6.1,6.9z M0.7,6.9L6.1,12.1 0.7,17.2 0.7,6.9z"/>
+                    <PathGeometry x:Key="IconTimelineShift.End" Figures="M128 896v-896l640 448zM768 896h128v-896h-128v896z"/>
+                    <PathGeometry x:Key="IconPlay" Figures="M1.2,5.0L12.8,11.5 1.2,17.9 1.2,5.0z"/>
+                    <PathGeometry x:Key="IconPause" Figures="M8.8,7.4L11.1,7.4 11.1,17.7 8.8,17.7 8.8,7.4z M4.8,7.4L7.1,7.4 7.1,17.7 4.8,17.7 4.8,7.4z"/>
                   </StackPanel.Resources>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.Beginning}"
+                    Icon="{StaticResource IconTimelineShift.Beginning}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.Beginning}" />
+                    CommandParameter="{x:Static c:TimelineShift.Beginning}"/>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.LargeBack}"
+                    Icon="{StaticResource IconTimelineShift.LargeBack}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.LargeBack}" />
+                    CommandParameter="{x:Static c:TimelineShift.LargeBack}"/>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.SmallBack}"
+                    Icon="{StaticResource IconTimelineShift.SmallBack}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.SmallBack}" />
+                    CommandParameter="{x:Static c:TimelineShift.SmallBack}"/>
 
                   <!-- Play/Pause -->
                   <ContentPresenter>
-                    
                     <ContentPresenter.Resources>
                       <c:IconButton
                         x:Key="PlayButton"
-                        Source="{StaticResource IconPlay}"
+                        Icon="{StaticResource IconPlay}"
                         Command="{Binding PlayPauseToggleCommand}"/>
-                      
+
                       <c:IconButton
                         x:Key="PauseButton"
-                        Source="{StaticResource IconPause}"
+                        Icon="{StaticResource IconPause}"
                         Command="{Binding PlayPauseToggleCommand}"/>
                     </ContentPresenter.Resources>
 
                     <ContentPresenter.Style>
                       <Style TargetType="{x:Type ContentPresenter}">
-                        
-                        <Setter
-                          Property="Content"
-                          Value="{StaticResource PlayButton}"/>
-
+                        <Setter Property="Content" Value="{StaticResource PlayButton}"/>
                         <Style.Triggers>
-                          <DataTrigger
-                            Value="True"
-                            Binding="{Binding IsPlaying}">
-                            
-                            <Setter
-                              Property="Content"
-                              Value="{StaticResource PauseButton}"/>
-
+                          <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                            <Setter Property="Content" Value="{StaticResource PauseButton}"/>
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
@@ -200,22 +172,21 @@
                   </ContentPresenter>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.SmallForward}"
+                    Icon="{StaticResource IconTimelineShift.SmallForward}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.SmallForward}" />
+                    CommandParameter="{x:Static c:TimelineShift.SmallForward}"/>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.LargeForward}"
+                    Icon="{StaticResource IconTimelineShift.LargeForward}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.LargeForward}" />
+                    CommandParameter="{x:Static c:TimelineShift.LargeForward}"/>
 
                   <c:IconButton
-                    Source="{StaticResource IconTimelineShift.End}"
+                    Icon="{StaticResource IconTimelineShift.End}"
                     Command="{Binding TimelineShiftCommand}"
-                    CommandParameter="{x:Static c:TimelineShift.End}" />
+                    CommandParameter="{x:Static c:TimelineShift.End}"/>
 
                 </StackPanel>
-
               </StackPanel>
             </Grid>
           </Grid>

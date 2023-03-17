@@ -5,23 +5,23 @@
 
   <ResourceDictionary.MergedDictionaries>
     <!--add in place of usage-->
-    <!--<ResourceDictionary Source="../Brushes/Brushes.xaml" />-->
-    <ResourceDictionary Source="TreeWrapRowStyle.xaml" />
-    <ResourceDictionary Source="TreeWrapGroupStyle.xaml" />
-    <ResourceDictionary Source="TreeWrapGroupInfoItemStyle.xaml" />
+    <!--<ResourceDictionary Source="../Brushes/Brushes.xaml"/>-->
+    <ResourceDictionary Source="TreeWrapRow.xaml"/>
+    <ResourceDictionary Source="TreeWrapGroup.xaml"/>
+    <ResourceDictionary Source="TreeWrapGroupInfoItem.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z" />
+  <PathGeometry x:Key="TreeArrow" Figures="M0,0 L0,6 L6,0 z"/>
 
   <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
-    <Setter Property="Background" Value="Transparent" />
-    <Setter Property="Focusable" Value="False" />
-    <Setter Property="Foreground" Value="{StaticResource WhiteBrush}" />
-    <Setter Property="Height" Value="16" />
-    <Setter Property="Width" Value="16" />
-    <Setter Property="Margin" Value="1" />
-    <Setter Property="HorizontalAlignment" Value="Left" />
-    <Setter Property="ClickMode" Value="Press" />
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Focusable" Value="False"/>
+    <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
+    <Setter Property="Height" Value="16"/>
+    <Setter Property="Width" Value="16"/>
+    <Setter Property="Margin" Value="1"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
+    <Setter Property="ClickMode" Value="Press"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -30,7 +30,7 @@
             Background="Transparent">
 
             <Path
-              x:Name="ExpandPath"
+              x:Name="PART_ExpandPath"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Data="{StaticResource TreeArrow}" 
@@ -41,34 +41,34 @@
                 <RotateTransform
                   Angle="135"
                   CenterX="3"
-                  CenterY="3" />
+                  CenterY="3"/>
               </Path.RenderTransform>
             </Path>
           </Grid>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="ExpandPath" Property="Fill" Value="{StaticResource GrayBrush1}" />
-              <Setter TargetName="ExpandPath" Property="RenderTransform">
+              <Setter TargetName="PART_ExpandPath" Property="Fill" Value="{StaticResource GrayBrush1}"/>
+              <Setter TargetName="PART_ExpandPath" Property="RenderTransform">
                 <Setter.Value>
-                  <RotateTransform Angle="180" CenterX="3" CenterY="3" />
+                  <RotateTransform Angle="180" CenterX="3" CenterY="3"/>
                 </Setter.Value>
               </Setter>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="ExpandPath" Property="Stroke" Value="{StaticResource GrayBrush5}" />
+              <Setter TargetName="PART_ExpandPath" Property="Stroke" Value="{StaticResource GrayBrush5}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
-                <Condition Property="IsEnabled" Value="False" />
-                <Condition Property="IsChecked" Value="True" />
+                <Condition Property="IsEnabled" Value="False"/>
+                <Condition Property="IsChecked" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="ExpandPath" Property="Fill" Value="{StaticResource GrayBrush5}" />
-              <Setter TargetName="ExpandPath" Property="Stroke" Value="{StaticResource GrayBrush5}" />
+              <Setter TargetName="PART_ExpandPath" Property="Fill" Value="{StaticResource GrayBrush5}"/>
+              <Setter TargetName="PART_ExpandPath" Property="Stroke" Value="{StaticResource GrayBrush5}"/>
             </MultiTrigger>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="ExpandPath" Property="Fill" Value="{StaticResource AccentColorBrush}" />
-              <Setter TargetName="ExpandPath" Property="Stroke" Value="{StaticResource AccentColorBrush}" />
+              <Setter TargetName="PART_ExpandPath" Property="Fill" Value="{StaticResource AccentColorBrush}"/>
+              <Setter TargetName="PART_ExpandPath" Property="Stroke" Value="{StaticResource AccentColorBrush}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -86,32 +86,31 @@
             SnapsToDevicePixels="True"
             StrokeDashArray="1 2"
             StrokeThickness="5"
-            Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
 
   <Style
-    x:Key="MH.UI.WPF.Controls.TreeWrapViewItem"
+    x:Key="MH.Styles.Controls.TreeWrapViewItem"
     TargetType="{x:Type TreeViewItem}">
-    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}" />
-    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-    <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
-    <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-    <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-    <Setter Property="MinHeight" Value="25" />
-    <Setter Property="Padding" Value="0" />
-    <Setter Property="SnapsToDevicePixels" Value="True" />
-    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+    <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="MinHeight" Value="25"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type TreeViewItem}">
           <StackPanel>
             <Border
-              x:Name="Border"
               MinHeight="{TemplateBinding MinHeight}"
               Padding="{TemplateBinding Padding}"
               Background="{TemplateBinding Background}"
@@ -128,28 +127,28 @@
                   ContentSource="Header"
                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
 
                 <ToggleButton
-                  x:Name="Expander"
+                  x:Name="PART_Expander"
                   Style="{StaticResource ExpandCollapseToggleStyle}"
                   IsChecked="{Binding IsExpanded,
                               RelativeSource={RelativeSource TemplatedParent},
-                              Mode=TwoWay}" />
+                              Mode=TwoWay}"/>
               </Grid>
             </Border>
             
             <ItemsPresenter
-              x:Name="ItemsHost"
-              SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+              x:Name="PART_ItemsHost"
+              SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
           </StackPanel>
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsExpanded" Value="false">
-              <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
+              <Setter TargetName="PART_ItemsHost" Property="Visibility" Value="Collapsed"/>
             </Trigger>
             <Trigger Property="HasItems" Value="false">
-              <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
+              <Setter TargetName="PART_Expander" Property="Visibility" Value="Hidden"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
@@ -160,7 +159,7 @@
         <Setter Property="ItemsPanel">
           <Setter.Value>
             <ItemsPanelTemplate>
-              <VirtualizingStackPanel />
+              <VirtualizingStackPanel/>
             </ItemsPanelTemplate>
           </Setter.Value>
         </Setter>
@@ -169,21 +168,21 @@
   </Style>
 
   <Style
-    x:Key="MH.UI.WPF.Controls.TreeWrapView"
+    x:Key="MH.Styles.Controls.TreeWrapView"
     TargetType="{x:Type c:TreeWrapView}">
-    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}" />
-    <Setter Property="BorderBrush" Value="{StaticResource WhiteBrush}" />
-    <Setter Property="BorderThickness" Value="0" />
-    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-    <Setter Property="VerticalContentAlignment" Value="Stretch" />
-    <Setter Property="Padding" Value="1" />
-    <Setter Property="SnapsToDevicePixels" Value="True" />
-    <Setter Property="AllowDrop" Value="True" />
-    <Setter Property="ItemContainerStyle" Value="{StaticResource MH.UI.WPF.Controls.TreeWrapViewItem}" />
-    <Setter Property="FocusManager.IsFocusScope" Value="True" />
-    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource WhiteBrush}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    <Setter Property="Padding" Value="1"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="AllowDrop" Value="True"/>
+    <Setter Property="ItemContainerStyle" Value="{StaticResource MH.Styles.Controls.TreeWrapViewItem}"/>
+    <Setter Property="FocusManager.IsFocusScope" Value="True"/>
+    <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+    <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
 
     <Setter Property="Template">
       <Setter.Value>
@@ -198,7 +197,7 @@
             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" >
             
-            <ItemsPresenter x:Name="PART_ItemsPresenter" />
+            <ItemsPresenter x:Name="PART_ItemsPresenter"/>
           </c:WheelSpeedScrollViewer>
         </ControlTemplate>
       </Setter.Value>
@@ -209,14 +208,14 @@
         <Setter Property="ItemsPanel">
           <Setter.Value>
             <ItemsPanelTemplate>
-              <VirtualizingStackPanel />
+              <VirtualizingStackPanel/>
             </ItemsPanelTemplate>
           </Setter.Value>
         </Setter>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
       </Trigger>
       <Trigger Property="IsEnabled" Value="False">
-        <Setter Property="BorderBrush" Value="{StaticResource GrayBrush9}" />
+        <Setter Property="BorderBrush" Value="{StaticResource GrayBrush9}"/>
       </Trigger>
     </Style.Triggers>
   </Style>

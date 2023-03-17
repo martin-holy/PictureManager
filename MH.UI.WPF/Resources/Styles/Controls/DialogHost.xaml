@@ -1,0 +1,36 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:c="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:mhui="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="../../Brushes.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+
+  <Style x:Key="MH.Styles.Controls.DialogHost" TargetType="{x:Type c:DialogHost}">
+    <Setter
+      Property="Title"
+      Value="{Binding Path=Content.(mhui:IDialog.Title),
+              RelativeSource={RelativeSource Mode=Self}}"/>
+    <Setter Property="ResizeMode" Value="NoResize"/>
+    <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+    <Setter Property="ShowInTaskbar" Value="False"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="UseLayoutRounding" Value="True"/>
+    <Setter Property="Background" Value="{StaticResource MH.Brushes.Background}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Foreground}"/>
+
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type c:DialogHost}">
+          <Border Background="{TemplateBinding Background}">
+            <AdornerDecorator>
+              <ContentPresenter Content="{TemplateBinding Content}"/>
+            </AdornerDecorator>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+</ResourceDictionary>

@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:c="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style TargetType="{x:Type c:WindowButtons}">
+  <Style x:Key="MH.Styles.Controls.WindowButtons" TargetType="{x:Type c:WindowButtons}">
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:WindowButtons}">
@@ -14,7 +14,7 @@
                 <Setter.Value>
                   <ControlTemplate TargetType="{x:Type Button}">
                     <Grid
-                      x:Name="_root"
+                      x:Name="PART_Root"
                       Background="Transparent"
                       Width="44"
                       Height="30">
@@ -31,7 +31,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                       <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="_root" Property="Background" Value="#40FFFFFF"/>
+                        <Setter TargetName="PART_Root" Property="Background" Value="#40FFFFFF"/>
                       </Trigger>
                     </ControlTemplate.Triggers>
                   </ControlTemplate>
@@ -39,7 +39,7 @@
               </Setter>
             </Style>
           </ControlTemplate.Resources>
-          
+
           <StackPanel
             Orientation="Horizontal"
             HorizontalAlignment="Right"
@@ -93,5 +93,4 @@
       </Setter.Value>
     </Setter>
   </Style>
-
 </ResourceDictionary>

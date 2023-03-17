@@ -17,13 +17,5 @@ namespace MH.UI.WPF.Controls {
         typeof(PopupSlider),
         new FrameworkPropertyMetadata(typeof(PopupSlider)));
     }
-
-    public override void OnApplyTemplate() {
-      base.OnApplyTemplate();
-
-      if (Effect == null) return;
-      (Template.FindName("PART_IconTextButton", this) as UIElement).Effect = Effect;
-      Effect = null;
-    }
   }
 }

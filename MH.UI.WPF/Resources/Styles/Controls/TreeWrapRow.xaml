@@ -7,7 +7,7 @@
     <ItemsControl ItemsSource="{Binding Items}">
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <StackPanel Orientation="Horizontal" />
+          <StackPanel Orientation="Horizontal"/>
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
     </ItemsControl>
