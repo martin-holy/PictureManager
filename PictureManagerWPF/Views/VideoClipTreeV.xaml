@@ -54,24 +54,22 @@
           <StackPanel Orientation="Horizontal">
             <StackPanel.Resources>
               <Style TargetType="{x:Type TextBlock}">
-                <Setter
-                  Property="Margin"
-                  Value="4,0" />
+                <Setter Property="Margin" Value="4,0" />
+              </Style>
+
+              <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+                <Setter Property="Width" Value="12"/>
+                <Setter Property="Height" Value="12"/>
+                <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
               </Style>
             </StackPanel.Resources>
             
-            <mhc:Icon
-              Source="{StaticResource IconClock}"
-              Size="12" />
-            <TextBlock Text="{Binding DurationStr}" />
-            <mhc:Icon
-              Source="{StaticResource IconSound3}"
-              Size="12" />
-            <TextBlock Text="{Binding VolumeStr}" />
-            <mhc:Icon
-              Source="{StaticResource IconRunFast}"
-              Size="12" />
-            <TextBlock Text="{Binding SpeedStr}" />
+            <Path Data="{StaticResource IconClock}"/>
+            <TextBlock Text="{Binding DurationStr}"/>
+            <Path Data="{StaticResource IconSound3}"/>
+            <TextBlock Text="{Binding VolumeStr}"/>
+            <Path Data="{StaticResource IconRunFast}"/>
+            <TextBlock Text="{Binding SpeedStr}"/>
           </StackPanel>
 
           <!-- A-B -->

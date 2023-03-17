@@ -8,9 +8,9 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="PersonV.xaml" />
-          <ResourceDictionary Source="SegmentsDrawerV.xaml" />
-          <ResourceDictionary Source="VideoClipsV.xaml" />
+          <ResourceDictionary Source="PersonV.xaml"/>
+          <ResourceDictionary Source="SegmentsDrawerV.xaml"/>
+          <ResourceDictionary Source="VideoClipsV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -32,8 +32,8 @@
               <ControlTemplate TargetType="{x:Type TabControl}">
                 <Grid Background="{StaticResource ColorBrushBackground}">
                   <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                   </Grid.RowDefinitions>
 
                   <DockPanel
@@ -45,30 +45,31 @@
                       DockPanel.Dock="Right"
                       Orientation="Horizontal">
                       <mhc:IconButton
-                        Padding="6"
+                        Padding="5"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         Command="{Binding CloseTabCommand}"
                         ToolTip="Close tab"
-                        Source="{StaticResource IconXCross}"
-                        Size="10"/>
+                        Icon="{StaticResource IconXCross}"
+                        Width="20"
+                        Height="20"/>
       
                       <mhc:IconToggleButton
-                        Source="{StaticResource IconPin}"
-                        Size="14"
+                        Icon="{StaticResource IconPin}"
+                        Width="20"
+                        Height="20"
                         IsThreeState="False"
-                        ShowShadow="False"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         IsChecked="{Binding IsPinned, RelativeSource=
                                    {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
-                        ToolTip="Pin panel" />
+                        ToolTip="Pin panel"/>
                      </StackPanel>
                     
                     <TabPanel
                       IsItemsHost="True"
                       KeyboardNavigation.TabIndex="1"
-                      Margin="0" />
+                      Margin="0"/>
                   </DockPanel>
 
                   <ItemsControl
@@ -77,13 +78,13 @@
                     
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate>
-                        <Grid />
+                        <Grid/>
                       </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
-                        <ContentPresenter Content="{Binding Content}" />
+                        <ContentPresenter Content="{Binding Content}"/>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
 
@@ -96,7 +97,7 @@
 
                             <Setter
                               Property="ContentPresenter.Visibility"
-                              Value="Hidden" />
+                              Value="Hidden"/>
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
@@ -117,13 +118,13 @@
 
           <Setter
             Property="Header"
-            Value="{Binding}" />
+            Value="{Binding}"/>
           <Setter
             Property="IsSelected"
-            Value="{Binding IsSelected, Mode=TwoWay}" />
+            Value="{Binding IsSelected, Mode=TwoWay}"/>
           <Setter
             Property="Background"
-            Value="{StaticResource ColorBrushBackground}" />
+            Value="{StaticResource ColorBrushBackground}"/>
 
           <Setter Property="HeaderTemplate">
             <Setter.Value>
@@ -133,7 +134,8 @@
                 <TextBlock
                   Text="{Binding ContentHeader}"
                   Margin="0"
-                  FontSize="{DynamicResource MahApps.Font.Size.TabItem}" />
+                  Effect="{StaticResource MH.Effects.DropShadow}"
+                  FontSize="{DynamicResource MahApps.Font.Size.TabItem}"/>
 
               </DataTemplate>
             </Setter.Value>
@@ -141,7 +143,7 @@
 
           <Setter
             Property="Content"
-            Value="{Binding Content}" />
+            Value="{Binding Content}"/>
         </Style>
       </TabControl.ItemContainerStyle>
     </TabControl>

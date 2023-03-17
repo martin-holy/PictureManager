@@ -9,18 +9,18 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
-          <ResourceDictionary Source="TreeItemV.xaml" />
-          <ResourceDictionary Source="VideoClipTreeV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml"/>
+          <ResourceDictionary Source="TreeItemV.xaml"/>
+          <ResourceDictionary Source="VideoClipTreeV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
     
     <Grid Background="{StaticResource ColorBrushBackground}">
       <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
       <!-- Buttons -->
@@ -32,13 +32,13 @@
 
             <Setter
               Property="Margin"
-              Value="2" />
+              Value="2"/>
             <Setter
               Property="Width"
-              Value="26" />
+              Value="26"/>
             <Setter
               Property="Height"
-              Value="26" />
+              Value="26"/>
           </Style>
         </StackPanel.Resources>
 
@@ -46,25 +46,28 @@
           ToolTip="Set start"
           Content="A"
           Command="{Binding SetMarkerCommand}"
-          CommandParameter="{StaticResource True}" />
+          CommandParameter="{StaticResource True}"/>
         <Button
           ToolTip="Set end"
           Content="B"
           Command="{Binding SetMarkerCommand}"
-          CommandParameter="{StaticResource False}" />
+          CommandParameter="{StaticResource False}"/>
         <Button
           ToolTip="Split"
           Content="S"
-          Command="{Binding SplitCommand}" />
+          Command="{Binding SplitCommand}"/>
         <mhc:IconButton
           ToolTip="Save Video Clips"
           Command="{Binding SaveCommand}"
-          Source="{StaticResource IconSave}"
-          Size="16" />
+          Icon="{StaticResource IconSave}"
+          Width="22"
+          Height="22"/>
         <mhc:IconToggleButton
-          Source="{StaticResource IconSoundMute}"
+          Icon="{StaticResource IconSoundMute}"
           IsChecked="{Binding VideoPlayer.Player.IsMuted}"
-          ToolTip="Mute" />
+          Width="22"
+          Height="22"
+          ToolTip="Mute"/>
                   
         <StackPanel
           Orientation="Horizontal"
@@ -74,7 +77,7 @@
 
           <TextBlock
             Text="Repeat for: "
-            Margin="0,0,4,0" />
+            Margin="0,0,4,0"/>
 
           <Slider
             Value="{Binding VideoPlayer.RepeatForSeconds}"
@@ -83,7 +86,7 @@
             Maximum="10"
             TickFrequency="1"
             IsSnapToTickEnabled="True" 
-            AutoToolTipPlacement="BottomRight" />
+            AutoToolTipPlacement="BottomRight"/>
         </StackPanel>
       </StackPanel>
 
@@ -93,7 +96,7 @@
         Grid.Row="1"
         Margin="4">
 
-        <TextBlock Text="Play: " />
+        <TextBlock Text="Play: "/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static mhc:PlayType.Video}"
@@ -102,7 +105,7 @@
           IsChecked="{Binding VideoPlayer.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
-                      ConverterParameter={x:Static mhc:PlayType.Video}}" />
+                      ConverterParameter={x:Static mhc:PlayType.Video}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static mhc:PlayType.Clip}"
@@ -111,7 +114,7 @@
           IsChecked="{Binding VideoPlayer.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
-                      ConverterParameter={x:Static mhc:PlayType.Clip}}" />
+                      ConverterParameter={x:Static mhc:PlayType.Clip}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static mhc:PlayType.Clips}"
@@ -120,7 +123,7 @@
           IsChecked="{Binding VideoPlayer.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
-                      ConverterParameter={x:Static mhc:PlayType.Clips}}" />
+                      ConverterParameter={x:Static mhc:PlayType.Clips}}"/>
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static mhc:PlayType.Group}"
@@ -129,7 +132,7 @@
           IsChecked="{Binding VideoPlayer.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
-                      ConverterParameter={x:Static mhc:PlayType.Group}}" />
+                      ConverterParameter={x:Static mhc:PlayType.Group}}"/>
       </StackPanel>
 
       <!-- Clips TreeView -->

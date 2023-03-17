@@ -8,9 +8,7 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentsRectsV.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/VideoPlayerStyle.xaml" />
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/ControlStyles/ZoomAndPanImageStyle.xaml" />
+    <ResourceDictionary Source="SegmentsRectsV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type vm:MediaViewerVM}">
@@ -29,7 +27,7 @@
               Value="True">
               <Setter
                 Property="FocusManager.FocusedElement"
-                Value="{Binding RelativeSource={RelativeSource Self}}" />
+                Value="{Binding RelativeSource={RelativeSource Self}}"/>
             </Trigger>
           </Style.Triggers>
         </Style>
@@ -38,60 +36,60 @@
       <Grid.InputBindings>
         <MouseBinding
           MouseAction="LeftDoubleClick"
-          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}"/>
         <KeyBinding
           Key="Esc"
-          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}"/>
         <KeyBinding
           Key="Right"
-          Command="{Binding NextCommand}" />
+          Command="{Binding NextCommand}"/>
         <KeyBinding
           Key="Left"
-          Command="{Binding PreviousCommand}" />
+          Command="{Binding PreviousCommand}"/>
         <KeyBinding
           Modifiers="Control"
           Key="P"
-          Command="{Binding PresentationPanel.PresentationCommand}" />
+          Command="{Binding PresentationPanel.PresentationCommand}"/>
         <KeyBinding
           Modifiers="Control"
           Key="R"
-          Command="{Binding MediaItemsM.RotateCommand, Source={x:Static pm:App.Core}}" />
+          Command="{Binding MediaItemsM.RotateCommand, Source={x:Static pm:App.Core}}"/>
         <KeyBinding
           Key="F2"
-          Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}" />
+          Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}"/>
         <KeyBinding
           Key="Delete"
-          Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}" />
+          Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}"/>
         <KeyBinding
           Modifiers="Control" Key="K"
-          Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}" />
+          Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="MouseWheel">
           <b:InvokeCommandAction
             Command="{Binding NavigateCommand}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseDown">
           <b:InvokeCommandAction
             Command="{Binding SegmentsVM.SegmentsRectsVM.CreateCommand,
                       Source={x:Static pm:App.Ui}}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseMove">
           <b:InvokeCommandAction
             Command="{Binding SegmentsVM.SegmentsRectsVM.EditCommand,
                       Source={x:Static pm:App.Ui}}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
             Command="{Binding SegmentsVM.SegmentsRectsVM.EndEditCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -106,7 +104,7 @@
         <ContentPresenter.Resources>
           <Style
             TargetType="{x:Type mhc:ZoomAndPanImage}"
-            BasedOn="{StaticResource MH.UI.WPF.Controls.ZoomAndPanImage}" />
+            BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPanImage}"/>
         </ContentPresenter.Resources>
       </ContentPresenter>
 
@@ -120,13 +118,13 @@
         <ContentPresenter.Resources>
           <Style
             TargetType="{x:Type mhc:VideoPlayer}"
-            BasedOn="{StaticResource MH.UI.WPF.Controls.VideoPlayer}" />
+            BasedOn="{StaticResource MH.Styles.Controls.VideoPlayer}"/>
         </ContentPresenter.Resources>
       </ContentPresenter>
       
       <!-- Segments Rects -->
       <ContentPresenter Content="{Binding SegmentsVM.SegmentsRectsVM,
-                                  Source={x:Static pm:App.Ui}}" />
+                                  Source={x:Static pm:App.Ui}}"/>
     </Grid>
 
   </DataTemplate>

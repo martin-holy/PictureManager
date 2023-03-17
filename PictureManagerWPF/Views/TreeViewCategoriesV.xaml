@@ -11,28 +11,28 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml" />
-          <ResourceDictionary Source="TreeViewSearchV.xaml" />
-          <ResourceDictionary Source="TreeItemV.xaml" />
-          <ResourceDictionary Source="MediaItemSizeTreeV.xaml" />
-          <ResourceDictionary Source="RatingTreeV.xaml" />
-          <ResourceDictionary Source="TreeContextMenus.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml"/>
+          <ResourceDictionary Source="TreeViewSearchV.xaml"/>
+          <ResourceDictionary Source="TreeItemV.xaml"/>
+          <ResourceDictionary Source="MediaItemSizeTreeV.xaml"/>
+          <ResourceDictionary Source="RatingTreeV.xaml"/>
+          <ResourceDictionary Source="TreeContextMenus.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Grid Background="{StaticResource ColorBrushBackground}">
 
       <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
       </Grid.RowDefinitions>
 
       <Border
         Grid.Row="0"
         BorderThickness="0,0,0,4"
         BorderBrush="{StaticResource AccentColorBrush4}">
-        
+
         <DockPanel Height="34">
 
           <!-- TreeView Categories Navigation Bar -->
@@ -42,24 +42,24 @@
 
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal" />
+                <StackPanel Orientation="Horizontal"/>
               </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <ItemsControl.ItemTemplate>
               <DataTemplate>
                 <mhc:IconButton
-                  Size="22"
-                  ShowShadow="False"
+                  Width="28"
+                  Height="28"
                   ToolTip="{Binding Name}"
                   Command="{Binding TreeViewCategoriesM.ScrollToCommand,
                             Source={x:Static pm:App.Core}}"
                   CommandParameter="{Binding}"
-                  Source="{Binding IconName,
+                  Icon="{Binding IconName,
                            Converter={StaticResource ResourceConverter}}"
-                  Fill="{Binding IconName,
-                         Converter={StaticResource ResourceConverter},
-                         ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}" />
+                  Foreground="{Binding IconName,
+                               Converter={StaticResource ResourceConverter},
+                               ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
               </DataTemplate>
             </ItemsControl.ItemTemplate>
           </ItemsControl>
@@ -71,21 +71,21 @@
 
             <!-- Search -->
             <mhc:IconButton
-              Size="22"
-              Source="{StaticResource IconMagnify}"
+              Width="28"
+              Height="28"
+              Icon="{StaticResource IconMagnify}"
               ToolTip="Search"
-              Command="{Binding Model.ShowSearchCommand}"
-              ShowShadow="False" />
+              Command="{Binding Model.ShowSearchCommand}"/>
 
             <!-- Button to pin slide panel -->
             <mhc:IconToggleButton
-              Source="{StaticResource IconPin}"
-              Size="14"
+              Icon="{StaticResource IconPin}"
+              Width="20"
+              Height="20"
               IsThreeState="False"
-              ShowShadow="False"
               IsChecked="{Binding IsPinned, RelativeSource=
                          {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
-              ToolTip="Pin panel" />
+              ToolTip="Pin panel"/>
           </StackPanel>
         </DockPanel>
       </Border>
@@ -98,14 +98,8 @@
 
         <!-- Disable Selecting -->
         <mhc:CatTreeView.ItemContainerStyle>
-          <Style
-            TargetType="{x:Type TreeViewItem}"
-            BasedOn="{StaticResource CatTreeViewItem}">
-
-            <Setter
-              Property="IsSelected"
-              Value="False" />
-
+          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource CatTreeViewItem}">
+            <Setter Property="IsSelected" Value="False"/>
             <Style.Triggers>
               <EventTrigger RoutedEvent="Selected">
                 <BeginStoryboard>
@@ -114,7 +108,7 @@
                       Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
                       <DiscreteBooleanKeyFrame
                         KeyTime="00:00:00"
-                        Value="False" />
+                        Value="False"/>
                     </BooleanAnimationUsingKeyFrames>
                   </Storyboard>
                 </BeginStoryboard>
@@ -122,46 +116,37 @@
             </Style.Triggers>
           </Style>
         </mhc:CatTreeView.ItemContainerStyle>
-        
+
         <mhc:CatTreeView.Style>
-          <Style
-            TargetType="{x:Type mhc:CatTreeView}"
-            BasedOn="{StaticResource CatTreeView}">
-            
+          <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource CatTreeView}">
+
             <!-- BlurEffect when Search is visible -->
             <Style.Triggers>
-              <DataTrigger
-                Binding="{Binding Model.TreeViewSearchM.IsVisible}"
-                Value="True">
-
+              <DataTrigger Binding="{Binding Model.TreeViewSearchM.IsVisible}" Value="True">
                 <Setter Property="Effect">
                   <Setter.Value>
-                    <BlurEffect
-                      Radius="4"
-                      KernelType="Gaussian" />
+                    <BlurEffect Radius="4" KernelType="Gaussian"/>
                   </Setter.Value>
                 </Setter>
               </DataTrigger>
             </Style.Triggers>
           </Style>
         </mhc:CatTreeView.Style>
-        
+
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="MouseLeftButtonUp">
             <b:InvokeCommandAction
               Command="{Binding SelectCommand}"
-              PassEventArgsToCommand="True" />
+              PassEventArgsToCommand="True"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
-        
+
       </mhc:CatTreeView>
 
       <!-- Search -->
       <ContentPresenter
         Grid.Row="1"
-        Content="{Binding Model.TreeViewSearchM}" />
-
+        Content="{Binding Model.TreeViewSearchM}"/>
     </Grid>
   </DataTemplate>
-    
 </ResourceDictionary>

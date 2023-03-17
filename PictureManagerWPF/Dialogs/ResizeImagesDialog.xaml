@@ -54,8 +54,8 @@
       <DockPanel Grid.Row="1" Grid.Column="1">
         <mhc:IconButton
           x:Name="BtnOpenDirectoryPicker"
-          Source="{StaticResource IconFolder}"
-          Fill="{StaticResource ColorBrushFolder}"
+          Icon="{StaticResource IconFolder}"
+          Foreground="{StaticResource ColorBrushFolder}"
           VerticalAlignment="Center"
           DockPanel.Dock="Right"
           Click="BtnOpenDirectoryPicker_OnClick" />

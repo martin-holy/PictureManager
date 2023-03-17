@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuint="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
@@ -14,72 +13,51 @@
   <HierarchicalDataTemplate
     DataType="{x:Type mhubc:TreeItem}"
     ItemsSource="{Binding Items}">
-    
+
     <HierarchicalDataTemplate.Resources>
-      <Style
-        x:Key="_iconStyle"
-        TargetType="{x:Type mhc:Icon}"
-        BasedOn="{StaticResource MH.UI.WPF.Controls.Icon}">
-        
+      <Style x:Key="_iconStyle" TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
         <Style.Triggers>
           <!-- ITreeCategory -->
           <DataTrigger
             Binding="{Binding Converter={StaticResource DataTypeConverter},
                       ConverterParameter={x:Type mhuint:ITreeCategory}}"
             Value="True">
-            <Setter
-              Property="Size"
-              Value="24" />
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
           </DataTrigger>
         </Style.Triggers>
       </Style>
-      
-      <Style
-        x:Key="_nameStyle"
-        TargetType="{x:Type TextBlock}">
-        
-        <Setter
-          Property="VerticalAlignment"
-          Value="Center" />
-        <Setter
-          Property="Margin"
-          Value="5,0,0,0" />
-        <Setter
-          Property="FontSize"
-          Value="14" />
-        
+
+      <Style x:Key="_nameStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="5,0,0,0"/>
+        <Setter Property="FontSize" Value="14"/>
+
         <Style.Triggers>
           <!-- ITreeCategory -->
           <DataTrigger
             Binding="{Binding Converter={StaticResource DataTypeConverter},
                       ConverterParameter={x:Type mhuint:ITreeCategory}}"
             Value="True">
-            <Setter
-              Property="FontSize"
-              Value="18" />
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
           </DataTrigger>
         </Style.Triggers>
       </Style>
-      
-      <Style
-        x:Key="_gridStyle"
-        TargetType="{x:Type Grid}">
-        
-        <Setter
-          Property="Background"
-          Value="Transparent" />
-          
+
+      <Style x:Key="_gridStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="Transparent"/>
+
         <Style.Triggers>
           <!-- ITreeCategory -->
           <DataTrigger
             Binding="{Binding Converter={StaticResource DataTypeConverter},
                       ConverterParameter={x:Type mhuint:ITreeCategory}}"
             Value="True">
-            <Setter
-              Property="Height"
-              Value="40" />
+            <Setter Property="Height" Value="40"/>
           </DataTrigger>
-            
+
           <!-- FavoriteFolderM ToolTip -->
           <DataTrigger
             Binding="{Binding Converter={StaticResource DataTypeConverter},
@@ -87,7 +65,7 @@
             Value="True">
             <Setter
               Property="ToolTip"
-              Value="{Binding Path=(m:FavoriteFolderM.Folder).FullPath}" />
+              Value="{Binding Path=(m:FavoriteFolderM.Folder).FullPath}"/>
           </DataTrigger>
 
           <!-- IFilterItem Background -->
@@ -100,31 +78,25 @@
               Value="{Binding Path=(pmdi:IFilterItem.DisplayFilter),
                       Converter={StaticResource ResourceConverter},
                       ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
-                      FallbackValue={StaticResource TransparentBrush}}" />
+                      FallbackValue={StaticResource TransparentBrush}}"/>
           </DataTrigger>
-            
+
           <!-- PersonM ToolTip -->
           <MultiDataTrigger>
             <MultiDataTrigger.Conditions>
               <Condition
                 Binding="{Binding Converter={StaticResource DataTypeConverter},
                           ConverterParameter={x:Type m:PersonM}}"
-                Value="True" />
+                Value="True"/>
               <Condition
                 Binding="{Binding Path=(m:PersonM.Segment),
                           Converter={StaticResource AllToBoolConverter}}"
-                Value="True" />
+                Value="True"/>
             </MultiDataTrigger.Conditions>
             <Setter Property="ToolTip">
               <Setter.Value>
-                <ToolTip
-                  BorderThickness="0"
-                  Padding="0">
-                    
-                  <Border
-                    BorderThickness="1"
-                    BorderBrush="Black">
-                      
+                <ToolTip BorderThickness="0" Padding="0">
+                  <Border BorderThickness="1" BorderBrush="Black">
                     <Image
                       Stretch="Fill"
                       Width="{Binding SegmentsVM.SegmentUiSize,
@@ -133,8 +105,8 @@
                                 Source={x:Static pm:App.Ui}}">
                       <Image.Source>
                         <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
-                          <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True" />
-                          <Binding Path="(m:PersonM.Segment)" />
+                          <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
+                          <Binding Path="(m:PersonM.Segment)"/>
                         </MultiBinding>
                       </Image.Source>
                     </Image>
@@ -146,8 +118,8 @@
         </Style.Triggers>
       </Style>
     </HierarchicalDataTemplate.Resources>
-    
-    <Grid Style="{StaticResource _gridStyle}">     
+
+    <Grid Style="{StaticResource _gridStyle}">
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
@@ -155,7 +127,7 @@
             PropertyName="ContextMenu"
             Value="{Binding
                     Converter={StaticResource ResourceConverter},
-                    ConverterParameter={x:Static rd:Dictionaries.TypeToTreeContextMenu}}" />
+                    ConverterParameter={x:Static rd:Dictionaries.TypeToTreeContextMenu}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -163,20 +135,16 @@
         Orientation="Horizontal"
         Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
 
-        <mhc:Icon
+        <Path
           Style="{StaticResource _iconStyle}"
-          Source="{Binding IconName,
-                   Converter={StaticResource ResourceConverter}}"
+          Data="{Binding IconName,
+                 Converter={StaticResource ResourceConverter}}"
           Fill="{Binding IconName,
                  Converter={StaticResource ResourceConverter},
-                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}" />
-        <TextBlock
-          Style="{StaticResource _nameStyle}"
-          Text="{Binding Name}" />
-        <TextBlock
-          Style="{StaticResource TreeItemKeywordsPicCount}" />
+                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+        <TextBlock Style="{StaticResource _nameStyle}" Text="{Binding Name}"/>
+        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}"/>
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>
-
 </ResourceDictionary>

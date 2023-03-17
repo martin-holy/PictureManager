@@ -12,8 +12,8 @@
                    Converter={StaticResource AllToVisibilityConverter}}">
 
       <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
       
       <!-- Search Box -->
@@ -35,7 +35,7 @@
 
                   <Setter
                     Property="FocusManager.FocusedElement"
-                    Value="{Binding RelativeSource={RelativeSource Self}}" />
+                    Value="{Binding RelativeSource={RelativeSource Self}}"/>
                 </Trigger>
               </Style.Triggers>
             </Style>
@@ -43,12 +43,13 @@
         </TextBox>
 
         <mhc:IconButton
-          Source="{StaticResource IconXCross}"
-          Size="12"
+          Icon="{StaticResource IconXCross}"
+          Width="18"
+          Height="18"
           HorizontalAlignment="Right"
           VerticalAlignment="Center"
           Margin="0,0,4,0"
-          Command="{Binding CloseCommand}" />
+          Command="{Binding CloseCommand}"/>
       </Grid>
 
       <!-- Search Result -->
@@ -71,20 +72,20 @@
                   MouseAction="LeftClick"
                   Command="{Binding DataContext.NavigateToCommand,
                             RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-                  CommandParameter="{Binding}" />
+                  CommandParameter="{Binding}"/>
               </StackPanel.InputBindings>
 
-              <mhc:Icon
-                Source="{Binding IconName,
-                         Converter={StaticResource ResourceConverter}}"
+              <Path
+                Style="{StaticResource MH.Styles.Icon}"
+                Data="{Binding IconName,
+                       Converter={StaticResource ResourceConverter}}"
                 Fill="{Binding IconName,
                        Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush},
-                       FallbackValue={StaticResource ColorBrushWhite}}" />
+                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
 
               <TextBlock
                 Text="{Binding Title}"
-                Margin="4" />
+                Margin="4"/>
 
             </StackPanel>
           </DataTemplate>

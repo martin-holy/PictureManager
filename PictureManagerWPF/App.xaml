@@ -6,37 +6,35 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ResourceDictionaries/DataTypes.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/DataTypes.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Icons.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/Converters.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/Icons.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/Converters.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/GridSplitter.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/MenuStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/TextBoxStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/ButtonStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/GridSplitter.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/MenuStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/BaseControlStyles/TextBoxStyles.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml" />
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/MenuStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml"/>
+        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/LabelStyles.xaml"/>
+
+        <ResourceDictionary Source="ResourceDictionaries/MahAppsMetro.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/themes/dark.blue.xaml"/>
         
-        <ResourceDictionary Source="ResourceDictionaries/MixedStyles.xaml" />
-
-        <ResourceDictionary Source="ResourceDictionaries/MahAppsMetro.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/styles/themes/dark.blue.xaml" />
+        <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml"/>
         
-        <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml" />
-        
-        <ResourceDictionary Source="Dialogs/AboutDialogV.xaml" />
-        <ResourceDictionary Source="Dialogs/CompressDialogV.xaml" />
-        <ResourceDictionary Source="Dialogs/RotationDialogV.xaml" />
-        <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml" />
+        <ResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
 
         <ResourceDictionary Source="Views/MainMenuV.xaml"/>
         <ResourceDictionary Source="Views/MainTabsV.xaml"/>

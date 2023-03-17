@@ -1,10 +1,15 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager">
 
   <DataTemplate x:Key="Views.MainMenu">
+    <DataTemplate.Resources>
+      <Style x:Key="_icon" TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+        <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+      </Style>
+    </DataTemplate.Resources>
+    
     <Menu Background="Transparent">
       <MenuItem
         Padding="0"
@@ -12,10 +17,10 @@
         Height="30">
         
         <MenuItem.Icon>
-          <mhc:Icon
-            Source="{StaticResource IconThreeBars}"
-            ShowShadow="True"
-            Margin="2 0 0 0" />
+          <Path
+            Style="{StaticResource _icon}"
+            Data="{StaticResource IconThreeBars}"
+            Margin="2 0 0 0"/>
         </MenuItem.Icon>
 
         <!-- Tools -->
@@ -28,7 +33,9 @@
             Command="{Binding MainWindowVM.OpenSettingsCommand,
                       Source={x:Static pm:App.Ui}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconSettings}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconSettings}"/>
             </MenuItem.Icon>
           </MenuItem>
 
@@ -37,14 +44,16 @@
             Command="{Binding MediaItemsM.AddGeoNamesFromFilesCommand,
                       Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconLocationCheckin}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconLocationCheckin}"/>
             </MenuItem.Icon>
           </MenuItem>
 
           <MenuItem
             Header="Test Button"
             Command="{Binding MainWindowVM.TestButtonCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
         </MenuItem>
 
         <!-- Media Items -->
@@ -55,51 +64,53 @@
           <MenuItem
             Header="Compress"
             Command="{Binding ThumbnailsGridsVM.CompressCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Rebuild Thumbnails"
             Command="{Binding MediaItemsVM.RebuildThumbnailsCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Rotate"
             InputGestureText="Ctrl+R"
             Command="{Binding MediaItemsM.RotateCommand,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Select Not Modified"
             Command="{Binding ThumbnailsGridsM.SelectNotModifiedCommand,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Shuffle"
             Command="{Binding ThumbnailsGridsM.ShuffleCommand,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Resize Images"
             Command="{Binding ThumbnailsGridsVM.ResizeImagesCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Images to Video"
             Command="{Binding ThumbnailsGridsVM.ImagesToVideoCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Copy Paths"
             Command="{Binding ThumbnailsGridsVM.CopyPathsCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Compare"
             Command="{Binding MediaItemsVM.CompareCommand,
-                      Source={x:Static pm:App.Ui}}" />
+                      Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Rename"
             InputGestureText="F2"
             Command="{Binding MediaItemsM.RenameCommand,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Segment Matching"
             Command="{Binding SegmentsVM.SegmentMatchingCommand,
                       Source={x:Static pm:App.Ui}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconEquals}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconEquals}"/>
             </MenuItem.Icon>
           </MenuItem>
         </MenuItem>
@@ -115,7 +126,9 @@
             Command="{Binding MediaItemsM.EditCommand,
                       Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconEdit}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconEdit}"/>
             </MenuItem.Icon>
           </MenuItem>
 
@@ -125,7 +138,9 @@
             Command="{Binding MediaItemsM.SaveEditCommand,
                       Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconSave}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconSave}"/>
             </MenuItem.Icon>
           </MenuItem>
 
@@ -135,7 +150,9 @@
             Command="{Binding MediaItemsM.CancelEditCommand,
                       Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconCancel}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconCancel}"/>
             </MenuItem.Icon>
           </MenuItem>
 
@@ -145,14 +162,16 @@
             Command="{Binding MediaItemsM.CommentCommand,
                       Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
-              <mhc:Icon Source="{StaticResource IconNotification}" />
+              <Path
+                Style="{StaticResource _icon}"
+                Data="{StaticResource IconNotification}"/>
             </MenuItem.Icon>
           </MenuItem>
 
           <MenuItem
             Header="Reload"
             Command="{Binding MediaItemsM.ReloadMetadataCommand,
-                      Source={x:Static pm:App.Core}}" />
+                      Source={x:Static pm:App.Core}}"/>
         </MenuItem>
 
         <!-- About -->
@@ -160,7 +179,7 @@
           Header="About"
           Command="{Binding MainWindowVM.OpenAboutCommand,
                     Source={x:Static pm:App.Ui}}"
-          Style="{StaticResource StyleMenuItemRoot}" />
+          Style="{StaticResource StyleMenuItemRoot}"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

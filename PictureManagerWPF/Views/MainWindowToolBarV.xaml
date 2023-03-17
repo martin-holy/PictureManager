@@ -35,11 +35,11 @@
           <ContentPresenter Content="{Binding TitleProgressBarM, Source={x:Static pm:App.Core}}"/>
 
           <!-- App Icon -->
-          <mhc:Icon
-            Source="{StaticResource IconImage}"
+          <Path
+            Style="{StaticResource MH.Styles.Icon}"
+            Data="{StaticResource IconImage}"
+            Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="5 -1 0 0"
-            Fill="White"
-            ShowShadow="True"
             HorizontalAlignment="Left"/>
 
           <!-- App Title -->
@@ -72,8 +72,10 @@
           <Separator />
 
           <!-- Media Items Count -->
-          <mhc:Icon
-            Source="{StaticResource IconImageMultiple}"
+          <Path
+            Style="{StaticResource MH.Styles.Icon}"
+            Data="{StaticResource IconImageMultiple}"
+            Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="3 0 0 0" />
           <TextBlock
             Text="{Binding MediaItemsM.MediaItemsCount, Source={x:Static pm:App.Core}}"
@@ -138,14 +140,14 @@
             DataContext="{Binding ThumbnailsGridsVM, Source={x:Static pm:App.Ui}}">
 
             <mhc:IconToggleButton
-              Source="{StaticResource IconImage}"
+              Icon="{StaticResource IconImage}"
               ToolTip="Image"
               Margin="0"
               IsChecked="{Binding Current.Model.ShowImages}"
               Command="{Binding Model.ReapplyFilterCommand}" />
 
             <mhc:IconToggleButton
-              Source="{StaticResource IconMovieClapper}"
+              Icon="{StaticResource IconMovieClapper}"
               ToolTip="Video"
               Margin="0"
               IsChecked="{Binding Current.Model.ShowVideos}"
@@ -158,8 +160,7 @@
           <mhc:IconTextButton
             Icon="{StaticResource IconDatabase}"
             Text="{Binding Sdb.Changes, Source={x:Static pm:App.Core}}"
-            Command="{Binding MainWindowVM.SaveDbCommand, Source={x:Static pm:App.Ui}}"
-            Effect="{StaticResource Res_ShadowEffect}"/>
+            Command="{Binding MainWindowVM.SaveDbCommand, Source={x:Static pm:App.Ui}}"/>
 
           <!-- Log Button -->
           <Button
@@ -187,22 +188,22 @@
               ToolTip="Segments edit"
               IsThreeState="False"
               VerticalAlignment="Center"
-              Source="{StaticResource IconPeople}"
+              Icon="{StaticResource IconPeople}"
               IsChecked="{Binding SegmentsRectsVM.AreVisible}" />
 
             <mhc:IconButton
               ToolTip="Open Segments drawer"
-              Source="{StaticResource IconDrawer}"
-              Command="{Binding OpenSegmentsDrawerCommand}" />
+              Icon="{StaticResource IconDrawer}"
+              Command="{Binding OpenSegmentsDrawerCommand}"/>
 
             <mhc:IconButton
               ToolTip="Add selected to Segments drawer"
-              Source="{StaticResource IconPlus}"
+              Icon="{StaticResource IconPlus}"
               Command="{Binding SegmentsM.AddSelectedToDrawerCommand}" />
 
             <mhc:IconButton
               ToolTip="Segment Matching"
-              Source="{StaticResource IconEquals}"
+              Icon="{StaticResource IconEquals}"
               Command="{Binding SegmentMatchingCommand}" />
           </StackPanel>
 
@@ -220,13 +221,13 @@
               <mhc:IconButton.Style>
                 <Style
                   TargetType="{x:Type mhc:IconButton}"
-                  BasedOn="{StaticResource MH.UI.WPF.Controls.IconButton}">
+                  BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
                   <Setter Property="Background" Value="White" />
-                  <Setter Property="Source" Value="{StaticResource IconPlay}" />
+                  <Setter Property="Icon" Value="{StaticResource IconPlay}" />
                   <Setter Property="ToolTip" Value="Stop presentation" />
                   <Style.Triggers>
                     <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                      <Setter Property="Source" Value="{StaticResource IconStop}" />
+                      <Setter Property="Icon" Value="{StaticResource IconStop}" />
                       <Setter Property="ToolTip" Value="Start presentation" />
                     </DataTrigger>
                   </Style.Triggers>
@@ -240,7 +241,6 @@
               Maximum="10"
               Value="{Binding Interval, Mode=TwoWay}"
               Icon="{StaticResource IconTimer}"
-              Effect="{StaticResource Res_ShadowEffect}"
               ToolTip="Presentation interval"/>
 
             <!-- Play Panoramic Images -->
@@ -249,7 +249,7 @@
               ToolTip="Play Panoramic Images"/>
           </StackPanel>
         </StackPanel>
-
+        
         <cc:ImageComparer x:Name="ImageComparerTool" Visibility="Collapsed"/>
       </StackPanel>
 

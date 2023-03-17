@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
@@ -19,7 +18,7 @@
           Header="Load"
           Command="{Binding ThumbnailsGridsVM.LoadByTagCommand,
                     Source={x:Static pm:App.Ui}}"
-          CommandParameter="{Binding}" />
+          CommandParameter="{Binding}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
     
@@ -32,7 +31,7 @@
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <mhu:SetterAction
             PropertyName="ContextMenu"
-            Value="{StaticResource TreeContextMenuRating}" />
+            Value="{StaticResource TreeContextMenuRating}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
       
@@ -41,13 +40,19 @@
         Margin="18,0,0,0">
         
         <StackPanel Orientation="Horizontal">
-          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}" />
-          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}" />
-          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}" />
-          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}" />
-          <mhc:Icon Source="{StaticResource IconStar}" Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}" />
+          <StackPanel.Resources>
+            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
+              <Setter Property="Data" Value="{StaticResource IconStar}"/>
+            </Style>
+          </StackPanel.Resources>
+          
+          <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}"/>
+          <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}"/>
+          <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}"/>
+          <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}"/>
+          <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}"/>
         </StackPanel>
-        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}" />
+        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}"/>
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>
