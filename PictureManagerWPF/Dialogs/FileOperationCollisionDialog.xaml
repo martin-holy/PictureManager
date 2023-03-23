@@ -1,25 +1,24 @@
-﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.FileOperationCollisionDialog"
+﻿<Window x:Class="PictureManager.Dialogs.FileOperationCollisionDialog"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   mc:Ignorable="d"
   Title="The destination already has a file with this name" SizeToContent="WidthAndHeight" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{StaticResource ColorBrushBackground}" 
-  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
-  WindowStartupLocation="CenterScreen" TitleCharacterCasing="Normal" 
+  ShowInTaskbar="False" FontSize="13.333" WindowStyle="ToolWindow"
+  WindowStartupLocation="CenterScreen" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0"
   Closing="OnClosing">
 
-  <controls:MetroWindow.Resources>
+  <Window.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
-      <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource StyleBaseTextBox}">
+      <Style x:Key="ErrorStyle" TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
         <Style.Triggers>
           <DataTrigger Binding="{Binding Path=Error}" Value="True">
             <Setter Property="Background" Value="#7FFF0000" />
@@ -35,7 +34,7 @@
         <Setter Property="MaxHeight" Value="{Binding MaxThumbSize}" />
       </Style>
     </ResourceDictionary>
-  </controls:MetroWindow.Resources>
+  </Window.Resources>
 
   <StackPanel Margin="5">
     
@@ -108,4 +107,4 @@
     </StackPanel>
 
   </StackPanel>
-</controls:MetroWindow>
+</Window>

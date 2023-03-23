@@ -5,10 +5,6 @@
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
 
-  <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListBox.xaml"/>
-  </ResourceDictionary.MergedDictionaries>
-
   <!-- ViewerM DataTemplate -->
   <DataTemplate DataType="{x:Type vm:ViewerVM}">
     <DataTemplate.Resources>
@@ -115,11 +111,12 @@
             Grid.Row="1">
 
             <ContentPresenter.Resources>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MahApps.Styles.ListBox}">
+              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
                 <Setter Property="ItemsSource" Value="{Binding Viewer.IncludedFolders}"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                       <Setter Property="ToolTip" Value="{Binding Path=(models:FolderM.FullPath)}"/>
                     </Style>
                   </Setter.Value>
@@ -151,11 +148,12 @@
 
           <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedFolders}">
             <ContentPresenter.Resources>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MahApps.Styles.ListBox}">
+              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
                 <Setter Property="ItemsSource" Value="{Binding Viewer.ExcludedFolders}"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                       <Setter Property="ToolTip" Value="{Binding Path=(models:FolderM.FullPath)}"/>
                     </Style>
                   </Setter.Value>
@@ -188,7 +186,8 @@
           <ListBox
             Grid.Row="1"
             ItemsSource="{Binding CategoryGroups}"
-            SelectionMode="Multiple">
+            SelectionMode="Multiple"
+            BorderThickness="0">
 
             <ListBox.ItemTemplate>
               <DataTemplate>
@@ -206,7 +205,7 @@
             </ListBox.ItemTemplate>
 
             <ListBox.ItemContainerStyle>
-              <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+              <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                 <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
               </Style>
             </ListBox.ItemContainerStyle>
@@ -233,11 +232,12 @@
 
           <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedKeywords}">
             <ContentPresenter.Resources>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MahApps.Styles.ListBox}">
+              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
                 <Setter Property="ItemsSource" Value="{Binding Viewer.ExcludedKeywords}"/>
+                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MahApps.Styles.ListBoxItem}">
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                       <Setter Property="ToolTip" Value="{Binding Path=(models:KeywordM.FullName)}"/>
                     </Style>
                   </Setter.Value>

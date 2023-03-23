@@ -7,14 +7,14 @@
   
   <DataTemplate DataType="{x:Type md:SettingsDialogM}">
     <DataTemplate.Resources>
-      
-      <Style TargetType="{x:Type TextBlock}">
+
+      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Margin" Value="5,0" />
       </Style>
-      
-      <Style TargetType="{x:Type Label}">
+
+      <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="VerticalAlignment" Value="Center" />
       </Style>

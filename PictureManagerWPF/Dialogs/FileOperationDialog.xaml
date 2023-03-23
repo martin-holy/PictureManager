@@ -1,15 +1,14 @@
-﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.FileOperationDialog"
+﻿<Window x:Class="PictureManager.Dialogs.FileOperationDialog"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   mc:Ignorable="d"
   Title="File Operation Dialog" SizeToContent="Height" Width="500"
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{StaticResource ColorBrushBackground}" 
-  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
-  WindowStartupLocation="Manual" TitleCharacterCasing="Normal" 
+  ShowInTaskbar="False" FontSize="13.333" WindowStyle="ToolWindow" 
+  WindowStartupLocation="Manual" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}">
 
   <StackPanel Orientation="Vertical">
@@ -42,4 +41,4 @@
       <Button x:Name="BtnCancel" Style="{StaticResource StyleButtonDialog}" Content="CANCEL" IsCancel="True" Click="BtnCancel_OnClick" />
     </StackPanel>
   </StackPanel>
-</controls:MetroWindow>
+</Window>

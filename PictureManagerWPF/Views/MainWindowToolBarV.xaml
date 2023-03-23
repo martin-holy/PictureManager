@@ -97,9 +97,13 @@
               <Style
                 TargetType="{x:Type Border}"
                 BasedOn="{StaticResource SBorderActiveFilter}" />
-              <Style
-                TargetType="{x:Type Label}"
-                BasedOn="{StaticResource SShadowLabel}" />
+              <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Margin" Value="-1,-1,0,0"/>
+                <Setter Property="Padding" Value="2,0"/>
+                <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
+              </Style>
             </StackPanel.Resources>
 
             <StackPanel.InputBindings>

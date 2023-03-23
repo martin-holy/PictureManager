@@ -1,25 +1,24 @@
-﻿<controls:MetroWindow x:Class="PictureManager.Dialogs.ImagesToVideoDialog"
+﻿<Window x:Class="PictureManager.Dialogs.ImagesToVideoDialog"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
   xmlns:p="clr-namespace:PictureManager.Properties"
   mc:Ignorable="d"
   Title="Images to Video" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{StaticResource ColorBrushBackground}" 
-  ShowInTaskbar="False" FontSize="13.333" ShowMaxRestoreButton="False" ShowMinButton="False" 
-  WindowStartupLocation="CenterOwner" TitleCharacterCasing="Normal" 
+  ShowInTaskbar="False" FontSize="13.333" WindowStyle="ToolWindow"
+  WindowStartupLocation="CenterOwner" 
   DataContext="{Binding RelativeSource={RelativeSource Self}}" Margin="0">
 
-  <controls:MetroWindow.Resources>
+  <Window.Resources>
     <Style TargetType="TextBlock">
       <Setter Property="Foreground" Value="White" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="Margin" Value="5" />
     </Style>
-  </controls:MetroWindow.Resources>
+  </Window.Resources>
 
   <StackPanel Margin="5">
 
@@ -62,9 +61,12 @@
 
         <!-- Height -->
         <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right" />
-        <controls:NumericUpDown Grid.Column="3" FontSize="16" Minimum="100" Maximum="3000" Height="30"
-                                Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoHeight, Mode=TwoWay}" />
-
+        <TextBox
+          Grid.Column="3"
+          FontSize="16"
+          Height="30"
+          PreviewTextInput="Height_PreviewTextInput"
+          Text="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoHeight, Mode=TwoWay}" />
       </Grid>
 
     </Grid>
@@ -77,4 +79,4 @@
       <Button x:Name="BtnCreateVideo" Style="{StaticResource StyleButtonDialog}" Content="CREATE VIDEO" Click="BtnCreateVideo_OnClick" />
     </StackPanel>
   </StackPanel>
-</controls:MetroWindow>
+</Window>

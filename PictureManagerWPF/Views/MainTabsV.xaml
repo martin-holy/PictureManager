@@ -115,7 +115,7 @@
       <TabControl.ItemContainerStyle>
         <Style
           TargetType="{x:Type TabItem}"
-          BasedOn="{StaticResource MahApps.Styles.TabItem}">
+          BasedOn="{StaticResource {x:Type TabItem}}">
 
           <Setter
             Property="MaxHeight"
@@ -190,7 +190,7 @@
                     Text="{Binding ContentHeader}"
                     Margin="0,8"
                     Effect="{StaticResource MH.Effects.DropShadow}"
-                    FontSize="{DynamicResource MahApps.Font.Size.TabItem}">
+                    FontSize="{StaticResource TabItemFontSize}">
 
                     <TextBlock.LayoutTransform>
                       <RotateTransform Angle="270"/>

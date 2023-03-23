@@ -26,19 +26,10 @@
       <!-- Buttons -->
       <StackPanel Orientation="Horizontal">
         <StackPanel.Resources>
-          <Style
-            TargetType="{x:Type Button}"
-            BasedOn="{StaticResource StyleBaseButtonBase}">
-
-            <Setter
-              Property="Margin"
-              Value="2"/>
-            <Setter
-              Property="Width"
-              Value="26"/>
-            <Setter
-              Property="Height"
-              Value="26"/>
+          <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
           </Style>
         </StackPanel.Resources>
 
