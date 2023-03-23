@@ -31,5 +31,55 @@ namespace MH.UI.WPF.Utils {
         child = (FrameworkElement)(child.Parent ?? child.TemplatedParent);
       }
     }
+
+    public static T TryFindParent<T>(this DependencyObject child) where T : DependencyObject {
+      DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+      if (parentObject == null)
+        return null;
+
+      T val = parentObject as T;
+      return val ?? parentObject.TryFindParent<T>();
+    }
+
+    public static T FindChild<T>(this DependencyObject parent, string childName = null) where T : DependencyObject {
+      if (parent == null) {
+        return null;
+      }
+
+      T val = null;
+      int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+      for (int i = 0; i < childrenCount; i++) {
+        DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+        T val2 = child as T;
+        if (val2 == null) {
+          val = child.FindChild<T>(childName);
+          if (val != null) {
+            break;
+          }
+
+          continue;
+        }
+
+        if (!string.IsNullOrEmpty(childName)) {
+          IFrameworkInputElement frameworkInputElement = child as IFrameworkInputElement;
+          if (frameworkInputElement != null && frameworkInputElement.Name == childName) {
+            val = (T)child;
+            break;
+          }
+
+          val = child.FindChild<T>(childName);
+          if (val != null) {
+            break;
+          }
+
+          continue;
+        }
+
+        val = (T)child;
+        break;
+      }
+
+      return val;
+    }
   }
 }

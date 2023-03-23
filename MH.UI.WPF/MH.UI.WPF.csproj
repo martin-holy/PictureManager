@@ -5,9 +5,9 @@
     <UseWPF>true</UseWPF>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.24.0</AssemblyVersion>
-    <FileVersion>1.24.0</FileVersion>
-    <Version>1.24.0</Version>
+    <AssemblyVersion>1.25.0</AssemblyVersion>
+    <FileVersion>1.25.0</FileVersion>
+    <Version>1.25.0</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>False</EnableNETAnalyzers>
@@ -20,6 +20,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Resources\Styles\BaseControls\GridSplitter.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>
