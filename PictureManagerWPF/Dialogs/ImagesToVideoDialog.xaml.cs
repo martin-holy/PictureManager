@@ -146,5 +146,9 @@ namespace PictureManager.Dialogs {
 
       Close();
     }
+
+    private void Height_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) {
+      e.Handled = new System.Text.RegularExpressions.Regex("[^0-9]+").IsMatch(e.Text);
+    }
   }
 }

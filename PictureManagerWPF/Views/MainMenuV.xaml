@@ -14,7 +14,8 @@
       <MenuItem
         Padding="0"
         Background="Transparent"
-        Height="30">
+        Height="30"
+        Width="30">
         
         <MenuItem.Icon>
           <Path
@@ -24,10 +25,7 @@
         </MenuItem.Icon>
 
         <!-- Tools -->
-        <MenuItem
-          Header="Tools"
-          Style="{StaticResource StyleMenuItemRoot}">
-
+        <MenuItem Header="Tools">
           <MenuItem
             Header="Settings"
             Command="{Binding MainWindowVM.OpenSettingsCommand,
@@ -57,10 +55,7 @@
         </MenuItem>
 
         <!-- Media Items -->
-        <MenuItem
-          Header="Media Items"
-          Style="{StaticResource StyleMenuItemRoot}">
-
+        <MenuItem Header="Media Items">
           <MenuItem
             Header="Compress"
             Command="{Binding ThumbnailsGridsVM.CompressCommand,
@@ -116,10 +111,7 @@
         </MenuItem>
 
         <!-- Metadata -->
-        <MenuItem
-          Header="Metadata"
-          Style="{StaticResource StyleMenuItemRoot}">
-
+        <MenuItem Header="Metadata">
           <MenuItem
             Header="Edit"
             InputGestureText="Ctrl+E"
@@ -178,8 +170,7 @@
         <MenuItem
           Header="About"
           Command="{Binding MainWindowVM.OpenAboutCommand,
-                    Source={x:Static pm:App.Ui}}"
-          Style="{StaticResource StyleMenuItemRoot}"/>
+                    Source={x:Static pm:App.Ui}}"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

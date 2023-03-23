@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using MahApps.Metro.Controls;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
@@ -84,7 +83,7 @@ namespace PictureManager.ViewModels {
     }
 
     private object CanDrag(MouseEventArgs e) {
-      if (e.OriginalSource is MetroThumb) return null;
+      if (((FrameworkElement)e.OriginalSource).DataContext is not MediaItemM) return null;
       var data = Model.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }

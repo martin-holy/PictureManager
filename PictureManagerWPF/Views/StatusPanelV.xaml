@@ -212,6 +212,7 @@
         <!-- Rating -->
         <Border
           Style="{StaticResource SBorderGroup}"
+          Margin="2,2,0,0"
           Visibility="{Binding Rating.Count,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <Border Margin="0">
@@ -225,7 +226,7 @@
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <Path Data="{StaticResource IconStar}"/>
+                  <Path Data="{StaticResource IconStar}" Style="{StaticResource MH.Styles.Icon}"/>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>

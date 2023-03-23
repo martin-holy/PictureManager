@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
   
@@ -33,7 +32,13 @@
           Text="{Binding CurrentGrid.FilterSize.PixelMax,
                  Converter={StaticResource MediaItemSizeConverter}}" />
 
-        <mah:RangeSlider
+        <TextBlock
+          Grid.Row="1"
+          Grid.Column="0"
+          Grid.ColumnSpan="2"
+          Text="Under construction"/>
+
+        <!--<mah:RangeSlider
           Grid.Row="1"
           Grid.Column="0"
           Grid.ColumnSpan="2"
@@ -57,7 +62,7 @@
               <b:InvokeCommandAction Command="{Binding RangeChangedCommand}" />
             </b:EventTrigger>
           </b:Interaction.Triggers>
-        </mah:RangeSlider>
+        </mah:RangeSlider>-->
       </Grid>
     </StackPanel>
   </HierarchicalDataTemplate>

@@ -29,14 +29,16 @@
         </MenuItem.ItemsSource>
 
         <MenuItem.Style>
-          <Style
-            TargetType="{x:Type MenuItem}"
-            BasedOn="{StaticResource StyleMenuItemRoot}">
+          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Background" Value="Transparent"/>
             <Setter
               Property="Header"
               Value="{Binding ViewersM.Current.Name,
                       Source={x:Static pm:App.Core}}"/>
             <Style.Triggers>
+              <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+              </Trigger>
               <DataTrigger
                 Binding="{Binding ViewersM.Current,
                           Source={x:Static pm:App.Core}}"
@@ -48,9 +50,7 @@
         </MenuItem.Style>
 
         <MenuItem.ItemContainerStyle>
-          <Style
-            TargetType="{x:Type MenuItem}"
-            BasedOn="{StaticResource StyleBaseMenuItem}">
+          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
             <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}"/>
             <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>

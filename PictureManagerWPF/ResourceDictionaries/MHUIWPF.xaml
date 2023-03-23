@@ -4,9 +4,24 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
   
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ButtonBase.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ComboBox.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/CheckBox.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Label.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ListBox.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Menu.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ProgressBar.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/RadioButton.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollBar.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ScrollViewer.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Slider.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TabControl.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TabItem.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TextBoxBase.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ToolTip.xaml"/>
+
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconButton.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextButton.xaml"/>
@@ -23,6 +38,28 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/WindowButtons.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ZoomAndPanImage.xaml"/>
   </ResourceDictionary.MergedDictionaries>
+
+  <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MH.Styles.BaseControls.ButtonBase}"/>
+  <Style TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource MH.Styles.BaseControls.RepeatButton}"/>
+  <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MH.Styles.BaseControls.ToggleButton}"/>
+  <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ComboBox}"/>
+  <Style TargetType="{x:Type GridSplitter}" BasedOn="{StaticResource MH.Styles.BaseControls.GridSplitter}"/>
+  <Style TargetType="{x:Type CheckBox}" BasedOn="{StaticResource MH.Styles.BaseControls.CheckBox}"/>
+  <Style TargetType="{x:Type Label}" BasedOn="{StaticResource MH.Styles.BaseControls.Label}"/>
+  <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource MH.Styles.BaseControls.ListBox}"/>
+  <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource MH.Styles.BaseControls.ListBoxItem}"/>
+  <Style TargetType="{x:Type ContextMenu}" BasedOn="{StaticResource MH.Styles.BaseControls.ContextMenu}"/>
+  <Style TargetType="{x:Type Menu}" BasedOn="{StaticResource MH.Styles.BaseControls.Menu}"/>
+  <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MH.Styles.BaseControls.MenuItem}"/>
+  <Style TargetType="{x:Type ProgressBar}" BasedOn="{StaticResource MH.Styles.BaseControls.ProgressBar}"/>
+  <Style TargetType="{x:Type RadioButton}" BasedOn="{StaticResource MH.Styles.BaseControls.RadioButton}"/>
+  <Style TargetType="{x:Type ScrollBar}" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollBar}"/>
+  <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MH.Styles.BaseControls.ScrollViewer}"/>
+  <Style TargetType="{x:Type Slider}" BasedOn="{StaticResource MH.Styles.BaseControls.Slider}"/>
+  <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource MH.Styles.BaseControls.TabControl}"/>
+  <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.Styles.BaseControls.TabItem}"/>
+  <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MH.Styles.BaseControls.TextBoxBase}"/>
+  <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
 
   <Style TargetType="{x:Type mhc:DialogHost}" BasedOn="{StaticResource MH.Styles.Controls.DialogHost}"/>
   <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}"/>

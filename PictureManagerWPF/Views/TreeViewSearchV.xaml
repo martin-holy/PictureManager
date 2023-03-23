@@ -24,15 +24,9 @@
           FontSize="16">
 
           <TextBox.Style>
-            <Style
-              TargetType="{x:Type TextBox}"
-              BasedOn="{StaticResource StyleBaseTextBox}">
-
+            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
               <Style.Triggers>
-                <Trigger
-                  Property="IsVisible"
-                  Value="True">
-
+                <Trigger Property="IsVisible" Value="True">
                   <Setter
                     Property="FocusManager.FocusedElement"
                     Value="{Binding RelativeSource={RelativeSource Self}}"/>
