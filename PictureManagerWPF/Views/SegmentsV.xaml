@@ -50,6 +50,8 @@
           <mhc:IconToggleButton
             ToolTip="Groups with similarities"
             IsThreeState="False"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Left"
             Icon="{StaticResource IconPeopleMultiple}"
             IsChecked="{Binding SegmentsM.GroupConfirmedSegments}"
             Command="{Binding SegmentsM.GroupConfirmedCommand}"/>
