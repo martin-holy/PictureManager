@@ -21,7 +21,8 @@
       <TextBlock
         Text="{Binding Title}"
         FontSize="20"
-        Padding="8" />
+        Padding="8"
+        Foreground="{StaticResource MH.Brushes.Text}"/>
     </StackPanel>
   </DataTemplate>
     
