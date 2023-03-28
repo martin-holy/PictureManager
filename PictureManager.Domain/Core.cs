@@ -26,6 +26,7 @@ namespace PictureManager.Domain {
     public MainWindowM MainWindowM { get; }
     public MediaItemsM MediaItemsM { get; }
     public MediaItemSizesTreeM MediaItemSizesTreeM { get; }
+    public MediaViewerM MediaViewerM { get; }
     public PeopleM PeopleM { get; }
     public RatingsTreeM RatingsTreeM { get; }
     public SegmentsM SegmentsM { get; }
@@ -52,15 +53,16 @@ namespace PictureManager.Domain {
       FoldersM = new(this, ViewersM); // FolderKeywordsM, MediaItemsM
       GeoNamesM = new();
       KeywordsM = new(CategoryGroupsM);
-      MainWindowM = new();
+      MainWindowM = new(this);
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       MediaItemSizesTreeM = new();
+      MediaViewerM = new();
       PeopleM = new(CategoryGroupsM);
       RatingsTreeM = new();
       StatusPanelM = new(this);
       ThumbnailsGridsM = new(this);
       TreeViewCategoriesM = new(this);
-      VideoClipsM = new(MediaItemsM);
+      VideoClipsM = new(MediaItemsM, MediaViewerM.MediaPlayerM);
 
       CategoryGroupsM.Categories.Add(Category.People, PeopleM);
       CategoryGroupsM.Categories.Add(Category.Keywords, KeywordsM);
@@ -105,6 +107,27 @@ namespace PictureManager.Domain {
     }
 
     private void AttachEvents() {
+      MainWindowM.PropertyChanged += (_, e) => {
+        if (nameof(MainWindowM.IsFullScreen).Equals(e.PropertyName)) {
+          var isFullScreen = MainWindowM.IsFullScreen;
+
+          MediaViewerM.IsVisible = isFullScreen;
+
+          if (!isFullScreen) {
+            ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
+            TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+
+            if (SegmentsM.NeedReload) {
+              SegmentsM.NeedReload = false;
+              SegmentsM.Reload();
+            }
+
+            MediaViewerM.Deactivate();
+            StatusPanelM.CurrentMediaItemM = ThumbnailsGridsM.Current?.CurrentMediaItem;
+          }
+        }
+      };
+
       FoldersM.FolderDeletedEventHandler += (_, e) => {
         FavoriteFoldersM.ItemDelete(e.Data);
         MediaItemsM.Delete(e.Data.MediaItems.ToArray());
@@ -124,6 +147,10 @@ namespace PictureManager.Domain {
           SegmentsM.Reload(false, true);
       };
 
+      PeopleM.PeopleKeywordChangedEvent += delegate {
+        SegmentsM.Reload();
+      };
+
       KeywordsM.AfterItemRenameEventHandler += (_, e) => {
         MediaItemsM.UpdateInfoBoxWithKeyword((KeywordM)e.Data);
       };
@@ -139,7 +166,23 @@ namespace PictureManager.Domain {
         ThumbnailsGridsM.RemoveMediaItem(e.Data);
       };
 
+      MediaItemsM.MediaItemsDeletedEventHandler += async (_, e) => {
+        if (ThumbnailsGridsM.Current?.NeedReload == true)
+          await ThumbnailsGridsM.Current.ThumbsGridReloadItems();
+
+        if (MediaViewerM.IsVisible) {
+          MediaViewerM.MediaItems.Remove(e.Data[0]);
+          if (MediaItemsM.Current != null)
+            MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+          else
+            MainWindowM.IsFullScreen = false;
+        }
+      };
+
       MediaItemsM.MediaItemsOrientationChangedEventHandler += async (_, e) => {
+        if (MediaViewerM.IsVisible && e.Data.Contains(MediaItemsM.Current))
+          MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+
         foreach (var __ in e.Data)
           MediaItemsM.DataAdapter.IsModified = true;
 
@@ -153,6 +196,8 @@ namespace PictureManager.Domain {
 
       MediaItemsM.PropertyChanged += (_, e) => {
         if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
+          MediaViewerM.SetCurrent(MediaItemsM.Current);
+
           if (MainWindowM.IsFullScreen)
             TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
         }
@@ -167,6 +212,22 @@ namespace PictureManager.Domain {
         if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
           MediaItemSizesTreeM.Size.CurrentGrid = ThumbnailsGridsM.Current;
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+          MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
+        }
+      };
+
+      MediaViewerM.PropertyChanged += (_, e) => {
+        switch (e.PropertyName) {
+          case nameof(MediaViewerM.IsVisible):
+            StatusPanelM.OnPropertyChanged(nameof(StatusPanelM.FilePath));
+            MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
+            break;
+          case nameof(MediaViewerM.Current):
+            SegmentsM.SegmentsRectsM.MediaItem = MediaViewerM.Current;
+
+            if (MediaItemsM.Current != MediaViewerM.Current)
+              MediaItemsM.Current = MediaViewerM.Current;
+            break;
         }
       };
     }

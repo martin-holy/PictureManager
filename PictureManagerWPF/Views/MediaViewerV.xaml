@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
@@ -17,14 +16,12 @@
       Background="Transparent"
       Focusable="True"
       FocusVisualStyle="{x:Null}"
-      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
+      Visibility="{Binding Model.IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
 
       <Grid.Style>
         <Style TargetType="{x:Type Grid}">
           <Style.Triggers>
-            <Trigger
-              Property="IsMouseOver"
-              Value="True">
+            <Trigger Property="IsMouseOver" Value="True">
               <Setter
                 Property="FocusManager.FocusedElement"
                 Value="{Binding RelativeSource={RelativeSource Self}}"/>
@@ -34,35 +31,9 @@
       </Grid.Style>
 
       <Grid.InputBindings>
-        <MouseBinding
-          MouseAction="LeftDoubleClick"
-          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}"/>
-        <KeyBinding
-          Key="Esc"
-          Command="{Binding MainWindowVM.SwitchToBrowserCommand, Source={x:Static pm:App.Ui}}"/>
-        <KeyBinding
-          Key="Right"
-          Command="{Binding NextCommand}"/>
-        <KeyBinding
-          Key="Left"
-          Command="{Binding PreviousCommand}"/>
-        <KeyBinding
-          Modifiers="Control"
-          Key="P"
-          Command="{Binding PresentationPanel.PresentationCommand}"/>
-        <KeyBinding
-          Modifiers="Control"
-          Key="R"
-          Command="{Binding MediaItemsM.RotateCommand, Source={x:Static pm:App.Core}}"/>
-        <KeyBinding
-          Key="F2"
-          Command="{Binding MediaItemsM.RenameCommand, Source={x:Static pm:App.Core}}"/>
-        <KeyBinding
-          Key="Delete"
-          Command="{Binding MediaItemsVM.DeleteCommand, Source={x:Static pm:App.Ui}}"/>
-        <KeyBinding
-          Modifiers="Control" Key="K"
-          Command="{Binding MediaItemsM.CommentCommand, Source={x:Static pm:App.Core}}"/>
+        <KeyBinding Key="Right" Command="{Binding Model.NextCommand}"/>
+        <KeyBinding Key="Left" Command="{Binding Model.PreviousCommand}"/>
+        <KeyBinding Modifiers="Control" Key="P" Command="{Binding Model.PresentationPanel.PresentationCommand}"/>
       </Grid.InputBindings>
 
       <b:Interaction.Triggers>
@@ -74,59 +45,128 @@
 
         <b:EventTrigger EventName="PreviewMouseDown">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.CreateCommand,
-                      Source={x:Static pm:App.Ui}}"
+            Command="{Binding CoreVM.SegmentsVM.SegmentsRectsVM.CreateCommand}"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseMove">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.EditCommand,
-                      Source={x:Static pm:App.Ui}}"
+            Command="{Binding CoreVM.SegmentsVM.SegmentsRectsVM.EditCommand}"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.EndEditCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding CoreVM.SegmentsVM.SegmentsRectsVM.EndEditCommand}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <!-- Full Media Image -->
-      <ContentPresenter
-        Content="{Binding FullImage}"
-        Visibility="{Binding Current.MediaType,
-                     Converter={StaticResource AllToVisibilityConverter},
-                     ConverterParameter={x:Static pmd:MediaType.Image}}"
-        Focusable="False">
+      <mhc:ZoomAndPan
+        x:Name="zoom"
+        ContentWidth="{Binding Model.ContentWidth, Mode=TwoWay}"
+        ContentHeight="{Binding Model.ContentHeight, Mode=TwoWay}"
+        MinAnimationDuration="{Binding Model.PresentationPanel.MinAnimationDuration}"
+        IsAnimationOn="{Binding Model.PresentationPanel.IsAnimationOn, Mode=TwoWay}"
+        ReScaleToFit="{Binding Model.ReScaleToFit, Mode=TwoWay}">
 
-        <ContentPresenter.Resources>
-          <Style
-            TargetType="{x:Type mhc:ZoomAndPanImage}"
-            BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPanImage}"/>
-        </ContentPresenter.Resources>
-      </ContentPresenter>
+        <b:Interaction.Triggers>
+          <b:PropertyChangedTrigger Binding="{Binding ElementName=zoom, Path=ScaleX}">
+            <b:InvokeCommandAction
+              Command="{Binding CoreVM.SegmentsVM.SegmentsM.SegmentsRectsM.UpdateScaleCommand}"
+              CommandParameter="{Binding ElementName=zoom, Path=ScaleX}"/>
+            <b:InvokeCommandAction
+              Command="{Binding Model.UpdateActualZoomCommand}"
+              CommandParameter="{Binding ElementName=zoom, Path=ScaleX}"/>
+          </b:PropertyChangedTrigger>
+        </b:Interaction.Triggers>
 
-      <!-- Full Media Video -->
-      <ContentPresenter
-        Content="{Binding FullVideo}"
-        Visibility="{Binding Current.MediaType,
+        <Grid>
+          <!-- Image -->
+          <Image
+            x:Name="image"
+            Source="{Binding ImageSource}"
+            Width="{Binding Model.ContentWidth}"
+            Height="{Binding Model.ContentHeight}"
+            Visibility="{Binding Model.Current.MediaType,
+                         Converter={StaticResource AllToVisibilityConverter},
+                         ConverterParameter={x:Static pmd:MediaType.Image}}"/>
+
+          <!-- Video -->
+          <mhc:MediaPlayer
+            x:Name="player"
+            LoadedBehavior="Manual"
+            UnloadedBehavior="Stop"
+            ScrubbingEnabled="True"
+            Stretch="Uniform"
+            StretchDirection="Both"
+            Volume="{Binding ElementName=controlPanel, Path=Volume}"
+            Speed="{Binding ElementName=controlPanel, Path=Speed}"
+            IsMuted="{Binding Model.MediaPlayerM.IsMuted}"
+            Visibility="{Binding Model.Current.MediaType,
+                         Converter={StaticResource AllToVisibilityConverter}, 
+                         ConverterParameter={x:Static pmd:MediaType.Video}}">
+
+            <FrameworkElement.LayoutTransform>
+              <TransformGroup>
+                <RotateTransform Angle="{Binding Model.Current.RotationAngle}"/>
+              </TransformGroup>
+            </FrameworkElement.LayoutTransform>
+
+            <b:Interaction.Triggers>
+              <b:EventTrigger EventName="Loaded">
+                <b:InvokeCommandAction
+                  Command="{Binding MediaPlayerLoadedCommand}"
+                  PassEventArgsToCommand="True"/>
+              </b:EventTrigger>
+              <b:EventTrigger EventName="MediaOpened">
+                <b:InvokeCommandAction
+                  Command="{Binding Model.MediaPlayerM.MediaOpenedCommand}"
+                  PassEventArgsToCommand="True"/>
+              </b:EventTrigger>
+              <b:EventTrigger EventName="MediaEnded">
+                <b:InvokeCommandAction
+                  Command="{Binding Model.MediaPlayerM.MediaEndedCommand}"
+                  PassEventArgsToCommand="True"/>
+              </b:EventTrigger>
+            </b:Interaction.Triggers>
+          </mhc:MediaPlayer>
+        </Grid>
+      </mhc:ZoomAndPan>
+
+      <!-- Media Player Control Panel -->
+      <mhc:MediaPlayerControlPanel
+        Grid.Row="1"
+        x:Name="controlPanel"
+        Player="{Binding ElementName=player}"
+        Height="30"
+        TimelinePosition="{Binding Model.MediaPlayerM.TimelinePosition, Mode=TwoWay}"
+        TimelineMaximum="{Binding Model.MediaPlayerM.TimelineMaximum, Mode=TwoWay}"
+        TimelineSmallChange="{Binding Model.MediaPlayerM.TimelineSmallChange}"
+        TimelineLargeChange="{Binding Model.MediaPlayerM.TimelineLargeChange}"
+        Volume="{Binding Model.MediaPlayerM.Volume}"
+        Speed="{Binding Model.MediaPlayerM.Speed}"
+        IsPlaying="{Binding Model.MediaPlayerM.IsPlaying}"
+        SourcePath="{Binding Model.MediaPlayerM.Source}"
+        Background="#33000000"
+        VerticalAlignment="Top"
+        Visibility="{Binding Model.Current.MediaType,
                      Converter={StaticResource AllToVisibilityConverter}, 
-                     ConverterParameter={x:Static pmd:MediaType.Video}}">
-        
-        <ContentPresenter.Resources>
-          <Style
-            TargetType="{x:Type mhc:VideoPlayer}"
-            BasedOn="{StaticResource MH.Styles.Controls.VideoPlayer}"/>
-        </ContentPresenter.Resources>
-      </ContentPresenter>
-      
-      <!-- Segments Rects -->
-      <ContentPresenter Content="{Binding SegmentsVM.SegmentsRectsVM,
-                                  Source={x:Static pm:App.Ui}}"/>
-    </Grid>
+                     ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
+      <!-- Segments Rects -->
+      <ContentPresenter
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        Content="{Binding CoreVM.SegmentsVM.SegmentsRectsVM}"
+        Width="{Binding ElementName=image, Path=ActualWidth}"
+        Height="{Binding ElementName=image, Path=ActualHeight}">
+
+        <ContentPresenter.RenderTransform>
+          <TranslateTransform
+            X="{Binding ElementName=zoom, Path=TransformX}"
+            Y="{Binding ElementName=zoom, Path=TransformY}"/>
+        </ContentPresenter.RenderTransform>
+      </ContentPresenter>
+    </Grid>
   </DataTemplate>
-    
 </ResourceDictionary>

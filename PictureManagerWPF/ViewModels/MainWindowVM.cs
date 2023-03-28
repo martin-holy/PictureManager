@@ -19,7 +19,6 @@ namespace PictureManager.ViewModels {
 
     public bool IsMaximized { get => _isMaximized; set { _isMaximized = value; OnPropertyChanged(); } }
     public bool FixWindowSize { get => _fixWindowSize; set { _fixWindowSize = value; OnPropertyChanged(); } }
-    public bool CanOpenStatusPanel => CoreM.ThumbnailsGridsM.Current != null || CoreVM.MediaViewerVM.IsVisible;
 
     public RelayCommand<object> SwitchToBrowserCommand { get; }
     public RelayCommand<object> OpenSettingsCommand { get; }
@@ -36,7 +35,9 @@ namespace PictureManager.ViewModels {
       CoreVM = coreVM;
       Model = model;
 
-      SwitchToBrowserCommand = new(() => Model.IsFullScreen = false);
+      SwitchToBrowserCommand = new(
+        () => Model.IsFullScreen = false,
+        () => CoreM.MediaViewerM.IsVisible);
       OpenSettingsCommand = new(OpenSettings);
       OpenAboutCommand = new(OpenAbout);
       OpenLogCommand = new(OpenLog);

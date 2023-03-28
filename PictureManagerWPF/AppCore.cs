@@ -9,7 +9,6 @@ using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
 using PictureManager.Domain.Models;
 using System.Linq;
-using PictureManager.Views;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -45,7 +44,7 @@ namespace PictureManager {
 
       FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
-      MediaViewerVM = new();
+      MediaViewerVM = new(this, App.Core.MediaViewerM);
       PeopleVM = new(App.Core, App.Core.PeopleM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
@@ -55,8 +54,6 @@ namespace PictureManager {
 
       PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM);
-
-      VideoClipsVM.VideoPlayer = MediaViewerVM.FullVideo;
 
       AttachEvents();
     }
@@ -81,8 +78,8 @@ namespace PictureManager {
           PersonVM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
 
-        if (MediaViewerVM.IsVisible)
-          MediaViewerVM.Current?.SetInfoBox();
+        if (App.Core.MediaViewerM.IsVisible)
+          App.Core.MediaViewerM.Current?.SetInfoBox();
       };
 
       App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
@@ -96,53 +93,6 @@ namespace PictureManager {
           PersonVM.ReloadPersonSegments();
 
         App.Core.SegmentsM.SegmentsDrawerRemove(e.Data);
-      };
-
-      App.Core.PeopleM.PeopleKeywordChangedEvent += (_, _) => {
-        App.Core.SegmentsM.Reload();
-      };
-
-      App.Core.MainWindowM.PropertyChanged += (_, e) => {
-        if (nameof(App.Core.MainWindowM.IsFullScreen).Equals(e.PropertyName)) {
-          var isFullScreen = App.Core.MainWindowM.IsFullScreen;
-
-          MediaViewerVM.IsVisible = isFullScreen;
-
-          if (!isFullScreen) {
-            App.Core.ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
-            App.Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-
-            if (App.Core.SegmentsM.NeedReload) {
-              App.Core.SegmentsM.NeedReload = false;
-              App.Core.SegmentsM.Reload();
-            }
-            
-            MediaViewerVM.Deactivate();
-            ToolsTabsVM.Deactivate(VideoClipsVM.ToolsTabsItem);
-
-            App.Core.StatusPanelM.CurrentMediaItemM = App.Core.ThumbnailsGridsM.Current?.CurrentMediaItem;
-          }
-        }
-      };
-
-      App.Core.ThumbnailsGridsM.PropertyChanged += (_, e) => {
-        if (nameof(App.Core.ThumbnailsGridsM.Current).Equals(e.PropertyName))
-          MainWindowVM.OnPropertyChanged(nameof(MainWindowVM.CanOpenStatusPanel));
-      };
-
-      MediaViewerVM.PropertyChanged += (_, e) => {
-        switch (e.PropertyName) {
-          case nameof(MediaViewerVM.IsVisible):
-            App.Core.StatusPanelM.OnPropertyChanged(nameof(App.Core.StatusPanelM.FilePath));
-            MainWindowVM.OnPropertyChanged(nameof(MainWindowVM.CanOpenStatusPanel));
-            break;
-          case nameof(MediaViewerVM.Current):
-            App.Core.SegmentsM.SegmentsRectsM.MediaItem = MediaViewerVM.Current;
-
-            if (App.Core.MediaItemsM.Current != MediaViewerVM.Current)
-              App.Core.MediaItemsM.Current = MediaViewerVM.Current;
-            break;
-        }
       };
 
       MainTabsVM.TabClosedEventHandler += (_, e) => {
@@ -162,32 +112,6 @@ namespace PictureManager {
 
           if (MainTabsVM.Selected is not { Content: ViewModels.PeopleVM })
             App.Core.PeopleM.DeselectAll();
-        }
-      };
-
-      App.Core.MediaItemsM.PropertyChanged += (_, e) => {
-        switch (e.PropertyName) {
-          case nameof(App.Core.MediaItemsM.Current):
-            MediaViewerVM.SetCurrent(App.Core.MediaItemsM.Current);
-            break;
-        }
-      };
-
-      App.Core.MediaItemsM.MediaItemsOrientationChangedEventHandler += (_, e) => {
-        if (MediaViewerVM.IsVisible && e.Data.Contains(App.Core.MediaItemsM.Current))
-          MediaViewerVM.SetMediaItemSource(App.Core.MediaItemsM.Current);
-      };
-
-      App.Core.MediaItemsM.MediaItemsDeletedEventHandler += async (_, e) => {
-        if (App.Core.ThumbnailsGridsM.Current?.NeedReload == true)
-          await App.Core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
-
-        if (MediaViewerVM.IsVisible) {
-          MediaViewerVM.MediaItems.Remove(e.Data[0]);
-          if (App.Core.MediaItemsM.Current != null)
-            MediaViewerVM.SetMediaItemSource(App.Core.MediaItemsM.Current);
-          else
-            App.Core.MainWindowM.IsFullScreen = false;
         }
       };
     }

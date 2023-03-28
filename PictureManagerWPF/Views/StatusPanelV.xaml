@@ -80,7 +80,7 @@
         <!-- PositionSlashCount / Selected / Modified -->
         <Border
           Style="{StaticResource _infoGroup}"
-          DataContext="{x:Static pm:App.Ui}">
+          DataContext="{x:Static pm:App.Core}">
 
           <StackPanel Orientation="Horizontal">
             <Path Data="{StaticResource IconImageMultiple}"/>
@@ -96,16 +96,16 @@
 
                     <Setter
                       Property="Text"
-                      Value="{Binding ThumbnailsGridsVM.Model.Current.PositionSlashCount}"/>
+                      Value="{Binding ThumbnailsGridsM.Current.PositionSlashCount}"/>
                     
                     <Style.Triggers>
                       <DataTrigger
-                        Binding="{Binding MediaViewerVM.IsVisible}"
+                        Binding="{Binding MediaViewerM.IsVisible}"
                         Value="True">
                         
                         <Setter
                           Property="Text"
-                          Value="{Binding MediaViewerVM.PositionSlashCount}"/>
+                          Value="{Binding MediaViewerM.PositionSlashCount}"/>
                       </DataTrigger>
                     </Style.Triggers>
                   </Style>
@@ -116,18 +116,18 @@
             <!-- Selected -->
             <Border
               Background="#1181B1"
-              Visibility="{Binding MediaViewerVM.IsVisible,
+              Visibility="{Binding MediaViewerM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding ThumbnailsGridsVM.Model.Current.SelectedCount}"/>
+              <TextBlock Text="{Binding ThumbnailsGridsM.Current.SelectedCount}"/>
             </Border>
 
             <!-- Modified -->
             <Border
               Background="#CA5100" 
-              Visibility="{Binding MediaItemsVM.Model.IsEditModeOn,
+              Visibility="{Binding MediaItemsM.IsEditModeOn,
                            Converter={StaticResource AllToVisibilityConverter}}">
-              <TextBlock Text="{Binding MediaItemsVM.Model.ModifiedItemsCount}"/>
+              <TextBlock Text="{Binding MediaItemsM.ModifiedItemsCount}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -168,43 +168,19 @@
         </Border>
 
         <!-- ImageActualZoom -->
-        <Border>
-          <Border.Style>
-            <Style
-              TargetType="{x:Type Border}"
-              BasedOn="{StaticResource _infoGroup}">
-
-              <Setter
-                Property="Visibility"
-                Value="Collapsed"/>
-
-              <Style.Triggers>
-                <MultiDataTrigger>
-                  <MultiDataTrigger.Conditions>
-                    <Condition
-                      Binding="{Binding MediaViewerVM.IsVisible,
-                                Source={x:Static pm:App.Ui}}"
-                      Value="True"/>
-                    <Condition
-                      Binding="{Binding CurrentMediaItemM.MediaType}"
-                      Value="{x:Static pmd:MediaType.Image}"/>
-                  </MultiDataTrigger.Conditions>
-                  
-                  <Setter
-                    Property="Visibility"
-                    Value="Visible"/>
-                </MultiDataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Border.Style>
-
+        <Border
+          Style="{StaticResource _infoGroup}"
+          Visibility="{Binding MediaViewerM.IsVisible,
+                       Source={x:Static pm:App.Core},
+                       Converter={StaticResource AllToVisibilityConverter}}">
           <StackPanel>
             <Path Data="{StaticResource IconMagnify}"/>
 
             <Border>
-              <TextBlock Text="{Binding MediaViewerVM.FullImage.ActualZoom,
-                                Source={x:Static pm:App.Ui},
-                                StringFormat={}{0:####}%}"/>
+              <TextBlock
+                Text="{Binding MediaViewerM.ActualZoom,
+                       Source={x:Static pm:App.Core},
+                       StringFormat={}{0:####}%}"/>
             </Border>
           </StackPanel>
         </Border>
@@ -309,8 +285,8 @@
                 <MultiDataTrigger>
                   <MultiDataTrigger.Conditions>
                     <Condition
-                      Binding="{Binding MediaViewerVM.IsVisible,
-                                Source={x:Static pm:App.Ui}}"
+                      Binding="{Binding MediaViewerM.IsVisible,
+                                Source={x:Static pm:App.Core}}"
                       Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.InfoBoxPeople, 
@@ -380,8 +356,8 @@
                 <MultiDataTrigger>
                   <MultiDataTrigger.Conditions>
                     <Condition
-                      Binding="{Binding MediaViewerVM.IsVisible,
-                                Source={x:Static pm:App.Ui}}"
+                      Binding="{Binding MediaViewerM.IsVisible,
+                                Source={x:Static pm:App.Core}}"
                       Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.InfoBoxKeywords, 
@@ -422,8 +398,8 @@
                 <MultiDataTrigger>
                   <MultiDataTrigger.Conditions>
                     <Condition
-                      Binding="{Binding MediaViewerVM.IsVisible,
-                                Source={x:Static pm:App.Ui}}"
+                      Binding="{Binding MediaViewerM.IsVisible,
+                                Source={x:Static pm:App.Core}}"
                       Value="True"/>
                     <Condition
                       Binding="{Binding CurrentMediaItemM.Comment, 

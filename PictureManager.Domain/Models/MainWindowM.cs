@@ -5,7 +5,10 @@ namespace PictureManager.Domain.Models {
     private int _activeLayout;
     private bool _isFullScreen;
 
+    public Core CoreM { get; }
+
     public int ActiveLayout { get => _activeLayout; set { _activeLayout = value; OnPropertyChanged(); } }
+    public bool CanOpenStatusPanel => CoreM.ThumbnailsGridsM.Current != null || CoreM.MediaViewerM.IsVisible;
     public bool IsFullScreenIsChanging { get; set; }
     public bool IsFullScreen {
       get => _isFullScreen;
@@ -16,6 +19,10 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged();
         IsFullScreenIsChanging = false;
       }
+    }
+
+    public MainWindowM(Core coreM) {
+      CoreM = coreM;
     }
   }
 }

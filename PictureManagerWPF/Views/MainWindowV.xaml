@@ -20,9 +20,12 @@
     <KeyBinding Modifiers="Control" Key="E" Command="{Binding CoreM.MediaItemsM.EditCommand}"/>
     <KeyBinding Modifiers="Control" Key="S" Command="{Binding CoreM.MediaItemsM.SaveEditCommand}"/>
     <KeyBinding Modifiers="Control" Key="Q" Command="{Binding CoreM.MediaItemsM.CancelEditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="R" Command="{Binding CoreM.MediaItemsM.RotateCommand}"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding CoreM.MediaItemsM.RenameCommand}"/>
     <KeyBinding Key="Delete" Command="{Binding CoreVM.MediaItemsVM.DeleteCommand}"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
+    <KeyBinding Key="Esc" Command="{Binding SwitchToBrowserCommand}"/>
+    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SwitchToBrowserCommand}"/>
   </Window.InputBindings>
 
   <b:Interaction.Triggers>
@@ -101,8 +104,8 @@
           <!-- Main Tabs -->
           <ContentPresenter
             Content="{Binding CoreVM.MainTabsVM}"
-            Visibility="{Binding MediaViewerVM.IsVisible,
-                         Source={x:Static pm:App.Ui},
+            Visibility="{Binding MediaViewerM.IsVisible,
+                         Source={x:Static pm:App.Core},
                          Converter={StaticResource AllToVisibilityConverter}, 
                          ConverterParameter={StaticResource False}}"/>
 
@@ -124,7 +127,7 @@
       <mhc:SlidePanelsGrid.PanelBottom>
         <mhc:SlidePanel
           Content="{Binding CoreM.StatusPanelM}"
-          CanOpen="{Binding CanOpenStatusPanel}"
+          CanOpen="{Binding Model.CanOpenStatusPanel}"
           MinHeight="30"/>
       </mhc:SlidePanelsGrid.PanelBottom>
     </mhc:SlidePanelsGrid>

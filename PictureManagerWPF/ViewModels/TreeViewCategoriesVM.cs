@@ -78,7 +78,7 @@ namespace PictureManager.ViewModels {
 
         case FolderM:
         case FolderKeywordM:
-          if (_coreVM.MediaViewerVM.IsVisible)
+          if (_core.MediaViewerM.IsVisible)
             _core.MainWindowM.IsFullScreen = false;
 
           var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();

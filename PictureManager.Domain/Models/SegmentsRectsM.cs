@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
+using MH.Utils.BaseClasses;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsRectsM : INotifyPropertyChanged {
@@ -18,14 +19,7 @@ namespace PictureManager.Domain.Models {
     private bool _isNew;
     private MediaItemM _mediaItemM;
 
-    public double Scale {
-      get => _scale;
-      set {
-        _scale = value;
-        OnPropertyChanged();
-        UpdateScale();
-      }
-    }
+    public double Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
     public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
 
     public MediaItemM MediaItem {
@@ -43,9 +37,12 @@ namespace PictureManager.Domain.Models {
     public SegmentsM SegmentsM { get; }
     public SegmentRectM Current { get; set; }
     public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = new();
+    public RelayCommand<double> UpdateScaleCommand { get; }
 
     public SegmentsRectsM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
+
+      UpdateScaleCommand = new(UpdateScale);
     }
 
     public void SetCurrent(SegmentRectM current, double x, double y) {
@@ -79,7 +76,8 @@ namespace PictureManager.Domain.Models {
         MediaItemSegmentsRects.Add(new(segment, Scale));
     }
 
-    private void UpdateScale() {
+    private void UpdateScale(double scale) {
+      Scale = scale;
       foreach (var sr in MediaItemSegmentsRects)
         sr.Scale = Scale;
     }

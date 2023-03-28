@@ -66,7 +66,7 @@ namespace PictureManager.ViewModels {
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
       var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
         ? currentThumbsGrid.LoadedItems
-        : _coreVM.MediaViewerVM.MediaItems,
+        : _core.MediaViewerM.MediaItems,
         items.ToList());
       Model.Delete(items, AppCore.FileOperationDelete, newCurrent);
     }
