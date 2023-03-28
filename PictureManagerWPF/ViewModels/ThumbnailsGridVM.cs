@@ -13,6 +13,7 @@ using PictureManager.Utils;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridVM: ObservableObject {
+    private readonly Core _coreM;
     private readonly AppCore _coreVM;
     private readonly MediaElement _videoPreview;
     private TreeWrapView _panel;
@@ -30,7 +31,8 @@ namespace PictureManager.ViewModels {
     public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
 
-    public ThumbnailsGridVM(AppCore coreVM, ThumbnailsGridM model, string tabTitle) {
+    public ThumbnailsGridVM(Core coreM, AppCore coreVM, ThumbnailsGridM model, string tabTitle) {
+      _coreM = coreM;
       _coreVM = coreVM;
       Model = model;
 
@@ -78,7 +80,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_coreVM.MediaViewerVM.IsVisible && !_coreVM.MainWindowVM.Model.IsFullScreenIsChanging)
+      if (e.WidthChanged && !_coreM.MediaViewerM.IsVisible && !_coreVM.MainWindowVM.Model.IsFullScreenIsChanging)
         _panel.ReWrap();
     }
 
@@ -119,8 +121,8 @@ namespace PictureManager.ViewModels {
         _videoPreview.Source = null;
       }
 
-      _coreVM.MainWindowVM.Model.IsFullScreen = true;
-      _coreVM.MediaViewerVM.SetMediaItems(Model.FilteredItems.ToList(), mi);
+      _coreM.MainWindowM.IsFullScreen = true;
+      _coreM.MediaViewerM.SetMediaItems(Model.FilteredItems.ToList(), mi);
     }
   }
 }

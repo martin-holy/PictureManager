@@ -217,8 +217,8 @@
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding MediaViewerVM.PresentationPanel, Source={x:Static pm:App.Ui}}"
-            IsEnabled="{Binding MediaViewerVM.Current, Source={x:Static pm:App.Ui}, Converter={StaticResource AllToBoolConverter}}">
+            DataContext="{Binding MediaViewerM.PresentationPanel, Source={x:Static pm:App.Core}}"
+            IsEnabled="{Binding MediaViewerM.Current, Source={x:Static pm:App.Core}, Converter={StaticResource AllToBoolConverter}}">
 
             <!-- Play/Stop -->
             <mhc:IconButton Command="{Binding PresentationCommand}">

@@ -116,7 +116,7 @@ namespace PictureManager.ViewModels {
       var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _coreVM.MainTabsVM.Selected == _mainTabsItem);
       if (items == null) return;
 
-      _coreVM.MediaViewerVM.SetMediaItems(items, segmentM.MediaItem);
+      _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
       _core.MainWindowM.IsFullScreen = true;
     }
 

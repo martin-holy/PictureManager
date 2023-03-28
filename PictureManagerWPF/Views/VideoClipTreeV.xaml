@@ -83,8 +83,8 @@
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
                   <b:InvokeCommandAction
-                    Command="{Binding VideoClipsVM.SeekToPositionCommand,
-                              Source={x:Static pm:App.Ui}}"
+                    Command="{Binding VideoClipsM.SeekToPositionCommand,
+                              Source={x:Static pm:App.Core}}"
                     CommandParameter="{Binding TimeStart}"/>
                 </b:EventTrigger>
               </b:Interaction.Triggers>
@@ -101,8 +101,8 @@
               <b:Interaction.Triggers>
                 <b:EventTrigger EventName="PreviewMouseLeftButtonUp">
                   <b:InvokeCommandAction
-                    Command="{Binding VideoClipsVM.SeekToPositionCommand,
-                              Source={x:Static pm:App.Ui}}"
+                    Command="{Binding VideoClipsM.SeekToPositionCommand,
+                              Source={x:Static pm:App.Core}}"
                     CommandParameter="{Binding TimeEnd}"/>
                 </b:EventTrigger>
               </b:Interaction.Triggers>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
@@ -20,15 +21,47 @@ namespace PictureManager.Domain.Models {
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }
     public VideoClipsGroupsM GroupsM { get; }
+    public MediaPlayerM MediaPlayerM { get; set; }
+    public Action<VideoClipM, bool> CreateThumbnail { get; set; }
 
-    public event EventHandler<ObjectEventArgs<VideoClipM>> ItemCreatedEventHandler = delegate { };
+    public RelayCommand<bool> SetMarkerCommand { get; }
+    public RelayCommand<PlayType> SetPlayTypeCommand { get; }
+    public RelayCommand<object> SetCurrentVideoClipCommand { get; }
+    public RelayCommand<object> SplitCommand { get; }
+    public RelayCommand<object> SaveCommand { get; }
+    public RelayCommand<int> SeekToPositionCommand { get; }
 
-    public VideoClipsM(MediaItemsM mi) : base(Res.IconMovieClapper, Category.VideoClips, "Clips") {
+    public VideoClipsM(MediaItemsM mi, MediaPlayerM player) : base(Res.IconMovieClapper, Category.VideoClips, "Clips") {
       _mediaItemsM = mi;
       IsExpanded = true;
       CanMoveItem = true;
       MediaItemClips = new() { this };
       GroupsM = new(this, _mediaItemsM);
+      MediaPlayerM = player;
+      MediaPlayerM.SelectNextClip = SelectNext;
+
+      SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
+      SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
+
+      SetCurrentVideoClipCommand = new(
+        item => SetCurrentVideoClip(item as VideoClipM),
+        item => item is VideoClipM);
+
+      SplitCommand = new(
+        VideoClipSplit,
+        () => !String.IsNullOrEmpty(MediaPlayerM?.Source));
+
+      SaveCommand = new(
+        () => {
+          DataAdapter.Save();
+          GroupsM.DataAdapter.Save();
+        },
+        () =>
+          DataAdapter.IsModified ||
+          GroupsM.DataAdapter.IsModified
+      );
+
+      SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -46,7 +79,8 @@ namespace PictureManager.Domain.Models {
       CurrentMediaItem.HasVideoClips = true;
       DataAdapter.All.Add(item.Id, item);
       UpdateClipsTitles();
-      ItemCreatedEventHandler(this, new(item));
+      SetMarker(true);
+      ScrollToItem = item;
 
       return item;
     }
@@ -98,9 +132,43 @@ namespace PictureManager.Domain.Models {
         ? null
         : $"{name} group already exists!";
 
-    public void SetMarker(VideoClipM clip, bool start, int ms, double volume, double speed) {
-      clip.SetMarker(start, ms, volume, speed);
+    private void VideoClipSplit() {
+      if (CurrentVideoClip?.TimeEnd == 0)
+        SetMarker(false);
+      else
+        ItemCreate(this);
+    }
+
+    private void SetCurrentVideoClip(VideoClipM vc) {
+      CurrentVideoClip = vc;
+      MediaPlayerM.ClipTimeStart = vc.TimeStart;
+      MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
+
+      if (MediaPlayerM.PlayType != PlayType.Video) {
+        MediaPlayerM.Volume = vc.Volume;
+        MediaPlayerM.Speed = vc.Speed;
+      }
+
+      if (MediaPlayerM.IsPlaying)
+        MediaPlayerM.StartClipTimer();
+    }
+
+    private void SetMarker(bool start) {
+      var vc = CurrentVideoClip;
+
+      vc.SetMarker(
+        start,
+        (int)Math.Round(MediaPlayerM.TimelinePosition),
+        MediaPlayerM.Volume,
+        MediaPlayerM.Speed);
+
       DataAdapter.IsModified = true;
+
+      MediaPlayerM.ClipTimeStart = vc.TimeStart;
+      MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
+
+      if (start)
+        CreateThumbnail.Invoke(vc, true);
     }
 
     public void SetMediaItem(MediaItemM mi) {
@@ -133,7 +201,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void SelectNext(bool inGroup, bool selectFirst) {
+    private void SelectNext(bool inGroup, bool selectFirst) {
       var clip = GetNextClip(inGroup, selectFirst);
       if (clip == null) return;
       if (clip.Equals(CurrentVideoClip))

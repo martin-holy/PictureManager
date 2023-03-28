@@ -33,7 +33,7 @@ namespace PictureManager.ViewModels {
       Model = model;
 
       Model.ThumbnailsGridAddedEventHandler += (_, e) => {
-        var viewModel = new ThumbnailsGridVM(_coreVM, e.Data.Item1, e.Data.Item2);
+        var viewModel = new ThumbnailsGridVM(_core, _coreVM, e.Data.Item1, e.Data.Item2);
         _coreVM.MainTabsVM.AddItem(viewModel.MainTabsItem);
       };
 

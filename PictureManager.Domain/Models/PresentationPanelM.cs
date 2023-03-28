@@ -1,15 +1,15 @@
 ﻿using System.Timers;
-using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain;
 
-namespace PictureManager.ViewModels {
-  public sealed class PresentationPanelVM : ObservableObject {
+namespace PictureManager.Domain.Models {
+  public sealed class PresentationPanelM : ObservableObject {
     private bool _isRunning;
     private bool _playPanoramicImages = true;
+    private bool _isAnimationOn;
+    private int _minAnimationDuration;
     private int _interval = 3;
     private readonly Timer _timer = new();
-    private readonly MediaViewerVM _mediaViewerVM;
+    private readonly MediaViewerM _mediaViewerM;
 
     public bool IsRunning {
       get => _isRunning;
@@ -28,6 +28,18 @@ namespace PictureManager.ViewModels {
       }
     }
 
+    public bool IsAnimationOn {
+      get => _isAnimationOn;
+      set {
+        _isAnimationOn = value;
+        if (!value)
+          Start(false);
+        OnPropertyChanged();
+      }
+    }
+
+    public int MinAnimationDuration { get => _minAnimationDuration; set { _minAnimationDuration = value; OnPropertyChanged(); } }
+
     public int Interval {
       get => _interval;
       set {
@@ -40,37 +52,41 @@ namespace PictureManager.ViewModels {
     public bool IsPaused { get; private set; }
     public RelayCommand<object> PresentationCommand { get; set; }
 
-    public PresentationPanelVM(MediaViewerVM mediaViewerVM) {
-      _mediaViewerVM = mediaViewerVM;
+    public PresentationPanelM(MediaViewerM mediaViewerM) {
+      _mediaViewerM = mediaViewerM;
       PresentationCommand = new(Presentation);
 
       _timer.Interval = Interval * 1000;
       _timer.Elapsed += (_, _) => Next();
     }
 
-    ~PresentationPanelVM() {
+    ~PresentationPanelM() {
       _timer?.Dispose();
     }
 
     public void Start(bool delay) {
-      if (delay && _mediaViewerVM.Current.MediaType == MediaType.Image && _mediaViewerVM.Current.IsPanoramic && PlayPanoramicImages) {
+      if (delay && _mediaViewerM.Current.MediaType == MediaType.Image && _mediaViewerM.Current.IsPanoramic && PlayPanoramicImages) {
         Pause();
-        _mediaViewerVM.FullImage.Play(Interval * 1000, () => Start(false));
+        MinAnimationDuration = Interval * 1000;
+        IsAnimationOn = true;
         return;
       }
 
       IsPaused = false;
       IsRunning = true;
-      _mediaViewerVM.FullVideo.PlayType = PlayType.Video;
-      _mediaViewerVM.FullVideo.RepeatForSeconds = Interval;
+      _mediaViewerM.MediaPlayerM.PlayType = PlayType.Video;
+      _mediaViewerM.MediaPlayerM.RepeatForSeconds = Interval;
 
       if (!delay) Next();
     }
 
     public void Stop() {
+      if (IsAnimationOn)
+        IsAnimationOn = false;
+
       IsPaused = false;
       IsRunning = false;
-      _mediaViewerVM.FullVideo.RepeatForSeconds = 0; // infinity
+      _mediaViewerM.MediaPlayerM.RepeatForSeconds = 0; // infinity
     }
 
     public void Pause() {
@@ -79,13 +95,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void Presentation() {
-      if (_mediaViewerVM.FullImage.IsAnimationOn) {
-        _mediaViewerVM.FullImage.Stop();
-        Stop();
-        return;
-      }
-
-      if (IsRunning || IsPaused)
+      if (IsAnimationOn || IsRunning || IsPaused)
         Stop();
       else
         Start(true);
@@ -94,8 +104,8 @@ namespace PictureManager.ViewModels {
     private void Next() {
       Core.RunOnUiThread(() => {
         if (IsPaused) return;
-        if (_mediaViewerVM.CanNext())
-          _mediaViewerVM.Next();
+        if (_mediaViewerM.CanNext())
+          _mediaViewerM.Next();
         else
           Stop();
       });
