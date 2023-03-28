@@ -20,6 +20,21 @@ namespace PictureManager.Utils {
         _ => Rotation.Rotate0
       };
 
+    public static BitmapImage GetBitmapImage(string filePath, MediaOrientation rotation) {
+      if (filePath == null)
+        return null;
+
+      var src = new BitmapImage();
+      src.BeginInit();
+      src.UriSource = new(filePath);
+      src.CacheOption = BitmapCacheOption.OnLoad;
+      src.CreateOptions = BitmapCreateOptions.PreservePixelFormat | BitmapCreateOptions.IgnoreColorProfile;
+      src.Rotation = MediaOrientation2Rotation(rotation);
+      src.EndInit();
+
+      return src;
+    }
+
     public static Task CreateThumbnailAsync(MediaType type, string srcPath, string destPath, int size, int rotationAngle, int quality) =>
       type == MediaType.Image
         ? Task.Run(() => CreateImageThumbnail(srcPath, destPath, size, quality))
