@@ -67,7 +67,7 @@ namespace PictureManager.ViewModels {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-      OpenSegmentsDrawerCommand = new(() => App.Ui.ToolsTabsVM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
+      OpenSegmentsDrawerCommand = new(() => App.Core.ToolsTabsM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
       MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
       ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
       MatchingPanelSizeChangedCommand = new(

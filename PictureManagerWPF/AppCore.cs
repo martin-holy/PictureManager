@@ -27,7 +27,6 @@ namespace PictureManager {
     public TreeViewCategoriesVM TreeViewCategoriesVM { get; }
 
     public MainTabsVM MainTabsVM { get; }
-    public ToolsTabsVM ToolsTabsVM { get; }
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
@@ -39,7 +38,6 @@ namespace PictureManager {
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowToolBarVM = new();
       MainTabsVM = new();
-      ToolsTabsVM = new();
 
       FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
