@@ -2,8 +2,8 @@
 using System.Linq;
 using MH.Utils.BaseClasses;
 
-namespace PictureManager.ViewModels {
-  public sealed class ToolsTabsVM : ObservableObject {
+namespace PictureManager.Domain.Models {
+  public sealed class ToolsTabsM : ObservableObject {
     private bool _isOpen;
     private HeaderedListItem<object, string> _selected;
 
@@ -12,7 +12,7 @@ namespace PictureManager.ViewModels {
     public ObservableCollection<HeaderedListItem<object, string>> Items { get; } = new();
     public RelayCommand<object> CloseTabCommand { get; }
 
-    public ToolsTabsVM() {
+    public ToolsTabsM() {
       CloseTabCommand = new(() => Deactivate(Selected));
     }
 

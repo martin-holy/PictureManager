@@ -117,9 +117,9 @@
       <!-- Tools Tabs -->
       <mhc:SlidePanelsGrid.PanelRight>
         <mhc:SlidePanel
-          IsOpen="{Binding CoreVM.ToolsTabsVM.IsOpen, Mode=TwoWay}"
-          CanOpen="{Binding CoreVM.ToolsTabsVM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
-          Content="{Binding CoreVM.ToolsTabsVM}"
+          IsOpen="{Binding CoreM.ToolsTabsM.IsOpen, Mode=TwoWay}"
+          CanOpen="{Binding CoreM.ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
+          Content="{Binding CoreM.ToolsTabsM}"
           Width="360"/>
       </mhc:SlidePanelsGrid.PanelRight>
 

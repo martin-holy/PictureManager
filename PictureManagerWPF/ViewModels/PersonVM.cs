@@ -78,7 +78,7 @@ namespace PictureManager.ViewModels {
 
       PersonM = person;
       ReloadPersonSegments();
-      App.Ui.ToolsTabsVM.Activate(_toolsTabsItem, true);
+      App.Core.ToolsTabsM.Activate(_toolsTabsItem, true);
     }
 
     public void ReloadPersonSegments() {
