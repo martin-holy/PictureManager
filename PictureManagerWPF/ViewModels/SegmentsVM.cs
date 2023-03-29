@@ -99,7 +99,7 @@ namespace PictureManager.ViewModels {
         : null;
 
     private void ViewMediaItemsWithSegment(SegmentM segmentM) {
-      var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _coreVM.MainTabsVM.Selected == _mainTabsItem);
+      var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _core.MainTabsM.Selected == _mainTabsItem);
       if (items == null) return;
 
       _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
@@ -137,7 +137,7 @@ namespace PictureManager.ViewModels {
       if (result == -1) return;
 
       SegmentsM.MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
-      _coreVM.MainTabsVM.Activate(_mainTabsItem);
+      _core.MainTabsM.Activate(_mainTabsItem);
 
       SegmentsM.LoadSegments(SegmentsM.MediaItemsForMatching, result);
     }

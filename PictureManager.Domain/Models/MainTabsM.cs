@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils.BaseClasses;
 
-namespace PictureManager.ViewModels {
-  public sealed class MainTabsVM : ObservableObject {
+namespace PictureManager.Domain.Models {
+  public sealed class MainTabsM : ObservableObject {
     private HeaderedListItem<object, string> _selected;
     private double _tabsActualHeight;
 
@@ -17,7 +17,7 @@ namespace PictureManager.ViewModels {
     public HeaderedListItem<object, string> Selected { get => _selected; set { _selected = value; OnPropertyChanged(); } }
     public double TabMaxHeight => _tabsActualHeight / Items.Count;
 
-    public MainTabsVM() {
+    public MainTabsM() {
       UpdateTabHeadersSizeCommand = new(UpdateTabHeadersSize);
       CloseTabCommand = new(CloseTab);
 

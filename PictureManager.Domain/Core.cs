@@ -15,6 +15,7 @@ namespace PictureManager.Domain {
     public int ThumbnailSize { get; set; }
     public ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
+    public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
     public TitleProgressBarM TitleProgressBarM { get; } = new();
 
