@@ -28,6 +28,7 @@
         <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
 
         <ResourceDictionary Source="Views/MainMenuV.xaml"/>
         <ResourceDictionary Source="Views/MainTabsV.xaml"/>

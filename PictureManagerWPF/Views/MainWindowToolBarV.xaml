@@ -164,12 +164,12 @@
           <mhc:IconTextButton
             Icon="{StaticResource IconDatabase}"
             Text="{Binding Sdb.Changes, Source={x:Static pm:App.Core}}"
-            Command="{Binding MainWindowVM.SaveDbCommand, Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding MainWindowM.SaveDbCommand, Source={x:Static pm:App.Core}}"/>
 
           <!-- Log Button -->
           <Button
             Background="Red"
-            Command="{Binding MainWindowVM.OpenLogCommand, Source={x:Static pm:App.Ui}}"
+            Command="{Binding MainWindowM.OpenLogCommand, Source={x:Static pm:App.Core}}"
             Height="24"
             Margin="2 0 2 0"
             Visibility="{Binding Log.Count,

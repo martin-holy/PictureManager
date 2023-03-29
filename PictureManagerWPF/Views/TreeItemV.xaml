@@ -99,10 +99,8 @@
                   <Border BorderThickness="1" BorderBrush="Black">
                     <Image
                       Stretch="Fill"
-                      Width="{Binding SegmentsVM.SegmentUiSize,
-                              Source={x:Static pm:App.Ui}}"
-                      Height="{Binding SegmentsVM.SegmentUiSize,
-                                Source={x:Static pm:App.Ui}}">
+                      Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
+                      Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
                       <Image.Source>
                         <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
                           <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>

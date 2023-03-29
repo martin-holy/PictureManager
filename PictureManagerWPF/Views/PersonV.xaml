@@ -99,8 +99,7 @@
         <mhc:VirtualizingWrapPanel
           Margin="2,0,0,0"
           MinHeight="106"
-          ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                      Source={x:Static pm:App.Ui}}"
+          ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
           ItemsToWrap="{Binding PersonM.TopSegments}">
 
           <b:Interaction.Triggers>
@@ -118,8 +117,7 @@
         Grid.Row="1"
         Margin="2,0,0,0"
         ShowRoot="True"
-        ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                    Source={x:Static pm:App.Ui}}"
+        ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
         Root="{Binding AllSegmentsRoot}"
         ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
 

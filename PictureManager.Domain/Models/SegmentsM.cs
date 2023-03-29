@@ -12,6 +12,7 @@ using PictureManager.Domain.HelperClasses;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
+    private double _segmentUiSize;
     private int _segmentSize = 100;
     private int _compareSegmentSize = 32;
     private int _similarityLimit = 90;
@@ -42,6 +43,9 @@ namespace PictureManager.Domain.Models {
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
     public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
     public bool NeedReload { get; set; }
+    public double ConfirmedPanelWidth { get; private set; }
+    public double SegmentUiFullWidth { get; set; }
+    public double SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
@@ -86,6 +90,12 @@ namespace PictureManager.Domain.Models {
 
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
+
+    public void SetSegmentUiSize(double size, double scrollBarSize) {
+      SegmentUiSize = size;
+      SegmentUiFullWidth = size + 6; // + border, margin
+      ConfirmedPanelWidth = (SegmentUiFullWidth * 2) + scrollBarSize;
+    }
 
     public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
       if (!add && Core.DialogHostShow(new MessageDialog(

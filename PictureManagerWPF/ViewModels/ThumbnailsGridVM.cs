@@ -80,7 +80,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_coreM.MediaViewerM.IsVisible && !_coreVM.MainWindowVM.Model.IsFullScreenIsChanging)
+      if (e.WidthChanged && !_coreM.MediaViewerM.IsVisible && !_coreM.MainWindowM.IsFullScreenIsChanging)
         _panel.ReWrap();
     }
 

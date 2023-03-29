@@ -7,51 +7,43 @@
   <DataTemplate DataType="{x:Type m:PersonM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="SegmentV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-        
+
         <DataTemplate x:Key="NoSegmentIcon">
           <Border
             BorderThickness="2"
             BorderBrush="Black"
             Margin="1"
-            Padding="15"
             Background="Transparent"
-            FocusVisualStyle="{x:Null}"
-            Width="{Binding SegmentsVM.SegmentUiSize,
-                    Source={x:Static pm:App.Ui}}"
-            Height="{Binding SegmentsVM.SegmentUiSize,
-                     Source={x:Static pm:App.Ui}}">
+            FocusVisualStyle="{x:Null}">
 
-            <Path
-              Style="{StaticResource MH.Styles.Icon}"
-              Data="{StaticResource IconPeople}"
-              Fill="Gray"/>
+            <Grid
+              Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
+              Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
+
+              <Path
+                Style="{StaticResource MH.Styles.Icon}"
+                Data="{StaticResource IconPeople}"
+                Width="40"
+                Height="40"
+                Fill="Gray"/>
+            </Grid>
           </Border>
         </DataTemplate>
-        
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Grid>
       <!-- Segment or empty icon -->
       <ContentControl>
         <ContentControl.Style>
           <Style TargetType="{x:Type ContentControl}">
-            <Setter
-              Property="Content"
-              Value="{Binding Segment}"/>
-
+            <Setter Property="Content" Value="{Binding Segment}"/>
             <Style.Triggers>
-              <DataTrigger
-                Binding="{Binding Segment}"
-                Value="{x:Null}">
-
-                <Setter
-                  Property="Content"
-                  Value="{Binding}"/>
+              <DataTrigger Binding="{Binding Segment}" Value="{x:Null}">
+                <Setter Property="Content" Value="{Binding}"/>
                 <Setter
                   Property="ContentTemplate"
                   Value="{StaticResource NoSegmentIcon}"/>
@@ -65,15 +57,9 @@
       <Border BorderThickness="2">
         <Border.Style>
           <Style TargetType="{x:Type Border}">
-            <Setter
-              Property="BorderBrush"
-              Value="Transparent"/>
-            
+            <Setter Property="BorderBrush" Value="Transparent"/>
             <Style.Triggers>
-              <DataTrigger
-                Binding="{Binding IsSelected}"
-                Value="True">
-
+              <DataTrigger Binding="{Binding IsSelected}" Value="True">
                 <Setter
                   Property="BorderBrush"
                   Value="{DynamicResource AccentColorBrush}"/>
@@ -82,9 +68,6 @@
           </Style>
         </Border.Style>
       </Border>
-
     </Grid>
-
   </DataTemplate>
-    
 </ResourceDictionary>

@@ -24,13 +24,13 @@
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding CoreM.MediaItemsM.RenameCommand}"/>
     <KeyBinding Key="Delete" Command="{Binding CoreVM.MediaItemsVM.DeleteCommand}"/>
-    <KeyBinding Key="Esc" Command="{Binding SwitchToBrowserCommand}"/>
-    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SwitchToBrowserCommand}"/>
+    <KeyBinding Key="Esc" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
+    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
   </Window.InputBindings>
 
   <b:Interaction.Triggers>
     <b:EventTrigger EventName="Closing">
-      <b:InvokeCommandAction Command="{Binding ClosingCommand}"/>
+      <b:InvokeCommandAction Command="{Binding MainWindowM.ClosingCommand}"/>
     </b:EventTrigger>
     <b:EventTrigger EventName="Loaded">
       <b:InvokeCommandAction Command="{Binding LoadedCommand}"/>
@@ -64,7 +64,7 @@
       </Style>
     </Border.Style>
 
-    <mhc:SlidePanelsGrid ActiveLayout="{Binding Model.ActiveLayout}">
+    <mhc:SlidePanelsGrid ActiveLayout="{Binding MainWindowM.ActiveLayout}">
       <mhc:SlidePanelsGrid.PinLayouts>
         <!-- Left, Top, Right, Bottom -->
         <x:Array Type="{x:Type sys:Array}">
@@ -127,7 +127,7 @@
       <mhc:SlidePanelsGrid.PanelBottom>
         <mhc:SlidePanel
           Content="{Binding CoreM.StatusPanelM}"
-          CanOpen="{Binding Model.CanOpenStatusPanel}"
+          CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
           MinHeight="30"/>
       </mhc:SlidePanelsGrid.PanelBottom>
     </mhc:SlidePanelsGrid>
