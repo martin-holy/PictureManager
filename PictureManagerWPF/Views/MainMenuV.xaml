@@ -169,8 +169,8 @@
         <!-- About -->
         <MenuItem
           Header="About"
-          Command="{Binding MainWindowVM.OpenAboutCommand,
-                    Source={x:Static pm:App.Ui}}"/>
+          Command="{Binding MainWindowM.OpenAboutCommand,
+                    Source={x:Static pm:App.Core}}"/>
       </MenuItem>
     </Menu>
   </DataTemplate>

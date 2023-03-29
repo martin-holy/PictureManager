@@ -12,7 +12,6 @@ using System.Linq;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
-    public static double ScrollBarSize;
     public FoldersVM FoldersVM { get; }
     public MainWindowVM MainWindowVM { get; }
     public MainWindowToolBarVM MainWindowToolBarVM { get; }

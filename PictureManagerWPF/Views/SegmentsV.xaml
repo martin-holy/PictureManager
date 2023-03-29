@@ -19,8 +19,8 @@
       <!-- Segments Grids -->
       <Grid>
         <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="{Binding ConfirmedPanelWidth, Mode=OneWay}"/>
-          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="{Binding SegmentsM.ConfirmedPanelWidth, Mode=OneWay}"/>
+          <ColumnDefinition Width="3"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -35,7 +35,7 @@
         
         <Grid Grid.Column="0">
           <mhc:VirtualizingWrapPanel
-            ItemWidth="{Binding SegmentUiFullWidth}"
+            ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
             ItemsToWrap="{Binding SegmentsM.ConfirmedGrouped}">
         
             <b:Interaction.Triggers>
@@ -57,12 +57,7 @@
             Command="{Binding SegmentsM.GroupConfirmedCommand}"/>
         </Grid>
 
-        <GridSplitter
-          Grid.Column="1"
-          HorizontalAlignment="Stretch"
-          Width="3"
-          Background="Transparent">
-          
+        <GridSplitter Grid.Column="1">
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="DragCompleted">
               <b:InvokeCommandAction
@@ -74,7 +69,7 @@
         
         <mhc:VirtualizingWrapPanel
           Grid.Column="2"
-          ItemWidth="{Binding SegmentUiFullWidth}"
+          ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
           ItemsToWrap="{Binding SegmentsM.LoadedGrouped}"
           ReloadAutoScroll="{Binding SegmentsM.ReloadAutoScroll}">
         

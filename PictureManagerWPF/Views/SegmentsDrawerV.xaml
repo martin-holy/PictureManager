@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type vm:SegmentsDrawerVM}">
@@ -17,8 +16,7 @@
     
     <mhc:VirtualizingWrapPanel
       Margin="2,0,0,0"
-      ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                  Source={x:Static pm:App.Ui}}"
+      ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
       ItemsToWrap="{Binding SegmentsM.SegmentsDrawer}">
         
       <b:Interaction.Triggers>

@@ -16,8 +16,7 @@
     </DataTemplate.Resources>
 
     <mhc:TreeWrapView
-      ItemWidth="{Binding SegmentsVM.SegmentUiFullWidth,
-                  Source={x:Static pm:App.Ui}}"
+      ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
       Root="{Binding PeopleRoot}"
       ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
 

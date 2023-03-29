@@ -1,4 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
+using PictureManager.Domain.Dialogs;
 
 namespace PictureManager.Domain.Models {
   public sealed class MainWindowM : ObservableObject {
@@ -21,8 +23,60 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public RelayCommand<object> OpenAboutCommand { get; }
+    public RelayCommand<object> ClosingCommand { get; }
+    public RelayCommand<object> SwitchToBrowserCommand { get; }
+    public RelayCommand<object> SaveDbCommand { get; }
+    public RelayCommand<object> OpenLogCommand { get; }
+
     public MainWindowM(Core coreM) {
       CoreM = coreM;
+
+      OpenAboutCommand = new(OpenAbout);
+      ClosingCommand = new(Closing);
+      SwitchToBrowserCommand = new(
+        () => IsFullScreen = false,
+        () => CoreM.MediaViewerM.IsVisible);
+      SaveDbCommand = new(
+        () => CoreM.Sdb.SaveAllTables(),
+        () => CoreM.Sdb.Changes > 0);
+      OpenLogCommand = new(OpenLog);
+    }
+
+    private static void OpenAbout() {
+      Core.DialogHostShow(new AboutDialogM());
+    }
+
+    private void Closing() {
+      if (CoreM.MediaItemsM.ModifiedItems.Count > 0 &&
+          Core.DialogHostShow(new MessageDialog(
+            "Metadata Edit",
+            "Some Media Items are modified, do you want to save them?",
+            Res.IconQuestion,
+            true)) == 0) {
+        CoreM.MediaItemsM.SaveEdit();
+      }
+
+      if (CoreM.Sdb.Changes > 0 &&
+          Core.DialogHostShow(new MessageDialog(
+            "Database changes",
+            "There are some changes in database, do you want to save them?",
+            Res.IconQuestion,
+            true)) == 0) {
+        CoreM.Sdb.SaveAllTables();
+      }
+
+      CoreM.Sdb.BackUp();
+    }
+
+    private static void OpenLog() {
+      Core.DialogHostShow(new LogDialogM());
+    }
+
+    public void Loaded(double windowsDisplayScale) {
+      CoreM.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
+      CoreM.SegmentsM.SetSegmentUiSize(CoreM.SegmentsM.SegmentSize / windowsDisplayScale, 14);
+      CoreM.MediaItemsM.OnPropertyChanged(nameof(CoreM.MediaItemsM.MediaItemsCount));
     }
   }
 }

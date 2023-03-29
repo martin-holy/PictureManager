@@ -26,8 +26,6 @@ namespace PictureManager.ViewModels {
     private readonly HeaderedListItem<object, string> _mainTabsItem;
     private readonly IProgress<int> _progress;
     private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
-    private double _segmentUiSize;
-    private double _confirmedPanelWidth;
     private VirtualizingWrapPanel _matchingPanel;
     private VirtualizingWrapPanel _confirmedMatchingPanel;
 
@@ -35,18 +33,6 @@ namespace PictureManager.ViewModels {
 
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
-    public double ConfirmedPanelWidth { get => _confirmedPanelWidth; private set { _confirmedPanelWidth = value; OnPropertyChanged(); } }
-    public double SegmentUiFullWidth { get; set; }
-
-    public double SegmentUiSize {
-      get => _segmentUiSize;
-      set {
-        _segmentUiSize = value;
-        SegmentUiFullWidth = value + 6; // + border, margin
-        ConfirmedPanelWidth = (SegmentUiFullWidth * 2) + AppCore.ScrollBarSize;
-        OnPropertyChanged();
-      }
-    }
 
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
