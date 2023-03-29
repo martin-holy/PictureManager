@@ -103,7 +103,7 @@
         <Grid>
           <!-- Main Tabs -->
           <ContentPresenter
-            Content="{Binding CoreVM.MainTabsVM}"
+            Content="{Binding CoreM.MainTabsM}"
             Visibility="{Binding MediaViewerM.IsVisible,
                          Source={x:Static pm:App.Core},
                          Converter={StaticResource AllToVisibilityConverter}, 

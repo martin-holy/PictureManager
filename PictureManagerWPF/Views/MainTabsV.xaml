@@ -3,11 +3,11 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
   
-  <DataTemplate DataType="{x:Type vm:MainTabsVM}">
+  <DataTemplate DataType="{x:Type m:MainTabsM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -119,7 +119,7 @@
 
           <Setter
             Property="MaxHeight"
-            Value="{Binding Path=DataContext.(vm:MainTabsVM.TabMaxHeight), ElementName=Tabs}"/>
+            Value="{Binding Path=DataContext.(m:MainTabsM.TabMaxHeight), ElementName=Tabs}"/>
           <Setter
             Property="IsSelected"
             Value="{Binding IsSelected, Mode=TwoWay}"/>
@@ -147,7 +147,7 @@
                       Padding="6"
                       ToolTip="Close"
                       HorizontalAlignment="Center"
-                      Command="{Binding Path=DataContext.(vm:MainTabsVM.CloseTabCommand), ElementName=Tabs}"
+                      Command="{Binding Path=DataContext.(m:MainTabsM.CloseTabCommand), ElementName=Tabs}"
                       CommandParameter="{Binding}"
                       Visibility="{Binding IsMouseOver,
                                    ElementName=TabHeader,

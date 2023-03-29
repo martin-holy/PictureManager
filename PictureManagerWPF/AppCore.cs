@@ -26,8 +26,6 @@ namespace PictureManager {
 
     public TreeViewCategoriesVM TreeViewCategoriesVM { get; }
 
-    public MainTabsVM MainTabsVM { get; }
-
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
       App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
@@ -37,7 +35,6 @@ namespace PictureManager {
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowToolBarVM = new();
-      MainTabsVM = new();
 
       FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
@@ -92,7 +89,7 @@ namespace PictureManager {
         App.Core.SegmentsM.SegmentsDrawerRemove(e.Data);
       };
 
-      MainTabsVM.TabClosedEventHandler += (_, e) => {
+      App.Core.MainTabsM.TabClosedEventHandler += (_, e) => {
         switch (e.Data.Content) {
           case ThumbnailsGridVM grid:
             ThumbnailsGridsVM.CloseGrid(grid);
@@ -103,11 +100,11 @@ namespace PictureManager {
         }
       };
 
-      MainTabsVM.PropertyChanged += async (_, e) => {
-        if (nameof(MainTabsVM.Selected).Equals(e.PropertyName)) {
-          await ThumbnailsGridsVM.SetCurrentGrid(MainTabsVM.Selected?.Content as ThumbnailsGridVM);
+      App.Core.MainTabsM.PropertyChanged += async (_, e) => {
+        if (nameof(App.Core.MainTabsM.Selected).Equals(e.PropertyName)) {
+          await ThumbnailsGridsVM.SetCurrentGrid(App.Core.MainTabsM.Selected?.Content as ThumbnailsGridVM);
 
-          if (MainTabsVM.Selected is not { Content: ViewModels.PeopleVM })
+          if (App.Core.MainTabsM.Selected is not { Content: ViewModels.PeopleVM })
             App.Core.PeopleM.DeselectAll();
         }
       };
