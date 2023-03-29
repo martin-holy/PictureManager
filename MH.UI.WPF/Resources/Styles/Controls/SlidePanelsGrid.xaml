@@ -25,9 +25,9 @@
                   <ColumnDefinition
                     Width="{Binding PanelLeftGridWidth, RelativeSource=
                            {RelativeSource TemplatedParent}, Mode=TwoWay}"/>
-                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="3"/>
                   <ColumnDefinition Width="*"/>
-                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="3"/>
                   <ColumnDefinition
                     Width="{Binding PanelRightGridWidth, RelativeSource=
                            {RelativeSource TemplatedParent}, Mode=TwoWay}"/>
