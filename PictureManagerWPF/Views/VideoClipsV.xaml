@@ -67,7 +67,8 @@
 
           <TextBlock
             Text="Repeat for: "
-            Margin="0,0,4,0"/>
+            Margin="0,0,4,0"
+            Foreground="{StaticResource MH.Brushes.Text}"/>
 
           <Slider
             Value="{Binding Model.MediaPlayerM.RepeatForSeconds}"
@@ -86,7 +87,10 @@
         Grid.Row="1"
         Margin="4">
 
-        <TextBlock Text="Play: "/>
+        <TextBlock
+          Text="Play: "
+          Foreground="{StaticResource MH.Brushes.Text}"/>
+        
         <RadioButton
           Command="{Binding Model.SetPlayTypeCommand}"
           CommandParameter="{x:Static m:PlayType.Video}"
