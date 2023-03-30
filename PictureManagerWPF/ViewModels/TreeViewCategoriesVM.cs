@@ -26,13 +26,6 @@ namespace PictureManager.ViewModels {
     }
 
     private void AttachEvents() {
-      _core.FoldersM.AfterItemCreateEventHandler += (_, e) =>
-        Model.ScrollToItem = e.Data;
-      _core.PeopleM.AfterItemCreateEventHandler += (_, e) =>
-        Model.ScrollToItem = e.Data;
-      _core.KeywordsM.AfterItemCreateEventHandler += (_, e) =>
-        Model.ScrollToItem = e.Data;
-
       _core.FoldersM.AfterItemRenameEventHandler += (_, e) => {
         // reload if the folder was selected before
         if (e.Data is FolderM { IsSelected: true } folder)
