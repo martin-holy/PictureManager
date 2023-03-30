@@ -35,6 +35,17 @@ namespace PictureManager.Domain.Models {
         _core.KeywordsM,
         _core.GeoNamesM,
         _core.ViewersM };
+
+      AttachEvents();
+    }
+
+    private void AttachEvents() {
+      _core.FoldersM.AfterItemCreateEventHandler += (_, e) =>
+        ScrollToItem = e.Data;
+      _core.PeopleM.AfterItemCreateEventHandler += (_, e) =>
+        ScrollToItem = e.Data;
+      _core.KeywordsM.AfterItemCreateEventHandler += (_, e) =>
+        ScrollToItem = e.Data;
     }
 
     private void ScrollTo(ITreeItem item) =>
