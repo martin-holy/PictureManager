@@ -47,7 +47,7 @@ namespace PictureManager.Domain {
 
       Sdb = new(this);
 
-      ViewersM = new();
+      ViewersM = new(this); // CategoryGroupsM
       SegmentsM = new();
       CategoryGroupsM = new();
       FavoriteFoldersM = new();

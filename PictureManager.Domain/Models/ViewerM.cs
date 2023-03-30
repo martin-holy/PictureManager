@@ -26,6 +26,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<FolderM> ExcludedFolders { get; } = new();
     public ObservableCollection<KeywordM> ExcludedKeywords { get; } = new();
     public HashSet<int> ExcCatGroupsIds { get; } = new();
+    public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
 
     private readonly HashSet<int> _incFoIds = new();
     private readonly HashSet<int> _incFoTreeIds = new();
@@ -35,6 +36,30 @@ namespace PictureManager.Domain.Models {
     public ViewerM(int id, string name, ITreeItem parent) : base(Res.IconEye, name) {
       Id = id;
       Parent = parent;
+    }
+
+    public void UpdateExcCatGroupsIds() {
+      ExcCatGroupsIds.Clear();
+      foreach (var cg in CategoryGroups.Where(x => !x.IsSelected))
+        ExcCatGroupsIds.Add(cg.Content.Id);
+    }
+
+    public void Reload(IEnumerable<CategoryGroupM> categoryGroups) {
+      ReloadCategoryGroups(categoryGroups);
+
+      foreach (var licg in CategoryGroups)
+        licg.IsSelected = !ExcCatGroupsIds.Contains(licg.Content.Id);
+    }
+
+    private void ReloadCategoryGroups(IEnumerable<CategoryGroupM> categoryGroups) {
+      var groups = categoryGroups
+        .OrderBy(x => x.Category)
+        .ThenBy(x => x.Name);
+
+      CategoryGroups.Clear();
+
+      foreach (var cg in groups)
+        CategoryGroups.Add(new(cg));
     }
 
     public void UpdateHashSets() {

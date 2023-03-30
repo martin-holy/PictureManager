@@ -8,15 +8,28 @@ using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class ViewersM : TreeCategoryBase {
+    private readonly Core _core;
     private ViewerM _current;
+    private ViewerM _selected;
 
     public ViewersDataAdapter DataAdapter { get; set; }
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+    public ViewerM Selected {
+      get => _selected;
+      set {
+        _selected = value;
+        OnPropertyChanged();
+        value.Reload(_core.CategoryGroupsM.DataAdapter.All.Values);
+      }
+    }
 
     public RelayCommand<ViewerM> SetCurrentCommand { get; }
+    public RelayCommand<ViewerM> UpdateExcCatGroupsIdsCommand { get; }
 
-    public ViewersM() : base(Res.IconEye, Category.Viewers, "Viewers") {
+    public ViewersM(Core core) : base(Res.IconEye, Category.Viewers, "Viewers") {
+      _core = core;
       SetCurrentCommand = new(SetCurrent);
+      UpdateExcCatGroupsIdsCommand = new(UpdateExcCatGroupsIds);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -49,8 +62,8 @@ namespace PictureManager.Domain.Models {
         ? $"{name} item already exists!"
         : null;
 
-    public void ToggleCategoryGroup(ViewerM viewer, int groupId) {
-      viewer.ExcCatGroupsIds.Toggle(groupId);
+    private void UpdateExcCatGroupsIds() {
+      Selected.UpdateExcCatGroupsIds();
       DataAdapter.IsModified = true;
     }
 
