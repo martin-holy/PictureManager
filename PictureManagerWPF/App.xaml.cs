@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Views;
 using System;
 using System.Windows;
@@ -15,9 +16,8 @@ namespace PictureManager {
     protected override async void OnStartup(StartupEventArgs e) {
       base.OnStartup(e);
 
-      AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs exArgs) {
-        var wError = new UnhandledErrorDialog { TbError = { Text = ((Exception)exArgs.ExceptionObject).ToString() } };
-        wError.ShowDialog();
+      AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs e) {
+        Core.DialogHostShow(new ErrorDialogM((Exception)e.ExceptionObject));
       };
 
       CommandManager.RequerySuggested += (o, e) => {
