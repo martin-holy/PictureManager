@@ -40,7 +40,9 @@ namespace PictureManager.Domain.Models {
     public event EventHandler MetadataChangedEventHandler = delegate { };
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
+    public FileOperationDelete FileOperationDeleteMethod { get; set; }
 
+    public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> RenameCommand { get; }
     public RelayCommand<object> EditCommand { get; }
@@ -54,6 +56,10 @@ namespace PictureManager.Domain.Models {
       _core = core;
       _segmentsM = segmentsM;
       _viewersM = viewersM;
+
+      DeleteCommand = new(
+        Delete,
+        () => GetActive().Any());
 
       RotateCommand = new(
         Rotate,
@@ -213,7 +219,25 @@ namespace PictureManager.Domain.Models {
         Delete(mi);
     }
 
-    public void Delete(MediaItemM[] items, FileOperationDelete fileOperationDelete, MediaItemM newCurrent) {
+    private void Delete() {
+      var items = GetActive();
+      var count = items.Length;
+
+      if (Core.DialogHostShow(new MessageDialog(
+        "Delete Confirmation",
+        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
+        Res.IconQuestion,
+        true)) != 0) return;
+
+      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
+      var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
+        ? currentThumbsGrid.LoadedItems
+        : _core.MediaViewerM.MediaItems,
+        items.ToList());
+      Delete(items, newCurrent);
+    }
+
+    public void Delete(MediaItemM[] items, MediaItemM newCurrent) {
       if (items.Length == 0) return;
 
       var files = new List<string>();
@@ -225,7 +249,7 @@ namespace PictureManager.Domain.Models {
         Delete(mi);
       }
 
-      fileOperationDelete.Invoke(files, true, false);
+      FileOperationDeleteMethod.Invoke(files, true, false);
       cache.ForEach(File.Delete);
 
       Current = newCurrent;
