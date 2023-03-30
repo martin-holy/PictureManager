@@ -26,7 +26,6 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
-    public RelayCommand<object> CompareCommand { get; }
 
     public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
@@ -47,10 +46,6 @@ namespace PictureManager.ViewModels {
       RebuildThumbnailsCommand = new(
         x => Model.RebuildThumbnails(x, (Keyboard.Modifiers & ModifierKeys.Shift) > 0),
         x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-
-      CompareCommand = new(
-        Compare,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
     }
 
     private void Delete() {
@@ -355,14 +350,6 @@ namespace PictureManager.ViewModels {
         _core.ThumbnailsGridsM.Current.RemoveSelected();
         _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
       }
-    }
-
-    private void Compare() {
-      // TODO
-      //App.MainWindowV.ImageComparerTool.Visibility = Visibility.Visible;
-      //App.MainWindowV.UpdateLayout();
-      //App.MainWindowV.ImageComparerTool.SelectDefaultMethod();
-      //_ = App.MainWindowV.ImageComparerTool.Compare();
     }
   }
 }

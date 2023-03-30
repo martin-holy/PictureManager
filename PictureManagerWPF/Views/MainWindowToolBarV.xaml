@@ -3,8 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:cc="clr-namespace:PictureManager.CustomControls">
+  xmlns:vm="clr-namespace:PictureManager.ViewModels">
 
   <DataTemplate DataType="{x:Type vm:MainWindowToolBarVM}">
     <DataTemplate.Resources>
@@ -252,9 +251,34 @@
               IsChecked="{Binding PlayPanoramicImages}"
               ToolTip="Play Panoramic Images"/>
           </StackPanel>
+
+          <!-- Image Comparer -->
+          <StackPanel
+            Orientation="Horizontal"
+            Visibility="{Binding ThumbnailsGridsM.Current, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
+
+            <Separator />
+
+            <mhc:IconButton
+              ToolTip="Compare images using average hash"
+              Icon="{StaticResource IconCompare}"
+              Command="{Binding ImageComparerVM.AverageHashCommand, Source={x:Static pm:App.Ui}}"
+              CommandParameter="{Binding ThumbnailsGridsM.Current, Source={x:Static pm:App.Core}}"/>
+
+            <mhc:IconButton
+              ToolTip="Compare images using p hash"
+              Icon="{StaticResource IconCompare}"
+              Command="{Binding ImageComparerVM.PHashCommand, Source={x:Static pm:App.Ui}}"
+              CommandParameter="{Binding ThumbnailsGridsM.Current, Source={x:Static pm:App.Core}}"/>
+
+            <mhc:PopupSlider
+              ToolTip="Compare limit"
+              Icon="{StaticResource IconCompare}"
+              Minimum="0"
+              Maximum="25"
+              Value="{Binding ImageComparerVM.Diff, Mode=TwoWay, Source={x:Static pm:App.Ui}}"/>
+          </StackPanel>
         </StackPanel>
-        
-        <cc:ImageComparer x:Name="ImageComparerTool" Visibility="Collapsed"/>
       </StackPanel>
 
       <mhc:WindowButtons Window="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
