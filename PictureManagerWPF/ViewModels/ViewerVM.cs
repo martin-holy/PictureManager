@@ -10,7 +10,6 @@ namespace PictureManager.ViewModels {
   public sealed class ViewerVM : ObservableObject {
     public ViewersM ViewersM { get; }
     
-    public HeaderedListItem<object, string> MainTabsItem { get; }
     public ListBox LbIncludedFolders { get; }
     public ListBox LbExcludedFolders { get; }
     public ListBox LbExcludedKeywords { get; }
@@ -18,7 +17,7 @@ namespace PictureManager.ViewModels {
     public ViewerVM(ViewersM viewersM) {
       ViewersM = viewersM;
 
-      MainTabsItem = new(this, "Viewer");
+      ViewersM.ViewerMainTabsItem = new(this, "Viewer");
 
       LbIncludedFolders = new();
       LbExcludedFolders = new();

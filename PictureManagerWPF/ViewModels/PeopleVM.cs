@@ -14,7 +14,6 @@ namespace PictureManager.ViewModels {
     private TreeWrapGroup _peopleRoot;
 
     public PeopleM PeopleM { get; }
-    public HeaderedListItem<object, string> MainTabsItem { get; }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
@@ -24,7 +23,7 @@ namespace PictureManager.ViewModels {
       _core = core;
       PeopleM = peopleM;
 
-      MainTabsItem = new(this, "People");
+      PeopleM.MainTabsItem = new(this, "People");
 
       SelectCommand = new(Select);
       PanelSizeChangedCommand = new(PanelSizeChanged);

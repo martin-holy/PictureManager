@@ -12,6 +12,7 @@ namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
 
+    public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
     public List<PersonM> Selected { get; } = new();
 
