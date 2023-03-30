@@ -12,6 +12,7 @@ namespace PictureManager.Domain.Models {
     private ViewerM _current;
     private ViewerM _selected;
 
+    public HeaderedListItem<object, string> ViewerMainTabsItem { get; set; }
     public ViewersDataAdapter DataAdapter { get; set; }
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public ViewerM Selected {

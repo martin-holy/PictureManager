@@ -79,13 +79,13 @@ namespace PictureManager.ViewModels {
           break;
 
         case ViewerM v:
-          _core.MainTabsM.Activate(_coreVM.ViewerVM.MainTabsItem);
+          _core.MainTabsM.Activate(_core.ViewersM.ViewerMainTabsItem);
           _core.ViewersM.Selected = v;
           break;
 
         case ITreeCategory cat:
           if (cat is PeopleM) {
-            _core.MainTabsM.Activate(_coreVM.PeopleVM.MainTabsItem);
+            _core.MainTabsM.Activate(_core.PeopleM.MainTabsItem);
             _coreVM.PeopleVM.Reload();
           }
           break;
