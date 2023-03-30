@@ -208,7 +208,7 @@
             <mhc:IconButton
               ToolTip="Segment Matching"
               Icon="{StaticResource IconEquals}"
-              Command="{Binding SegmentMatchingCommand}" />
+              Command="{Binding SegmentsM.SegmentMatchingCommand}" />
           </StackPanel>
 
           <Separator />

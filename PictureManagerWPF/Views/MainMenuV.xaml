@@ -100,8 +100,8 @@
                       Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Segment Matching"
-            Command="{Binding SegmentsVM.SegmentMatchingCommand,
-                      Source={x:Static pm:App.Ui}}">
+            Command="{Binding SegmentsM.SegmentMatchingCommand,
+                      Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
               <Path
                 Style="{StaticResource _icon}"
