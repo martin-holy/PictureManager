@@ -94,24 +94,6 @@
           Modifiers="Control"
           Key="A"
           Command="{Binding Model.SelectAllCommand}" />
-        <KeyBinding
-          Modifiers="Control"
-          Key="R"
-          Command="{Binding MediaItemsM.RotateCommand,
-                    Source={x:Static pm:App.Core}}" />
-        <KeyBinding
-          Key="F2"
-          Command="{Binding MediaItemsM.RenameCommand,
-                    Source={x:Static pm:App.Core}}" />
-        <KeyBinding
-          Key="Delete"
-          Command="{Binding MediaItemsVM.DeleteCommand,
-                    Source={x:Static pm:App.Ui}}" />
-        <KeyBinding
-          Modifiers="Control"
-          Key="K"
-          Command="{Binding MediaItemsM.CommentCommand,
-                    Source={x:Static pm:App.Core}}" />
       </mhc:TreeWrapView.InputBindings>
 
       <b:Interaction.Triggers>
@@ -123,8 +105,8 @@
 
         <b:EventTrigger EventName="Loaded">
           <b:InvokeCommandAction
-              Command="{Binding PanelLoadedCommand}"
-              PassEventArgsToCommand="True" />
+            Command="{Binding PanelLoadedCommand}"
+            PassEventArgsToCommand="True" />
         </b:EventTrigger>
 
         <b:EventTrigger EventName="SizeChanged">
