@@ -23,17 +23,17 @@
             Header="Group by Folders"
             IsCheckable="True"
             IsChecked="{Binding Model.GroupByFolders}"
-            Command="{Binding RefreshCommand}" />
+            Command="{Binding Model.RefreshCommand}" />
           <MenuItem
             Header="Group by Date"
             IsCheckable="True"
             IsChecked="{Binding Model.GroupByDate}"
-            Command="{Binding RefreshCommand}" />
+            Command="{Binding Model.RefreshCommand}" />
           <MenuItem
             Header="Sort by File first"
             IsCheckable="True"
             IsChecked="{Binding Model.SortByFileFirst}"
-            Command="{Binding RefreshCommand}" />
+            Command="{Binding Model.RefreshCommand}" />
         </ContextMenu>
         
         <DataTemplate DataType="{x:Type models:MediaItemM}">
@@ -93,7 +93,7 @@
         <KeyBinding
           Modifiers="Control"
           Key="A"
-          Command="{Binding SelectAllCommand}" />
+          Command="{Binding Model.SelectAllCommand}" />
         <KeyBinding
           Modifiers="Control"
           Key="R"

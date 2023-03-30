@@ -26,8 +26,6 @@ namespace PictureManager.ViewModels {
     public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
     public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
-    public RelayCommand<object> RefreshCommand { get; }
-    public RelayCommand<object> SelectAllCommand { get; }
     public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
 
@@ -40,8 +38,6 @@ namespace PictureManager.ViewModels {
 
       ShowVideoPreviewCommand = new(ShowVideoPreview);
       HideVideoPreviewCommand = new(HideVideoPreview);
-      RefreshCommand = new(async () => await Model.ReapplyFilter());
-      SelectAllCommand = new(() => Model.SelectAll());
       PanelLoadedCommand = new(PanelLoaded);
       PanelSizeChangedCommand = new(PanelSizeChanged);
 

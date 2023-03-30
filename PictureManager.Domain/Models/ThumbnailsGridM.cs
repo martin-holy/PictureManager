@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
@@ -72,10 +73,16 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public RelayCommand<object> RefreshCommand { get; }
+    public RelayCommand<object> SelectAllCommand { get; }
+
     public ThumbnailsGridM(MediaItemsM mediaItemsM, TitleProgressBarM progressBar, double thumbScale) {
       _mediaItemsM = mediaItemsM;
       _progressBar = progressBar;
       ThumbScale = thumbScale;
+
+      RefreshCommand = new(async () => await ReapplyFilter());
+      SelectAllCommand = new(() => SelectAll());
     }
 
     public void UpdatePositionSlashCount() =>
