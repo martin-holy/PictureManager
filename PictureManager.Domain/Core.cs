@@ -48,7 +48,7 @@ namespace PictureManager.Domain {
       Sdb = new(this);
 
       ViewersM = new(this); // CategoryGroupsM
-      SegmentsM = new();
+      SegmentsM = new(this); // MainTabsM, MediaViewerM, MainWindowM, ThumbnailsGridsM
       CategoryGroupsM = new();
       FavoriteFoldersM = new();
       FolderKeywordsM = new();

@@ -12,6 +12,7 @@ using PictureManager.Domain.HelperClasses;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
+    private readonly Core _core;
     private double _segmentUiSize;
     private int _segmentSize = 100;
     private int _compareSegmentSize = 32;
@@ -23,6 +24,7 @@ namespace PictureManager.Domain.Models {
     private bool _reloadAutoScroll = true;
     private readonly List<SegmentM> _selected = new();
 
+    public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public SegmentsDataAdapter DataAdapter { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public List<SegmentM> Loaded { get; } = new();
@@ -61,8 +63,11 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> CompareAllGroupsCommand { get; }
     public RelayCommand<object> SortCommand { get; }
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
+    public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
+    public RelayCommand<object> SegmentMatchingCommand { get; }
 
-    public SegmentsM() {
+    public SegmentsM(Core core) {
+      _core = core;
       SegmentsRectsM = new(this);
 
       AddSelectedToDrawerCommand = new(
@@ -75,6 +80,10 @@ namespace PictureManager.Domain.Models {
       CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
       SortCommand = new(() => Reload(true, true));
       GroupMatchingPanelCommand = new(() => Reload(true, false));
+      ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
+      SegmentMatchingCommand = new(
+        SegmentMatching,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));
@@ -649,6 +658,30 @@ namespace PictureManager.Domain.Models {
             itemsGroup.Items.Add(segment);
         }
       }
+    }
+
+    private void ViewMediaItemsWithSegment(SegmentM segmentM) {
+      var items = GetMediaItemsWithSegment(segmentM, _core.MainTabsM.Selected == MainTabsItem);
+      if (items == null) return;
+
+      _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
+      _core.MainWindowM.IsFullScreen = true;
+    }
+
+    private void SegmentMatching() {
+      var result = Core.DialogHostShow(new MessageDialog(
+        "Segment Matching",
+        "Do you want to load all segments, segments with persons \nor one segment from each person?",
+        Res.IconQuestion,
+        true,
+        new DialogButton[] { new("All segments", 0, null, true), new("Segments with persons", 1), new("One from each", 2) }));
+
+      if (result == -1) return;
+
+      MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
+      _core.MainTabsM.Activate(MainTabsItem);
+
+      LoadSegments(MediaItemsForMatching, result);
     }
   }
 }

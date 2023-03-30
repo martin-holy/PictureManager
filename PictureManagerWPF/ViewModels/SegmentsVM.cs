@@ -23,7 +23,6 @@ namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
     private readonly Core _core;
     private readonly AppCore _coreVM;
-    private readonly HeaderedListItem<object, string> _mainTabsItem;
     private readonly IProgress<int> _progress;
     private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
     private VirtualizingWrapPanel _matchingPanel;
@@ -34,9 +33,7 @@ namespace PictureManager.ViewModels {
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
 
-    public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
-    public RelayCommand<object> SegmentMatchingCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
     public RelayCommand<RoutedEventArgs> MatchingPanelLoadedCommand { get; }
@@ -54,15 +51,11 @@ namespace PictureManager.ViewModels {
         _core.TitleProgressBarM.ValueB = x;
       });
 
-      _mainTabsItem = new(this, "Segment Matching");
+      SegmentsM.MainTabsItem = new(this, "Segment Matching");
       var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
-      SegmentsRectsVM = new(segmentsM.SegmentsRectsM);
+      SegmentsRectsVM = new(SegmentsM.SegmentsRectsM);
 
-      ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
       SelectCommand = new(Select);
-      SegmentMatchingCommand = new(
-        SegmentMatching,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       CompareCommand = new(async () => {
         await CompareAsync();
         SegmentsM.Reload(true, true);
@@ -98,14 +91,6 @@ namespace PictureManager.ViewModels {
         ? SegmentsM.GetOneOrSelected(segmentM)
         : null;
 
-    private void ViewMediaItemsWithSegment(SegmentM segmentM) {
-      var items = SegmentsM.GetMediaItemsWithSegment(segmentM, _core.MainTabsM.Selected == _mainTabsItem);
-      if (items == null) return;
-
-      _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
-      _core.MainWindowM.IsFullScreen = true;
-    }
-
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM } image) {
         var rowStackPanel = image.TryFindParent<StackPanel>();
@@ -124,22 +109,6 @@ namespace PictureManager.ViewModels {
 
         SegmentsM.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
       }
-    }
-
-    private void SegmentMatching() {
-      var result = Core.DialogHostShow(new MessageDialog(
-        "Segment Matching",
-        "Do you want to load all segments, segments with persons \nor one segment from each person?",
-        Res.IconQuestion,
-        true,
-        new DialogButton[] { new("All segments", 0, null, true), new("Segments with persons", 1), new("One from each", 2) }));
-
-      if (result == -1) return;
-
-      SegmentsM.MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
-      _core.MainTabsM.Activate(_mainTabsItem);
-
-      SegmentsM.LoadSegments(SegmentsM.MediaItemsForMatching, result);
     }
 
     private async Task CompareAsync() {

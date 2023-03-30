@@ -39,8 +39,8 @@
       <Border.InputBindings>
         <MouseBinding
           MouseAction="LeftDoubleClick"
-          Command="{Binding SegmentsVM.ViewMediaItemsWithSegmentCommand,
-                    Source={x:Static pm:App.Ui}}"
+          Command="{Binding SegmentsM.ViewMediaItemsWithSegmentCommand,
+                    Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
       </Border.InputBindings>
           	  
