@@ -14,6 +14,7 @@
   <DataTemplate DataType="{x:Type mhud:MessageDialog}">
     <DockPanel
       x:Name="PART_Root"
+      MinWidth="300"
       Tag="{Binding Result, Mode=TwoWay}">
       
       <!-- Buttons -->
