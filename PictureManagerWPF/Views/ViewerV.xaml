@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
+  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <!-- ViewerM DataTemplate -->
   <DataTemplate DataType="{x:Type vm:ViewerVM}">
@@ -25,11 +26,12 @@
         <Setter Property="Margin" Value="6,0,0,0"/>
       </Style>
 
-      <Style x:Key="_headerText" TargetType="{x:Type TextBlock}">
+      <Style x:Key="_headerText" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
         <Setter Property="FontSize" Value="20"/>
         <Setter Property="Padding" Value="8"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Text}"/>
       </Style>
 
       <!-- FolderM DataTemplate -->
@@ -112,7 +114,7 @@
 
             <ContentPresenter.Resources>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding Viewer.IncludedFolders}"/>
+                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.IncludedFolders}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
@@ -149,7 +151,7 @@
           <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedFolders}">
             <ContentPresenter.Resources>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding Viewer.ExcludedFolders}"/>
+                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.ExcludedFolders}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
@@ -185,28 +187,25 @@
 
           <ListBox
             Grid.Row="1"
-            ItemsSource="{Binding CategoryGroups}"
+            ItemsSource="{Binding ViewersM.Selected.CategoryGroups}"
             SelectionMode="Multiple"
             BorderThickness="0">
 
+            <b:Interaction.Triggers>
+              <b:EventTrigger EventName="PreviewMouseUp">
+                <b:InvokeCommandAction Command="{Binding ViewersM.UpdateExcCatGroupsIdsCommand}"/>
+              </b:EventTrigger>
+            </b:Interaction.Triggers>
+
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <ContentPresenter Content="{Binding Content}">
-                  <ContentPresenter.InputBindings>
-                    <MouseBinding
-                      MouseAction="LeftClick"
-                      Command="{Binding DataContext.CategoryGroupsSelectCommand,
-                                RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
-                      CommandParameter="{Binding DataContext,
-                                         RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}}"/>
-                  </ContentPresenter.InputBindings>
-                </ContentPresenter>
+                <ContentPresenter Content="{Binding Content}"/>
               </DataTemplate>
             </ListBox.ItemTemplate>
 
             <ListBox.ItemContainerStyle>
               <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                <Setter Property="IsSelected" Value="{Binding IsSelected}"/>
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
               </Style>
             </ListBox.ItemContainerStyle>
           </ListBox>
@@ -233,7 +232,7 @@
           <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedKeywords}">
             <ContentPresenter.Resources>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding Viewer.ExcludedKeywords}"/>
+                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.ExcludedKeywords}"/>
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>

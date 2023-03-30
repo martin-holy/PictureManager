@@ -8,29 +8,21 @@ using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
   public sealed class ViewerVM : ObservableObject {
-    private readonly ViewersM _viewersM;
-    private readonly CategoryGroupsM _categoryGroupsM;
-    private ViewerM _viewer;
-
-    public ViewerM Viewer { get => _viewer; set { _viewer = value; OnPropertyChanged(); Reload(); } }
+    public ViewersM ViewersM { get; }
+    
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public ListBox LbIncludedFolders { get; }
     public ListBox LbExcludedFolders { get; }
     public ListBox LbExcludedKeywords { get; }
-    public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
-    public RelayCommand<ListItem<CategoryGroupM>> CategoryGroupsSelectCommand { get; }
 
-    public ViewerVM(ViewersM viewersM, CategoryGroupsM categoryGroupsM) {
-      _viewersM = viewersM;
-      _categoryGroupsM = categoryGroupsM;
+    public ViewerVM(ViewersM viewersM) {
+      ViewersM = viewersM;
 
       MainTabsItem = new(this, "Viewer");
 
       LbIncludedFolders = new();
       LbExcludedFolders = new();
       LbExcludedKeywords = new();
-
-      CategoryGroupsSelectCommand = new(CategoryGroupsSelect);
 
       AttachEvents();
     }
@@ -53,37 +45,14 @@ namespace PictureManager.ViewModels {
       DragDropFactory.SetDrop(LbExcludedKeywords, CanDropKeyword, DoDropKeyword);
     }
 
-    private void CategoryGroupsSelect(ListItem<CategoryGroupM> item) {
-      item.IsSelected = !item.IsSelected;
-      _viewersM.ToggleCategoryGroup(Viewer, item.Content.Id);
-    }
-
-    private void Reload() {
-      ReloadCategoryGroups();
-
-      foreach (var licg in CategoryGroups)
-        licg.IsSelected = !Viewer.ExcCatGroupsIds.Contains(licg.Content.Id);
-    }
-
-    private void ReloadCategoryGroups() {
-      var groups = _categoryGroupsM.DataAdapter.All.Values
-        .OrderBy(x => x.Category)
-        .ThenBy(x => x.Name);
-
-      CategoryGroups.Clear();
-
-      foreach (var cg in groups)
-        CategoryGroups.Add(new(cg));
-    }
-
     private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
       if (data is not FolderM folder)
         return DragDropEffects.None;
 
       if (!source.Equals(LbIncludedFolders) && !source.Equals(LbExcludedFolders))
         return (included
-          ? Viewer.IncludedFolders
-          : Viewer.ExcludedFolders)
+          ? ViewersM.Selected.IncludedFolders
+          : ViewersM.Selected.ExcludedFolders)
           .Contains(folder)
             ? DragDropEffects.None
             : DragDropEffects.Copy;
@@ -98,9 +67,9 @@ namespace PictureManager.ViewModels {
 
     private void DoDropFolder(DragEventArgs e, object source, object data, bool included) {
       if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        _viewersM.RemoveFolder(Viewer, (FolderM)data, included);
+        ViewersM.RemoveFolder(ViewersM.Selected, (FolderM)data, included);
       else
-        _viewersM.AddFolder(Viewer, (FolderM)data, included);
+        ViewersM.AddFolder(ViewersM.Selected, (FolderM)data, included);
     }
 
     private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
@@ -112,16 +81,16 @@ namespace PictureManager.ViewModels {
           ? DragDropEffects.None
           : DragDropEffects.Move;
       else
-        return Viewer.ExcludedKeywords.Contains(keyword)
+        return ViewersM.Selected.ExcludedKeywords.Contains(keyword)
           ? DragDropEffects.None
           : DragDropEffects.Copy;
     }
 
     private void DoDropKeyword(DragEventArgs e, object source, object data) {
       if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        _viewersM.RemoveKeyword(Viewer, (KeywordM)data);
+        ViewersM.RemoveKeyword(ViewersM.Selected, (KeywordM)data);
       else
-        _viewersM.AddKeyword(Viewer, (KeywordM)data);
+        ViewersM.AddKeyword(ViewersM.Selected, (KeywordM)data);
     }
   }
 }

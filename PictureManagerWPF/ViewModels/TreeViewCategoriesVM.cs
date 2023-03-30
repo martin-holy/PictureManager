@@ -87,7 +87,7 @@ namespace PictureManager.ViewModels {
 
         case ViewerM v:
           _core.MainTabsM.Activate(_coreVM.ViewerVM.MainTabsItem);
-          _coreVM.ViewerVM.Viewer = v;
+          _core.ViewersM.Selected = v;
           break;
 
         case ITreeCategory cat:

@@ -47,7 +47,7 @@ namespace PictureManager {
       TreeViewCategoriesVM = new(App.Core, this, App.Core.TreeViewCategoriesM);
 
       PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
-      ViewerVM = new(App.Core.ViewersM, App.Core.CategoryGroupsM);
+      ViewerVM = new(App.Core.ViewersM);
 
       AttachEvents();
     }
