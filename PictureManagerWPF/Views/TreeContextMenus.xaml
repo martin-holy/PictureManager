@@ -4,7 +4,8 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels">
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
@@ -64,7 +65,7 @@
   <!-- Folder Keywords -->
   <ContextMenu x:Key="TreeContextMenuFolderKeywords">
     <MenuItem Header="Folder Keywords list"
-              Command="vm:FolderKeywordsVM.OpenFolderKeywordsListCommand" />
+              Command="md:FolderKeywordsDialogM.OpenCommand" />
   </ContextMenu>
 
   <!-- Keywords -->
