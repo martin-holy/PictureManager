@@ -34,7 +34,7 @@ namespace PictureManager {
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
-      MainWindowToolBarVM = new();
+      MainWindowToolBarVM = new(App.Core, this);
 
       FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
