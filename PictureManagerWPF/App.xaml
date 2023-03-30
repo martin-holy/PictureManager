@@ -26,6 +26,7 @@
 
         <ResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>

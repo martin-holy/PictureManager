@@ -1,0 +1,33 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
+
+  <DataTemplate DataType="{x:Type md:ErrorDialogM}">
+    <DockPanel Width="400">
+      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
+        <Button
+          Style="{StaticResource StyleButtonDialog}"
+          Command="{Binding CloseCommand}"
+          Content="CLOSE"
+          IsCancel="True"/>
+      </StackPanel>
+      
+      <StackPanel Margin="5">
+        <TextBlock Text="{Binding Message}" Margin="5"/>
+        
+        <Expander
+          Header="Detail"
+          IsExpanded="False"
+          Foreground="{StaticResource MH.Brushes.Text}">
+          
+          <TextBox
+            Text="{Binding Detail}"
+            IsReadOnly="True" 
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"/>
+        </Expander>
+      </StackPanel>
+    </DockPanel>
+  </DataTemplate>
+</ResourceDictionary>
