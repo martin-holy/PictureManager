@@ -23,7 +23,7 @@
     <KeyBinding Modifiers="Control" Key="R" Command="{Binding CoreM.MediaItemsM.RotateCommand}"/>
     <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
     <KeyBinding Key="F2" Command="{Binding CoreM.MediaItemsM.RenameCommand}"/>
-    <KeyBinding Key="Delete" Command="{Binding CoreVM.MediaItemsVM.DeleteCommand}"/>
+    <KeyBinding Key="Delete" Command="{Binding CoreM.MediaItemsM.DeleteCommand}"/>
     <KeyBinding Key="Esc" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
   </Window.InputBindings>

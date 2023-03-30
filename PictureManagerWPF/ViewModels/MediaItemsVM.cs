@@ -23,7 +23,6 @@ namespace PictureManager.ViewModels {
 
     public MediaItemsM Model { get; }
 
-    public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
 
@@ -34,10 +33,7 @@ namespace PictureManager.ViewModels {
 
       Model.ReadMetadata = ReadMetadata;
       Model.WriteMetadata = WriteMetadata;
-
-      DeleteCommand = new(
-        Delete,
-        () => Model.GetActive().Any());
+      Model.FileOperationDeleteMethod = AppCore.FileOperationDelete;
 
       ReloadMetadataInFolderCommand = new(
         x => Model.ReloadMetadata(x.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
@@ -46,24 +42,6 @@ namespace PictureManager.ViewModels {
       RebuildThumbnailsCommand = new(
         x => Model.RebuildThumbnails(x, (Keyboard.Modifiers & ModifierKeys.Shift) > 0),
         x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-    }
-
-    private void Delete() {
-      var items = Model.GetActive();
-      var count = items.Length;
-
-      if (Core.DialogHostShow(new MessageDialog(
-        "Delete Confirmation",
-        $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
-        Res.IconQuestion,
-        true)) != 0) return;
-
-      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
-      var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
-        ? currentThumbsGrid.LoadedItems
-        : _core.MediaViewerM.MediaItems,
-        items.ToList());
-      Model.Delete(items, AppCore.FileOperationDelete, newCurrent);
     }
 
     private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
