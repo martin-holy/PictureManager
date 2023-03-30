@@ -38,7 +38,6 @@
         <ResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
         <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
         <ResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/CustomControlStyles/ImageComparerStyle.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

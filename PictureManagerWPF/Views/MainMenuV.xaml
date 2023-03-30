@@ -90,10 +90,6 @@
             Command="{Binding ThumbnailsGridsVM.CopyPathsCommand,
                       Source={x:Static pm:App.Ui}}"/>
           <MenuItem
-            Header="Compare"
-            Command="{Binding MediaItemsVM.CompareCommand,
-                      Source={x:Static pm:App.Ui}}"/>
-          <MenuItem
             Header="Rename"
             InputGestureText="F2"
             Command="{Binding MediaItemsM.RenameCommand,
