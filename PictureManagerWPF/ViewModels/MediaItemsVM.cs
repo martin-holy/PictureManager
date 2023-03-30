@@ -12,6 +12,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -318,7 +319,7 @@ namespace PictureManager.ViewModels {
               AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
         }
         catch (Exception ex) {
-          ErrorDialog.Show(ex);
+          Core.DialogHostShow(new ErrorDialogM(ex));
         }
       }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Close()));
 
