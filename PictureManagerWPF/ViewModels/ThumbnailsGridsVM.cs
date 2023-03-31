@@ -101,10 +101,7 @@ namespace PictureManager.ViewModels {
       ImagesToVideoDialog.Show(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (folder, fileName) => {
           // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = new MediaItemM(_core.MediaItemsM.DataAdapter.GetNextId(), folder, fileName);
-          _core.MediaItemsM.DataAdapter.All.Add(mi.Id, mi);
-          _core.MediaItemsM.OnPropertyChanged(nameof(_core.MediaItemsM.MediaItemsCount));
-          folder.MediaItems.Add(mi);
+          var mi = _core.MediaItemsM.AddNew(folder, fileName, false);
           await _core.MediaItemsM.ReadMetadata(mi, false);
           mi.SetThumbSize(true);
 
