@@ -17,8 +17,8 @@
 
     <mhc:TreeWrapView
       ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
-      Root="{Binding PeopleRoot}"
-      ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+      Root="{Binding PeopleM.PeopleRoot}"
+      ScrollToItem="{Binding PeopleM.ScrollToItem, Mode=TwoWay}">
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
