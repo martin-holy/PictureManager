@@ -341,11 +341,14 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public MediaItemM AddNew(FolderM folder, string fileName, bool isNew) {
+    public MediaItemM AddNew(FolderM folder, string fileName, bool isNew, bool readMetadata) {
       var mi = new MediaItemM(DataAdapter.GetNextId(), folder, fileName, isNew);
       DataAdapter.All.Add(mi.Id, mi);
       OnPropertyChanged(nameof(MediaItemsCount));
       folder.MediaItems.Add(mi);
+
+      if (readMetadata)
+        _ = ReadMetadata(mi, false);
 
       return mi;
     }
@@ -384,7 +387,7 @@ namespace PictureManager.Domain.Models {
             // check if the MediaItem is already in DB, if not put it there
             var fileName = Path.GetFileName(file);
             fmis.TryGetValue(fileName, out var inDbFile);
-            inDbFile ??= AddNew(folder, fileName, true);
+            inDbFile ??= AddNew(folder, fileName, true, false);
 
             if (!_viewersM.CanViewerSee(inDbFile)) {
               hiddenMediaItems.Add(inDbFile);
