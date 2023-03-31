@@ -11,10 +11,14 @@ using PictureManager.Domain.DataAdapters;
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly CategoryGroupsM _categoryGroupsM;
+    private TreeWrapGroup _peopleRoot;
+    private object _scrollToItem;
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
     public List<PersonM> Selected { get; } = new();
+    public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
+    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
@@ -145,7 +149,7 @@ namespace PictureManager.Domain.Models {
     public void SetSelected(PersonM p, bool value) =>
       Selecting.SetSelected(Selected, p, value, null);
 
-    public TreeWrapGroup Reload() {
+    public void Reload() {
       var root = new TreeWrapGroup();
 
       // add people in groups
@@ -157,7 +161,8 @@ namespace PictureManager.Domain.Models {
       if (peopleWithoutGroup.Any())
         AddPeopleToGroups(root, string.Empty, peopleWithoutGroup);
 
-      return root;
+      PeopleRoot = root;
+      ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
     }
 
     private static void AddPeopleToGroups(TreeWrapGroup root, string groupTitle, IEnumerable<PersonM> people) {

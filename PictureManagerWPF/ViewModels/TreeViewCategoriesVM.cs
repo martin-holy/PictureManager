@@ -86,7 +86,7 @@ namespace PictureManager.ViewModels {
         case ITreeCategory cat:
           if (cat is PeopleM) {
             _core.MainTabsM.Activate(_core.PeopleM.MainTabsItem);
-            _coreVM.PeopleVM.Reload();
+            _core.PeopleM.Reload();
           }
           break;
       }
