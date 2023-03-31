@@ -198,7 +198,9 @@ namespace PictureManager.Domain.Models {
       var folderPath = path[..lioSep];
       var fileName = path[(lioSep + 1)..];
       var folder = GetByPath(folderPath);
-      return folder?.GetMediaItemByName(fileName);
+      var mi = folder?.GetMediaItemByName(fileName);
+      mi ??= _core.MediaItemsM.AddNew(folder, fileName, false, true);
+      return mi;
     }
 
     private FolderM GetByPath(string path) {
@@ -232,6 +234,7 @@ namespace PictureManager.Domain.Models {
             var fileName = oldFilePath[(oldFilePath.LastIndexOf(Path.DirectorySeparatorChar) + 1)..];
             var mi = srcFolder.GetMediaItemByName(fileName);
             // renamed files can contain files which are not in DB
+            // TODO remove this
             if (mi == null) continue;
             mi.FileName = newFileName;
           }
