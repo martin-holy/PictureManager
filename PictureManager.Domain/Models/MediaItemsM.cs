@@ -32,7 +32,6 @@ namespace PictureManager.Domain.Models {
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
 
     public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
-    public delegate CollisionResult CollisionResolver(string srcFilePath, string destFilePath, ref string destFileName);
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsDeletedEventHandler = delegate { };
@@ -267,8 +266,35 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(ModifiedItemsCount));
     }
 
-    public void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder,
-      IProgress<object[]> progress, CollisionResolver collisionResolver, CancellationToken token) {
+    /// <summary>
+    /// Copy or Move MediaItems (Files, Cache and DB)
+    /// </summary>
+    /// <param name="mode"></param>
+    /// <param name="items"></param>
+    /// <param name="destFolder"></param>
+    public void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder) {
+      var fop = new FileOperationDialogM(mode, false);
+      fop.RunTask = Task.Run(() => {
+        fop.LoadCts = new();
+        var token = fop.LoadCts.Token;
+
+        try {
+          CopyMove(mode, items, destFolder, fop.Progress, token);
+        }
+        catch (Exception ex) {
+          Core.DialogHostShow(new ErrorDialogM(ex));
+        }
+      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Result = 1));
+
+      _ = Core.DialogHostShow(fop);
+
+      if (mode == FileOperationMode.Move) {
+        _core.ThumbnailsGridsM.Current.RemoveSelected();
+        _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
+      }
+    }
+
+    private void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
       var count = items.Count;
       var done = 0;
 
@@ -285,7 +311,7 @@ namespace PictureManager.Domain.Models {
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
         if (File.Exists(destFilePath)) {
-          var result = collisionResolver.Invoke(mi.FilePath, destFilePath, ref miNewFileName);
+          var result = FileOperationCollisionDialogM.Show(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
             Core.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));

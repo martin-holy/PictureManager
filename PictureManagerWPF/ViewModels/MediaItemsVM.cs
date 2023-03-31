@@ -9,10 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using PictureManager.Properties;
@@ -299,36 +296,6 @@ namespace PictureManager.ViewModels {
       }
 
       return bSuccess;
-    }
-
-    /// <summary>
-    /// Copy or Move MediaItems (Files, Cache and DB)
-    /// </summary>
-    /// <param name="mode"></param>
-    /// <param name="items"></param>
-    /// <param name="destFolder"></param>
-    public void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder) {
-      var fop = new FileOperationDialog(Application.Current.MainWindow, mode) { PbProgress = { IsIndeterminate = false, Value = 0 } };
-      fop.RunTask = Task.Run(() => {
-        fop.LoadCts = new();
-        var token = fop.LoadCts.Token;
-
-        try {
-          Model.CopyMove(mode, items, destFolder, fop.Progress,
-            (string srcFilePath, string destFilePath, ref string destFileName) =>
-              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
-        }
-        catch (Exception ex) {
-          Core.DialogHostShow(new ErrorDialogM(ex));
-        }
-      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Close()));
-
-      _ = fop.ShowDialog();
-
-      if (mode == FileOperationMode.Move) {
-        _core.ThumbnailsGridsM.Current.RemoveSelected();
-        _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
-      }
     }
   }
 }

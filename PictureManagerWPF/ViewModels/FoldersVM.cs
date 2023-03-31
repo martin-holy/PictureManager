@@ -1,12 +1,9 @@
 ﻿using MH.Utils.Interfaces;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace PictureManager.ViewModels {
@@ -38,7 +35,7 @@ namespace PictureManager.ViewModels {
 
       switch (src) {
         case FolderM srcData: // Folder
-          CopyMoveVM(foMode, srcData, destFolder);
+          Model.CopyMove(foMode, srcData, destFolder);
 
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.GetByPath(srcData.Name) != null) {
@@ -49,7 +46,7 @@ namespace PictureManager.ViewModels {
           break;
 
         case string[]: // MediaItems
-          _coreVM.MediaItemsVM.CopyMove(foMode,
+          _core.MediaItemsM.CopyMove(foMode,
             _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
             destFolder);
           _core.MediaItemsM.DataAdapter.IsModified = true;
@@ -58,25 +55,6 @@ namespace PictureManager.ViewModels {
       }
 
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-    }
-
-    private void CopyMoveVM(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
-      var fop = new FileOperationDialog(Application.Current.MainWindow, mode) { PbProgress = { IsIndeterminate = true } };
-      fop.RunTask = Task.Run(() => {
-        fop.LoadCts = new();
-        var token = fop.LoadCts.Token;
-
-        try {
-          Model.CopyMove(mode, srcFolder, destFolder, fop.Progress,
-            (string srcFilePath, string destFilePath, ref string destFileName) =>
-              AppCore.ShowFileOperationCollisionDialog(srcFilePath, destFilePath, fop, ref destFileName), token);
-        }
-        catch (Exception ex) {
-          Core.DialogHostShow(new ErrorDialogM(ex));
-        }
-      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Close()));
-
-      fop.ShowDialog();
     }
   }
 }

@@ -110,29 +110,6 @@ namespace PictureManager {
       };
     }
 
-    public static CollisionResult ShowFileOperationCollisionDialog(string srcFilePath, string destFilePath, Window owner, ref string fileName) {
-      var result = CollisionResult.Skip;
-      var outFileName = fileName;
-      var srcMi = App.Core.FoldersM.GetMediaItemByPath(srcFilePath);
-      var destMi = App.Core.FoldersM.GetMediaItemByPath(destFilePath);
-
-      Core.RunOnUiThread(() => {
-        srcMi?.SetThumbSize();
-        srcMi?.SetInfoBox();
-        destMi?.SetThumbSize();
-        destMi?.SetInfoBox();
-
-        var cd = new FileOperationCollisionDialog(srcFilePath, destFilePath, srcMi, destMi, owner);
-        cd.ShowDialog();
-        result = cd.Result;
-        outFileName = cd.FileName;
-      }).GetAwaiter().GetResult();
-
-      fileName = outFileName;
-
-      return result;
-    }
-
     public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
       var fops = new PicFileOperationProgressSink();
       using var fo = new FileOperation(fops);
