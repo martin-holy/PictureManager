@@ -101,9 +101,7 @@ namespace PictureManager.ViewModels {
       ImagesToVideoDialog.Show(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (folder, fileName) => {
           // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = _core.MediaItemsM.AddNew(folder, fileName, false);
-          await _core.MediaItemsM.ReadMetadata(mi, false);
-          mi.SetThumbSize(true);
+          var mi = _core.MediaItemsM.AddNew(folder, fileName, false, true);
 
           // reload grid
           Model.Current.LoadedItems.AddInOrder(mi,
