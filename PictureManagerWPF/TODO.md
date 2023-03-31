@@ -57,6 +57,11 @@
   - segment with person doesn't show number of selected segments
 ## ImageComparerTool
   - rewrite UI
+## SegmentRect
+  - rect doesn't stay on the edge of an image when editing
+  - moving beyond the edge of an image should stop changing x,y,c
+## Segment
+  - wrong size calc with windowsDisplayScale
 
 
 # Update
@@ -72,6 +77,7 @@
   - comment out MahApps styles that I don't use for app start speed up
   - check how many RAM consumes referencing objects like Folder have list of MediaItems or MediaItem have list of keywords and people, ...
   - check if mhu:SetterAction can be replaced by b:ChangePropertyAction
+  - join FileOperationDialogM and FileOperationCollisionDialogM
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
@@ -97,14 +103,20 @@
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - replace behaviors with InputBindings where possible
+  - move resources up to DataTemplate or ResourceDictionary
+  - where to declare ResourceConverter because it is used in MH.UI and PM
 ## WPF Controls
   - ZoomAndPanImage update to MVVM
   - VideoPlayer update to MVVM
   - use button foreground and background for icon in IconButton and IconToggleButton
+  - create dialog button style in MH.UI
+  - add background behind text in IconTextButton
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 ## Compress dialog
-   - smaller font size for file size
+  - smaller font size for file size
+## MediaItemM
+  - remove IsNew prop
 
 
 # New
@@ -138,6 +150,7 @@
   - import/export
   - metadata (keywords, people, rating, comment) on file and/or Clip
   - export to mp4 (FFMPEG)
+  - zoom and pan
 ## MediaViewer
   - po 3 vterinach taky skryt status bar a nastavit top bar na opacity 0
   - na prehravani panoramat zmensit obrazek na vysku obrazovky <= je to nekvalitni :(
