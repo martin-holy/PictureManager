@@ -341,6 +341,15 @@ namespace PictureManager.Domain.Models {
       }
     }
 
+    public MediaItemM AddNew(FolderM folder, string fileName, bool isNew) {
+      var mi = new MediaItemM(DataAdapter.GetNextId(), folder, fileName, isNew);
+      DataAdapter.All.Add(mi.Id, mi);
+      OnPropertyChanged(nameof(MediaItemsCount));
+      folder.MediaItems.Add(mi);
+
+      return mi;
+    }
+
     public async Task<List<MediaItemM>> GetMediaItemsForLoadAsync(IReadOnlyCollection<MediaItemM> mediaItems, IReadOnlyCollection<FolderM> folders) {
       var items = new List<MediaItemM>();
 
@@ -375,12 +384,8 @@ namespace PictureManager.Domain.Models {
             // check if the MediaItem is already in DB, if not put it there
             var fileName = Path.GetFileName(file);
             fmis.TryGetValue(fileName, out var inDbFile);
-            if (inDbFile == null) {
-              inDbFile = new(DataAdapter.GetNextId(), folder, fileName, true);
-              DataAdapter.All.Add(inDbFile.Id, inDbFile);
-              OnPropertyChanged(nameof(MediaItemsCount));
-              folder.MediaItems.Add(inDbFile);
-            }
+            inDbFile ??= AddNew(folder, fileName, true);
+
             if (!_viewersM.CanViewerSee(inDbFile)) {
               hiddenMediaItems.Add(inDbFile);
               continue;
