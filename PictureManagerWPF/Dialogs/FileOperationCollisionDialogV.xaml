@@ -1,0 +1,101 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
+
+  <DataTemplate DataType="{x:Type md:FileOperationCollisionDialogM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml"/>
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <DockPanel>
+      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
+        <Button Style="{StaticResource StyleButtonDialog}" Content="RENAME" Command="{Binding RenameCommand}"/>
+        <Button Style="{StaticResource StyleButtonDialog}" Content="REPLACE" Command="{Binding ReplaceCommand}"/>
+        <Button Style="{StaticResource StyleButtonDialog}" Content="SKIP" Command="{Binding SkipCommand}"/>
+      </StackPanel>
+
+      <StackPanel Margin="5">
+        <!-- Thumbnails -->
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <!-- Source Thumbnail -->
+          <Grid Grid.Row="0" Grid.Column="0" ToolTip="{Binding SrcFileInfo.FullName}">
+            <ContentPresenter Content="{Binding SrcMediaItem}"/>
+          </Grid>
+
+          <!-- Destination Thumbnail -->
+          <Grid Grid.Row="0" Grid.Column="2" ToolTip="{Binding DestFileInfo.FullName}">
+            <ContentPresenter Content="{Binding DestMediaItem}"/>
+          </Grid>
+
+          <!-- Source File Info -->
+          <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical">
+            <TextBlock Margin="4" Text="{Binding SrcFileInfo.Length, StringFormat='File size: {0:D} B'}"/>
+            <TextBlock Margin="4" Text="{Binding SrcFileInfo.LastWriteTime, StringFormat='Modified: {0:G}'}"/>
+            <TextBlock Margin="4">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="Dimensions: {0}x{1}">
+                  <Binding Path="SrcMediaItem.Width"/>
+                  <Binding Path="SrcMediaItem.Height"/>
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+
+          <!-- Destination File Info -->
+          <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical">
+            <TextBlock Margin="4" Text="{Binding DestFileInfo.Length, StringFormat='File size: {0:D} B'}"/>
+            <TextBlock Margin="4" Text="{Binding DestFileInfo.LastWriteTime, StringFormat='Modified: {0:G}'}"/>
+            <TextBlock Margin="4">
+              <TextBlock.Text>
+                <MultiBinding StringFormat="Dimensions: {0}x{1}">
+                  <Binding Path="DestMediaItem.Width"/>
+                  <Binding Path="DestMediaItem.Height"/>
+                </MultiBinding>
+              </TextBlock.Text>
+            </TextBlock>
+          </StackPanel>
+        </Grid>
+
+        <!-- File Name -->
+        <StackPanel Orientation="Horizontal">
+          <Label Content="File name:"/>
+          <TextBox
+            Text="{Binding FileName}"
+            Margin="5,0"
+            MinWidth="200" 
+            VerticalAlignment="Center"
+            Height="24">
+            
+            <TextBox.Style>
+              <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
+                <Setter Property="ToolTip" Value="{x:Null}"/>
+                <Style.Triggers>
+                  <DataTrigger Binding="{Binding Error, Converter={StaticResource AllToBoolConverter}}" Value="True">
+                    <Setter Property="Background" Value="#7FFF0000"/>
+                    <Setter Property="ToolTip" Value="{Binding Error}"/>
+                  </DataTrigger>
+                </Style.Triggers>
+              </Style>
+            </TextBox.Style>
+          </TextBox>
+        </StackPanel>
+      </StackPanel>
+    </DockPanel>
+  </DataTemplate>
+</ResourceDictionary>

@@ -1,0 +1,48 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
+
+  <DataTemplate DataType="{x:Type md:FileOperationDialogM}">
+    <DockPanel Width="500">
+      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
+        <Button
+          Style="{StaticResource StyleButtonDialog}"
+          Content="CANCEL"
+          IsCancel="True"
+          Command="{Binding CancelCommand}"/>
+      </StackPanel>
+
+      <StackPanel Margin="5">
+        <!-- Directory From / To, FileName -->
+        <Grid VerticalAlignment="Center">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <Label Grid.Row="0" Grid.Column="0" Content="From: "/>
+          <Label Grid.Row="1" Grid.Column="0" Content="To: "/>
+          <Label Grid.Row="2" Grid.Column="0" Content="File: "/>
+
+          <Label Grid.Row="0" Grid.Column="1" Content="{Binding DirFrom}"/>
+          <Label Grid.Row="1" Grid.Column="1" Content="{Binding DirTo}"/>
+          <Label Grid.Row="2" Grid.Column="1" Content="{Binding FileName}"/>
+        </Grid>
+
+        <!-- Progress Bar -->
+        <ProgressBar
+          Height="16"
+          Margin="5,0"
+          IsIndeterminate="{Binding IsIndeterminate}"
+          Value="{Binding ProgressValue}"/>
+      </StackPanel>
+    </DockPanel>
+  </DataTemplate>
+</ResourceDictionary>

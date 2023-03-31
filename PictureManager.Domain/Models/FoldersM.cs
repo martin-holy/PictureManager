@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Dialogs;
 
 namespace PictureManager.Domain.Models {
   public class FoldersM : TreeCategoryBase {
@@ -213,14 +215,30 @@ namespace PictureManager.Domain.Models {
     public bool IsFolderVisible(FolderM folder) =>
       Tree.GetTopParent(folder)?.IsAvailable == true && _viewersM.CanViewerSee(folder);
 
-    public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress,
-      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
+    public void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder) {
+      var fop = new FileOperationDialogM(mode, true);
+      fop.RunTask = Task.Run(() => {
+        fop.LoadCts = new();
+        var token = fop.LoadCts.Token;
+
+        try {
+          CopyMove(mode, srcFolder, destFolder, fop.Progress, token);
+        }
+        catch (Exception ex) {
+          Core.DialogHostShow(new ErrorDialogM(ex));
+        }
+      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Result = 1));
+
+      Core.DialogHostShow(fop);
+    }
+
+    private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
       var skippedFiles = new HashSet<string>();
       var renamedFiles = new Dictionary<string, string>();
 
       // Copy/Move Files and Cache on file system
       CopyMoveFilesAndCache(mode, srcFolder.FullPath, IOExtensions.PathCombine(destFolder.FullPath, srcFolder.Name),
-        ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
+        ref skippedFiles, ref renamedFiles, progress, token);
 
       // update objects with skipped and renamed files in mind
       switch (mode) {
@@ -248,8 +266,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
-      ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress,
-      MediaItemsM.CollisionResolver collisionResolver, CancellationToken token) {
+      ref HashSet<string> skippedFiles, ref Dictionary<string, string> renamedFiles, IProgress<object[]> progress, CancellationToken token) {
 
       Directory.CreateDirectory(destDirPath);
       var srcDirPathLength = srcDirPath.Length + 1;
@@ -257,7 +274,7 @@ namespace PictureManager.Domain.Models {
       // run this function for each sub directory
       foreach (var dir in Directory.EnumerateDirectories(srcDirPath)) {
         CopyMoveFilesAndCache(mode, dir, IOExtensions.PathCombine(destDirPath, dir[srcDirPathLength..]),
-          ref skippedFiles, ref renamedFiles, progress, collisionResolver, token);
+          ref skippedFiles, ref renamedFiles, progress, token);
       }
 
       // get source and destination paths to Cache
@@ -283,7 +300,7 @@ namespace PictureManager.Domain.Models {
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
         if (File.Exists(destFilePath)) {
-          var result = collisionResolver.Invoke(srcFilePath, destFilePath, ref destFileName);
+          var result = FileOperationCollisionDialogM.Show(srcFilePath, destFilePath, ref destFileName);
 
           switch (result) {
             case CollisionResult.Rename: {
