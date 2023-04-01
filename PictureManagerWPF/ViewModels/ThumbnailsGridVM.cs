@@ -7,6 +7,7 @@ using System.Windows.Media;
 using MH.UI.WPF.Controls;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
@@ -23,8 +24,8 @@ namespace PictureManager.ViewModels {
 
     public RelayCommand<object> ShowVideoPreviewCommand { get; }
     public RelayCommand<MediaItemM> HideVideoPreviewCommand { get; }
-    public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
-    public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
+    public RelayCommand<ClickEventArgs> SelectMediaItemCommand { get; }
+    public RelayCommand<ClickEventArgs> OpenMediaItemCommand { get; }
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
     public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
@@ -42,13 +43,12 @@ namespace PictureManager.ViewModels {
       PanelSizeChangedCommand = new(PanelSizeChanged);
 
       SelectMediaItemCommand = new(e => {
-        if ((e.Source as FrameworkElement)?.DataContext is not MediaItemM mi) return;
-        var (isCtrlOn, isShiftOn) = InputUtils.GetKeyboardModifiers(e);
-        Model.Select(mi, isCtrlOn, isShiftOn);
+        if (e.DataContext is MediaItemM mi)
+          Model.Select(mi, e.IsCtrlOn, e.IsShiftOn);
       });
 
       OpenMediaItemCommand = new(
-        e => OpenMediaItem((e.Source as FrameworkElement)?.DataContext as MediaItemM),
+        e => OpenMediaItem(e.DataContext as MediaItemM),
         e => e.ClickCount == 2);
 
       ZoomCommand = new(

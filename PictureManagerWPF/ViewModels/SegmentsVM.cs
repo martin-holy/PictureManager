@@ -14,6 +14,7 @@ using MH.UI.WPF.Utils;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.EventsArgs;
 using MH.Utils.HelperClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;

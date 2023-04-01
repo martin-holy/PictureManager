@@ -65,14 +65,15 @@
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.SelectMediaItemCommand),
                             RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  PassEventArgsToCommand="True" />
+                  EventArgsConverter="{StaticResource ClickConverter}"
+                  EventArgsConverterParameter="{StaticResource True}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeftButtonDown">
                 <b:InvokeCommandAction
                   Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.OpenMediaItemCommand),
                             RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  PassEventArgsToCommand="True" />
+                  EventArgsConverter="{StaticResource ClickConverter}" />
               </b:EventTrigger>
             </b:Interaction.Triggers>
           </ContentPresenter>
