@@ -24,7 +24,6 @@ namespace PictureManager {
     public PersonVM PersonVM { get; }
     public ViewerVM ViewerVM { get; }
     public ImageComparerVM ImageComparerVM { get; } = new();
-    public TreeViewCategoriesVM TreeViewCategoriesVM { get; }
 
     public AppCore() {
       App.Core.CachePath = Settings.Default.CachePath;
@@ -43,8 +42,6 @@ namespace PictureManager {
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsVM = new(App.Core.VideoClipsM);
-
-      TreeViewCategoriesVM = new(App.Core, this, App.Core.TreeViewCategoriesM);
 
       PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM);
