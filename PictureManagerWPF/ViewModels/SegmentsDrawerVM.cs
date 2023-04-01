@@ -51,7 +51,7 @@ namespace PictureManager.ViewModels {
       SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !source.Equals(_panel));
 
     private void Select(ClickEventArgs e) {
-      if (e.DataContext is SegmentM segmentM)
+      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         SegmentsM.Select(SegmentsM.SegmentsDrawer.Cast<SegmentM>().ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 

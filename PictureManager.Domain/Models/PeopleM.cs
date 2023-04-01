@@ -145,7 +145,7 @@ namespace PictureManager.Domain.Models {
       ToggleKeyword(Selected, keyword);
 
     private void Select(ClickEventArgs e) {
-      if (e.DataContext is SegmentM segmentM)
+      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
     }
 
