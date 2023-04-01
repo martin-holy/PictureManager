@@ -10,20 +10,21 @@ namespace MH.UI.WPF.Converters {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
       value is not MouseButtonEventArgs args
         ? null
-        : GetArgs(args, parameter is true);
+        : GetArgs(args, parameter);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
 
-    private ClickEventArgs GetArgs(MouseButtonEventArgs e, bool allButtons) {
+    private ClickEventArgs GetArgs(MouseButtonEventArgs e, object desiredSource) {
       var args = new ClickEventArgs() {
+        IsSourceDesired = desiredSource == null || e.OriginalSource.GetType().FullName.Equals(desiredSource),
         OriginalSource = e.OriginalSource,
         DataContext = (e.OriginalSource as FrameworkElement)?.DataContext,
         ClickCount = e.ClickCount,
         IsAltOn = (Keyboard.Modifiers & ModifierKeys.Alt) > 0
       };
 
-      if (allButtons && e.ChangedButton is not MouseButton.Left) {
+      if (e.ChangedButton is not MouseButton.Left) {
         args.IsCtrlOn = true;
         args.IsShiftOn = false;
       }
