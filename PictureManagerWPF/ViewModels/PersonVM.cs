@@ -88,7 +88,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void Select(ClickEventArgs e) {
-      if (e.DataContext is SegmentM segmentM)
+      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         _segmentsM.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 

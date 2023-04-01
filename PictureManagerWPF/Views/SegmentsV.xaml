@@ -28,8 +28,7 @@
           <b:EventTrigger EventName="PreviewMouseUp">
             <b:InvokeCommandAction
               Command="{Binding SelectCommand}"
-              EventArgsConverter="{StaticResource ClickConverter}"
-              EventArgsConverterParameter="{StaticResource True}"/>
+              EventArgsConverter="{StaticResource ClickConverter}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
         

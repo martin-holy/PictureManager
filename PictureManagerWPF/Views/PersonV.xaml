@@ -137,7 +137,7 @@
           <b:InvokeCommandAction
             Command="{Binding SelectCommand}"
             EventArgsConverter="{StaticResource ClickConverter}"
-            EventArgsConverterParameter="{StaticResource True}"/>
+            EventArgsConverterParameter="System.Windows.Controls.Image"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="SizeChanged">

@@ -23,9 +23,9 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
-            Command="{Binding SelectCommand}"
+            Command="{Binding PeopleM.SelectCommand}"
             EventArgsConverter="{StaticResource ClickConverter}"
-            EventArgsConverterParameter="{StaticResource True}" />
+            EventArgsConverterParameter="System.Windows.Controls.Image"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="SizeChanged">
