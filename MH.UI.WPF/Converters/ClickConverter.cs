@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MH.Utils.EventsArgs;
+using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -8,33 +10,29 @@ namespace MH.UI.WPF.Converters {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
       value is not MouseButtonEventArgs args
         ? null
-        : new ClickEventArgs(args, parameter is true);
+        : GetArgs(args, parameter is true);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
-  }
 
-  public class ClickEventArgs {
-    public int ClickCount { get; }
-    public object Source { get; }
-    public object OriginalSource { get; }
-    public bool IsCtrlOn { get; }
-    public bool IsAltOn { get; }
-    public bool IsShiftOn { get; }
+    private ClickEventArgs GetArgs(MouseButtonEventArgs e, bool allButtons) {
+      var args = new ClickEventArgs() {
+        OriginalSource = e.OriginalSource,
+        DataContext = (e.OriginalSource as FrameworkElement)?.DataContext,
+        ClickCount = e.ClickCount,
+        IsAltOn = (Keyboard.Modifiers & ModifierKeys.Alt) > 0
+      };
 
-    public ClickEventArgs(MouseButtonEventArgs args, bool allButtons) {
-      ClickCount = args.ClickCount;
-      Source = args.Source;
-      OriginalSource = args.OriginalSource;
-      IsCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
-      IsAltOn = (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
-      IsShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
-
-      // right button like CTRL + left button
-      if (allButtons && args.ChangedButton is MouseButton.Right) {
-        IsCtrlOn = true;
-        IsShiftOn = false;
+      if (allButtons && e.ChangedButton is not MouseButton.Left) {
+        args.IsCtrlOn = true;
+        args.IsShiftOn = false;
       }
+      else {
+        args.IsCtrlOn = (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+        args.IsShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+      }
+
+      return args;
     }
   }
 }
