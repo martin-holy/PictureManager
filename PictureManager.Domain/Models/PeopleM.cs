@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -19,6 +20,7 @@ namespace PictureManager.Domain.Models {
     public List<PersonM> Selected { get; } = new();
     public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public RelayCommand<ClickEventArgs> SelectCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
@@ -27,6 +29,8 @@ namespace PictureManager.Domain.Models {
     public PeopleM(CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
+
+      SelectCommand = new(Select);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -140,6 +144,11 @@ namespace PictureManager.Domain.Models {
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
       ToggleKeyword(Selected, keyword);
 
+    private void Select(ClickEventArgs e) {
+      if (e.DataContext is SegmentM segmentM)
+        Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
+    }
+
     public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>
       Selecting.Select(Selected, list, p, isCtrlOn, isShiftOn, null);
 
@@ -163,6 +172,10 @@ namespace PictureManager.Domain.Models {
 
       PeopleRoot = root;
       ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
+
+      // TODO do it just for loaded
+      foreach (var person in DataAdapter.All.Values)
+        person.UpdateDisplayKeywords();
     }
 
     private static void AddPeopleToGroups(TreeWrapGroup root, string groupTitle, IEnumerable<PersonM> people) {
