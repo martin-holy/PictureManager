@@ -2,12 +2,11 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using MH.UI.WPF.Controls;
-using MH.UI.WPF.Converters;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using PictureManager.Domain.Models;
 
 namespace PictureManager.ViewModels {
@@ -89,7 +88,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void Select(ClickEventArgs e) {
-      if (e.OriginalSource is Image { DataContext: SegmentM segmentM })
+      if (e.DataContext is SegmentM segmentM)
         _segmentsM.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 

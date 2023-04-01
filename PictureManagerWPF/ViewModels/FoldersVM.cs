@@ -1,4 +1,5 @@
-﻿using MH.Utils.Interfaces;
+﻿using MH.Utils.EventsArgs;
+using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
@@ -40,7 +41,7 @@ namespace PictureManager.ViewModels {
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.GetByPath(srcData.Name) != null) {
             destFolder.ExpandTo();
-            _coreVM.TreeViewCategoriesVM.Select(destFolder);
+            _coreVM.TreeViewCategoriesVM.Select(new ClickEventArgs() { DataContext = destFolder });
           }
 
           break;

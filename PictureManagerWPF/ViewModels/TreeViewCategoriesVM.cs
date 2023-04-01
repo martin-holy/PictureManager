@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
@@ -13,7 +14,7 @@ namespace PictureManager.ViewModels {
     
     public TreeViewCategoriesM Model { get; }
 
-    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
+    public RelayCommand<ClickEventArgs> SelectCommand { get; }
 
     public TreeViewCategoriesVM(Core core, AppCore coreVM, TreeViewCategoriesM model) {
       _core = core;
@@ -29,18 +30,15 @@ namespace PictureManager.ViewModels {
       _core.FoldersM.AfterItemRenameEventHandler += (_, e) => {
         // reload if the folder was selected before
         if (e.Data is FolderM { IsSelected: true } folder)
-          Select(folder);
+          Select(new ClickEventArgs() { DataContext = folder });
       };
     }
 
-    private void Select(MouseButtonEventArgs e) =>
-      Select((e.OriginalSource as FrameworkElement)?.DataContext as ITreeItem);
-
-    public void Select(ITreeItem item) {
+    public void Select(ClickEventArgs e) {
       // SHIFT key => recursive
       // (Folder, FolderKeyword) => MBL => show, MBL+ctrl => and, MBL+alt => hide
 
-      if (item == null) return;
+      if (e.DataContext is not ITreeItem item) return;
 
       switch (item) {
         case RatingTreeM r:
@@ -74,8 +72,7 @@ namespace PictureManager.ViewModels {
           if (_core.MediaViewerM.IsVisible)
             _core.MainWindowM.IsFullScreen = false;
 
-          var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
-          _ = _core.ThumbnailsGridsM.LoadByFolder(item, and, hide, recursive);
+          _ = _core.ThumbnailsGridsM.LoadByFolder(item, e.IsCtrlOn, e.IsAltOn, e.IsShiftOn);
           break;
 
         case ViewerM v:
