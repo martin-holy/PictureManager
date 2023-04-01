@@ -95,7 +95,7 @@
       <!-- Tree View Categories -->
       <mhc:SlidePanelsGrid.PanelLeft>
         <mhc:SlidePanel
-          Content="{Binding CoreVM.TreeViewCategoriesVM}"
+          Content="{Binding CoreM.TreeViewCategoriesM}"
           Width="380"/>
       </mhc:SlidePanelsGrid.PanelLeft>
 

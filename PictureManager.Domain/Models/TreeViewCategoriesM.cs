@@ -1,4 +1,5 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace PictureManager.Domain.Models {
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public RelayCommand<object> ShowSearchCommand { get; }
     public RelayCommand<ITreeItem> ScrollToCommand { get; }
+    public RelayCommand<ClickEventArgs> SelectCommand { get; }
 
     public TreeViewCategoriesM(Core core) {
       _core = core;
@@ -24,6 +26,7 @@ namespace PictureManager.Domain.Models {
 
       ShowSearchCommand = new(ShowSearch);
       ScrollToCommand = new(ScrollTo);
+      SelectCommand = new(Select);
 
       Items = new() {
         _core.FavoriteFoldersM,
@@ -40,6 +43,11 @@ namespace PictureManager.Domain.Models {
     }
 
     private void AttachEvents() {
+      _core.FoldersM.AfterItemRenameEventHandler += (_, e) => {
+        // reload if the folder was selected before
+        if (e.Data is FolderM { IsSelected: true } folder)
+          Select(new ClickEventArgs() { DataContext = folder });
+      };
       _core.FoldersM.AfterItemCreateEventHandler += (_, e) =>
         ScrollToItem = e.Data;
       _core.PeopleM.AfterItemCreateEventHandler += (_, e) =>
@@ -54,6 +62,61 @@ namespace PictureManager.Domain.Models {
     private void ShowSearch() {
       TreeViewSearchM.SearchText = string.Empty;
       TreeViewSearchM.IsVisible = true;
+    }
+
+    public void Select(ClickEventArgs e) {
+      // SHIFT key => recursive
+      // (Folder, FolderKeyword) => MBL => show, MBL+ctrl => and, MBL+alt => hide
+
+      if (e.DataContext is not ITreeItem item) return;
+
+      switch (item) {
+        case RatingTreeM r:
+          if (_core.MediaItemsM.IsEditModeOn)
+            _core.MediaItemsM.SetMetadata(item);
+          else
+            _ = _core.ThumbnailsGridsM.Current?.ActivateFilter(r, DisplayFilter.Or);
+          break;
+
+        case GeoNameM:
+          if (_core.MediaItemsM.IsEditModeOn)
+            _core.MediaItemsM.SetMetadata(item);
+          break;
+
+        case KeywordM k:
+          _core.ToggleKeyword(k);
+          break;
+
+        case PersonM p:
+          _core.TogglePerson(p);
+          break;
+
+        case FavoriteFolderM ff:
+          if (!_core.FoldersM.IsFolderVisible(ff.Folder)) break;
+          ff.Folder.ExpandTo();
+          ScrollToItem = ff.Folder;
+          break;
+
+        case FolderM:
+        case FolderKeywordM:
+          if (_core.MediaViewerM.IsVisible)
+            _core.MainWindowM.IsFullScreen = false;
+
+          _ = _core.ThumbnailsGridsM.LoadByFolder(item, e.IsCtrlOn, e.IsAltOn, e.IsShiftOn);
+          break;
+
+        case ViewerM v:
+          _core.MainTabsM.Activate(_core.ViewersM.ViewerMainTabsItem);
+          _core.ViewersM.Selected = v;
+          break;
+
+        case ITreeCategory cat:
+          if (cat is PeopleM) {
+            _core.MainTabsM.Activate(_core.PeopleM.MainTabsItem);
+            _core.PeopleM.Reload();
+          }
+          break;
+      }
     }
 
     // TODO rename, check usage, use it less

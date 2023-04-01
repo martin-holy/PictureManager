@@ -38,8 +38,8 @@
       <Setter.Value>
         <MultiBinding Converter="{StaticResource MarkedTagsItemsCountConverter}">
           <Binding
-            Path="TreeViewCategoriesVM.Model.MarkedTags"
-            Source="{x:Static pm:App.Ui}" />
+            Path="TreeViewCategoriesM.MarkedTags"
+            Source="{x:Static pm:App.Core}" />
           <Binding />
         </MultiBinding>
       </Setter.Value>
