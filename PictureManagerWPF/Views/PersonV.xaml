@@ -29,6 +29,7 @@
           
           <TextBlock
             Text="{Binding PersonM.Name}"
+            Foreground="{StaticResource MH.Brushes.Text}"
             FontSize="20"
             Padding="8"
             HorizontalAlignment="Center"
