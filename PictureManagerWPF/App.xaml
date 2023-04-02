@@ -31,9 +31,10 @@
         <ResourceDictionary Source="Dialogs/FileOperationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/FolderBrowserDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/FolderKeywordsDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
 
         <ResourceDictionary Source="Views/MainMenuV.xaml"/>
         <ResourceDictionary Source="Views/MainTabsV.xaml"/>

@@ -57,7 +57,7 @@ namespace PictureManager.ViewModels {
         () => Model.Current?.FilteredItems.Count > 0);
 
       ResizeImagesCommand = new(
-        () => ResizeImagesDialog.Show(Model.Current.GetSelectedOrAll()),
+        () => Core.DialogHostShow(new ResizeImagesDialogM(Model.Current.GetSelectedOrAll())),
         () => Model.Current?.FilteredItems.Count > 0);
 
       ImagesToVideoCommand = new(
