@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -20,7 +22,6 @@ namespace PictureManager.Domain.Models {
     public FoldersDataAdapter DataAdapter { get; set; }
     public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
-    public Action<object, ITreeItem, bool, bool> OnDropAction { get; set; }
 
     public RelayCommand<FolderM> SetAsFolderKeywordCommand { get; }
 
@@ -33,6 +34,16 @@ namespace PictureManager.Domain.Models {
       IsExpanded = true;
 
       SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
+
+      AttachEvents();
+    }
+
+    private void AttachEvents() {
+      AfterItemDeleteEventHandler += (_, e) => {
+        // delete folder, sub folders and mediaItems from file system
+        if (e.Data is FolderM folder && Directory.Exists(folder.FullPath))
+          Core.FileOperationDelete(new() { folder.FullPath }, true, false);
+      };
     }
 
     public void HandleItemExpandedChanged(FolderM item) {
@@ -75,7 +86,33 @@ namespace PictureManager.Domain.Models {
     }
 
     public override void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
-      OnDropAction(src, dest, aboveDest, copy);
+      if (dest is not FolderM destFolder) return;
+      var foMode = copy
+        ? FileOperationMode.Copy
+        : FileOperationMode.Move;
+
+      switch (src) {
+        case FolderM srcData: // Folder
+          CopyMove(foMode, srcData, destFolder);
+
+          // reload last selected source if was moved
+          if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.GetByPath(srcData.Name) != null) {
+            destFolder.ExpandTo();
+            _core.TreeViewCategoriesM.Select(new ClickEventArgs() { DataContext = destFolder });
+          }
+
+          break;
+
+        case string[]: // MediaItems
+          _core.MediaItemsM.CopyMove(foMode,
+            _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
+            destFolder);
+          _core.MediaItemsM.DataAdapter.IsModified = true;
+
+          break;
+      }
+
+      _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {

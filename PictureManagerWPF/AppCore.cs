@@ -10,7 +10,6 @@ using System.Linq;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
-    public FoldersVM FoldersVM { get; }
     public MainWindowVM MainWindowVM { get; }
     public MainWindowToolBarVM MainWindowToolBarVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
@@ -32,7 +31,6 @@ namespace PictureManager {
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowToolBarVM = new(App.Core, this);
 
-      FoldersVM = new(App.Core, this, App.Core.FoldersM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       PeopleVM = new(App.Core, App.Core.PeopleM);
