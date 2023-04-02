@@ -1,22 +1,31 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Windows;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain;
+using System.IO;
+using System;
 using PictureManager.Domain.Models;
+using System.Collections.ObjectModel;
 
-namespace PictureManager.Dialogs {
-  public partial class FolderBrowserDialog {
+namespace PictureManager.Domain.Dialogs {
+  public sealed class FolderBrowserDialogM : ObservableObject, IDialog {
+    private string _title = "Browse For Folder";
+    private int _result = -1;
+    private FolderTreeViewItem _selectedFolder;
+
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
+    public FolderTreeViewItem SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
+
     public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
-    public string SelectedPath => ((FolderTreeViewItem)TreeViewFolders.SelectedValue)?.FullPath;
+    public RelayCommand<FolderTreeViewItem> SelectCommand { get; }
+    public RelayCommand<object> OkCommand { get; }
+    public RelayCommand<object> CancelCommand { get; }
 
-    public FolderBrowserDialog() {
-      InitializeComponent();
-      Owner = Application.Current.MainWindow;
-      TreeViewFolders.ItemsSource = Drives;
+    public FolderBrowserDialogM() {
+      SelectCommand = new(x => SelectedFolder = x);
+      OkCommand = new(() => Result = 1);
+      CancelCommand = new(() => Result = 0);
+
       AddDrives();
     }
 
@@ -36,16 +45,6 @@ namespace PictureManager.Dialogs {
 
         Drives.Add(item);
       }
-    }
-
-    private void BtnOk_OnClick(object sender, RoutedEventArgs e) {
-      DialogResult = true;
-      Close();
-    }
-
-    private void BtnCancel_OnClick(object sender, RoutedEventArgs e) {
-      DialogResult = false;
-      Close();
     }
   }
 
