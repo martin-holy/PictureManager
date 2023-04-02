@@ -5,7 +5,7 @@ using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using PictureManager.Utils;
 using PictureManager.Domain.Models;
-using PictureManager.Properties;
+using PictureManager.Domain;
 
 namespace PictureManager.Converters {
   public class MediaItemThumbnailSourceConverter : IValueConverter {
@@ -19,9 +19,9 @@ namespace PictureManager.Converters {
             mi.MediaType,
             mi.FilePath,
             mi.FilePathCache,
-            Settings.Default.ThumbnailSize,
+            Core.Settings.ThumbnailSize,
             0,
-            Settings.Default.JpegQualityLevel).GetAwaiter().GetResult();
+            Core.Settings.JpegQualityLevel).GetAwaiter().GetResult();
 
         var src = new BitmapImage();
         src.BeginInit();

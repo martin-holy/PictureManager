@@ -10,7 +10,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using PictureManager.Domain.Dialogs;
-using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridsVM : ObservableObject {
@@ -53,7 +52,7 @@ namespace PictureManager.ViewModels {
             new CompressDialogM(
               Model.Current.GetSelectedOrAll()
                 .Where(x => x.MediaType == MediaType.Image).ToList(),
-              Settings.Default.JpegQualityLevel));
+              Core.Settings.JpegQualityLevel));
         },
         () => Model.Current?.FilteredItems.Count > 0);
 

@@ -30,7 +30,7 @@ namespace PictureManager.Domain.Models {
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
     public bool IsFolderKeyword { get => _isFolderKeyword; set { _isFolderKeyword = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
-    public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
+    public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
 
     public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {
       Id = id;

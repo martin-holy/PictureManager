@@ -11,7 +11,6 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Properties;
 
 namespace PictureManager.Dialogs {
   public partial class ImagesToVideoDialog {
@@ -74,7 +73,7 @@ namespace PictureManager.Dialogs {
       var mi = _items.First();
 
       // Scale
-      var height = (double)Settings.Default.ImagesToVideoHeight;
+      var height = (double)Core.Settings.ImagesToVideoHeight;
       var width = mi.Orientation is (int)MediaOrientation.Rotate270 or (int)MediaOrientation.Rotate90
         ? Math.Round(mi.Height / (mi.Width / height), 0)
         : Math.Round(mi.Width / (mi.Height / height), 0);
@@ -89,15 +88,15 @@ namespace PictureManager.Dialogs {
         _ => string.Empty
       };
 
-      var speedStr = Settings.Default.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
-      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Settings.Default.ImagesToVideoQuality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
+      var speedStr = Core.Settings.ImagesToVideoSpeed.ToString(CultureInfo.InvariantCulture);
+      var args = $"-y -r 1/{speedStr} -f concat -safe 0 -i \"{_inputListPath}\" -c:v libx264 -r 25 -preset medium -crf {Core.Settings.ImagesToVideoQuality} -vf \"{rotation}scale={scale},format=yuv420p\" \"{_outputFilePath}\"";
       var tcs = new TaskCompletionSource<bool>();
 
       _process = new() {
         EnableRaisingEvents = true,
         StartInfo = new() {
           Arguments = args,
-          FileName = Settings.Default.FfmpegPath,
+          FileName = Core.Settings.FfmpegPath,
           UseShellExecute = false,
           CreateNoWindow = false
         }
@@ -121,10 +120,10 @@ namespace PictureManager.Dialogs {
         return;
       }
 
-      Settings.Default.Save();
+      Core.Settings.Save();
 
       // check for FFMPEG
-      if (!File.Exists(Settings.Default.FfmpegPath)) {
+      if (!File.Exists(Core.Settings.FfmpegPath)) {
         Core.DialogHostShow(new MessageDialog(
           "FFMPEG not found",
           "FFMPEG was not found. Install it and set the path in the settings.",

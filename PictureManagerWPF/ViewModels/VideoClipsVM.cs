@@ -2,8 +2,8 @@
 using System.IO;
 using System.Windows;
 using MH.Utils.BaseClasses;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
   public sealed class VideoClipsVM : ObservableObject {
@@ -26,8 +26,8 @@ namespace PictureManager.ViewModels {
       Utils.Imaging.CreateThumbnailFromVisual(
         visual,
         vc.ThumbPath,
-        Settings.Default.ThumbnailSize,
-        Settings.Default.JpegQualityLevel);
+        Core.Settings.ThumbnailSize,
+        Core.Settings.JpegQualityLevel);
 
       vc.OnPropertyChanged(nameof(vc.ThumbPath));
     }

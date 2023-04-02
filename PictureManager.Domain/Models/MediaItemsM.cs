@@ -89,7 +89,7 @@ namespace PictureManager.Domain.Models {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       AddGeoNamesFromFilesCommand = new(
-        () => AddGeoNamesFromFiles(GeoNamesM.GeoNamesUserName),
+        () => AddGeoNamesFromFiles(Core.Settings.GeoNamesUserName),
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
     }
 

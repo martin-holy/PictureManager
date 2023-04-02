@@ -1,10 +1,7 @@
 ﻿<Window x:Class="PictureManager.Dialogs.ImagesToVideoDialog"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-  xmlns:p="clr-namespace:PictureManager.Properties"
-  mc:Ignorable="d"
+  xmlns:d="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   Title="Images to Video" SizeToContent="Height" Width="515" 
   BorderBrush="{DynamicResource AccentColorBrush}" 
   Background="{StaticResource ColorBrushBackground}" 
@@ -37,7 +34,7 @@
       <Slider x:Name="SldSpeed" Grid.Row="0" Grid.Column="0" Maximum="5" Minimum="0.1" TickFrequency="0.05"
               AutoToolTipPlacement="BottomRight" AutoToolTipPrecision="2" IsSnapToTickEnabled="True"
               VerticalAlignment="Center" Margin="5,0,0,0"
-              Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoSpeed, Mode=TwoWay}" />
+              Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoSpeed, Mode=TwoWay}" />
       <TextBlock Grid.Row="0" Grid.Column="1" TextAlignment="Right"
                  Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat={}{0:0.00}s per Image}" />
 
@@ -57,7 +54,7 @@
         <TextBlock Grid.Column="0" Text="{Binding ElementName=SldQuality, Path=Value, StringFormat={}Quality: {0}}" />
         <Slider Grid.Column="1" x:Name="SldQuality"  Maximum="51" Minimum="0" AutoToolTipPlacement="BottomRight"
                 TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Center" 
-                Value="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoQuality, Mode=TwoWay}" />
+                Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoQuality, Mode=TwoWay}" />
 
         <!-- Height -->
         <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right" />
@@ -66,7 +63,7 @@
           FontSize="16"
           Height="30"
           PreviewTextInput="Height_PreviewTextInput"
-          Text="{Binding Source={x:Static p:Settings.Default}, Path=ImagesToVideoHeight, Mode=TwoWay}" />
+          Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoHeight, Mode=TwoWay}" />
       </Grid>
 
     </Grid>

@@ -12,7 +12,6 @@ using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
-using PictureManager.Properties;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsVM : ObservableObject {
@@ -263,7 +262,7 @@ namespace PictureManager.ViewModels {
     private static bool WriteMetadataToFile(MediaItemM mi, FileInfo newFile, BitmapDecoder decoder, BitmapMetadata metadata, bool withThumbnail) {
       bool bSuccess;
       var hResult = 0;
-      var encoder = new JpegBitmapEncoder { QualityLevel = Settings.Default.JpegQualityLevel };
+      var encoder = new JpegBitmapEncoder { QualityLevel = Core.Settings.JpegQualityLevel };
       encoder.Frames.Add(BitmapFrame.Create(decoder.Frames[0],
         withThumbnail ? decoder.Frames[0].Thumbnail : null, metadata, decoder.Frames[0].ColorContexts));
 
