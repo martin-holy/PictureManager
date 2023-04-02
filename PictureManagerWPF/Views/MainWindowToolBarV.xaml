@@ -259,13 +259,13 @@
             <mhc:IconButton
               ToolTip="Compare images using average hash"
               Icon="{StaticResource IconCompare}"
-              Command="{Binding CoreVM.ImageComparerVM.AverageHashCommand}"
+              Command="{Binding CoreM.ImageComparerM.AverageHashCommand}"
               CommandParameter="{Binding CoreM.ThumbnailsGridsM.Current}"/>
 
             <mhc:IconButton
               ToolTip="Compare images using p hash"
               Icon="{StaticResource IconCompare}"
-              Command="{Binding CoreVM.ImageComparerVM.PHashCommand}"
+              Command="{Binding CoreM.ImageComparerM.PHashCommand}"
               CommandParameter="{Binding CoreM.ThumbnailsGridsM.Current}"/>
 
             <mhc:PopupSlider
@@ -273,7 +273,7 @@
               Icon="{StaticResource IconCompare}"
               Minimum="0"
               Maximum="25"
-              Value="{Binding CoreVM.ImageComparerVM.Diff, Mode=TwoWay}"/>
+              Value="{Binding CoreM.ImageComparerM.Diff, Mode=TwoWay}"/>
           </StackPanel>
         </StackPanel>
       </StackPanel>
