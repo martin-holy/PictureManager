@@ -16,7 +16,6 @@ namespace PictureManager.ViewModels {
     public bool IsMaximized { get => _isMaximized; set { _isMaximized = value; OnPropertyChanged(); } }
     public bool FixWindowSize { get => _fixWindowSize; set { _fixWindowSize = value; OnPropertyChanged(); } }
 
-    public RelayCommand<object> OpenSettingsCommand { get; }
     public RelayCommand<object> TestButtonCommand { get; }
     public RelayCommand<object> LoadedCommand { get; }
     public RelayCommand<Window> WindowStateChangedCommand { get; }
@@ -26,7 +25,6 @@ namespace PictureManager.ViewModels {
       CoreVM = coreVM;
       MainWindowM = model;
 
-      OpenSettingsCommand = new(OpenSettings);
       TestButtonCommand = new(() => Tests.Run());
       LoadedCommand = new(Loaded);
       WindowStateChangedCommand = new(WindowStateChanged);
@@ -69,14 +67,6 @@ namespace PictureManager.ViewModels {
     private void WindowStateChanged(Window window) {
       IsMaximized = window.WindowState == WindowState.Maximized;
       FixWindowSize = window.WindowState == WindowState.Maximized && !MainWindowM.IsFullScreen;
-    }
-
-    private static void OpenSettings() {
-      var result = Core.DialogHostShow(new SettingsDialogM());
-      if (result == 0)
-        Core.Settings.Save();
-      else
-        Core.Settings.Load();
     }
 
     private void Loaded() {

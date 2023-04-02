@@ -28,8 +28,8 @@
         <MenuItem Header="Tools">
           <MenuItem
             Header="Settings"
-            Command="{Binding MainWindowVM.OpenSettingsCommand,
-                      Source={x:Static pm:App.Ui}}">
+            Command="{Binding MainWindowM.OpenSettingsCommand,
+                      Source={x:Static pm:App.Core}}">
             <MenuItem.Icon>
               <Path
                 Style="{StaticResource _icon}"

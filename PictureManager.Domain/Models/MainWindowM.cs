@@ -28,6 +28,7 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> SwitchToBrowserCommand { get; }
     public RelayCommand<object> SaveDbCommand { get; }
     public RelayCommand<object> OpenLogCommand { get; }
+    public RelayCommand<object> OpenSettingsCommand { get; }
 
     public MainWindowM(Core coreM) {
       CoreM = coreM;
@@ -41,6 +42,7 @@ namespace PictureManager.Domain.Models {
         () => CoreM.Sdb.SaveAllTables(),
         () => CoreM.Sdb.Changes > 0);
       OpenLogCommand = new(OpenLog);
+      OpenSettingsCommand = new(OpenSettings);
     }
 
     private static void OpenAbout() {
@@ -71,6 +73,14 @@ namespace PictureManager.Domain.Models {
 
     private static void OpenLog() {
       Core.DialogHostShow(new LogDialogM());
+    }
+
+    private static void OpenSettings() {
+      var result = Core.DialogHostShow(new SettingsDialogM());
+      if (result == 0)
+        Core.Settings.Save();
+      else
+        Core.Settings.Load();
     }
 
     public void Loaded(double windowsDisplayScale) {
