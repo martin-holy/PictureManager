@@ -29,6 +29,7 @@
         <ResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/FileOperationCollisionDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/FileOperationDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/FolderBrowserDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/FolderKeywordsDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
