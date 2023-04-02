@@ -2,7 +2,6 @@
 using PictureManager.Domain;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Models;
-using PictureManager.Properties;
 using System.Windows;
 
 namespace PictureManager.ViewModels {
@@ -75,9 +74,9 @@ namespace PictureManager.ViewModels {
     private static void OpenSettings() {
       var result = Core.DialogHostShow(new SettingsDialogM());
       if (result == 0)
-        Settings.Default.Save();
+        Core.Settings.Save();
       else
-        Settings.Default.Reload();
+        Core.Settings.Load();
     }
 
     private void Loaded() {

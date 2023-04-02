@@ -55,7 +55,7 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<PersonM> InfoBoxPeople { get; set; }
     public ObservableCollection<string> InfoBoxKeywords { get; set; }
     public string FilePath => IOExtensions.PathCombine(Folder.FullPath, FileName);
-    public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath) +
+    public string FilePathCache => FilePath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath) +
                                    (MediaType == MediaType.Image ? string.Empty : ".jpg");
     public int RotationAngle =>
       (MediaOrientation)Orientation switch {
@@ -94,7 +94,7 @@ namespace PictureManager.Domain.Models {
                        ?? core.ThumbnailsGridsM.DefaultThumbScale;
 
       // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int)(core.ThumbnailSize * thumbScale);
+      var desiredSize = (int)(Core.Settings.ThumbnailSize * thumbScale);
       var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
       
       // TODO move rotation check to GetThumbSize or create func for getting w & h rotated

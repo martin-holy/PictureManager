@@ -11,8 +11,6 @@ using SimpleDB;
 
 namespace PictureManager.Domain {
   public sealed class Core : ILogger {
-    public string CachePath { get; set; }
-    public int ThumbnailSize { get; set; }
     public ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
     public MainTabsM MainTabsM { get; } = new();
@@ -39,12 +37,14 @@ namespace PictureManager.Domain {
     public ViewersM ViewersM { get; }
 
     public static Func<IDialog, int> DialogHostShow { get; set; }
+    public static Settings Settings { get; set; }
 
     private static TaskScheduler UiTaskScheduler { get; set; }
 
     private Core() {
       UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-
+      Settings = new();
+      Settings.Load();
       Sdb = new(this);
 
       ViewersM = new(this); // CategoryGroupsM

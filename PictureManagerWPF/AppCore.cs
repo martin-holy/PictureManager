@@ -2,7 +2,6 @@
 using System.Windows;
 using PictureManager.Dialogs;
 using PictureManager.Domain;
-using PictureManager.Properties;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using MH.Utils.BaseClasses;
@@ -26,9 +25,6 @@ namespace PictureManager {
     public ImageComparerVM ImageComparerVM { get; } = new();
 
     public AppCore() {
-      App.Core.CachePath = Settings.Default.CachePath;
-      App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-      GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
       Core.DialogHostShow = DialogHost.Show;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
@@ -50,20 +46,6 @@ namespace PictureManager {
     }
 
     private void AttachEvents() {
-      Settings.Default.PropertyChanged += (o, e) => {
-        switch (e.PropertyName) {
-          case nameof(Settings.Default.CachePath):
-            App.Core.CachePath = Settings.Default.CachePath;
-            break;
-          case nameof(Settings.Default.ThumbnailSize):
-            App.Core.ThumbnailSize = Settings.Default.ThumbnailSize;
-            break;
-          case nameof(Settings.Default.GeoNamesUserName):
-            GeoNamesM.GeoNamesUserName = Settings.Default.GeoNamesUserName;
-            break;
-        }
-      };
-
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
         if (e.Data.Any(x => x.Equals(PersonVM.PersonM)))
           PersonVM.ReloadPersonSegments();

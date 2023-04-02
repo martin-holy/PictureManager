@@ -278,8 +278,8 @@ namespace PictureManager.Domain.Models {
       }
 
       // get source and destination paths to Cache
-      var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
-      var destDirPathCache = destDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Instance.CachePath);
+      var srcDirPathCache = srcDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
+      var destDirPathCache = destDirPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
 
       // for each file in the folder
       foreach (var srcFilePath in Directory.EnumerateFiles(srcDirPath)) {

@@ -10,12 +10,10 @@ using PictureManager.Domain.DataAdapters;
 namespace PictureManager.Domain.Models {
   public sealed class GeoNamesM : TreeCategoryBase {
     public GeoNamesDataAdapter DataAdapter { get; set; }
-    public static string GeoNamesUserName { get; set; }
-
     public RelayCommand<object> NewGeoNameFromGpsCommand { get; }
 
     public GeoNamesM() : base(Res.IconLocationCheckin, Category.GeoNames, "GeoNames") {
-      NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(GeoNamesUserName));
+      NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(Core.Settings.GeoNamesUserName));
     }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
