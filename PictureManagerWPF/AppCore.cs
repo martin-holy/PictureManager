@@ -7,6 +7,7 @@ using MH.Utils.BaseClasses;
 using MH.UI.WPF.Controls;
 using PictureManager.Domain.Models;
 using System.Linq;
+using System.Windows.Input;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -22,14 +23,9 @@ namespace PictureManager {
     public ViewerVM ViewerVM { get; }
 
     public AppCore() {
-      Core.DialogHostShow = DialogHost.Show;
-      Core.FileOperationDelete = FileOperationDelete;
-      MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
+      SetDelegates();
 
-      PictureManager.Domain.Utils.Imaging.GetAvgHash = PictureManager.Utils.Imaging.GetAvgHash;
-      PictureManager.Domain.Utils.Imaging.GetPerceptualHash = PictureManager.Utils.Imaging.GetPerceptualHash;
-      PictureManager.Domain.Utils.Imaging.GetSimilarImages = PictureManager.Utils.Imaging.GetSimilarImages;
-      PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
+      MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowToolBarVM = new(App.Core, this);
@@ -45,6 +41,20 @@ namespace PictureManager {
       ViewerVM = new(App.Core.ViewersM);
 
       AttachEvents();
+    }
+
+    private void SetDelegates() {
+      Core.DialogHostShow = DialogHost.Show;
+      Core.FileOperationDelete = FileOperationDelete;
+
+      PictureManager.Domain.Utils.Imaging.GetAvgHash = PictureManager.Utils.Imaging.GetAvgHash;
+      PictureManager.Domain.Utils.Imaging.GetPerceptualHash = PictureManager.Utils.Imaging.GetPerceptualHash;
+      PictureManager.Domain.Utils.Imaging.GetSimilarImages = PictureManager.Utils.Imaging.GetSimilarImages;
+      PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
+      
+      PictureManager.Domain.Utils.Keyboard.IsCtrlOn = () => (Keyboard.Modifiers & ModifierKeys.Control) > 0;
+      PictureManager.Domain.Utils.Keyboard.IsAltOn = () => (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
+      PictureManager.Domain.Utils.Keyboard.IsShiftOn = () => (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
     }
 
     private void AttachEvents() {
