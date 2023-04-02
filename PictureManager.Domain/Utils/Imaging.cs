@@ -7,6 +7,9 @@ namespace PictureManager.Domain.Utils {
     private static readonly string[] SupportedExts = { ".jpg", ".jpeg", ".mp4" };
     private static readonly string[] SupportedImageExts = { ".jpg", ".jpeg" };
 
+    public delegate void ResizeJpgAction(string src, string dest, int px, bool withMetadata, bool withThumbnail, int quality);
+    public static ResizeJpgAction ResizeJpg { get; set; }
+
     public static bool IsSupportedFileType(string filePath) =>
       SupportedExts.Any(x => x.Equals(Path.GetExtension(filePath), StringComparison.OrdinalIgnoreCase));
 

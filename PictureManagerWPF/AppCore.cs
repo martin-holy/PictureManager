@@ -27,6 +27,7 @@ namespace PictureManager {
     public AppCore() {
       Core.DialogHostShow = DialogHost.Show;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
+      PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MainWindowToolBarVM = new(App.Core, this);
