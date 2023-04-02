@@ -36,6 +36,8 @@ namespace PictureManager.Domain {
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
 
+    public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
+    public static FileOperationDeleteFunc FileOperationDelete { get; set; }
     public static Func<IDialog, int> DialogHostShow { get; set; }
     public static Settings Settings { get; set; }
 

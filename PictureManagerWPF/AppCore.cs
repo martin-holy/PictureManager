@@ -25,6 +25,7 @@ namespace PictureManager {
 
     public AppCore() {
       Core.DialogHostShow = DialogHost.Show;
+      Core.FileOperationDelete = FileOperationDelete;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
       PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
@@ -88,7 +89,7 @@ namespace PictureManager {
         }
       };
     }
-
+    
     public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
       var fops = new PicFileOperationProgressSink();
       using var fo = new FileOperation(fops);
