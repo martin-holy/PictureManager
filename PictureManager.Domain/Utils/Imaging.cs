@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,7 +8,13 @@ namespace PictureManager.Domain.Utils {
     private static readonly string[] SupportedExts = { ".jpg", ".jpeg", ".mp4" };
     private static readonly string[] SupportedImageExts = { ".jpg", ".jpeg" };
 
+    public delegate long ImageHashFunc(string srcPath);
+    public delegate List<object> GetSimilarImagesFunc(Dictionary<object, long> hashes, int limit);
     public delegate void ResizeJpgAction(string src, string dest, int px, bool withMetadata, bool withThumbnail, int quality);
+    
+    public static ImageHashFunc GetAvgHash { get; set; }
+    public static ImageHashFunc GetPerceptualHash { get; set; }
+    public static GetSimilarImagesFunc GetSimilarImages { get; set; }
     public static ResizeJpgAction ResizeJpg { get; set; }
 
     public static bool IsSupportedFileType(string filePath) =>

@@ -26,6 +26,10 @@ namespace PictureManager {
       Core.DialogHostShow = DialogHost.Show;
       Core.FileOperationDelete = FileOperationDelete;
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
+
+      PictureManager.Domain.Utils.Imaging.GetAvgHash = PictureManager.Utils.Imaging.GetAvgHash;
+      PictureManager.Domain.Utils.Imaging.GetPerceptualHash = PictureManager.Utils.Imaging.GetPerceptualHash;
+      PictureManager.Domain.Utils.Imaging.GetSimilarImages = PictureManager.Utils.Imaging.GetSimilarImages;
       PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
