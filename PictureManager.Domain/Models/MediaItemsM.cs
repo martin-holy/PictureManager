@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using MH.Utils;
@@ -31,15 +32,12 @@ namespace PictureManager.Domain.Models {
     public int ModifiedItemsCount => ModifiedItems.Count;
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
 
-    public delegate Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent);
-
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
     public event EventHandler MetadataChangedEventHandler = delegate { };
     public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
-    public FileOperationDelete FileOperationDeleteMethod { get; set; }
 
     public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<object> RotateCommand { get; }
@@ -50,6 +48,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> CommentCommand { get; }
     public RelayCommand<object> ReloadMetadataCommand { get; }
     public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
+    public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
+    public RelayCommand<object> RebuildThumbnailsCommand { get; }
 
     public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {
       _core = core;
@@ -91,6 +91,14 @@ namespace PictureManager.Domain.Models {
       AddGeoNamesFromFilesCommand = new(
         () => AddGeoNamesFromFiles(Core.Settings.GeoNamesUserName),
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+
+      ReloadMetadataInFolderCommand = new(
+        x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()), true),
+        x => x != null);
+
+      RebuildThumbnailsCommand = new(
+        x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
+        x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
     }
 
     /// <summary>
@@ -248,7 +256,7 @@ namespace PictureManager.Domain.Models {
         Delete(mi);
       }
 
-      FileOperationDeleteMethod.Invoke(files, true, false);
+      Core.FileOperationDelete(files, true, false);
       cache.ForEach(File.Delete);
 
       Current = newCurrent;

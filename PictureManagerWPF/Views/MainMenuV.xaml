@@ -62,8 +62,8 @@
                       Source={x:Static pm:App.Ui}}"/>
           <MenuItem
             Header="Rebuild Thumbnails"
-            Command="{Binding MediaItemsVM.RebuildThumbnailsCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding MediaItemsM.RebuildThumbnailsCommand,
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Rotate"
             InputGestureText="Ctrl+R"

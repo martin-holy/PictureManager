@@ -5,8 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
@@ -20,9 +18,6 @@ namespace PictureManager.ViewModels {
 
     public MediaItemsM Model { get; }
 
-    public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
-    public RelayCommand<object> RebuildThumbnailsCommand { get; }
-
     public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
       _core = core;
       _coreVM = coreVM;
@@ -30,15 +25,6 @@ namespace PictureManager.ViewModels {
 
       Model.ReadMetadata = ReadMetadata;
       Model.WriteMetadata = WriteMetadata;
-      Model.FileOperationDeleteMethod = AppCore.FileOperationDelete;
-
-      ReloadMetadataInFolderCommand = new(
-        x => Model.ReloadMetadata(x.GetMediaItems((Keyboard.Modifiers & ModifierKeys.Shift) > 0), true),
-        x => x != null);
-
-      RebuildThumbnailsCommand = new(
-        x => Model.RebuildThumbnails(x, (Keyboard.Modifiers & ModifierKeys.Shift) > 0),
-        x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
     }
 
     private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {

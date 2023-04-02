@@ -172,8 +172,8 @@
       CommandParameter="{Binding}" />
     <MenuItem
       Header="Reload metadata"
-      Command="{Binding MediaItemsVM.ReloadMetadataInFolderCommand,
-                Source={x:Static pm:App.Ui}}"
+      Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand,
+                Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}" />
 
     <!--TODO: rebuild thumbnails-->
