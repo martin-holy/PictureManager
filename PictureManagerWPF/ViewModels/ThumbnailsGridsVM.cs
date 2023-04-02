@@ -5,7 +5,6 @@ using System.Windows;
 using MH.Utils.Interfaces;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
@@ -97,7 +96,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void ImagesToVideo() {
-      ImagesToVideoDialog.Show(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+      Core.DialogHostShow(new ImagesToVideoDialogM(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         async (folder, fileName) => {
           // create new MediaItem, Read Metadata and Create Thumbnail
           var mi = _core.MediaItemsM.AddNew(folder, fileName, false, true);
@@ -107,7 +106,7 @@ namespace PictureManager.ViewModels {
             (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
           await Model.Current.ReapplyFilter();
           Model.Current.ScrollToItem = mi;
-        }
+        })
       );
     }
   }

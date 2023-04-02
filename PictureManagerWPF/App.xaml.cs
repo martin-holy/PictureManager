@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Views;
