@@ -79,14 +79,14 @@ namespace PictureManager.Domain {
         if (props.TryGetValue(nameof(ImagesToVideoQuality), out var imagesToVideoQuality))
           ImagesToVideoQuality = int.Parse(imagesToVideoQuality);
         if (props.TryGetValue(nameof(ImagesToVideoSpeed), out var imagesToVideoSpeed))
-          ImagesToVideoSpeed = int.Parse(imagesToVideoSpeed);
+          ImagesToVideoSpeed = double.Parse(imagesToVideoSpeed);
         if (props.TryGetValue(nameof(GeoNamesUserName), out var geoNamesUserName))
           GeoNamesUserName = geoNamesUserName;
 
         return true;
       }
-      catch (Exception ex) {
-        Core.Instance.LogError(ex);
+      catch {
+        // ignored
         return false;
       }
     }
