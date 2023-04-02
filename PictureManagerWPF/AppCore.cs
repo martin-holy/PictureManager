@@ -20,7 +20,6 @@ namespace PictureManager {
     public VideoClipsVM VideoClipsVM { get; }
     public PersonVM PersonVM { get; }
     public ViewerVM ViewerVM { get; }
-    public ImageComparerVM ImageComparerVM { get; } = new();
 
     public AppCore() {
       Core.DialogHostShow = DialogHost.Show;

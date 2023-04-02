@@ -16,6 +16,7 @@ namespace PictureManager.Domain {
     public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
     public TitleProgressBarM TitleProgressBarM { get; } = new();
+    public ImageComparerM ImageComparerM { get; } = new();
 
     public CategoryGroupsM CategoryGroupsM { get; }
     public FavoriteFoldersM FavoriteFoldersM { get; }
