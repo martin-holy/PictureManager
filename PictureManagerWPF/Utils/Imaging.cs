@@ -141,9 +141,11 @@ namespace PictureManager.Utils {
       }
     }
 
-    public static long GetAvgHash(string filePath, Int32Rect rect) => GetAvgHashAsync(filePath, rect).GetAwaiter().GetResult();
+    public static long GetAvgHash(string filePath) =>
+      GetAvgHashAsync(filePath, Int32Rect.Empty).GetAwaiter().GetResult();
 
-    public static long GetPerceptualHash(string filePath, Int32Rect rect) => GetPerceptualHashAsync(filePath, rect).GetAwaiter().GetResult();
+    public static long GetPerceptualHash(string filePath) =>
+      GetPerceptualHashAsync(filePath, Int32Rect.Empty).GetAwaiter().GetResult();
 
     /// <summary>
     /// Compute AVG hash from image
