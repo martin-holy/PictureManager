@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using PictureManager.Dialogs;
 using PictureManager.Domain;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;

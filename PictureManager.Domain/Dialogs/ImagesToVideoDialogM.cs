@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
+using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -6,14 +10,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using MH.Utils.Dialogs;
-using MH.Utils.Extensions;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
+using System;
 
-namespace PictureManager.Dialogs {
-  public partial class ImagesToVideoDialog {
+namespace PictureManager.Domain.Dialogs {
+  public sealed class ImagesToVideoDialogM : ObservableObject, IDialog {
+    private string _title = "Images to Video";
+    private int _result = 1;
+    private bool _isBusy;
     private readonly MediaItemM[] _items;
     private Process _process;
     private readonly string _inputListPath;
@@ -23,25 +26,25 @@ namespace PictureManager.Dialogs {
     private readonly OnSuccess _onSuccess;
 
     public delegate void OnSuccess(FolderM folder, string fileName);
+    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
+    public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
+    public RelayCommand<object> CreateVideoCommand { get; }
+    public RelayCommand<object> CancelCommand { get; }
 
-    public ImagesToVideoDialog(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
-      InitializeComponent();
+    public ImagesToVideoDialogM(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
+      CreateVideoCommand = new(CreateVideo);
+      CancelCommand = new(Cancel);
 
       _items = items.ToArray();
       var firstMi = _items.First();
       var fileName = IOExtensions.GetNewFileName(firstMi.Folder.FullPath, firstMi.FileName + ".mp4");
 
-      Owner = Application.Current.MainWindow;
       _inputListPath = Path.GetTempPath() + "PictureManagerImagesToVideo.list";
       _outputFilePath = IOExtensions.PathCombine(firstMi.Folder.FullPath, fileName);
       _outputFileName = fileName;
       _outputFolder = firstMi.Folder;
       _onSuccess = onSuccess;
-    }
-
-    public static void Show(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
-      var dlg = new ImagesToVideoDialog(items, onSuccess);
-      dlg.ShowDialog();
     }
 
     // create input list of items for FFMPEG
@@ -54,7 +57,7 @@ namespace PictureManager.Dialogs {
         return true;
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        Core.Instance.LogError(ex);
         return false;
       }
     }
@@ -65,7 +68,7 @@ namespace PictureManager.Dialogs {
           File.Delete(path);
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        Core.Instance.LogError(ex);
       }
     }
 
@@ -111,15 +114,17 @@ namespace PictureManager.Dialogs {
       return tcs.Task;
     }
 
-    private async void BtnCreateVideo_OnClick(object sender, RoutedEventArgs e) {
+    private void Cancel() {
       if (_process != null) {
         _process.Kill();
         DeleteFile(_inputListPath);
         DeleteFile(_outputFilePath);
-        Close();
-        return;
       }
 
+      Result = 0;
+    }
+
+    private async void CreateVideo() {
       Core.Settings.Save();
 
       // check for FFMPEG
@@ -129,25 +134,19 @@ namespace PictureManager.Dialogs {
           "FFMPEG was not found. Install it and set the path in the settings.",
           Res.IconInformation,
           false));
-        Close();
+        Result = 0;
         return;
       }
 
-      PbProgress.IsIndeterminate = true;
-      BtnCreateVideo.Content = "Cancel";
+      IsBusy = true;
 
       if (CreateTempListFile()) {
         await CreateVideoAsync();
         DeleteFile(_inputListPath);
-        Owner.Activate();
         _onSuccess.Invoke(_outputFolder, _outputFileName);
       }
 
-      Close();
-    }
-
-    private void Height_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e) {
-      e.Handled = new System.Text.RegularExpressions.Regex("[^0-9]+").IsMatch(e.Text);
+      Result = 1;
     }
   }
 }
