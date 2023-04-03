@@ -4,7 +4,7 @@
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type md:ErrorDialogM}">
-    <DockPanel Width="400">
+    <DockPanel Width="515">
       <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
         <Button
           Style="{StaticResource StyleButtonDialog}"
@@ -14,7 +14,10 @@
       </StackPanel>
       
       <StackPanel Margin="5">
-        <TextBlock Text="{Binding Message}" Margin="5"/>
+        <TextBlock
+          Text="{Binding Message}"
+          Margin="5"
+          TextWrapping="Wrap"/>
         
         <Expander
           Header="Detail"
