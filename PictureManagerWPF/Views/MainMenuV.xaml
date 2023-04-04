@@ -58,8 +58,8 @@
         <MenuItem Header="Media Items">
           <MenuItem
             Header="Compress"
-            Command="{Binding ThumbnailsGridsVM.CompressCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding ThumbnailsGridsM.CompressCommand,
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Rebuild Thumbnails"
             Command="{Binding MediaItemsM.RebuildThumbnailsCommand,
@@ -79,16 +79,16 @@
                       Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Resize Images"
-            Command="{Binding ThumbnailsGridsVM.ResizeImagesCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding ThumbnailsGridsM.ResizeImagesCommand,
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Images to Video"
-            Command="{Binding ThumbnailsGridsVM.ImagesToVideoCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding ThumbnailsGridsM.ImagesToVideoCommand,
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Copy Paths"
-            Command="{Binding ThumbnailsGridsVM.CopyPathsCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding ThumbnailsGridsM.CopyPathsCommand,
+                      Source={x:Static pm:App.Core}}"/>
           <MenuItem
             Header="Rename"
             InputGestureText="F2"

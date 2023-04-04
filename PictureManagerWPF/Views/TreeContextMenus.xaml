@@ -4,13 +4,12 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
     <MenuItem Header="Load"
-              Command="{Binding ThumbnailsGridsVM.LoadByTagCommand, Source={x:Static pm:App.Ui}}"
+              Command="{Binding ThumbnailsGridsM.LoadByTagCommand, Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding}" />
     <MenuItem Header="Filter And"
               Command="{Binding ThumbnailsGridsM.ActivateFilterAndCommand, Source={x:Static pm:App.Core}}"

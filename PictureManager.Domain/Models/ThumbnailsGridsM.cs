@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Interfaces;
 
 namespace PictureManager.Domain.Models {
@@ -26,6 +30,11 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> SelectNotModifiedCommand { get; }
     public RelayCommand<object> ShuffleCommand { get; }
     public RelayCommand<object> ReapplyFilterCommand { get; }
+    public RelayCommand<object> LoadByTagCommand { get; }
+    public RelayCommand<object> CompressCommand { get; }
+    public RelayCommand<object> ResizeImagesCommand { get; }
+    public RelayCommand<object> ImagesToVideoCommand { get; }
+    public RelayCommand<object> CopyPathsCommand { get; }
 
     public ThumbnailsGridsM(Core core) {
       _core = core;
@@ -53,6 +62,44 @@ namespace PictureManager.Domain.Models {
       ReapplyFilterCommand = new(
         async () => await Current.ReapplyFilter(),
         () => Current != null);
+      LoadByTagCommand = new(
+        async item => {
+          await LoadByTag(item, Keyboard.IsCtrlOn(), Keyboard.IsAltOn(), Keyboard.IsShiftOn());
+        },
+        item => item != null);
+      CompressCommand = new(
+        () => {
+          Core.DialogHostShow(
+            new CompressDialogM(
+              Current.GetSelectedOrAll()
+                .Where(x => x.MediaType == MediaType.Image).ToList(),
+              Core.Settings.JpegQualityLevel));
+        },
+        () => Current?.FilteredItems.Count > 0);
+      ResizeImagesCommand = new(
+        () => Core.DialogHostShow(new ResizeImagesDialogM(Current.GetSelectedOrAll())),
+        () => Current?.FilteredItems.Count > 0);
+      ImagesToVideoCommand = new(
+        ImagesToVideo,
+        () => Current?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
+      CopyPathsCommand = new(
+        () => Clipboard.SetText(string.Join("\n", Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
+        () => Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+    }
+
+    private void ImagesToVideo() {
+      Core.DialogHostShow(new ImagesToVideoDialogM(Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+        async (folder, fileName) => {
+          // create new MediaItem, Read Metadata and Create Thumbnail
+          var mi = _core.MediaItemsM.AddNew(folder, fileName, false, true);
+
+          // reload grid
+          Current.LoadedItems.AddInOrder(mi,
+            (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
+          await Current.ReapplyFilter();
+          Current.ScrollToItem = mi;
+        })
+      );
     }
 
     private ThumbnailsGridM AddThumbnailsGrid(MediaItemsM mediaItemsM, TitleProgressBarM progressBar) {

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
-using MH.Utils.Interfaces;
-using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
-using PictureManager.Utils;
-using PictureManager.Domain.Dialogs;
+using System.Threading.Tasks;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridsVM : ObservableObject {
@@ -18,12 +11,6 @@ namespace PictureManager.ViewModels {
 
     public ThumbnailsGridsM Model { get; }
     public ThumbnailsGridVM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
-
-    public RelayCommand<object> LoadByTagCommand { get; }
-    public RelayCommand<object> CompressCommand { get; }
-    public RelayCommand<object> ResizeImagesCommand { get; }
-    public RelayCommand<object> ImagesToVideoCommand { get; }
-    public RelayCommand<object> CopyPathsCommand { get; }
 
     public ThumbnailsGridsVM(Core core, AppCore coreVM, ThumbnailsGridsM model) {
       _core = core;
@@ -36,37 +23,6 @@ namespace PictureManager.ViewModels {
       };
 
       Model.AddThumbnailsGridIfNotActive = AddThumbnailsGridIfNotActive;
-
-      #region Commands
-      LoadByTagCommand = new(
-        async item => {
-          var (and, hide, recursive) = InputUtils.GetControlAltShiftModifiers();
-          await Model.LoadByTag(item, and, hide, recursive);
-        },
-        item => item != null);
-
-      CompressCommand = new(
-        () => {
-          Core.DialogHostShow(
-            new CompressDialogM(
-              Model.Current.GetSelectedOrAll()
-                .Where(x => x.MediaType == MediaType.Image).ToList(),
-              Core.Settings.JpegQualityLevel));
-        },
-        () => Model.Current?.FilteredItems.Count > 0);
-
-      ResizeImagesCommand = new(
-        () => Core.DialogHostShow(new ResizeImagesDialogM(Model.Current.GetSelectedOrAll())),
-        () => Model.Current?.FilteredItems.Count > 0);
-
-      ImagesToVideoCommand = new(
-        ImagesToVideo,
-        () => Model.Current?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
-
-      CopyPathsCommand = new(
-        () => Clipboard.SetText(string.Join("\n", Model.Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
-        () => Model.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
-      #endregion
     }
 
     public void CloseGrid(ThumbnailsGridVM grid) {
@@ -93,21 +49,6 @@ namespace PictureManager.ViewModels {
       }
 
       Model.AddThumbnailsGrid(tabTitle);
-    }
-
-    private void ImagesToVideo() {
-      Core.DialogHostShow(new ImagesToVideoDialogM(Model.Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
-        async (folder, fileName) => {
-          // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = _core.MediaItemsM.AddNew(folder, fileName, false, true);
-
-          // reload grid
-          Model.Current.LoadedItems.AddInOrder(mi,
-            (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          await Model.Current.ReapplyFilter();
-          Model.Current.ScrollToItem = mi;
-        })
-      );
     }
   }
 }
