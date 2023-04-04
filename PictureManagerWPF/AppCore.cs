@@ -18,7 +18,6 @@ namespace PictureManager {
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
-    public ViewerVM ViewerVM { get; }
 
     public AppCore() {
       SetDelegates();
@@ -33,7 +32,6 @@ namespace PictureManager {
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsVM = new(App.Core.VideoClipsM);
-      ViewerVM = new(App.Core.ViewersM);
 
       AttachEvents();
     }

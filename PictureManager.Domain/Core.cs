@@ -37,6 +37,7 @@ namespace PictureManager.Domain {
     public TreeViewCategoriesM TreeViewCategoriesM { get; }
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
+    public ViewerDetailM ViewerDetailM { get; }
 
     public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
     public static FileOperationDeleteFunc FileOperationDelete { get; set; }
@@ -52,6 +53,7 @@ namespace PictureManager.Domain {
       Sdb = new(this);
 
       ViewersM = new(this); // CategoryGroupsM
+      ViewerDetailM = new(ViewersM);
       SegmentsM = new(this); // MainTabsM, MediaViewerM, MainWindowM, ThumbnailsGridsM
       CategoryGroupsM = new();
       FavoriteFoldersM = new();
