@@ -15,13 +15,6 @@
     </DataTemplate.Resources>
 
     <Grid Height="30" Background="Transparent">
-      <Grid.InputBindings>
-        <MouseBinding
-          MouseAction="LeftClick"
-          Command="{Binding PinCommand, RelativeSource=
-                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}" />
-      </Grid.InputBindings>
-
       <StackPanel
         Orientation="Horizontal"
         HorizontalAlignment="Stretch"
@@ -278,7 +271,19 @@
         </StackPanel>
       </StackPanel>
 
-      <mhc:WindowButtons Window="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <!-- Button to pin slide panel -->
+        <mhc:IconToggleButton
+          Icon="{StaticResource IconPin}"
+          Width="20"
+          Height="20"
+          IsThreeState="False"
+          IsChecked="{Binding IsPinned, RelativeSource=
+                     {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
+          ToolTip="Pin panel"/>
+
+        <mhc:WindowButtons Window="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+      </StackPanel>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
