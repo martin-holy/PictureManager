@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using MH.UI.WPF.Controls;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain;
+using PictureManager.Domain.Models;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
-using MH.Utils.BaseClasses;
-using MH.UI.WPF.Controls;
-using PictureManager.Domain.Models;
-using System.Linq;
-using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
@@ -49,28 +46,6 @@ namespace PictureManager {
     }
 
     private void AttachEvents() {
-      App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(App.Core.PersonDetailM.PersonM)))
-          App.Core.PersonDetailM.ReloadPersonSegments();
-        App.Core.SegmentsM.Reload();
-
-        if (App.Core.MediaViewerM.IsVisible)
-          App.Core.MediaViewerM.Current?.SetInfoBox();
-      };
-
-      App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(App.Core.PersonDetailM.PersonM)))
-          App.Core.PersonDetailM.ReloadPersonSegments();
-        App.Core.SegmentsM.Reload();
-      };
-
-      App.Core.SegmentsM.SegmentDeletedEventHandler += (_, e) => {
-        if (App.Core.PersonDetailM.PersonM?.Equals(e.Data.Person) == true)
-          App.Core.PersonDetailM.ReloadPersonSegments();
-
-        App.Core.SegmentsM.SegmentsDrawerRemove(e.Data);
-      };
-
       App.Core.MainTabsM.TabClosedEventHandler += (_, e) => {
         switch (e.Data.Content) {
           case ThumbnailsGridVM grid:
