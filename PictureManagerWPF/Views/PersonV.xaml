@@ -105,6 +105,7 @@
           MinHeight="106"
           ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
           ItemsToWrap="{Binding PersonM.TopSegments}"
+          ReWrapItems="{Binding ReWrapTopItems, Mode=TwoWay}"
           mhu:DragDropHelper.IsDragEnabled="True"
           mhu:DragDropHelper.IsDropEnabled="True"
           mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -112,10 +113,8 @@
           mhu:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}">
 
           <b:Interaction.Triggers>
-            <b:EventTrigger EventName="Loaded">
-              <b:InvokeCommandAction
-                Command="{Binding TopSegmentsLoadedCommand}"
-                PassEventArgsToCommand="True"/>
+            <b:EventTrigger EventName="WidthChangedEventHandler">
+              <b:InvokeCommandAction Command="{Binding PanelTopWidthChangedCommand}"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
@@ -129,14 +128,13 @@
         ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
         Root="{Binding AllSegmentsRoot}"
         ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
+        ReWrapItems="{Binding ReWrapAllItems, Mode=TwoWay}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}">
 
         <b:Interaction.Triggers>
-          <b:EventTrigger EventName="Loaded">
-            <b:InvokeCommandAction
-              Command="{Binding AllSegmentsLoadedCommand}"
-              PassEventArgsToCommand="True"/>
+          <b:EventTrigger EventName="WidthChangedEventHandler">
+            <b:InvokeCommandAction Command="{Binding PanelAllWidthChangedCommand}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
       </mhc:TreeWrapView>
@@ -147,12 +145,6 @@
             Command="{Binding SelectCommand}"
             EventArgsConverter="{StaticResource ClickConverter}"
             EventArgsConverterParameter="System.Windows.Controls.Image"/>
-        </b:EventTrigger>
-
-        <b:EventTrigger EventName="SizeChanged">
-          <b:InvokeCommandAction
-            Command="{Binding PanelSizeChangedCommand}"
-            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 

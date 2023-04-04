@@ -18,19 +18,19 @@ namespace PictureManager.ViewModels {
     private readonly Core _coreM;
     private readonly AppCore _coreVM;
     private readonly MediaElement _videoPreview;
-    private TreeWrapView _panel;
+    private bool _reWrapItems;
 
     public ThumbnailsGridM Model { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public CanDragFunc CanDragFunc { get; }
 
+    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public RelayCommand<object> ShowVideoPreviewCommand { get; }
     public RelayCommand<MediaItemM> HideVideoPreviewCommand { get; }
     public RelayCommand<ClickEventArgs> SelectMediaItemCommand { get; }
     public RelayCommand<ClickEventArgs> OpenMediaItemCommand { get; }
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
-    public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
+    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public ThumbnailsGridVM(Core coreM, AppCore coreVM, ThumbnailsGridM model, string tabTitle) {
       _coreM = coreM;
@@ -42,8 +42,10 @@ namespace PictureManager.ViewModels {
 
       ShowVideoPreviewCommand = new(ShowVideoPreview);
       HideVideoPreviewCommand = new(HideVideoPreview);
-      PanelLoadedCommand = new(PanelLoaded);
-      PanelSizeChangedCommand = new(PanelSizeChanged);
+
+      PanelWidthChangedCommand = new(
+        () => ReWrapItems = true,
+        () => !_coreM.MediaViewerM.IsVisible && !_coreM.MainWindowM.IsFullScreenIsChanging);
 
       SelectMediaItemCommand = new(e => {
         if (e.DataContext is MediaItemM mi)
@@ -71,15 +73,6 @@ namespace PictureManager.ViewModels {
         // MediaElement.Stop()/Play() doesn't work when is video shorter than 1s
         ((MediaElement)o).Position = TimeSpan.FromMilliseconds(1);
       };
-    }
-
-    private void PanelLoaded(RoutedEventArgs e) {
-      _panel = e.Source as TreeWrapView;
-    }
-
-    private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (e.WidthChanged && !_coreM.MediaViewerM.IsVisible && !_coreM.MainWindowM.IsFullScreenIsChanging)
-        _panel.ReWrap();
     }
 
     private object CanDrag(object source) {

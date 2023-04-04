@@ -29,6 +29,8 @@ namespace PictureManager.ViewModels {
     private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
     private VirtualizingWrapPanel _matchingPanel;
     private VirtualizingWrapPanel _confirmedMatchingPanel;
+    private bool _reWrapLoadedItems;
+    private bool _reWrapConfirmedItems;
 
     private readonly WorkTask _workTask = new();
 
@@ -37,13 +39,14 @@ namespace PictureManager.ViewModels {
 
     public CanDragFunc CanDragFunc { get; }
 
+    public bool ReWrapLoadedItems { get => _reWrapLoadedItems; set { _reWrapLoadedItems = value; OnPropertyChanged(); } }
+    public bool ReWrapConfirmedItems { get => _reWrapConfirmedItems; set { _reWrapConfirmedItems = value; OnPropertyChanged(); } }
+
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
-    public RelayCommand<RoutedEventArgs> MatchingPanelLoadedCommand { get; }
-    public RelayCommand<RoutedEventArgs> ConfirmedMatchingPanelLoadedCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> MatchingPanelSizeChangedCommand { get; }
-    public RelayCommand<DragCompletedEventArgs> ConfirmedMatchingPanelSizeChangedCommand { get; }
+    public RelayCommand<object> PanelLoadedWidthChangedCommand { get; }
+    public RelayCommand<object> PanelConfirmedWidthChangedCommand { get; }
 
     public SegmentsVM(Core core, AppCore coreVM, SegmentsM segmentsM) {
       _core = core;
@@ -66,28 +69,16 @@ namespace PictureManager.ViewModels {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-      OpenSegmentsDrawerCommand = new(() => App.Core.ToolsTabsM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
-      MatchingPanelLoadedCommand = new(OnMatchingPanelLoaded);
-      ConfirmedMatchingPanelLoadedCommand = new(OnConfirmedMatchingPanelLoaded);
-      MatchingPanelSizeChangedCommand = new(
-        () => _matchingPanel.ReWrap(),
-        e => e.WidthChanged && !_core.MainWindowM.IsFullScreenIsChanging);
-      ConfirmedMatchingPanelSizeChangedCommand = new(() => {
-        _confirmedMatchingPanel.UpdateLayout();
-        _confirmedMatchingPanel.ReWrap();
-      });
+      OpenSegmentsDrawerCommand = new(
+        () => App.Core.ToolsTabsM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
+      PanelLoadedWidthChangedCommand = new(
+        () => ReWrapLoadedItems = true,
+        () => !_core.MainWindowM.IsFullScreenIsChanging);
+      PanelConfirmedWidthChangedCommand = new(() => ReWrapConfirmedItems = true);
 
       // TODO do it just when needed
       foreach (var person in App.Core.PeopleM.DataAdapter.All.Values)
         person.UpdateDisplayKeywords();
-    }
-
-    private void OnMatchingPanelLoaded(RoutedEventArgs e) {
-      _matchingPanel = e.Source as VirtualizingWrapPanel;
-    }
-
-    private void OnConfirmedMatchingPanelLoaded(RoutedEventArgs e) {
-      _confirmedMatchingPanel = e.Source as VirtualizingWrapPanel;
     }
 
     private object CanDrag(object source) =>

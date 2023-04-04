@@ -86,6 +86,7 @@
       ItemWidthGetter="{Binding Model.ItemWidthGetter}"
       Root="{Binding Model.FilteredRoot}"
       ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
+      ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}"
       ReloadAutoScroll="False"
       ScrollViewerSpeedFactor="2.5"
       Tag="{Binding}"
@@ -106,17 +107,8 @@
             Command="{Binding ZoomCommand}"
             PassEventArgsToCommand="True" />
         </b:EventTrigger>
-
-        <b:EventTrigger EventName="Loaded">
-          <b:InvokeCommandAction
-            Command="{Binding PanelLoadedCommand}"
-            PassEventArgsToCommand="True" />
-        </b:EventTrigger>
-
-        <b:EventTrigger EventName="SizeChanged">
-          <b:InvokeCommandAction
-            Command="{Binding PanelSizeChangedCommand}"
-            PassEventArgsToCommand="True" />
+        <b:EventTrigger EventName="WidthChangedEventHandler">
+          <b:InvokeCommandAction Command="{Binding PanelWidthChangedCommand}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </mhc:TreeWrapView>

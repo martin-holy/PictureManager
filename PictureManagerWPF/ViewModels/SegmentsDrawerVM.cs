@@ -9,17 +9,18 @@ using PictureManager.Domain.Models;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
-  public sealed class SegmentsDrawerVM {
+  public sealed class SegmentsDrawerVM : ObservableObject {
     private VirtualizingWrapPanel _panel;
+    private bool _reWrapItems;
 
     public SegmentsM SegmentsM { get; }
     public readonly HeaderedListItem<object, string> ToolsTabsItem;
     public CanDragFunc CanDragFunc { get; }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction DoDropAction { get; }
+    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
-    public RelayCommand<RoutedEventArgs> PanelLoadedCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
+    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public SegmentsDrawerVM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
@@ -30,8 +31,7 @@ namespace PictureManager.ViewModels {
       DoDropAction = DoDrop;
 
       SelectCommand = new(Select);
-      PanelLoadedCommand = new(OnPanelLoaded);
-      PanelSizeChangedCommand = new(PanelSizeChanged);
+      PanelWidthChangedCommand = new(() => ReWrapItems = true);
     }
 
     private object CanDrag(object source) =>
@@ -50,18 +50,9 @@ namespace PictureManager.ViewModels {
     private void DoDrop(object data, bool haveSameOrigin) =>
       SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
 
-    private void OnPanelLoaded(RoutedEventArgs e) {
-      _panel = e.Source as VirtualizingWrapPanel;
-    }
-
     private void Select(ClickEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         SegmentsM.Select(SegmentsM.SegmentsDrawer.Cast<SegmentM>().ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
-    }
-
-    private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (!e.WidthChanged) return;
-      _panel.ReWrap();
     }
   }
 }

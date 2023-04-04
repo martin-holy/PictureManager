@@ -17,6 +17,8 @@ namespace PictureManager.ViewModels {
     private PersonM _personM;
     private object _scrollToItem;
     private TreeWrapGroup _allSegmentsRoot;
+    private bool _reWrapTopItems;
+    private bool _reWrapAllItems;
 
     private readonly HeaderedListItem<object, string> _toolsTabsItem;
     private VirtualizingWrapPanel _topSegmentsPanel;
@@ -27,13 +29,14 @@ namespace PictureManager.ViewModels {
     public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
+    public bool ReWrapTopItems { get => _reWrapTopItems; set { _reWrapTopItems = value; OnPropertyChanged(); } }
+    public bool ReWrapAllItems { get => _reWrapAllItems; set { _reWrapAllItems = value; OnPropertyChanged(); } }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
-    public RelayCommand<RoutedEventArgs> TopSegmentsLoadedCommand { get; }
-    public RelayCommand<RoutedEventArgs> AllSegmentsLoadedCommand { get; }
-    public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
     public RelayCommand<PersonM> SetPersonCommand { get; }
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<object> PanelTopWidthChangedCommand { get; }
+    public RelayCommand<object> PanelAllWidthChangedCommand { get; }
 
     public PersonVM(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
@@ -43,19 +46,10 @@ namespace PictureManager.ViewModels {
       CanDropFunc = CanDrop;
       TopSegmentsDropAction = TopSegmentsDrop;
 
-      TopSegmentsLoadedCommand = new(OnTopSegmentsLoaded);
-      AllSegmentsLoadedCommand = new(OnAllSegmentsLoaded);
-      PanelSizeChangedCommand = new(PanelSizeChanged);
       SetPersonCommand = new(SetPerson);
       SelectCommand = new(Select);
-    }
-
-    private void OnTopSegmentsLoaded(RoutedEventArgs e) {
-      _topSegmentsPanel = e.Source as VirtualizingWrapPanel;
-    }
-
-    private void OnAllSegmentsLoaded(RoutedEventArgs e) {
-      _allSegmentsPanel = e.Source as TreeWrapView;
+      PanelTopWidthChangedCommand = new(() => ReWrapTopItems = true);
+      PanelAllWidthChangedCommand = new(() => ReWrapAllItems = true);
     }
 
     private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
@@ -90,12 +84,6 @@ namespace PictureManager.ViewModels {
     private void Select(ClickEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         _segmentsM.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
-    }
-
-    private void PanelSizeChanged(SizeChangedEventArgs e) {
-      if (!e.WidthChanged) return;
-      _topSegmentsPanel.ReWrap();
-      _allSegmentsPanel.ReWrap();
     }
   }
 }
