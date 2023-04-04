@@ -55,13 +55,16 @@
 ## Segment matching
   - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
   - segment with person doesn't show number of selected segments
-## ImageComparerTool
-  - rewrite UI
 ## SegmentRect
   - rect doesn't stay on the edge of an image when editing
   - moving beyond the edge of an image should stop changing x,y,c
+  - rect is cropped when zoomed in
 ## Segment
   - wrong size calc with windowsDisplayScale
+## SlidePanelsGrid
+  - panel is opening by its self when for example segment is drag & drop in person detail in fullscreen
+## Style
+  - input dialog text background and foreground
 
 
 # Update
