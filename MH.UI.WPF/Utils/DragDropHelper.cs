@@ -12,36 +12,42 @@ namespace MH.UI.WPF.Utils {
 
     public static DragEventArgs DragEventArgs { get; set; }
 
-    public static readonly DependencyProperty IsDragEnabledProperty =
-      DependencyProperty.RegisterAttached("IsDragEnabled", typeof(bool), typeof(DragDropHelper), new(OnIsDragEnabledChanged));
-    public static readonly DependencyProperty IsDropEnabledProperty =
-      DependencyProperty.RegisterAttached("IsDropEnabled", typeof(bool), typeof(DragDropHelper), new(OnIsDropEnabledChanged));
-    public static readonly DependencyProperty DragDataTypeProperty =
-      DependencyProperty.RegisterAttached("DragDataType", typeof(Type), typeof(DragDropHelper));
-    public static readonly DependencyProperty CanDragProperty =
-      DependencyProperty.RegisterAttached("CanDrag", typeof(CanDragFunc), typeof(DragDropHelper));
-    public static readonly DependencyProperty CanDropProperty =
-      DependencyProperty.RegisterAttached("CanDrop", typeof(CanDropFunc), typeof(DragDropHelper));
-    public static readonly DependencyProperty DoDropProperty =
-      DependencyProperty.RegisterAttached("DoDrop", typeof(DoDropAction), typeof(DragDropHelper));
-    public static readonly DependencyProperty DataFormatProperty =
-      DependencyProperty.RegisterAttached("DataFormat", typeof(string), typeof(DragDropHelper));
+    public static readonly DependencyProperty IsDragEnabledProperty = DependencyProperty.RegisterAttached(
+      "IsDragEnabled", typeof(bool), typeof(DragDropHelper), new(OnIsDragEnabledChanged));
+    
+    public static readonly DependencyProperty IsDropEnabledProperty = DependencyProperty.RegisterAttached(
+      "IsDropEnabled", typeof(bool), typeof(DragDropHelper), new(OnIsDropEnabledChanged));
+    
+    public static readonly DependencyProperty DragDataTypeProperty = DependencyProperty.RegisterAttached(
+      "DragDataType", typeof(Type), typeof(DragDropHelper));
+    
+    public static readonly DependencyProperty CanDragProperty = DependencyProperty.RegisterAttached(
+      "CanDrag", typeof(CanDragFunc), typeof(DragDropHelper));
+    
+    public static readonly DependencyProperty CanDropProperty = DependencyProperty.RegisterAttached(
+      "CanDrop", typeof(CanDropFunc), typeof(DragDropHelper));
+    
+    public static readonly DependencyProperty DoDropProperty = DependencyProperty.RegisterAttached(
+      "DoDrop", typeof(DoDropAction), typeof(DragDropHelper));
+    
+    public static readonly DependencyProperty DataFormatProperty = DependencyProperty.RegisterAttached(
+      "DataFormat", typeof(string), typeof(DragDropHelper));
 
-    public static void SetIsDragEnabled(DependencyObject d, bool value) => d.SetValue(IsDragEnabledProperty, value);
     public static bool GetIsDragEnabled(DependencyObject d) => (bool)d.GetValue(IsDragEnabledProperty);
-    public static void SetIsDropEnabled(DependencyObject d, bool value) => d.SetValue(IsDropEnabledProperty, value);
+    public static void SetIsDragEnabled(DependencyObject d, bool value) => d.SetValue(IsDragEnabledProperty, value);
     public static bool GetIsDropEnabled(DependencyObject d) => (bool)d.GetValue(IsDropEnabledProperty);
-    public static void SetDragDataType(DependencyObject d, Type value) => d.SetValue(DragDataTypeProperty, value);
+    public static void SetIsDropEnabled(DependencyObject d, bool value) => d.SetValue(IsDropEnabledProperty, value);
     public static Type GetDragDataType(DependencyObject d) => (Type)d.GetValue(DragDataTypeProperty);
-    public static void SetCanDrag(DependencyObject d, CanDragFunc value) => d.SetValue(CanDragProperty, value);
+    public static void SetDragDataType(DependencyObject d, Type value) => d.SetValue(DragDataTypeProperty, value);
     public static CanDragFunc GetCanDrag(DependencyObject d) => (CanDragFunc)d.GetValue(CanDragProperty);
-    public static void SetCanDrop(DependencyObject d, CanDropFunc value) => d.SetValue(CanDropProperty, value);
+    public static void SetCanDrag(DependencyObject d, CanDragFunc value) => d.SetValue(CanDragProperty, value);
     public static CanDropFunc GetCanDrop(DependencyObject d) => (CanDropFunc)d.GetValue(CanDropProperty);
-    public static void SetDoDrop(DependencyObject d, DoDropAction value) => d.SetValue(DoDropProperty, value);
+    public static void SetCanDrop(DependencyObject d, CanDropFunc value) => d.SetValue(CanDropProperty, value);
     public static DoDropAction GetDoDrop(DependencyObject d) => (DoDropAction)d.GetValue(DoDropProperty);
-    public static void SetDataFormat(DependencyObject d, string value) => d.SetValue(DataFormatProperty, value);
+    public static void SetDoDrop(DependencyObject d, DoDropAction value) => d.SetValue(DoDropProperty, value);
     public static string GetDataFormat(DependencyObject d) => (string)d.GetValue(DataFormatProperty);
-
+    public static void SetDataFormat(DependencyObject d, string value) => d.SetValue(DataFormatProperty, value);
+    
     private static void OnIsDragEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
       if (d is not FrameworkElement fe)
         throw new InvalidOperationException();
