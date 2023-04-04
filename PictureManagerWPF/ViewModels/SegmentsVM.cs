@@ -44,7 +44,6 @@ namespace PictureManager.ViewModels {
 
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
-    public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
     public RelayCommand<object> PanelLoadedWidthChangedCommand { get; }
     public RelayCommand<object> PanelConfirmedWidthChangedCommand { get; }
 
@@ -59,7 +58,6 @@ namespace PictureManager.ViewModels {
       });
 
       SegmentsM.MainTabsItem = new(this, "Segment Matching");
-      var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
       SegmentsRectsVM = new(SegmentsM.SegmentsRectsM);
 
       CanDragFunc = CanDrag;
@@ -69,8 +67,6 @@ namespace PictureManager.ViewModels {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-      OpenSegmentsDrawerCommand = new(
-        () => App.Core.ToolsTabsM.Activate(segmentsDrawerVM.ToolsTabsItem, true));
       PanelLoadedWidthChangedCommand = new(
         () => ReWrapLoadedItems = true,
         () => !_core.MainWindowM.IsFullScreenIsChanging);

@@ -1,16 +1,10 @@
-﻿using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using MH.UI.WPF.Controls;
-using MH.UI.WPF.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
-using PictureManager.Domain.Models;
 using static MH.Utils.DragDropHelper;
+using System.Linq;
 
-namespace PictureManager.ViewModels {
-  public sealed class SegmentsDrawerVM : ObservableObject {
-    private VirtualizingWrapPanel _panel;
+namespace PictureManager.Domain.Models {
+  public sealed class SegmentsDrawerM : ObservableObject {
     private bool _reWrapItems;
 
     public SegmentsM SegmentsM { get; }
@@ -22,7 +16,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> PanelWidthChangedCommand { get; }
 
-    public SegmentsDrawerVM(SegmentsM segmentsM) {
+    public SegmentsDrawerM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
       ToolsTabsItem = new(this, "Segments");
 

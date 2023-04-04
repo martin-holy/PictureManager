@@ -100,7 +100,7 @@
         <mhc:IconButton
           ToolTip="Open Segments drawer"
           Icon="{StaticResource IconDrawer}"
-          Command="{Binding OpenSegmentsDrawerCommand}"/>
+          Command="{Binding SegmentsM.OpenSegmentsDrawerCommand}"/>
         <mhc:IconButton
           ToolTip="Compare all groups of segments"
           Icon="{StaticResource IconCompare}"

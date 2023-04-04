@@ -27,6 +27,7 @@ namespace PictureManager.Domain.Models {
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public SegmentsDataAdapter DataAdapter { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
+    public SegmentsDrawerM SegmentsDrawerM { get; }
     public List<SegmentM> Loaded { get; } = new();
     public List<MediaItemM> MediaItemsForMatching { get; set; }
     public ObservableCollection<object> LoadedGrouped { get; } = new();
@@ -65,10 +66,12 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
+    public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
 
     public SegmentsM(Core core) {
       _core = core;
       SegmentsRectsM = new(this);
+      SegmentsDrawerM = new(this);
 
       AddSelectedToDrawerCommand = new(
         () => SegmentsDrawerUpdate(Selected.ToArray(), true),
@@ -84,6 +87,8 @@ namespace PictureManager.Domain.Models {
       SegmentMatchingCommand = new(
         SegmentMatching,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+      OpenSegmentsDrawerCommand = new(
+        () =>_core.ToolsTabsM.Activate(SegmentsDrawerM.ToolsTabsItem, true));
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));
