@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 
 namespace MH.UI.WPF.Utils {
   public static class Init {
@@ -6,6 +7,8 @@ namespace MH.UI.WPF.Utils {
       MH.Utils.Keyboard.IsCtrlOn = () => (Keyboard.Modifiers & ModifierKeys.Control) > 0;
       MH.Utils.Keyboard.IsAltOn = () => (Keyboard.Modifiers & ModifierKeys.Alt) > 0;
       MH.Utils.Keyboard.IsShiftOn = () => (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
+
+      MH.Utils.Clipboard.SetText = Clipboard.SetText;
     }
   }
 }
