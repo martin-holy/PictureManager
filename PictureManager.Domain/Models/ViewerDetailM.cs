@@ -1,14 +1,9 @@
-﻿using System.Collections.ObjectModel;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-using MH.UI.WPF.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using PictureManager.Domain.Models;
 using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.ViewModels {
-  public sealed class ViewerVM : ObservableObject {
+namespace PictureManager.Domain.Models {
+  public sealed class ViewerDetailM : ObservableObject {
     public ViewersM ViewersM { get; }
 
     public CanDragFunc CanDragFolder { get; set; }
@@ -19,7 +14,7 @@ namespace PictureManager.ViewModels {
     public CanDropFunc CanDropKeyword { get; }
     public DoDropAction DoDropKeyword { get; }
 
-    public ViewerVM(ViewersM viewersM) {
+    public ViewerDetailM(ViewersM viewersM) {
       ViewersM = viewersM;
 
       ViewersM.ViewerMainTabsItem = new(this, "Viewer");
@@ -33,24 +28,24 @@ namespace PictureManager.ViewModels {
       DoDropKeyword = DoDropKeywordMethod;
     }
 
-    private MH.Utils.DragDropEffects CanDropFolder(object target, object data, bool haveSameOrigin, bool included) {
+    private DragDropEffects CanDropFolder(object target, object data, bool haveSameOrigin, bool included) {
       if (data is not FolderM folder)
-        return MH.Utils.DragDropEffects.None;
+        return DragDropEffects.None;
 
       if (!haveSameOrigin)
         return (included
           ? ViewersM.Selected.IncludedFolders
           : ViewersM.Selected.ExcludedFolders)
           .Contains(folder)
-            ? MH.Utils.DragDropEffects.None
-            : MH.Utils.DragDropEffects.Copy;
+            ? DragDropEffects.None
+            : DragDropEffects.Copy;
 
       if (haveSameOrigin)
         return folder.Equals(target)
-          ? MH.Utils.DragDropEffects.None
-          : MH.Utils.DragDropEffects.Move;
+          ? DragDropEffects.None
+          : DragDropEffects.Move;
 
-      return MH.Utils.DragDropEffects.None;
+      return DragDropEffects.None;
     }
 
     private void DoDropFolder(object data, bool haveSameOrigin, bool included) {
@@ -60,18 +55,18 @@ namespace PictureManager.ViewModels {
         ViewersM.AddFolder(ViewersM.Selected, (FolderM)data, included);
     }
 
-    private MH.Utils.DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
+    private DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
       if (data is not KeywordM keyword)
-        return MH.Utils.DragDropEffects.None;
+        return DragDropEffects.None;
 
       if (haveSameOrigin)
         return keyword.Equals(target)
-          ? MH.Utils.DragDropEffects.None
-          : MH.Utils.DragDropEffects.Move;
+          ? DragDropEffects.None
+          : DragDropEffects.Move;
       else
         return ViewersM.Selected.ExcludedKeywords.Contains(keyword)
-          ? MH.Utils.DragDropEffects.None
-          : MH.Utils.DragDropEffects.Copy;
+          ? DragDropEffects.None
+          : DragDropEffects.Copy;
     }
 
     private void DoDropKeywordMethod(object data, bool haveSameOrigin) {
