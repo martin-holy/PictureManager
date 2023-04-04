@@ -180,20 +180,42 @@ namespace MH.UI.WPF.Controls {
     private void OnMouseMove(object sender, MouseEventArgs e) {
       var pos = e.GetPosition(this);
 
-      if (pos.X < 5) {
-        if (PanelLeft?.IsOpen == false && PanelLeft.CanOpen)
+      // to stop opening/closing panel by it self in some cases
+      if ((pos.X == 0 && pos.Y == 0) || pos.X < 0 || pos.Y < 0) return;
+
+      if (PanelLeft != null) {
+        if (PanelLeft.IsOpen) {
+          if (!PanelLeft.IsPinned && pos.X > PanelLeft.ActualWidth)
+            PanelLeft.IsOpen = false;
+        }
+        else if (pos.X < 5 && PanelLeft.CanOpen)
           PanelLeft.IsOpen = true;
       }
-      else if (pos.X > ActualWidth - 5) {
-        if (PanelRight?.IsOpen == false && PanelRight.CanOpen)
+
+      if (PanelRight != null) {
+        if (PanelRight.IsOpen) {
+          if (!PanelRight.IsPinned && pos.X < (ActualWidth - PanelRight.ActualWidth))
+            PanelRight.IsOpen = false;
+        }
+        else if (pos.X > ActualWidth - 5 && PanelRight.CanOpen)
           PanelRight.IsOpen = true;
       }
-      else if (pos.Y < 15) {
-        if (PanelTop?.IsOpen == false && PanelTop.CanOpen)
+
+      if (PanelTop != null) {
+        if (PanelTop.IsOpen) {
+          if (!PanelTop.IsPinned && pos.Y > PanelTop.ActualHeight)
+            PanelTop.IsOpen = false;
+        }
+        else if (pos.Y < 5 && PanelTop.CanOpen)
           PanelTop.IsOpen = true;
       }
-      else if (pos.Y > ActualHeight - 20) {
-        if (PanelBottom?.IsOpen == false && PanelBottom.CanOpen)
+
+      if (PanelBottom != null) {
+        if (PanelBottom.IsOpen) {
+          if (!PanelBottom.IsPinned && pos.Y < (ActualHeight - PanelBottom.ActualHeight))
+            PanelBottom.IsOpen = false;
+        }
+        else if (pos.Y > ActualHeight - 5 && PanelBottom.CanOpen)
           PanelBottom.IsOpen = true;
       }
     }

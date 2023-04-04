@@ -55,7 +55,6 @@ namespace MH.UI.WPF.Controls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
       PinCommand = new(() => IsPinned = !IsPinned);
-      MouseLeave += delegate { if (!IsPinned) IsOpen = false; };
       SizeChanged += (o, e) => { UpdateAnimation(e); };
 
       _openAnimation = new();
