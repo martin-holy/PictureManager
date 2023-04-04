@@ -38,13 +38,13 @@
           <mhc:VirtualizingWrapPanel
             ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
             ItemsToWrap="{Binding SegmentsM.ConfirmedGrouped}"
-            ReWrapItems="{Binding ReWrapConfirmedItems, Mode=TwoWay}"
+            ReWrapItems="{Binding SegmentsM.ReWrapConfirmedItems, Mode=TwoWay}"
             mhu:DragDropHelper.IsDragEnabled="True"
-            mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}">
+            mhu:DragDropHelper.CanDrag="{Binding SegmentsM.CanDragFunc}">
         
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="WidthChangedEventHandler">
-                <b:InvokeCommandAction Command="{Binding PanelConfirmedWidthChangedCommand}"/>
+                <b:InvokeCommandAction Command="{Binding SegmentsM.PanelConfirmedWidthChangedCommand}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
           </mhc:VirtualizingWrapPanel>
@@ -66,13 +66,13 @@
           ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
           ItemsToWrap="{Binding SegmentsM.LoadedGrouped}"
           ReloadAutoScroll="{Binding SegmentsM.ReloadAutoScroll}"
-          ReWrapItems="{Binding ReWrapLoadedItems, Mode=TwoWay}"
+          ReWrapItems="{Binding SegmentsM.ReWrapLoadedItems, Mode=TwoWay}"
           mhu:DragDropHelper.IsDragEnabled="True"
-          mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}">
+          mhu:DragDropHelper.CanDrag="{Binding SegmentsM.CanDragFunc}">
         
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="WidthChangedEventHandler">
-              <b:InvokeCommandAction Command="{Binding PanelLoadedWidthChangedCommand}"/>
+              <b:InvokeCommandAction Command="{Binding SegmentsM.PanelLoadedWidthChangedCommand}"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>

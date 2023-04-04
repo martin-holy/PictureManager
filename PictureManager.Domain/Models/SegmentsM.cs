@@ -9,6 +9,7 @@ using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.HelperClasses;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
@@ -22,6 +23,8 @@ namespace PictureManager.Domain.Models {
     private bool _groupConfirmedSegments;
     private bool _matchingAutoSort = true;
     private bool _reloadAutoScroll = true;
+    private bool _reWrapLoadedItems;
+    private bool _reWrapConfirmedItems;
     private readonly List<SegmentM> _selected = new();
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
@@ -45,10 +48,14 @@ namespace PictureManager.Domain.Models {
     public bool MultiplePeopleSelected => Selected.GroupBy(x => x.Person).Count() > 1 || Selected.Count(x => x.Person == null) > 1;
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
     public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
+    public bool ReWrapLoadedItems { get => _reWrapLoadedItems; set { _reWrapLoadedItems = value; OnPropertyChanged(); } }
+    public bool ReWrapConfirmedItems { get => _reWrapConfirmedItems; set { _reWrapConfirmedItems = value; OnPropertyChanged(); } }
     public bool NeedReload { get; set; }
     public double ConfirmedPanelWidth { get; private set; }
     public double SegmentUiFullWidth { get; set; }
     public double SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
+
+    public CanDragFunc CanDragFunc { get; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
@@ -67,6 +74,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
     public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
+    public RelayCommand<object> PanelLoadedWidthChangedCommand { get; }
+    public RelayCommand<object> PanelConfirmedWidthChangedCommand { get; }
 
     public SegmentsM(Core core) {
       _core = core;
@@ -89,6 +98,12 @@ namespace PictureManager.Domain.Models {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       OpenSegmentsDrawerCommand = new(
         () =>_core.ToolsTabsM.Activate(SegmentsDrawerM.ToolsTabsItem, true));
+      PanelLoadedWidthChangedCommand = new(
+        () => ReWrapLoadedItems = true,
+        () => !_core.MainWindowM.IsFullScreenIsChanging);
+      PanelConfirmedWidthChangedCommand = new(() => ReWrapConfirmedItems = true);
+
+      CanDragFunc = CanDrag;
 
       SelectedChangedEventHandler += (_, _) => {
         OnPropertyChanged(nameof(SelectedCount));
@@ -104,6 +119,11 @@ namespace PictureManager.Domain.Models {
 
     public void SetSelected(SegmentM segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
+
+    private object CanDrag(object source) =>
+      source is SegmentM segmentM
+        ? GetOneOrSelected(segmentM)
+        : null;
 
     public void SetSegmentUiSize(double size, double scrollBarSize) {
       SegmentUiSize = size;

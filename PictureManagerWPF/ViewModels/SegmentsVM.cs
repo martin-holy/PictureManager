@@ -1,4 +1,13 @@
-﻿using System;
+﻿using MH.UI.WPF.Controls;
+using MH.UI.WPF.Utils;
+using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
+using MH.Utils.HelperClasses;
+using PictureManager.Converters;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,20 +15,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using MH.UI.WPF.Controls;
-using MH.UI.WPF.Converters;
-using MH.UI.WPF.Utils;
-using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
-using MH.Utils.EventsArgs;
-using MH.Utils.HelperClasses;
-using PictureManager.Converters;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
@@ -27,25 +22,14 @@ namespace PictureManager.ViewModels {
     private readonly AppCore _coreVM;
     private readonly IProgress<int> _progress;
     private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
-    private VirtualizingWrapPanel _matchingPanel;
-    private VirtualizingWrapPanel _confirmedMatchingPanel;
-    private bool _reWrapLoadedItems;
-    private bool _reWrapConfirmedItems;
-
+    
     private readonly WorkTask _workTask = new();
 
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
 
-    public CanDragFunc CanDragFunc { get; }
-
-    public bool ReWrapLoadedItems { get => _reWrapLoadedItems; set { _reWrapLoadedItems = value; OnPropertyChanged(); } }
-    public bool ReWrapConfirmedItems { get => _reWrapConfirmedItems; set { _reWrapConfirmedItems = value; OnPropertyChanged(); } }
-
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
-    public RelayCommand<object> PanelLoadedWidthChangedCommand { get; }
-    public RelayCommand<object> PanelConfirmedWidthChangedCommand { get; }
 
     public SegmentsVM(Core core, AppCore coreVM, SegmentsM segmentsM) {
       _core = core;
@@ -60,27 +44,16 @@ namespace PictureManager.ViewModels {
       SegmentsM.MainTabsItem = new(this, "Segment Matching");
       SegmentsRectsVM = new(SegmentsM.SegmentsRectsM);
 
-      CanDragFunc = CanDrag;
-
       SelectCommand = new(Select);
       CompareCommand = new(async () => {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-      PanelLoadedWidthChangedCommand = new(
-        () => ReWrapLoadedItems = true,
-        () => !_core.MainWindowM.IsFullScreenIsChanging);
-      PanelConfirmedWidthChangedCommand = new(() => ReWrapConfirmedItems = true);
 
       // TODO do it just when needed
-      foreach (var person in App.Core.PeopleM.DataAdapter.All.Values)
+      foreach (var person in _core.PeopleM.DataAdapter.All.Values)
         person.UpdateDisplayKeywords();
     }
-
-    private object CanDrag(object source) =>
-      source is SegmentM segmentM
-        ? SegmentsM.GetOneOrSelected(segmentM)
-        : null;
 
     private void Select(ClickEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM } image) {
