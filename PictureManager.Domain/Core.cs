@@ -62,7 +62,7 @@ namespace PictureManager.Domain {
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       MediaItemSizesTreeM = new();
       MediaViewerM = new();
-      PeopleM = new(CategoryGroupsM);
+      PeopleM = new(this, CategoryGroupsM); // MainWindowM
       RatingsTreeM = new();
       StatusPanelM = new(this);
       ThumbnailsGridsM = new(this);

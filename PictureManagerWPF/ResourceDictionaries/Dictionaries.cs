@@ -46,14 +46,14 @@ namespace PictureManager.ResourceDictionaries {
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToIcon = new() {
-      { typeof(PeopleVM), Res.IconPeople },
+      { typeof(PeopleM), Res.IconPeople },
       { typeof(SegmentsVM), Res.IconEquals },
       { typeof(ViewerVM), Res.IconEye },
       { typeof(ThumbnailsGridVM), Res.IconFolder }
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToIconBrush = new() {
-      { typeof(PeopleVM), "ColorBrushPeople" },
+      { typeof(PeopleM), "ColorBrushPeople" },
       { typeof(SegmentsVM), "ColorBrushWhite" },
       { typeof(ViewerVM), "ColorBrushWhite" },
       { typeof(ThumbnailsGridVM), "ColorBrushFolder" }
