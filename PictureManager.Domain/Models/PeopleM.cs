@@ -14,23 +14,31 @@ namespace PictureManager.Domain.Models {
     private readonly CategoryGroupsM _categoryGroupsM;
     private TreeWrapGroup _peopleRoot;
     private object _scrollToItem;
+    private bool _reWrapItems;
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
     public List<PersonM> Selected { get; } = new();
     public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
+
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
-    public PeopleM(CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
+    public PeopleM(Core core, CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
+      MainTabsItem = new(this, "People");
 
       SelectCommand = new(Select);
+      PanelWidthChangedCommand = new(
+        () => ReWrapItems = true,
+        () => !core.MainWindowM.IsFullScreenIsChanging);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {

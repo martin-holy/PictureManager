@@ -15,7 +15,6 @@ namespace PictureManager {
     public MainWindowToolBarVM MainWindowToolBarVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
-    public PeopleVM PeopleVM { get; }
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
@@ -32,7 +31,6 @@ namespace PictureManager {
 
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
-      PeopleVM = new(App.Core, App.Core.PeopleM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsVM = new(App.Core.VideoClipsM);
@@ -85,8 +83,8 @@ namespace PictureManager {
           case ThumbnailsGridVM grid:
             ThumbnailsGridsVM.CloseGrid(grid);
             break;
-          case PeopleVM people:
-            people.PeopleM.DeselectAll();
+          case PeopleM people:
+            people.DeselectAll();
             break;
         }
       };
@@ -95,7 +93,7 @@ namespace PictureManager {
         if (nameof(App.Core.MainTabsM.Selected).Equals(e.PropertyName)) {
           await ThumbnailsGridsVM.SetCurrentGrid(App.Core.MainTabsM.Selected?.Content as ThumbnailsGridVM);
 
-          if (App.Core.MainTabsM.Selected is not { Content: ViewModels.PeopleVM })
+          if (App.Core.MainTabsM.Selected is not { Content: PeopleM })
             App.Core.PeopleM.DeselectAll();
         }
       };
