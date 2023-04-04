@@ -19,6 +19,7 @@ using MH.Utils.HelperClasses;
 using PictureManager.Converters;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
@@ -33,6 +34,8 @@ namespace PictureManager.ViewModels {
 
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
+
+    public CanDragFunc CanDragFunc { get; }
 
     public RelayCommand<ClickEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
@@ -55,6 +58,8 @@ namespace PictureManager.ViewModels {
       SegmentsM.MainTabsItem = new(this, "Segment Matching");
       var segmentsDrawerVM = new SegmentsDrawerVM(SegmentsM);
       SegmentsRectsVM = new(SegmentsM.SegmentsRectsM);
+
+      CanDragFunc = CanDrag;
 
       SelectCommand = new(Select);
       CompareCommand = new(async () => {
@@ -79,16 +84,14 @@ namespace PictureManager.ViewModels {
 
     private void OnMatchingPanelLoaded(RoutedEventArgs e) {
       _matchingPanel = e.Source as VirtualizingWrapPanel;
-      DragDropFactory.SetDrag(_matchingPanel, CanDrag);
     }
 
     private void OnConfirmedMatchingPanelLoaded(RoutedEventArgs e) {
       _confirmedMatchingPanel = e.Source as VirtualizingWrapPanel;
-      DragDropFactory.SetDrag(_confirmedMatchingPanel, CanDrag);
     }
 
-    private object CanDrag(MouseEventArgs e) =>
-      e.OriginalSource is FrameworkElement { DataContext: SegmentM segmentM }
+    private object CanDrag(object source) =>
+      source is SegmentM segmentM
         ? SegmentsM.GetOneOrSelected(segmentM)
         : null;
 
