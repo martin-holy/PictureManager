@@ -78,30 +78,26 @@
             Margin="5,15,5,5"/>
 
           <TextBox
+            x:Name="tbAnswer"
             MinWidth="300"
             Padding="5"
             Margin="5"
             Text="{Binding Answer, UpdateSourceTrigger=PropertyChanged}"
-            ToolTip="{Binding ErrorMessage}">
-
-            <TextBox.Style>
-              <Style TargetType="{x:Type Control}">
-                <Style.Triggers>
-                  <Trigger Property="IsVisible" Value="True">
-                    <Setter
-                      Property="FocusManager.FocusedElement"
-                      Value="{Binding RelativeSource={RelativeSource Self}}"/>
-                  </Trigger>
-
-                  <DataTrigger Binding="{Binding Error}" Value="True">
-                    <Setter Property="Background" Value="#7FFF0000"/>
-                  </DataTrigger>
-                </Style.Triggers>
-              </Style>
-            </TextBox.Style>
-          </TextBox>
+            ToolTip="{Binding ErrorMessage}"/>
         </StackPanel>
       </StackPanel>
     </DockPanel>
+
+    <DataTemplate.Triggers>
+      <Trigger Property="IsVisible" Value="True">
+        <Setter
+          TargetName="tbAnswer"
+          Property="FocusManager.FocusedElement"
+          Value="{Binding ElementName=tbAnswer}"/>
+      </Trigger>
+      <DataTrigger Binding="{Binding Error}" Value="True">
+        <Setter TargetName="tbAnswer" Property="Background" Value="#7FFF0000"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
