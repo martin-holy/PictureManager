@@ -8,6 +8,7 @@ using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using PictureManager.Domain.Models;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
   public sealed class PersonVM : ObservableObject {
@@ -26,6 +27,8 @@ namespace PictureManager.ViewModels {
     public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
+    public CanDropFunc CanDropFunc { get; }
+    public DoDropAction TopSegmentsDropAction { get; }
     public RelayCommand<RoutedEventArgs> TopSegmentsLoadedCommand { get; }
     public RelayCommand<RoutedEventArgs> AllSegmentsLoadedCommand { get; }
     public RelayCommand<SizeChangedEventArgs> PanelSizeChangedCommand { get; }
@@ -37,6 +40,9 @@ namespace PictureManager.ViewModels {
       _segmentsM = segmentsM;
       _toolsTabsItem = new(this, "Person");
 
+      CanDropFunc = CanDrop;
+      TopSegmentsDropAction = TopSegmentsDrop;
+
       TopSegmentsLoadedCommand = new(OnTopSegmentsLoaded);
       AllSegmentsLoadedCommand = new(OnAllSegmentsLoaded);
       PanelSizeChangedCommand = new(PanelSizeChanged);
@@ -46,28 +52,22 @@ namespace PictureManager.ViewModels {
 
     private void OnTopSegmentsLoaded(RoutedEventArgs e) {
       _topSegmentsPanel = e.Source as VirtualizingWrapPanel;
-      DragDropFactory.SetDrag(_topSegmentsPanel, CanDrag);
-      DragDropFactory.SetDrop(_topSegmentsPanel, CanDrop, TopSegmentsDrop);
     }
 
     private void OnAllSegmentsLoaded(RoutedEventArgs e) {
       _allSegmentsPanel = e.Source as TreeWrapView;
-      DragDropFactory.SetDrag(_allSegmentsPanel, CanDrag);
     }
 
-    private object CanDrag(MouseEventArgs e) =>
-      (e.OriginalSource as FrameworkElement)?.DataContext as SegmentM;
+    private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
+      if (!haveSameOrigin && PersonM.TopSegments?.Contains(data as SegmentM) != true)
+        return MH.Utils.DragDropEffects.Copy;
+      if (haveSameOrigin && data != target)
+        return MH.Utils.DragDropEffects.Move;
 
-    private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
-      if (_allSegmentsPanel.Equals(source) && PersonM.TopSegments?.Contains(data as SegmentM) != true)
-        return DragDropEffects.Copy;
-      if (_topSegmentsPanel.Equals(source) && data != (e.OriginalSource as FrameworkElement)?.DataContext)
-        return DragDropEffects.Move;
-
-      return DragDropEffects.None;
+      return MH.Utils.DragDropEffects.None;
     }
 
-    private void TopSegmentsDrop(DragEventArgs e, object source, object data) =>
+    private void TopSegmentsDrop(object data, bool haveSameOrigin) =>
       _peopleM.ToggleTopSegment(PersonM, data as SegmentM);
 
     private void SetPerson(PersonM person) {

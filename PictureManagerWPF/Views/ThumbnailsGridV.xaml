@@ -4,8 +4,9 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
   
   <DataTemplate DataType="{x:Type vm:ThumbnailsGridVM}">
     <DataTemplate.Resources>
@@ -36,7 +37,7 @@
             Command="{Binding Model.RefreshCommand}" />
         </ContextMenu>
         
-        <DataTemplate DataType="{x:Type models:MediaItemM}">
+        <DataTemplate DataType="{x:Type m:MediaItemM}">
           <DataTemplate.Resources>
             <ResourceDictionary>
               <ResourceDictionary.MergedDictionaries>
@@ -87,7 +88,10 @@
       ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
       ReloadAutoScroll="False"
       ScrollViewerSpeedFactor="2.5"
-      Tag="{Binding}">
+      Tag="{Binding}"
+      mhu:DragDropHelper.IsDragEnabled="True"
+      mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"
+      mhu:DragDropHelper.DataFormat="FileDrop">
 
       <mhc:TreeWrapView.InputBindings>
         <KeyBinding

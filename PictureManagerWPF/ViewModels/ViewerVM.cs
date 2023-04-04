@@ -5,88 +5,77 @@ using System.Windows.Controls;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
   public sealed class ViewerVM : ObservableObject {
     public ViewersM ViewersM { get; }
-    
-    public ListBox LbIncludedFolders { get; }
-    public ListBox LbExcludedFolders { get; }
-    public ListBox LbExcludedKeywords { get; }
+
+    public CanDragFunc CanDragFolder { get; set; }
+    public CanDropFunc CanDropFolderIncluded { get; }
+    public DoDropAction DoDropFolderIncluded { get; }
+    public CanDropFunc CanDropFolderExcluded { get; }
+    public DoDropAction DoDropFolderExcluded { get; }
+    public CanDropFunc CanDropKeyword { get; }
+    public DoDropAction DoDropKeyword { get; }
 
     public ViewerVM(ViewersM viewersM) {
       ViewersM = viewersM;
 
       ViewersM.ViewerMainTabsItem = new(this, "Viewer");
 
-      LbIncludedFolders = new();
-      LbExcludedFolders = new();
-      LbExcludedKeywords = new();
-
-      AttachEvents();
+      CanDragFolder = (source) => source is FolderM ? source : null;
+      CanDropFolderIncluded = (a, b, c) => CanDropFolder(a, b, c, true);
+      CanDropFolderExcluded = (a, b, c) => CanDropFolder(a, b, c, false);
+      DoDropFolderIncluded = (a, b) => DoDropFolder(a, b, true);
+      DoDropFolderExcluded = (a, b) => DoDropFolder(a, b, false);
+      CanDropKeyword = CanDropKeywordMethod;
+      DoDropKeyword = DoDropKeywordMethod;
     }
 
-    private void AttachEvents() {
-      DragDropFactory.SetDrag(LbIncludedFolders, e => (e.OriginalSource as FrameworkElement)?.DataContext as FolderM);
-      DragDropFactory.SetDrag(LbExcludedFolders, e => (e.OriginalSource as FrameworkElement)?.DataContext as FolderM);
-      DragDropFactory.SetDrag(LbExcludedKeywords, e => (e.OriginalSource as FrameworkElement)?.DataContext as KeywordM);
-
-      DragDropFactory.SetDrop(
-        LbIncludedFolders,
-        (e, source, data) => CanDropFolder(e, source, data, true),
-        (e, source, data) => DoDropFolder(e, source, data, true));
-
-      DragDropFactory.SetDrop(
-        LbExcludedFolders,
-        (e, source, data) => CanDropFolder(e, source, data, false),
-        (e, source, data) => DoDropFolder(e, source, data, false));
-
-      DragDropFactory.SetDrop(LbExcludedKeywords, CanDropKeyword, DoDropKeyword);
-    }
-
-    private DragDropEffects CanDropFolder(DragEventArgs e, object source, object data, bool included) {
+    private MH.Utils.DragDropEffects CanDropFolder(object target, object data, bool haveSameOrigin, bool included) {
       if (data is not FolderM folder)
-        return DragDropEffects.None;
+        return MH.Utils.DragDropEffects.None;
 
-      if (!source.Equals(LbIncludedFolders) && !source.Equals(LbExcludedFolders))
+      if (!haveSameOrigin)
         return (included
           ? ViewersM.Selected.IncludedFolders
           : ViewersM.Selected.ExcludedFolders)
           .Contains(folder)
-            ? DragDropEffects.None
-            : DragDropEffects.Copy;
+            ? MH.Utils.DragDropEffects.None
+            : MH.Utils.DragDropEffects.Copy;
 
-      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        return folder.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
-          ? DragDropEffects.None
-          : DragDropEffects.Move;
+      if (haveSameOrigin)
+        return folder.Equals(target)
+          ? MH.Utils.DragDropEffects.None
+          : MH.Utils.DragDropEffects.Move;
 
-      return DragDropEffects.None;
+      return MH.Utils.DragDropEffects.None;
     }
 
-    private void DoDropFolder(DragEventArgs e, object source, object data, bool included) {
-      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
+    private void DoDropFolder(object data, bool haveSameOrigin, bool included) {
+      if (haveSameOrigin)
         ViewersM.RemoveFolder(ViewersM.Selected, (FolderM)data, included);
       else
         ViewersM.AddFolder(ViewersM.Selected, (FolderM)data, included);
     }
 
-    private DragDropEffects CanDropKeyword(DragEventArgs e, object source, object data) {
+    private MH.Utils.DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
       if (data is not KeywordM keyword)
-        return DragDropEffects.None;
+        return MH.Utils.DragDropEffects.None;
 
-      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
-        return keyword.Equals((e.OriginalSource as FrameworkElement)?.DataContext)
-          ? DragDropEffects.None
-          : DragDropEffects.Move;
+      if (haveSameOrigin)
+        return keyword.Equals(target)
+          ? MH.Utils.DragDropEffects.None
+          : MH.Utils.DragDropEffects.Move;
       else
         return ViewersM.Selected.ExcludedKeywords.Contains(keyword)
-          ? DragDropEffects.None
-          : DragDropEffects.Copy;
+          ? MH.Utils.DragDropEffects.None
+          : MH.Utils.DragDropEffects.Copy;
     }
 
-    private void DoDropKeyword(DragEventArgs e, object source, object data) {
-      if ((e.Source as FrameworkElement)?.TemplatedParent == source)
+    private void DoDropKeywordMethod(object data, bool haveSameOrigin) {
+      if (haveSameOrigin)
         ViewersM.RemoveKeyword(ViewersM.Selected, (KeywordM)data);
       else
         ViewersM.AddKeyword(ViewersM.Selected, (KeywordM)data);

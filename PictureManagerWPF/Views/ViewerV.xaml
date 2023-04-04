@@ -2,9 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <!-- ViewerM DataTemplate -->
   <DataTemplate DataType="{x:Type vm:ViewerVM}">
@@ -35,7 +36,7 @@
       </Style>
 
       <!-- FolderM DataTemplate -->
-      <DataTemplate DataType="{x:Type models:FolderM}">
+      <DataTemplate DataType="{x:Type m:FolderM}">
         <StackPanel Orientation="Horizontal">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
@@ -55,7 +56,7 @@
       </DataTemplate>
 
       <!-- CategoryGroupM DataTemplate -->
-      <DataTemplate DataType="{x:Type models:CategoryGroupM}">
+      <DataTemplate DataType="{x:Type m:CategoryGroupM}">
         <StackPanel Orientation="Horizontal" Background="Transparent">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
@@ -73,7 +74,7 @@
       </DataTemplate>
 
       <!-- KeywordM DataTemplate -->
-      <DataTemplate DataType="{x:Type models:KeywordM}">
+      <DataTemplate DataType="{x:Type m:KeywordM}">
         <StackPanel Orientation="Horizontal">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
@@ -108,24 +109,28 @@
               Text="Included Folders"/>
           </StackPanel>
 
-          <ContentPresenter
-            Content="{Binding LbIncludedFolders}"
-            Grid.Row="1">
+          <ListBox
+            Grid.Row="1"
+            ItemsSource="{Binding ViewersM.Selected.IncludedFolders}"
+            BorderThickness="0"
+            mhu:DragDropHelper.IsDragEnabled="True"
+            mhu:DragDropHelper.IsDropEnabled="True"
+            mhu:DragDropHelper.CanDrag="{Binding CanDragFolder}"
+            mhu:DragDropHelper.CanDrop="{Binding CanDropFolderIncluded}"
+            mhu:DragDropHelper.DoDrop="{Binding DoDropFolderIncluded}">
 
-            <ContentPresenter.Resources>
+            <ListBox.Style>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.IncludedFolders}"/>
-                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
                     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(models:FolderM.FullPath)}"/>
+                      <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
                     </Style>
                   </Setter.Value>
                 </Setter>
               </Style>
-            </ContentPresenter.Resources>
-          </ContentPresenter>
+            </ListBox.Style>
+          </ListBox>
         </Grid>
       </Border>
 
@@ -148,21 +153,28 @@
               Text="Excluded Folders"/>
           </StackPanel>
 
-          <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedFolders}">
-            <ContentPresenter.Resources>
+          <ListBox
+            Grid.Row="1"
+            ItemsSource="{Binding ViewersM.Selected.ExcludedFolders}"
+            BorderThickness="0"
+            mhu:DragDropHelper.IsDragEnabled="True"
+            mhu:DragDropHelper.IsDropEnabled="True"
+            mhu:DragDropHelper.CanDrag="{Binding CanDragFolder}"
+            mhu:DragDropHelper.CanDrop="{Binding CanDropFolderExcluded}"
+            mhu:DragDropHelper.DoDrop="{Binding DoDropFolderExcluded}">
+
+            <ListBox.Style>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.ExcludedFolders}"/>
-                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
                     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(models:FolderM.FullPath)}"/>
+                      <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
                     </Style>
                   </Setter.Value>
                 </Setter>
               </Style>
-            </ContentPresenter.Resources>
-          </ContentPresenter>
+            </ListBox.Style>
+          </ListBox>
         </Grid>
       </Border>
 
@@ -229,21 +241,28 @@
             <TextBlock Style="{StaticResource _headerText}" Text="Excluded Keywords"/>
           </StackPanel>
 
-          <ContentPresenter Grid.Row="1" Content="{Binding LbExcludedKeywords}">
-            <ContentPresenter.Resources>
+          <ListBox
+            Grid.Row="1"
+            ItemsSource="{Binding ViewersM.Selected.ExcludedKeywords}"
+            BorderThickness="0"
+            mhu:DragDropHelper.IsDragEnabled="True"
+            mhu:DragDropHelper.IsDropEnabled="True"
+            mhu:DragDropHelper.DragDataType="{x:Type m:KeywordM}"
+            mhu:DragDropHelper.CanDrop="{Binding CanDropKeyword}"
+            mhu:DragDropHelper.DoDrop="{Binding DoDropKeyword}">
+
+            <ListBox.Style>
               <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemsSource" Value="{Binding ViewersM.Selected.ExcludedKeywords}"/>
-                <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="ItemContainerStyle">
                   <Setter.Value>
                     <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(models:KeywordM.FullName)}"/>
+                      <Setter Property="ToolTip" Value="{Binding Path=(m:KeywordM.FullName)}"/>
                     </Style>
                   </Setter.Value>
                 </Setter>
               </Style>
-            </ContentPresenter.Resources>
-          </ContentPresenter>
+            </ListBox.Style>
+          </ListBox>
         </Grid>
       </Border>
     </WrapPanel>

@@ -11,6 +11,7 @@ using MH.Utils.EventsArgs;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.ViewModels {
   public sealed class ThumbnailsGridVM: ObservableObject {
@@ -21,6 +22,7 @@ namespace PictureManager.ViewModels {
 
     public ThumbnailsGridM Model { get; }
     public HeaderedListItem<object, string> MainTabsItem { get; }
+    public CanDragFunc CanDragFunc { get; }
 
     public RelayCommand<object> ShowVideoPreviewCommand { get; }
     public RelayCommand<MediaItemM> HideVideoPreviewCommand { get; }
@@ -36,6 +38,7 @@ namespace PictureManager.ViewModels {
       Model = model;
 
       MainTabsItem = new(this, tabTitle);
+      CanDragFunc = CanDrag;
 
       ShowVideoPreviewCommand = new(ShowVideoPreview);
       HideVideoPreviewCommand = new(HideVideoPreview);
@@ -72,7 +75,6 @@ namespace PictureManager.ViewModels {
 
     private void PanelLoaded(RoutedEventArgs e) {
       _panel = e.Source as TreeWrapView;
-      DragDropFactory.SetDrag(_panel, CanDrag, DataFormats.FileDrop);
     }
 
     private void PanelSizeChanged(SizeChangedEventArgs e) {
@@ -80,8 +82,8 @@ namespace PictureManager.ViewModels {
         _panel.ReWrap();
     }
 
-    private object CanDrag(MouseEventArgs e) {
-      if (((FrameworkElement)e.OriginalSource).DataContext is not MediaItemM) return null;
+    private object CanDrag(object source) {
+      if (source is not MediaItemM) return null;
       var data = Model.FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
