@@ -19,51 +19,40 @@ namespace MH.UI.WPF.Controls {
     private object _topItemBeforeReload;
 
     public ScrollViewer RowsScrollViewer { get; set; }
+    public event EventHandler WidthChangedEventHandler = delegate { };
 
     public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register(
-      nameof(ItemWidth),
-      typeof(double),
-      typeof(VirtualizingWrapPanel));
-
+      nameof(ItemWidth), typeof(double), typeof(VirtualizingWrapPanel));
+    
     public static readonly DependencyProperty ItemWidthGetterProperty = DependencyProperty.Register(
-      nameof(ItemWidthGetter),
-      typeof(Func<object, int>),
-      typeof(VirtualizingWrapPanel));
-
+      nameof(ItemWidthGetter), typeof(Func<object, int>), typeof(VirtualizingWrapPanel));
+    
     public static readonly DependencyProperty ItemsToWrapProperty = DependencyProperty.Register(
-      nameof(ItemsToWrap),
-      typeof(ObservableCollection<object>),
-      typeof(VirtualizingWrapPanel),
-      new(ItemsToWrapChanged));
-
+      nameof(ItemsToWrap), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel), new(ItemsToWrapChanged));
+    
     public static readonly DependencyProperty ScrollToItemProperty = DependencyProperty.Register(
-      nameof(ScrollToItem),
-      typeof(object),
-      typeof(VirtualizingWrapPanel),
-      new(ScrollToItemChanged));
-
+      nameof(ScrollToItem), typeof(object), typeof(VirtualizingWrapPanel), new(ScrollToItemChanged));
+    
     public static readonly DependencyProperty ScrollToTopProperty = DependencyProperty.Register(
-      nameof(ScrollToTop),
-      typeof(bool),
-      typeof(VirtualizingWrapPanel),
-      new(ScrollToTopChanged));
-
+      nameof(ScrollToTop), typeof(bool), typeof(VirtualizingWrapPanel), new(ScrollToTopChanged));
+    
     public static readonly DependencyProperty WrappedItemsProperty = DependencyProperty.Register(
-      nameof(WrappedItems),
-      typeof(ObservableCollection<object>),
-      typeof(VirtualizingWrapPanel));
-
+      nameof(WrappedItems), typeof(ObservableCollection<object>), typeof(VirtualizingWrapPanel));
+    
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(
-      nameof(ScrollViewerSpeedFactor),
-      typeof(double),
-      typeof(VirtualizingWrapPanel),
-      new(2.5));
-
+      nameof(ScrollViewerSpeedFactor), typeof(double), typeof(VirtualizingWrapPanel), new(2.5));
+    
     public static readonly DependencyProperty ReloadAutoScrollProperty = DependencyProperty.Register(
-      nameof(ReloadAutoScroll),
-      typeof(bool),
-      typeof(VirtualizingWrapPanel),
-      new(true));
+      nameof(ReloadAutoScroll), typeof(bool), typeof(VirtualizingWrapPanel), new(true));
+    
+    public static readonly DependencyProperty ReWrapItemsProperty = DependencyProperty.Register(
+      nameof(ReWrapItems), typeof(bool), typeof(VirtualizingWrapPanel),
+      new((o, e) => {
+        if ((bool)e.NewValue && o is VirtualizingWrapPanel self) {
+          self.ReWrapItems = false;
+          self.ReWrap();
+        }
+      }));
 
     public double ItemWidth {
       get => (double)GetValue(ItemWidthProperty);
@@ -103,6 +92,11 @@ namespace MH.UI.WPF.Controls {
     public bool ReloadAutoScroll {
       get => (bool)GetValue(ReloadAutoScrollProperty);
       set => SetValue(ReloadAutoScrollProperty, value);
+    }
+
+    public bool ReWrapItems {
+      get => (bool)GetValue(ReWrapItemsProperty);
+      set => SetValue(ReWrapItemsProperty, value);
     }
 
     static VirtualizingWrapPanel() {
@@ -147,6 +141,11 @@ namespace MH.UI.WPF.Controls {
 
       Loaded += (_, _) =>
         AddAll();
+
+      SizeChanged += (_, e) => {
+        if (e.WidthChanged)
+          WidthChangedEventHandler(this, EventArgs.Empty);
+      };
     }
 
     private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {

@@ -22,46 +22,38 @@ namespace MH.UI.WPF.Controls {
     private readonly Dictionary<ObservableCollection<object>, TreeWrapGroup> _treeWrapGroups = new();
 
     public ScrollViewer ScrollViewer;
+    public event EventHandler WidthChangedEventHandler = delegate { };
 
     #region DependencyProperties
     public static readonly DependencyProperty ItemWidthProperty = DependencyProperty.Register(
-      nameof(ItemWidth),
-      typeof(double),
-      typeof(TreeWrapView));
+      nameof(ItemWidth), typeof(double), typeof(TreeWrapView));
 
     public static readonly DependencyProperty ItemWidthGetterProperty = DependencyProperty.Register(
-      nameof(ItemWidthGetter),
-      typeof(Func<object, int>),
-      typeof(TreeWrapView));
+      nameof(ItemWidthGetter), typeof(Func<object, int>), typeof(TreeWrapView));
 
     public static readonly DependencyProperty RootProperty = DependencyProperty.Register(
-      nameof(Root),
-      typeof(TreeWrapGroup),
-      typeof(TreeWrapView),
-      new(RootChanged));
+      nameof(Root), typeof(TreeWrapGroup), typeof(TreeWrapView), new(RootChanged));
 
     public static readonly DependencyProperty ScrollToItemProperty = DependencyProperty.Register(
-      nameof(ScrollToItem),
-      typeof(object),
-      typeof(TreeWrapView),
-      new(ScrollToItemChanged));
+      nameof(ScrollToItem), typeof(object), typeof(TreeWrapView), new(ScrollToItemChanged));
 
     public static readonly DependencyProperty ShowRootProperty = DependencyProperty.Register(
-      nameof(ShowRoot),
-      typeof(bool),
-      typeof(TreeWrapView));
+      nameof(ShowRoot), typeof(bool), typeof(TreeWrapView));
 
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(
-      nameof(ScrollViewerSpeedFactor),
-      typeof(double),
-      typeof(TreeWrapView),
-      new(2.5));
+      nameof(ScrollViewerSpeedFactor), typeof(double), typeof(TreeWrapView), new(2.5));
 
     public static readonly DependencyProperty ReloadAutoScrollProperty = DependencyProperty.Register(
-      nameof(ReloadAutoScroll),
-      typeof(bool),
-      typeof(TreeWrapView),
-      new(true));
+      nameof(ReloadAutoScroll), typeof(bool), typeof(TreeWrapView), new(true));
+
+    public static readonly DependencyProperty ReWrapItemsProperty = DependencyProperty.Register(
+      nameof(ReWrapItems), typeof(bool), typeof(TreeWrapView),
+      new((o, e) => {
+        if ((bool)e.NewValue && o is TreeWrapView self) {
+          self.ReWrapItems = false;
+          self.ReWrap();
+        }
+      }));
 
     public double ItemWidth {
       get => (double)GetValue(ItemWidthProperty);
@@ -97,6 +89,11 @@ namespace MH.UI.WPF.Controls {
       get => (bool)GetValue(ReloadAutoScrollProperty);
       set => SetValue(ReloadAutoScrollProperty, value);
     }
+
+    public bool ReWrapItems {
+      get => (bool)GetValue(ReWrapItemsProperty);
+      set => SetValue(ReWrapItemsProperty, value);
+    }
     #endregion
 
     static TreeWrapView() {
@@ -127,6 +124,11 @@ namespace MH.UI.WPF.Controls {
 
       Loaded += (_, _) =>
         SetSource();
+
+      SizeChanged += (_, e) => {
+        if (e.WidthChanged)
+          WidthChangedEventHandler(this, EventArgs.Empty);
+      };
     }
 
     private object GetTopItem() {
