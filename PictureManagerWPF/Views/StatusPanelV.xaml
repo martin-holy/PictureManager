@@ -325,8 +325,8 @@
                     <Border.InputBindings>
                       <MouseBinding
                         MouseAction="LeftClick"
-                        Command="{Binding PersonVM.SetPersonCommand,
-                                  Source={x:Static pm:App.Ui}}"
+                        Command="{Binding PersonDetailM.SetPersonCommand,
+                                  Source={x:Static pm:App.Core}}"
                         CommandParameter="{Binding}"/>         
                     </Border.InputBindings>
 

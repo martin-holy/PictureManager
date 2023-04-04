@@ -292,8 +292,8 @@
             Icon="{StaticResource IconInformation}"
             Width="20"
             Height="20"
-            Command="{Binding PersonVM.SetPersonCommand,
-                      Source={x:Static pm:App.Ui}}"
+            Command="{Binding PersonDetailM.SetPersonCommand,
+                      Source={x:Static pm:App.Core}}"
             CommandParameter="{Binding Person}"/>
         </StackPanel>
 

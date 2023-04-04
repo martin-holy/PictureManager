@@ -4,11 +4,10 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <DataTemplate DataType="{x:Type vm:PersonVM}">
+  <DataTemplate DataType="{x:Type m:PersonDetailM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
