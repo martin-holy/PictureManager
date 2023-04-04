@@ -29,6 +29,7 @@ namespace PictureManager.Domain {
     public MediaItemSizesTreeM MediaItemSizesTreeM { get; }
     public MediaViewerM MediaViewerM { get; }
     public PeopleM PeopleM { get; }
+    public PersonDetailM PersonDetailM { get; }
     public RatingsTreeM RatingsTreeM { get; }
     public SegmentsM SegmentsM { get; }
     public StatusPanelM StatusPanelM { get; }
@@ -63,6 +64,7 @@ namespace PictureManager.Domain {
       MediaItemSizesTreeM = new();
       MediaViewerM = new();
       PeopleM = new(this, CategoryGroupsM); // MainWindowM
+      PersonDetailM = new(PeopleM, SegmentsM);
       RatingsTreeM = new();
       StatusPanelM = new(this);
       ThumbnailsGridsM = new(this);

@@ -18,7 +18,6 @@ namespace PictureManager {
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
-    public PersonVM PersonVM { get; }
     public ViewerVM ViewerVM { get; }
 
     public AppCore() {
@@ -34,8 +33,6 @@ namespace PictureManager {
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
       VideoClipsVM = new(App.Core.VideoClipsM);
-
-      PersonVM = new(App.Core.PeopleM, App.Core.SegmentsM);
       ViewerVM = new(App.Core.ViewersM);
 
       AttachEvents();
@@ -57,8 +54,8 @@ namespace PictureManager {
 
     private void AttachEvents() {
       App.Core.SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(PersonVM.PersonM)))
-          PersonVM.ReloadPersonSegments();
+        if (e.Data.Any(x => x.Equals(App.Core.PersonDetailM.PersonM)))
+          App.Core.PersonDetailM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
 
         if (App.Core.MediaViewerM.IsVisible)
@@ -66,14 +63,14 @@ namespace PictureManager {
       };
 
       App.Core.SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(PersonVM.PersonM)))
-          PersonVM.ReloadPersonSegments();
+        if (e.Data.Any(x => x.Equals(App.Core.PersonDetailM.PersonM)))
+          App.Core.PersonDetailM.ReloadPersonSegments();
         App.Core.SegmentsM.Reload();
       };
 
       App.Core.SegmentsM.SegmentDeletedEventHandler += (_, e) => {
-        if (PersonVM.PersonM?.Equals(e.Data.Person) == true)
-          PersonVM.ReloadPersonSegments();
+        if (App.Core.PersonDetailM.PersonM?.Equals(e.Data.Person) == true)
+          App.Core.PersonDetailM.ReloadPersonSegments();
 
         App.Core.SegmentsM.SegmentsDrawerRemove(e.Data);
       };

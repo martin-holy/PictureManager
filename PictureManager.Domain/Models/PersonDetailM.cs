@@ -1,17 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
+using static MH.Utils.DragDropHelper;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows;
-using System.Windows.Input;
-using MH.UI.WPF.Controls;
-using MH.UI.WPF.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
-using PictureManager.Domain.Models;
-using static MH.Utils.DragDropHelper;
 
-namespace PictureManager.ViewModels {
-  public sealed class PersonVM : ObservableObject {
+namespace PictureManager.Domain.Models {
+  public sealed class PersonDetailM : ObservableObject {
     private readonly PeopleM _peopleM;
     private readonly SegmentsM _segmentsM;
     private PersonM _personM;
@@ -21,8 +16,6 @@ namespace PictureManager.ViewModels {
     private bool _reWrapAllItems;
 
     private readonly HeaderedListItem<object, string> _toolsTabsItem;
-    private VirtualizingWrapPanel _topSegmentsPanel;
-    private TreeWrapView _allSegmentsPanel;
 
     public List<SegmentM> AllSegments { get; } = new();
     public ObservableCollection<object> AllSegmentsGrouped { get; } = new();
@@ -38,7 +31,7 @@ namespace PictureManager.ViewModels {
     public RelayCommand<object> PanelTopWidthChangedCommand { get; }
     public RelayCommand<object> PanelAllWidthChangedCommand { get; }
 
-    public PersonVM(PeopleM peopleM, SegmentsM segmentsM) {
+    public PersonDetailM(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
       _segmentsM = segmentsM;
       _toolsTabsItem = new(this, "Person");
@@ -71,7 +64,7 @@ namespace PictureManager.ViewModels {
 
       PersonM = person;
       ReloadPersonSegments();
-      App.Core.ToolsTabsM.Activate(_toolsTabsItem, true);
+      Core.Instance.ToolsTabsM.Activate(_toolsTabsItem, true);
     }
 
     public void ReloadPersonSegments() {

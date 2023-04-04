@@ -8,7 +8,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="PersonV.xaml"/>
+          <ResourceDictionary Source="PersonDetailV.xaml"/>
           <ResourceDictionary Source="SegmentsDrawerV.xaml"/>
           <ResourceDictionary Source="VideoClipsV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
