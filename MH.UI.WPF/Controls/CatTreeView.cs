@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static MH.Utils.DragDropHelper;
 
 namespace MH.UI.WPF.Controls {
   public class CatTreeView : TreeView {
@@ -47,8 +48,18 @@ namespace MH.UI.WPF.Controls {
     private ScrollViewer _scrollViewer;
     private double _verticalOffset;
 
+    public CanDragFunc CanDragFunc { get; }
+    public CanDropFunc CanDropFunc { get; }
+    public DoDropAction DoDropAction { get; }
+
     static CatTreeView() {
       DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
+    }
+
+    public CatTreeView() {
+      CanDragFunc = CanDrag;
+      CanDropFunc = CanDrop;
+      DoDropAction = DoDrop;
     }
 
     private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -100,38 +111,35 @@ namespace MH.UI.WPF.Controls {
           _verticalOffset = 0;
         }
       };
-
-      DragDropFactory.SetDrag(this, CanDrag);
-      DragDropFactory.SetDrop(this, CanDrop, DoDrop);
     }
 
     #region Drag & Drop
-    private static object CanDrag(MouseEventArgs e) {
-      var tvi = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement);
-      return tvi == null || tvi.DataContext is ITreeCategory
+    private static object CanDrag(object source) {
+      return source is ITreeCategory
         ? null
-        : Tree.GetTopParent(tvi.DataContext as ITreeItem) is not ITreeCategory
+        : Tree.GetTopParent(source as ITreeItem) is not ITreeCategory
           ? null
-          : tvi.DataContext;
+          : source;
     }
 
-    private DragDropEffects CanDrop(DragEventArgs e, object source, object data) {
+    private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
+      var e = MH.UI.WPF.Utils.DragDropHelper.DragEventArgs;
       DragDropAutoScroll(e);
 
-      var dest = Extensions.FindTemplatedParent<TreeViewItem>(e.OriginalSource as FrameworkElement)?.DataContext;
-      var cat = Tree.GetTopParent(dest as ITreeItem) as ITreeCategory;
+      var cat = Tree.GetTopParent(target as ITreeItem) as ITreeCategory;
 
-      if (cat?.CanDrop(data, dest as ITreeItem) == true) {
-        if (dest is ITreeGroup) return DragDropEffects.Move;
-        if (!cat.CanCopyItem && !cat.CanMoveItem) return DragDropEffects.None;
-        if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return DragDropEffects.Copy;
-        if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return DragDropEffects.Move;
+      if (cat?.CanDrop(data, target as ITreeItem) == true) {
+        if (target is ITreeGroup) return MH.Utils.DragDropEffects.Move;
+        if (!cat.CanCopyItem && !cat.CanMoveItem) return MH.Utils.DragDropEffects.None;
+        if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return MH.Utils.DragDropEffects.Copy;
+        if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return MH.Utils.DragDropEffects.Move;
       }
 
-      return DragDropEffects.None;
+      return MH.Utils.DragDropEffects.None;
     }
 
-    private static void DoDrop(DragEventArgs e, object source, object data) {
+    private static void DoDrop(object data, bool haveSameOrigin) {
+      var e = MH.UI.WPF.Utils.DragDropHelper.DragEventArgs;
       var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
       if (tvi?.DataContext is not ITreeItem dest ||
         Tree.GetTopParent(dest) is not ITreeCategory cat) return;
