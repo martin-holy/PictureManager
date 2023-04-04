@@ -239,6 +239,28 @@ namespace PictureManager.Domain {
             break;
         }
       };
+
+      SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
+        if (e.Data.Any(x => x.Equals(PersonDetailM.PersonM)))
+          PersonDetailM.ReloadPersonSegments();
+        SegmentsM.Reload();
+
+        if (MediaViewerM.IsVisible)
+          MediaViewerM.Current?.SetInfoBox();
+      };
+
+      SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
+        if (e.Data.Any(x => x.Equals(PersonDetailM.PersonM)))
+          PersonDetailM.ReloadPersonSegments();
+        SegmentsM.Reload();
+      };
+
+      SegmentsM.SegmentDeletedEventHandler += (_, e) => {
+        if (PersonDetailM.PersonM?.Equals(e.Data.Person) == true)
+          PersonDetailM.ReloadPersonSegments();
+
+        SegmentsM.SegmentsDrawerRemove(e.Data);
+      };
     }
 
     private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {
