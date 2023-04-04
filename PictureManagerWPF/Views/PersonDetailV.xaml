@@ -50,8 +50,8 @@
             <mhc:IconButton
               ToolTip="Load Media items in new tab"
               Icon="{StaticResource IconImageMultiple}"
-              Command="{Binding ThumbnailsGridsVM.LoadByTagCommand,
-                        Source={x:Static pm:App.Ui}}"
+              Command="{Binding ThumbnailsGridsM.LoadByTagCommand,
+                        Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding PersonM}"/>
           </StackPanel>
         </Grid>

@@ -16,8 +16,8 @@
           
         <MenuItem
           Header="Load"
-          Command="{Binding ThumbnailsGridsVM.LoadByTagCommand,
-                    Source={x:Static pm:App.Ui}}"
+          Command="{Binding ThumbnailsGridsM.LoadByTagCommand,
+                    Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
