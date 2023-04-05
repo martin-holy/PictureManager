@@ -409,6 +409,7 @@ namespace PictureManager.Domain.Models {
 
       _loadIsRunning = true;
       ClearItBeforeLoad();
+      _progressBar.IsVisible = true;
       _progressBar.IsIndeterminate = true;
 
       var items = await _mediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders);
@@ -445,6 +446,7 @@ namespace PictureManager.Domain.Models {
 
       _progressBar.ValueA = 100;
       _progressBar.ValueB = 100;
+      _progressBar.IsVisible = false;
     }
 
     private async Task ReadMetadataAndListThumbs(IReadOnlyCollection<MediaItemM> items, IProgress<int> progress) {

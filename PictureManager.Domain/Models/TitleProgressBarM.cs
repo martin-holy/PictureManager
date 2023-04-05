@@ -7,12 +7,14 @@ namespace PictureManager.Domain.Models {
     private int _maxA = 100;
     private int _maxB = 100;
     private bool _isIndeterminate;
+    private bool _isVisible;
 
     public int ValueA { get => _valueA; set { _valueA = value; OnPropertyChanged(); } }
     public int ValueB { get => _valueB; set { _valueB = value; OnPropertyChanged(); } }
     public int MaxA { get => _maxA; set { _maxA = value; OnPropertyChanged(); } }
     public int MaxB { get => _maxB; set { _maxB = value; OnPropertyChanged(); } }
     public bool IsIndeterminate { get => _isIndeterminate; set { _isIndeterminate = value; OnPropertyChanged(); } }
+    public bool IsVisible { get => _isVisible; set { _isVisible = value; OnPropertyChanged(); } }
 
     public void ResetProgressBars(int max) {
       ResetProgressBarA(max);

@@ -79,7 +79,9 @@ namespace PictureManager.ViewModels {
       await _workTask.Cancel();
       SegmentsM.AddSegmentsForComparison();
       _core.TitleProgressBarM.ResetProgressBars(SegmentsM.Loaded.Count);
+      _core.TitleProgressBarM.IsVisible = true;
       await _workTask.Start(FindSimilaritiesAsync(SegmentsM.Loaded, _workTask.Token));
+      _core.TitleProgressBarM.IsVisible = false;
     }
 
     private Task FindSimilaritiesAsync(List<SegmentM> segments, CancellationToken token) {
