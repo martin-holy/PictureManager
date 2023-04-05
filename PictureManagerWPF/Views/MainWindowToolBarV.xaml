@@ -22,7 +22,14 @@
         Background="#40000000"
         WindowChrome.IsHitTestVisibleInChrome="True">
 
-        <Grid WindowChrome.IsHitTestVisibleInChrome="False">
+        <Grid WindowChrome.IsHitTestVisibleInChrome="False" Width="180">
+          <Grid.Background>
+            <LinearGradientBrush>
+              <GradientStop Offset="0" Color="{StaticResource Highlight}"/>
+              <GradientStop Offset="1" Color="Transparent"/>
+            </LinearGradientBrush>
+          </Grid.Background>
+          
           <!-- Progress bar -->
           <ContentPresenter Content="{Binding CoreM.TitleProgressBarM}"/>
 
@@ -39,7 +46,8 @@
             Text="Picture Manager"
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
-            FontWeight="Bold"/>
+            FontWeight="Bold"
+            Effect="{StaticResource MH.Effects.DropShadow}"/>
 
           <!-- Main Menu -->
           <ContentPresenter

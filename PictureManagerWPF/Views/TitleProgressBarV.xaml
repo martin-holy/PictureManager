@@ -4,9 +4,12 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:TitleProgressBarM}">
-    <StackPanel Orientation="Vertical">
+    <StackPanel
+      Orientation="Vertical"
+      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
+      
       <ProgressBar
-        Width="200"
+        Background="Transparent"
         Height="15"
         BorderThickness="0"
         Value="{Binding ValueA}"
@@ -14,7 +17,7 @@
         IsIndeterminate="{Binding IsIndeterminate}" />
 
       <ProgressBar
-        Width="200"
+        Background="Transparent"
         Height="15"
         BorderThickness="0"
         Value="{Binding ValueB}"
