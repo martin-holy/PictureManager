@@ -31,7 +31,7 @@ namespace PictureManager.ViewModels {
     }
 
     private void SetCurrent(MouseEventArgs e) {
-      if (e.Source is FrameworkElement fe && (fe.Name.Equals("MovePoint") || fe.Name.Equals("ResizeBorder"))) {
+      if (e.Source is FrameworkElement fe && (fe.Name.Equals("PART_MovePoint") || fe.Name.Equals("PART_ResizeBorder"))) {
         var pos = e.GetPosition(_view);
         SegmentsRectsM.SetCurrent((SegmentRectM)fe.DataContext, pos.X, pos.Y);
       }
