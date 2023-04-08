@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
   public sealed class Core : ILogger {
-    public ObservableCollection<LogItem> Log { get; } = new();
+    public static ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
     public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
