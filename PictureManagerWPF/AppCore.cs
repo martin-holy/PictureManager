@@ -9,7 +9,6 @@ using System.Collections.Generic;
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public MainWindowVM MainWindowVM { get; }
-    public MainWindowToolBarVM MainWindowToolBarVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
     public SegmentsVM SegmentsVM { get; }
@@ -22,8 +21,6 @@ namespace PictureManager {
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
-      MainWindowToolBarVM = new(App.Core, this);
-
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);

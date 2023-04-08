@@ -17,10 +17,12 @@ namespace PictureManager.Domain.Models {
     private double _startY;
     private bool _isEditOn;
     private bool _isNew;
+    private bool _areVisible;
     private MediaItemM _mediaItemM;
 
     public double Scale { get => _scale; set { _scale = value; OnPropertyChanged(); } }
     public bool IsEditOn { get => _isEditOn; set { _isEditOn = value; OnPropertyChanged(); } }
+    public bool AreVisible { get => _areVisible; set { _areVisible = value; OnPropertyChanged(); } }
 
     public MediaItemM MediaItem {
       get => _mediaItemM;
