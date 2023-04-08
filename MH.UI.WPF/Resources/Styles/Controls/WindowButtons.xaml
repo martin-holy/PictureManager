@@ -1,96 +1,75 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:c="clr-namespace:MH.UI.WPF.Controls">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls">
 
-  <Style x:Key="MH.Styles.Controls.WindowButtons" TargetType="{x:Type c:WindowButtons}">
-    <Setter Property="Template">
-      <Setter.Value>
-        <ControlTemplate TargetType="{x:Type c:WindowButtons}">
-          <ControlTemplate.Resources>
-            <Style x:Key="StyleButtonWindow" TargetType="{x:Type Button}">
-              <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
-              <Setter Property="Template">
-                <Setter.Value>
-                  <ControlTemplate TargetType="{x:Type Button}">
-                    <Grid
-                      x:Name="PART_Root"
-                      Background="Transparent"
-                      Width="44"
-                      Height="30">
-                      <TextBlock
-                        Text="{TemplateBinding Content}"
-                        FontFamily="Segoe MDL2 Assets"
-                        FontSize="10" 
-                        Foreground="#D6D6D6"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        RenderOptions.ClearTypeHint="Auto"
-                        TextOptions.TextRenderingMode="Aliased"
-                        TextOptions.TextFormattingMode="Display"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                      <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="PART_Root" Property="Background" Value="#40FFFFFF"/>
-                      </Trigger>
-                    </ControlTemplate.Triggers>
-                  </ControlTemplate>
-                </Setter.Value>
-              </Setter>
-            </Style>
-          </ControlTemplate.Resources>
+  <DataTemplate x:Key="MH.Styles.Controls.WindowButtons" DataType="{x:Type mhc:CustomWindow}">
+    <DataTemplate.Resources>
+      <Style TargetType="{x:Type Button}">
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="{x:Type Button}">
+              <Grid
+                x:Name="root"
+                Background="Transparent"
+                Width="44"
+                Height="30">
 
-          <StackPanel
-            Orientation="Horizontal"
-            HorizontalAlignment="Right"
-            DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type c:WindowButtons}}}">
+                <TextBlock
+                  Text="{TemplateBinding Content}"
+                  FontFamily="Segoe MDL2 Assets"
+                  FontSize="10" 
+                  Foreground="#D6D6D6"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"/>
+              </Grid>
 
-            <Button
-              Style="{StaticResource StyleButtonWindow}"
-              ToolTip="Minimize"
-              Content="&#xE949;"
-              Command="{Binding MinimizeWindowCommand}"/>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="root" Property="Background" Value="#40FFFFFF"/>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+    </DataTemplate.Resources>
 
-            <Button
-              ToolTip="Restore"
-              Content="&#xE923;"
-              Command="{Binding RestoreWindowCommand}">
-              <Button.Style>
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleButtonWindow}">
-                  <Setter Property="Visibility" Value="Visible"/>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding Window.WindowState}" Value="Normal">
-                      <Setter Property="Visibility" Value="Collapsed"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Button.Style>
-            </Button>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button
+        ToolTip="Minimize"
+        Content="&#xE949;"
+        Command="mhc:CustomWindow.MinimizeWindowCommand"
+        CommandParameter="{Binding}"/>
 
-            <Button
-              ToolTip="Maximize"
-              Content="&#xE739;"
-              Command="{Binding MaximizeWindowCommand}">
-              <Button.Style>
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource StyleButtonWindow}">
-                  <Setter Property="Visibility" Value="Visible"/>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding Window.WindowState}" Value="Maximized">
-                      <Setter Property="Visibility" Value="Collapsed"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </Button.Style>
-            </Button>
+      <Button
+        x:Name="btnRestore"
+        ToolTip="Restore"
+        Content="&#xE923;"
+        Command="mhc:CustomWindow.RestoreWindowCommand"
+        CommandParameter="{Binding}"/>
 
-            <Button
-              Style="{StaticResource StyleButtonWindow}"
-              ToolTip="Close"
-              Content="&#xE106;"
-              Command="{Binding CloseWindowCommand}"/>
-          </StackPanel>
-        </ControlTemplate>
-      </Setter.Value>
-    </Setter>
-  </Style>
+      <Button
+        x:Name="btnMaximize"
+        ToolTip="Maximize"
+        Content="&#xE739;"
+        Command="mhc:CustomWindow.MaximizeWindowCommand"
+        CommandParameter="{Binding}"/>
+
+      <Button
+        ToolTip="Close"
+        Content="&#xE106;"
+        Command="mhc:CustomWindow.CloseWindowCommand"
+        CommandParameter="{Binding}"/>
+    </StackPanel>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding WindowState}" Value="Normal">
+        <Setter TargetName="btnRestore" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding WindowState}" Value="Maximized">
+        <Setter TargetName="btnMaximize" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
 </ResourceDictionary>
