@@ -19,10 +19,9 @@
         Orientation="Horizontal"
         HorizontalAlignment="Stretch"
         VerticalAlignment="Center"
-        Background="#40000000"
-        WindowChrome.IsHitTestVisibleInChrome="True">
+        Background="#40000000">
 
-        <Grid WindowChrome.IsHitTestVisibleInChrome="False" Width="180">
+        <Grid Width="180">
           <Grid.Background>
             <LinearGradientBrush>
               <GradientStop Offset="0" Color="{StaticResource Highlight}"/>
@@ -33,28 +32,33 @@
           <!-- Progress bar -->
           <ContentPresenter Content="{Binding CoreM.TitleProgressBarM}"/>
 
-          <!-- App Icon -->
-          <Path
-            Style="{StaticResource MH.Styles.Icon}"
-            Data="{StaticResource IconImage}"
-            Effect="{StaticResource MH.Effects.DropShadow}"
-            Margin="5 -1 0 0"
-            HorizontalAlignment="Left"/>
+          <Grid
+            Background="Transparent"
+            mhc:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType={x:Type mhc:CustomWindow}}}">
+            
+            <!-- App Icon -->
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{StaticResource IconImage}"
+              Effect="{StaticResource MH.Effects.DropShadow}"
+              Margin="5 -1 0 0"
+              HorizontalAlignment="Left"/>
 
-          <!-- App Title -->
-          <TextBlock
-            Text="Picture Manager"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            FontWeight="Bold"
-            Effect="{StaticResource MH.Effects.DropShadow}"/>
+            <!-- App Title -->
+            <TextBlock
+              Text="Picture Manager"
+              VerticalAlignment="Center"
+              HorizontalAlignment="Center"
+            
+              FontWeight="Bold"
+              Effect="{StaticResource MH.Effects.DropShadow}"/>
+          </Grid>
 
           <!-- Main Menu -->
           <ContentPresenter
             ContentTemplate="{StaticResource Views.MainMenu}"
             HorizontalAlignment="Right"
-            VerticalAlignment="Center"
-            WindowChrome.IsHitTestVisibleInChrome="True"/>
+            VerticalAlignment="Center"/>
         </Grid>
 
         <StackPanel Orientation="Horizontal">
@@ -290,7 +294,9 @@
                      {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
           ToolTip="Pin panel"/>
 
-        <mhc:WindowButtons Window="{Binding RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+        <ContentPresenter
+          Content="{Binding RelativeSource={RelativeSource AncestorType={x:Type mhc:CustomWindow}}}"
+          ContentTemplate="{StaticResource MH.Styles.Controls.WindowButtons}"/>
       </StackPanel>
     </Grid>
   </DataTemplate>

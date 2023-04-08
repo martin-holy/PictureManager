@@ -1,4 +1,4 @@
-﻿<Window
+﻿<mhc:CustomWindow
   x:Class="PictureManager.Views.MainWindowV"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,14 +7,18 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   DataContext="{Binding MainWindowVM, Source={x:Static pm:App.Ui}}"
+  Style="{StaticResource MH.Styles.Controls.CustomWindow}"
+  IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
+  BorderThickness="1"
+  BorderBrush="#0063B1"
   Title="Picture Manager"
   WindowState="Maximized"
-  WindowStyle="SingleBorderWindow"
+  CanResize="True"
   UseLayoutRounding="True"
   SnapsToDevicePixels="True"
   Background="{StaticResource ColorBrushBackground}"
-  FontSize="14"
-  Foreground="{StaticResource WhiteBrush}">
+  Foreground="{StaticResource WhiteBrush}"
+  FontSize="14">
 
   <Window.InputBindings>
     <KeyBinding Modifiers="Control" Key="E" Command="{Binding CoreM.MediaItemsM.EditCommand}"/>
@@ -35,101 +39,73 @@
     <b:EventTrigger EventName="Loaded">
       <b:InvokeCommandAction Command="{Binding LoadedCommand}"/>
     </b:EventTrigger>
-    <b:EventTrigger EventName="StateChanged">
-      <b:InvokeCommandAction
-        Command="{Binding WindowStateChangedCommand}"
-        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
-    </b:EventTrigger>
   </b:Interaction.Triggers>
 
-  <!-- WindowChrome blocks controls like buttons on SlidePanel.
-   I need to find the way how to set CaptionHeight to 0 or 30.
-   It is ok when the WindowStyle is none. like in full screen mode.
-   But WindowStyle none hides TaskBar
-   try something with z-index
-   TODO delete WindowChrome and create custom window control with WindowStyle is none -->
-  <WindowChrome.WindowChrome>
-    <WindowChrome CaptionHeight="10" />
-  </WindowChrome.WindowChrome>
-
-  <Border BorderBrush="Black">
-    <Border.Style>
-      <Style TargetType="{x:Type Border}">
-        <Setter Property="BorderThickness" Value="7"/>
-        <Style.Triggers>
-          <DataTrigger Binding="{Binding FixWindowSize}" Value="False">
-            <Setter Property="BorderThickness" Value="0"/>
-          </DataTrigger>
-        </Style.Triggers>
-      </Style>
-    </Border.Style>
-
-    <mhc:SlidePanelsGrid ActiveLayout="{Binding MainWindowM.ActiveLayout}">
-      <mhc:SlidePanelsGrid.PinLayouts>
-        <!-- Left, Top, Right, Bottom -->
-        <x:Array Type="{x:Type sys:Array}">
-          <!-- Browser -->
-          <x:Array Type="{x:Type sys:Boolean}">
-            <sys:Boolean>True</sys:Boolean>
-            <sys:Boolean>True</sys:Boolean>
-            <sys:Boolean>False</sys:Boolean>
-            <sys:Boolean>True</sys:Boolean>
-          </x:Array>
-          <!-- Viewer -->
-          <x:Array Type="{x:Type sys:Boolean}">
-            <sys:Boolean>False</sys:Boolean>
-            <sys:Boolean>False</sys:Boolean>
-            <sys:Boolean>False</sys:Boolean>
-            <sys:Boolean>True</sys:Boolean>
-          </x:Array>
+  <mhc:SlidePanelsGrid ActiveLayout="{Binding MainWindowM.ActiveLayout}">
+    <mhc:SlidePanelsGrid.PinLayouts>
+      <!-- Left, Top, Right, Bottom -->
+      <x:Array Type="{x:Type sys:Array}">
+        <!-- Browser -->
+        <x:Array Type="{x:Type sys:Boolean}">
+          <sys:Boolean>True</sys:Boolean>
+          <sys:Boolean>True</sys:Boolean>
+          <sys:Boolean>False</sys:Boolean>
+          <sys:Boolean>True</sys:Boolean>
         </x:Array>
-      </mhc:SlidePanelsGrid.PinLayouts>
+        <!-- Viewer -->
+        <x:Array Type="{x:Type sys:Boolean}">
+          <sys:Boolean>False</sys:Boolean>
+          <sys:Boolean>False</sys:Boolean>
+          <sys:Boolean>False</sys:Boolean>
+          <sys:Boolean>True</sys:Boolean>
+        </x:Array>
+      </x:Array>
+    </mhc:SlidePanelsGrid.PinLayouts>
 
-      <!-- Main Window Tool Bar -->
-      <mhc:SlidePanelsGrid.PanelTop>
-        <mhc:SlidePanel
-          Content="{Binding CoreVM.MainWindowToolBarVM}"
-          Height="30"/>
-      </mhc:SlidePanelsGrid.PanelTop>
+    <!-- Main Window Tool Bar -->
+    <mhc:SlidePanelsGrid.PanelTop>
+      <mhc:SlidePanel
+        Content="{Binding CoreVM.MainWindowToolBarVM}"
+        Height="30"/>
+    </mhc:SlidePanelsGrid.PanelTop>
 
-      <!-- Tree View Categories -->
-      <mhc:SlidePanelsGrid.PanelLeft>
-        <mhc:SlidePanel
-          Content="{Binding CoreM.TreeViewCategoriesM}"
-          Width="380"/>
-      </mhc:SlidePanelsGrid.PanelLeft>
+    <!-- Tree View Categories -->
+    <mhc:SlidePanelsGrid.PanelLeft>
+      <mhc:SlidePanel
+        Content="{Binding CoreM.TreeViewCategoriesM}"
+        Width="380"/>
+    </mhc:SlidePanelsGrid.PanelLeft>
 
-      <mhc:SlidePanelsGrid.PanelMiddle>
-        <Grid>
-          <!-- Main Tabs -->
-          <ContentPresenter
-            Content="{Binding CoreM.MainTabsM}"
-            Visibility="{Binding MediaViewerM.IsVisible,
-                         Source={x:Static pm:App.Core},
-                         Converter={StaticResource AllToVisibilityConverter}, 
-                         ConverterParameter={StaticResource False}}"/>
+    <mhc:SlidePanelsGrid.PanelMiddle>
+      <Grid>
+        <!-- Main Tabs -->
+        <ContentPresenter
+          Content="{Binding CoreM.MainTabsM}"
+          Visibility="{Binding MediaViewerM.IsVisible,
+                       Source={x:Static pm:App.Core},
+                       Converter={StaticResource AllToVisibilityConverter}, 
+                       ConverterParameter={StaticResource False}}"/>
 
-          <!-- Media Viewer -->
-          <ContentPresenter Content="{Binding CoreVM.MediaViewerVM}"/>
-        </Grid>
-      </mhc:SlidePanelsGrid.PanelMiddle>
+        <!-- Media Viewer -->
+        <ContentPresenter Content="{Binding CoreVM.MediaViewerVM}"/>
+      </Grid>
+    </mhc:SlidePanelsGrid.PanelMiddle>
 
-      <!-- Tools Tabs -->
-      <mhc:SlidePanelsGrid.PanelRight>
-        <mhc:SlidePanel
-          IsOpen="{Binding CoreM.ToolsTabsM.IsOpen, Mode=TwoWay}"
-          CanOpen="{Binding CoreM.ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
-          Content="{Binding CoreM.ToolsTabsM}"
-          Width="360"/>
-      </mhc:SlidePanelsGrid.PanelRight>
+    <!-- Tools Tabs -->
+    <mhc:SlidePanelsGrid.PanelRight>
+      <mhc:SlidePanel
+        IsOpen="{Binding CoreM.ToolsTabsM.IsOpen, Mode=TwoWay}"
+        CanOpen="{Binding CoreM.ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
+        Content="{Binding CoreM.ToolsTabsM}"
+        Width="360"/>
+    </mhc:SlidePanelsGrid.PanelRight>
 
-      <!-- Status Panel -->
-      <mhc:SlidePanelsGrid.PanelBottom>
-        <mhc:SlidePanel
-          Content="{Binding CoreM.StatusPanelM}"
-          CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
-          MinHeight="30"/>
-      </mhc:SlidePanelsGrid.PanelBottom>
-    </mhc:SlidePanelsGrid>
-  </Border>
-</Window>
+    <!-- Status Panel -->
+    <mhc:SlidePanelsGrid.PanelBottom>
+      <mhc:SlidePanel
+        Content="{Binding CoreM.StatusPanelM}"
+        CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
+        MinHeight="30"/>
+    </mhc:SlidePanelsGrid.PanelBottom>
+  </mhc:SlidePanelsGrid>
+</mhc:CustomWindow>

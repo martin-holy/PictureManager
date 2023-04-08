@@ -23,6 +23,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/TextBoxBase.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ToolTip.xaml"/>
 
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/CustomWindow.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/DialogHost.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconButton.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/IconTextButton.xaml"/>
@@ -73,6 +74,5 @@
   <Style TargetType="{x:Type mhc:SlidePanelsGrid}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGrid}"/>
   <Style TargetType="{x:Type mhc:TreeWrapView}" BasedOn="{StaticResource MH.Styles.Controls.TreeWrapView}"/>
   <Style TargetType="{x:Type mhc:VirtualizingWrapPanel}" BasedOn="{StaticResource MH.Styles.Controls.VirtualizingWrapPanel}"/>
-  <Style TargetType="{x:Type mhc:WindowButtons}" BasedOn="{StaticResource MH.Styles.Controls.WindowButtons}"/>
   <Style TargetType="{x:Type mhc:ZoomAndPan}" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
 </ResourceDictionary>

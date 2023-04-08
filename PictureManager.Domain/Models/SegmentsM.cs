@@ -98,9 +98,7 @@ namespace PictureManager.Domain.Models {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       OpenSegmentsDrawerCommand = new(
         () =>_core.ToolsTabsM.Activate(SegmentsDrawerM.ToolsTabsItem, true));
-      PanelLoadedWidthChangedCommand = new(
-        () => ReWrapLoadedItems = true,
-        () => !_core.MainWindowM.IsFullScreenIsChanging);
+      PanelLoadedWidthChangedCommand = new(() => ReWrapLoadedItems = true);
       PanelConfirmedWidthChangedCommand = new(() => ReWrapConfirmedItems = true);
 
       CanDragFunc = CanDrag;
