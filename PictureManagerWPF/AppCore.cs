@@ -22,7 +22,7 @@ namespace PictureManager {
 
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
-      MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
+      MediaItemsVM = new(App.Core, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
