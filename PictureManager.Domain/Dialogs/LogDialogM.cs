@@ -14,7 +14,7 @@ namespace PictureManager.Domain.Dialogs {
       Title = "Log";
       CloseCommand = new(
         () => {
-          Core.Instance.Log.Clear();
+          Core.Log.Clear();
           Result = 0;
         });
     }
