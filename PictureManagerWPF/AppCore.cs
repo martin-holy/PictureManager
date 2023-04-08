@@ -5,22 +5,23 @@ using PictureManager.Domain.Models;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
-    public MainWindowVM MainWindowVM { get; }
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
     public VideoClipsVM VideoClipsVM { get; }
 
+    public static RelayCommand<object> TestButtonCommand { get; } = new(() => Tests.Run());
+
     public AppCore() {
       SetDelegates();
 
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
-      MainWindowVM = new(App.Core, this, App.Core.MainWindowM);
       MediaItemsVM = new(App.Core, this, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
@@ -33,6 +34,7 @@ namespace PictureManager {
     private void SetDelegates() {
       Core.DialogHostShow = DialogHost.Show;
       Core.FileOperationDelete = FileOperationDelete;
+      Core.GetDisplayScale = GetDisplayScale;
 
       PictureManager.Domain.Utils.Imaging.GetAvgHash = PictureManager.Utils.Imaging.GetAvgHash;
       PictureManager.Domain.Utils.Imaging.GetPerceptualHash = PictureManager.Utils.Imaging.GetPerceptualHash;
@@ -63,7 +65,13 @@ namespace PictureManager {
         }
       };
     }
-    
+
+    private static double GetDisplayScale() =>
+      Application.Current.MainWindow == null
+        ? 1.0
+        : PresentationSource.FromVisual(Application.Current.MainWindow)
+          ?.CompositionTarget?.TransformToDevice.M11 ?? 1.0;
+
     public static Dictionary<string, string> FileOperationDelete(List<string> items, bool recycle, bool silent) {
       var fops = new PicFileOperationProgressSink();
       using var fo = new FileOperation(fops);

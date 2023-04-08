@@ -50,8 +50,7 @@
 
           <MenuItem
             Header="Test Button"
-            Command="{Binding MainWindowVM.TestButtonCommand,
-                      Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding TestButtonCommand, Source={x:Static pm:App.Ui}}"/>
         </MenuItem>
 
         <!-- Media Items -->

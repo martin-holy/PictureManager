@@ -4,9 +4,10 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  DataContext="{Binding MainWindowVM, Source={x:Static pm:App.Ui}}"
+  DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
   BorderThickness="1"
@@ -21,13 +22,13 @@
   FontSize="14">
 
   <Window.InputBindings>
-    <KeyBinding Modifiers="Control" Key="E" Command="{Binding CoreM.MediaItemsM.EditCommand}"/>
-    <KeyBinding Modifiers="Control" Key="S" Command="{Binding CoreM.MediaItemsM.SaveEditCommand}"/>
-    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding CoreM.MediaItemsM.CancelEditCommand}"/>
-    <KeyBinding Modifiers="Control" Key="R" Command="{Binding CoreM.MediaItemsM.RotateCommand}"/>
-    <KeyBinding Modifiers="Control" Key="K" Command="{Binding CoreM.MediaItemsM.CommentCommand}"/>
-    <KeyBinding Key="F2" Command="{Binding CoreM.MediaItemsM.RenameCommand}"/>
-    <KeyBinding Key="Delete" Command="{Binding CoreM.MediaItemsM.DeleteCommand}"/>
+    <KeyBinding Modifiers="Control" Key="E" Command="{Binding MediaItemsM.EditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="S" Command="{Binding MediaItemsM.SaveEditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="Q" Command="{Binding MediaItemsM.CancelEditCommand}"/>
+    <KeyBinding Modifiers="Control" Key="R" Command="{Binding MediaItemsM.RotateCommand}"/>
+    <KeyBinding Modifiers="Control" Key="K" Command="{Binding MediaItemsM.CommentCommand}"/>
+    <KeyBinding Key="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
+    <KeyBinding Key="Delete" Command="{Binding MediaItemsM.DeleteCommand}"/>
     <KeyBinding Key="Esc" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainWindowM.SwitchToBrowserCommand}"/>
   </Window.InputBindings>
@@ -65,7 +66,7 @@
     <!-- Main Window Tool Bar -->
     <mhc:SlidePanelsGrid.PanelTop>
       <mhc:SlidePanel
-        Content="{Binding Source={x:Static pm:App.Core}}"
+        Content="{Binding}"
         ContentTemplate="{StaticResource MainWindowToolBarV}"
         Height="30"/>
     </mhc:SlidePanelsGrid.PanelTop>
@@ -73,7 +74,7 @@
     <!-- Tree View Categories -->
     <mhc:SlidePanelsGrid.PanelLeft>
       <mhc:SlidePanel
-        Content="{Binding CoreM.TreeViewCategoriesM}"
+        Content="{Binding TreeViewCategoriesM}"
         Width="380"/>
     </mhc:SlidePanelsGrid.PanelLeft>
 
@@ -81,30 +82,30 @@
       <Grid>
         <!-- Main Tabs -->
         <ContentPresenter
-          Content="{Binding CoreM.MainTabsM}"
+          Content="{Binding MainTabsM}"
           Visibility="{Binding MediaViewerM.IsVisible,
                        Source={x:Static pm:App.Core},
                        Converter={StaticResource AllToVisibilityConverter}, 
                        ConverterParameter={StaticResource False}}"/>
 
         <!-- Media Viewer -->
-        <ContentPresenter Content="{Binding CoreVM.MediaViewerVM}"/>
+        <ContentPresenter Content="{Binding MediaViewerVM, Source={x:Static pm:App.Ui}}"/>
       </Grid>
     </mhc:SlidePanelsGrid.PanelMiddle>
 
     <!-- Tools Tabs -->
     <mhc:SlidePanelsGrid.PanelRight>
       <mhc:SlidePanel
-        IsOpen="{Binding CoreM.ToolsTabsM.IsOpen, Mode=TwoWay}"
-        CanOpen="{Binding CoreM.ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
-        Content="{Binding CoreM.ToolsTabsM}"
+        IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
+        CanOpen="{Binding ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
+        Content="{Binding ToolsTabsM}"
         Width="360"/>
     </mhc:SlidePanelsGrid.PanelRight>
 
     <!-- Status Panel -->
     <mhc:SlidePanelsGrid.PanelBottom>
       <mhc:SlidePanel
-        Content="{Binding CoreM.StatusPanelM}"
+        Content="{Binding StatusPanelM}"
         CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
         MinHeight="30"/>
     </mhc:SlidePanelsGrid.PanelBottom>
