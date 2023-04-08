@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain"
-  xmlns:pmdm="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <DataTemplate DataType="{x:Type md:LogDialogM}">
     <DockPanel Width="600" Height="300">
@@ -47,7 +47,7 @@
           VerticalAlignment="Top"
           VerticalScrollBarVisibility="Auto"
           HorizontalScrollBarVisibility="Auto"
-          Text="{Binding ElementName=ListBoxLog, Path=SelectedItem.(pmdm:LogItem.Detail)}"/>
+          Text="{Binding ElementName=ListBoxLog, Path=SelectedItem.(mhbc:LogItem.Detail)}"/>
       </Grid>
     </DockPanel>
   </DataTemplate>

@@ -346,13 +346,7 @@ namespace PictureManager.Domain {
 
     private static Core _instance;
     private static readonly object Lock = new();
-    public static Core Instance {
-      get {
-        lock (Lock) {
-          return _instance ??= new();
-        }
-      }
-    }
+    public static Core Instance { get { lock (Lock) { return _instance ??= new(); } } }
 
     public static Task RunOnUiThread(Action action) {
       var task = new Task(action);
