@@ -45,7 +45,7 @@ namespace PictureManager.ViewModels {
 
       PanelWidthChangedCommand = new(
         () => ReWrapItems = true,
-        () => !_coreM.MediaViewerM.IsVisible && !_coreM.MainWindowM.IsFullScreenIsChanging);
+        () => !_coreM.MediaViewerM.IsVisible);
 
       SelectMediaItemCommand = new(e => {
         if (e.DataContext is MediaItemM mi)

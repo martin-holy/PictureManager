@@ -36,9 +36,7 @@ namespace PictureManager.Domain.Models {
       MainTabsItem = new(this, "People");
 
       SelectCommand = new(Select);
-      PanelWidthChangedCommand = new(
-        () => ReWrapItems = true,
-        () => !core.MainWindowM.IsFullScreenIsChanging);
+      PanelWidthChangedCommand = new(() => ReWrapItems = true);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
