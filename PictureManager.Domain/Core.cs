@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using SimpleDB;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
   public sealed class Core : ILogger {
@@ -42,7 +43,10 @@ namespace PictureManager.Domain {
     public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
     public static FileOperationDeleteFunc FileOperationDelete { get; set; }
     public static Func<IDialog, int> DialogHostShow { get; set; }
+    public static Func<double> GetDisplayScale { get; set; }
     public static Settings Settings { get; set; }
+
+    public RelayCommand<object> LoadedCommand { get; }
 
     private static TaskScheduler UiTaskScheduler { get; set; }
 
@@ -51,6 +55,8 @@ namespace PictureManager.Domain {
       Settings = new();
       Settings.Load();
       Sdb = new(this);
+
+      LoadedCommand = new(Loaded);
 
       ViewersM = new(this); // CategoryGroupsM
       ViewerDetailM = new(ViewersM);
@@ -261,6 +267,13 @@ namespace PictureManager.Domain {
 
         SegmentsM.SegmentsDrawerRemove(e.Data);
       };
+    }
+
+    private void Loaded() {
+      var scale = GetDisplayScale();
+      ThumbnailsGridsM.DefaultThumbScale = 1 / scale;
+      SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
+      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
     }
 
     private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {

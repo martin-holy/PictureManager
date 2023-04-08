@@ -79,11 +79,5 @@ namespace PictureManager.Domain.Models {
       else
         Core.Settings.Load();
     }
-
-    public void Loaded(double windowsDisplayScale) {
-      CoreM.ThumbnailsGridsM.DefaultThumbScale = 1 / windowsDisplayScale;
-      CoreM.SegmentsM.SetSegmentUiSize(CoreM.SegmentsM.SegmentSize / windowsDisplayScale, 14);
-      CoreM.MediaItemsM.OnPropertyChanged(nameof(CoreM.MediaItemsM.MediaItemsCount));
-    }
   }
 }
