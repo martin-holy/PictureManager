@@ -5,13 +5,13 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentRectV.xaml" />
+    <ResourceDictionary Source="SegmentRectV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type vm:SegmentsRectsVM}">
     <ItemsControl
       ItemsSource="{Binding SegmentsRectsM.MediaItemSegmentsRects}"
-      Visibility="{Binding AreVisible,
+      Visibility="{Binding SegmentsRectsM.AreVisible,
                    Converter={StaticResource AllToVisibilityConverter}}">
 
       <ItemsControl.ItemsPanel>
@@ -24,7 +24,7 @@
         <b:EventTrigger EventName="Loaded">
           <b:InvokeCommandAction
             Command="{Binding SetViewCommand}"
-            PassEventArgsToCommand="True" />
+            PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </ItemsControl>

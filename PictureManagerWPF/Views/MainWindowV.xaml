@@ -65,7 +65,8 @@
     <!-- Main Window Tool Bar -->
     <mhc:SlidePanelsGrid.PanelTop>
       <mhc:SlidePanel
-        Content="{Binding CoreVM.MainWindowToolBarVM}"
+        Content="{Binding Source={x:Static pm:App.Core}}"
+        ContentTemplate="{StaticResource MainWindowToolBarV}"
         Height="30"/>
     </mhc:SlidePanelsGrid.PanelTop>
 

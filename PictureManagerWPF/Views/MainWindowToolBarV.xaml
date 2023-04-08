@@ -3,9 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels">
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type vm:MainWindowToolBarVM}">
+  <DataTemplate x:Key="MainWindowToolBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -30,7 +30,7 @@
           </Grid.Background>
           
           <!-- Progress bar -->
-          <ContentPresenter Content="{Binding CoreM.TitleProgressBarM}"/>
+          <ContentPresenter Content="{Binding TitleProgressBarM}"/>
 
           <Grid
             Background="Transparent"
@@ -82,7 +82,7 @@
             Effect="{StaticResource MH.Effects.DropShadow}"
             Margin="3 0 0 0" />
           <TextBlock
-            Text="{Binding CoreM.MediaItemsM.MediaItemsCount}"
+            Text="{Binding MediaItemsM.MediaItemsCount}"
             VerticalAlignment="Center"
             Margin="5 0" />
 
@@ -93,7 +93,7 @@
             Orientation="Horizontal"
             VerticalAlignment="Center"
             Margin="0 2 2 0"
-            DataContext="{Binding CoreM.ThumbnailsGridsM}"
+            DataContext="{Binding ThumbnailsGridsM}"
             ToolTip="Clear filters"
             Cursor="Hand">
 
@@ -145,21 +145,21 @@
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding CoreVM.ThumbnailsGridsVM}">
+            DataContext="{Binding ThumbnailsGridsM}">
 
             <mhc:IconToggleButton
               Icon="{StaticResource IconImage}"
               ToolTip="Image"
               Margin="0"
-              IsChecked="{Binding Current.Model.ShowImages}"
-              Command="{Binding Model.ReapplyFilterCommand}" />
+              IsChecked="{Binding Current.ShowImages}"
+              Command="{Binding ReapplyFilterCommand}" />
 
             <mhc:IconToggleButton
               Icon="{StaticResource IconMovieClapper}"
               ToolTip="Video"
               Margin="0"
-              IsChecked="{Binding Current.Model.ShowVideos}"
-              Command="{Binding Model.ReapplyFilterCommand}" />
+              IsChecked="{Binding Current.ShowVideos}"
+              Command="{Binding ReapplyFilterCommand}" />
           </StackPanel>
 
           <Separator />
@@ -167,18 +167,18 @@
           <!-- DB Button -->
           <mhc:IconTextButton
             Icon="{StaticResource IconDatabase}"
-            Text="{Binding CoreM.Sdb.Changes}"
-            Command="{Binding CoreM.MainWindowM.SaveDbCommand}"/>
+            Text="{Binding Sdb.Changes}"
+            Command="{Binding MainWindowM.SaveDbCommand}"/>
 
           <!-- Log Button -->
           <Button
             Background="Red"
-            Command="{Binding CoreM.MainWindowM.OpenLogCommand}"
+            Command="{Binding MainWindowM.OpenLogCommand}"
             Height="24"
             Margin="2 0 2 0"
-            Visibility="{Binding CoreM.Log.Count, Converter={StaticResource AllToVisibilityConverter}}">
+            Visibility="{Binding Log.Count, Converter={StaticResource AllToVisibilityConverter}}">
 
-            <TextBlock Text="{Binding CoreM.Log.Count, StringFormat='Log {0}'}" />
+            <TextBlock Text="{Binding Log.Count, StringFormat='Log {0}'}" />
           </Button>
 
           <Separator />
@@ -187,29 +187,29 @@
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding CoreVM.SegmentsVM}">
+            DataContext="{Binding SegmentsM}">
 
             <mhc:IconToggleButton
               ToolTip="Segments edit"
               IsThreeState="False"
               VerticalAlignment="Center"
               Icon="{StaticResource IconPeople}"
-              IsChecked="{Binding SegmentsRectsVM.AreVisible}" />
+              IsChecked="{Binding SegmentsRectsM.AreVisible}" />
 
             <mhc:IconButton
               ToolTip="Open Segments drawer"
               Icon="{StaticResource IconDrawer}"
-              Command="{Binding SegmentsM.OpenSegmentsDrawerCommand}"/>
+              Command="{Binding OpenSegmentsDrawerCommand}"/>
 
             <mhc:IconButton
               ToolTip="Add selected to Segments drawer"
               Icon="{StaticResource IconPlus}"
-              Command="{Binding SegmentsM.AddSelectedToDrawerCommand}" />
+              Command="{Binding AddSelectedToDrawerCommand}" />
 
             <mhc:IconButton
               ToolTip="Segment Matching"
               Icon="{StaticResource IconEquals}"
-              Command="{Binding SegmentsM.SegmentMatchingCommand}" />
+              Command="{Binding SegmentMatchingCommand}" />
           </StackPanel>
 
           <Separator />
@@ -218,7 +218,7 @@
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
-            DataContext="{Binding CoreM.MediaViewerM.PresentationPanel}"
+            DataContext="{Binding MediaViewerM.PresentationPanel}"
             IsEnabled="{Binding MediaViewerM.Current, Source={x:Static pm:App.Core}, Converter={StaticResource AllToBoolConverter}}">
 
             <!-- Play/Stop -->
@@ -257,28 +257,28 @@
           <!-- Image Comparer -->
           <StackPanel
             Orientation="Horizontal"
-            Visibility="{Binding CoreM.ThumbnailsGridsM.Current, Converter={StaticResource AllToVisibilityConverter}}">
+            Visibility="{Binding ThumbnailsGridsM.Current, Converter={StaticResource AllToVisibilityConverter}}">
 
             <Separator />
 
             <mhc:IconButton
               ToolTip="Compare images using average hash"
               Icon="{StaticResource IconCompare}"
-              Command="{Binding CoreM.ImageComparerM.AverageHashCommand}"
-              CommandParameter="{Binding CoreM.ThumbnailsGridsM.Current}"/>
+              Command="{Binding ImageComparerM.AverageHashCommand}"
+              CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
 
             <mhc:IconButton
               ToolTip="Compare images using p hash"
               Icon="{StaticResource IconCompare}"
-              Command="{Binding CoreM.ImageComparerM.PHashCommand}"
-              CommandParameter="{Binding CoreM.ThumbnailsGridsM.Current}"/>
+              Command="{Binding ImageComparerM.PHashCommand}"
+              CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
 
             <mhc:PopupSlider
               ToolTip="Compare limit"
               Icon="{StaticResource IconCompare}"
               Minimum="0"
               Maximum="25"
-              Value="{Binding CoreM.ImageComparerM.Diff, Mode=TwoWay}"/>
+              Value="{Binding ImageComparerM.Diff, Mode=TwoWay}"/>
           </StackPanel>
         </StackPanel>
       </StackPanel>

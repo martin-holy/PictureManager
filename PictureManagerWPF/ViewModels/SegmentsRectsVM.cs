@@ -7,11 +7,9 @@ using PictureManager.Domain.Models;
 namespace PictureManager.ViewModels {
   public sealed class SegmentsRectsVM : ObservableObject {
     private IInputElement _view;
-    private bool _areVisible;
-
+    
     public SegmentsRectsM SegmentsRectsM { get; }
-    public bool AreVisible { get => _areVisible; set { _areVisible = value; OnPropertyChanged(); } }
-
+    
     public RelayCommand<RoutedEventArgs> SetViewCommand { get; }
     public RelayCommand<MouseEventArgs> SetCurrentCommand { get; }
     public RelayCommand<MouseButtonEventArgs> CreateCommand { get; }
@@ -24,7 +22,7 @@ namespace PictureManager.ViewModels {
 
       SetViewCommand = new(e => _view = (IInputElement)e.Source);
       SetCurrentCommand = new(SetCurrent);
-      CreateCommand = new(Create, () => AreVisible);
+      CreateCommand = new(Create, () => SegmentsRectsM.AreVisible);
       EditCommand = new(Edit);
       EndEditCommand = new(() => SegmentsRectsM.EndEdit());
       DeleteCommand = new(SegmentsRectsM.Delete);
