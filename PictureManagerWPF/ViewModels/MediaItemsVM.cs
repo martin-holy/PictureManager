@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MH.Utils.BaseClasses;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -6,21 +10,15 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using MH.Utils.BaseClasses;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Domain.Utils;
 
 namespace PictureManager.ViewModels {
   public class MediaItemsVM : ObservableObject {
     private readonly Core _core;
-    private readonly AppCore _coreVM;
 
     public MediaItemsM Model { get; }
 
-    public MediaItemsVM(Core core, AppCore coreVM, MediaItemsM model) {
+    public MediaItemsVM(Core core, MediaItemsM model) {
       _core = core;
-      _coreVM = coreVM;
       Model = model;
 
       Model.ReadMetadata = ReadMetadata;
