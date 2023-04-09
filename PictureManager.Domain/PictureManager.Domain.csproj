@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
-    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
   </ItemGroup>
 
 </Project>

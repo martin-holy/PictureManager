@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using SimpleDB;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IRecord {

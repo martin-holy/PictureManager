@@ -18,6 +18,8 @@ Viewers
  are stored in separate files for each drive
  */
 
+using MH.Utils;
+
 namespace PictureManager.Domain.DataAdapters {
   public static class DatabaseMigration {
     public static void Resolver(int oldVersion, int newVersion) {
@@ -25,19 +27,19 @@ namespace PictureManager.Domain.DataAdapters {
 
       // 0 => 1
       if (oldVersion == 0) {
-        SimpleDB.SimpleDB.MigrateFile(
+        SimpleDB.MigrateFile(
           core.FavoriteFoldersM.DataAdapter.TableFilePath,
           record => $"{record}|Favorite folder name");
 
-         SimpleDB.SimpleDB.MigrateFile(
+         SimpleDB.MigrateFile(
           core.KeywordsM.DataAdapter.TableFilePath,
           record => record[..record.LastIndexOf('|')]);
 
-        SimpleDB.SimpleDB.MigrateFile(
+        SimpleDB.MigrateFile(
           core.PeopleM.DataAdapter.TableFilePath,
           record => $"{record}||");
 
-        SimpleDB.SimpleDB.MigrateFile(
+        SimpleDB.MigrateFile(
           core.ViewersM.DataAdapter.TableFilePath,
           record => {
             var lio = record.LastIndexOf('|');
