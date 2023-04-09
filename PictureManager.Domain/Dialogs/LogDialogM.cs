@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 
 namespace PictureManager.Domain.Dialogs {
@@ -14,7 +15,7 @@ namespace PictureManager.Domain.Dialogs {
       Title = "Log";
       CloseCommand = new(
         () => {
-          Core.Log.Clear();
+          Log.Items.Clear();
           Result = 0;
         });
     }

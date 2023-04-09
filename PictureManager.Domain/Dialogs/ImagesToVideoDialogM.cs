@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using MH.Utils;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class ImagesToVideoDialogM : ObservableObject, IDialog {
@@ -57,7 +58,7 @@ namespace PictureManager.Domain.Dialogs {
         return true;
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
         return false;
       }
     }
@@ -68,7 +69,7 @@ namespace PictureManager.Domain.Dialogs {
           File.Delete(path);
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
       }
     }
 

@@ -49,7 +49,7 @@ namespace PictureManager.Domain.Models {
         return parentGeoName;
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
         return null;
       }
     }

@@ -396,7 +396,7 @@ namespace PictureManager.Domain.Models {
         segment.MediaItem = null;
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
       }
     }
 

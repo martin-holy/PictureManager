@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using PictureManager.Utils;
 using PictureManager.Domain.Models;
 using PictureManager.Domain;
+using MH.Utils;
 
 namespace PictureManager.Converters {
   public class MediaItemThumbnailSourceConverter : IValueConverter {
@@ -32,7 +33,7 @@ namespace PictureManager.Converters {
         return src;
       }
       catch (Exception ex) {
-        App.Core.LogError(ex);
+        Log.Error(ex);
         return Binding.DoNothing;
       }
     }

@@ -53,7 +53,7 @@ namespace PictureManager.ViewModels {
         mi.IsOnlyInDb = false;
       }
       catch (Exception ex) {
-        _core.LogError(ex, mi.FilePath);
+        Log.Error(ex, mi.FilePath);
 
         // No imaging component suitable to complete this operation was found.
         if ((ex.InnerException as COMException)?.HResult == -2003292336)
@@ -84,7 +84,7 @@ namespace PictureManager.ViewModels {
         Model.DataAdapter.IsModified = true;
       }
       catch (Exception ex) {
-        _core.LogError(ex, mi.FilePath);
+        Log.Error(ex, mi.FilePath);
       }
     }
 
@@ -263,7 +263,7 @@ namespace PictureManager.ViewModels {
 
         // don't log error if hResult is -2146233033
         if (hResult != -2146233033)
-          Core.Instance.LogError(ex, mi.FilePath);
+          Log.Error(ex, mi.FilePath);
       }
 
       // There is too much metadata to be written to the bitmap. (Exception from HRESULT: 0x88982F52)
