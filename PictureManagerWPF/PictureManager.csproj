@@ -14,7 +14,7 @@
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2022)</Copyright>
+    <Copyright>Martin Holý (2015 - 2023)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <EnableNETAnalyzers>false</EnableNETAnalyzers>
@@ -51,20 +51,12 @@
     <ProjectReference Include="..\MH.UI.WPF\MH.UI.WPF.csproj" />
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
     <ProjectReference Include="..\PictureManager.Domain\PictureManager.Domain.csproj" />
-    <ProjectReference Include="..\SimpleDB\SimpleDB.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="ThumbnailCreator.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="ResourceDictionaries\CustomControlStyles\CatTreeViewStyle.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 
 </Project>

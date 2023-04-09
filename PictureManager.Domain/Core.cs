@@ -4,16 +4,14 @@ using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
-using SimpleDB;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
-  public sealed class Core : ILogger {
-    public SimpleDB.SimpleDB Sdb { get; }
+  public sealed class Core {
+    public SimpleDB Sdb { get; }
     public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
     public TitleProgressBarM TitleProgressBarM { get; } = new();
@@ -52,7 +50,7 @@ namespace PictureManager.Domain {
       Tasks.SetUiTaskScheduler();
       Settings = new();
       Settings.Load();
-      Sdb = new(this);
+      Sdb = new();
 
       LoadedCommand = new(Loaded);
 
@@ -107,7 +105,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(SegmentsM.DataAdapter);
 
-        SimpleDB.SimpleDB.Migrate(2, DatabaseMigration.Resolver, this);
+        SimpleDB.Migrate(2, DatabaseMigration.Resolver);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);
@@ -334,11 +332,5 @@ namespace PictureManager.Domain {
     private static Core _instance;
     private static readonly object Lock = new();
     public static Core Instance { get { lock (Lock) { return _instance ??= new(); } } }
-
-    public void LogError(Exception ex) =>
-      Log.Error(ex);
-
-    public void LogError(Exception ex, string msg) =>
-      Log.Error(ex, msg);
   }
 }
