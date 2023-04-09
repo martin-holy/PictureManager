@@ -152,7 +152,7 @@ namespace PictureManager.ViewModels {
             : null;
         }
         catch (Exception ex) {
-          Core.Instance.LogError(ex, segment.FilePathCache);
+          Log.Error(ex, segment.FilePathCache);
           return null;
         }
       });
@@ -179,7 +179,7 @@ namespace PictureManager.ViewModels {
         segment.OnPropertyChanged(nameof(segment.FilePathCache));
       }
       catch (Exception ex) {
-        _core.LogError(ex, filePath);
+        Log.Error(ex, filePath);
       }
     }
   }

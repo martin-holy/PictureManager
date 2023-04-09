@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
 using System;
@@ -35,7 +36,7 @@ namespace PictureManager.Domain.BaseClasses {
         AfterItemCreateEventHandler(this, new(item));
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
       }
     }
 
@@ -48,7 +49,7 @@ namespace PictureManager.Domain.BaseClasses {
         AfterItemRenameEventHandler(this, new(item));
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
       }
     }
 
@@ -65,7 +66,7 @@ namespace PictureManager.Domain.BaseClasses {
         AfterItemDeleteEventHandler(this, new(item));
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
       }
     }
 

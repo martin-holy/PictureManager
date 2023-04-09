@@ -499,7 +499,7 @@ namespace PictureManager.Domain.Models {
         return WriteMetadata(mediaItem) ? true : throw new("Error writing metadata");
       }
       catch (Exception ex) {
-        _core.LogError(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
+        Log.Error(ex, $"Metadata will be saved just in Database. {mediaItem.FilePath}");
         // set MediaItem as IsOnlyInDb to not save metadata to file, but keep them just in DB
         mediaItem.IsOnlyInDb = true;
         return false;
@@ -716,7 +716,7 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged(nameof(Current));
       }
       catch (Exception ex) {
-        _core.LogError(ex);
+        Log.Error(ex);
       }
     }
 

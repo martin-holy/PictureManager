@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
   public sealed class Core : ILogger {
-    public static ObservableCollection<LogItem> Log { get; } = new();
     public SimpleDB.SimpleDB Sdb { get; }
     public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
@@ -332,19 +331,14 @@ namespace PictureManager.Domain {
       }
     }
 
-    public void LogError(Exception ex) =>
-      LogError(ex, string.Empty);
-
-    public void LogError(Exception ex, string msg) =>
-      Tasks.RunOnUiThread(() =>
-        Log.Add(new(
-          string.IsNullOrEmpty(msg)
-            ? ex.Message
-            : msg,
-          $"{msg}\n{ex.Message}\n{ex.StackTrace}")));
-
     private static Core _instance;
     private static readonly object Lock = new();
     public static Core Instance { get { lock (Lock) { return _instance ??= new(); } } }
+
+    public void LogError(Exception ex) =>
+      Log.Error(ex);
+
+    public void LogError(Exception ex, string msg) =>
+      Log.Error(ex, msg);
   }
 }

@@ -74,7 +74,7 @@ namespace PictureManager.Domain.Dialogs {
           Directory.CreateDirectory(DestDir);
         }
         catch (Exception ex) {
-          Core.Instance.LogError(ex);
+          Log.Error(ex);
           return;
         }
       }
@@ -102,7 +102,7 @@ namespace PictureManager.Domain.Dialogs {
               Imaging.ResizeJpg(mi.FilePath, dest, px, withMetadata, withThumbnail, Core.Settings.JpegQualityLevel);
             }
             catch (Exception ex) {
-              Core.Instance.LogError(ex, mi.FilePath);
+              Log.Error(ex, mi.FilePath);
             }
           });
         }

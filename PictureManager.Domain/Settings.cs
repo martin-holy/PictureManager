@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System;
+using MH.Utils;
 
 namespace PictureManager.Domain {
   public sealed class Settings : ObservableObject {
@@ -44,7 +45,7 @@ namespace PictureManager.Domain {
         return true;
       }
       catch (Exception ex) {
-        Core.Instance.LogError(ex);
+        Log.Error(ex);
         return false;
       }
     }
