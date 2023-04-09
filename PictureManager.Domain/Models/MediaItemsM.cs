@@ -292,7 +292,7 @@ namespace PictureManager.Domain.Models {
         catch (Exception ex) {
           Core.DialogHostShow(new ErrorDialogM(ex));
         }
-      }).ContinueWith(_ => Core.RunOnUiThread(() => fop.Result = 1));
+      }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
       _ = Core.DialogHostShow(fop);
 
@@ -322,7 +322,7 @@ namespace PictureManager.Domain.Models {
           var result = FileOperationCollisionDialogM.Show(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Core.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
+            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
             continue;
           }
         }
@@ -523,7 +523,7 @@ namespace PictureManager.Domain.Models {
 
           mi.GeoName = lastGeoName;
           TryWriteMetadata(mi);
-          await Core.RunOnUiThread(() => {
+          await Tasks.RunOnUiThread(() => {
             mi.SetInfoBox();
             DataAdapter.IsModified = true;
           });
@@ -617,7 +617,7 @@ namespace PictureManager.Domain.Models {
         // action
         async mi => {
           TryWriteMetadata(mi);
-          await Core.RunOnUiThread(() => SetModified(mi, false));
+          await Tasks.RunOnUiThread(() => SetModified(mi, false));
         },
         mi => mi.FilePath,
         // onCompleted
@@ -643,7 +643,7 @@ namespace PictureManager.Domain.Models {
         async mi => {
           await ReadMetadata(mi, false);
 
-          await Core.RunOnUiThread(() => {
+          await Tasks.RunOnUiThread(() => {
             SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -670,7 +670,7 @@ namespace PictureManager.Domain.Models {
 
           // set info box just for loaded media items
           if (updateInfoBox)
-            await Core.RunOnUiThread(mi.SetInfoBox);
+            await Tasks.RunOnUiThread(mi.SetInfoBox);
         },
         mi => mi.FilePath,
         // onCompleted

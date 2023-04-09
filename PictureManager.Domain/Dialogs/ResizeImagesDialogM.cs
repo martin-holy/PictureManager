@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using System.Linq;
+using MH.Utils;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class ResizeImagesDialogM : ObservableObject, IDialog {
@@ -91,7 +92,7 @@ namespace PictureManager.Domain.Dialogs {
 
           Parallel.ForEach(_items, po, mi => {
             index++;
-            Core.RunOnUiThread(() => {
+            Tasks.RunOnUiThread(() => {
               ProgressValue = index;
               FileName = mi.FileName;
             });

@@ -1,4 +1,5 @@
 ﻿using System.Timers;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 
 namespace PictureManager.Domain.Models {
@@ -102,7 +103,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private void Next() {
-      Core.RunOnUiThread(() => {
+      Tasks.RunOnUiThread(() => {
         if (IsPaused) return;
         if (_mediaViewerM.CanNext())
           _mediaViewerM.Next();
