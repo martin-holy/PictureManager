@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using PictureManager.Domain.BaseClasses;
@@ -39,7 +40,7 @@ namespace PictureManager.Domain.Models {
 
             DataAdapter.All.Add(dbGeoName.Id, dbGeoName);
             parentGeoName?.Items.Add(dbGeoName);
-            Core.RunOnUiThread(() => DataAdapter.IsModified = true);
+            Tasks.RunOnUiThread(() => DataAdapter.IsModified = true);
           }
 
           parentGeoName = dbGeoName;

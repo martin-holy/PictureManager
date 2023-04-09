@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
@@ -28,7 +29,7 @@ namespace PictureManager.ViewModels {
     private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
       try {
         if (mi.MediaType == MediaType.Video) {
-          await Core.RunOnUiThread(() => ReadVideoMetadata(mi));
+          await Tasks.RunOnUiThread(() => ReadVideoMetadata(mi));
         }
         else {
           await using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -125,7 +126,7 @@ namespace PictureManager.ViewModels {
             .ToArray();
 
           if (people.Any())
-            await Core.RunOnUiThread(() => {
+            await Tasks.RunOnUiThread(() => {
               mi.People = new(people.Length);
               foreach (var person in people)
                 mi.People.Add(_core.PeopleM.GetPerson(person.ToString(), true));
@@ -144,7 +145,7 @@ namespace PictureManager.ViewModels {
         // Keywords
         mi.Keywords = null;
         if (bm.Keywords != null) {
-          await Core.RunOnUiThread(() => {
+          await Tasks.RunOnUiThread(() => {
             mi.Keywords = new();
             foreach (var k in bm.Keywords.OrderByDescending(x => x).Distinct()) {
               var keyword = _core.KeywordsM.GetByFullPath(k.Replace('|', ' '));

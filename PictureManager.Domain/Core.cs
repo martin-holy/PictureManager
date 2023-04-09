@@ -1,3 +1,4 @@
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
@@ -48,10 +49,8 @@ namespace PictureManager.Domain {
 
     public RelayCommand<object> LoadedCommand { get; }
 
-    private static TaskScheduler UiTaskScheduler { get; set; }
-
     private Core() {
-      UiTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+      Tasks.SetUiTaskScheduler();
       Settings = new();
       Settings.Load();
       Sdb = new(this);
@@ -337,7 +336,7 @@ namespace PictureManager.Domain {
       LogError(ex, string.Empty);
 
     public void LogError(Exception ex, string msg) =>
-      RunOnUiThread(() =>
+      Tasks.RunOnUiThread(() =>
         Log.Add(new(
           string.IsNullOrEmpty(msg)
             ? ex.Message
@@ -347,17 +346,5 @@ namespace PictureManager.Domain {
     private static Core _instance;
     private static readonly object Lock = new();
     public static Core Instance { get { lock (Lock) { return _instance ??= new(); } } }
-
-    public static Task RunOnUiThread(Action action) {
-      var task = new Task(action);
-      task.Start(UiTaskScheduler);
-      return task;
-    }
-
-    public static Task<T> RunOnUiThread<T>(Func<T> func) {
-      var task = new Task<T>(func);
-      task.Start(UiTaskScheduler);
-      return task;
-    }
   }
 }

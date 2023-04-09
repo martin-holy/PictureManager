@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System.IO;
@@ -44,7 +45,7 @@ namespace PictureManager.Domain.Dialogs {
       var result = CollisionResult.Skip;
       var outFileName = fileName;
 
-      Core.RunOnUiThread(() => {
+      Tasks.RunOnUiThread(() => {
         var cd = new FileOperationCollisionDialogM(srcFilePath, destFilePath);
         result = (CollisionResult)Core.DialogHostShow(cd);
         outFileName = cd.FileName;
