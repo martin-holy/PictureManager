@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:sys="clr-namespace:System;assembly=mscorlib">
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
   <!--SystemColors override-->
   <!--<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Red"/>-->
@@ -16,6 +16,7 @@
   <Color x:Key="ForegroundColor">#FFFFFFFF</Color>
   <Color x:Key="TextColor">#FFFFFFFF</Color>
   <Color x:Key="Highlight">#FF00589F</Color>
+  <Color x:Key="Accent">#0063B1</Color>
   <Color x:Key="Accent3">#660078D7</Color>
   <Color x:Key="GrayColor1">#F0F0F0</Color>
   <Color x:Key="GrayColor2">#A0A0A0</Color>
@@ -26,7 +27,7 @@
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Text" Color="{StaticResource TextColor}"/>
-
+  <SolidColorBrush x:Key="MH.Brushes.Accent" Color="{StaticResource Accent}"/>
 
 
   <!-- Control -->
@@ -39,6 +40,10 @@
   <SolidColorBrush x:Key="MH.Control.Pressed.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Control.Pressed.Border" Color="{StaticResource GrayColor2}"/>
   <SolidColorBrush x:Key="MH.Control.Pressed.Text" Color="{StaticResource TextColor}"/>
+  <SolidColorBrush x:Key="MH.Control.Selected.Background" Color="#3D26A0DA"/>
+  <SolidColorBrush x:Key="MH.Control.Selected.Border" Color="#FF26A0DA"/>
+  <SolidColorBrush x:Key="MH.Control.Highlight.Background" Color="#3D26A0DA"/>
+  <SolidColorBrush x:Key="MH.Control.Highlight.Border" Color="#FF26A0DA"/>
 
   <!-- ComboBox -->
   <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{StaticResource GrayColor2}"/>

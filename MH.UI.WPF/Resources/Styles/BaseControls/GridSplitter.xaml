@@ -6,7 +6,7 @@
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate>
-          <Rectangle Fill="{StaticResource ColorBrushForeground}" Opacity="0.5"/>
+          <Rectangle Fill="{StaticResource MH.Brushes.Background}" Opacity="0.5"/>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
