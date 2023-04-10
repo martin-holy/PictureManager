@@ -11,7 +11,6 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml"/>
           <ResourceDictionary Source="TreeViewSearchV.xaml"/>
           <ResourceDictionary Source="TreeItemV.xaml"/>
           <ResourceDictionary Source="MediaItemSizeTreeV.xaml"/>
@@ -98,7 +97,7 @@
 
         <!-- Disable Selecting -->
         <mhc:CatTreeView.ItemContainerStyle>
-          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource CatTreeViewItem}">
+          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MH.Styles.Controls.TreeViewItem}">
             <Setter Property="IsSelected" Value="False"/>
             <Style.Triggers>
               <EventTrigger RoutedEvent="Selected">
@@ -118,7 +117,7 @@
         </mhc:CatTreeView.ItemContainerStyle>
 
         <mhc:CatTreeView.Style>
-          <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource CatTreeView}">
+          <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}">
 
             <!-- BlurEffect when Search is visible -->
             <Style.Triggers>
