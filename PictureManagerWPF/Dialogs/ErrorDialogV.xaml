@@ -28,7 +28,8 @@
             Text="{Binding Detail}"
             IsReadOnly="True" 
             VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Auto"/>
+            HorizontalScrollBarVisibility="Auto"
+            MaxHeight="200"/>
         </Expander>
       </StackPanel>
     </DockPanel>
