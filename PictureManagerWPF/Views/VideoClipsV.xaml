@@ -10,7 +10,6 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/CatTreeViewStyle.xaml"/>
           <ResourceDictionary Source="TreeItemV.xaml"/>
           <ResourceDictionary Source="VideoClipTreeV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
@@ -133,7 +132,6 @@
       <mhc:CatTreeView
         x:Name="CtvClips"
         Grid.Row="2"
-        Style="{StaticResource CatTreeView}" 
         ItemsSource="{Binding Model.MediaItemClips}"
         ScrollToItem="{Binding Model.ScrollToItem}">
 
