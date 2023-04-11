@@ -3,10 +3,9 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type vm:VideoClipsVM}">
+  <DataTemplate DataType="{x:Type m:VideoClipsM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -36,26 +35,26 @@
         <Button
           ToolTip="Set start"
           Content="A"
-          Command="{Binding Model.SetMarkerCommand}"
+          Command="{Binding SetMarkerCommand}"
           CommandParameter="{StaticResource True}"/>
         <Button
           ToolTip="Set end"
           Content="B"
-          Command="{Binding Model.SetMarkerCommand}"
+          Command="{Binding SetMarkerCommand}"
           CommandParameter="{StaticResource False}"/>
         <Button
           ToolTip="Split"
           Content="S"
-          Command="{Binding Model.SplitCommand}"/>
+          Command="{Binding SplitCommand}"/>
         <mhc:IconButton
           ToolTip="Save Video Clips"
-          Command="{Binding Model.SaveCommand}"
+          Command="{Binding SaveCommand}"
           Icon="{StaticResource IconSave}"
           Width="22"
           Height="22"/>
         <mhc:IconToggleButton
           Icon="{StaticResource IconSoundMute}"
-          IsChecked="{Binding Model.MediaPlayerM.IsMuted}"
+          IsChecked="{Binding MediaPlayerM.IsMuted}"
           Width="22"
           Height="22"
           ToolTip="Mute"/>
@@ -70,7 +69,7 @@
             Foreground="{StaticResource MH.Brushes.Text}"/>
 
           <Slider
-            Value="{Binding Model.MediaPlayerM.RepeatForSeconds}"
+            Value="{Binding MediaPlayerM.RepeatForSeconds}"
             Width="70"
             Minimum="0"
             Maximum="10"
@@ -91,38 +90,38 @@
           Foreground="{StaticResource MH.Brushes.Text}"/>
         
         <RadioButton
-          Command="{Binding Model.SetPlayTypeCommand}"
+          Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static m:PlayType.Video}"
           Content="Video"
           Margin="5,0"
-          IsChecked="{Binding Model.MediaPlayerM.PlayType,
+          IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Video}}"/>
         <RadioButton
-          Command="{Binding Model.SetPlayTypeCommand}"
+          Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static m:PlayType.Clip}"
           Content="Clip"
           Margin="5,0"
-          IsChecked="{Binding Model.MediaPlayerM.PlayType,
+          IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Clip}}"/>
         <RadioButton
-          Command="{Binding Model.SetPlayTypeCommand}"
+          Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static m:PlayType.Clips}"
           Content="Clips"
           Margin="5,0"
-          IsChecked="{Binding Model.MediaPlayerM.PlayType,
+          IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Clips}}"/>
         <RadioButton
-          Command="{Binding Model.SetPlayTypeCommand}"
+          Command="{Binding SetPlayTypeCommand}"
           CommandParameter="{x:Static m:PlayType.Group}"
           Content="Group"
           Margin="5,0"
-          IsChecked="{Binding Model.MediaPlayerM.PlayType,
+          IsChecked="{Binding MediaPlayerM.PlayType,
                       Mode=OneWay,
                       Converter={StaticResource AllToBoolConverter},
                       ConverterParameter={x:Static m:PlayType.Group}}"/>
@@ -132,13 +131,13 @@
       <mhc:CatTreeView
         x:Name="CtvClips"
         Grid.Row="2"
-        ItemsSource="{Binding Model.MediaItemClips}"
-        ScrollToItem="{Binding Model.ScrollToItem}">
+        ItemsSource="{Binding Items}"
+        ScrollToItem="{Binding ScrollToItem}">
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="SelectedItemChanged">
             <b:InvokeCommandAction
-              Command="{Binding Model.SetCurrentVideoClipCommand}"
+              Command="{Binding SetCurrentVideoClipCommand}"
               CommandParameter="{Binding SelectedItem, ElementName=CtvClips}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
