@@ -48,7 +48,7 @@ namespace PictureManager.ViewModels {
         App.Core.VideoClipsM.SetMediaItem(null);
         Model.MediaPlayerM.IsPlaying = false;
         Model.MediaPlayerM.Source = String.Empty;
-        App.Core.ToolsTabsM.Deactivate(App.Ui.VideoClipsVM.ToolsTabsItem);
+        App.Core.ToolsTabsM.Deactivate(App.Core.VideoClipsM.ToolsTabsItem);
       }
 
       if (mediaItem == null) return;
@@ -66,7 +66,7 @@ namespace PictureManager.ViewModels {
           App.Core.VideoClipsM.SetMediaItem(mediaItem);
           Model.MediaPlayerM.Source = mediaItem.FilePath;
           Model.MediaPlayerM.TimelineSmallChange = smallChange;
-          App.Core.ToolsTabsM.Activate(App.Ui.VideoClipsVM.ToolsTabsItem);
+          App.Core.ToolsTabsM.Activate(App.Core.VideoClipsM.ToolsTabsItem);
           break;
         }
       }

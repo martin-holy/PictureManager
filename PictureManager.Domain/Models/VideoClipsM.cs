@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsM : TreeCategoryBase {
@@ -17,12 +15,12 @@ namespace PictureManager.Domain.Models {
 
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public VideoClipsDataAdapter DataAdapter { get; set; }
-    public ObservableCollection<ITreeCategory> MediaItemClips { get; }
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }
     public VideoClipsGroupsM GroupsM { get; }
     public MediaPlayerM MediaPlayerM { get; set; }
-    public Action<VideoClipM, bool> CreateThumbnail { get; set; }
+    public Action<string> CreateThumbnail { get; set; }
+    public readonly HeaderedListItem<object, string> ToolsTabsItem;
 
     public RelayCommand<bool> SetMarkerCommand { get; }
     public RelayCommand<PlayType> SetPlayTypeCommand { get; }
@@ -35,10 +33,10 @@ namespace PictureManager.Domain.Models {
       _mediaItemsM = mi;
       IsExpanded = true;
       CanMoveItem = true;
-      MediaItemClips = new() { this };
       GroupsM = new(this, _mediaItemsM);
       MediaPlayerM = player;
       MediaPlayerM.SelectNextClip = SelectNext;
+      ToolsTabsItem = new(this, "Clips");
 
       SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
       SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
@@ -167,8 +165,10 @@ namespace PictureManager.Domain.Models {
       MediaPlayerM.ClipTimeStart = vc.TimeStart;
       MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
 
-      if (start)
-        CreateThumbnail.Invoke(vc, true);
+      if (start) {
+        CreateThumbnail(vc.ThumbPath);
+        vc.OnPropertyChanged(nameof(vc.ThumbPath));
+      }
     }
 
     public void SetMediaItem(MediaItemM mi) {

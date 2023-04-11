@@ -13,7 +13,6 @@ namespace PictureManager {
     public MediaViewerVM MediaViewerVM { get; }
     public SegmentsVM SegmentsVM { get; }
     public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
-    public VideoClipsVM VideoClipsVM { get; }
 
     public static RelayCommand<object> TestButtonCommand { get; } = new(() => Tests.Run());
 
@@ -26,7 +25,6 @@ namespace PictureManager {
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
       ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
-      VideoClipsVM = new(App.Core.VideoClipsM);
 
       AttachEvents();
     }
@@ -36,12 +34,14 @@ namespace PictureManager {
       Core.FileOperationDelete = FileOperationDelete;
       Core.GetDisplayScale = GetDisplayScale;
 
-      PictureManager.Domain.Utils.Imaging.GetAvgHash = PictureManager.Utils.Imaging.GetAvgHash;
-      PictureManager.Domain.Utils.Imaging.GetPerceptualHash = PictureManager.Utils.Imaging.GetPerceptualHash;
-      PictureManager.Domain.Utils.Imaging.GetSimilarImages = PictureManager.Utils.Imaging.GetSimilarImages;
-      PictureManager.Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
+      Domain.Utils.Imaging.GetAvgHash = Utils.Imaging.GetAvgHash;
+      Domain.Utils.Imaging.GetPerceptualHash = Utils.Imaging.GetPerceptualHash;
+      Domain.Utils.Imaging.GetSimilarImages = Utils.Imaging.GetSimilarImages;
+      Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
       MH.UI.WPF.Utils.Init.SetDelegates();
+
+      App.Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
     }
 
     private void AttachEvents() {

@@ -99,6 +99,13 @@ namespace PictureManager.Utils {
       }
     }
 
+    public static void CreateVideoClipThumbnail(string destPath) =>
+      CreateThumbnailFromVisual(
+        App.Ui.MediaViewerVM.FullVideo,
+        destPath,
+        Core.Settings.ThumbnailSize,
+        Core.Settings.JpegQualityLevel);
+
     public static bool CreateThumbnailFromVisual(FrameworkElement visual, string destPath, int desiredSize, int quality) {
       try {
         // create destination directory if doesn't exist
