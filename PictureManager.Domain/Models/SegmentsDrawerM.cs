@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction DoDropAction { get; }
     public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
-    public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public SegmentsDrawerM(SegmentsM segmentsM) {
@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Models {
     private void DoDrop(object data, bool haveSameOrigin) =>
       SegmentsM.SegmentsDrawerUpdate(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
 
-    private void Select(ClickEventArgs e) {
+    private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         SegmentsM.Select(SegmentsM.SegmentsDrawer.Cast<SegmentM>().ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
     }

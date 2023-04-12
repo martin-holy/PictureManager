@@ -136,7 +136,7 @@
           <b:EventTrigger EventName="MouseLeftButtonUp">
             <b:InvokeCommandAction
               Command="{Binding SelectCommand}"
-              EventArgsConverter="{StaticResource ClickConverter}"/>
+              EventArgsConverter="{StaticResource MouseButtonConverter}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
 

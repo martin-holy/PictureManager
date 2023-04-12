@@ -28,7 +28,7 @@ namespace PictureManager.ViewModels {
     public SegmentsM SegmentsM { get; }
     public SegmentsRectsVM SegmentsRectsVM { get; }
 
-    public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
 
     public SegmentsVM(Core core, AppCore coreVM, SegmentsM segmentsM) {
@@ -55,7 +55,7 @@ namespace PictureManager.ViewModels {
         person.UpdateDisplayKeywords();
     }
 
-    private void Select(ClickEventArgs e) {
+    private void Select(MouseButtonEventArgs e) {
       if (e.OriginalSource is Image { DataContext: SegmentM segmentM } image) {
         var rowStackPanel = image.TryFindParent<StackPanel>();
         var wrapPanel = image.TryFindParent<VirtualizingWrapPanel>();

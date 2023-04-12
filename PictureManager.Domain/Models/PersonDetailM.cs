@@ -27,7 +27,7 @@ namespace PictureManager.Domain.Models {
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
     public RelayCommand<PersonM> SetPersonCommand { get; }
-    public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> PanelTopWidthChangedCommand { get; }
     public RelayCommand<object> PanelAllWidthChangedCommand { get; }
 
@@ -74,7 +74,7 @@ namespace PictureManager.Domain.Models {
       OnPropertyChanged(nameof(AllSegments)); // this is for the count
     }
 
-    private void Select(ClickEventArgs e) {
+    private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         _segmentsM.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }

@@ -98,7 +98,7 @@ namespace PictureManager.Domain.Models {
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.GetByPath(srcData.Name) != null) {
             destFolder.ExpandTo();
-            _core.TreeViewCategoriesM.Select(new ClickEventArgs() { DataContext = destFolder });
+            _core.TreeViewCategoriesM.Select(new MouseButtonEventArgs() { DataContext = destFolder });
           }
 
           break;
