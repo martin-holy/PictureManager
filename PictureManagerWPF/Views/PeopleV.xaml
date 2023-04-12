@@ -25,7 +25,7 @@
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
             Command="{Binding SelectCommand}"
-            EventArgsConverter="{StaticResource ClickConverter}"
+            EventArgsConverter="{StaticResource MouseButtonConverter}"
             EventArgsConverterParameter="System.Windows.Controls.Image"/>
         </b:EventTrigger>
 

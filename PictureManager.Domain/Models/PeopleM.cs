@@ -23,7 +23,7 @@ namespace PictureManager.Domain.Models {
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
 
-    public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
@@ -150,7 +150,7 @@ namespace PictureManager.Domain.Models {
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
       ToggleKeyword(Selected, keyword);
 
-    private void Select(ClickEventArgs e) {
+    private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
         Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
     }

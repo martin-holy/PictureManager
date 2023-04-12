@@ -17,7 +17,7 @@ namespace PictureManager.Domain.Models {
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public RelayCommand<object> ShowSearchCommand { get; }
     public RelayCommand<ITreeItem> ScrollToCommand { get; }
-    public RelayCommand<ClickEventArgs> SelectCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public TreeViewCategoriesM(Core core) {
       _core = core;
@@ -46,7 +46,7 @@ namespace PictureManager.Domain.Models {
       _core.FoldersM.AfterItemRenameEventHandler += (_, e) => {
         // reload if the folder was selected before
         if (e.Data is FolderM { IsSelected: true } folder)
-          Select(new ClickEventArgs() { DataContext = folder });
+          Select(new MouseButtonEventArgs() { DataContext = folder });
       };
       _core.FoldersM.AfterItemCreateEventHandler += (_, e) =>
         ScrollToItem = e.Data;
@@ -64,7 +64,7 @@ namespace PictureManager.Domain.Models {
       TreeViewSearchM.IsVisible = true;
     }
 
-    public void Select(ClickEventArgs e) {
+    public void Select(MouseButtonEventArgs e) {
       // SHIFT key => recursive
       // (Folder, FolderKeyword) => MBL => show, MBL+ctrl => and, MBL+alt => hide
 

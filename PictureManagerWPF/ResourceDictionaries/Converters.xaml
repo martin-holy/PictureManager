@@ -15,7 +15,8 @@
   <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter" />
   <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
   <mhConverters:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
-  <mhConverters:ClickConverter x:Key="ClickConverter" />
+  <mhConverters:MouseButtonConverter x:Key="MouseButtonConverter" />
+  <mhConverters:MouseWheelConverter x:Key="MouseWheelConverter" />
   <mhConverters:DataTypeConverter x:Key="DataTypeConverter" />
   <mhConverters:DebugConverter x:Key="DebugConverter" />
   <mhConverters:EqualityConverter x:Key="EqualityConverter" />
