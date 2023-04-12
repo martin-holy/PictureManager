@@ -87,7 +87,7 @@ namespace PictureManager.Domain {
       PeopleM.DataAdapter = new(PeopleM, SegmentsM, KeywordsM);
       SegmentsM.DataAdapter = new(SegmentsM, MediaItemsM, PeopleM, KeywordsM);
       VideoClipsM.DataAdapter = new(VideoClipsM, MediaItemsM, KeywordsM, PeopleM);
-      VideoClipsM.GroupsM.DataAdapter = new(VideoClipsM.GroupsM, VideoClipsM, MediaItemsM);
+      VideoClipsM.TreeCategory.GroupsM.DataAdapter = new(VideoClipsM.TreeCategory.GroupsM, VideoClipsM, MediaItemsM);
       ViewersM.DataAdapter = new(ViewersM, FoldersM, KeywordsM, FolderKeywordsM, CategoryGroupsM);
     }
 
@@ -100,7 +100,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
         Sdb.AddDataAdapter(MediaItemsM.DataAdapter);
-        Sdb.AddDataAdapter(VideoClipsM.GroupsM.DataAdapter); // needs to be before VideoClips
+        Sdb.AddDataAdapter(VideoClipsM.TreeCategory.GroupsM.DataAdapter); // needs to be before VideoClips
         Sdb.AddDataAdapter(VideoClipsM.DataAdapter);
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(SegmentsM.DataAdapter);

@@ -41,7 +41,7 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var (group, csv) in AllCsv) {
         group.MediaItem = _mediaItemsM.DataAdapter.All[int.Parse(csv[2])];
         group.MediaItem.HasVideoClips = true;
-        group.Parent = _videoClipsM;
+        group.Parent = _videoClipsM.TreeCategory;
 
         if (!string.IsNullOrEmpty(csv[3])) {
           var ids = csv[3].Split(',');

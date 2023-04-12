@@ -56,7 +56,7 @@ namespace PictureManager.Domain.DataAdapters {
         core.MediaItemsM.DataAdapter.IsModified = true;
         core.SegmentsM.DataAdapter.IsModified = true;
         core.VideoClipsM.DataAdapter.IsModified = true;
-        core.VideoClipsM.GroupsM.DataAdapter.IsModified = true;
+        core.VideoClipsM.TreeCategory.GroupsM.DataAdapter.IsModified = true;
       }
     }
   }
