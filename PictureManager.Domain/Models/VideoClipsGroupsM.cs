@@ -5,16 +5,17 @@ using MH.Utils;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.TreeCategories;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsGroupsM {
-    private readonly VideoClipsM _videoClips;
+    private readonly VideoClipsTreeCategory _treeCategory;
     private readonly MediaItemsM _mediaItemsM;
 
     public VideoClipsGroupsDataAdapter DataAdapter { get; set; }
 
-    public VideoClipsGroupsM(VideoClipsM vc, MediaItemsM mi) {
-      _videoClips = vc;
+    public VideoClipsGroupsM(VideoClipsTreeCategory treeCategory, MediaItemsM mi) {
+      _treeCategory = treeCategory;
       _mediaItemsM = mi;
     }
 
@@ -26,11 +27,11 @@ namespace PictureManager.Domain.Models {
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       group.MediaItem = mi;
       group.MediaItem.HasVideoClips = true;
-      Tree.SetInOrder(_videoClips.Items, group, x => x.Name);
+      Tree.SetInOrder(_treeCategory.Items, group, x => x.Name);
       DataAdapter.All.Add(group.Id, group);
 
       if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(mi))
-        _mediaItemsM.MediaItemVideoClips.Add(mi, _videoClips.Items);
+        _mediaItemsM.MediaItemVideoClips.Add(mi, _treeCategory.Items);
 
       return group;
     }
@@ -51,7 +52,7 @@ namespace PictureManager.Domain.Models {
           cat.ItemMove(item, cat, false);
 
       group.Parent.Items.Remove(group);
-      ((VideoClipsGroupM)group).MediaItem.HasVideoClips = _videoClips.Items.Count != 0;
+      ((VideoClipsGroupM)group).MediaItem.HasVideoClips = _treeCategory.Items.Count != 0;
       DataAdapter.All.Remove(((VideoClipsGroupM)group).Id);
       DataAdapter.IsModified = true;
     }

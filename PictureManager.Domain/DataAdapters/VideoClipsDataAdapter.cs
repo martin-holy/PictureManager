@@ -79,7 +79,7 @@ namespace PictureManager.Domain.DataAdapters {
 
         // set parent for clips not in an group
         if (vc.Parent == null) {
-          vc.Parent = _model;
+          vc.Parent = _model.TreeCategory;
 
           if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(vc.MediaItem))
             _mediaItemsM.MediaItemVideoClips.Add(vc.MediaItem, new());

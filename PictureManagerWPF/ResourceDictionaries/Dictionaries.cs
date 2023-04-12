@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.TreeCategories;
 using PictureManager.ViewModels;
 
 namespace PictureManager.ResourceDictionaries {
@@ -34,7 +35,7 @@ namespace PictureManager.ResourceDictionaries {
       { typeof(GeoNameM), "TreeContextMenuGeoName" },
       { typeof(ViewersM), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
-      { typeof(VideoClipsM), "TreeContextMenuVideoClips" },
+      { typeof(VideoClipsTreeCategory), "TreeContextMenuVideoClips" },
       { typeof(CategoryGroupM), "TreeContextMenuGroup" },
       { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
     };

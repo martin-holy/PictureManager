@@ -58,11 +58,8 @@
           Width="22"
           Height="22"
           ToolTip="Mute"/>
-                  
-        <StackPanel
-          Orientation="Horizontal"
-          Margin="4">
 
+        <StackPanel Orientation="Horizontal" Margin="4">
           <TextBlock
             Text="Repeat for: "
             Margin="0,0,4,0"
@@ -85,9 +82,7 @@
         Grid.Row="1"
         Margin="4">
 
-        <TextBlock
-          Text="Play: "
-          Foreground="{StaticResource MH.Brushes.Text}"/>
+        <TextBlock Text="Play: " Foreground="{StaticResource MH.Brushes.Text}"/>
         
         <RadioButton
           Command="{Binding SetPlayTypeCommand}"
@@ -131,7 +126,7 @@
       <mhc:CatTreeView
         x:Name="CtvClips"
         Grid.Row="2"
-        ItemsSource="{Binding Items}"
+        ItemsSource="{Binding TreeRoot}"
         ScrollToItem="{Binding ScrollToItem}">
 
         <b:Interaction.Triggers>

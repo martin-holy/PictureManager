@@ -1,23 +1,24 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipsM : TreeCategoryBase {
+  public sealed class VideoClipsM : ObservableObject {
     private readonly MediaItemsM _mediaItemsM;
     private ITreeItem _scrollToItem;
 
     public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public VideoClipsDataAdapter DataAdapter { get; set; }
+    public VideoClipsTreeCategory TreeCategory { get; }
+    public ObservableCollection<ITreeCategory> TreeRoot { get; }
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }
-    public VideoClipsGroupsM GroupsM { get; }
     public MediaPlayerM MediaPlayerM { get; set; }
     public Action<string> CreateThumbnail { get; set; }
     public readonly HeaderedListItem<object, string> ToolsTabsItem;
@@ -29,11 +30,10 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> SaveCommand { get; }
     public RelayCommand<int> SeekToPositionCommand { get; }
 
-    public VideoClipsM(MediaItemsM mi, MediaPlayerM player) : base(Res.IconMovieClapper, Category.VideoClips, "Clips") {
+    public VideoClipsM(MediaItemsM mi, MediaPlayerM player) {
       _mediaItemsM = mi;
-      IsExpanded = true;
-      CanMoveItem = true;
-      GroupsM = new(this, _mediaItemsM);
+      TreeCategory = new(this, mi);
+      TreeRoot = new() { TreeCategory };
       MediaPlayerM = player;
       MediaPlayerM.SelectNextClip = SelectNext;
       ToolsTabsItem = new(this, "Clips");
@@ -52,17 +52,17 @@ namespace PictureManager.Domain.Models {
       SaveCommand = new(
         () => {
           DataAdapter.Save();
-          GroupsM.DataAdapter.Save();
+          TreeCategory.GroupsM.DataAdapter.Save();
         },
         () =>
           DataAdapter.IsModified ||
-          GroupsM.DataAdapter.IsModified
+          TreeCategory.GroupsM.DataAdapter.IsModified
       );
 
       SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
     }
 
-    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
+    public VideoClipM Create(ITreeItem root, string name) {
       var item = new VideoClipM(DataAdapter.GetNextId(), CurrentMediaItem) {
         Parent = root,
         Name = name,
@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
       };
 
       if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(CurrentMediaItem))
-        _mediaItemsM.MediaItemVideoClips.Add(CurrentMediaItem, Items);
+        _mediaItemsM.MediaItemVideoClips.Add(CurrentMediaItem, TreeCategory.Items);
 
       root.Items.Add(item);
       CurrentVideoClip = item;
@@ -83,17 +83,17 @@ namespace PictureManager.Domain.Models {
       return item;
     }
 
-    protected override void ModelItemRename(ITreeItem item, string name) {
+    public void Rename(ITreeItem item, string name) {
       item.Name = name;
       DataAdapter.IsModified = true;
       UpdateClipsTitles();
     }
 
-    protected override void ModelItemDelete(ITreeItem item) {
+    public void Delete(ITreeItem item) {
       var vc = (VideoClipM)item;
       File.Delete(vc.ThumbPath);
 
-      vc.MediaItem.HasVideoClips = Items.Count != 0;
+      vc.MediaItem.HasVideoClips = TreeCategory.Items.Count != 0;
       vc.MediaItem = null;
       vc.Parent.Items.Remove(vc);
       vc.Parent = null;
@@ -105,36 +105,11 @@ namespace PictureManager.Domain.Models {
       UpdateClipsTitles();
     }
 
-    public override void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
-      Tree.ItemMove(item, dest, aboveDest);
-      DataAdapter.IsModified = true;
-    }
-
-    protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      null;
-
-    protected override void ModelGroupCreate(ITreeItem root, string name) =>
-      GroupsM.ItemCreate(name, CurrentMediaItem);
-
-    protected override void ModelGroupRename(ITreeGroup group, string name) =>
-      GroupsM.ItemRename(group, name);
-
-    protected override void ModelGroupDelete(ITreeGroup group) =>
-      GroupsM.ItemDelete(group);
-
-    public override void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) =>
-      GroupsM.GroupMove(group, dest, aboveDest);
-
-    protected override string ValidateNewGroupName(ITreeItem root, string name) =>
-      GroupsM.ItemCanRename(name, CurrentMediaItem)
-        ? null
-        : $"{name} group already exists!";
-
     private void VideoClipSplit() {
       if (CurrentVideoClip?.TimeEnd == 0)
         SetMarker(false);
       else
-        ItemCreate(this);
+        TreeCategory.ItemCreate(TreeCategory);
     }
 
     private void SetCurrentVideoClip(VideoClipM vc) {
@@ -174,23 +149,23 @@ namespace PictureManager.Domain.Models {
     public void SetMediaItem(MediaItemM mi) {
       SetCurrentMediaItem(mi);
       UpdateClipsTitles();
-      ExpandAll();
+      TreeCategory.ExpandAll();
     }
 
     private void SetCurrentMediaItem(MediaItemM mi) {
       CurrentMediaItem = mi;
-      Items = mi != null && _mediaItemsM.MediaItemVideoClips.ContainsKey(mi)
+      TreeCategory.Items = mi != null && _mediaItemsM.MediaItemVideoClips.ContainsKey(mi)
         ? _mediaItemsM.MediaItemVideoClips[mi]
         : new();
 
-      OnPropertyChanged(nameof(Items));
+      OnPropertyChanged(nameof(TreeCategory.Items));
     }
 
     private void UpdateClipsTitles() {
       var nr = 0;
-      var clips = Items.OfType<VideoClipsGroupM>()
+      var clips = TreeCategory.Items.OfType<VideoClipsGroupM>()
         .SelectMany(g => g.Items.Select(x => x))
-        .Concat(Items.OfType<VideoClipM>())
+        .Concat(TreeCategory.Items.OfType<VideoClipM>())
         .Cast<VideoClipM>();
 
       foreach (var clip in clips) {
@@ -212,11 +187,11 @@ namespace PictureManager.Domain.Models {
     private VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
       var groups = new List<List<VideoClipM>>();
 
-      groups.AddRange(Items.OfType<VideoClipsGroupM>()
+      groups.AddRange(TreeCategory.Items.OfType<VideoClipsGroupM>()
         .Where(g => g.Items.Count > 0)
         .Select(g => g.Items.Cast<VideoClipM>().ToList()));
 
-      var clips = Items.OfType<VideoClipM>().ToList();
+      var clips = TreeCategory.Items.OfType<VideoClipM>().ToList();
       if (clips.Count != 0) 
         groups.Add(clips);
 
