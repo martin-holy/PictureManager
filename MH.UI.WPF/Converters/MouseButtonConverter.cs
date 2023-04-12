@@ -1,22 +1,21 @@
-﻿using MH.Utils.EventsArgs;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
 namespace MH.UI.WPF.Converters {
-  public class ClickConverter : IValueConverter {
+  public class MouseButtonConverter : IValueConverter {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-      value is not MouseButtonEventArgs args
-        ? null
-        : GetArgs(args, parameter);
+      GetArgs(value, parameter);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
 
-    private ClickEventArgs GetArgs(MouseButtonEventArgs e, object desiredSource) {
-      var args = new ClickEventArgs() {
+    private MH.Utils.EventsArgs.MouseButtonEventArgs GetArgs(object value, object desiredSource) {
+      if (value is not MouseButtonEventArgs e) return null;
+
+      var args = new MH.Utils.EventsArgs.MouseButtonEventArgs() {
         IsSourceDesired = desiredSource == null || e.OriginalSource.GetType().FullName.Equals(desiredSource),
         OriginalSource = e.OriginalSource,
         DataContext = (e.OriginalSource as FrameworkElement)?.DataContext,
