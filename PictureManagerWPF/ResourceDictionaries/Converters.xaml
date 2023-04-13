@@ -1,26 +1,24 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:converters="clr-namespace:PictureManager.Converters"
   xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
-  <pm:RatingConverter x:Key="RatingConverter" />
-  <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
-
+  <converters:ImageSourceConverter x:Key="ImageSourceConverter"/>
+  <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter"/>
+  <converters:MediaItemSizeConverter x:Key="MediaItemSizeConverter"/>
   <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
   <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
-  <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
-  <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
-  <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
+  <converters:RatingConverter x:Key="RatingConverter"/>
+  <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
   
-  <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter" />
-  <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter" />
-  <mhConverters:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12" />
-  <mhConverters:MouseButtonConverter x:Key="MouseButtonConverter" />
-  <mhConverters:MouseWheelConverter x:Key="MouseWheelConverter" />
-  <mhConverters:DataTypeConverter x:Key="DataTypeConverter" />
-  <mhConverters:DebugConverter x:Key="DebugConverter" />
-  <mhConverters:EqualityConverter x:Key="EqualityConverter" />
-  <mhConverters:ResourceConverter x:Key="ResourceConverter" />
+  <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter"/>
+  <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter"/>
+  <mhConverters:CatTreeViewMarginConverter x:Key="CatTreeViewMarginConverter" Length="12"/>
+  <mhConverters:MouseButtonConverter x:Key="MouseButtonConverter"/>
+  <mhConverters:MouseWheelConverter x:Key="MouseWheelConverter"/>
+  <mhConverters:DataTypeConverter x:Key="DataTypeConverter"/>
+  <mhConverters:DebugConverter x:Key="DebugConverter"/>
+  <mhConverters:EqualityConverter x:Key="EqualityConverter"/>
+  <mhConverters:ResourceConverter x:Key="ResourceConverter"/>
 </ResourceDictionary>
