@@ -66,7 +66,7 @@ namespace PictureManager.Domain {
       MainWindowM = new(this);
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       MediaItemSizesTreeM = new();
-      MediaViewerM = new();
+      MediaViewerM = new(this);
       PeopleM = new(this, CategoryGroupsM); // MainWindowM
       PersonDetailM = new(PeopleM, SegmentsM);
       RatingsTreeM = new();
@@ -238,6 +238,9 @@ namespace PictureManager.Domain {
 
             if (MediaItemsM.Current != MediaViewerM.Current)
               MediaItemsM.Current = MediaViewerM.Current;
+            break;
+          case nameof(MediaViewerM.Scale):
+            SegmentsM.SegmentsRectsM.UpdateScale(MediaViewerM.Scale);
             break;
         }
       };

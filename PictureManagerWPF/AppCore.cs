@@ -9,10 +9,12 @@ using System.Windows;
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public MediaItemsVM MediaItemsVM { get; }
-    public MediaViewerVM MediaViewerVM { get; }
     public SegmentsVM SegmentsVM { get; }
+    public static MediaPlayer FullVideo { get; private set; }
 
     public static RelayCommand<object> TestButtonCommand { get; } = new(() => Tests.Run());
+    public static RelayCommand<RoutedEventArgs> MediaPlayerLoadedCommand { get; } =
+      new(e => FullVideo = e.Source as MediaPlayer);
 
     public AppCore() {
       SetDelegates();
@@ -20,7 +22,6 @@ namespace PictureManager {
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MediaItemsVM = new(App.Core, App.Core.MediaItemsM);
-      MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
     }
 
@@ -37,6 +38,7 @@ namespace PictureManager {
       MH.UI.WPF.Utils.Init.SetDelegates();
 
       App.Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
+      App.Core.MediaViewerM.GetVideoMetadata = ShellStuff.FileInformation.GetVideoMetadata;
     }
 
     private static double GetDisplayScale() =>

@@ -39,12 +39,9 @@ namespace PictureManager.Domain.Models {
     public SegmentsM SegmentsM { get; }
     public SegmentRectM Current { get; set; }
     public ObservableCollection<SegmentRectM> MediaItemSegmentsRects { get; } = new();
-    public RelayCommand<double> UpdateScaleCommand { get; }
 
     public SegmentsRectsM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
-
-      UpdateScaleCommand = new(UpdateScale);
     }
 
     public void SetCurrent(SegmentRectM current, double x, double y) {
@@ -78,7 +75,7 @@ namespace PictureManager.Domain.Models {
         MediaItemSegmentsRects.Add(new(segment, Scale));
     }
 
-    private void UpdateScale(double scale) {
+    public void UpdateScale(double scale) {
       Scale = scale;
       foreach (var sr in MediaItemSegmentsRects)
         sr.Scale = Scale;
