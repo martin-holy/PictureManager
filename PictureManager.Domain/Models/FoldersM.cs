@@ -152,6 +152,16 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override void ModelItemDelete(ITreeItem item) {
+      var folder = (FolderM)item;
+
+      // delete folder, sub folders and mediaItems from cache
+      if (Directory.Exists(folder.FullPathCache))
+        Directory.Delete(folder.FullPathCache, true);
+
+      // delete folder, sub folders and mediaItems from file system
+      if (Directory.Exists(folder.FullPath))
+        Core.FileOperationDelete(new() { folder.FullPath }, true, false);
+
       item.Parent.Items.Remove(item);
 
       // get all folders recursive
@@ -168,14 +178,6 @@ namespace PictureManager.Domain.Models {
       }
 
       _core.FolderKeywordsM.Load(DataAdapter.All.Values);
-
-      // delete folder, sub folders and mediaItems from cache
-      if (Directory.Exists(((FolderM)item).FullPathCache))
-        Directory.Delete(((FolderM)item).FullPathCache, true);
-
-      // delete folder, sub folders and mediaItems from file system
-      // TODO it should be in Model
-      // done in OnAfterItemDelete (FoldersTreeVM)
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) {
