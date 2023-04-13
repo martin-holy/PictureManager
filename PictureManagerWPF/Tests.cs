@@ -1,5 +1,5 @@
-﻿using PictureManager.Domain;
-using PictureManager.Domain.Models;
+﻿using MH.Utils.Extensions;
+using PictureManager.Domain;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,40 +7,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
-using MH.Utils;
-using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager {
-  /*public interface IBranch : ILeaf {
-    ObservableCollection<ILeaf> Items { get; set; }
-  }
-
-  public interface ILeaf {
-    IBranch Parent { get; set; }
-  }
-
-  public interface IBranch<TI, TP> : ILeaf<TI, TP> where TI : ILeaf<TI, TP> where TP : IBranch<TI, TP> {
-    ObservableCollection<TI> Items { get; set; }
-  }
-
-  public interface ILeaf<TI, TP> where TI : ILeaf<TI, TP> where TP : IBranch<TI, TP> {
-    TP Parent { get; set; }
-  }
-
-  public class Person : ILeaf {
-    public IBranch Parent { get; set; }
-  }
-
-  public class People : IBranch {
-    public ObservableCollection<ILeaf> Items { get; set; }
-    public IBranch Parent { get; set; }
-  }
-
-  public class Group : IBranch {
-    public ObservableCollection<ILeaf> Items { get; set; }
-    public IBranch Parent { get; set; }
-  }*/
-
   public class Tests {
 
     public static void Run() {
