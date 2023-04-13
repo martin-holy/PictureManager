@@ -14,7 +14,7 @@
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2022)</Copyright>
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-    <EnableNETAnalyzers>false</EnableNETAnalyzers>
+    <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 
   <ItemGroup>
