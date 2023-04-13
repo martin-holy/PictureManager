@@ -224,6 +224,8 @@ namespace PictureManager.Domain.Models {
     public void Delete(MediaItemM[] items) {
       foreach (var mi in items)
         Delete(mi);
+
+      MediaItemsDeletedEventHandler(this, new(items));
     }
 
     private void Delete() {
