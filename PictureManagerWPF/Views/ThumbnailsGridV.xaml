@@ -7,112 +7,104 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
-  
-  <DataTemplate DataType="{x:Type vm:ThumbnailsGridVM}">
+
+  <DataTemplate DataType="{x:Type m:ThumbnailsGridM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        
+
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-        
+
         <ContextMenu
           x:Key="ThumbnailsGridContextMenu"
-          DataContext="{Binding ThumbnailsGridsVM.Current, Source={x:Static pm:App.Ui}}">
-    
+          DataContext="{Binding ThumbnailsGridsM.Current, Source={x:Static pm:App.Core}}">
+
           <MenuItem
             Header="Group by Folders"
             IsCheckable="True"
-            IsChecked="{Binding Model.GroupByFolders}"
-            Command="{Binding Model.RefreshCommand}" />
+            IsChecked="{Binding GroupByFolders}"
+            Command="{Binding RefreshCommand}"/>
           <MenuItem
             Header="Group by Date"
             IsCheckable="True"
-            IsChecked="{Binding Model.GroupByDate}"
-            Command="{Binding Model.RefreshCommand}" />
+            IsChecked="{Binding GroupByDate}"
+            Command="{Binding RefreshCommand}"/>
           <MenuItem
             Header="Sort by File first"
             IsCheckable="True"
-            IsChecked="{Binding Model.SortByFileFirst}"
-            Command="{Binding Model.RefreshCommand}" />
+            IsChecked="{Binding SortByFileFirst}"
+            Command="{Binding RefreshCommand}"/>
         </ContextMenu>
-        
+
         <DataTemplate DataType="{x:Type m:MediaItemM}">
           <DataTemplate.Resources>
             <ResourceDictionary>
               <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="MediaItemThumbnailV.xaml" />
+                <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
               </ResourceDictionary.MergedDictionaries>
             </ResourceDictionary>
           </DataTemplate.Resources>
-    
+
           <ContentPresenter Content="{Binding}">
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="MouseEnter">
                 <b:InvokeCommandAction
-                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.ShowVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}" />
+                  Command="vm:MediaItemVideoPreviewVM.ShowVideoPreviewCommand"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeave">
                 <b:InvokeCommandAction
-                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.HideVideoPreviewCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  CommandParameter="{Binding}" />
+                  Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="PreviewMouseUp">
                 <b:InvokeCommandAction
-                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.SelectMediaItemCommand),
+                  Command="{Binding Path=DataContext.(m:ThumbnailsGridM.SelectMediaItemCommand),
                             RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  EventArgsConverter="{StaticResource ClickConverter}"/>
+                  EventArgsConverter="{StaticResource MouseButtonConverter}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeftButtonDown">
                 <b:InvokeCommandAction
-                  Command="{Binding Path=Tag.(vm:ThumbnailsGridVM.OpenMediaItemCommand),
+                  Command="{Binding Path=DataContext.(m:ThumbnailsGridM.OpenMediaItemCommand),
                             RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
-                  EventArgsConverter="{StaticResource ClickConverter}" />
+                  EventArgsConverter="{StaticResource MouseButtonConverter}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
           </ContentPresenter>
         </DataTemplate>
-        
+
       </ResourceDictionary>
     </DataTemplate.Resources>
 
     <mhc:TreeWrapView
-      ItemWidthGetter="{Binding Model.ItemWidthGetter}"
-      Root="{Binding Model.FilteredRoot}"
-      ScrollToItem="{Binding Model.ScrollToItem, Mode=TwoWay}"
+      ItemWidthGetter="{Binding ItemWidthGetter}"
+      Root="{Binding FilteredRoot}"
+      ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
       ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}"
       ReloadAutoScroll="False"
       ScrollViewerSpeedFactor="2.5"
-      Tag="{Binding}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"
       mhu:DragDropHelper.DataFormat="FileDrop">
 
       <mhc:TreeWrapView.InputBindings>
-        <KeyBinding
-          Modifiers="Control"
-          Key="A"
-          Command="{Binding Model.SelectAllCommand}" />
+        <KeyBinding Modifiers="Control" Key="A" Command="{Binding SelectAllCommand}"/>
       </mhc:TreeWrapView.InputBindings>
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseWheel">
           <b:InvokeCommandAction
             Command="{Binding ZoomCommand}"
-            PassEventArgsToCommand="True" />
+            EventArgsConverter="{StaticResource MouseWheelConverter}"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="WidthChangedEventHandler">
           <b:InvokeCommandAction Command="{Binding PanelWidthChangedCommand}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </mhc:TreeWrapView>
-
   </DataTemplate>
-    
 </ResourceDictionary>

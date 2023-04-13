@@ -1,18 +1,18 @@
-﻿using System;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
+using MH.Utils.Extensions;
+using PictureManager.Domain.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
-using PictureManager.Domain.Interfaces;
+using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
-    private readonly MediaItemsM _mediaItemsM;
-    private readonly TitleProgressBarM _progressBar;
+    private readonly Core _core;
     private readonly List<MediaItemM> _selectedItems = new();
     private readonly List<object> _filterAnd = new();
     private readonly List<object> _filterOr = new();
@@ -28,6 +28,7 @@ namespace PictureManager.Domain.Models {
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
+    private bool _reWrapItems;
     private string _positionSlashCount;
     private object _scrollToItem;
     private TreeWrapGroup _filteredRoot = new();
@@ -42,7 +43,10 @@ namespace PictureManager.Domain.Models {
     public MediaItemFilterSizeM FilterSize { get; } = new();
     public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public TreeWrapGroup FilteredRoot { get => _filteredRoot; private set { _filteredRoot = value; OnPropertyChanged(); } }
+    public HeaderedListItem<object, string> MainTabsItem { get; set; }
+    public CanDragFunc CanDragFunc { get; }
 
     public int FilterAndCount => _filterAnd.Count;
     public int FilterOrCount => _filterOr.Count;
@@ -75,14 +79,54 @@ namespace PictureManager.Domain.Models {
 
     public RelayCommand<object> RefreshCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
+    public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
+    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
-    public ThumbnailsGridM(MediaItemsM mediaItemsM, TitleProgressBarM progressBar, double thumbScale) {
-      _mediaItemsM = mediaItemsM;
-      _progressBar = progressBar;
+    public ThumbnailsGridM(Core core, double thumbScale, string tabTitle) {
+      _core = core;
       ThumbScale = thumbScale;
+      CanDragFunc = CanDrag;
+      MainTabsItem = new(this, tabTitle);
 
       RefreshCommand = new(async () => await ReapplyFilter());
       SelectAllCommand = new(() => SelectAll());
+
+      ZoomCommand = new(
+        async e => {
+          Zoom(e.Delta);
+          await ThumbsGridReloadItems();
+        },
+        e => e.IsCtrlOn);
+
+      PanelWidthChangedCommand = new(
+        () => ReWrapItems = true,
+        () => !_core.MediaViewerM.IsVisible);
+
+      SelectMediaItemCommand = new(e => {
+        if (e.DataContext is MediaItemM mi)
+          Select(mi, e.IsCtrlOn, e.IsShiftOn);
+      });
+
+      OpenMediaItemCommand = new(
+        e => OpenMediaItem(e.DataContext as MediaItemM),
+        e => e.ClickCount == 2);
+    }
+
+    private void OpenMediaItem(MediaItemM mi) {
+      if (mi == null) return;
+
+      DeselectAll();
+      CurrentMediaItem = mi;
+      _core.MainWindowM.IsFullScreen = true;
+      _core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), mi);
+    }
+
+    private object CanDrag(object source) {
+      if (source is not MediaItemM) return null;
+      var data = FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
+      return data.Length == 0 ? null : data;
     }
 
     public void UpdatePositionSlashCount() =>
@@ -184,7 +228,8 @@ namespace PictureManager.Domain.Models {
         item.SetThumbSize(true);
     }
 
-    public List<MediaItemM> GetSelectedOrAll() => SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
+    public List<MediaItemM> GetSelectedOrAll() =>
+      SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
 
     public void SelectNotModified(HashSet<MediaItemM> modifiedItems) {
       foreach (var mi in FilteredItems)
@@ -377,8 +422,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SelectAndScrollToCurrentMediaItem() {
-      var mi = FilteredItems.Contains(_mediaItemsM.Current)
-        ? _mediaItemsM.Current
+      var mi = FilteredItems.Contains(_core.MediaItemsM.Current)
+        ? _core.MediaItemsM.Current
         : CurrentMediaItem;
 
       DeselectAll();
@@ -409,10 +454,10 @@ namespace PictureManager.Domain.Models {
 
       _loadIsRunning = true;
       ClearItBeforeLoad();
-      _progressBar.IsVisible = true;
-      _progressBar.IsIndeterminate = true;
+      _core.TitleProgressBarM.IsVisible = true;
+      _core.TitleProgressBarM.IsIndeterminate = true;
 
-      var items = await _mediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders);
+      var items = await _core.MediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders);
       LoadedItems.AddRange(items);
       ReloadFilteredItems();
       await LoadThumbnails(FilteredItems.ToArray());
@@ -431,22 +476,22 @@ namespace PictureManager.Domain.Models {
 
     private async Task LoadThumbnails(IReadOnlyCollection<MediaItemM> items) {
       var progress = new Progress<int>(x => {
-        _progressBar.ValueA = x;
-        _progressBar.ValueB = x;
+        _core.TitleProgressBarM.ValueA = x;
+        _core.TitleProgressBarM.ValueB = x;
       });
 
-      _progressBar.IsIndeterminate = false;
-      _progressBar.ResetProgressBars(100);
+      _core.TitleProgressBarM.IsIndeterminate = false;
+      _core.TitleProgressBarM.ResetProgressBars(100);
 
       // read metadata for new items and add thumbnails to grid
       await ReadMetadataAndListThumbs(items, progress);
 
       if (_cancelLoad)
-        _mediaItemsM.Delete(_mediaItemsM.DataAdapter.All.Values.Where(x => x.IsNew).ToArray());
+        _core.MediaItemsM.Delete(_core.MediaItemsM.DataAdapter.All.Values.Where(x => x.IsNew).ToArray());
 
-      _progressBar.ValueA = 100;
-      _progressBar.ValueB = 100;
-      _progressBar.IsVisible = false;
+      _core.TitleProgressBarM.ValueA = 100;
+      _core.TitleProgressBarM.ValueB = 100;
+      _core.TitleProgressBarM.IsVisible = false;
     }
 
     private async Task ReadMetadataAndListThumbs(IReadOnlyCollection<MediaItemM> items, IProgress<int> progress) {
@@ -463,7 +508,7 @@ namespace PictureManager.Domain.Models {
         var percent = Convert.ToInt32((double)workingOn / count * 100);
 
         if (mi.IsNew) {
-          var success = await Task.Run(async () => await _mediaItemsM.ReadMetadata(mi, false));
+          var success = await Task.Run(async () => await _core.MediaItemsM.ReadMetadata(mi, false));
 
           mi.IsNew = false;
           if (!success) {
@@ -472,7 +517,7 @@ namespace PictureManager.Domain.Models {
             FilteredItems.Remove(mi);
             FilteredChangedEventHandler(this, EventArgs.Empty);
             UpdatePositionSlashCount();
-            _mediaItemsM.Delete(mi);
+            _core.MediaItemsM.Delete(mi);
             progress.Report(percent);
 
             continue;

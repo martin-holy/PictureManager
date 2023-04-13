@@ -1,7 +1,6 @@
 ﻿using MH.UI.WPF.Controls;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
-using PictureManager.Domain.Models;
 using PictureManager.ShellStuff;
 using PictureManager.ViewModels;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ namespace PictureManager {
     public MediaItemsVM MediaItemsVM { get; }
     public MediaViewerVM MediaViewerVM { get; }
     public SegmentsVM SegmentsVM { get; }
-    public ThumbnailsGridsVM ThumbnailsGridsVM { get; }
 
     public static RelayCommand<object> TestButtonCommand { get; } = new(() => Tests.Run());
 
@@ -24,9 +22,6 @@ namespace PictureManager {
       MediaItemsVM = new(App.Core, App.Core.MediaItemsM);
       MediaViewerVM = new(this, App.Core.MediaViewerM);
       SegmentsVM = new(App.Core, this, App.Core.SegmentsM);
-      ThumbnailsGridsVM = new(App.Core, this, App.Core.ThumbnailsGridsM);
-
-      AttachEvents();
     }
 
     private void SetDelegates() {
@@ -42,28 +37,6 @@ namespace PictureManager {
       MH.UI.WPF.Utils.Init.SetDelegates();
 
       App.Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
-    }
-
-    private void AttachEvents() {
-      App.Core.MainTabsM.TabClosedEventHandler += (_, e) => {
-        switch (e.Data.Content) {
-          case ThumbnailsGridVM grid:
-            ThumbnailsGridsVM.CloseGrid(grid);
-            break;
-          case PeopleM people:
-            people.DeselectAll();
-            break;
-        }
-      };
-
-      App.Core.MainTabsM.PropertyChanged += async (_, e) => {
-        if (nameof(App.Core.MainTabsM.Selected).Equals(e.PropertyName)) {
-          await ThumbnailsGridsVM.SetCurrentGrid(App.Core.MainTabsM.Selected?.Content as ThumbnailsGridVM);
-
-          if (App.Core.MainTabsM.Selected is not { Content: PeopleM })
-            App.Core.PeopleM.DeselectAll();
-        }
-      };
     }
 
     private static double GetDisplayScale() =>
