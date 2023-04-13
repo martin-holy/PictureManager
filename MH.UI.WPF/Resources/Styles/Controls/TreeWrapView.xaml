@@ -95,7 +95,7 @@
   <Style
     x:Key="MH.Styles.Controls.TreeWrapViewItem"
     TargetType="{x:Type TreeViewItem}">
-    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
     <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment,Mode=OneWay,FallbackValue=Stretch,RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
@@ -170,8 +170,8 @@
   <Style
     x:Key="MH.Styles.Controls.TreeWrapView"
     TargetType="{x:Type c:TreeWrapView}">
-    <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource WhiteBrush}"/>
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
     <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     <Setter Property="VerticalContentAlignment" Value="Stretch"/>
