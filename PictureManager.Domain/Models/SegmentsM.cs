@@ -392,7 +392,9 @@ namespace PictureManager.Domain.Models {
         simSegment.Similar?.Remove(segment);
 
       try {
-        File.Delete(segment.FilePathCache);
+        if (File.Exists(segment.FilePathCache))
+          File.Delete(segment.FilePathCache);
+
         segment.MediaItem = null;
       }
       catch (Exception ex) {
