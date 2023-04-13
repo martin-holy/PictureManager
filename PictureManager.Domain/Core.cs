@@ -263,6 +263,26 @@ namespace PictureManager.Domain {
 
         SegmentsM.SegmentsDrawerRemove(e.Data);
       };
+
+      MainTabsM.TabClosedEventHandler += (_, e) => {
+        switch (e.Data.Content) {
+          case ThumbnailsGridM grid:
+            ThumbnailsGridsM.CloseGrid(grid);
+            break;
+          case PeopleM people:
+            people.DeselectAll();
+            break;
+        }
+      };
+
+      MainTabsM.PropertyChanged += async (_, e) => {
+        if (nameof(MainTabsM.Selected).Equals(e.PropertyName)) {
+          await ThumbnailsGridsM.SetCurrentGrid(MainTabsM.Selected?.Content as ThumbnailsGridM);
+
+          if ((MainTabsM.Selected?.Content as PeopleM) == null)
+            PeopleM.DeselectAll();
+        }
+      };
     }
 
     private void Loaded() {

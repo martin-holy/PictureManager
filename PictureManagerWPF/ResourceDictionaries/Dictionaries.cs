@@ -50,18 +50,18 @@ namespace PictureManager.ResourceDictionaries {
       { typeof(PeopleM), Res.IconPeople },
       { typeof(SegmentsVM), Res.IconEquals },
       { typeof(ViewerDetailM), Res.IconEye },
-      { typeof(ThumbnailsGridVM), Res.IconFolder }
+      { typeof(ThumbnailsGridM), Res.IconFolder }
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToIconBrush = new() {
       { typeof(PeopleM), "ColorBrushPeople" },
       { typeof(SegmentsVM), "ColorBrushWhite" },
       { typeof(ViewerDetailM), "ColorBrushWhite" },
-      { typeof(ThumbnailsGridVM), "ColorBrushFolder" }
+      { typeof(ThumbnailsGridM), "ColorBrushFolder" }
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToContextMenu = new() {
-      { typeof(ThumbnailsGridVM), "ThumbnailsGridContextMenu" }
+      { typeof(ThumbnailsGridM), "ThumbnailsGridContextMenu" }
     };
   }
 }

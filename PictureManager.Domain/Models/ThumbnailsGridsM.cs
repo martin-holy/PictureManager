@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridsM : ObservableObject {
@@ -19,8 +18,6 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<ThumbnailsGridM> All { get; } = new();
     public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public double DefaultThumbScale { get; set; } = 1.0;
-    public event EventHandler<ObjectEventArgs<(ThumbnailsGridM, string)>> ThumbnailsGridAddedEventHandler = delegate { };
-    public Action<string> AddThumbnailsGridIfNotActive { get; set; }
 
     public RelayCommand<string> AddThumbnailsGridCommand { get; }
     public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
@@ -40,33 +37,42 @@ namespace PictureManager.Domain.Models {
       _core = core;
 
       AddThumbnailsGridCommand = new(AddThumbnailsGrid);
+      
       ActivateFilterAndCommand = new(
         item => _ = Current?.ActivateFilter(item, DisplayFilter.And),
         item => item != null);
+      
       ActivateFilterOrCommand = new(
         item => _ = Current?.ActivateFilter(item, DisplayFilter.Or),
         item => item != null);
+      
       ActivateFilterNotCommand = new(
         item => _ = Current?.ActivateFilter(item, DisplayFilter.Not),
         item => item != null);
+      
       ClearFiltersCommand = new(() => _ = Current?.ClearFilters());
+      
       SelectNotModifiedCommand = new(
         () => Current?.SelectNotModified(_core.MediaItemsM.ModifiedItems),
         () => Current?.FilteredItems.Count > 0);
+      
       ShuffleCommand = new(
         () => {
           Current.Shuffle();
           _ = Current.ThumbsGridReloadItems();
         },
         () => Current?.FilteredItems.Count > 0);
+      
       ReapplyFilterCommand = new(
         async () => await Current.ReapplyFilter(),
         () => Current != null);
+      
       LoadByTagCommand = new(
         async item => {
           await LoadByTag(item, Keyboard.IsCtrlOn(), Keyboard.IsAltOn(), Keyboard.IsShiftOn());
         },
         item => item != null);
+      
       CompressCommand = new(
         () => {
           Core.DialogHostShow(
@@ -76,12 +82,15 @@ namespace PictureManager.Domain.Models {
               Core.Settings.JpegQualityLevel));
         },
         () => Current?.FilteredItems.Count > 0);
+      
       ResizeImagesCommand = new(
         () => Core.DialogHostShow(new ResizeImagesDialogM(Current.GetSelectedOrAll())),
         () => Current?.FilteredItems.Count > 0);
+      
       ImagesToVideoCommand = new(
         ImagesToVideo,
         () => Current?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
+      
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
         () => Current?.FilteredItems.Count(x => x.IsSelected) > 0);
@@ -102,17 +111,17 @@ namespace PictureManager.Domain.Models {
       );
     }
 
-    private ThumbnailsGridM AddThumbnailsGrid(MediaItemsM mediaItemsM, TitleProgressBarM progressBar) {
-      var grid = new ThumbnailsGridM(mediaItemsM, progressBar, DefaultThumbScale);
-      All.Add(grid);
-      Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
-
-      return grid;
-    }
-
     public void RemoveMediaItem(MediaItemM item) {
       foreach (var grid in All)
         grid.Remove(item, Current == grid);
+    }
+
+    public void CloseGrid(ThumbnailsGridM grid) {
+      grid.ClearItBeforeLoad();
+      All.Remove(grid);
+
+      if (grid.Equals(Current))
+        Current = null;
     }
 
     public async Task SetCurrentGrid(ThumbnailsGridM grid) {
@@ -128,22 +137,35 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public void AddThumbnailsGrid(string tabTitle) {
-      var model = AddThumbnailsGrid(_core.MediaItemsM, _core.TitleProgressBarM);
+    private void AddThumbnailsGridIfNotActive(string tabTitle) {
+      if (_core.MainTabsM.Selected?.Content is ThumbnailsGridM) {
+        if (tabTitle != null)
+          _core.MainTabsM.Selected.ContentHeader = tabTitle;
 
-      model.SelectionChangedEventHandler += (_, _) => {
+        return;
+      }
+
+      AddThumbnailsGrid(tabTitle);
+    }
+
+    private void AddThumbnailsGrid(string tabTitle) {
+      var grid = new ThumbnailsGridM(_core, DefaultThumbScale, tabTitle);
+      All.Add(grid);
+      Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
+
+      grid.SelectionChangedEventHandler += (_, _) => {
         _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
         _core.StatusPanelM.OnPropertyChanged(nameof(_core.StatusPanelM.FileSize));
       };
 
-      model.FilteredChangedEventHandler += (_, _) => {
+      grid.FilteredChangedEventHandler += (_, _) => {
         _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       };
 
-      ThumbnailsGridAddedEventHandler(this, new((model, tabTitle)));
+      _core.MainTabsM.AddItem(grid.MainTabsItem);
     }
 
-    public async Task LoadByTag(object item, bool and, bool hide, bool recursive) {
+    private async Task LoadByTag(object item, bool and, bool hide, bool recursive) {
       var items = item switch {
         RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value).ToList(),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
