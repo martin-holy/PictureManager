@@ -101,7 +101,7 @@ namespace PictureManager.Utils {
 
     public static void CreateVideoClipThumbnail(string destPath) =>
       CreateThumbnailFromVisual(
-        App.Ui.MediaViewerVM.FullVideo,
+        AppCore.FullVideo,
         destPath,
         Core.Settings.ThumbnailSize,
         Core.Settings.JpegQualityLevel);

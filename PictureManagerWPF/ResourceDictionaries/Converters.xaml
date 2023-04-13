@@ -7,7 +7,9 @@
 
   <pm:RatingConverter x:Key="RatingConverter" />
   <pm:MediaItemSizeConverter x:Key="MediaItemSizeConverter" />
-  
+
+  <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
+  <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
   <converters:ImageSourceConverter x:Key="ImageSourceConverter" />
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter" />
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter" />
