@@ -133,7 +133,7 @@ namespace PictureManager.Domain.Models {
       
       if (Current.NeedReload) {
         await Current.ThumbsGridReloadItems();
-        Current.UpdatePositionSlashCount();
+        Current.OnPropertyChanged(nameof(Current.PositionSlashCount));
       }
     }
 
@@ -154,8 +154,11 @@ namespace PictureManager.Domain.Models {
       Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
 
       grid.SelectionChangedEventHandler += (_, _) => {
+        _core.MediaItemsM.Current = grid.SelectedItems.Count == 1
+          ? grid.SelectedItems[0]
+          : null;
+
         _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-        _core.StatusPanelM.OnPropertyChanged(nameof(_core.StatusPanelM.FileSize));
       };
 
       grid.FilteredChangedEventHandler += (_, _) => {

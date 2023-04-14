@@ -29,12 +29,12 @@ namespace PictureManager.Domain.Models {
       thumbsGrid.GroupByFolders = false;
       thumbsGrid.GroupByDate = false;
       thumbsGrid.FilteredItems.Clear();
+      thumbsGrid.DeselectAll();
 
       if (similar != null)
         foreach (var mi in similar.Cast<MediaItemM>())
           thumbsGrid.FilteredItems.Add(mi);
 
-      thumbsGrid.CurrentMediaItem = null;
       await thumbsGrid.ThumbsGridReloadItems();
     }
 

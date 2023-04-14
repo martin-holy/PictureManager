@@ -104,7 +104,8 @@
     <!-- Status Panel -->
     <mhc:SlidePanelsGrid.PanelBottom>
       <mhc:SlidePanel
-        Content="{Binding StatusPanelM}"
+        Content="{Binding}"
+        ContentTemplate="{StaticResource StatusPanelV}"
         CanOpen="{Binding MainWindowM.CanOpenStatusPanel}"
         MinHeight="30"/>
     </mhc:SlidePanelsGrid.PanelBottom>

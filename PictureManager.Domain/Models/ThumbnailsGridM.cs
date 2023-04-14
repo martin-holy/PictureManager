@@ -22,14 +22,12 @@ namespace PictureManager.Domain.Models {
     private bool _loadIsRunning;
     private bool _cancelLoad;
 
-    private MediaItemM _currentMediaItem;
     private bool _showImages = true;
     private bool _showVideos = true;
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
     private bool _reWrapItems;
-    private string _positionSlashCount;
     private object _scrollToItem;
     private TreeWrapGroup _filteredRoot = new();
 
@@ -58,24 +56,12 @@ namespace PictureManager.Domain.Models {
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
     public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
     public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
-    public string PositionSlashCount { get => _positionSlashCount; set { _positionSlashCount = value; OnPropertyChanged(); } }
+    public string PositionSlashCount => SelectedItems.Count == 0
+      ? FilteredItems.Count.ToString()
+      : $"{FilteredItems.IndexOf(SelectedItems[0]) + 1}/{FilteredItems.Count}";
 
     public bool NeedReload { get; set; }
     public double ThumbScale { get; set; }
-
-    public MediaItemM CurrentMediaItem {
-      get => _currentMediaItem;
-      set {
-        _currentMediaItem = value;
-
-        // TODO temporary
-        if (Core.Instance.MediaItemsM.Current != value)
-          Core.Instance.MediaItemsM.Current = value;
-
-        OnPropertyChanged();
-        UpdatePositionSlashCount();
-      }
-    }
 
     public RelayCommand<object> RefreshCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
@@ -118,7 +104,6 @@ namespace PictureManager.Domain.Models {
       if (mi == null) return;
 
       DeselectAll();
-      CurrentMediaItem = mi;
       _core.MainWindowM.IsFullScreen = true;
       _core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), mi);
     }
@@ -128,9 +113,6 @@ namespace PictureManager.Domain.Models {
       var data = FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
     }
-
-    public void UpdatePositionSlashCount() =>
-      PositionSlashCount = $"{(CurrentMediaItem == null ? string.Empty : $"{FilteredItems.IndexOf(CurrentMediaItem) + 1}/")}{FilteredItems.Count}";
 
     public void ClearItBeforeLoad() {
       foreach (var item in SelectedItems)
@@ -144,17 +126,12 @@ namespace PictureManager.Domain.Models {
       FilteredRoot = new();
       SelectionChanged();
       FilteredChangedEventHandler(this, EventArgs.Empty);
-
-      // TODO temporary
-      Core.Instance.StatusPanelM.CurrentMediaItemM = null;
     }
 
     private void SelectionChanged() {
       SelectionChangedEventHandler.Invoke(this, EventArgs.Empty);
       OnPropertyChanged(nameof(SelectedCount));
-      CurrentMediaItem = SelectedItems.Count == 1
-        ? SelectedItems[0]
-        : null;
+      OnPropertyChanged(nameof(PositionSlashCount));
     }
 
     public void SetSelected(MediaItemM mi, bool value) =>
@@ -196,7 +173,7 @@ namespace PictureManager.Domain.Models {
       if (FilteredItems.Remove(item)) {
         NeedReload = true;
         if (isCurrent) {
-          UpdatePositionSlashCount();
+          OnPropertyChanged(nameof(PositionSlashCount));
           FilteredChangedEventHandler(this, EventArgs.Empty);
         }
       }
@@ -214,7 +191,7 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in items)
         Remove(mi, true);
 
-      CurrentMediaItem = newCurrent;
+      SetSelected(newCurrent, true);
     }
 
     public void Zoom(int delta) {
@@ -248,7 +225,7 @@ namespace PictureManager.Domain.Models {
       var newIndex = FilteredItems.OrderBy(x => x.FileName).ToList().IndexOf(mi);
       FilteredItems.RemoveAt(oldIndex);
       FilteredItems.Insert(newIndex, mi);
-      UpdatePositionSlashCount();
+      OnPropertyChanged(nameof(PositionSlashCount));
       FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
@@ -278,10 +255,7 @@ namespace PictureManager.Domain.Models {
       foreach (var mi in sorted)
         FilteredItems.Add(mi);
 
-      if (FilteredItems.IndexOf(CurrentMediaItem) < 0)
-        CurrentMediaItem = null;
-
-      UpdatePositionSlashCount();
+      OnPropertyChanged(nameof(PositionSlashCount));
       FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
@@ -424,7 +398,9 @@ namespace PictureManager.Domain.Models {
     public void SelectAndScrollToCurrentMediaItem() {
       var mi = FilteredItems.Contains(_core.MediaItemsM.Current)
         ? _core.MediaItemsM.Current
-        : CurrentMediaItem;
+        : SelectedItems.Count != 0
+          ? SelectedItems[0]
+          : null;
 
       DeselectAll();
       if (mi == null) return;
@@ -516,7 +492,7 @@ namespace PictureManager.Domain.Models {
             LoadedItems.Remove(mi);
             FilteredItems.Remove(mi);
             FilteredChangedEventHandler(this, EventArgs.Empty);
-            UpdatePositionSlashCount();
+            OnPropertyChanged(nameof(PositionSlashCount));
             _core.MediaItemsM.Delete(mi);
             progress.Report(percent);
 

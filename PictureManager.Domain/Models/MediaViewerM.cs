@@ -76,11 +76,6 @@ namespace PictureManager.Domain.Models {
       Current = null;
     }
 
-    public void SetCurrent(MediaItemM current) {
-      if (IsVisible && Current != current)
-        Current = current;
-    }
-
     public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
       if (mediaItems == null || mediaItems.Count == 0) {
         MediaItems.Clear();
