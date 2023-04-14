@@ -134,7 +134,6 @@ namespace PictureManager.Domain {
             }
 
             MediaViewerM.Deactivate();
-            StatusPanelM.CurrentMediaItemM = ThumbnailsGridsM.Current?.CurrentMediaItem;
           }
         }
       };
@@ -207,7 +206,7 @@ namespace PictureManager.Domain {
 
       MediaItemsM.PropertyChanged += (_, e) => {
         if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
-          MediaViewerM.SetCurrent(MediaItemsM.Current);
+          StatusPanelM.Update();
 
           if (MainWindowM.IsFullScreen)
             TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
@@ -236,7 +235,7 @@ namespace PictureManager.Domain {
           case nameof(MediaViewerM.Current):
             SegmentsM.SegmentsRectsM.MediaItem = MediaViewerM.Current;
 
-            if (MediaItemsM.Current != MediaViewerM.Current)
+            if (MediaViewerM.Current != null && MediaItemsM.Current != MediaViewerM.Current)
               MediaItemsM.Current = MediaViewerM.Current;
             break;
           case nameof(MediaViewerM.Scale):
