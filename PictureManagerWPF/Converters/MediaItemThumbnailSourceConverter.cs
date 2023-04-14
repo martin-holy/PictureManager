@@ -1,12 +1,12 @@
-﻿using System;
+﻿using MH.Utils;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using PictureManager.Utils;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using PictureManager.Utils;
-using PictureManager.Domain.Models;
-using PictureManager.Domain;
-using MH.Utils;
 
 namespace PictureManager.Converters {
   public class MediaItemThumbnailSourceConverter : IValueConverter {
@@ -24,10 +24,20 @@ namespace PictureManager.Converters {
             0,
             Core.Settings.JpegQualityLevel).GetAwaiter().GetResult();
 
+        var orientation = mi.Orientation;
+        // swap 90 and 270 degrees for video
+        if (mi.MediaType == MediaType.Video) {
+          if (mi.Orientation == 6)
+            orientation = 8;
+          else if (mi.Orientation == 8)
+            orientation = 6;
+        }
+
         var src = new BitmapImage();
         src.BeginInit();
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(mi.FilePathCache);
+        src.Rotation = Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
         src.EndInit();
 
         return src;

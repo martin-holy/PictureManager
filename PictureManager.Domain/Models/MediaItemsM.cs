@@ -600,7 +600,7 @@ namespace PictureManager.Domain.Models {
 
           TryWriteMetadata(mi);
           mi.SetThumbSize(true);
-          File.Delete(mi.FilePathCache);
+          mi.OnPropertyChanged(nameof(mi.FilePathCache));
         },
         mi => mi.FilePath,
         // onCompleted
@@ -686,6 +686,9 @@ namespace PictureManager.Domain.Models {
       if (rotation == MediaOrientation.Normal) return;
 
       SetOrientation(GetActive(), rotation);
+
+      if (_core.MediaViewerM.IsVisible)
+        _core.MediaViewerM.Current = _core.MediaViewerM.Current;
     }
 
     public async void Rename() {
