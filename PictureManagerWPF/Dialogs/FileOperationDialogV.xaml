@@ -4,6 +4,12 @@
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type md:FileOperationDialogM}">
+    <DataTemplate.Resources>
+      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="Margin" Value="5"/>
+      </Style>
+    </DataTemplate.Resources>
+    
     <DockPanel Width="500">
       <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
         <Button
@@ -27,19 +33,19 @@
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
 
-          <Label Grid.Row="0" Grid.Column="0" Content="From: "/>
-          <Label Grid.Row="1" Grid.Column="0" Content="To: "/>
-          <Label Grid.Row="2" Grid.Column="0" Content="File: "/>
+          <TextBlock Grid.Row="0" Grid.Column="0" Text="From: "/>
+          <TextBlock Grid.Row="1" Grid.Column="0" Text="To: "/>
+          <TextBlock Grid.Row="2" Grid.Column="0" Text="File: "/>
 
-          <Label Grid.Row="0" Grid.Column="1" Content="{Binding DirFrom}"/>
-          <Label Grid.Row="1" Grid.Column="1" Content="{Binding DirTo}"/>
-          <Label Grid.Row="2" Grid.Column="1" Content="{Binding FileName}"/>
+          <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DirFrom}"/>
+          <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DirTo}"/>
+          <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FileName}"/>
         </Grid>
 
         <!-- Progress Bar -->
         <ProgressBar
           Height="16"
-          Margin="5,0"
+          Margin="5,5,5,0"
           IsIndeterminate="{Binding IsIndeterminate}"
           Value="{Binding ProgressValue}"/>
       </StackPanel>
