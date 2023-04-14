@@ -297,7 +297,7 @@ namespace PictureManager.Domain {
     private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {
       var sCount = SegmentsM.Selected.Count;
       var pCount = item is PersonM ? 0 : PeopleM.Selected.Count;
-      var miCount = MediaItemsM.IsEditModeOn ? ThumbnailsGridsM.Current?.SelectedCount ?? 0 : 0;
+      var miCount = MediaItemsM.IsEditModeOn ? MediaItemsM.GetActive().Length : 0;
       if (sCount == 0 && pCount == 0 && miCount == 0) return null;
 
       var msgA = $"Do you want to toggle #{itemName} on selected";
