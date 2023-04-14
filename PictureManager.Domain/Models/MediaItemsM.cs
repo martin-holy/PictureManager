@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
@@ -14,6 +6,13 @@ using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.Utils;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaItemsM : ObservableObject {
@@ -292,7 +291,7 @@ namespace PictureManager.Domain.Models {
           CopyMove(mode, items, destFolder, fop.Progress, token);
         }
         catch (Exception ex) {
-          Core.DialogHostShow(new ErrorDialogM(ex));
+          Tasks.RunOnUiThread(() => Core.DialogHostShow(new ErrorDialogM(ex)));
         }
       }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
