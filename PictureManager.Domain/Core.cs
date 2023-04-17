@@ -308,17 +308,13 @@ namespace PictureManager.Domain {
         return null;
       }
 
+      var md = new MessageDialog(title, null, Res.IconQuestion, true);
+      var buttons = new List<DialogButton>();
       var msgA = $"Do you want to toggle #{itemName} on selected";
       var msgB = new List<string>();
       var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
       var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
       var msgMi = miCount > 1 ? $"Media Items ({miCount})" : "Media Item";
-      var msg = oneOption
-        ? $"{msgA} {msgB[0]}?"
-        : $"{msgA} {string.Join(" or ", msgB)}?";
-
-      var md = new MessageDialog(title, msg, Res.IconQuestion, true);
-      var buttons = new List<DialogButton>();
 
       void AddOption(string msg, int result, string icon) {
         buttons.Add(oneOption
@@ -333,6 +329,9 @@ namespace PictureManager.Domain {
       if (oneOption) buttons.Add(new("No", Res.IconXCross, md.SetResult(0), false, true));
 
       md.Buttons = buttons.ToArray();
+      md.Message = oneOption
+        ? $"{msgA} {msgB[0]}?"
+        : $"{msgA} {string.Join(" or ", msgB)}?";
 
       return md;
     }
