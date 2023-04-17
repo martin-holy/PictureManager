@@ -93,7 +93,7 @@ namespace PictureManager.Domain.Models {
             : string.Empty;
         });
 
-      if (Core.DialogHostShow(inputDialog) != 0) return;
+      if (Core.DialogHostShow(inputDialog) != 1) return;
 
       var (lat, lng) = ParseLatLng(inputDialog.Answer);
       InsertGeoNameHierarchy(lat, lng, userName);

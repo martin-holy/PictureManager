@@ -9,46 +9,34 @@
         <Setter Property="Margin" Value="5"/>
       </Style>
     </DataTemplate.Resources>
-    
-    <DockPanel Width="500">
-      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Content="CANCEL"
-          IsCancel="True"
-          Command="{Binding CancelCommand}"/>
-      </StackPanel>
 
-      <StackPanel Margin="5">
-        <!-- Directory From / To, FileName -->
-        <Grid VerticalAlignment="Center">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-          </Grid.RowDefinitions>
+    <StackPanel Margin="5" Width="500">
+      <Grid VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-          </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-          <TextBlock Grid.Row="0" Grid.Column="0" Text="From: "/>
-          <TextBlock Grid.Row="1" Grid.Column="0" Text="To: "/>
-          <TextBlock Grid.Row="2" Grid.Column="0" Text="File: "/>
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="From: "/>
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="To: "/>
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="File: "/>
 
-          <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DirFrom}"/>
-          <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DirTo}"/>
-          <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FileName}"/>
-        </Grid>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DirFrom}"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DirTo}"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding FileName}"/>
+      </Grid>
 
-        <!-- Progress Bar -->
-        <ProgressBar
-          Height="16"
-          Margin="5,5,5,0"
-          IsIndeterminate="{Binding IsIndeterminate}"
-          Value="{Binding ProgressValue}"/>
-      </StackPanel>
-    </DockPanel>
+      <ProgressBar
+        Height="16"
+        Margin="5,5,5,0"
+        IsIndeterminate="{Binding IsIndeterminate}"
+        Value="{Binding ProgressValue}"/>
+    </StackPanel>
   </DataTemplate>
 </ResourceDictionary>

@@ -1,14 +1,12 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+using MH.Utils.Dialogs;
 using PictureManager.Domain.Models;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class FileOperationCollisionDialogM : ObservableObject, IDialog {
-    private string _title = "The destination already has a file with this name";
-    private int _result = (int)CollisionResult.Skip;
+  public sealed class FileOperationCollisionDialogM : Dialog {
     private string _error;
     private string _fileName;
     private FileInfo _srcFileInfo;
@@ -16,8 +14,6 @@ namespace PictureManager.Domain.Dialogs {
     private MediaItemM _srcMediaItem;
     private MediaItemM _destMediaItem;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public string Error { get => _error; set { _error = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
     public FileInfo SrcFileInfo { get => _srcFileInfo; set { _srcFileInfo = value; OnPropertyChanged(); } }
@@ -25,20 +21,17 @@ namespace PictureManager.Domain.Dialogs {
     public MediaItemM SrcMediaItem { get => _srcMediaItem; set { _srcMediaItem = value; OnPropertyChanged(); } }
     public MediaItemM DestMediaItem { get => _destMediaItem; set { _destMediaItem = value; OnPropertyChanged(); } }
 
-    public RelayCommand<object> RenameCommand { get; }
-    public RelayCommand<object> ReplaceCommand { get; }
-    public RelayCommand<object> SkipCommand { get; }
-
-    public FileOperationCollisionDialogM(string srcFilePath, string destFilePath) {
+    public FileOperationCollisionDialogM(string srcFilePath, string destFilePath) : base("The destination already has a file with this name", Res.IconImageMultiple) {
       SrcFileInfo = new(srcFilePath);
       DestFileInfo = new(destFilePath);
       SrcMediaItem = GetMediaItem(srcFilePath);
       DestMediaItem = GetMediaItem(destFilePath);
       FileName = SrcFileInfo.Name;
 
-      RenameCommand = new(Rename);
-      ReplaceCommand = new(() => Result = (int)CollisionResult.Replace);
-      SkipCommand = new(() => Result = (int)CollisionResult.Skip);
+      Buttons = new DialogButton[] {
+        new("Rename", null, new(Rename)),
+        new("Replace", null, new(() => Result = (int)CollisionResult.Replace)),
+        new("Skip", null, new(() => Result = (int)CollisionResult.Skip)) }; 
     }
 
     public static CollisionResult Show(string srcFilePath, string destFilePath, ref string fileName) {
@@ -53,7 +46,7 @@ namespace PictureManager.Domain.Dialogs {
 
       fileName = outFileName;
 
-      return result;
+      return result == 0 ? CollisionResult.Skip : result;
     }
 
     private MediaItemM GetMediaItem(string filePath) {

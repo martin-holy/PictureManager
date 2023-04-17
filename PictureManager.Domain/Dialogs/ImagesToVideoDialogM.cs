@@ -1,8 +1,9 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -10,13 +11,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System;
-using MH.Utils;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class ImagesToVideoDialogM : ObservableObject, IDialog {
-    private string _title = "Images to Video";
-    private int _result = 1;
+  public sealed class ImagesToVideoDialogM : Dialog {
     private bool _isBusy;
     private readonly MediaItemM[] _items;
     private Process _process;
@@ -27,15 +24,14 @@ namespace PictureManager.Domain.Dialogs {
     private readonly OnSuccess _onSuccess;
 
     public delegate void OnSuccess(FolderM folder, string fileName);
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public bool IsBusy { get => _isBusy; set { _isBusy = value; OnPropertyChanged(); } }
-    public RelayCommand<object> CreateVideoCommand { get; }
-    public RelayCommand<object> CancelCommand { get; }
 
-    public ImagesToVideoDialogM(IEnumerable<MediaItemM> items, OnSuccess onSuccess) {
-      CreateVideoCommand = new(CreateVideo);
-      CancelCommand = new(Cancel);
+    public ImagesToVideoDialogM(IEnumerable<MediaItemM> items, OnSuccess onSuccess) : base("Images to Video", Res.IconMovieClapper) {
+      CloseCommand = new(Cancel);
+
+      Buttons = new DialogButton[] {
+        new("Create Video", Res.IconMovieClapper, new(CreateVideo, () => !IsBusy), true),
+        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
 
       _items = items.ToArray();
       var firstMi = _items.First();

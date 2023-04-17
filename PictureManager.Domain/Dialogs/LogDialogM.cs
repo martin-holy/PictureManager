@@ -1,23 +1,13 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+using MH.Utils.Dialogs;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class LogDialogM : ObservableObject, IDialog {
-    private string _title;
-    private int _result = 1;
-
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
-    public RelayCommand<object> CloseCommand { get; }
-
-    public LogDialogM() {
-      Title = "Log";
-      CloseCommand = new(
-        () => {
-          Log.Items.Clear();
-          Result = 0;
-        });
+  public sealed class LogDialogM : Dialog {
+    public LogDialogM() : base("Log", Res.IconSort) {
+      Buttons = new DialogButton[] {
+        new("Clear", null, new(() => { Log.Items.Clear(); Result = 1; }), true),
+        new("Close", Res.IconXCross, CloseCommand, false, true) };
     }
   }
 }

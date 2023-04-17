@@ -79,7 +79,7 @@ namespace PictureManager {
     }*/
 
     private static void ChangeDate() {
-      var progress = new MH.Utils.Dialogs.ProgressBarDialog("Change date", true, 1);
+      var progress = new MH.Utils.Dialogs.ProgressBarDialog("Change date", Res.IconCalendar, true, 1);
       progress.AddEvents(
         Directory.GetFiles(@"d:\fotos", "*.jpg", SearchOption.AllDirectories),
         null,

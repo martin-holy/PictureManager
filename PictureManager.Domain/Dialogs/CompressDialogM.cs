@@ -1,6 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,20 +10,16 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Dialogs {
-  public class CompressDialogM : ObservableObject, IDialog {
+  public class CompressDialogM : Dialog {
     private CancellationTokenSource _cts;
     private Task _workTask;
 
-    private string _title;
-    private int _result = -1;
     private int _jpegQualityLevel;
     private long _totalSourceSize;
     private long _totalCompressedSize;
     private double _progressValue;
     private bool _isWorkInProgress;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public int JpegQualityLevel { get => _jpegQualityLevel; set { _jpegQualityLevel = value; OnPropertyChanged(); } }
     public string TotalSourceSize => IOExtensions.FileSizeToString(_totalSourceSize);
     public string TotalCompressedSize => IOExtensions.FileSizeToString(_totalCompressedSize);
@@ -31,31 +27,28 @@ namespace PictureManager.Domain.Dialogs {
     public bool IsWorkInProgress { get => _isWorkInProgress; set { _isWorkInProgress = value; OnPropertyChanged(); } }
     public List<MediaItemM> Items { get; set; }
 
-    public RelayCommand<object> CancelCommand { get; set; }
-    public RelayCommand<object> CompressCommand { get; set; }
-
-    public CompressDialogM(List<MediaItemM> items, int jpegQualityLevel) {
-      Title = "Compress Pictures to JPG";
+    public CompressDialogM(List<MediaItemM> items, int jpegQualityLevel) : base("Compress Pictures to JPG", Res.IconImage) {
       Items = items;
       JpegQualityLevel = jpegQualityLevel;
       ProgressValue = Items.Count;
 
-      CancelCommand = new(
-        async () => {
-          await Cancel();
-          Result = 0; // close
-        },
-        () => IsWorkInProgress);
-
-      CompressCommand = new(
+      var compressCommand = new RelayCommand<object>(
         async () => { await Compress(); },
         () => !IsWorkInProgress);
+
+      CloseCommand = new(async () => { await Cancel(); });
+
+      Buttons = new DialogButton[] {
+        new("Compress", Res.IconImage, compressCommand, true, false),
+        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
     }
 
     public async Task Cancel() {
       _cts?.Cancel();
       if (_workTask != null)
         await _workTask;
+
+      Result = 0;
     }
 
     public async Task Compress() {

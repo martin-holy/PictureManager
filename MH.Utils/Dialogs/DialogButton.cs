@@ -1,14 +1,16 @@
-﻿namespace MH.Utils.Dialogs {
+﻿using MH.Utils.BaseClasses;
+
+namespace MH.Utils.Dialogs {
   public class DialogButton {
     public string Text { get; }
-    public int Result { get; }
     public string Icon { get; }
     public bool IsDefault { get; }
     public bool IsCancel { get; }
+    public RelayCommand<object> Command { get; }
 
-    public DialogButton(string text, int result, string icon = null, bool isDefault = false, bool isCancel = false) {
+    public DialogButton(string text, string icon, RelayCommand<object> command, bool isDefault = false, bool isCancel = false) {
       Text = text;
-      Result = result;
+      Command = command;
       Icon = icon;
       IsDefault = isDefault;
       IsCancel = isCancel;

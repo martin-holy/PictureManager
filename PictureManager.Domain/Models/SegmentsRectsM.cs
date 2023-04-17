@@ -234,7 +234,7 @@ namespace PictureManager.Domain.Models {
         "Delete Segment",
         "Do you really want to delete this segment?",
         Res.IconQuestion,
-        true)) != 0) return;
+        true)) != 1) return;
 
       SegmentsM.Delete(item.Segment);
       MediaItemSegmentsRects.Remove(item);

@@ -1,33 +1,28 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace MH.Utils.Dialogs {
-  public class ProgressBarDialog : ObservableObject, IDialog {
+  public class ProgressBarDialog : Dialog {
     private readonly BackgroundWorker _worker;
     private readonly CancellationTokenSource _cts;
     private readonly ParallelOptions _po;
+    private readonly bool _canCancel;
 
-    private string _title;
     private string _message;
-    private bool _canCancel;
-    private int _result = -1;
     private string _stringProgress;
     private int _intProgress;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
     public string Message { get => _message; set { _message = value; OnPropertyChanged(); } }
-    public bool CanCancel { get => _canCancel; set { _canCancel = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public string StringProgress { get => _stringProgress; set { _stringProgress = value; OnPropertyChanged(); } }
     public int IntProgress { get => _intProgress; set { _intProgress = value; OnPropertyChanged(); } }
 
-    public ProgressBarDialog(string title, bool canCancel, int maxDegreeOfParallelism) {
-      Title = title;
-      CanCancel = canCancel;
+    public ProgressBarDialog(string title, string icon, bool canCancel, int maxDegreeOfParallelism) : base(title, icon) {
+      _canCancel = canCancel;
+      CloseCommand = new(Cancel, () => _canCancel);
+      Buttons = new DialogButton[] { new("Cancel", "IconXCross", CloseCommand, false, true) };
 
       _worker = new() {
         WorkerReportsProgress = true,
@@ -40,15 +35,17 @@ namespace MH.Utils.Dialogs {
         MaxDegreeOfParallelism = maxDegreeOfParallelism,
         CancellationToken = _cts.Token
       };
-
-      PropertyChanged += (_, e) => {
-        if (nameof(Result).Equals(e.PropertyName, StringComparison.Ordinal) && Result == -1)
-          _worker.CancelAsync();
-      };
     }
 
     ~ProgressBarDialog() {
       _cts.Dispose();
+    }
+
+    private void Cancel() {
+      if (_canCancel)
+        _worker.CancelAsync();
+
+      Result = 0;
     }
 
     public void Start() =>
@@ -81,7 +78,7 @@ namespace MH.Utils.Dialogs {
 
       _worker.RunWorkerCompleted += (o, e) => {
         onCompleted?.Invoke(o, e);
-        Result = 0;
+        Result = 1;
       };
 
       _worker.ProgressChanged += (_, e) => {

@@ -52,7 +52,7 @@ namespace PictureManager.Domain.Models {
             "Metadata Edit",
             "Some Media Items are modified, do you want to save them?",
             Res.IconQuestion,
-            true)) == 0) {
+            true)) == 1) {
         CoreM.MediaItemsM.SaveEdit();
       }
 
@@ -61,7 +61,7 @@ namespace PictureManager.Domain.Models {
             "Database changes",
             "There are some changes in database, do you want to save them?",
             Res.IconQuestion,
-            true)) == 0) {
+            true)) == 1) {
         CoreM.Sdb.SaveAllTables();
       }
 

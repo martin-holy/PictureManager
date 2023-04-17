@@ -16,7 +16,8 @@
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2023)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 

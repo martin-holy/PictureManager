@@ -40,7 +40,7 @@ namespace PictureManager.Domain {
 
     public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
     public static FileOperationDeleteFunc FileOperationDelete { get; set; }
-    public static Func<IDialog, int> DialogHostShow { get; set; }
+    public static Func<Dialog, int> DialogHostShow { get; set; }
     public static Func<double> GetDisplayScale { get; set; }
     public static Settings Settings { get; set; }
 
@@ -298,38 +298,43 @@ namespace PictureManager.Domain {
       var sCount = SegmentsM.Selected.Count;
       var pCount = item is PersonM ? 0 : PeopleM.Selected.Count;
       var miCount = MediaItemsM.IsEditModeOn ? MediaItemsM.GetActive().Length : 0;
+      
       if (sCount == 0 && pCount == 0 && miCount == 0) return null;
 
-      var msgA = $"Do you want to toggle #{itemName} on selected";
-      var msgB = new List<string>();
-      var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
-      var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
-      var msgMi = miCount > 1 ? $"Media Items ({miCount})" : "Media Item";
       var oneOption = new[] { sCount, pCount, miCount }.Count(x => x > 0) == 1;
-      var buttons = new List<DialogButton>();
-
-      void AddOption(string msg, int result, string icon) {
-        buttons.Add(oneOption
-          ? new("YES", result, Res.IconCheckMark, true)
-          : new(msg, result, icon));
-        msgB.Add(msg);
-      }
-
-      if (sCount > 0) AddOption(msgS, 1, Res.IconEquals);
-      if (pCount > 0) AddOption(msgP, 2, Res.IconPeople);
-      if (miCount > 0) AddOption(msgMi, 3, Res.IconImage);
-      if (oneOption) buttons.Add(new("NO", 0, Res.IconXCross, false, true));
 
       if (oneOption && miCount > 0) {
         MediaItemsM.SetMetadata(item);
         return null;
       }
 
+      var msgA = $"Do you want to toggle #{itemName} on selected";
+      var msgB = new List<string>();
+      var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
+      var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
+      var msgMi = miCount > 1 ? $"Media Items ({miCount})" : "Media Item";
       var msg = oneOption
         ? $"{msgA} {msgB[0]}?"
         : $"{msgA} {string.Join(" or ", msgB)}?";
 
-      return new(title, msg, Res.IconQuestion, true, buttons.ToArray());
+      var md = new MessageDialog(title, msg, Res.IconQuestion, true);
+      var buttons = new List<DialogButton>();
+
+      void AddOption(string msg, int result, string icon) {
+        buttons.Add(oneOption
+          ? new("Yes", Res.IconCheckMark, md.SetResult(result), true)
+          : new(msg, icon, md.SetResult(result)));
+        msgB.Add(msg);
+      }
+
+      if (sCount > 0) AddOption(msgS, 1, Res.IconEquals);
+      if (pCount > 0) AddOption(msgP, 2, Res.IconPeople);
+      if (miCount > 0) AddOption(msgMi, 3, Res.IconImage);
+      if (oneOption) buttons.Add(new("No", Res.IconXCross, md.SetResult(0), false, true));
+
+      md.Buttons = buttons.ToArray();
+
+      return md;
     }
 
     public void ToggleKeyword(KeywordM keyword) {

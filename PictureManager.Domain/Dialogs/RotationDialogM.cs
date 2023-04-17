@@ -1,17 +1,10 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class RotationDialogM : ObservableObject, IDialog {
-    private string _title;
-    private int _result = 1;
-
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
+  public sealed class RotationDialogM : Dialog {
     public RelayCommand<MediaOrientation> RotationCommand { get; }
 
-    public RotationDialogM() {
-      Title = "Rotation";
+    public RotationDialogM() : base("Rotation", Res.IconImageMultiple) {
       RotationCommand = new(mo => Result = (int)mo);
     }
   }

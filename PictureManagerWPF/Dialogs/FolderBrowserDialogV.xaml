@@ -6,67 +6,53 @@
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type md:FolderBrowserDialogM}">
-    <DockPanel Width="300" Height="500">
-      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding OkCommand}"
-          Content="OK"
-          IsDefault="True"/>
-        
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding CancelCommand}"
-          Content="Cancel"
-          IsCancel="True"/>
-      </StackPanel>
+    <TreeView
+      x:Name="tree"
+      ItemsSource="{Binding Drives}"
+      Background="{StaticResource MH.Brushes.Background}"
+      Width="300"
+      Height="500"
+      Padding="0,5,0,0"
+      BorderThickness="0">
 
-      <TreeView
-        x:Name="tree"
-        ItemsSource="{Binding Drives}"
-        Background="{StaticResource MH.Brushes.Background}"
-        Padding="0,5,0,0"
-        BorderThickness="0">
-        
-        <b:Interaction.Triggers>
-          <b:EventTrigger EventName="SelectedItemChanged">
-            <b:InvokeCommandAction
-              Command="{Binding SelectCommand}"
-              CommandParameter="{Binding ElementName=tree, Path=SelectedItem}"/>
-          </b:EventTrigger>
-        </b:Interaction.Triggers>
-        
-        <TreeView.ItemContainerStyle>
-          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-            <Setter Property="ToolTip" Value="{Binding FullPath}"/>
-            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-            <Setter Property="MinHeight" Value="20"/>
-            <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Foreground}"/>
-          </Style>
-        </TreeView.ItemContainerStyle>
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="SelectedItemChanged">
+          <b:InvokeCommandAction
+            Command="{Binding SelectCommand}"
+            CommandParameter="{Binding ElementName=tree, Path=SelectedItem}"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
 
-        <TreeView.ItemTemplate>
-          <HierarchicalDataTemplate
-            DataType="{x:Type md:FolderTreeViewItem}"
-            ItemsSource="{Binding Items}">
-            
-            <StackPanel Orientation="Horizontal" Background="Transparent">
-              <Path
-                Style="{StaticResource MH.Styles.Icon}"
-                Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
-                Fill="{Binding IconName,
-                       Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
-                HorizontalAlignment="Center"/>
-              
-              <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}"/>
-            </StackPanel>
-          </HierarchicalDataTemplate>
-        </TreeView.ItemTemplate>
-      </TreeView>
-    </DockPanel>
+      <TreeView.ItemContainerStyle>
+        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+          <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+          <Setter Property="ToolTip" Value="{Binding FullPath}"/>
+          <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+          <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+          <Setter Property="MinHeight" Value="20"/>
+          <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Foreground}"/>
+        </Style>
+      </TreeView.ItemContainerStyle>
+
+      <TreeView.ItemTemplate>
+        <HierarchicalDataTemplate
+          DataType="{x:Type md:FolderTreeViewItem}"
+          ItemsSource="{Binding Items}">
+
+          <StackPanel Orientation="Horizontal" Background="Transparent">
+            <Path
+              Style="{StaticResource MH.Styles.Icon}"
+              Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+              Fill="{Binding IconName,
+                      Converter={StaticResource ResourceConverter},
+                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+              HorizontalAlignment="Center"/>
+
+            <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}"/>
+          </StackPanel>
+        </HierarchicalDataTemplate>
+      </TreeView.ItemTemplate>
+    </TreeView>
   </DataTemplate>
 </ResourceDictionary>

@@ -1,30 +1,34 @@
-﻿using System;
-using MH.Utils.Interfaces;
+﻿using MH.Utils.BaseClasses;
+using System;
 using System.Windows;
 
 namespace MH.UI.WPF.Controls {
-  public class DialogHost : Window {
-    static DialogHost() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(DialogHost),
-        new FrameworkPropertyMetadata(typeof(DialogHost)));
-    }
+  public class DialogHost {
+    public Dialog Content { get; }
+    public CustomWindow Window { get; }
 
-    private DialogHost(IDialog content) {
+    private DialogHost(Dialog content) {
       Content = content;
-      Owner = Application.Current.MainWindow;
 
-      // I had problem with setting this in XAML
-      WindowStartupLocation = WindowStartupLocation.CenterOwner;
+      Window = new CustomWindow() {
+        Content = this,
+        Owner = Application.Current.MainWindow,
+        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+        ShowInTaskbar = false,
+        CanResize = true,
+        SizeToContent = SizeToContent.WidthAndHeight,
+        Style = Application.Current.FindResource("MH.Styles.Controls.CustomWindow") as Style
+      };
 
       content.PropertyChanged += (_, e) => {
         if (nameof(content.Result).Equals(e.PropertyName, StringComparison.Ordinal))
-          Close();
+          Window.Close();
       };
     }
 
-    public static int Show(IDialog content) {
+    public static int Show(Dialog content) {
       var dh = new DialogHost(content);
-      dh.ShowDialog();
+      dh.Window.ShowDialog();
 
       return content.Result;
     }

@@ -29,6 +29,10 @@
     <Setter Property="AllowsTransparency" Value="True"/>
     <Setter Property="MinHeight" Value="70"/>
     <Setter Property="MinWidth" Value="250"/>
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.Brushes.Accent}"/>
+    <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type mhc:CustomWindow}">
