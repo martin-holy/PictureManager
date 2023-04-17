@@ -1,32 +1,32 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class FolderKeywordsDialogM : ObservableObject, IDialog {
+  public sealed class FolderKeywordsDialogM : Dialog {
     private readonly Core _core;
-    private string _title;
-    private int _result = -1;
+    private FolderM _selectedFolder;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
+    public FolderM SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
     public ObservableCollection<FolderM> Items { get; } = new();
+    public RelayCommand<FolderM> SelectCommand { get; }
 
-    public RelayCommand<object> CloseCommand { get; }
-    public RelayCommand<FolderM> RemoveCommand { get; }
     public static RelayCommand<object> OpenCommand { get; } = new(
       () => Core.DialogHostShow(new FolderKeywordsDialogM(Core.Instance)));
 
-    public FolderKeywordsDialogM(Core core) {
+    public FolderKeywordsDialogM(Core core) : base("Folder Keywords", Res.IconFolderPuzzle) {
       _core = core;
-      Title = "Folder Keywords";
 
-      CloseCommand = new(() => Result = 0);
-      RemoveCommand = new(Remove);
+      SelectCommand = new(x => SelectedFolder = x);
+      var removeCommand = new RelayCommand<object>(
+        () => Remove(SelectedFolder),
+        () => SelectedFolder != null);
+
+      Buttons = new DialogButton[] {
+        new("Remove", Res.IconXCross, removeCommand),
+        new("Close", Res.IconXCross, CloseCommand, false, true) };
 
       foreach (var folder in _core.FoldersM.DataAdapter.All.Values
         .Where(x => x.IsFolderKeyword)
@@ -37,7 +37,7 @@ namespace PictureManager.Domain.Dialogs {
 
     private void Remove(FolderM folder) {
       if (folder == null) return;
-      if (Core.DialogHostShow(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 0) return;
+      if (Core.DialogHostShow(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
 
       folder.IsFolderKeyword = false;
       Items.Remove(folder);

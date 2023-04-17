@@ -13,7 +13,8 @@
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2022)</Copyright>
-    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
   </PropertyGroup>
 

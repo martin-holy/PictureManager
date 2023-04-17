@@ -1,21 +1,17 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
-using System.Threading.Tasks;
-using System.Threading;
+using MH.Utils.Dialogs;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class FileOperationDialogM : ObservableObject, IDialog {
-    private string _title;
-    private int _result = -1;
+  public sealed class FileOperationDialogM : Dialog {
     private int _progressValue;
     private bool _isIndeterminate;
     private string _dirFrom;
     private string _dirTo;
     private string _fileName;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public int ProgressValue { get => _progressValue; set { _progressValue = value; OnPropertyChanged(); } }
     public bool IsIndeterminate { get => _isIndeterminate; set { _isIndeterminate = value; OnPropertyChanged(); } }
     public string DirFrom { get => _dirFrom; set { _dirFrom = value; OnPropertyChanged(); } }
@@ -24,9 +20,8 @@ namespace PictureManager.Domain.Dialogs {
     public CancellationTokenSource LoadCts { get; set; }
     public Task RunTask { get; set; }
     public IProgress<object[]> Progress { get; set; }
-    public RelayCommand<object> CancelCommand { get; }
 
-    public FileOperationDialogM(FileOperationMode mode, bool isIndeterminate) {
+    public FileOperationDialogM(FileOperationMode mode, bool isIndeterminate) : base("", Res.IconImageMultiple) {
       Title = $"File Operation Dialog ({mode})";
       IsIndeterminate = isIndeterminate;
       ProgressValue = 0;
@@ -38,7 +33,8 @@ namespace PictureManager.Domain.Dialogs {
         FileName = e[3].ToString();
       });
 
-      CancelCommand = new(Cancel);
+      CloseCommand = new(async () => { await Cancel(); });
+      Buttons = new DialogButton[] { new("Cancel", Res.IconXCross, CloseCommand, false, true) };
     }
 
     ~FileOperationDialogM() {
@@ -48,12 +44,13 @@ namespace PictureManager.Domain.Dialogs {
       }
     }
 
-    private async void Cancel() {
+    private async Task Cancel() {
       if (LoadCts != null) {
         LoadCts.Cancel();
         await RunTask;
-        Result = 0;
       }
+
+      Result = 0;
     }
   }
 }

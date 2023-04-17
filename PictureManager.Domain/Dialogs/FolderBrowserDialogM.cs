@@ -1,30 +1,25 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
-using System.IO;
-using System;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class FolderBrowserDialogM : ObservableObject, IDialog {
-    private string _title = "Browse For Folder";
-    private int _result = -1;
+  public sealed class FolderBrowserDialogM : Dialog {
     private FolderTreeViewItem _selectedFolder;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public FolderTreeViewItem SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
-
     public ObservableCollection<FolderTreeViewItem> Drives { get; } = new();
     public RelayCommand<FolderTreeViewItem> SelectCommand { get; }
-    public RelayCommand<object> OkCommand { get; }
-    public RelayCommand<object> CancelCommand { get; }
 
-    public FolderBrowserDialogM() {
+    public FolderBrowserDialogM() : base("Browse For Folder", Res.IconFolder) {
       SelectCommand = new(x => SelectedFolder = x);
-      OkCommand = new(() => Result = 1);
-      CancelCommand = new(() => Result = 0);
+      Buttons = new DialogButton[] {
+        new("Ok", Res.IconCheckMark, YesOkCommand, true),
+        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
 
       AddDrives();
     }

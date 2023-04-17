@@ -12,98 +12,84 @@
         <Setter Property="Margin" Value="5"/>
       </Style>
     </DataTemplate.Resources>
-    
-    <DockPanel Width="515">
-      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding ResizeCommand}"
-          Content="Resize"/>
 
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding CancelCommand}"
-          Content="Cancel"/>
+    <Grid Margin="5" Width="515">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- Preserve Thumbnail/Metadata -->
+      <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0"/>
+      <StackPanel
+        Orientation="Horizontal"
+        Grid.Row="0"
+        Grid.Column="1"
+        VerticalAlignment="Center">
+
+        <CheckBox
+          Content="Thumbnail"
+          IsThreeState="False"
+          IsChecked="{Binding PreserveThumbnail}"/>
+
+        <CheckBox
+          Content="Metadata"
+          IsThreeState="False"
+          IsChecked="{Binding PreserveMetadata}"
+          Margin="15,0,0,0"/>
       </StackPanel>
 
-      <Grid Margin="5">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+      <!-- Resize to -->
+      <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0"/>
+      <DockPanel Grid.Row="1" Grid.Column="1">
+        <mhc:IconButton
+          Icon="{StaticResource IconFolder}"
+          Foreground="{StaticResource ColorBrushFolder}"
+          VerticalAlignment="Center"
+          DockPanel.Dock="Right"
+          Command="{Binding OpenFolderBrowserCommand}"/>
 
-        <!-- Preserve Thumbnail/Metadata -->
-        <TextBlock Text="Preserve:" Grid.Row="0" Grid.Column="0"/>
-        <StackPanel
-          Orientation="Horizontal"
-          Grid.Row="0"
-          Grid.Column="1"
-          VerticalAlignment="Center">
+        <ComboBox
+          ItemsSource="{Binding DirPaths}"
+          Text="{Binding DestDir}"
+          Height="30"/>
+      </DockPanel>
 
-          <CheckBox
-            Content="Thumbnail"
-            IsThreeState="False"
-            IsChecked="{Binding PreserveThumbnail}"/>
+      <!-- Slider MPx -->
+      <TextBlock
+        Grid.Row="2"
+        Grid.Column="0"
+        Text="{Binding Mpx, StringFormat={}{0:F1} MPx}"/>
 
-          <CheckBox
-            Content="Metadata"
-            IsThreeState="False"
-            IsChecked="{Binding PreserveMetadata}"
-            Margin="15,0,0,0"/>
-        </StackPanel>
+      <Slider
+        Grid.Row="2"
+        Grid.Column="1"
+        Maximum="{Binding MaxMpx}"
+        Minimum="0.1"
+        Value="{Binding Mpx}"
+        TickFrequency="0.1"
+        IsSnapToTickEnabled="True"
+        VerticalAlignment="Center"/>
 
-        <!-- Resize to -->
-        <TextBlock Text="Resize to:" Grid.Row="1" Grid.Column="0"/>
-        <DockPanel Grid.Row="1" Grid.Column="1">
-          <mhc:IconButton
-            Icon="{StaticResource IconFolder}"
-            Foreground="{StaticResource ColorBrushFolder}"
-            VerticalAlignment="Center"
-            DockPanel.Dock="Right"
-            Command="{Binding OpenFolderBrowserCommand}"/>
+      <TextBlock
+        Grid.Row="3"
+        Grid.ColumnSpan="2"
+        Text="{Binding FileName}"/>
 
-          <ComboBox
-            ItemsSource="{Binding DirPaths}"
-            Text="{Binding DestDir}"
-            Height="30"/>
-        </DockPanel>
-
-        <!-- Slider MPx -->
-        <TextBlock
-          Grid.Row="2"
-          Grid.Column="0"
-          Text="{Binding Mpx, StringFormat={}{0:F1} MPx}"/>
-
-        <Slider
-          Grid.Row="2"
-          Grid.Column="1"
-          Maximum="{Binding MaxMpx}"
-          Minimum="0.1"
-          Value="{Binding Mpx}"
-          TickFrequency="0.1"
-          IsSnapToTickEnabled="True"
-          VerticalAlignment="Center"/>
-
-        <TextBlock
-          Grid.Row="3"
-          Grid.ColumnSpan="2"
-          Text="{Binding FileName}"/>
-
-        <ProgressBar
-          Grid.Row="4"
-          Grid.ColumnSpan="2"
-          Maximum="{Binding ProgressMax}"
-          Value="{Binding ProgressValue}"
-          Height="20"
-          Margin="5"/>
-      </Grid>
-    </DockPanel>
+      <ProgressBar
+        Grid.Row="4"
+        Grid.ColumnSpan="2"
+        Maximum="{Binding ProgressMax}"
+        Value="{Binding ProgressValue}"
+        Height="20"
+        Margin="5"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

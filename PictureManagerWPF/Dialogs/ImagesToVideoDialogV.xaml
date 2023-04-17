@@ -11,103 +11,80 @@
         <Setter Property="Margin" Value="5"/>
       </Style>
     </DataTemplate.Resources>
-    
-    <DockPanel Width="515" Margin="5">
-      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding CreateVideoCommand}"
-          Content="Create Video"
-          IsDefault="True"
-          Visibility="{Binding IsBusy,
-                       Converter={StaticResource AllToVisibilityConverter},
-                       ConverterParameter={StaticResource False}}"/>
-        
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Command="{Binding CancelCommand}"
-          Content="Cancel"
-          IsCancel="True"
-          Visibility="{Binding IsBusy,
-                       Converter={StaticResource AllToVisibilityConverter},
-                       ConverterParameter={StaticResource True}}"/>
-      </StackPanel>
 
-      <Grid Margin="0,0,0,15">
+    <Grid Width="515" Margin="5">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+        <RowDefinition Height="40"/>
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="110"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- Speed -->
+      <Slider
+        x:Name="SldSpeed"
+        Maximum="5"
+        Minimum="0.1"
+        TickFrequency="0.05"
+        AutoToolTipPlacement="BottomRight"
+        AutoToolTipPrecision="2"
+        IsSnapToTickEnabled="True"
+        VerticalAlignment="Center"
+        Margin="5,0,0,0"
+        Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoSpeed, Mode=TwoWay}"/>
+
+      <TextBlock
+        Grid.Column="1"
+        TextAlignment="Right"
+        Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat='{}{0:0.00}s per Image'}"/>
+
+      <!-- Quality and Scale -->
+      <Grid Grid.Row="1" ColumnSpan="2">
         <Grid.RowDefinitions>
           <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-          <RowDefinition Height="40"/>
-
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="80"/>
           <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="110"/>
+          <ColumnDefinition Width="60"/>
+          <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Speed -->
+        <!-- Quality -->
+        <TextBlock Text="{Binding ElementName=SldQuality, Path=Value, StringFormat='{}Quality: {0}'}"/>
         <Slider
-          x:Name="SldSpeed"
-          Maximum="5"
-          Minimum="0.1"
-          TickFrequency="0.05"
-          AutoToolTipPlacement="BottomRight"
-          AutoToolTipPrecision="2"
-          IsSnapToTickEnabled="True"
-          VerticalAlignment="Center"
-          Margin="5,0,0,0"
-          Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoSpeed, Mode=TwoWay}"/>
-        
-        <TextBlock
           Grid.Column="1"
-          TextAlignment="Right"
-          Text="{Binding ElementName=SldSpeed, Path=Value, StringFormat='{}{0:0.00}s per Image'}"/>
+          x:Name="SldQuality" 
+          Maximum="51"
+          Minimum="0"
+          AutoToolTipPlacement="BottomRight"
+          TickFrequency="1"
+          IsSnapToTickEnabled="True"
+          VerticalAlignment="Center" 
+          Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoQuality, Mode=TwoWay}"/>
 
-        <!-- Quality and Scale -->
-        <Grid Grid.Row="1" ColumnSpan="2">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
-          </Grid.RowDefinitions>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="80"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="60"/>
-            <ColumnDefinition Width="100"/>
-          </Grid.ColumnDefinitions>
-
-          <!-- Quality -->
-          <TextBlock Text="{Binding ElementName=SldQuality, Path=Value, StringFormat='{}Quality: {0}'}"/>
-          <Slider
-            Grid.Column="1"
-            x:Name="SldQuality" 
-            Maximum="51"
-            Minimum="0"
-            AutoToolTipPlacement="BottomRight"
-            TickFrequency="1"
-            IsSnapToTickEnabled="True"
-            VerticalAlignment="Center" 
-            Value="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoQuality, Mode=TwoWay}"/>
-
-          <!-- Height -->
-          <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right"/>
-          <TextBox
-            Grid.Column="3"
-            FontSize="16"
-            Height="30"
-            Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoHeight, Mode=TwoWay}"/>
-        </Grid>
-
-        <!-- ProgressBar -->
-        <ProgressBar
-          Grid.Row="2"
-          Grid.ColumnSpan="2"
-          Height="20"
-          Margin="5"
-          IsIndeterminate="True"
-          Visibility="{Binding IsBusy,
-                       Converter={StaticResource AllToVisibilityConverter},
-                       ConverterParameter={StaticResource True}}"/>
+        <!-- Height -->
+        <TextBlock Grid.Column="2" Text="Height:" TextAlignment="Right"/>
+        <TextBox
+          Grid.Column="3"
+          FontSize="16"
+          Height="30"
+          Text="{Binding Source={x:Static d:Core.Settings}, Path=ImagesToVideoHeight, Mode=TwoWay}"/>
       </Grid>
-    </DockPanel>
+
+      <!-- ProgressBar -->
+      <ProgressBar
+        Grid.Row="2"
+        Grid.ColumnSpan="2"
+        Height="20"
+        Margin="5"
+        IsIndeterminate="True"
+        Visibility="{Binding IsBusy,
+                     Converter={StaticResource AllToVisibilityConverter},
+                     ConverterParameter={StaticResource True}}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

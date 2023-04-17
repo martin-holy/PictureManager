@@ -6,49 +6,36 @@
   xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <DataTemplate DataType="{x:Type md:LogDialogM}">
-    <DockPanel Width="600" Height="300">
-      <StackPanel Style="{StaticResource DialogButtons}" DockPanel.Dock="Bottom">
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Content="CLEAR"
-          Command="{Binding CloseCommand}"/>
-        <Button
-          Style="{StaticResource StyleButtonDialog}"
-          Content="CLOSE"
-          IsCancel="True"/>
-      </StackPanel>
+    <Grid Margin="5" Width="600" Height="300">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="100"/>
+        <RowDefinition Height="3"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
 
-      <Grid Margin="5">
-        <Grid.RowDefinitions>
-          <RowDefinition Height="100"/>
-          <RowDefinition Height="3"/>
-          <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+      <ListBox
+        x:Name="ListBoxLog"
+        Grid.Row="0"
+        ItemsSource="{Binding Path=(mhu:Log.Items)}">
 
-        <ListBox
-          x:Name="ListBoxLog"
-          Grid.Row="0"
-          ItemsSource="{Binding Path=(mhu:Log.Items)}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Title}"/>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
 
-          <ListBox.ItemTemplate>
-            <DataTemplate>
-              <TextBlock Text="{Binding Title}"/>
-            </DataTemplate>
-          </ListBox.ItemTemplate>
-        </ListBox>
+      <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
 
-        <GridSplitter Grid.Row="1" ResizeDirection="Rows"/>
-
-        <TextBox
-          Grid.Row="2"
-          BorderThickness="0"
-          MaxLines="10"
-          IsReadOnly="True"
-          VerticalAlignment="Top"
-          VerticalScrollBarVisibility="Auto"
-          HorizontalScrollBarVisibility="Auto"
-          Text="{Binding ElementName=ListBoxLog, Path=SelectedItem.(mhbc:LogItem.Detail)}"/>
-      </Grid>
-    </DockPanel>
+      <TextBox
+        Grid.Row="2"
+        BorderThickness="0"
+        MaxLines="10"
+        IsReadOnly="True"
+        VerticalAlignment="Top"
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Auto"
+        Text="{Binding ElementName=ListBoxLog, Path=SelectedItem.(mhbc:LogItem.Detail)}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>

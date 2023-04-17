@@ -68,7 +68,6 @@
   <Style TargetType="{x:Type ToolTip}" BasedOn="{StaticResource MH.Styles.BaseControls.ToolTip}"/>
 
   <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}"/>
-  <Style TargetType="{x:Type mhc:DialogHost}" BasedOn="{StaticResource MH.Styles.Controls.DialogHost}"/>
   <Style TargetType="{x:Type mhc:IconButton}" BasedOn="{StaticResource MH.Styles.Controls.IconButton}"/>
   <Style TargetType="{x:Type mhc:IconTextButton}" BasedOn="{StaticResource MH.Styles.Controls.IconTextButton}"/>
   <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>

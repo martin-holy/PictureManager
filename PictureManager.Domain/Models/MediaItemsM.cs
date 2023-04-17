@@ -235,7 +235,7 @@ namespace PictureManager.Domain.Models {
         "Delete Confirmation",
         $"Do you really want to delete {count} item{(count > 1 ? "s" : string.Empty)}?",
         Res.IconQuestion,
-        true)) != 0) return;
+        true)) != 1) return;
 
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
       var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
@@ -510,7 +510,7 @@ namespace PictureManager.Domain.Models {
     public void AddGeoNamesFromFiles(string geoNamesUserName) {
       if (!GeoNamesM.IsGeoNamesUserNameInSettings(geoNamesUserName)) return;
 
-      var progress = new ProgressBarDialog("Adding GeoNames ...", true, 1);
+      var progress = new ProgressBarDialog("Adding GeoNames ...", Res.IconLocationCheckin, true, 1);
       progress.AddEvents(
         _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
@@ -546,7 +546,7 @@ namespace PictureManager.Domain.Models {
         _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
       };
 
-      var progress = new ProgressBarDialog("Rebuilding thumbnails ...", true, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Rebuilding thumbnails ...", Res.IconImage, true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -564,7 +564,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
-      var progress = new ProgressBarDialog("Changing orientation ...", true, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Changing orientation ...", Res.IconImage, true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems,
         null,
@@ -611,7 +611,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SaveEdit() {
-      var progress = new ProgressBarDialog("Saving metadata ...", true, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Saving metadata ...", Res.IconImage, true, Environment.ProcessorCount);
       progress.AddEvents(
         ModifiedItems.ToArray(),
         null,
@@ -636,7 +636,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void CancelEdit() {
-      var progress = new ProgressBarDialog("Reloading metadata ...", false, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Reloading metadata ...", Res.IconImage, false, Environment.ProcessorCount);
       progress.AddEvents(
         ModifiedItems.ToArray(),
         null,
@@ -661,7 +661,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ReloadMetadata(List<MediaItemM> mediaItems, bool updateInfoBox = false) {
-      var progress = new ProgressBarDialog("Reloading metadata ...", true, Environment.ProcessorCount);
+      var progress = new ProgressBarDialog("Reloading metadata ...", Res.IconImage, true, Environment.ProcessorCount);
       progress.AddEvents(
         mediaItems.ToArray(),
         null,
@@ -682,10 +682,10 @@ namespace PictureManager.Domain.Models {
     }
 
     private void Rotate() {
-      var rotation = (MediaOrientation)Core.DialogHostShow(new RotationDialogM());
-      if (rotation == MediaOrientation.Normal) return;
+      var rotation = Core.DialogHostShow(new RotationDialogM());
+      if (rotation == 0) return;
 
-      SetOrientation(GetActive(), rotation);
+      SetOrientation(GetActive(), (MediaOrientation)rotation);
 
       if (_core.MediaViewerM.IsVisible)
         _core.MediaViewerM.Current = _core.MediaViewerM.Current;
@@ -709,7 +709,7 @@ namespace PictureManager.Domain.Models {
           return string.Empty;
         });
         
-      if (Core.DialogHostShow(inputDialog) != 0) return;
+      if (Core.DialogHostShow(inputDialog) != 1) return;
 
       try {
         Rename(Current, inputDialog.Answer + Path.GetExtension(Current.FileName));
@@ -734,7 +734,7 @@ namespace PictureManager.Domain.Models {
           ? "Comment is too long!"
           : string.Empty);
 
-      if (Core.DialogHostShow(inputDialog) != 0) return;
+      if (Core.DialogHostShow(inputDialog) != 1) return;
 
       Current.Comment = StringUtils.NormalizeComment(inputDialog.Answer);
       Current.SetInfoBox();

@@ -105,7 +105,7 @@ namespace PictureManager.Domain.BaseClasses {
       var result = Core.DialogHostShow(inputDialog);
       newName = inputDialog.Answer;
 
-      return result == 0;
+      return result == 1;
     }
 
     private static bool DeleteAccepted(string name) =>
@@ -113,6 +113,6 @@ namespace PictureManager.Domain.BaseClasses {
         "Delete Confirmation",
         $"Do you really want to delete '{name}'?",
         Res.IconQuestion,
-        true)) == 0;
+        true)) == 1;
   }
 }

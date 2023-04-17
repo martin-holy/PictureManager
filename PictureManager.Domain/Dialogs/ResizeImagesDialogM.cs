@@ -1,22 +1,20 @@
-﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
 using System.Linq;
-using MH.Utils;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class ResizeImagesDialogM : ObservableObject, IDialog {
+  public sealed class ResizeImagesDialogM : Dialog {
     private CancellationTokenSource _cts;
     private readonly MediaItemM[] _items;
-    private string _title = "Resize Images";
-    private int _result = -1;
     private bool _preserveThumbnail;
     private bool _preserveMetadata;
     private string _fileName;
@@ -27,8 +25,6 @@ namespace PictureManager.Domain.Dialogs {
     private int _progressValue;
     private ObservableCollection<string> _dirPaths;
 
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public bool PreserveThumbnail { get => _preserveThumbnail; set { _preserveThumbnail = value; OnPropertyChanged(); } }
     public bool PreserveMetadata { get => _preserveMetadata; set { _preserveMetadata = value; OnPropertyChanged(); } }
     public string FileName { get => _fileName; set { _fileName = value; OnPropertyChanged(); } }
@@ -40,13 +36,14 @@ namespace PictureManager.Domain.Dialogs {
     public ObservableCollection<string> DirPaths { get => _dirPaths; set { _dirPaths = value; OnPropertyChanged(); } }
 
     public RelayCommand<object> OpenFolderBrowserCommand { get; }
-    public RelayCommand<object> ResizeCommand { get; }
-    public RelayCommand<object> CancelCommand { get; }
 
-    public ResizeImagesDialogM(IEnumerable<MediaItemM> items) {
+    public ResizeImagesDialogM(IEnumerable<MediaItemM> items) : base("Resize Images", Res.IconImageMultiple) {
       OpenFolderBrowserCommand = new(OpenFolderBrowser);
-      ResizeCommand = new(Resize);
-      CancelCommand = new(Cancel);
+      CloseCommand = new(Cancel);
+
+      Buttons = new DialogButton[] {
+        new("Resize", null, new(Resize), true),
+        new("Cancel", Res.IconXCross, CloseCommand, false, true) }; 
 
       _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
       ProgressMax = _items.Length;

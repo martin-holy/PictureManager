@@ -1,6 +1,7 @@
 ﻿namespace PictureManager.Domain {
   public static class Res {
     public const string IconEmpty = null;
+    public const string IconCompare = "IconCompare";
     public const string IconFolder = "IconFolder";
     public const string IconFolderStar = "IconFolderStar";
     public const string IconFolderLock = "IconFolderLock";
@@ -13,7 +14,10 @@
     public const string IconDrive = "IconDrive";
     public const string IconDriveError = "IconDriveError";
     public const string IconCd = "IconCd";
+    public const string IconSave = "IconSave";
+    public const string IconSettings = "IconSettings";
     public const string IconStar = "IconStar";
+    public const string IconSort = "IconSort";
     public const string IconRuler = "IconRuler";
     public const string IconLocationCheckin = "IconLocationCheckin";
     public const string IconEye = "IconEye";

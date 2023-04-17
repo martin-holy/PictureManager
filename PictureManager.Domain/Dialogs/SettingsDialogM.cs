@@ -1,18 +1,12 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+using MH.Utils.Dialogs;
 
 namespace PictureManager.Domain.Dialogs {
-  public sealed class SettingsDialogM : ObservableObject, IDialog {
-    private string _title;
-    private int _result = -1;
-
-    public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
-    public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
-    public RelayCommand<int> ButtonCommand { get; }
-
-    public SettingsDialogM() {
-      Title = "Settings";
-      ButtonCommand = new(result => Result = result);
+  public sealed class SettingsDialogM : Dialog {
+    public SettingsDialogM() : base("Settings", Res.IconSettings) {
+      Buttons = new DialogButton[] {
+        new("Save", Res.IconSave, YesOkCommand, true),
+        new("Close", Res.IconXCross, CloseCommand, false, true) };
     }
   }
 }

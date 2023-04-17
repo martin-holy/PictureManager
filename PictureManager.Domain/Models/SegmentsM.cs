@@ -134,7 +134,7 @@ namespace PictureManager.Domain.Models {
             "Segments Drawer",
             "Do you want to remove segments from drawer?",
             Res.IconQuestion,
-            true)) != 0)
+            true)) != 1)
         return;
 
       var count = SegmentsDrawer.Count;
@@ -481,12 +481,12 @@ namespace PictureManager.Domain.Models {
 
     private SegmentM[] GetSegments(List<MediaItemM> mediaItems, int mode) {
       switch (mode) {
-        case 0: // all segments from mediaItems
+        case 1: // all segments from mediaItems
           return mediaItems
             .Where(x => x.Segments != null)
             .SelectMany(x => x.Segments)
             .ToArray();
-        case 1: // all segments with person found on segments from mediaItems
+        case 2: // all segments with person found on segments from mediaItems
           var people = mediaItems
             .Where(mi => mi.Segments != null)
             .SelectMany(mi => mi.Segments
@@ -499,7 +499,7 @@ namespace PictureManager.Domain.Models {
             .Where(x => x.Person != null && people.Contains(x.Person))
             .OrderBy(x => x.MediaItem.FileName)
             .ToArray();
-        case 2: // one segment from each person
+        case 3: // one segment from each person
           return DataAdapter.All.Values
             .Where(x => x.Person != null)
             .GroupBy(x => x.Person.Id)
@@ -694,14 +694,20 @@ namespace PictureManager.Domain.Models {
     }
 
     private void SegmentMatching() {
-      var result = Core.DialogHostShow(new MessageDialog(
+      var md = new MessageDialog(
         "Segment Matching",
         "Do you want to load all segments, segments with persons \nor one segment from each person?",
         Res.IconQuestion,
-        true,
-        new DialogButton[] { new("All segments", 0, null, true), new("Segments with persons", 1), new("One from each", 2) }));
+        true);
 
-      if (result == -1) return;
+      md.Buttons = new DialogButton[] {
+        new("All segments", null, md.SetResult(1), true),
+        new("Segments with persons", null, md.SetResult(2)),
+        new("One from each", null, md.SetResult(3)) };
+
+      var result = Core.DialogHostShow(md);
+
+      if (result < 1) return;
 
       MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       _core.MainTabsM.Activate(MainTabsItem);
