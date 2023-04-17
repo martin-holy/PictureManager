@@ -18,10 +18,8 @@
 
         <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/ButtonStyles.xaml"/>
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/StackPanelStyles.xaml"/>
 
         <ResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
