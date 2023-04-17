@@ -24,6 +24,7 @@ namespace PictureManager.Domain.Models {
     private MediaItemM _current;
 
     public MediaItemsDataAdapter DataAdapter { get; set; }
+    public static HashSet<MediaItemM> ThumbIgnoreCache { get; } = new();
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
     public Dictionary<MediaItemM, ObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
     public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
@@ -552,6 +553,7 @@ namespace PictureManager.Domain.Models {
         null,
         (mi) => {
           mi.SetThumbSize(true);
+          ThumbIgnoreCache.Add(mi);
           File.Delete(mi.FilePathCache);
         },
         mi => mi.FilePath,
