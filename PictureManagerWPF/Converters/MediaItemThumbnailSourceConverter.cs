@@ -38,6 +38,10 @@ namespace PictureManager.Converters {
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(mi.FilePathCache);
         src.Rotation = Imaging.MediaOrientation2Rotation((MediaOrientation)orientation);
+
+        if (MediaItemsM.ThumbIgnoreCache.Remove(mi))
+          src.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+
         src.EndInit();
 
         return src;

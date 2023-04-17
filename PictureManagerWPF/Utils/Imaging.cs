@@ -80,21 +80,12 @@ namespace PictureManager.Utils {
         Domain.Utils.Imaging.GetThumbSize(pxw, pxh, desiredSize, out var thumbWidth, out var thumbHeight);
 
         var output = new TransformedBitmap(frame, new ScaleTransform(thumbWidth / pxw, thumbHeight / pxh, 0, 0));
-        
-        // yes, angles 90 and 270 are switched
-        var angle = orientation switch {
-          MediaOrientation.Normal => 0,
-          MediaOrientation.Rotate90 => 270,
-          MediaOrientation.Rotate180 => 180,
-          MediaOrientation.Rotate270 => 90
-        };
-
-        if (angle != 0)
-          output = new(output, new RotateTransform(angle));
+        var metadata = new BitmapMetadata("jpg");
+        metadata.SetQuery("System.Photo.Orientation", (ushort)orientation);
 
         using Stream destFileStream = File.Open(destPath, FileMode.Create, FileAccess.ReadWrite);
         var encoder = new JpegBitmapEncoder { QualityLevel = quality };
-        encoder.Frames.Add(BitmapFrame.Create(output));
+        encoder.Frames.Add(BitmapFrame.Create(output, null, metadata, frame.ColorContexts));
         encoder.Save(destFileStream);
       }
     }
