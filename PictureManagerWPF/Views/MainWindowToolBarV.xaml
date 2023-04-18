@@ -204,7 +204,7 @@
 
             <mhc:IconButton
               ToolTip="Add selected to Segments drawer"
-              Icon="{StaticResource IconPlus}"
+              Icon="{StaticResource IconDrawerAdd}"
               Command="{Binding AddSelectedToDrawerCommand}" />
 
             <mhc:IconButton
