@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
@@ -28,7 +27,7 @@
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
-          <mhu:SetterAction
+          <b:ChangePropertyAction
             PropertyName="ContextMenu"
             Value="{StaticResource VideoClipTreeContextMenu}" />
         </b:EventTrigger>

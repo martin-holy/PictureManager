@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
@@ -29,7 +28,7 @@
       <b:Interaction.Triggers>
         <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
-          <mhu:SetterAction
+          <b:ChangePropertyAction
             PropertyName="ContextMenu"
             Value="{StaticResource TreeContextMenuRating}"/>
         </b:EventTrigger>
