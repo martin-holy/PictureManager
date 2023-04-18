@@ -17,7 +17,8 @@ namespace PictureManager.Views {
     private void SetUpMouseHideTimer() {
       _mouseHideTimer = new() { Interval = _mouseHideTimerInterval };
       _mouseHideTimer.Tick += delegate {
-        if (_isMouseHidden || DateTime.Now - _mouseLastMove < _mouseHideTimerInterval) return;
+        if (_isMouseHidden || !IsActive || DateTime.Now - _mouseLastMove < _mouseHideTimerInterval)
+          return;
         
         _isMouseHidden = true;
         Mouse.OverrideCursor = Cursors.None;
