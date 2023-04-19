@@ -183,7 +183,7 @@ namespace PictureManager.Domain {
         if (MediaViewerM.IsVisible) {
           MediaViewerM.MediaItems.Remove(e.Data[0]);
           if (MediaItemsM.Current != null)
-            MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
+            MediaViewerM.Current = MediaItemsM.Current;
           else
             MainWindowM.IsFullScreen = false;
         }
