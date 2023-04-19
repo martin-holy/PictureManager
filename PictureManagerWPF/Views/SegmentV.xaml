@@ -10,21 +10,19 @@
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-        
         <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
-        
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Border
-      x:Name="Root"
+      x:Name="root"
       BorderThickness="2"
       Margin="1"
       Background="Transparent"
+      BorderBrush="Black"
       FocusVisualStyle="{x:Null}">
 
       <b:Interaction.Triggers>
@@ -43,25 +41,6 @@
                     Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
       </Border.InputBindings>
-          	  
-      <Border.Style>
-        <Style TargetType="{x:Type Border}">
-          <Setter
-            Property="BorderBrush"
-            Value="Black"/>
-
-          <Style.Triggers>
-            <DataTrigger
-              Binding="{Binding IsSelected}"
-              Value="True">
-              
-              <Setter
-                Property="BorderBrush"
-                Value="{DynamicResource AccentColorBrush}"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Border.Style>
 
       <Border.ToolTip>
         <ToolTip Padding="0">
@@ -69,10 +48,10 @@
             <Grid DockPanel.Dock="Top">
               <!-- Thumbnail -->
               <ContentPresenter Content="{Binding MediaItem}"/>
-              
+
               <!-- Segments Rects -->
-              <ItemsControl ItemsSource="{Binding SegmentsM.SegmentToolTipRects,
-                                          Source={x:Static pm:App.Core}}">
+              <ItemsControl
+                ItemsSource="{Binding SegmentsM.SegmentToolTipRects, Source={x:Static pm:App.Core}}">
 
                 <ItemsControl.ItemsPanel>
                   <ItemsPanelTemplate>
@@ -82,42 +61,26 @@
 
                 <ItemsControl.ItemContainerStyle>
                   <Style TargetType="{x:Type ContentPresenter}">
-                    <Setter
-                      Property="Canvas.Left"
-                      Value="{Binding Item1}"/>
-                    <Setter
-                      Property="Canvas.Top"
-                      Value="{Binding Item2}"/>
+                    <Setter Property="Canvas.Left" Value="{Binding Item1}"/>
+                    <Setter Property="Canvas.Top" Value="{Binding Item2}"/>
                   </Style>
                 </ItemsControl.ItemContainerStyle>
 
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
                     <Rectangle
+                      x:Name="rect"
                       Width="{Binding Item3}"
                       Height="{Binding Item3}" 
                       StrokeThickness="1"
-                      Effect="{StaticResource MH.Effects.DropShadow}">
+                      Stroke="White"
+                      Effect="{StaticResource MH.Effects.DropShadow}"/>
 
-                      <Rectangle.Style>
-                        <Style TargetType="{x:Type Rectangle}">
-                          <Setter
-                            Property="Stroke"
-                            Value="White"/>
-
-                          <Style.Triggers>
-                            <DataTrigger
-                              Binding="{Binding Item4}"
-                              Value="True">
-
-                              <Setter
-                                Property="Stroke"
-                                Value="LimeGreen"/>
-                            </DataTrigger>
-                          </Style.Triggers>
-                        </Style>
-                      </Rectangle.Style>
-                    </Rectangle>
+                    <DataTemplate.Triggers>
+                      <DataTrigger Binding="{Binding Item4}" Value="True">
+                        <Setter TargetName="rect" Property="Stroke" Value="LimeGreen"/>
+                      </DataTrigger>
+                    </DataTemplate.Triggers>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
               </ItemsControl>
@@ -128,22 +91,12 @@
                 VerticalAlignment="Bottom"
                 HorizontalAlignment="Center"
                 Margin="0,0,0,4"
-                TextWrapping="Wrap">
-                <TextBlock.Effect>
-                  <DropShadowEffect
-                    BlurRadius="2"
-                    Color="Black"
-                    Opacity="0.7"
-                    ShadowDepth="2"/>
-                </TextBlock.Effect>
-              </TextBlock>
+                TextWrapping="Wrap"
+                Effect="{StaticResource MH.Effects.DropShadow}"/>
             </Grid>
-            
-            <!-- Name and TopSegments -->
-            <StackPanel
-              Orientation="Vertical"
-              MaxWidth="{Binding MediaItem.ThumbWidth}">
 
+            <!-- Name and TopSegments -->
+            <StackPanel Orientation="Vertical" MaxWidth="{Binding MediaItem.ThumbWidth}">
               <Border
                 BorderThickness="1"
                 BorderBrush="Black"
@@ -173,9 +126,8 @@
           </DockPanel>
         </ToolTip>
       </Border.ToolTip>
-    
+
       <Grid>
-        
         <Image
           Stretch="Fill"
           Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
@@ -187,85 +139,33 @@
             </MultiBinding>
           </Image.Source>
         </Image>
-        
+
         <!-- No Person Icon -->
         <Path
+          x:Name="noPersonIcon"
+          Style="{StaticResource MH.Styles.Icon}"
           Data="{StaticResource IconPeople}"
           Effect="{StaticResource MH.Effects.DropShadow}"
           Fill="Red"
           Margin="5"
           HorizontalAlignment="Left"
-          VerticalAlignment="Top">
-              
-          <Path.Style>
-            <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
-              <Setter Property="Visibility" Value="Hidden"/>
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding Person}" Value="{x:Null}">
-                  <Setter Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsMouseOver, ElementName=Root}" Value="True">
-                  <Setter Property="Visibility" Value="Hidden"/>
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </Path.Style>
-        </Path>
+          VerticalAlignment="Top"
+          Visibility="Hidden"/>
 
         <!-- Buttons -->
         <StackPanel
+          x:Name="buttons"
           Orientation="Horizontal"
           HorizontalAlignment="Right"
-          VerticalAlignment="Top">
-          
-          <StackPanel.Style>
-            <Style TargetType="{x:Type StackPanel}">
-              <Setter
-                Property="Visibility"
-                Value="Hidden"/>
+          VerticalAlignment="Top"
+          Visibility="Hidden">
 
-              <Style.Triggers>
-                <DataTrigger
-                  Binding="{Binding IsMouseOver, ElementName=Root}"
-                  Value="True">
-
-                  <Setter
-                    Property="Visibility"
-                    Value="Visible"/>
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </StackPanel.Style>
-            
           <!-- Same Person Button -->
-          <StackPanel Orientation="Horizontal">
-            <StackPanel.Style>
-              <Style TargetType="{x:Type StackPanel}">
-                <Setter
-                  Property="Visibility"
-                  Value="Hidden"/>
+          <StackPanel
+            x:Name="samePersonBtn"
+            Orientation="Horizontal"
+            Visibility="Hidden">
 
-                <Style.Triggers>
-                  <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                      <Condition
-                        Binding="{Binding IsSelected}"
-                        Value="True"/>
-                      <Condition
-                        Binding="{Binding SegmentsM.MultiplePeopleSelected,
-                                  Source={x:Static pm:App.Core},
-                                  Converter={StaticResource AllToBoolConverter}}"
-                        Value="True"/>
-                    </MultiDataTrigger.Conditions>
-
-                    <Setter
-                      Property="Visibility"
-                      Value="Visible"/>
-                  </MultiDataTrigger>
-                </Style.Triggers>
-              </Style>
-            </StackPanel.Style>
-              
             <Border
               Style="{StaticResource SBorderGroup}"
               Background="#1181B1"
@@ -275,7 +175,7 @@
               <TextBlock
                 Style="{StaticResource STextBlock}"
                 Text="{Binding SegmentsM.SelectedCount,
-                        Source={x:Static pm:App.Core}}"/>
+                       Source={x:Static pm:App.Core}}"/>
             </Border>
 
             <mhc:IconButton
@@ -296,9 +196,31 @@
                       Source={x:Static pm:App.Core}}"
             CommandParameter="{Binding Person}"/>
         </StackPanel>
-
       </Grid>
     </Border>
-  </DataTemplate>
 
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding IsSelected}" Value="True">
+        <Setter TargetName="root" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding Person}" Value="{x:Null}">
+        <Setter TargetName="noPersonIcon" Property="Visibility" Value="Visible"/>
+      </DataTrigger>
+      <Trigger SourceName="root" Property="IsMouseOver" Value="True">
+        <Setter TargetName="noPersonIcon" Property="Visibility" Value="Hidden"/>
+        <Setter TargetName="buttons" Property="Visibility" Value="Visible"/>
+      </Trigger>
+      <MultiDataTrigger>
+        <MultiDataTrigger.Conditions>
+          <Condition Binding="{Binding IsSelected}" Value="True"/>
+          <Condition
+             Binding="{Binding SegmentsM.MultiplePeopleSelected,
+                       Source={x:Static pm:App.Core},
+                       Converter={StaticResource AllToBoolConverter}}"
+             Value="True"/>
+        </MultiDataTrigger.Conditions>
+        <Setter TargetName="samePersonBtn" Property="Visibility" Value="Visible"/>
+      </MultiDataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
 </ResourceDictionary>

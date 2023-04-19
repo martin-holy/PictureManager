@@ -5,16 +5,12 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsDrawerM : ObservableObject {
-    private bool _reWrapItems;
-
     public SegmentsM SegmentsM { get; }
     public readonly HeaderedListItem<object, string> ToolsTabsItem;
     public CanDragFunc CanDragFunc { get; }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction DoDropAction { get; }
-    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
-    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public SegmentsDrawerM(SegmentsM segmentsM) {
       SegmentsM = segmentsM;
@@ -25,7 +21,6 @@ namespace PictureManager.Domain.Models {
       DoDropAction = DoDrop;
 
       SelectCommand = new(Select);
-      PanelWidthChangedCommand = new(() => ReWrapItems = true);
     }
 
     private object CanDrag(object source) =>

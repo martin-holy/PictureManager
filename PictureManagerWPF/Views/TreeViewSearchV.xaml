@@ -8,33 +8,19 @@
   <DataTemplate DataType="{x:Type m:TreeViewSearchM}">
     <Grid
       Margin="4"
-      Visibility="{Binding IsVisible,
-                   Converter={StaticResource AllToVisibilityConverter}}">
+      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
 
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
-      
+
       <!-- Search Box -->
       <Grid Grid.Row="0">
         <TextBox
-          Text="{Binding SearchText,
-                 UpdateSourceTrigger=PropertyChanged}" 
-          FontSize="16">
-
-          <TextBox.Style>
-            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-              <Style.Triggers>
-                <Trigger Property="IsVisible" Value="True">
-                  <Setter
-                    Property="FocusManager.FocusedElement"
-                    Value="{Binding RelativeSource={RelativeSource Self}}"/>
-                </Trigger>
-              </Style.Triggers>
-            </Style>
-          </TextBox.Style>
-        </TextBox>
+          x:Name="search"
+          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+          FontSize="16"/>
 
         <mhc:IconButton
           Icon="{StaticResource IconXCross}"
@@ -51,23 +37,25 @@
         Grid.Row="1"
         ItemsSource="{Binding SearchResult}"
         MaxHeight="400"
-        Visibility="{Binding SearchResult.Count,
-                     Converter={StaticResource AllToVisibilityConverter}}">
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch"
+        Visibility="{Binding SearchResult.Count, Converter={StaticResource AllToVisibilityConverter}}">
 
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <StackPanel
-              Orientation="Horizontal"
-              Background="Transparent"
-              ToolTip="{Binding ToolTip}">
+            <Grid Background="Transparent" ToolTip="{Binding ToolTip}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+              </Grid.ColumnDefinitions>
 
-              <StackPanel.InputBindings>
+              <Grid.InputBindings>
                 <MouseBinding
                   MouseAction="LeftClick"
-                  Command="{Binding DataContext.NavigateToCommand,
-                            RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                  Command="{Binding DataContext.NavigateToCommand, RelativeSource=
+                           {RelativeSource AncestorType=ListBox}}"
                   CommandParameter="{Binding}"/>
-              </StackPanel.InputBindings>
+              </Grid.InputBindings>
 
               <Path
                 Style="{StaticResource MH.Styles.Icon}"
@@ -77,16 +65,20 @@
                        Converter={StaticResource ResourceConverter},
                        ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
 
-              <TextBlock
-                Text="{Binding Title}"
-                Margin="4"/>
-
-            </StackPanel>
+              <TextBlock Grid.Column="1" Text="{Binding Title}" Margin="4"/>
+            </Grid>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
-      
     </Grid>
+
+    <DataTemplate.Triggers>
+      <Trigger SourceName="search" Property="IsVisible" Value="True">
+        <Setter
+          TargetName="search"
+          Property="FocusManager.FocusedElement"
+          Value="{Binding ElementName=search}"/>
+      </Trigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
-    
 </ResourceDictionary>

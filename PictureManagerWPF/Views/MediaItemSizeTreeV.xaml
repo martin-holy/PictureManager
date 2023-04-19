@@ -9,7 +9,7 @@
       Orientation="Horizontal"
       Margin="18,0,3,3">
       
-      <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type StackPanel}}}">
+      <Grid Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=StackPanel}}">
         <Grid.RowDefinitions>
           <RowDefinition />
           <RowDefinition />

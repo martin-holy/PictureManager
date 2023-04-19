@@ -15,39 +15,20 @@
         <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Border
+      x:Name="border"
       Width="{Binding ThumbWidth}"
       Height="{Binding ThumbHeight}"
       BorderThickness="2"
+      BorderBrush="Black"
       Margin="1"
       ClipToBounds="True">
-
-      <Border.Style>
-        <Style TargetType="{x:Type Border}">
-          <Setter
-            Property="BorderBrush"
-            Value="Black"/>
-
-          <Style.Triggers>
-            <DataTrigger
-              Binding="{Binding IsSelected}"
-              Value="True">
-
-              <Setter
-                Property="BorderBrush"
-                Value="{DynamicResource AccentColorBrush}"/>
-            </DataTrigger>
-          </Style.Triggers>
-        </Style>
-      </Border.Style>
 
       <Grid x:Name="PART_Grid">
         <!-- Thumbnail Image -->
         <Image
-          Source="{Binding
-                   IsAsync=True,
-                   Converter={StaticResource MediaItemThumbnailSourceConverter}}"
+          Source="{Binding IsAsync=True, Converter={StaticResource MediaItemThumbnailSourceConverter}}"
           Stretch="Fill"/>
 
         <!-- Video over layer -->
@@ -72,42 +53,10 @@
           HorizontalAlignment="Right"
           VerticalAlignment="Bottom"
           Margin="5"
-          Visibility="{Binding HasVideoClips,
-                       Converter={StaticResource AllToVisibilityConverter}}"/>
+          Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}"/>
 
         <!-- Thumbnail Info Box -->
-        <ItemsControl ItemsSource="{Binding InfoBoxThumb}">
-          <ItemsControl.Style>
-            <Style TargetType="{x:Type ItemsControl}">
-              <Style.Triggers>
-                <DataTrigger
-                  Binding="{Binding IsMouseOver,
-                            RelativeSource={RelativeSource AncestorType=Border}}"
-                  Value="True">
-
-                  <Setter
-                    Property="Visibility"
-                    Value="Hidden"/>
-                </DataTrigger>
-
-                <DataTrigger Value="True">
-                  <DataTrigger.Binding>
-                    <MultiBinding Converter="{StaticResource EqualityConverter}">
-                      <Binding Path="ThumbWidth"/>
-                      <Binding Source="{StaticResource SignLessThan}"/>
-                      <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
-                    </MultiBinding>
-                  </DataTrigger.Binding>
-
-                  <Setter
-                    Property="Visibility"
-                    Value="Hidden"/>
-                </DataTrigger>
-
-              </Style.Triggers>
-            </Style>
-          </ItemsControl.Style>
-
+        <ItemsControl x:Name="info" ItemsSource="{Binding InfoBoxThumb}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <WrapPanel Orientation="Horizontal"/>
@@ -127,10 +76,7 @@
         </ItemsControl>
 
         <!-- Selected over layer -->
-        <Grid
-          Visibility="{Binding IsSelected,
-                       Converter={StaticResource AllToVisibilityConverter}}">
-
+        <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
           <Polygon
             Width="40"
             Height="40"
@@ -150,5 +96,26 @@
 
       </Grid>
     </Border>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding IsSelected}" Value="True">
+        <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+      </DataTrigger>
+
+      <Trigger SourceName="border" Property="IsMouseOver" Value="True">
+        <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
+      </Trigger>
+
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualityConverter}">
+            <Binding Path="ThumbWidth"/>
+            <Binding Source="{StaticResource SignLessThan}"/>
+            <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

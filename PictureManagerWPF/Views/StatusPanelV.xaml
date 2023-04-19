@@ -3,8 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:d="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:d="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
   <DataTemplate x:Key="StatusPanelV" DataType="{x:Type d:Core}">
     <DataTemplate.Resources>
@@ -50,7 +49,7 @@
         <MouseBinding
           MouseAction="LeftClick"
           Command="{Binding PinCommand, RelativeSource=
-                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"/>
+                   {RelativeSource AncestorType=mhc:SlidePanel}}"/>
       </Grid.InputBindings>
 
       <WrapPanel VerticalAlignment="Bottom" Margin="0,2,0,1">

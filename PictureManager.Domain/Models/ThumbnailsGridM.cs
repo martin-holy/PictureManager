@@ -27,7 +27,6 @@ namespace PictureManager.Domain.Models {
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
     private bool _sortByFileFirst = true;
-    private bool _reWrapItems;
     private object _scrollToItem;
     private TreeWrapGroup _filteredRoot = new();
 
@@ -41,7 +40,6 @@ namespace PictureManager.Domain.Models {
     public MediaItemFilterSizeM FilterSize { get; } = new();
     public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public TreeWrapGroup FilteredRoot { get => _filteredRoot; private set { _filteredRoot = value; OnPropertyChanged(); } }
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public CanDragFunc CanDragFunc { get; }
@@ -68,7 +66,6 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
     public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
-    public RelayCommand<object> PanelWidthChangedCommand { get; }
 
     public ThumbnailsGridM(Core core, double thumbScale, string tabTitle) {
       _core = core;
@@ -85,10 +82,6 @@ namespace PictureManager.Domain.Models {
           await ThumbsGridReloadItems();
         },
         e => e.IsCtrlOn);
-
-      PanelWidthChangedCommand = new(
-        () => ReWrapItems = true,
-        () => !_core.MediaViewerM.IsVisible);
 
       SelectMediaItemCommand = new(e => {
         if (e.DataContext is MediaItemM mi)

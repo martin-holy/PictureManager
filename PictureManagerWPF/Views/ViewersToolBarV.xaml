@@ -2,7 +2,7 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <Path
     x:Key="EyeIcon"
@@ -13,45 +13,29 @@
 
   <DataTemplate x:Key="Views.ViewersToolBarV">
     <Menu Background="Transparent">
-      <MenuItem Icon="{StaticResource EyeIcon}" Height="30">
+      <MenuItem
+        x:Name="root"
+        Icon="{StaticResource EyeIcon}"
+        Height="30"
+        Background="Transparent"
+        Header="{Binding ViewersM.Current.Name, Source={x:Static pm:App.Core}}">
+
         <MenuItem.ItemsSource>
           <CompositeCollection>
             <MenuItem
               Icon="{StaticResource EyeIcon}"
               Header="All"
               DataContext="{x:Null}"
-              Command="{Binding ViewersM.SetCurrentCommand,
-                        Source={x:Static pm:App.Core}}"/>
+              Command="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
 
             <CollectionContainer
               Collection="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
 
-        <MenuItem.Style>
-          <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter
-              Property="Header"
-              Value="{Binding ViewersM.Current.Name,
-                      Source={x:Static pm:App.Core}}"/>
-            <Style.Triggers>
-              <Trigger Property="IsHighlighted" Value="True">
-                <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
-              </Trigger>
-              <DataTrigger
-                Binding="{Binding ViewersM.Current,
-                          Source={x:Static pm:App.Core}}"
-                Value="{x:Null}">
-                <Setter Property="Header" Value="All"/>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </MenuItem.Style>
-
         <MenuItem.ItemContainerStyle>
           <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
-            <Setter Property="Header" Value="{Binding Path=(models:ViewerM.Name)}"/>
+            <Setter Property="Header" Value="{Binding Path=(m:ViewerM.Name)}"/>
             <Setter Property="Command" Value="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
             <Setter Property="CommandParameter" Value="{Binding}"/>
             <Setter Property="Icon" Value="{StaticResource EyeIcon}"/>
@@ -59,5 +43,14 @@
         </MenuItem.ItemContainerStyle>
       </MenuItem>
     </Menu>
+
+    <DataTemplate.Triggers>
+      <Trigger SourceName="root" Property="IsHighlighted" Value="True">
+        <Setter TargetName="root" Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+      </Trigger>
+      <DataTrigger Binding="{Binding ViewersM.Current, Source={x:Static pm:App.Core}}" Value="{x:Null}">
+        <Setter TargetName="root" Property="Header" Value="All"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

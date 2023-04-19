@@ -69,25 +69,21 @@
       <StackPanel Orientation="Horizontal">
         <Label Content="File name:"/>
         <TextBox
+          x:Name="fileName"
           Text="{Binding FileName}"
           Margin="5,0"
           MinWidth="200" 
           VerticalAlignment="Center"
-          Height="24">
-
-          <TextBox.Style>
-            <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
-              <Setter Property="ToolTip" Value="{x:Null}"/>
-              <Style.Triggers>
-                <DataTrigger Binding="{Binding Error, Converter={StaticResource AllToBoolConverter}}" Value="True">
-                  <Setter Property="Background" Value="#7FFF0000"/>
-                  <Setter Property="ToolTip" Value="{Binding Error}"/>
-                </DataTrigger>
-              </Style.Triggers>
-            </Style>
-          </TextBox.Style>
-        </TextBox>
+          Height="24"
+          ToolTip="{x:Null}"/>
       </StackPanel>
     </StackPanel>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding Error, Converter={StaticResource AllToBoolConverter}}" Value="True">
+        <Setter TargetName="fileName" Property="Background" Value="#7FFF0000"/>
+        <Setter TargetName="fileName" Property="ToolTip" Value="{Binding Error}"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

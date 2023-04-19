@@ -51,26 +51,26 @@
               <b:EventTrigger EventName="MouseEnter">
                 <b:InvokeCommandAction
                   Command="vm:MediaItemVideoPreviewVM.ShowVideoPreviewCommand"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}"/>
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeave">
                 <b:InvokeCommandAction
                   Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContentPresenter}}}"/>
+                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="PreviewMouseUp">
                 <b:InvokeCommandAction
                   Command="{Binding Path=DataContext.(m:ThumbnailsGridM.SelectMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
+                            RelativeSource={RelativeSource AncestorType=mhc:TreeWrapView}}"
                   EventArgsConverter="{StaticResource MouseButtonConverter}"/>
               </b:EventTrigger>
 
               <b:EventTrigger EventName="MouseLeftButtonDown">
                 <b:InvokeCommandAction
                   Command="{Binding Path=DataContext.(m:ThumbnailsGridM.OpenMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType={x:Type mhc:TreeWrapView}}}"
+                            RelativeSource={RelativeSource AncestorType=mhc:TreeWrapView}}"
                   EventArgsConverter="{StaticResource MouseButtonConverter}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
@@ -84,7 +84,6 @@
       ItemWidthGetter="{Binding ItemWidthGetter}"
       Root="{Binding FilteredRoot}"
       ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
-      ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}"
       ReloadAutoScroll="False"
       ScrollViewerSpeedFactor="2.5"
       mhu:DragDropHelper.IsDragEnabled="True"
@@ -102,7 +101,7 @@
             EventArgsConverter="{StaticResource MouseWheelConverter}"/>
         </b:EventTrigger>
         <b:EventTrigger EventName="WidthChangedEventHandler">
-          <b:InvokeCommandAction Command="{Binding PanelWidthChangedCommand}"/>
+          <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </mhc:TreeWrapView>

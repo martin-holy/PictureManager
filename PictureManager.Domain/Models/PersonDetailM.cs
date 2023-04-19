@@ -12,8 +12,6 @@ namespace PictureManager.Domain.Models {
     private PersonM _personM;
     private object _scrollToItem;
     private TreeWrapGroup _allSegmentsRoot;
-    private bool _reWrapTopItems;
-    private bool _reWrapAllItems;
 
     private readonly HeaderedListItem<object, string> _toolsTabsItem;
 
@@ -22,14 +20,10 @@ namespace PictureManager.Domain.Models {
     public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
-    public bool ReWrapTopItems { get => _reWrapTopItems; set { _reWrapTopItems = value; OnPropertyChanged(); } }
-    public bool ReWrapAllItems { get => _reWrapAllItems; set { _reWrapAllItems = value; OnPropertyChanged(); } }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
     public RelayCommand<PersonM> SetPersonCommand { get; }
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
-    public RelayCommand<object> PanelTopWidthChangedCommand { get; }
-    public RelayCommand<object> PanelAllWidthChangedCommand { get; }
 
     public PersonDetailM(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
@@ -41,8 +35,6 @@ namespace PictureManager.Domain.Models {
 
       SetPersonCommand = new(SetPerson);
       SelectCommand = new(Select);
-      PanelTopWidthChangedCommand = new(() => ReWrapTopItems = true);
-      PanelAllWidthChangedCommand = new(() => ReWrapAllItems = true);
     }
 
     private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {

@@ -44,6 +44,7 @@
           Stretch="Uniform"
           Width="100"
           Margin="0,4,4,4" />
+        
         <StackPanel>
           <TextBlock
             Text="{Binding Title}"

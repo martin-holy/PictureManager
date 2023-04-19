@@ -15,7 +15,7 @@
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
@@ -24,10 +24,7 @@
 
       <StackPanel Grid.Row="0">
         <!-- Heather -->
-        <Grid
-          Background="#88000000"
-          Margin="0,0,0,5">
-          
+        <Grid Background="#88000000" Margin="0,0,0,5">
           <TextBlock
             Text="{Binding PersonM.Name}"
             Foreground="{StaticResource MH.Brushes.Text}"
@@ -36,9 +33,7 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center"/>
 
-          <StackPanel
-            VerticalAlignment="Center"
-            Orientation="Horizontal">
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
             <Path
               Style="{StaticResource MH.Styles.Icon}"
               Effect="{StaticResource MH.Effects.DropShadow}"
@@ -50,20 +45,18 @@
             <mhc:IconButton
               ToolTip="Load Media items in new tab"
               Icon="{StaticResource IconImageMultiple}"
-              Command="{Binding ThumbnailsGridsM.LoadByTagCommand,
-                        Source={x:Static pm:App.Core}}"
+              Command="{Binding ThumbnailsGridsM.LoadByTagCommand, Source={x:Static pm:App.Core}}"
               CommandParameter="{Binding PersonM}"/>
           </StackPanel>
         </Grid>
-          
+
         <!-- Keywords -->
         <Border
           Style="{StaticResource SBorderGroup}"
           Margin="4,0"
           Background="Transparent"
           BorderThickness="0"
-          Visibility="{Binding PersonM.DisplayKeywords,
-                       Converter={StaticResource AllToVisibilityConverter}}">
+          Visibility="{Binding PersonM.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
 
           <StackPanel Orientation="Horizontal">
             <Path
@@ -72,27 +65,25 @@
               Data="{StaticResource IconTag}"
               Fill="{StaticResource ColorBrushTag}"
               Margin="0,0,4,0"/>
-              
+
             <ItemsControl ItemsSource="{Binding PersonM.DisplayKeywords}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <WrapPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
-              
+
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <Border Style="{StaticResource SBorderText}">
-                    <TextBlock
-                      Text="{Binding Name}"
-                      Style="{StaticResource STextBlock}"/>
+                    <TextBlock Text="{Binding Name}" Style="{StaticResource STextBlock}"/>
                   </Border>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
             </ItemsControl>
           </StackPanel>
         </Border>
-          
+
         <!-- Top Segments -->
         <TextBlock
           Text="Top Segments:"
@@ -104,7 +95,6 @@
           MinHeight="106"
           ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
           ItemsToWrap="{Binding PersonM.TopSegments}"
-          ReWrapItems="{Binding ReWrapTopItems, Mode=TwoWay}"
           mhu:DragDropHelper.IsDragEnabled="True"
           mhu:DragDropHelper.IsDropEnabled="True"
           mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -113,12 +103,12 @@
 
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="WidthChangedEventHandler">
-              <b:InvokeCommandAction Command="{Binding PanelTopWidthChangedCommand}"/>
+              <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
       </StackPanel>
-      
+
       <!-- All Segments -->
       <mhc:TreeWrapView
         Grid.Row="1"
@@ -127,13 +117,12 @@
         ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
         Root="{Binding AllSegmentsRoot}"
         ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
-        ReWrapItems="{Binding ReWrapAllItems, Mode=TwoWay}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}">
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="WidthChangedEventHandler">
-            <b:InvokeCommandAction Command="{Binding PanelAllWidthChangedCommand}"/>
+            <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
       </mhc:TreeWrapView>
@@ -146,9 +135,6 @@
             EventArgsConverterParameter="System.Windows.Controls.Image"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
-
     </Grid>
-
   </DataTemplate>
-    
 </ResourceDictionary>

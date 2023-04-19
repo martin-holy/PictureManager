@@ -12,7 +12,7 @@
         x:Key="TreeContextMenuRating"
         DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
                       RelativeSource={RelativeSource Self}}">
-          
+
         <MenuItem
           Header="Load"
           Command="{Binding ThumbnailsGridsM.LoadByTagCommand,
@@ -20,7 +20,7 @@
           CommandParameter="{Binding}"/>
       </ContextMenu>
     </HierarchicalDataTemplate.Resources>
-    
+
     <Grid Background="{Binding DisplayFilter,
                        Converter={StaticResource ResourceConverter},
                        ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
@@ -33,18 +33,15 @@
             Value="{StaticResource TreeContextMenuRating}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
-      
-      <StackPanel
-        Orientation="Horizontal"
-        Margin="18,0,0,0">
-        
+
+      <StackPanel Orientation="Horizontal" Margin="18,0,0,0">
         <StackPanel Orientation="Horizontal">
           <StackPanel.Resources>
             <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
               <Setter Property="Data" Value="{StaticResource IconStar}"/>
             </Style>
           </StackPanel.Resources>
-          
+
           <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}"/>
           <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}"/>
           <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}"/>
@@ -55,5 +52,4 @@
       </StackPanel>
     </Grid>
   </HierarchicalDataTemplate>
-
 </ResourceDictionary>

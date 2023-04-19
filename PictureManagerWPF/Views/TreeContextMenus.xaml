@@ -8,30 +8,37 @@
 
   <!-- Tag Items Load and Filters -->
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
-    <MenuItem Header="Load"
-              Command="{Binding ThumbnailsGridsM.LoadByTagCommand, Source={x:Static pm:App.Core}}"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="Filter And"
-              Command="{Binding ThumbnailsGridsM.ActivateFilterAndCommand, Source={x:Static pm:App.Core}}"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="Filter Or"
-              Command="{Binding ThumbnailsGridsM.ActivateFilterOrCommand, Source={x:Static pm:App.Core}}"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="Filter Not"
-              Command="{Binding ThumbnailsGridsM.ActivateFilterNotCommand, Source={x:Static pm:App.Core}}"
-              CommandParameter="{Binding}" />
+    <MenuItem
+      Header="Load"
+      Command="{Binding ThumbnailsGridsM.LoadByTagCommand, Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="Filter And"
+      Command="{Binding ThumbnailsGridsM.ActivateFilterAndCommand, Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="Filter Or"
+      Command="{Binding ThumbnailsGridsM.ActivateFilterOrCommand, Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="Filter Not"
+      Command="{Binding ThumbnailsGridsM.ActivateFilterNotCommand, Source={x:Static pm:App.Core}}"
+      CommandParameter="{Binding}"/>
   </x:Array>
 
   <!-- People -->
-  <ContextMenu x:Key="TreeContextMenuPeople"
-               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                             RelativeSource={RelativeSource Self}}">
-    <MenuItem Header="New"
-              Command="mhc:CatTreeView.ItemCreateCommand"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="New Group"
-              Command="mhc:CatTreeView.GroupCreateCommand"
-              CommandParameter="{Binding}" />
+  <ContextMenu
+    x:Key="TreeContextMenuPeople"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                  RelativeSource={RelativeSource Self}}">
+    <MenuItem
+      Header="New"
+      Command="mhc:CatTreeView.ItemCreateCommand"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="New Group"
+      Command="mhc:CatTreeView.GroupCreateCommand"
+      CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
   </ContextMenu>
@@ -39,74 +46,82 @@
   <ContextMenu
     x:Key="TreeContextMenuPerson"
     DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                RelativeSource={RelativeSource Self}}">
+                  RelativeSource={RelativeSource Self}}">
     <ContextMenu.ItemsSource>
       <CompositeCollection>
         <MenuItem
           Header="Detail"
-          Command="{Binding PersonDetailM.SetPersonCommand,
-                    Source={x:Static pm:App.Core}}"
-          CommandParameter="{Binding}" />
+          Command="{Binding PersonDetailM.SetPersonCommand, Source={x:Static pm:App.Core}}"
+          CommandParameter="{Binding}"/>
         <MenuItem
           Header="Rename"
           Command="mhc:CatTreeView.ItemRenameCommand"
-          CommandParameter="{Binding}" />
+          CommandParameter="{Binding}"/>
         <MenuItem
           Header="Delete"
           Command="mhc:CatTreeView.ItemDeleteCommand"
-          CommandParameter="{Binding}" />
-        <Separator />
-        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
+          CommandParameter="{Binding}"/>
+        <Separator/>
+        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
 
   <!-- Folder Keywords -->
   <ContextMenu x:Key="TreeContextMenuFolderKeywords">
-    <MenuItem Header="Folder Keywords list"
-              Command="md:FolderKeywordsDialogM.OpenCommand" />
+    <MenuItem
+      Header="Folder Keywords list"
+      Command="md:FolderKeywordsDialogM.OpenCommand"/>
   </ContextMenu>
 
   <!-- Keywords -->
-  <ContextMenu x:Key="TreeContextMenuKeywords"
-               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                             RelativeSource={RelativeSource Self}}">
-    <MenuItem Header="New"
-              Command="mhc:CatTreeView.ItemCreateCommand"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="New Group"
-              Command="mhc:CatTreeView.GroupCreateCommand"
-              CommandParameter="{Binding}" />
+  <ContextMenu
+    x:Key="TreeContextMenuKeywords"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                  RelativeSource={RelativeSource Self}}">
+    <MenuItem
+      Header="New"
+      Command="mhc:CatTreeView.ItemCreateCommand"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="New Group"
+      Command="mhc:CatTreeView.GroupCreateCommand"
+      CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
   </ContextMenu>
 
   <!-- GeoNames -->
   <ContextMenu x:Key="TreeContextMenuGeoNames">
-    <MenuItem Header="New"
-              Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand,
-                        Source={x:Static pm:App.Core}}" />
+    <MenuItem
+      Header="New"
+      Command="{Binding GeoNamesM.NewGeoNameFromGpsCommand, Source={x:Static pm:App.Core}}"/>
   </ContextMenu>
 
   <!-- Viewers -->
-  <ContextMenu x:Key="TreeContextMenuViewers"
-               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                             RelativeSource={RelativeSource Self}}">
-    <MenuItem Header="New"
-              Command="mhc:CatTreeView.ItemCreateCommand"
-              CommandParameter="{Binding}" />
+  <ContextMenu
+    x:Key="TreeContextMenuViewers"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                  RelativeSource={RelativeSource Self}}">
+    <MenuItem
+      Header="New"
+      Command="mhc:CatTreeView.ItemCreateCommand"
+      CommandParameter="{Binding}"/>
   </ContextMenu>
 
   <!-- Video Clips -->
-  <ContextMenu x:Key="TreeContextMenuVideoClips"
-               DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
-                             RelativeSource={RelativeSource Self}}">
-    <MenuItem Header="New"
-              Command="mhc:CatTreeView.ItemCreateCommand"
-              CommandParameter="{Binding}" />
-    <MenuItem Header="New Group"
-              Command="mhc:CatTreeView.GroupCreateCommand"
-              CommandParameter="{Binding}" />
+  <ContextMenu
+    x:Key="TreeContextMenuVideoClips"
+    DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
+                  RelativeSource={RelativeSource Self}}">
+    <MenuItem
+      Header="New"
+      Command="mhc:CatTreeView.ItemCreateCommand"
+      CommandParameter="{Binding}"/>
+    <MenuItem
+      Header="New Group"
+      Command="mhc:CatTreeView.GroupCreateCommand"
+      CommandParameter="{Binding}"/>
   </ContextMenu>
   
    <!-- Tree Category Group -->
@@ -117,15 +132,15 @@
     <MenuItem
       Header="New"
       Command="mhc:CatTreeView.ItemCreateCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename Group"
       Command="mhc:CatTreeView.GroupRenameCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete Group"
       Command="mhc:CatTreeView.GroupDeleteCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
   </ContextMenu>
@@ -138,7 +153,7 @@
     <MenuItem
       Header="New"
       Command="mhc:CatTreeView.ItemCreateCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- Folder -->
@@ -149,31 +164,31 @@
     <MenuItem
       Header="New"
       Command="mhc:CatTreeView.ItemCreateCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename"
       Command="mhc:CatTreeView.ItemRenameCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
       Command="mhc:CatTreeView.ItemDeleteCommand"
-      CommandParameter="{Binding}" />
-    <Separator />
+      CommandParameter="{Binding}"/>
+    <Separator/>
     <MenuItem
       Header="Add to Favorites"
       Command="{Binding FavoriteFoldersM.AddToFavoritesCommand,
                 Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Set as Folder Keyword"
       Command="{Binding FoldersM.SetAsFolderKeywordCommand,
                 Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Reload metadata"
       Command="{Binding MediaItemsM.ReloadMetadataInFolderCommand,
                 Source={x:Static pm:App.Core}}"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
 
     <!--TODO: rebuild thumbnails-->
   </ContextMenu>
@@ -186,11 +201,11 @@
     <MenuItem
       Header="Rename"
       Command="mhc:CatTreeView.ItemRenameCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
       Command="mhc:CatTreeView.ItemDeleteCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <!-- GeoName -->
@@ -198,7 +213,7 @@
     x:Key="TreeContextMenuGeoName"
     DataContext="{Binding PlacementTarget.(FrameworkElement.DataContext),
                 RelativeSource={RelativeSource Self}}"
-    ItemsSource="{StaticResource TagItemTreeContextMenu}" />
+    ItemsSource="{StaticResource TagItemTreeContextMenu}"/>
   
   <!-- Keyword -->
   <ContextMenu
@@ -210,17 +225,17 @@
         <MenuItem
           Header="New"
           Command="mhc:CatTreeView.ItemCreateCommand"
-          CommandParameter="{Binding}" />
+          CommandParameter="{Binding}"/>
         <MenuItem
           Header="Rename"
           Command="mhc:CatTreeView.ItemRenameCommand"
-          CommandParameter="{Binding}" />
+          CommandParameter="{Binding}"/>
         <MenuItem
           Header="Delete"
           Command="mhc:CatTreeView.ItemDeleteCommand"
-          CommandParameter="{Binding}" />
-        <Separator />
-        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}" />
+          CommandParameter="{Binding}"/>
+        <Separator/>
+        <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
       </CompositeCollection>
     </ContextMenu.ItemsSource>
   </ContextMenu>
@@ -233,11 +248,11 @@
     <MenuItem
       Header="Rename"
       Command="mhc:CatTreeView.ItemRenameCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
       Command="mhc:CatTreeView.ItemDeleteCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
   </ContextMenu>
   
   <ContextMenu
@@ -247,15 +262,15 @@
     <MenuItem
       Header="New"
       Command="mhc:CatTreeView.ItemCreateCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename Group"
       Command="mhc:CatTreeView.GroupRenameCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete Group"
       Command="mhc:CatTreeView.GroupDeleteCommand"
-      CommandParameter="{Binding}" />
+      CommandParameter="{Binding}"/>
   </ContextMenu>
     
 </ResourceDictionary>
