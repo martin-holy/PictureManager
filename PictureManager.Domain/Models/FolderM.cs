@@ -120,26 +120,6 @@ namespace PictureManager.Domain.Models {
       Items.Sort(x => ((FolderM)x).Name);
     }
 
-    /// <param name="path">full or partial folder path with no directory separator on the end</param>
-    public FolderM GetByPath(string path) {
-      if (string.IsNullOrEmpty(path)) return null;
-      if (FullPath.Equals(path, StringComparison.CurrentCultureIgnoreCase)) return this;
-
-      var root = this;
-      var pathParts = (path.StartsWith(FullPath, StringComparison.CurrentCultureIgnoreCase)
-        ? path[(FullPath.Length + 1)..]
-        : path)
-        .Split(Path.DirectorySeparatorChar);
-
-      foreach (var pathPart in pathParts) {
-        var folder = root.Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(pathPart, StringComparison.CurrentCultureIgnoreCase));
-        if (folder == null) return null;
-        root = folder;
-      }
-
-      return root;
-    }
-
     public MediaItemM GetMediaItemByName(string fileName) =>
       MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName, StringComparison.Ordinal));
 

@@ -4,6 +4,7 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.Models;
 using System.IO;
 using System.Linq;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class FileOperationCollisionDialogM : Dialog {
@@ -50,9 +51,19 @@ namespace PictureManager.Domain.Dialogs {
     }
 
     private MediaItemM GetMediaItem(string filePath) {
-      var mi = Core.Instance.FoldersM.GetMediaItemByPath(filePath);
+      var mi = GetMediaItemByPath(filePath);
       mi.SetInfoBox();
       mi.SetThumbSize();
+      return mi;
+    }
+
+    private MediaItemM GetMediaItemByPath(string path) {
+      var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
+      var folderPath = path[..lioSep];
+      var fileName = path[(lioSep + 1)..];
+      var folder = Tree.GetByPath(Core.Instance.FoldersM, folderPath, Path.DirectorySeparatorChar) as FolderM;
+      var mi = folder?.GetMediaItemByName(fileName);
+      mi ??= Core.Instance.MediaItemsM.AddNew(folder, fileName, false, true);
       return mi;
     }
 
