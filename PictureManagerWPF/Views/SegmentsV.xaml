@@ -16,7 +16,7 @@
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <Grid>
       <!-- Segments Grids -->
       <Grid>
@@ -33,22 +33,21 @@
               EventArgsConverter="{StaticResource MouseButtonConverter}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
-        
+
         <Grid Grid.Column="0">
           <mhc:VirtualizingWrapPanel
             ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
             ItemsToWrap="{Binding SegmentsM.ConfirmedGrouped}"
-            ReWrapItems="{Binding SegmentsM.ReWrapConfirmedItems, Mode=TwoWay}"
             mhu:DragDropHelper.IsDragEnabled="True"
             mhu:DragDropHelper.CanDrag="{Binding SegmentsM.CanDragFunc}">
-        
+
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="WidthChangedEventHandler">
-                <b:InvokeCommandAction Command="{Binding SegmentsM.PanelConfirmedWidthChangedCommand}"/>
+                <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
           </mhc:VirtualizingWrapPanel>
-          
+
           <mhc:IconToggleButton
             ToolTip="Groups with similarities"
             IsThreeState="False"
@@ -66,13 +65,12 @@
           ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
           ItemsToWrap="{Binding SegmentsM.LoadedGrouped}"
           ReloadAutoScroll="{Binding SegmentsM.ReloadAutoScroll}"
-          ReWrapItems="{Binding SegmentsM.ReWrapLoadedItems, Mode=TwoWay}"
           mhu:DragDropHelper.IsDragEnabled="True"
           mhu:DragDropHelper.CanDrag="{Binding SegmentsM.CanDragFunc}">
-        
+
           <b:Interaction.Triggers>
             <b:EventTrigger EventName="WidthChangedEventHandler">
-              <b:InvokeCommandAction Command="{Binding SegmentsM.PanelLoadedWidthChangedCommand}"/>
+              <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
             </b:EventTrigger>
           </b:Interaction.Triggers>
         </mhc:VirtualizingWrapPanel>
@@ -118,7 +116,7 @@
           IsChecked="{Binding SegmentsM.MatchingAutoSort}"
           Content="Auto Sort"
           IsThreeState="False"/>
-        
+
         <Slider
           Value="{Binding SegmentsM.SimilarityLimit}" 
           Minimum="{Binding SegmentsM.SimilarityLimitMin}" 
@@ -127,8 +125,6 @@
           AutoToolTipPlacement="BottomRight"
           Margin="8,0"/>
       </StackPanel>
-
     </Grid>
   </DataTemplate>
-
 </ResourceDictionary>

@@ -15,13 +15,12 @@
   BorderThickness="1"
   BorderBrush="Black">
   
-  <Grid
-    DataContext="{Binding RelativeSource={RelativeSource AncestorType={x:Type v:SplashScreenV}}}">
+  <Grid DataContext="{Binding RelativeSource={RelativeSource AncestorType=v:SplashScreenV}}">
     <Grid.RowDefinitions>
-      <RowDefinition />
-      <RowDefinition Height="20" />
-      <RowDefinition Height="20" />
-      <RowDefinition Height="20" />
+      <RowDefinition/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="20"/>
     </Grid.RowDefinitions>
     
     <TextBlock
@@ -30,22 +29,22 @@
       FontWeight="Bold"
       FontSize="30"
       HorizontalAlignment="Center"
-      VerticalAlignment="Center" />
+      VerticalAlignment="Center"/>
     
     <TextBlock
       Grid.Row="1"
       Text="{Binding Version}"
-      HorizontalAlignment="Center" />
+      HorizontalAlignment="Center"/>
     
     <TextBlock
       Grid.Row="2"
       Text="{Binding Message}"
-      HorizontalAlignment="Center" />
+      HorizontalAlignment="Center"/>
     
     <ProgressBar
       Grid.Row="3"
       IsIndeterminate="True"
       Margin="4,0"
-      Height="10" />
+      Height="10"/>
   </Grid>
 </Window>

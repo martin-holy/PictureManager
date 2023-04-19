@@ -3,7 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
-  
+
   <DataTemplate DataType="{x:Type m:ToolsTabsM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
@@ -14,7 +14,7 @@
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <TabControl
       x:Name="Tabs"
       TabStripPlacement="Top"
@@ -24,7 +24,7 @@
       Visibility="{Binding HasItems,
                    ElementName=Tabs,
                    Converter={StaticResource AllToVisibilityConverter}}">
-      
+
       <TabControl.Style>
         <Style TargetType="{x:Type TabControl}">
           <Setter Property="Template">
@@ -36,14 +36,8 @@
                     <RowDefinition Height="*"/>
                   </Grid.RowDefinitions>
 
-                  <DockPanel
-                    Grid.Row="0"
-                    ZIndex="1"
-                    Height="46">
-
-                    <StackPanel
-                      DockPanel.Dock="Right"
-                      Orientation="Horizontal">
+                  <DockPanel Grid.Row="0" ZIndex="1" Height="46">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                       <mhc:IconButton
                         Padding="5"
                         HorizontalAlignment="Right"
@@ -53,7 +47,7 @@
                         Icon="{StaticResource IconXCross}"
                         Width="20"
                         Height="20"/>
-      
+
                       <mhc:IconToggleButton
                         Icon="{StaticResource IconPin}"
                         Width="20"
@@ -62,20 +56,17 @@
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
                         IsChecked="{Binding IsPinned, RelativeSource=
-                                   {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
+                                   {RelativeSource AncestorType=mhc:SlidePanel}}"
                         ToolTip="Pin panel"/>
-                     </StackPanel>
-                    
+                    </StackPanel>
+
                     <TabPanel
                       IsItemsHost="True"
                       KeyboardNavigation.TabIndex="1"
                       Margin="0"/>
                   </DockPanel>
 
-                  <ItemsControl
-                    Grid.Row="1"
-                    ItemsSource="{Binding Items}">
-                    
+                  <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">
                     <ItemsControl.ItemsPanel>
                       <ItemsPanelTemplate>
                         <Grid/>
@@ -91,19 +82,13 @@
                     <ItemsControl.ItemContainerStyle>
                       <Style>
                         <Style.Triggers>
-                          <DataTrigger
-                            Binding="{Binding IsSelected}"
-                            Value="False">
-
-                            <Setter
-                              Property="ContentPresenter.Visibility"
-                              Value="Hidden"/>
+                          <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                            <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
                           </DataTrigger>
                         </Style.Triggers>
                       </Style>
                     </ItemsControl.ItemContainerStyle>
                   </ItemsControl>
-                  
                 </Grid>
               </ControlTemplate>
             </Setter.Value>
@@ -112,42 +97,25 @@
       </TabControl.Style>
 
       <TabControl.ItemContainerStyle>
-        <Style
-          TargetType="{x:Type TabItem}"
-          BasedOn="{StaticResource {x:Type TabItem}}">
-
-          <Setter
-            Property="Header"
-            Value="{Binding}"/>
-          <Setter
-            Property="IsSelected"
-            Value="{Binding IsSelected, Mode=TwoWay}"/>
-          <Setter
-            Property="Background"
-            Value="{StaticResource ColorBrushBackground}"/>
-
+        <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+          <Setter Property="Header" Value="{Binding}"/>
+          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+          <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
+          <Setter Property="Content" Value="{Binding Content}"/>
           <Setter Property="HeaderTemplate">
             <Setter.Value>
               <DataTemplate>
-
                 <!-- Tab text -->
                 <TextBlock
                   Text="{Binding ContentHeader}"
                   Margin="0"
                   Effect="{StaticResource MH.Effects.DropShadow}"
                   FontSize="{StaticResource TabItemFontSize}"/>
-
               </DataTemplate>
             </Setter.Value>
           </Setter>
-
-          <Setter
-            Property="Content"
-            Value="{Binding Content}"/>
         </Style>
       </TabControl.ItemContainerStyle>
     </TabControl>
-    
   </DataTemplate>
-    
 </ResourceDictionary>

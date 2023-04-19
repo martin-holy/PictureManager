@@ -18,8 +18,7 @@
     <mhc:TreeWrapView
       ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
       Root="{Binding PeopleRoot}"
-      ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
-      ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}">
+      ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
@@ -30,7 +29,7 @@
         </b:EventTrigger>
 
         <b:EventTrigger EventName="WidthChangedEventHandler">
-          <b:InvokeCommandAction Command="{Binding PanelWidthChangedCommand}"/>
+          <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </mhc:TreeWrapView>

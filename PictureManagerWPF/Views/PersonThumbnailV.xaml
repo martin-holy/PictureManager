@@ -36,38 +36,17 @@
     </DataTemplate.Resources>
 
     <Grid>
-      <!-- Segment or empty icon -->
-      <ContentControl>
-        <ContentControl.Style>
-          <Style TargetType="{x:Type ContentControl}">
-            <Setter Property="Content" Value="{Binding Segment}"/>
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding Segment}" Value="{x:Null}">
-                <Setter Property="Content" Value="{Binding}"/>
-                <Setter
-                  Property="ContentTemplate"
-                  Value="{StaticResource NoSegmentIcon}"/>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </ContentControl.Style>
-      </ContentControl>
-
-      <!-- Border -->
-      <Border BorderThickness="2">
-        <Border.Style>
-          <Style TargetType="{x:Type Border}">
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                <Setter
-                  Property="BorderBrush"
-                  Value="{DynamicResource AccentColorBrush}"/>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </Border.Style>
-      </Border>
+      <ContentControl x:Name="content" Content="{Binding Segment}"/>
+      <Border x:Name="border" BorderThickness="2"/>
     </Grid>
+
+    <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding Segment}" Value="{x:Null}">
+        <Setter TargetName="content" Property="ContentTemplate" Value="{StaticResource NoSegmentIcon}"/>
+      </DataTrigger>
+      <DataTrigger Binding="{Binding IsSelected}" Value="True">
+        <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>

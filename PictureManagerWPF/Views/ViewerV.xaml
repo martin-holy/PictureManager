@@ -6,7 +6,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
-  <!-- ViewerM DataTemplate -->
   <DataTemplate DataType="{x:Type m:ViewerDetailM}">
     <DataTemplate.Resources>
       <Style TargetType="{x:Type Border}">
@@ -118,17 +117,11 @@
             mhu:DragDropHelper.CanDrop="{Binding CanDropFolderIncluded}"
             mhu:DragDropHelper.DoDrop="{Binding DoDropFolderIncluded}">
 
-            <ListBox.Style>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemContainerStyle">
-                  <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
-                    </Style>
-                  </Setter.Value>
-                </Setter>
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
               </Style>
-            </ListBox.Style>
+            </ListBox.ItemContainerStyle>
           </ListBox>
         </Grid>
       </Border>
@@ -162,17 +155,11 @@
             mhu:DragDropHelper.CanDrop="{Binding CanDropFolderExcluded}"
             mhu:DragDropHelper.DoDrop="{Binding DoDropFolderExcluded}">
 
-            <ListBox.Style>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemContainerStyle">
-                  <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
-                    </Style>
-                  </Setter.Value>
-                </Setter>
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                <Setter Property="ToolTip" Value="{Binding Path=(m:FolderM.FullPath)}"/>
               </Style>
-            </ListBox.Style>
+            </ListBox.ItemContainerStyle>
           </ListBox>
         </Grid>
       </Border>
@@ -250,17 +237,11 @@
             mhu:DragDropHelper.CanDrop="{Binding CanDropKeyword}"
             mhu:DragDropHelper.DoDrop="{Binding DoDropKeyword}">
 
-            <ListBox.Style>
-              <Style TargetType="{x:Type ListBox}" BasedOn="{StaticResource {x:Type ListBox}}">
-                <Setter Property="ItemContainerStyle">
-                  <Setter.Value>
-                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                      <Setter Property="ToolTip" Value="{Binding Path=(m:KeywordM.FullName)}"/>
-                    </Style>
-                  </Setter.Value>
-                </Setter>
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                <Setter Property="ToolTip" Value="{Binding Path=(m:KeywordM.FullName)}"/>
               </Style>
-            </ListBox.Style>
+            </ListBox.ItemContainerStyle>
           </ListBox>
         </Grid>
       </Border>

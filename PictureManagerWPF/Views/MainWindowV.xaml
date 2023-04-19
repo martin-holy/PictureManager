@@ -9,15 +9,11 @@
   DataContext="{Binding Source={x:Static pm:App.Core}}"
   Style="{StaticResource MH.Styles.Controls.CustomWindow}"
   IsFullScreen="{Binding MainWindowM.IsFullScreen, Mode=TwoWay}"
-  BorderThickness="1"
-  BorderBrush="#0063B1"
   Title="Picture Manager"
   WindowState="Maximized"
   CanResize="True"
   UseLayoutRounding="True"
   SnapsToDevicePixels="True"
-  Background="{StaticResource ColorBrushBackground}"
-  Foreground="{StaticResource WhiteBrush}"
   FontSize="14">
 
   <Window.InputBindings>
@@ -88,7 +84,7 @@
                        ConverterParameter={StaticResource False}}"/>
 
         <!-- Media Viewer -->
-        <ContentPresenter Content="{Binding MediaViewerM, Source={x:Static pm:App.Core}}"/>
+        <ContentPresenter Content="{Binding MediaViewerM}"/>
       </Grid>
     </mhc:SlidePanelsGrid.PanelMiddle>
 

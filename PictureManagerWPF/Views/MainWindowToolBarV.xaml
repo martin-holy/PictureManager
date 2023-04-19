@@ -10,7 +10,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="ViewersToolBarV.xaml" />
+          <ResourceDictionary Source="ViewersToolBarV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -35,7 +35,7 @@
 
           <Grid
             Background="Transparent"
-            mhc:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType={x:Type mhc:CustomWindow}}}">
+            mhc:CustomWindow.IsDragAreaFor="{Binding RelativeSource={RelativeSource AncestorType=mhc:CustomWindow}}">
             
             <!-- App Icon -->
             <Path
@@ -67,27 +67,27 @@
             <Style
               TargetType="{x:Type Separator}"
               BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}">
-              <Setter Property="Height" Value="15" />
+              <Setter Property="Height" Value="15"/>
             </Style>
           </StackPanel.Resources>
 
           <!-- Viewers -->
-          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}" />
+          <ContentPresenter ContentTemplate="{StaticResource Views.ViewersToolBarV}"/>
 
-          <Separator />
+          <Separator/>
 
           <!-- Media Items Count -->
           <Path
             Style="{StaticResource MH.Styles.Icon}"
             Data="{StaticResource IconImageMultiple}"
             Effect="{StaticResource MH.Effects.DropShadow}"
-            Margin="3 0 0 0" />
+            Margin="3 0 0 0"/>
           <TextBlock
             Text="{Binding MediaItemsM.MediaItemsCount}"
             VerticalAlignment="Center"
-            Margin="5 0" />
+            Margin="5 0"/>
 
-          <Separator />
+          <Separator/>
 
           <!-- Filters Panel -->
           <StackPanel
@@ -101,7 +101,7 @@
             <StackPanel.Resources>
               <Style
                 TargetType="{x:Type Border}"
-                BasedOn="{StaticResource SBorderActiveFilter}" />
+                BasedOn="{StaticResource SBorderActiveFilter}"/>
               <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
@@ -114,7 +114,7 @@
             <StackPanel.InputBindings>
               <MouseBinding
                 MouseAction="LeftClick"
-                Command="{Binding ClearFiltersCommand}" />
+                Command="{Binding ClearFiltersCommand}"/>
             </StackPanel.InputBindings>
 
             <!-- And -->
@@ -122,7 +122,7 @@
               <Label
                 Content="{Binding Current.FilterAndCount}"
                 Visibility="{Binding Current.FilterAndCount,
-                            Converter={StaticResource AllToVisibilityConverter}}" />
+                            Converter={StaticResource AllToVisibilityConverter}}"/>
             </Border>
 
             <!-- Or -->
@@ -153,17 +153,17 @@
               ToolTip="Image"
               Margin="0"
               IsChecked="{Binding Current.ShowImages}"
-              Command="{Binding ReapplyFilterCommand}" />
+              Command="{Binding ReapplyFilterCommand}"/>
 
             <mhc:IconToggleButton
               Icon="{StaticResource IconMovieClapper}"
               ToolTip="Video"
               Margin="0"
               IsChecked="{Binding Current.ShowVideos}"
-              Command="{Binding ReapplyFilterCommand}" />
+              Command="{Binding ReapplyFilterCommand}"/>
           </StackPanel>
 
-          <Separator />
+          <Separator/>
 
           <!-- DB Button -->
           <mhc:IconTextButton
@@ -179,10 +179,10 @@
             Margin="2 0 2 0"
             Visibility="{Binding Path=(mhu:Log.Items).Count, Converter={StaticResource AllToVisibilityConverter}}">
 
-            <TextBlock Text="{Binding Path=(mhu:Log.Items).Count, StringFormat='Log {0}'}" />
+            <TextBlock Text="{Binding Path=(mhu:Log.Items).Count, StringFormat='Log {0}'}"/>
           </Button>
 
-          <Separator />
+          <Separator/>
 
           <!-- Segments ToolBar -->
           <StackPanel
@@ -195,7 +195,7 @@
               IsThreeState="False"
               VerticalAlignment="Center"
               Icon="{StaticResource IconPeople}"
-              IsChecked="{Binding SegmentsRectsM.AreVisible}" />
+              IsChecked="{Binding SegmentsRectsM.AreVisible}"/>
 
             <mhc:IconButton
               ToolTip="Open Segments drawer"
@@ -205,15 +205,15 @@
             <mhc:IconButton
               ToolTip="Add selected to Segments drawer"
               Icon="{StaticResource IconDrawerAdd}"
-              Command="{Binding AddSelectedToDrawerCommand}" />
+              Command="{Binding AddSelectedToDrawerCommand}"/>
 
             <mhc:IconButton
               ToolTip="Segment Matching"
               Icon="{StaticResource IconEquals}"
-              Command="{Binding SegmentMatchingCommand}" />
+              Command="{Binding SegmentMatchingCommand}"/>
           </StackPanel>
 
-          <Separator />
+          <Separator/>
 
           <!-- Presentation ToolBar -->
           <StackPanel
@@ -228,13 +228,13 @@
                 <Style
                   TargetType="{x:Type mhc:IconButton}"
                   BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                  <Setter Property="Background" Value="White" />
-                  <Setter Property="Icon" Value="{StaticResource IconPlay}" />
-                  <Setter Property="ToolTip" Value="Stop presentation" />
+                  <Setter Property="Background" Value="White"/>
+                  <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
+                  <Setter Property="ToolTip" Value="Stop presentation"/>
                   <Style.Triggers>
                     <DataTrigger Binding="{Binding IsRunning}" Value="False">
-                      <Setter Property="Icon" Value="{StaticResource IconStop}" />
-                      <Setter Property="ToolTip" Value="Start presentation" />
+                      <Setter Property="Icon" Value="{StaticResource IconStop}"/>
+                      <Setter Property="ToolTip" Value="Start presentation"/>
                     </DataTrigger>
                   </Style.Triggers>
                 </Style>
@@ -260,7 +260,7 @@
             Orientation="Horizontal"
             Visibility="{Binding ThumbnailsGridsM.Current, Converter={StaticResource AllToVisibilityConverter}}">
 
-            <Separator />
+            <Separator/>
 
             <mhc:IconButton
               ToolTip="Compare images using average hash"
@@ -292,11 +292,11 @@
           Height="20"
           IsThreeState="False"
           IsChecked="{Binding IsPinned, RelativeSource=
-                     {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
+                     {RelativeSource AncestorType=mhc:SlidePanel}}"
           ToolTip="Pin panel"/>
 
         <ContentPresenter
-          Content="{Binding RelativeSource={RelativeSource AncestorType={x:Type mhc:CustomWindow}}}"
+          Content="{Binding RelativeSource={RelativeSource AncestorType=mhc:CustomWindow}}"
           ContentTemplate="{StaticResource MH.Styles.Controls.WindowButtons}"/>
       </StackPanel>
     </Grid>

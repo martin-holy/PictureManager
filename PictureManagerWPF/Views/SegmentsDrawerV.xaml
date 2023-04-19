@@ -19,7 +19,6 @@
       Margin="2,0,0,0"
       ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
       ItemsToWrap="{Binding SegmentsM.SegmentsDrawer}"
-      ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"
@@ -35,7 +34,7 @@
         </b:EventTrigger>
 
         <b:EventTrigger EventName="WidthChangedEventHandler">
-          <b:InvokeCommandAction Command="{Binding PanelWidthChangedCommand}"/>
+          <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
     </mhc:VirtualizingWrapPanel>

@@ -21,7 +21,6 @@
     </DataTemplate.Resources>
 
     <Grid Background="{StaticResource ColorBrushBackground}">
-
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="*"/>
@@ -35,10 +34,7 @@
         <DockPanel Height="34">
 
           <!-- TreeView Categories Navigation Bar -->
-          <ItemsControl
-            ItemsSource="{Binding Items}"
-            DockPanel.Dock="Left">
-
+          <ItemsControl ItemsSource="{Binding Items}" DockPanel.Dock="Left">
             <ItemsControl.ItemsPanel>
               <ItemsPanelTemplate>
                 <StackPanel Orientation="Horizontal"/>
@@ -54,8 +50,7 @@
                   Command="{Binding TreeViewCategoriesM.ScrollToCommand,
                             Source={x:Static pm:App.Core}}"
                   CommandParameter="{Binding}"
-                  Icon="{Binding IconName,
-                           Converter={StaticResource ResourceConverter}}"
+                  Icon="{Binding IconName, Converter={StaticResource ResourceConverter}}"
                   Foreground="{Binding IconName,
                                Converter={StaticResource ResourceConverter},
                                ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
@@ -83,7 +78,7 @@
               Height="20"
               IsThreeState="False"
               IsChecked="{Binding IsPinned, RelativeSource=
-                         {RelativeSource AncestorType={x:Type mhc:SlidePanel}}}"
+                         {RelativeSource AncestorType=mhc:SlidePanel}}"
               ToolTip="Pin panel"/>
           </StackPanel>
         </DockPanel>
@@ -91,6 +86,7 @@
 
       <!-- CatTreeView Categories -->
       <mhc:CatTreeView
+        x:Name="tree"
         Grid.Row="1"
         ItemsSource="{Binding Items}"
         ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
@@ -105,9 +101,7 @@
                   <Storyboard>
                     <BooleanAnimationUsingKeyFrames
                       Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
-                      <DiscreteBooleanKeyFrame
-                        KeyTime="00:00:00"
-                        Value="False"/>
+                      <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"/>
                     </BooleanAnimationUsingKeyFrames>
                   </Storyboard>
                 </BeginStoryboard>
@@ -116,22 +110,6 @@
           </Style>
         </mhc:CatTreeView.ItemContainerStyle>
 
-        <mhc:CatTreeView.Style>
-          <Style TargetType="{x:Type mhc:CatTreeView}" BasedOn="{StaticResource MH.Styles.Controls.CatTreeView}">
-
-            <!-- BlurEffect when Search is visible -->
-            <Style.Triggers>
-              <DataTrigger Binding="{Binding TreeViewSearchM.IsVisible}" Value="True">
-                <Setter Property="Effect">
-                  <Setter.Value>
-                    <BlurEffect Radius="4" KernelType="Gaussian"/>
-                  </Setter.Value>
-                </Setter>
-              </DataTrigger>
-            </Style.Triggers>
-          </Style>
-        </mhc:CatTreeView.Style>
-
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="MouseLeftButtonUp">
             <b:InvokeCommandAction
@@ -139,13 +117,21 @@
               EventArgsConverter="{StaticResource MouseButtonConverter}"/>
           </b:EventTrigger>
         </b:Interaction.Triggers>
-
       </mhc:CatTreeView>
 
       <!-- Search -->
-      <ContentPresenter
-        Grid.Row="1"
-        Content="{Binding TreeViewSearchM}"/>
+      <ContentPresenter Grid.Row="1" Content="{Binding TreeViewSearchM}"/>
     </Grid>
+
+    <DataTemplate.Triggers>
+      <!-- BlurEffect when Search is visible -->
+      <DataTrigger Binding="{Binding TreeViewSearchM.IsVisible}" Value="True">
+        <Setter TargetName="tree" Property="Effect">
+          <Setter.Value>
+            <BlurEffect Radius="4" KernelType="Gaussian"/>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+    </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
