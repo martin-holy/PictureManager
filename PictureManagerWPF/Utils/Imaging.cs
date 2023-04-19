@@ -1,9 +1,7 @@
 ﻿using PictureManager.Domain;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -139,193 +137,26 @@ namespace PictureManager.Utils {
       }
     }
 
-    public static long GetAvgHash(string filePath) =>
-      GetAvgHashAsync(filePath, Int32Rect.Empty).GetAwaiter().GetResult();
+    public static byte[] GetHashPixels(string filePath, int bytes) {
+      // create source
+      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+      var bmpSource = new BitmapImage();
+      bmpSource.BeginInit();
+      bmpSource.CacheOption = BitmapCacheOption.None;
+      bmpSource.StreamSource = fileStream;
+      bmpSource.EndInit();
 
-    public static long GetPerceptualHash(string filePath) =>
-      GetPerceptualHashAsync(filePath, Int32Rect.Empty).GetAwaiter().GetResult();
+      // resize
+      var scaled = new TransformedBitmap(bmpSource, new ScaleTransform((double)bytes / bmpSource.PixelWidth, (double)bytes / bmpSource.PixelHeight));
 
-    /// <summary>
-    /// Compute AVG hash from image
-    /// </summary>
-    /// <param name="filePath">File path to the image</param>
-    /// <param name="rect">Compute AVG hash only on a part of the image. Use Int32Rect.Empty for the whole image.</param>
-    /// <returns>AVG hash of the image</returns>
-    public static Task<long> GetAvgHashAsync(string filePath, Int32Rect rect) {
-      return Task.Run(() => {
-        // create source
-        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        var bmpSource = new BitmapImage();
-        bmpSource.BeginInit();
-        bmpSource.CacheOption = BitmapCacheOption.None;
-        bmpSource.StreamSource = fileStream;
-        bmpSource.SourceRect = rect;
-        bmpSource.EndInit();
+      // convert to gray scale
+      var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
 
-        // resize
-        var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(8.0 / bmpSource.PixelWidth, 8.0 / bmpSource.PixelHeight));
+      // copy pixels
+      var pixels = new byte[bytes * bytes];
+      grayScale.CopyPixels(pixels, bytes, 0);
 
-        // convert to gray scale
-        var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
-
-        // copy pixels
-        var pixels = new byte[64];
-        grayScale.CopyPixels(pixels, 8, 0);
-
-        // compute average
-        var sum = 0;
-        for (var i = 0; i < 64; i++)
-          sum += pixels[i];
-        var avg = sum / 64;
-
-        // compute bits
-        long hash = 0;
-        for (var i = 0; i < 64; i++)
-          if (pixels[i] > avg)
-            hash |= 1 << i;
-
-        return hash;
-      });
-    }
-
-    /// <summary>
-    /// Compute Perceptual hash from image
-    /// </summary>
-    /// <param name="filePath">File path to the image</param>
-    /// <param name="rect">Compute Perceptual hash only on a part of the image. Use Int32Rect.Empty for the whole image.</param>
-    /// <returns>Perceptual hash of the image</returns>
-    public static Task<long> GetPerceptualHashAsync(string filePath, Int32Rect rect) {
-      return Task.Run(() => {
-        // create source
-        using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        var bmpSource = new BitmapImage();
-        bmpSource.BeginInit();
-        bmpSource.CacheOption = BitmapCacheOption.None;
-        bmpSource.StreamSource = fileStream;
-        bmpSource.SourceRect = rect;
-        bmpSource.EndInit();
-
-        // resize
-        var scaled = new TransformedBitmap(bmpSource, new ScaleTransform(32.0 / bmpSource.PixelWidth, 32.0 / bmpSource.PixelHeight));
-
-        // convert to gray scale
-        var grayScale = new FormatConvertedBitmap(scaled, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
-
-        // copy pixels
-        var pixels = new byte[1024];
-        grayScale.CopyPixels(pixels, 32, 0);
-        var pixels2D = new byte[32, 32];
-        var row = -1;
-        for (var i = 0; i < 1024; i++) {
-          if (i % 32 == 0) row++;
-          pixels2D[row, i - (row * 32)] = pixels[i];
-        }
-
-        // compute DCT
-        var pixelsDct = ApplyDiscreteCosineTransform(pixels2D, 32);
-
-        // compute average only from top-left 8x8 minus first value
-        double total = 0;
-        for (var x = 0; x < 8; x++)
-          for (var y = 0; y < 8; y++)
-            total += pixelsDct[x, y];
-
-        total -= pixelsDct[0, 0];
-        var avg = total / ((8 * 8) - 1);
-
-        // compute bits
-        long hash = 0;
-        var bi = 0;
-        for (var x = 0; x < 8; x++) {
-          for (var y = 0; y < 8; y++) {
-            if (pixelsDct[x, y] > avg)
-              hash |= 1 << bi;
-            bi++;
-          }
-        }
-
-        return hash;
-      });
-    }
-
-    public static double[,] ApplyDiscreteCosineTransform(byte[,] input, int size) {
-      var m = size;
-      var n = size;
-      const double pi = 3.142857;
-
-      // dct will store the discrete cosine transform 
-      var dct = new double[m, n];
-
-      for (var i = 0; i < m; i++) {
-        for (var j = 0; j < n; j++) {
-          // ci and cj depends on frequency as well as 
-          // number of row and columns of specified matrix 
-          var ci = i == 0 ? 1 / Math.Sqrt(m) : Math.Sqrt(2) / Math.Sqrt(m);
-          var cj = j == 0 ? 1 / Math.Sqrt(n) : Math.Sqrt(2) / Math.Sqrt(n);
-
-          // sum will temporarily store the sum of  
-          // cosine signals 
-          double sum = 0;
-          for (var k = 0; k < m; k++) {
-            for (var l = 0; l < n; l++) {
-              sum += input[k, l] *
-                     Math.Cos(((2 * k) + 1) * i * pi / (2 * m)) *
-                     Math.Cos(((2 * l) + 1) * j * pi / (2 * n));
-            }
-          }
-
-          dct[i, j] = ci * cj * sum;
-        }
-      }
-
-      return dct;
-    }
-
-    /// <summary>
-    /// Gets list of images ordered by similarity
-    /// </summary>
-    /// <param name="hashes">Image object and hash dictionary</param>
-    /// <param name="limit">Similarity output limit. Set -1 to no limit</param>
-    /// <returns>List of images ordered by similarity</returns>
-    public static List<object> GetSimilarImages(Dictionary<object, long> hashes, int limit) {
-      var items = hashes.Keys.ToArray();
-      var itemsLength = items.Length;
-      var output = new List<object>();
-      var set = new HashSet<int>();
-
-      if (itemsLength == 1) {
-        output.Add(items[0]);
-        return output;
-      }
-
-      for (var i = 0; i < itemsLength; i++) {
-        var similar = new Dictionary<int, int>();
-
-        for (var j = i + 1; j < itemsLength; j++) {
-          var diff = CompareHashes(hashes[items[i]], hashes[items[j]]);
-          if (diff > limit) continue;
-          similar.Add(j, diff);
-        }
-
-        if (similar.Count == 0) continue;
-
-        // add similar
-        if (set.Add(i)) output.Add(items[i]);
-        foreach (var s in similar.OrderBy(x => x.Value))
-          if (set.Add(s.Key))
-            output.Add(items[s.Key]);
-      }
-
-      return output;
-    }
-
-    public static int CompareHashes(long a, long b) {
-      var diff = 0;
-      for (var i = 0; i < 64; i++)
-        if ((a & (1 << i)) != (b & (1 << i)))
-          diff++;
-
-      return diff;
+      return pixels;
     }
   }
 }
