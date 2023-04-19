@@ -1,9 +1,9 @@
-﻿using System;
+﻿using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
 
 namespace MH.Utils {
   public static class Tree {
@@ -92,6 +92,34 @@ namespace MH.Utils {
       }
 
       return newIdx;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="root"></param>
+    /// <param name="path">full or partial path with no separator on the end</param>
+    /// <param name="separator"></param>
+    /// <param name="comparison"></param>
+    /// <returns></returns>
+    public static ITreeItem GetByPath(ITreeItem root, string path, char separator, StringComparison comparison = StringComparison.CurrentCultureIgnoreCase) {
+      if (string.IsNullOrEmpty(path)) return null;
+
+      var rootFullPath = GetFullName(root, separator.ToString(), x => x.Name);
+      if (rootFullPath.Equals(path, comparison)) return root;
+
+      var parts = (path.StartsWith(rootFullPath, comparison)
+        ? path[(rootFullPath.Length + 1)..]
+        : path)
+        .Split(separator);
+
+      foreach (var part in parts) {
+        var item = root.Items.SingleOrDefault(x => x.Name.Equals(part, comparison));
+        if (item == null) return null;
+        root = item;
+      }
+
+      return root;
     }
   }
 }
