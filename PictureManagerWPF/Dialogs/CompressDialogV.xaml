@@ -32,14 +32,14 @@
         Grid.Column="0"
         Grid.Row="1"
         HorizontalAlignment="Center"
-        FontSize="32"
+        FontSize="20"
         Content="{Binding TotalSourceSize}"/>
       
       <Label
         Grid.Column="1"
         Grid.Row="1"
         HorizontalAlignment="Center"
-        FontSize="32"
+        FontSize="20"
         Content="{Binding TotalCompressedSize}"/>
 
       <ProgressBar
