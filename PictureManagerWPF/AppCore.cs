@@ -30,9 +30,7 @@ namespace PictureManager {
       Core.FileOperationDelete = FileOperationDelete;
       Core.GetDisplayScale = GetDisplayScale;
 
-      Domain.Utils.Imaging.GetAvgHash = Utils.Imaging.GetAvgHash;
-      Domain.Utils.Imaging.GetPerceptualHash = Utils.Imaging.GetPerceptualHash;
-      Domain.Utils.Imaging.GetSimilarImages = Utils.Imaging.GetSimilarImages;
+      Domain.Utils.Imaging.GetHashPixels = Utils.Imaging.GetHashPixels;
       Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
       MH.UI.WPF.Utils.Init.SetDelegates();
