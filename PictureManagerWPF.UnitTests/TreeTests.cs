@@ -1,9 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MH.Utils;
+using MH.Utils.Interfaces;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PictureManager.Domain.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace PictureManagerWPF.UnitTests.Database {
+namespace PictureManagerWPF.UnitTests {
   [TestClass]
-  public class FolderTests {
+  public class TreeTests {
     public FolderM GetByPath_GetTestData() {
       var folderA = new FolderM(1, "D:", null);
       var folderB = new FolderM(2, "subFolder", folderA);
@@ -22,7 +30,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathA_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = root.GetByPath("D:");
+      var result = Tree.GetByPath(root, "D:", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -32,7 +40,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathB_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = root.GetByPath("D:\\subFolder");
+      var result = Tree.GetByPath(root, "D:\\subFolder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -42,7 +50,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathC_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = root.GetByPath("D:\\subFolder\\sub folder");
+      var result = Tree.GetByPath(root, "D:\\subFolder\\sub folder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -52,7 +60,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathD_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder");
+      var result = Tree.GetByPath(root.Items[0], "D:\\subFolder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -62,7 +70,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathE_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder\\sub folder");
+      var result = Tree.GetByPath(root.Items[0], "D:\\subFolder\\sub folder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -72,7 +80,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathF_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((FolderM)root.Items[0]).GetByPath("D:\\other");
+      var result = Tree.GetByPath(root.Items[0], "D:\\other", Path.DirectorySeparatorChar);
 
       Assert.IsNull(result);
     }
@@ -82,7 +90,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_FullPathG_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((FolderM)root.Items[0]).GetByPath("D:\\subFolder2\\neco");
+      var result = Tree.GetByPath(root.Items[0], "D:\\subFolder2\\neco", Path.DirectorySeparatorChar);
 
       Assert.IsNull(result);
     }
@@ -92,7 +100,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_PartialPathA_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = root.GetByPath("subFolder");
+      var result = Tree.GetByPath(root, "subFolder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -102,7 +110,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_PartialPathB_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = root.GetByPath("subFolder\\sub folder");
+      var result = Tree.GetByPath(root, "subFolder\\sub folder", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
@@ -112,7 +120,7 @@ namespace PictureManagerWPF.UnitTests.Database {
     public void GetByPath_PartialPathC_ReturnsFolder() {
       var root = GetByPath_GetTestData();
 
-      var result = ((FolderM)root.Items[0]).GetByPath("sub folder\\sub folder 2");
+      var result = Tree.GetByPath(root.Items[0], "sub folder\\sub folder 2", Path.DirectorySeparatorChar);
 
       Assert.IsInstanceOfType(result, typeof(FolderM));
     }
