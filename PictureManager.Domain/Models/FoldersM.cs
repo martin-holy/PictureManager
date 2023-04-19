@@ -96,7 +96,7 @@ namespace PictureManager.Domain.Models {
           CopyMove(foMode, srcData, destFolder);
 
           // reload last selected source if was moved
-          if (foMode == FileOperationMode.Move && srcData.IsSelected && destFolder.GetByPath(srcData.Name) != null) {
+          if (foMode == FileOperationMode.Move && srcData.IsSelected && Tree.GetByPath(destFolder, srcData.Name, Path.DirectorySeparatorChar) != null) {
             destFolder.ExpandTo();
             _core.TreeViewCategoriesM.Select(new MouseButtonEventArgs() { DataContext = destFolder });
           }
@@ -233,23 +233,6 @@ namespace PictureManager.Domain.Models {
         DriveType.NoRootDirectory or DriveType.Unknown => Res.IconDriveError,
         _ => Res.IconDrive,
       };
-
-    public MediaItemM GetMediaItemByPath(string path) {
-      var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
-      var folderPath = path[..lioSep];
-      var fileName = path[(lioSep + 1)..];
-      var folder = GetByPath(folderPath);
-      var mi = folder?.GetMediaItemByName(fileName);
-      mi ??= _core.MediaItemsM.AddNew(folder, fileName, false, true);
-      return mi;
-    }
-
-    private FolderM GetByPath(string path) {
-      if (string.IsNullOrEmpty(path)) return null;
-      var pathParts = path.Split(Path.DirectorySeparatorChar);
-      var drive = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(pathParts[0], StringComparison.OrdinalIgnoreCase));
-      return pathParts.Length == 1 ? drive : drive?.GetByPath(path);
-    }
 
     public bool IsFolderVisible(FolderM folder) =>
       Tree.GetTopParent(folder)?.IsAvailable == true && _viewersM.CanViewerSee(folder);
@@ -409,7 +392,7 @@ namespace PictureManager.Domain.Models {
       dest.LoadSubFolders(false);
 
       // get target folder
-      var targetFolder = dest.GetByPath(src.Name);
+      var targetFolder = Tree.GetByPath(dest, src.Name, Path.DirectorySeparatorChar) as FolderM;
       if (targetFolder == null) return; // if folder doesn't exists => nothing was copied
 
       // Copy all MediaItems to target folder
@@ -466,7 +449,7 @@ namespace PictureManager.Domain.Models {
       if (targetFolder == null) {
         // reload destFolder so that new folder is added
         dest.LoadSubFolders(false);
-        targetFolder = dest.GetByPath(src.Name);
+        targetFolder = Tree.GetByPath(dest, src.Name, Path.DirectorySeparatorChar) as FolderM;
       }
       if (targetFolder == null) throw new DirectoryNotFoundException();
 
