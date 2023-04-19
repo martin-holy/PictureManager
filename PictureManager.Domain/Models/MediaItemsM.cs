@@ -240,7 +240,7 @@ namespace PictureManager.Domain.Models {
 
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
       var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
-        ? currentThumbsGrid.LoadedItems
+        ? currentThumbsGrid.FilteredItems
         : _core.MediaViewerM.MediaItems,
         items.ToList());
       Delete(items, newCurrent);
