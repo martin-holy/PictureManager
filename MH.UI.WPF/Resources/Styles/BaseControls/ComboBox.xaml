@@ -329,7 +329,7 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.Item.Disabled.Foreground}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -337,8 +337,8 @@
                 <Condition Property="IsMouseOver" Value="True"/>
                 <Condition Property="UIElement.IsKeyboardFocused" Value="False"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ComboBoxItem.Hover.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.Hover.Border}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -346,16 +346,16 @@
                 <Condition Property="IsMouseOver" Value="False"/>
                 <Condition Property="UIElement.IsKeyboardFocused" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ComboBoxItem.Selected.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.Selected.Border}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource MH.Item.Selected.Background}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.Selected.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="IsSelected" Value="True"/>
                 <Condition Property="IsMouseOver" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ComboBoxItem.SelectedHover.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.SelectedHover.Border}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -363,8 +363,8 @@
                 <Condition Property="IsMouseOver" Value="False"/>
                 <Condition Property="UIElement.IsKeyboardFocused" Value="False"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ComboBoxItem.SelectedNoFocus.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.SelectedNoFocus.Border}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource MH.Item.SelectedNoFocus.Background}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.SelectedNoFocus.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -372,7 +372,7 @@
                 <Condition Property="IsMouseOver" Value="False"/>
                 <Condition Property="UIElement.IsKeyboardFocused" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.Focus.Border}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.Focus.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -380,8 +380,8 @@
                 <Condition Property="IsMouseOver" Value="True"/>
                 <Condition Property="UIElement.IsKeyboardFocused" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource ComboBoxItem.HoverFocus.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource ComboBoxItem.HoverFocus.Border}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource MH.Item.HoverFocus.Background}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource MH.Item.HoverFocus.Border}"/>
             </MultiTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
