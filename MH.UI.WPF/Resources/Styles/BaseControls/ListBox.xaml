@@ -6,7 +6,7 @@
     <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
     <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
@@ -17,7 +17,6 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ListBox}">
           <Border
-            Name="Bd"
             Background="{TemplateBinding Background}"
             BorderBrush="{TemplateBinding BorderBrush}"
             BorderThickness="{TemplateBinding BorderThickness}"
@@ -31,7 +30,11 @@
           
           <ControlTemplate.Triggers>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.MouseOver.Border}"/>
             </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
@@ -58,50 +61,56 @@
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ListBoxItem}">
           <Border
-            x:Name="Bd" 
             BorderBrush="{TemplateBinding BorderBrush}" 
             BorderThickness="{TemplateBinding BorderThickness}" 
             Background="{TemplateBinding Background}" 
             Padding="{TemplateBinding Padding}" 
             SnapsToDevicePixels="True">
-            
+
             <ContentPresenter 
               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
           </Border>
-          
+
           <ControlTemplate.Triggers>
-            <MultiTrigger>
-              <MultiTrigger.Conditions>
-                <Condition Property="IsMouseOver" Value="True"/>
-              </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource Item.MouseOver.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Item.MouseOver.Border}"/>
-            </MultiTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{StaticResource MH.Item.Disabled.Foreground}"/>
+            </Trigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="Selector.IsSelectionActive" Value="False"/>
                 <Condition Property="IsSelected" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource Item.SelectedInactive.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Item.SelectedInactive.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.Item.SelectedNoFocus.Background}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.SelectedNoFocus.Border}"/>
             </MultiTrigger>
             <MultiTrigger>
               <MultiTrigger.Conditions>
                 <Condition Property="Selector.IsSelectionActive" Value="True"/>
                 <Condition Property="IsSelected" Value="True"/>
               </MultiTrigger.Conditions>
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource Item.SelectedActive.Background}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Item.SelectedActive.Border}"/>
+              <Setter Property="Background" Value="{StaticResource MH.Item.Selected.Background}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Selected.Border}"/>
             </MultiTrigger>
-            <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
-            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsMouseOver" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" Value="{StaticResource MH.Item.Hover.Background}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.Hover.Border}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsMouseOver" Value="True"/>
+                <Condition Property="IsSelected" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" Value="{StaticResource MH.Item.SelectedHover.Background}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Item.SelectedHover.Border}"/>
+            </MultiTrigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
-
 </ResourceDictionary>
