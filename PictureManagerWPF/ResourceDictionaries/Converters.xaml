@@ -4,6 +4,10 @@
   xmlns:converters="clr-namespace:PictureManager.Converters"
   xmlns:mhConverters="clr-namespace:MH.UI.WPF.Converters;assembly=MH.UI.WPF">
 
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+
   <converters:ImageSourceConverter x:Key="ImageSourceConverter"/>
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter"/>
   <converters:MediaItemSizeConverter x:Key="MediaItemSizeConverter"/>

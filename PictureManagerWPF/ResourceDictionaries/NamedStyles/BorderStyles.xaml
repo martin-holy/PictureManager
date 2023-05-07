@@ -22,15 +22,4 @@
   <Style x:Key="SBorderGroup" TargetType="Border" BasedOn="{StaticResource SBorderText}">
     <Setter Property="Padding" Value="2" />
   </Style>
-
-  <!-- SBorderActiveFilter -->
-  <Style x:Key="SBorderActiveFilter" TargetType="Border">
-    <Setter Property="BorderThickness" Value="1" />
-    <Setter Property="BorderBrush" Value="Black" />
-    <Setter Property="Height" Value="22" />
-    <Setter Property="MinWidth" Value="22" />
-    <Setter Property="CornerRadius" Value="5" />
-    <Setter Property="Margin" Value="2,0,0,0" />
-  </Style>
-
 </ResourceDictionary>

@@ -3,7 +3,6 @@ using MH.Utils.Dialogs;
 using PictureManager.Domain.Utils;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class ImageComparerM : ObservableObject {
@@ -16,14 +15,14 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<ThumbnailsGridM> PHashCommand { get; }
 
     public ImageComparerM() {
-      AverageHashCommand = new(async (tg) => await Compare(tg, _avgHashes, Imaging.GetAvgHash));
-      PHashCommand = new(async (tg) => await Compare(tg, _pHashes, Imaging.GetPerceptualHash));
+      AverageHashCommand = new((tg) => Compare(tg, _avgHashes, Imaging.GetAvgHash));
+      PHashCommand = new((tg) => Compare(tg, _pHashes, Imaging.GetPerceptualHash));
     }
 
-    public async Task Compare(ThumbnailsGridM thumbsGrid, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
+    public void Compare(ThumbnailsGridM thumbsGrid, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
       if (thumbsGrid == null) return;
 
-      var items = thumbsGrid.Filter(thumbsGrid.LoadedItems);
+      var items = thumbsGrid.LoadedItems.Where(x => thumbsGrid.Filter.Filter(x));
       List<object> similar = GetSimilar(items.ToArray(), Diff, hashes, hashMethod);
 
       thumbsGrid.GroupByFolders = false;
@@ -32,10 +31,9 @@ namespace PictureManager.Domain.Models {
       thumbsGrid.DeselectAll();
 
       if (similar != null)
-        foreach (var mi in similar.Cast<MediaItemM>())
-          thumbsGrid.FilteredItems.Add(mi);
+        thumbsGrid.FilteredItems.AddRange(similar.Cast<MediaItemM>());
 
-      await thumbsGrid.ThumbsGridReloadItems();
+      thumbsGrid.SoftLoad(thumbsGrid.FilteredItems, false, false);
     }
 
     private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {

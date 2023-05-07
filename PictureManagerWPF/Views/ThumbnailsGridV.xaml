@@ -24,17 +24,17 @@
             Header="Group by Folders"
             IsCheckable="True"
             IsChecked="{Binding GroupByFolders}"
-            Command="{Binding RefreshCommand}"/>
+            Command="{Binding SortCommand}"/>
           <MenuItem
             Header="Group by Date"
             IsCheckable="True"
             IsChecked="{Binding GroupByDate}"
-            Command="{Binding RefreshCommand}"/>
+            Command="{Binding SortCommand}"/>
           <MenuItem
             Header="Sort by File first"
             IsCheckable="True"
             IsChecked="{Binding SortByFileFirst}"
-            Command="{Binding RefreshCommand}"/>
+            Command="{Binding SortCommand}"/>
         </ContextMenu>
 
         <DataTemplate DataType="{x:Type m:MediaItemM}">
@@ -84,7 +84,9 @@
       ItemWidthGetter="{Binding ItemWidthGetter}"
       Root="{Binding FilteredRoot}"
       ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
-      ReloadAutoScroll="False"
+      ScrollToTop="{Binding ScrollToTop, Mode=TwoWay}"
+      ReWrapItems="{Binding ReWrapItems, Mode=TwoWay}"
+      ReloadAutoScroll="True"
       ScrollViewerSpeedFactor="2.5"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

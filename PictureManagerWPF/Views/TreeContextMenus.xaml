@@ -14,15 +14,15 @@
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter And"
-      Command="{Binding ThumbnailsGridsM.ActivateFilterAndCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding ThumbnailsGridsM.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter Or"
-      Command="{Binding ThumbnailsGridsM.ActivateFilterOrCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding ThumbnailsGridsM.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter Not"
-      Command="{Binding ThumbnailsGridsM.ActivateFilterNotCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding ThumbnailsGridsM.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
   </x:Array>
 

@@ -6,7 +6,6 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pmdi="clr-namespace:PictureManager.Domain.Interfaces;assembly=PictureManager.Domain"
   xmlns:pm="clr-namespace:PictureManager">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
@@ -69,20 +68,6 @@
           TargetName="grid"
           Property="ToolTip"
           Value="{Binding Path=(m:FavoriteFolderM.Folder).FullPath}"/>
-      </DataTrigger>
-
-      <!-- IFilterItem Background -->
-      <DataTrigger
-        Binding="{Binding Converter={StaticResource DataTypeConverter},
-                  ConverterParameter={x:Type pmdi:IFilterItem}}"
-        Value="True">
-        <Setter
-          TargetName="grid"
-          Property="Background"
-          Value="{Binding Path=(pmdi:IFilterItem.DisplayFilter),
-                  Converter={StaticResource ResourceConverter},
-                  ConverterParameter={x:Static rd:Dictionaries.DisplayFilterToBrush},
-                  FallbackValue={StaticResource TransparentBrush}}"/>
       </DataTrigger>
 
       <!-- PersonM ToolTip -->

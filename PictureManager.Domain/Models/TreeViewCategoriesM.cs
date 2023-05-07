@@ -32,7 +32,6 @@ namespace PictureManager.Domain.Models {
         _core.FavoriteFoldersM,
         _core.FoldersM,
         _core.RatingsTreeM,
-        _core.MediaItemSizesTreeM,
         _core.PeopleM,
         _core.FolderKeywordsM,
         _core.KeywordsM,
@@ -75,7 +74,7 @@ namespace PictureManager.Domain.Models {
           if (_core.MediaItemsM.IsEditModeOn)
             _core.MediaItemsM.SetMetadata(item);
           else
-            _ = _core.ThumbnailsGridsM.Current?.ActivateFilter(r, DisplayFilter.Or);
+            _core.ThumbnailsGridsM.Current?.Filter.Set(r, DisplayFilter.Or);
           break;
 
         case GeoNameM:

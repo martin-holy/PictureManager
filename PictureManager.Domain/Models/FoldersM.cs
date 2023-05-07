@@ -474,7 +474,9 @@ namespace PictureManager.Domain.Models {
         ModelItemDelete(src);
     }
 
-    public static List<FolderM> GetFolders(List<FolderM> roots, bool recursive) {
+    public List<FolderM> GetFolders(ITreeItem item, bool recursive) {
+      var roots = (item as FolderKeywordM)?.Folders ?? new List<FolderM> { (FolderM)item };
+
       if (!recursive) return roots;
 
       var output = new List<FolderM>();
@@ -483,7 +485,7 @@ namespace PictureManager.Domain.Models {
         Tree.GetThisAndItemsRecursive(root, ref output);
       }
 
-      return output.ToList();
+      return output.Where(f => IsFolderVisible(f)).ToList();
     }
 
     public void SetAsFolderKeyword(FolderM folder) {

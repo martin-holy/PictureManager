@@ -5,6 +5,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Dialogs;
+using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
@@ -33,19 +34,23 @@ namespace PictureManager.Domain.Models {
     public bool IsEditModeOn { get => _isEditModeOn; set { _isEditModeOn = value; OnPropertyChanged(); } }
 
     public event EventHandler<ObjectEventArgs<MediaItemM>> MediaItemDeletedEventHandler = delegate { };
-    public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsDeletedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<List<MediaItemM>>> MediaItemsDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<MediaItemM[]>> MediaItemsOrientationChangedEventHandler = delegate { };
     public event EventHandler MetadataChangedEventHandler = delegate { };
-    public Func<MediaItemM, bool, Task<bool>> ReadMetadata { get; set; }
+    public Action<MediaItemMetadata, bool> ReadMetadata { get; set; }
     public Func<MediaItemM, bool> WriteMetadata { get; set; }
 
+    public RelayCommand<object> CompressCommand { get; }
     public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> RenameCommand { get; }
+    public RelayCommand<ThumbnailsGridM> ImagesToVideoCommand { get; }
     public RelayCommand<object> EditCommand { get; }
     public RelayCommand<object> SaveEditCommand { get; }
+    public RelayCommand<ThumbnailsGridM> SelectNotModifiedCommand { get; }
     public RelayCommand<object> CancelEditCommand { get; }
     public RelayCommand<object> CommentCommand { get; }
+    public RelayCommand<object> ResizeImagesCommand { get; }
     public RelayCommand<object> ReloadMetadataCommand { get; }
     public RelayCommand<object> AddGeoNamesFromFilesCommand { get; }
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
@@ -56,33 +61,22 @@ namespace PictureManager.Domain.Models {
       _segmentsM = segmentsM;
       _viewersM = viewersM;
 
-      DeleteCommand = new(
-        Delete,
-        () => GetActive().Any());
+      CompressCommand = new(Compress, () => GetActive().Any());
+      DeleteCommand = new(Delete, () => GetActive().Any());
+      RotateCommand = new(Rotate, () => GetActive().Any());
+      RenameCommand = new(Rename, () => Current != null);
 
-      RotateCommand = new(
-        Rotate,
-        () => GetActive().Any());
-
-      RenameCommand = new(
-        Rename,
-        () => Current != null);
+      ResizeImagesCommand = new(
+        () => Core.DialogHostShow(new ResizeImagesDialogM(_core.ThumbnailsGridsM.Current.GetSelectedOrAll())),
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       EditCommand = new(
         () => IsEditModeOn = true,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0 && !IsEditModeOn);
+        () => !IsEditModeOn);
 
-      SaveEditCommand = new(
-        SaveEdit,
-        () => IsEditModeOn && ModifiedItems.Count > 0);
-
-      CancelEditCommand = new(
-        CancelEdit,
-        () => IsEditModeOn);
-
-      CommentCommand = new(
-        Comment,
-        () => Current != null);
+      SaveEditCommand = new(SaveEdit, () => IsEditModeOn && ModifiedItems.Count > 0);
+      CancelEditCommand = new(CancelEdit, () => IsEditModeOn);
+      CommentCommand = new(Comment, () => Current != null);
 
       ReloadMetadataCommand = new(
         () => ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
@@ -99,6 +93,33 @@ namespace PictureManager.Domain.Models {
       RebuildThumbnailsCommand = new(
         x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
         x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+
+      ImagesToVideoCommand = new(
+        ImagesToVideo,
+        (grid) => grid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
+
+      SelectNotModifiedCommand = new(
+        SelectNotModified,
+        (grid) => grid?.FilteredItems.Count > 0);
+    }
+
+    private void ImagesToVideo(ThumbnailsGridM grid) {
+      Core.DialogHostShow(new ImagesToVideoDialogM(grid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+        (folder, fileName) => {
+          var mi = AddNew(folder, fileName);
+          var mim = new MediaItemMetadata(mi);
+          ReadMetadata(mim, false);
+          mi.SetThumbSize();
+          grid.LoadedItems.Add(mi);
+          grid.SoftLoad(grid.LoadedItems, true, true);
+        })
+      );
+    }
+
+    private void SelectNotModified(ThumbnailsGridM grid) {
+      // TODO deselect all and than select modified
+      foreach (var mi in grid.FilteredItems)
+        grid.SetSelected(mi, !ModifiedItems.Contains(mi));
     }
 
     /// <summary>
@@ -107,39 +128,42 @@ namespace PictureManager.Domain.Models {
     /// <param name="all"></param>
     /// <param name="selected"></param>
     /// <returns>Returns next MediaItem from all after last in the selected or one before first or null</returns>
-    public static MediaItemM GetNewCurrent(List<MediaItemM> all, List<MediaItemM> selected) {
-      if (all == null || selected == null || selected.Count == 0) return null;
+    public void SetNewCurrent(List<MediaItemM> all, List<MediaItemM> selected) {
+      if (all == null || selected == null || selected.Count == 0)
+        Current = null;
 
       var index = all.IndexOf(selected[^1]) + 1;
       if (index == all.Count)
         index = all.IndexOf(selected[0]) - 1;
-      return index >= 0 ? all[index] : null;
+
+      Current = index >= 0
+        ? all[index]
+        : null;
     }
 
-    public List<MediaItemM> GetMediaItems(PersonM person) =>
+    public IEnumerable<MediaItemM> GetMediaItems(PersonM person) =>
       DataAdapter.All.Values.Where(mi =>
           mi.People?.Contains(person) == true ||
           mi.Segments?.Any(s => s.Person == person) == true)
-        .OrderBy(mi => mi.FileName).ToList();
+        .OrderBy(mi => mi.FileName);
 
-    public List<MediaItemM> GetMediaItems(KeywordM keyword, bool recursive) {
+    public IEnumerable<MediaItemM> GetMediaItems(KeywordM keyword, bool recursive) {
       var keywords = new List<KeywordM> { keyword };
       if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
       var set = new HashSet<KeywordM>(keywords);
 
       return DataAdapter.All.Values
         .Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true
-          || mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true)
-        .ToList();
+          || mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
     }
 
-    public List<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
+    public IEnumerable<MediaItemM> GetMediaItems(GeoNameM geoName, bool recursive) {
       var geoNames = new List<GeoNameM> { geoName };
       if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
       var set = new HashSet<GeoNameM>(geoNames);
 
       return DataAdapter.All.Values.Where(mi => set.Contains(mi.GeoName))
-        .OrderBy(x => x.FileName).ToList();
+        .OrderBy(x => x.FileName);
     }
 
     public MediaItemM CopyTo(MediaItemM mi, FolderM folder, string fileName) {
@@ -177,9 +201,6 @@ namespace PictureManager.Domain.Models {
     }
 
     public void MoveTo(MediaItemM mi, FolderM folder, string fileName) {
-      // delete existing MediaItem if exists
-      Delete(folder.MediaItems.SingleOrDefault(x => x.FileName.Equals(fileName)));
-
       mi.FileName = fileName;
       mi.Folder.MediaItems.Remove(mi);
       mi.Folder = folder;
@@ -196,6 +217,12 @@ namespace PictureManager.Domain.Models {
       File.Move(oldFilePathCache, mi.FilePathCache);
       DataAdapter.IsModified = true;
     }
+
+    private void Compress() =>
+      Core.DialogHostShow(
+        new CompressDialogM(
+          GetActive().Where(x => x.MediaType == MediaType.Image).ToList(),
+          Core.Settings.JpegQualityLevel));
 
     public void Delete(MediaItemM item) {
       if (item == null) return;
@@ -221,7 +248,9 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    public void Delete(MediaItemM[] items) {
+    public void Delete(List<MediaItemM> items) {
+      if (items.Count == 0) return;
+
       foreach (var mi in items)
         Delete(mi);
 
@@ -229,8 +258,8 @@ namespace PictureManager.Domain.Models {
     }
 
     private void Delete() {
-      var items = GetActive();
-      var count = items.Length;
+      var items = GetActive().ToList();
+      var count = items.Count;
 
       if (Core.DialogHostShow(new MessageDialog(
         "Delete Confirmation",
@@ -239,15 +268,16 @@ namespace PictureManager.Domain.Models {
         true)) != 1) return;
 
       var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
-      var newCurrent = MediaItemsM.GetNewCurrent(currentThumbsGrid != null
-        ? currentThumbsGrid.FilteredItems
-        : _core.MediaViewerM.MediaItems,
-        items.ToList());
-      Delete(items, newCurrent);
+      SetNewCurrent(
+        currentThumbsGrid != null
+          ? currentThumbsGrid.FilteredItems
+          : _core.MediaViewerM.MediaItems,
+        items);
+      DeleteFromDbAndDrive(items);
     }
 
-    public void Delete(MediaItemM[] items, MediaItemM newCurrent) {
-      if (items.Length == 0) return;
+    private void DeleteFromDbAndDrive(List<MediaItemM> items) {
+      if (items.Count == 0) return;
 
       var files = new List<string>();
       var cache = new List<string>();
@@ -261,7 +291,6 @@ namespace PictureManager.Domain.Models {
       Core.FileOperationDelete(files, true, false);
       cache.ForEach(File.Delete);
 
-      Current = newCurrent;
       MediaItemsDeletedEventHandler(this, new(items));
     }
 
@@ -298,15 +327,14 @@ namespace PictureManager.Domain.Models {
 
       _ = Core.DialogHostShow(fop);
 
-      if (mode == FileOperationMode.Move) {
-        _core.ThumbnailsGridsM.Current.RemoveSelected();
-        _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
-      }
+      if (mode == FileOperationMode.Move)
+        _core.ThumbnailsGridsM.Current.Remove(_core.ThumbnailsGridsM.Current.SelectedItems.ToList(), true);
     }
 
     private void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
       var count = items.Count;
       var done = 0;
+      var replaced = new List<MediaItemM>();
 
       foreach (var mi in items) {
         if (token.IsCancellationRequested)
@@ -327,6 +355,9 @@ namespace PictureManager.Domain.Models {
             Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
             continue;
           }
+
+          if (result == CollisionResult.Replace)
+            replaced.Add(mi);
         }
 
         switch (mode) {
@@ -375,98 +406,17 @@ namespace PictureManager.Domain.Models {
 
         done++;
       }
+
+      Delete(replaced);
     }
 
-    public MediaItemM AddNew(FolderM folder, string fileName, bool isNew, bool readMetadata) {
-      var mi = new MediaItemM(DataAdapter.GetNextId(), folder, fileName, isNew);
+    public MediaItemM AddNew(FolderM folder, string fileName) {
+      var mi = new MediaItemM(DataAdapter.GetNextId(), folder, fileName);
       DataAdapter.All.Add(mi.Id, mi);
       OnPropertyChanged(nameof(MediaItemsCount));
       folder.MediaItems.Add(mi);
 
-      if (readMetadata)
-        _ = ReadMetadata(mi, false);
-
       return mi;
-    }
-
-    public async Task<List<MediaItemM>> GetMediaItemsForLoadAsync(IReadOnlyCollection<MediaItemM> mediaItems, IReadOnlyCollection<FolderM> folders) {
-      var items = new List<MediaItemM>();
-
-      if (mediaItems != null)
-        // filter out items if directory or file not exists or Viewer can not see items
-        items = await VerifyAccessibilityOfMediaItemsAsync(mediaItems);
-
-      if (folders != null)
-        items = await GetMediaItemsFromFoldersAsync(folders);
-
-      foreach (var mi in items)
-        mi.SetThumbSize();
-
-      return items;
-    }
-
-    private async Task<List<MediaItemM>> GetMediaItemsFromFoldersAsync(IReadOnlyCollection<FolderM> folders) {
-      var output = new List<MediaItemM>();
-
-      await Task.Run(() => {
-        foreach (var folder in folders) {
-          if (!Directory.Exists(folder.FullPath)) continue;
-          var folderMediaItems = new List<MediaItemM>();
-          var hiddenMediaItems = new List<MediaItemM>();
-
-          // add MediaItems from current Folder to dictionary for faster search
-          var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
-
-          foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
-            if (!Imaging.IsSupportedFileType(file)) continue;
-
-            // check if the MediaItem is already in DB, if not put it there
-            var fileName = Path.GetFileName(file);
-            fmis.TryGetValue(fileName, out var inDbFile);
-            inDbFile ??= AddNew(folder, fileName, true, false);
-
-            if (!_viewersM.CanViewerSee(inDbFile)) {
-              hiddenMediaItems.Add(inDbFile);
-              continue;
-            }
-            folderMediaItems.Add(inDbFile);
-          }
-
-          output.AddRange(folderMediaItems.OrderBy(x => x.FileName));
-
-          // remove MediaItems deleted outside of this application
-          foreach (var fmi in folder.MediaItems.ToArray()) {
-            if (folderMediaItems.Contains(fmi) || hiddenMediaItems.Contains(fmi)) continue;
-            Delete(fmi);
-          }
-        }
-      });
-
-      return output;
-    }
-
-    private async Task<List<MediaItemM>> VerifyAccessibilityOfMediaItemsAsync(IReadOnlyCollection<MediaItemM> items) {
-      var output = new List<MediaItemM>();
-
-      await Task.Run(() => {
-        var folders = items.Select(x => x.Folder).Distinct();
-        var foldersSet = new HashSet<int>();
-
-        foreach (var folder in folders) {
-          if (!_viewersM.CanViewerSeeContentOf(folder)) continue;
-          if (!Directory.Exists(folder.FullPath)) continue;
-          foldersSet.Add(folder.Id);
-        }
-
-        foreach (var mi in items) {
-          if (!foldersSet.Contains(mi.Folder.Id)) continue;
-          if (!_viewersM.CanViewerSee(mi)) continue;
-          if (!File.Exists(mi.FilePath)) continue;
-          output.Add(mi);
-        }
-      });
-
-      return output;
     }
 
     public void UpdateInfoBoxWithPerson(PersonM person) {
@@ -517,7 +467,12 @@ namespace PictureManager.Domain.Models {
         null,
         // action
         async mi => {
-          if (mi.Lat == null || mi.Lng == null) _ = await ReadMetadata(mi, true);
+          if (mi.Lat == null || mi.Lng == null) {
+            var mim = new MediaItemMetadata(mi);
+            ReadMetadata(mim, true);
+            if (mim.Success)
+              await Tasks.RunOnUiThread(() => mim.FindRefs(_core));
+          }
           if (mi.Lat == null || mi.Lng == null) return;
 
           var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, geoNamesUserName);
@@ -547,22 +502,13 @@ namespace PictureManager.Domain.Models {
         _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
       };
 
-      var progress = new ProgressBarDialog("Rebuilding thumbnails ...", Res.IconImage, true, Environment.ProcessorCount);
-      progress.AddEvents(
-        mediaItems.ToArray(),
-        null,
-        (mi) => {
-          mi.SetThumbSize(true);
-          ThumbIgnoreCache.Add(mi);
-          File.Delete(mi.FilePathCache);
-        },
-        mi => mi.FilePath,
-        delegate {
-          _ = _core.ThumbnailsGridsM.Current?.ThumbsGridReloadItems();
-        });
+      foreach (var mi in mediaItems) {
+        mi.SetThumbSize(true);
+        ThumbIgnoreCache.Add(mi);
+        File.Delete(mi.FilePathCache);
+      }
 
-      progress.Start();
-      Core.DialogHostShow(progress);
+      _core.ThumbnailsGridsM.Current.ReWrapItems = true;
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
@@ -644,9 +590,11 @@ namespace PictureManager.Domain.Models {
         null,
         // action
         async mi => {
-          await ReadMetadata(mi, false);
+          var mim = new MediaItemMetadata(mi);
+          ReadMetadata(mim, false);
 
           await Tasks.RunOnUiThread(() => {
+            if (mim.Success) mim.FindRefs(_core);
             SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -669,7 +617,10 @@ namespace PictureManager.Domain.Models {
         null,
         // action
         async (mi) => {
-          await ReadMetadata(mi, false);
+          var mim = new MediaItemMetadata(mi);
+          ReadMetadata(mim, false);
+          if (mim.Success)
+            await Tasks.RunOnUiThread(() => mim.FindRefs(_core));
 
           // set info box just for loaded media items
           if (updateInfoBox)
@@ -715,10 +666,7 @@ namespace PictureManager.Domain.Models {
 
       try {
         Rename(Current, inputDialog.Answer + Path.GetExtension(Current.FileName));
-        if (_core.ThumbnailsGridsM.Current != null) {
-          _core.ThumbnailsGridsM.Current.FilteredItemsSetInPlace(Current);
-          await _core.ThumbnailsGridsM.Current.ThumbsGridReloadItems();
-        }
+        _core.ThumbnailsGridsM.Current?.SoftLoad(_core.ThumbnailsGridsM.Current.FilteredItems, true, false);
         OnPropertyChanged(nameof(Current));
       }
       catch (Exception ex) {

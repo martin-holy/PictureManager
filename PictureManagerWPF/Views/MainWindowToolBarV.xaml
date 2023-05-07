@@ -10,6 +10,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="MediaItemsFilterV.xaml"/>
           <ResourceDictionary Source="ViewersToolBarV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
@@ -87,83 +88,10 @@
             VerticalAlignment="Center"
             Margin="5 0"/>
 
-          <Separator/>
-
           <!-- Filters Panel -->
-          <StackPanel
-            Orientation="Horizontal"
-            VerticalAlignment="Center"
-            Margin="0 2 2 0"
-            DataContext="{Binding ThumbnailsGridsM}"
-            ToolTip="Clear filters"
-            Cursor="Hand">
-
-            <StackPanel.Resources>
-              <Style
-                TargetType="{x:Type Border}"
-                BasedOn="{StaticResource SBorderActiveFilter}"/>
-              <Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}">
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="-1,-1,0,0"/>
-                <Setter Property="Padding" Value="2,0"/>
-                <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
-              </Style>
-            </StackPanel.Resources>
-
-            <StackPanel.InputBindings>
-              <MouseBinding
-                MouseAction="LeftClick"
-                Command="{Binding ClearFiltersCommand}"/>
-            </StackPanel.InputBindings>
-
-            <!-- And -->
-            <Border Background="{StaticResource DisplayFilterAndBrush}">
-              <Label
-                Content="{Binding Current.FilterAndCount}"
-                Visibility="{Binding Current.FilterAndCount,
-                            Converter={StaticResource AllToVisibilityConverter}}"/>
-            </Border>
-
-            <!-- Or -->
-            <Border Background="{StaticResource DisplayFilterOrBrush}">
-              <Label
-                Content="{Binding Current.FilterOrCount}"
-                Visibility="{Binding Current.FilterOrCount,
-                            Converter={StaticResource AllToVisibilityConverter}}"/>
-            </Border>
-
-            <!-- Not -->
-            <Border Background="{StaticResource DisplayFilterNotBrush}">
-              <Label
-                Content="{Binding Current.FilterNotCount}"
-                Visibility="{Binding Current.FilterNotCount,
-                            Converter={StaticResource AllToVisibilityConverter}}"/>
-            </Border>
-          </StackPanel>
-
-          <!-- Media Types -->
-          <StackPanel
-            VerticalAlignment="Center"
-            Orientation="Horizontal"
-            DataContext="{Binding ThumbnailsGridsM}">
-
-            <mhc:IconToggleButton
-              Icon="{StaticResource IconImage}"
-              ToolTip="Image"
-              Margin="0"
-              IsChecked="{Binding Current.ShowImages}"
-              Command="{Binding ReapplyFilterCommand}"/>
-
-            <mhc:IconToggleButton
-              Icon="{StaticResource IconMovieClapper}"
-              ToolTip="Video"
-              Margin="0"
-              IsChecked="{Binding Current.ShowVideos}"
-              Command="{Binding ReapplyFilterCommand}"/>
-          </StackPanel>
-
-          <Separator/>
+          <ContentPresenter
+            Content="{Binding ThumbnailsGridsM.Current.Filter}"
+            ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
           <!-- DB Button -->
           <mhc:IconTextButton

@@ -68,16 +68,12 @@ namespace PictureManager.Domain.Models {
     public double? Lat { get; set; }
     public double? Lng { get; set; }
 
-    // TODO maybe not needed
-    public bool IsNew { get; set; }
-
     public bool IsPanoramic { get; set; }
 
-    public MediaItemM(int id, FolderM folder, string fileName, bool isNew = false) {
+    public MediaItemM(int id, FolderM folder, string fileName) {
       Id = id;
       Folder = folder;
       FileName = fileName;
-      IsNew = isNew;
       MediaType = Imaging.GetMediaType(fileName);
     }
 
