@@ -4,9 +4,9 @@
 
   <!--TODO CornerRadius is blury-->
   <Style x:Key="MH.Styles.BaseControls.ButtonBase" TargetType="{x:Type ButtonBase}">
-    <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
-    <Setter Property="Foreground" Value="{StaticResource Button.Static.Foreground}"/>
+    <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Foreground}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="HorizontalContentAlignment" Value="Center"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -52,7 +52,8 @@
               <Setter TargetName="border" Property="BorderThickness" Value="2"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+              <Setter Property="Foreground" Value="{StaticResource MH.Control.Disabled.Foreground}"/>
+              <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Disabled.Border}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>
