@@ -21,7 +21,7 @@ namespace MH.UI.WPF.Controls {
     private object _topItemBeforeReload;
     private readonly Dictionary<ObservableCollection<object>, TreeWrapGroup> _treeWrapGroups = new();
 
-    public ScrollViewer ScrollViewer;
+    public ScrollViewer ScrollViewer { get; set; }
     public event EventHandler WidthChangedEventHandler = delegate { };
 
     #region DependencyProperties
@@ -33,6 +33,9 @@ namespace MH.UI.WPF.Controls {
 
     public static readonly DependencyProperty RootProperty = DependencyProperty.Register(
       nameof(Root), typeof(TreeWrapGroup), typeof(TreeWrapView), new(RootChanged));
+
+    public static readonly DependencyProperty ScrollToTopProperty = DependencyProperty.Register(
+      nameof(ScrollToTop), typeof(bool), typeof(TreeWrapView), new(ScrollToTopChanged));
 
     public static readonly DependencyProperty ScrollToItemProperty = DependencyProperty.Register(
       nameof(ScrollToItem), typeof(object), typeof(TreeWrapView), new(ScrollToItemChanged));
@@ -68,6 +71,11 @@ namespace MH.UI.WPF.Controls {
     public TreeWrapGroup Root {
       get => (TreeWrapGroup)GetValue(RootProperty);
       set => SetValue(RootProperty, value);
+    }
+
+    public bool ScrollToTop {
+      get => (bool)GetValue(ScrollToTopProperty);
+      set => SetValue(ScrollToTopProperty, value);
     }
 
     public object ScrollToItem {
@@ -114,6 +122,11 @@ namespace MH.UI.WPF.Controls {
         if (_topItemBeforeReload != null) {
           ScrollTo(_topItemBeforeReload);
           _topItemBeforeReload = null;
+        }
+
+        if (ScrollToItem != null) {
+          ScrollTo(ScrollToItem);
+          ScrollToItem = null;
         }
 
         if (_verticalOffset > 0) {
@@ -263,6 +276,13 @@ namespace MH.UI.WPF.Controls {
 
       AddAll(Root);
       ScrollTo(_topItem);
+    }
+
+    private static void ScrollToTopChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not TreeWrapView self || !(bool)e.NewValue) return;
+      self.ScrollViewer?.ScrollToTop();
+      self.ScrollViewer?.UpdateLayout();
+      self.ScrollToTop = false;
     }
 
     private static void ScrollToItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
