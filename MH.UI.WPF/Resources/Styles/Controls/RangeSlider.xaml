@@ -1,0 +1,251 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls">
+
+  <ControlTemplate x:Key="SliderThumb" TargetType="{x:Type Thumb}">
+    <Rectangle
+      x:Name="grip"
+      RadiusX="2"
+      RadiusY="2"
+      Margin="-5,0"
+      Width="10"
+      Height="20"
+      Fill="{StaticResource SliderThumb.Static.Background}"
+      Stroke="{StaticResource SliderThumb.Static.Border}"/>
+
+    <ControlTemplate.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
+      </Trigger>
+      <Trigger Property="IsDragging" Value="True">
+        <Setter TargetName="grip" Property="Fill" Value="{StaticResource SliderThumb.Pressed.Background}"/>
+      </Trigger>
+      <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource AncestorType=mhc:RangeSlider}}" Value="Vertical">
+        <Setter TargetName="grip" Property="Width" Value="Auto"/>
+        <Setter TargetName="grip" Property="Height" Value="10"/>
+        <Setter TargetName="grip" Property="Margin" Value="0,-5"/>
+      </DataTrigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="RangeSliderHorizontalTemplate" TargetType="{x:Type mhc:RangeSlider}">
+    <Border
+      x:Name="root"
+      BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="{TemplateBinding BorderThickness}"
+      Background="{TemplateBinding Background}" 
+      Width="{TemplateBinding Width}"
+      Height="{TemplateBinding Height}"
+      Padding="5,0,5,10"
+      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <UniformGrid
+          Grid.Row="0"
+          Columns="4"
+          Margin="0,0,0,-10"
+          DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+
+          <TextBlock Text="{Binding Minimum}"/>
+          <TextBlock Text="{Binding Start}" x:Name="startValue" HorizontalAlignment="Center"/>
+          <TextBlock Text="{Binding End}" x:Name="endValue" HorizontalAlignment="Center"/>
+          <TextBlock Text="{Binding Maximum}" HorizontalAlignment="Right"/>
+        </UniformGrid>
+
+        <Grid x:Name="PART_SliderContainer" Grid.Row="1" Background="Transparent">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+
+          <Border
+            x:Name="PART_StartArea"
+            Grid.Column="0"
+            Height="4"
+            BorderThickness="1"
+            BorderBrush="{StaticResource SliderThumb.Track.Border}"
+            Background="{StaticResource SliderThumb.Track.Background}"
+            IsHitTestVisible="False"/>
+
+          <Border
+            x:Name="PART_SelectedArea"
+            Grid.Column="1"
+            Height="4"
+            Background="{StaticResource SliderThumb.Track.Selection.Background}"
+            IsHitTestVisible="False"/>
+
+          <Border
+            x:Name="PART_EndArea"
+            Grid.Column="2"
+            Height="4"
+            BorderThickness="1"
+            BorderBrush="{StaticResource SliderThumb.Track.Border}"
+            Background="{StaticResource SliderThumb.Track.Background}"
+            IsHitTestVisible="False"/>
+
+          <Thumb
+            x:Name="PART_StartThumb"
+            Grid.Column="0"
+            HorizontalAlignment="Right"
+            Template="{StaticResource SliderThumb}"/>
+
+          <Thumb
+            x:Name="PART_EndThumb"
+            Grid.Column="2"
+            HorizontalAlignment="Left"
+            Template="{StaticResource SliderThumb}"/>
+        </Grid>
+      </Grid>
+    </Border>
+
+    <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualityConverter}">
+            <Binding Path="TemplatedParent.Minimum" ElementName="root"/>
+            <Binding Source="{StaticResource SignEquals}"/>
+            <Binding Path="TemplatedParent.Start" ElementName="root"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="startValue" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualityConverter}">
+            <Binding Path="TemplatedParent.End" ElementName="root"/>
+            <Binding Source="{StaticResource SignEquals}"/>
+            <Binding Path="TemplatedParent.Maximum" ElementName="root"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="endValue" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <ControlTemplate x:Key="RangeSliderVertialTemplate" TargetType="{x:Type mhc:RangeSlider}">
+    <Border
+      x:Name="root"
+      BorderBrush="{TemplateBinding BorderBrush}"
+      BorderThickness="{TemplateBinding BorderThickness}"
+      Background="{TemplateBinding Background}" 
+      Width="{TemplateBinding Width}"
+      Height="{TemplateBinding Height}"
+      Padding="{TemplateBinding Padding}"
+      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <UniformGrid
+          Grid.Column="0"
+          Rows="4"
+          Margin="-10,0,0,0"
+          DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+
+          <TextBlock Text="{Binding Minimum}"/>
+          <TextBlock Text="{Binding Start}" x:Name="startValue" VerticalAlignment="Center"/>
+          <TextBlock Text="{Binding End}" x:Name="endValue" VerticalAlignment="Center"/>
+          <TextBlock Text="{Binding Maximum}" VerticalAlignment="Bottom"/>
+        </UniformGrid>
+
+        <Grid x:Name="PART_SliderContainer" Grid.Column="1" Background="Transparent">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+
+          <Border
+            x:Name="PART_StartArea"
+            Grid.Row="0"
+            Width="4"
+            BorderThickness="1"
+            BorderBrush="{StaticResource SliderThumb.Track.Border}"
+            Background="{StaticResource SliderThumb.Track.Background}"
+            IsHitTestVisible="False"/>
+
+          <Border
+            x:Name="PART_SelectedArea"
+            Grid.Row="1"
+            Width="4"
+            Background="{StaticResource SliderThumb.Track.Selection.Background}"
+            IsHitTestVisible="False"/>
+
+          <Border
+            x:Name="PART_EndArea"
+            Grid.Row="2"
+            Width="4"
+            BorderThickness="1"
+            BorderBrush="{StaticResource SliderThumb.Track.Border}"
+            Background="{StaticResource SliderThumb.Track.Background}"
+            IsHitTestVisible="False"/>
+
+          <Thumb
+            x:Name="PART_StartThumb"
+            Grid.Row="0"
+            VerticalAlignment="Bottom"
+            Template="{StaticResource SliderThumb}"/>
+
+          <Thumb
+            x:Name="PART_EndThumb"
+            Grid.Row="2"
+            VerticalAlignment="Top"
+            Template="{StaticResource SliderThumb}"/>
+        </Grid>
+      </Grid>
+    </Border>
+
+    <ControlTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualityConverter}">
+            <Binding Path="TemplatedParent.Minimum" ElementName="root"/>
+            <Binding Source="{StaticResource SignEquals}"/>
+            <Binding Path="TemplatedParent.Start" ElementName="root"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="startValue" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{StaticResource EqualityConverter}">
+            <Binding Path="TemplatedParent.End" ElementName="root"/>
+            <Binding Source="{StaticResource SignEquals}"/>
+            <Binding Path="TemplatedParent.Maximum" ElementName="root"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="endValue" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
+    </ControlTemplate.Triggers>
+  </ControlTemplate>
+
+  <Style x:Key="MH.Styles.Controls.RangeSlider" TargetType="{x:Type mhc:RangeSlider}">
+    <Style.Resources>
+      <Style TargetType="{x:Type TextBlock}" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource SliderThumb.MouseOver.Background}"/>
+      </Style>
+    </Style.Resources>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Template" Value="{StaticResource RangeSliderHorizontalTemplate}"/>
+    <Style.Triggers>
+      <Trigger Property="Orientation" Value="Vertical">
+        <Setter Property="Template" Value="{StaticResource RangeSliderVertialTemplate}"/>
+      </Trigger>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Opacity" Value="{StaticResource ControlIsNotEnabledOpacity}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+</ResourceDictionary>
