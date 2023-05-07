@@ -88,7 +88,8 @@
       <Popup
         x:Name="popup"
         Placement="Bottom"
-        PlacementTarget="{Binding ElementName=root}">
+        PlacementTarget="{Binding ElementName=root}"
+        StaysOpen="False">
         
         <Border
           x:Name="popupBorder"
