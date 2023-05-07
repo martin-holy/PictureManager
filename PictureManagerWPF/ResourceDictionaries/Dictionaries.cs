@@ -40,12 +40,6 @@ namespace PictureManager.ResourceDictionaries {
       { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
     };
 
-    public static readonly Dictionary<object, object> DisplayFilterToBrush = new() {
-      { DisplayFilter.And, "DisplayFilterAndBrush" },
-      { DisplayFilter.Or, "DisplayFilterOrBrush" },
-      { DisplayFilter.Not, "DisplayFilterNotBrush" }
-    };
-
     public static readonly Dictionary<object, object> MainTabsTypeToIcon = new() {
       { typeof(PeopleM), Res.IconPeople },
       { typeof(SegmentsVM), Res.IconEquals },

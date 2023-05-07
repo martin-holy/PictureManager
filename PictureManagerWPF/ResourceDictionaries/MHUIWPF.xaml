@@ -36,6 +36,7 @@
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/MessageDialog.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/PopupSlider.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/ProgressBarDialog.xaml"/>
+    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/RangeSlider.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanel.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/SlidePanelsGrid.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Controls/TreeWrapView.xaml"/>
@@ -73,6 +74,7 @@
   <Style TargetType="{x:Type mhc:IconToggleButton}" BasedOn="{StaticResource MH.Styles.Controls.IconToggleButton}"/>
   <Style TargetType="{x:Type mhc:MediaPlayerControlPanel}" BasedOn="{StaticResource MH.Styles.Controls.MediaPlayerControlPanel}"/>
   <Style TargetType="{x:Type mhc:PopupSlider}" BasedOn="{StaticResource MH.Styles.Controls.PopupSlider}"/>
+  <Style TargetType="{x:Type mhc:RangeSlider}" BasedOn="{StaticResource MH.Styles.Controls.RangeSlider}"/>
   <Style TargetType="{x:Type mhc:SlidePanel}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanel}"/>
   <Style TargetType="{x:Type mhc:SlidePanelsGrid}" BasedOn="{StaticResource MH.Styles.Controls.SlidePanelsGrid}"/>
   <Style TargetType="{x:Type mhc:TreeWrapView}" BasedOn="{StaticResource MH.Styles.Controls.TreeWrapView}"/>

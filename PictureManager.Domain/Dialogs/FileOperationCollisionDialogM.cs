@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
 using System.IO;
 using System.Linq;
@@ -63,7 +64,14 @@ namespace PictureManager.Domain.Dialogs {
       var fileName = path[(lioSep + 1)..];
       var folder = Tree.GetByPath(Core.Instance.FoldersM, folderPath, Path.DirectorySeparatorChar) as FolderM;
       var mi = folder?.GetMediaItemByName(fileName);
-      mi ??= Core.Instance.MediaItemsM.AddNew(folder, fileName, false, true);
+      
+      if (mi == null)
+        mi = Core.Instance.MediaItemsM.AddNew(folder, fileName);
+
+      var mim = new MediaItemMetadata(mi);
+      Core.Instance.MediaItemsM.ReadMetadata(mim, false);
+      if (mim.Success) mim.FindRefs(Core.Instance);
+
       return mi;
     }
 

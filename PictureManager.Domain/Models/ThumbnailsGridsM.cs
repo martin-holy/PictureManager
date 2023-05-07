@@ -1,146 +1,72 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridsM : ObservableObject {
     private readonly Core _core;
+    private List<ThumbnailsGridM> _all { get; } = new();
     private ThumbnailsGridM _current;
-
-    public ObservableCollection<ThumbnailsGridM> All { get; } = new();
+    
     public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public double DefaultThumbScale { get; set; } = 1.0;
 
     public RelayCommand<string> AddThumbnailsGridCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterAndCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterOrCommand { get; }
-    public RelayCommand<IFilterItem> ActivateFilterNotCommand { get; }
-    public RelayCommand<object> ClearFiltersCommand { get; }
-    public RelayCommand<object> SelectNotModifiedCommand { get; }
-    public RelayCommand<object> ShuffleCommand { get; }
-    public RelayCommand<object> ReapplyFilterCommand { get; }
-    public RelayCommand<object> LoadByTagCommand { get; }
-    public RelayCommand<object> CompressCommand { get; }
-    public RelayCommand<object> ResizeImagesCommand { get; }
-    public RelayCommand<object> ImagesToVideoCommand { get; }
     public RelayCommand<object> CopyPathsCommand { get; }
+    public RelayCommand<object> LoadByTagCommand { get; }
+    public RelayCommand<object> ShuffleCommand { get; }
 
     public ThumbnailsGridsM(Core core) {
       _core = core;
 
       AddThumbnailsGridCommand = new(AddThumbnailsGrid);
-      
-      ActivateFilterAndCommand = new(
-        item => _ = Current?.ActivateFilter(item, DisplayFilter.And),
-        item => item != null);
-      
-      ActivateFilterOrCommand = new(
-        item => _ = Current?.ActivateFilter(item, DisplayFilter.Or),
-        item => item != null);
-      
-      ActivateFilterNotCommand = new(
-        item => _ = Current?.ActivateFilter(item, DisplayFilter.Not),
-        item => item != null);
-      
-      ClearFiltersCommand = new(() => _ = Current?.ClearFilters());
-      
-      SelectNotModifiedCommand = new(
-        () => Current?.SelectNotModified(_core.MediaItemsM.ModifiedItems),
-        () => Current?.FilteredItems.Count > 0);
-      
-      ShuffleCommand = new(
-        () => {
-          Current.Shuffle();
-          _ = Current.ThumbsGridReloadItems();
-        },
-        () => Current?.FilteredItems.Count > 0);
-      
-      ReapplyFilterCommand = new(
-        async () => await Current.ReapplyFilter(),
-        () => Current != null);
-      
-      LoadByTagCommand = new(
-        async item => {
-          await LoadByTag(item, Keyboard.IsCtrlOn(), Keyboard.IsAltOn(), Keyboard.IsShiftOn());
-        },
-        item => item != null);
-      
-      CompressCommand = new(
-        () => {
-          Core.DialogHostShow(
-            new CompressDialogM(
-              Current.GetSelectedOrAll()
-                .Where(x => x.MediaType == MediaType.Image).ToList(),
-              Core.Settings.JpegQualityLevel));
-        },
-        () => Current?.FilteredItems.Count > 0);
-      
-      ResizeImagesCommand = new(
-        () => Core.DialogHostShow(new ResizeImagesDialogM(Current.GetSelectedOrAll())),
-        () => Current?.FilteredItems.Count > 0);
-      
-      ImagesToVideoCommand = new(
-        ImagesToVideo,
-        () => Current?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
-      
+
       CopyPathsCommand = new(
-        () => Clipboard.SetText(string.Join("\n", Current.FilteredItems.Where(x => x.IsSelected).Select(x => x.FilePath))),
-        () => Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+        () => Clipboard.SetText(string.Join("\n", Current.SelectedItems.Select(x => x.FilePath))),
+        () => Current?.SelectedItems.Any() == true);
+
+      LoadByTagCommand = new(async item => await LoadByTag(item));
+
+      ShuffleCommand = new(
+        () => Current.Shuffle(),
+        () => Current?.FilteredItems.Count > 0);
     }
 
-    private void ImagesToVideo() {
-      Core.DialogHostShow(new ImagesToVideoDialogM(Current.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
-        async (folder, fileName) => {
-          // create new MediaItem, Read Metadata and Create Thumbnail
-          var mi = _core.MediaItemsM.AddNew(folder, fileName, false, true);
-
-          // reload grid
-          Current.LoadedItems.AddInOrder(mi,
-            (a, b) => string.Compare(a.FileName, b.FileName, StringComparison.OrdinalIgnoreCase) >= 0);
-          await Current.ReapplyFilter();
-          Current.ScrollToItem = mi;
-        })
-      );
-    }
-
-    public void RemoveMediaItem(MediaItemM item) {
-      foreach (var grid in All)
-        grid.Remove(item, Current == grid);
+    public void RemoveMediaItems(List<MediaItemM> items) {
+      foreach (var grid in _all)
+        grid.Remove(items, Current == grid);
     }
 
     public void CloseGrid(ThumbnailsGridM grid) {
-      grid.ClearItBeforeLoad();
-      All.Remove(grid);
+      grid.Clear();
+      grid.SelectionChangedEventHandler -= OnGridSelectionChanged;
+      grid.FilteredChangedEventHandler -= OnGridFilteredChanged;
+      _all.Remove(grid);
 
-      if (grid.Equals(Current))
+      if (grid.Equals(Current)) {
         Current = null;
-    }
-
-    public async Task SetCurrentGrid(ThumbnailsGridM grid) {
-      Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
-
-      if (Current == null) return;
-
-      Current.UpdateSelected();
-      
-      if (Current.NeedReload) {
-        await Current.ThumbsGridReloadItems();
-        Current.OnPropertyChanged(nameof(Current.PositionSlashCount));
+        _core.MediaItemsM.Current = null;
+        _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     }
 
-    private void AddThumbnailsGridIfNotActive(string tabTitle) {
-      if (_core.MainTabsM.Selected?.Content is ThumbnailsGridM) {
+    public void SetCurrentGrid(ThumbnailsGridM grid) {
+      Current = grid;
+      if (Current == null) return;
+      Current.UpdateSelected();
+
+      if (Current.NeedReload)
+        Current.SoftLoad(Current.LoadedItems, true, true);
+    }
+
+    public void AddThumbnailsGridIfNotActive(string tabTitle) {
+      if (_core.MainTabsM.Selected?.Content is ThumbnailsGridM grid) {
         if (tabTitle != null)
-          _core.MainTabsM.Selected.ContentHeader = tabTitle;
+          grid.MainTabsItem.ContentHeader = tabTitle;
 
         return;
       }
@@ -148,34 +74,58 @@ namespace PictureManager.Domain.Models {
       AddThumbnailsGrid(tabTitle);
     }
 
-    private void AddThumbnailsGrid(string tabTitle) {
+    public void AddThumbnailsGrid(string tabTitle) {
       var grid = new ThumbnailsGridM(_core, DefaultThumbScale, tabTitle);
-      All.Add(grid);
-      Current = ThumbnailsGridM.ActivateThumbnailsGrid(Current, grid);
-
-      grid.SelectionChangedEventHandler += (_, _) => {
-        _core.MediaItemsM.Current = grid.SelectedItems.Count == 1
-          ? grid.SelectedItems[0]
-          : null;
-
-        _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      };
-
-      grid.FilteredChangedEventHandler += (_, _) => {
-        _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      };
-
+      _all.Add(grid);
+      Current = grid;
+      grid.SelectionChangedEventHandler += OnGridSelectionChanged;
+      grid.FilteredChangedEventHandler += OnGridFilteredChanged;
       _core.MainTabsM.AddItem(grid.MainTabsItem);
     }
 
-    private async Task LoadByTag(object item, bool and, bool hide, bool recursive) {
+    private void OnGridSelectionChanged(object o, EventArgs e) {
+      _core.MediaItemsM.Current = ((ThumbnailsGridM)o).SelectedItems.FirstOrDefault();
+      _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+    }
+
+    private void OnGridFilteredChanged(object o, EventArgs e) {
+      _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+    }
+
+    public void ReloadGridsIfContains(MediaItemM[] mediaItems) {
+      foreach (var grid in _all) {
+        if (!grid.FilteredItems.Any(mediaItems.Contains)) continue;
+        if (grid.Equals(Current))
+          grid.SoftLoad(grid.LoadedItems, true, true);
+        else
+          grid.NeedReload = true;
+      }
+    }
+
+    public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
+      if (item is FolderM { IsAccessible: false }) return;
+
+      item.IsSelected = true;
+      AddThumbnailsGridIfNotActive(and || hide ? null : item.Name);
+      await Current.LoadByFolder(item, and, hide, recursive);
+    }
+
+    public async Task LoadByTag(object item) {
+      var and = Keyboard.IsCtrlOn();
+      var hide = Keyboard.IsAltOn();
+      var recursive = Keyboard.IsShiftOn();
       var items = item switch {
-        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value).ToList(),
+        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
         KeywordM keyword => _core.MediaItemsM.GetMediaItems(keyword, recursive),
         GeoNameM geoName => _core.MediaItemsM.GetMediaItems(geoName, recursive),
-        _ => new()
+        _ => Array.Empty<MediaItemM>()
       };
+
+      // if CTRL is pressed, add new items to already loaded items
+      if (and) items = Current.LoadedItems.Union(items);
+      // if ALT is pressed, remove new items from already loaded items
+      if (hide) items = Current.LoadedItems.Except(items);
 
       var tabTitle = and || hide
         ? null
@@ -187,39 +137,12 @@ namespace PictureManager.Domain.Models {
           _ => string.Empty
         };
 
-      AddThumbnailsGrid(tabTitle);
-      await Current.LoadMediaItems(items, and, hide);
-    }
+      if (and || hide)
+        AddThumbnailsGridIfNotActive(tabTitle);
+      else
+        AddThumbnailsGrid(tabTitle);
 
-    public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
-      if (item is FolderM { IsAccessible: false }) return;
-
-      item.IsSelected = true;
-
-      var roots = (item as FolderKeywordM)?.Folders ?? new List<FolderM> { (FolderM)item };
-      var folders = FoldersM.GetFolders(roots, recursive)
-        .Where(f => _core.FoldersM.IsFolderVisible(f))
-        .ToList();
-
-      if (and || hide) {
-        var items = folders.SelectMany(x => x.MediaItems).ToList();
-        AddThumbnailsGridIfNotActive(null);
-        await Current.LoadMediaItems(items, and, hide);
-        return;
-      }
-
-      AddThumbnailsGridIfNotActive(folders[0].Name);
-      await Current.LoadAsync(null, folders);
-    }
-
-    public async Task ReloadGridsIfContains(MediaItemM[] mediaItems) {
-      foreach (var tg in All) {
-        if (!tg.FilteredItems.Any(mediaItems.Contains)) continue;
-        if (tg.Equals(Current))
-          await tg.ThumbsGridReloadItems();
-        else
-          tg.NeedReload = true;
-      }
+      await Current.LoadByTag(items);
     }
   }
 }

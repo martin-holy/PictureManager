@@ -13,7 +13,6 @@
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="TreeViewSearchV.xaml"/>
           <ResourceDictionary Source="TreeItemV.xaml"/>
-          <ResourceDictionary Source="MediaItemSizeTreeV.xaml"/>
           <ResourceDictionary Source="RatingTreeV.xaml"/>
           <ResourceDictionary Source="TreeContextMenus.xaml"/>
         </ResourceDictionary.MergedDictionaries>

@@ -1,7 +1,6 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using System;
@@ -25,7 +24,6 @@ namespace PictureManager.Domain {
     public KeywordsM KeywordsM { get; }
     public MainWindowM MainWindowM { get; }
     public MediaItemsM MediaItemsM { get; }
-    public MediaItemSizesTreeM MediaItemSizesTreeM { get; }
     public MediaViewerM MediaViewerM { get; }
     public PeopleM PeopleM { get; }
     public PersonDetailM PersonDetailM { get; }
@@ -65,7 +63,6 @@ namespace PictureManager.Domain {
       KeywordsM = new(CategoryGroupsM);
       MainWindowM = new(this);
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
-      MediaItemSizesTreeM = new();
       MediaViewerM = new(this);
       PeopleM = new(this, CategoryGroupsM); // MainWindowM
       PersonDetailM = new(PeopleM, SegmentsM);
@@ -140,7 +137,7 @@ namespace PictureManager.Domain {
 
       FoldersM.FolderDeletedEventHandler += (_, e) => {
         FavoriteFoldersM.ItemDelete(e.Data);
-        MediaItemsM.Delete(e.Data.MediaItems.ToArray());
+        MediaItemsM.Delete(e.Data.MediaItems);
       };
 
       PeopleM.AfterItemRenameEventHandler += (_, e) => {
@@ -173,12 +170,10 @@ namespace PictureManager.Domain {
 
       MediaItemsM.MediaItemDeletedEventHandler += (_, e) => {
         SegmentsM.Delete(e.Data.Segments);
-        ThumbnailsGridsM.RemoveMediaItem(e.Data);
       };
 
-      MediaItemsM.MediaItemsDeletedEventHandler += async (_, e) => {
-        if (ThumbnailsGridsM.Current?.NeedReload == true)
-          await ThumbnailsGridsM.Current.ThumbsGridReloadItems();
+      MediaItemsM.MediaItemsDeletedEventHandler += (_, e) => {
+        ThumbnailsGridsM.RemoveMediaItems(e.Data);
 
         if (MediaViewerM.IsVisible) {
           MediaViewerM.MediaItems.Remove(e.Data[0]);
@@ -189,14 +184,14 @@ namespace PictureManager.Domain {
         }
       };
 
-      MediaItemsM.MediaItemsOrientationChangedEventHandler += async (_, e) => {
+      MediaItemsM.MediaItemsOrientationChangedEventHandler += (_, e) => {
         if (MediaViewerM.IsVisible && e.Data.Contains(MediaItemsM.Current))
           MediaViewerM.OnPropertyChanged(nameof(MediaViewerM.Current));
 
         foreach (var __ in e.Data)
           MediaItemsM.DataAdapter.IsModified = true;
 
-        await ThumbnailsGridsM.ReloadGridsIfContains(e.Data);
+        ThumbnailsGridsM.ReloadGridsIfContains(e.Data);
       };
 
       MediaItemsM.MetadataChangedEventHandler += (_, _) => {
@@ -220,7 +215,6 @@ namespace PictureManager.Domain {
 
       ThumbnailsGridsM.PropertyChanged += (_, e) => {
         if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
-          MediaItemSizesTreeM.Size.CurrentGrid = ThumbnailsGridsM.Current;
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
           MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
         }
@@ -277,9 +271,9 @@ namespace PictureManager.Domain {
         }
       };
 
-      MainTabsM.PropertyChanged += async (_, e) => {
+      MainTabsM.PropertyChanged += (_, e) => {
         if (nameof(MainTabsM.Selected).Equals(e.PropertyName)) {
-          await ThumbnailsGridsM.SetCurrentGrid(MainTabsM.Selected?.Content as ThumbnailsGridM);
+          ThumbnailsGridsM.SetCurrentGrid(MainTabsM.Selected?.Content as ThumbnailsGridM);
 
           if ((MainTabsM.Selected?.Content as PeopleM) == null)
             PeopleM.DeselectAll();

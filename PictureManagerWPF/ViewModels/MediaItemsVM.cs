@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain;
+using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.Utils;
 using System;
@@ -9,7 +10,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace PictureManager.ViewModels {
@@ -26,69 +26,68 @@ namespace PictureManager.ViewModels {
       Model.WriteMetadata = WriteMetadata;
     }
 
-    private async Task<bool> ReadMetadata(MediaItemM mi, bool gpsOnly = false) {
+    private void ReadMetadata(MediaItemMetadata mim, bool gpsOnly = false) {
+      mim.Success = false;
       try {
-        if (mi.MediaType == MediaType.Video) {
-          await Tasks.RunOnUiThread(() => ReadVideoMetadata(mi));
+        if (mim.MediaItem.MediaType == MediaType.Video) {
+          ReadVideoMetadata(mim);
+          return;
         }
-        else {
-          await using Stream srcFileStream = File.Open(mi.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+        if (mim.MediaItem.MediaType == MediaType.Image) {
+          using Stream srcFileStream = File.Open(mim.MediaItem.FilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
           var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
           var frame = decoder.Frames[0];
-          mi.Width = frame.PixelWidth;
-          mi.Height = frame.PixelHeight;
-          mi.SetThumbSize(true);
-
-          if (!mi.IsNew)
-            Model.DataAdapter.IsModified = true;
+          
+          mim.MediaItem.Width = frame.PixelWidth;
+          mim.MediaItem.Height = frame.PixelHeight;
 
           // true because only media item dimensions are required
-          if (frame.Metadata is not BitmapMetadata bm) return true;
+          if (frame.Metadata is not BitmapMetadata bm) {
+            mim.Success = true;
+            return;
+          }
 
-          await ReadImageMetadata(mi, bm, gpsOnly);
-
-          mi.SetThumbSize(true);
+          ReadImageMetadata(mim, bm, gpsOnly);
+          mim.MediaItem.IsOnlyInDb = false; // TODO
+          mim.Success = true;
         }
-
-        mi.IsOnlyInDb = false;
       }
       catch (Exception ex) {
-        Log.Error(ex, mi.FilePath);
+        Log.Error(ex, mim.MediaItem.FilePath);
 
         // No imaging component suitable to complete this operation was found.
         if ((ex.InnerException as COMException)?.HResult == -2003292336)
-          return false;
+          return;
 
-        mi.IsOnlyInDb = true;
+        mim.MediaItem.IsOnlyInDb = true;
 
         // true because only media item dimensions are required
-        return true;
+        mim.Success = true;
       }
-
-      return true;
     }
 
-    private void ReadVideoMetadata(MediaItemM mi) {
+    private void ReadVideoMetadata(MediaItemMetadata mim) {
       try {
-        var size = ShellStuff.FileInformation.GetVideoMetadata(mi.Folder.FullPath, mi.FileName);
-        mi.Height = (int)size[0];
-        mi.Width = (int)size[1];
-        mi.Orientation = (int)size[2] switch {
+        var size = ShellStuff.FileInformation.GetVideoMetadata(mim.MediaItem.Folder.FullPath, mim.MediaItem.FileName);
+        mim.MediaItem.Height = (int)size[0];
+        mim.MediaItem.Width = (int)size[1];
+        mim.MediaItem.Orientation = (int)size[2] switch {
           90 => (int)MediaOrientation.Rotate90,
           180 => (int)MediaOrientation.Rotate180,
           270 => (int)MediaOrientation.Rotate270,
           _ => (int)MediaOrientation.Normal,
         };
-        mi.SetThumbSize(true);
 
-        Model.DataAdapter.IsModified = true;
+        mim.Success = true;
       }
       catch (Exception ex) {
-        Log.Error(ex, mi.FilePath);
+        Log.Error(ex, mim.MediaItem.FilePath);
+        mim.Success = false;
       }
     }
 
-    private async Task ReadImageMetadata(MediaItemM mi, BitmapMetadata bm, bool gpsOnly) {
+    private void ReadImageMetadata(MediaItemMetadata mim, BitmapMetadata bm, bool gpsOnly) {
       object GetQuery(string query) {
         try {
           return bm.GetQuery(query);
@@ -103,65 +102,35 @@ namespace PictureManager.ViewModels {
         var tmpLat = GetQuery("System.GPS.Latitude.Proxy")?.ToString();
         if (tmpLat != null) {
           var vals = tmpLat[..^1].Split(',');
-          mi.Lat = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLat.EndsWith("S") ? -1 : 1);
+          mim.MediaItem.Lat = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLat.EndsWith("S") ? -1 : 1);
         }
 
         var tmpLng = GetQuery("System.GPS.Longitude.Proxy")?.ToString();
         if (tmpLng != null) {
           var vals = tmpLng[..^1].Split(',');
-          mi.Lng = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLng.EndsWith("W") ? -1 : 1);
+          mim.MediaItem.Lng = (int.Parse(vals[0]) + (double.Parse(vals[1], CultureInfo.InvariantCulture) / 60)) * (tmpLng.EndsWith("W") ? -1 : 1);
         }
 
         if (gpsOnly) return;
 
         // People
-        mi.People = null;
         const string microsoftRegions = "/xmp/MP:RegionInfo/MPRI:Regions";
         const string microsoftPersonDisplayName = "/MPReg:PersonDisplayName";
 
         if (GetQuery(microsoftRegions) is BitmapMetadata regions) {
-          var people = regions
+          mim.People = regions
             .Select(region => GetQuery(microsoftRegions + region + microsoftPersonDisplayName))
             .Where(x => x != null)
+            .Select(x => x.ToString())
             .ToArray();
-
-          if (people.Any())
-            await Tasks.RunOnUiThread(() => {
-              mi.People = new(people.Length);
-              foreach (var person in people)
-                mi.People.Add(_core.PeopleM.GetPerson(person.ToString(), true));
-            });
         }
 
-        // Rating
-        mi.Rating = bm.Rating;    
-
-        // Comment
-        mi.Comment = StringUtils.NormalizeComment(bm.Comment);
-
+        mim.MediaItem.Rating = bm.Rating;
+        mim.MediaItem.Comment = StringUtils.NormalizeComment(bm.Comment);
         // Orientation 1: 0, 3: 180, 6: 270, 8: 90
-        mi.Orientation = (ushort?)GetQuery("System.Photo.Orientation") ?? 1;
-
-        // Keywords
-        mi.Keywords = null;
-        if (bm.Keywords != null) {
-          await Tasks.RunOnUiThread(() => {
-            mi.Keywords = new();
-            foreach (var k in bm.Keywords.OrderByDescending(x => x).Distinct()) {
-              var keyword = _core.KeywordsM.GetByFullPath(k.Replace('|', ' '));
-              if (keyword != null)
-                mi.Keywords.Add(keyword);
-            }
-          });
-        }
-
-        // GeoNameId
-        var tmpGId = GetQuery("/xmp/GeoNames:GeoNameId") as string;
-        // TODO change condition
-        if (!string.IsNullOrEmpty(tmpGId)) {
-          // TODO find/create GeoName
-          mi.GeoName = _core.GeoNamesM.DataAdapter.All.Values.SingleOrDefault(x => x.Id == int.Parse(tmpGId));
-        }
+        mim.MediaItem.Orientation = (ushort?)GetQuery("System.Photo.Orientation") ?? 1;
+        mim.Keywords = bm.Keywords?.ToArray();
+        mim.GeoName = GetQuery("/xmp/GeoNames:GeoNameId") as string;
       }
       catch (Exception) {
         // ignored

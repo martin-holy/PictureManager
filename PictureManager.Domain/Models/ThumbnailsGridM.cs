@@ -2,31 +2,26 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
-using PictureManager.Domain.Interfaces;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.HelperClasses;
+using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
     private readonly Core _core;
     private readonly List<MediaItemM> _selectedItems = new();
-    private readonly List<object> _filterAnd = new();
-    private readonly List<object> _filterOr = new();
-    private readonly List<object> _filterNot = new();
-    private readonly Dictionary<IFilterItem, DisplayFilter> _filterAll = new();
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
-    private bool _loadIsRunning;
-    private bool _cancelLoad;
 
-    private bool _showImages = true;
-    private bool _showVideos = true;
     private bool _groupByFolders = true;
     private bool _groupByDate = true;
-    private bool _sortByFileFirst = true;
+    private bool _sortByFileFirst = false;
+    private bool _reWrapItems;
+    private bool _scrollToTop;
     private object _scrollToItem;
     private TreeWrapGroup _filteredRoot = new();
 
@@ -36,32 +31,28 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> SelectedItems => _selectedItems;
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
-    public ObservableCollection<object> FilteredGrouped { get; } = new();
-    public MediaItemFilterSizeM FilterSize { get; } = new();
+    public MediaItemsFilterM Filter { get; } = new();
     public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
+    public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
+    public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public TreeWrapGroup FilteredRoot { get => _filteredRoot; private set { _filteredRoot = value; OnPropertyChanged(); } }
-    public HeaderedListItem<object, string> MainTabsItem { get; set; }
-    public CanDragFunc CanDragFunc { get; }
-
-    public int FilterAndCount => _filterAnd.Count;
-    public int FilterOrCount => _filterOr.Count;
-    public int FilterNotCount => _filterNot.Count;
+    public HeaderedListItem<object, string> MainTabsItem { get; }
+    public DragDropHelper.CanDragFunc CanDragFunc { get; }
     public int SelectedCount => SelectedItems.Count;
 
-    public bool ShowImages { get => _showImages; set { _showImages = value; OnPropertyChanged(); } }
-    public bool ShowVideos { get => _showVideos; set { _showVideos = value; OnPropertyChanged(); } }
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
     public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
     public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
-    public string PositionSlashCount => SelectedItems.Count == 0
-      ? FilteredItems.Count.ToString()
-      : $"{FilteredItems.IndexOf(SelectedItems[0]) + 1}/{FilteredItems.Count}";
+    public string PositionSlashCount =>
+      SelectedItems.Count == 0
+        ? FilteredItems.Count.ToString()
+        : $"{FilteredItems.IndexOf(SelectedItems[0]) + 1}/{FilteredItems.Count}";
 
     public bool NeedReload { get; set; }
     public double ThumbScale { get; set; }
 
-    public RelayCommand<object> RefreshCommand { get; }
+    public RelayCommand<object> SortCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
     public RelayCommand<MouseButtonEventArgs> SelectMediaItemCommand { get; }
     public RelayCommand<MouseButtonEventArgs> OpenMediaItemCommand { get; }
@@ -73,15 +64,9 @@ namespace PictureManager.Domain.Models {
       CanDragFunc = CanDrag;
       MainTabsItem = new(this, tabTitle);
 
-      RefreshCommand = new(async () => await ReapplyFilter());
+      SortCommand = new(() => SoftLoad(FilteredItems, true, false));
       SelectAllCommand = new(() => SelectAll());
-
-      ZoomCommand = new(
-        async e => {
-          Zoom(e.Delta);
-          await ThumbsGridReloadItems();
-        },
-        e => e.IsCtrlOn);
+      ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
 
       SelectMediaItemCommand = new(e => {
         if (e.DataContext is MediaItemM mi)
@@ -91,6 +76,8 @@ namespace PictureManager.Domain.Models {
       OpenMediaItemCommand = new(
         e => OpenMediaItem(e.DataContext as MediaItemM),
         e => e.ClickCount == 2);
+
+      Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
     }
 
     private void OpenMediaItem(MediaItemM mi) {
@@ -107,28 +94,33 @@ namespace PictureManager.Domain.Models {
       return data.Length == 0 ? null : data;
     }
 
-    public void ClearItBeforeLoad() {
+    public void Clear() {
       foreach (var item in SelectedItems)
         item.IsSelected = false;
 
       SelectedItems.Clear();
       LoadedItems.Clear();
       FilteredItems.Clear();
-      FilteredGrouped.Clear();
       FilteredRoot.Items.Clear();
+    }
+
+    private void ClearItBeforeLoad() {
+      ScrollToTop = true;
+      Clear();
       FilteredRoot = new();
-      SelectionChanged();
-      FilteredChangedEventHandler(this, EventArgs.Empty);
     }
 
     private void SelectionChanged() {
-      SelectionChangedEventHandler.Invoke(this, EventArgs.Empty);
+      SelectionChangedEventHandler(this, EventArgs.Empty);
       OnPropertyChanged(nameof(SelectedCount));
       OnPropertyChanged(nameof(PositionSlashCount));
     }
 
-    public void SetSelected(MediaItemM mi, bool value) =>
-      Selecting.SetSelected(_selectedItems, mi, value, SelectionChanged);
+    public void SetSelected(MediaItemM mi, bool value, bool withEvent = true) =>
+      Selecting.SetSelected(_selectedItems, mi, value, withEvent ? SelectionChanged : null);
+    
+    private void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) =>
+      Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, SelectionChanged);
 
     public void UpdateSelected() {
       foreach (var mi in SelectedItems)
@@ -140,9 +132,6 @@ namespace PictureManager.Domain.Models {
       SelectionChanged();
     }
 
-    public void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, SelectionChanged);
-
     public void DeselectAll() {
       foreach (var mi in SelectedItems)
         mi.IsSelected = false;
@@ -151,7 +140,7 @@ namespace PictureManager.Domain.Models {
       SelectionChanged();
     }
 
-    public void SelectAll() {
+    private void SelectAll() {
       foreach (var mi in FilteredItems)
         mi.IsSelected = true;
 
@@ -160,37 +149,31 @@ namespace PictureManager.Domain.Models {
       SelectionChanged();
     }
 
-    public void Remove(MediaItemM item, bool isCurrent) {
-      LoadedItems.Remove(item);
+    public void Remove(List<MediaItemM> items, bool isCurrent) {
+      foreach (var item in items) {
+        LoadedItems.Remove(item);
 
-      if (FilteredItems.Remove(item)) {
-        NeedReload = true;
-        if (isCurrent) {
-          OnPropertyChanged(nameof(PositionSlashCount));
-          FilteredChangedEventHandler(this, EventArgs.Empty);
-        }
+        if (FilteredItems.Remove(item))
+          NeedReload = true;
+
+        if (isCurrent)
+          SetSelected(item, false, false);
+        else
+          SelectedItems.Remove(item);
       }
 
-      if (isCurrent)
-        SetSelected(item, false);
-      else
-        SelectedItems.Remove(item);
+      if (!isCurrent) return;
+      SelectionChanged();
+
+      if (NeedReload)
+        SoftLoad(FilteredItems, false, false);
     }
 
-    public void RemoveSelected() {
-      var items = FilteredItems.Where(x => x.IsSelected).ToList();
-      var newCurrent = MediaItemsM.GetNewCurrent(FilteredItems, items);
-
-      foreach (var mi in items)
-        Remove(mi, true);
-
-      SetSelected(newCurrent, true);
-    }
-
-    public void Zoom(int delta) {
+    private void Zoom(int delta) {
       if (delta < 0 && ThumbScale < .1) return;
       ThumbScale += delta > 0 ? .05 : -.05;
       ResetThumbsSize();
+      ReWrapItems = true;
     }
 
     private void ResetThumbsSize() {
@@ -201,199 +184,37 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> GetSelectedOrAll() =>
       SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
 
-    public void SelectNotModified(HashSet<MediaItemM> modifiedItems) {
-      foreach (var mi in FilteredItems)
-        SetSelected(mi, !modifiedItems.Contains(mi));
-    }
-
     public void Shuffle() {
-      FilteredItems.Shuffle();
+      LoadedItems.Shuffle();
       GroupByFolders = false;
       GroupByDate = false;
+      SoftLoad(LoadedItems, true, true);
     }
 
-    // TODO use universal function
-    public void FilteredItemsSetInPlace(MediaItemM mi) {
-      var oldIndex = FilteredItems.IndexOf(mi);
-      var newIndex = FilteredItems.OrderBy(x => x.FileName).ToList().IndexOf(mi);
-      FilteredItems.RemoveAt(oldIndex);
-      FilteredItems.Insert(newIndex, mi);
-      OnPropertyChanged(nameof(PositionSlashCount));
-      FilteredChangedEventHandler(this, EventArgs.Empty);
-    }
-
-    public async Task ReapplyFilter() {
-      ReloadFilteredItems();
-      await ThumbsGridReloadItems();
-    }
-
-    private void ReloadFilteredItems() {
-      FilteredItems.Clear();
-      var filtered = Filter(LoadedItems);
-
-      var sorted = SortByFileFirst
-        ? filtered.OrderBy(x => x.FileName).ThenBy(
+    public IEnumerable<MediaItemM> Sort(IEnumerable<MediaItemM> items) =>
+      SortByFileFirst
+        ? items.OrderBy(x => x.FileName).ThenBy(
           x => GroupByFolders
             ? x.Folder.FolderKeyword != null
               ? x.Folder.FolderKeyword.FullPath
               : x.Folder.FullPath
             : string.Empty)
         : GroupByFolders
-          ? filtered.OrderBy(
+          ? items.OrderBy(
             x => x.Folder.FolderKeyword != null
               ? x.Folder.FolderKeyword.FullPath
               : x.Folder.FullPath).ThenBy(x => x.FileName)
-          : filtered.OrderBy(x => x.FileName);
+          : items.OrderBy(x => x.FileName);
 
-      foreach (var mi in sorted)
-        FilteredItems.Add(mi);
-
-      OnPropertyChanged(nameof(PositionSlashCount));
-      FilteredChangedEventHandler(this, EventArgs.Empty);
-    }
-
-    public static ThumbnailsGridM ActivateThumbnailsGrid(ThumbnailsGridM oldGrid, ThumbnailsGridM newGrid) {
-      if (oldGrid != null)
-        foreach (var item in oldGrid._filterAll.Keys)
-          item.DisplayFilter = DisplayFilter.None;
-
-      if (newGrid != null)
-        foreach (var (k, v) in newGrid._filterAll)
-          k.DisplayFilter = v;
-
-      return newGrid;
-    }
-
-    private void SetMediaItemFilterSizeRange() {
-      var zeroItems = FilteredItems.Count == 0;
-      var min = zeroItems ? 0 : FilteredItems.Min(x => x.Width * x.Height);
-      var max = zeroItems ? 0 : FilteredItems.Max(x => x.Width * x.Height);
-      FilterSize.SetLoadedRange(min, max);
-    }
-
-    public async Task ClearFilters() {
-      foreach (var item in _filterAll.Keys.ToArray())
-        SetDisplayFilter(item, DisplayFilter.None);
-
-      await ReapplyFilter();
-    }
-
-    public async Task ActivateFilter(IFilterItem item, DisplayFilter displayFilter) {
-      SetDisplayFilter(item, displayFilter);
-      await ReapplyFilter();
-    }
-
-    private void SetDisplayFilter(IFilterItem item, DisplayFilter displayFilter) {
-      item.DisplayFilter = item.DisplayFilter != DisplayFilter.None
-        ? DisplayFilter.None
-        : displayFilter;
-
-      object m = item is RatingTreeM r
-        ? r.Value
-        : item;
-
-      _filterAll.Remove(item);
-      if (item.DisplayFilter != DisplayFilter.None)
-        _filterAll.Add(item, item.DisplayFilter);
-
-      switch (item.DisplayFilter) {
-        case DisplayFilter.None:
-          if (_filterAnd.Remove(m))
-            OnPropertyChanged(nameof(FilterAndCount));
-          if (_filterOr.Remove(m))
-            OnPropertyChanged(nameof(FilterOrCount));
-          if (_filterNot.Remove(m))
-            OnPropertyChanged(nameof(FilterNotCount));
-          break;
-        case DisplayFilter.And:
-          _filterAnd.Add(m);
-          OnPropertyChanged(nameof(FilterAndCount));
-          break;
-        case DisplayFilter.Or:
-          _filterOr.Add(m);
-          OnPropertyChanged(nameof(FilterOrCount));
-          break;
-        case DisplayFilter.Not:
-          _filterNot.Add(m);
-          OnPropertyChanged(nameof(FilterNotCount));
-          break;
-        default:
-          throw new ArgumentOutOfRangeException(nameof(displayFilter), displayFilter, null);
-      }
-    }
-
-    public IEnumerable<MediaItemM> Filter(List<MediaItemM> mediaItems) {
-      // Media Type
-      var mediaTypes = new HashSet<MediaType>();
-      if (ShowImages) mediaTypes.Add(MediaType.Image);
-      if (ShowVideos) mediaTypes.Add(MediaType.Video);
-      mediaItems = mediaItems.Where(mi => mediaTypes.Any(x => x.Equals(mi.MediaType))).ToList();
-
-      // TODO GeoNames
-
-      //Ratings
-      var chosenRatings = _filterOr.OfType<int>().ToArray();
-      if (chosenRatings.Length > 0)
-        mediaItems = mediaItems.Where(mi => mi.IsNew || chosenRatings.Any(x => x.Equals(mi.Rating))).ToList();
-
-      // MediaItemSizes
-      if (!FilterSize.AllSizes)
-        mediaItems = mediaItems.Where(mi => mi.IsNew || FilterSize.Fits(mi.Width * mi.Height)).ToList();
-
-      // People
-      var andPeople = _filterAnd.OfType<PersonM>().ToArray();
-      var orPeople = _filterOr.OfType<PersonM>().ToArray();
-      var notPeople = _filterNot.OfType<PersonM>().ToArray();
-      var andPeopleAny = andPeople.Length > 0;
-      var orPeopleAny = orPeople.Length > 0;
-      if (orPeopleAny || andPeopleAny || notPeople.Length > 0) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.People != null && notPeople.Any(fp => mi.People.Any(p => p == fp)))
-            return false;
-          if (!andPeopleAny && !orPeopleAny)
-            return true;
-          if (mi.People != null && andPeopleAny && andPeople.All(fp => mi.People.Any(p => p == fp)))
-            return true;
-          if (mi.People != null && orPeople.Any(fp => mi.People.Any(p => p == fp)))
-            return true;
-
-          return false;
-        }).ToList();
-      }
-
-      // Keywords
-      var andKeywords = _filterAnd.OfType<KeywordM>().ToArray();
-      var orKeywords = _filterOr.OfType<KeywordM>().ToArray();
-      var notKeywords = _filterNot.OfType<KeywordM>().ToArray();
-      var andKeywordsAny = andKeywords.Length > 0;
-      var orKeywordsAny = orKeywords.Length > 0;
-      if (orKeywordsAny || andKeywordsAny || notKeywords.Length > 0) {
-        mediaItems = mediaItems.Where(mi => {
-          if (mi.IsNew)
-            return true;
-          if (mi.Keywords != null && notKeywords.Any(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))
-            return false;
-          if (!andKeywordsAny && !orKeywordsAny)
-            return true;
-          if (mi.Keywords != null && andKeywordsAny && andKeywords.All(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))
-            return true;
-          if (mi.Keywords != null && orKeywords.Any(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))
-            return true;
-          return false;
-        }).ToList();
-      }
-
-      return mediaItems;
-    }
-
-    public void SelectAndScrollToCurrentMediaItem() {
-      var mi = FilteredItems.Contains(_core.MediaItemsM.Current)
+    private MediaItemM GetItemToScrollTo() =>
+      FilteredItems.Contains(_core.MediaItemsM.Current)
         ? _core.MediaItemsM.Current
         : SelectedItems.Count != 0
           ? SelectedItems[0]
           : null;
+
+    public void SelectAndScrollToCurrentMediaItem() {
+      var mi = GetItemToScrollTo();
 
       DeselectAll();
       if (mi == null) return;
@@ -402,104 +223,107 @@ namespace PictureManager.Domain.Models {
       ScrollToItem = mi;
     }
 
-    public async Task LoadMediaItems(List<MediaItemM> items, bool and, bool hide) {
-      // if CTRL is pressed, add new items to already loaded items
-      if (and)
-        items = LoadedItems.Union(items).ToList();
+    public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
+      if (!and && !hide)
+        ClearItBeforeLoad();
 
-      // if ALT is pressed, remove new items from already loaded items
-      if (hide)
-        items = LoadedItems.Except(items).ToList();
+      GroupByFolders = true;
+      SortByFileFirst = false;
 
-      await LoadAsync(items, null);
-    }
+      var folders = _core.FoldersM.GetFolders(item, recursive);
+      var bufferNew = new List<MediaItemMetadata>();
 
-    public async Task LoadAsync(List<MediaItemM> mediaItems, List<FolderM> folders) {
-      if (_loadIsRunning) {
-        _cancelLoad = true;
-        while (_cancelLoad)
-          await Task.Delay(10);
-      }
+      foreach (var folder in folders) {
+        if (!Directory.Exists(folder.FullPath)
+          || !_core.ViewersM.CanViewerSeeContentOf(folder)) continue;
 
-      _loadIsRunning = true;
-      ClearItBeforeLoad();
-      _core.TitleProgressBarM.IsVisible = true;
-      _core.TitleProgressBarM.IsIndeterminate = true;
+        // add MediaItems from current Folder to dictionary for faster search
+        var fmis = folder.MediaItems.ToDictionary(x => x.FileName);
 
-      var items = await _core.MediaItemsM.GetMediaItemsForLoadAsync(mediaItems, folders);
-      LoadedItems.AddRange(items);
-      ReloadFilteredItems();
-      await LoadThumbnails(FilteredItems.ToArray());
-      ScrollToItem = (FilteredRoot.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
-      SetMediaItemFilterSizeRange();
+        foreach (var file in Directory.EnumerateFiles(folder.FullPath, "*.*", SearchOption.TopDirectoryOnly)) {
+          if (!Imaging.IsSupportedFileType(file)) continue;
 
-      _loadIsRunning = false;
-      _cancelLoad = false;
-    }
+          // check if the MediaItem is already in DB, if not put it there
+          var fileName = Path.GetFileName(file);
+          if (!fmis.Remove(fileName, out var mi)) {
+            mi = _core.MediaItemsM.AddNew(folder, fileName);
+            var mim = new MediaItemMetadata(mi);
 
-    public async Task ThumbsGridReloadItems() {
-      await LoadThumbnails(FilteredItems.ToArray());
-      NeedReload = false;
-      SelectAndScrollToCurrentMediaItem();
-    }
-
-    private async Task LoadThumbnails(IReadOnlyCollection<MediaItemM> items) {
-      var progress = new Progress<int>(x => {
-        _core.TitleProgressBarM.ValueA = x;
-        _core.TitleProgressBarM.ValueB = x;
-      });
-
-      _core.TitleProgressBarM.IsIndeterminate = false;
-      _core.TitleProgressBarM.ResetProgressBars(100);
-
-      // read metadata for new items and add thumbnails to grid
-      await ReadMetadataAndListThumbs(items, progress);
-
-      if (_cancelLoad)
-        _core.MediaItemsM.Delete(_core.MediaItemsM.DataAdapter.All.Values.Where(x => x.IsNew).ToArray());
-
-      _core.TitleProgressBarM.ValueA = 100;
-      _core.TitleProgressBarM.ValueB = 100;
-      _core.TitleProgressBarM.IsVisible = false;
-    }
-
-    private async Task ReadMetadataAndListThumbs(IReadOnlyCollection<MediaItemM> items, IProgress<int> progress) {
-      var count = items.Count;
-      var workingOn = 0;
-
-      FilteredGrouped.Clear();
-      FilteredRoot = new();
-
-      foreach (var mi in items) {
-        if (_cancelLoad) break;
-
-        workingOn++;
-        var percent = Convert.ToInt32((double)workingOn / count * 100);
-
-        if (mi.IsNew) {
-          var success = await Task.Run(async () => await _core.MediaItemsM.ReadMetadata(mi, false));
-
-          mi.IsNew = false;
-          if (!success) {
-            // delete corrupted MediaItems
-            LoadedItems.Remove(mi);
-            FilteredItems.Remove(mi);
-            FilteredChangedEventHandler(this, EventArgs.Empty);
-            OnPropertyChanged(nameof(PositionSlashCount));
-            _core.MediaItemsM.Delete(mi);
-            progress.Report(percent);
-
-            continue;
+            if (mi.MediaType == MediaType.Video) {
+              await LoadByFolderProcessBuffer(bufferNew, MediaType.Image, and, hide);
+              await LoadByFolderProcessBuffer(new() { mim }, MediaType.Video, and, hide);
+            }
+            else if (mi.MediaType == MediaType.Image) {
+              bufferNew.Add(mim);
+              if (bufferNew.Count > 15)
+                await LoadByFolderProcessBuffer(bufferNew, MediaType.Image, and, hide);
+            }
+          }
+          else {
+            await LoadByFolderProcessBuffer(bufferNew, MediaType.Image, and, hide);
+            AddMediaItem(mi, and, hide);
           }
         }
 
-        mi.SetInfoBox();
-        AddMediaItemToGrid(mi);
-        progress.Report(percent);
+        await LoadByFolderProcessBuffer(bufferNew, MediaType.Image, and, hide);
+
+        // remove MediaItems deleted outside of this application
+        foreach (var fmi in fmis.Values)
+          _core.MediaItemsM.Delete(fmi);
       }
 
-      foreach (var group in FilteredRoot.Items.OfType<TreeWrapGroup>())
-        group.Info.Add(new(Res.IconImageMultiple, group.Items.Count.ToString()));
+      if (and || hide)
+        SoftLoad(FilteredItems, true, false);
+      else
+        AfterLoad(true);
+    }
+
+    private async Task LoadByFolderProcessBuffer(List<MediaItemMetadata> buffer, MediaType type, bool and, bool hide) {
+      if (buffer.Count == 0) return;
+
+      if (type == MediaType.Image)
+        await Task.Run(() =>
+          Parallel.ForEach(
+            buffer,
+            new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount },
+            mim => _core.MediaItemsM.ReadMetadata(mim, false)));
+      else if (type == MediaType.Video)
+        foreach (var mim in buffer)
+          _core.MediaItemsM.ReadMetadata(mim, false);
+
+      foreach (var mim in buffer) {
+        if (mim.Success) {
+          mim.FindRefs(_core);
+          AddMediaItem(mim.MediaItem, and, hide);
+        }
+        else
+          _core.MediaItemsM.Delete(mim.MediaItem);
+      }
+
+      buffer.Clear();
+    }
+
+    private void AddMediaItem(MediaItemM mi, bool and = false, bool hide = false) {
+      if (hide) {
+        LoadedItems.Remove(mi);
+        FilteredItems.Remove(mi);
+        if (SelectedItems.Remove(mi))
+          mi.IsSelected = false;
+
+        return;
+      }
+
+      if (and && LoadedItems.Contains(mi)) return;
+      if (!_core.ViewersM.CanViewerSee(mi)) return;
+
+      mi.SetThumbSize();
+      mi.SetInfoBox();
+      LoadedItems.Add(mi);
+
+      if (Filter.Filter(mi)) {
+        FilteredItems.Add(mi);
+        AddMediaItemToGrid(mi);
+      }
     }
 
     private void AddMediaItemToGrid(MediaItemM mi) {
@@ -531,6 +355,92 @@ namespace PictureManager.Domain.Models {
         FilteredRoot.Items.Add(group);
 
       group.Items.Add(mi);
+    }
+
+    public void SoftLoad(IEnumerable<MediaItemM> items, bool sort, bool filter) {
+      if (SelectedItems.Count > 0)
+        ScrollToTop = true;
+
+      IEnumerable<MediaItemM> toLoad = items.ToArray();
+      FilteredItems.Clear();
+      FilteredRoot.Items.Clear();
+      FilteredRoot = new();
+
+      toLoad = filter
+        ? toLoad.Where(Filter.Filter)
+        : toLoad;
+
+      toLoad = sort
+        ? Sort(toLoad)
+        : toLoad;
+
+      FilteredItems.AddRange(toLoad);
+
+      foreach (var mi in toLoad)
+        AddMediaItemToGrid(mi);
+
+      AfterLoad(false);
+    }
+
+    public async Task LoadByTag(IEnumerable<MediaItemM> itemsToLoad) {
+      ClearItBeforeLoad();
+
+      var items = Sort(itemsToLoad).ToArray();
+
+      // check if folders are available
+      var foldersSet = await Task.Run(() => {
+        var folders = items.Select(x => x.Folder).Distinct();
+        var set = new HashSet<FolderM>();
+
+        foreach (var folder in folders) {
+          if (!_core.ViewersM.CanViewerSeeContentOf(folder)) continue;
+          if (!Directory.Exists(folder.FullPath)) continue;
+          set.Add(folder);
+        }
+
+        return set;
+      });
+
+      // check if files are available
+      var skip = new HashSet<MediaItemM>();
+      const int buffer = 50;
+
+      for (int i = 0; i < (items.Length / buffer) + 1; i++) {
+        await Task.Run(() => {
+          for (int j = i * buffer; j < (i + 1) * buffer && j < items.Length; j++) {
+            var mi = items[j];
+            if (!foldersSet.Contains(mi.Folder) || !File.Exists(mi.FilePath)) {
+              skip.Add(mi);
+              continue;
+            }
+          }
+        });
+
+        for (int j = i * buffer; j < (i + 1) * buffer && j < items.Length; j++) {
+          var mi = items[j];
+          if (skip.Remove(mi)) continue;
+          AddMediaItem(mi);
+        }
+      }
+
+      AfterLoad(true);
+    }
+
+    private void AfterLoad(bool maxSizeSelection) {
+      foreach (var group in FilteredRoot.Items.OfType<TreeWrapGroup>()) {
+        var info = group.Info.SingleOrDefault(x => x.Icon.Equals(Res.IconImageMultiple));
+        var title = group.Items.Count.ToString();
+        if (info == null)
+          group.Info.Add(new(Res.IconImageMultiple, title));
+        else
+          info.Title = title;
+      }
+
+      OnPropertyChanged(nameof(PositionSlashCount));
+      FilteredChangedEventHandler(this, EventArgs.Empty);
+      NeedReload = false;
+      ScrollToItem = GetItemToScrollTo();
+      Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
     }
   }
 }
