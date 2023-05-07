@@ -721,7 +721,7 @@ namespace PictureManager.Domain.Models {
             break;
 
           case RatingTreeM r:
-            mi.Rating = r.Value;
+            mi.Rating = r.Rating.Value;
             break;
 
           case GeoNameM g:

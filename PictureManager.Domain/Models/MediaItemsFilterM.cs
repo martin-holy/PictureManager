@@ -84,7 +84,7 @@ namespace PictureManager.Domain.Models {
       // TODO GeoNames
 
       //Ratings
-      var chosenRatings = FilterOr.OfType<RatingTreeM>().Select(x => x.Value);
+      var chosenRatings = FilterOr.OfType<RatingM>().Select(x => x.Value);
       if (chosenRatings.Any() && !chosenRatings.Contains(mi.Rating)) return false;
 
       // MediaItemSizes

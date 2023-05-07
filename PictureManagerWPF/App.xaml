@@ -38,6 +38,7 @@
         <ResourceDictionary Source="Views/MainTabsV.xaml"/>
         <ResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
         <ResourceDictionary Source="Views/MediaViewerV.xaml"/>
+        <ResourceDictionary Source="Views/RatingV.xaml"/>
         <ResourceDictionary Source="Views/StatusPanelV.xaml"/>
         <ResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
         <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
