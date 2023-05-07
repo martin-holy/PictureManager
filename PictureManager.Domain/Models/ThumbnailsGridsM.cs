@@ -115,7 +115,7 @@ namespace PictureManager.Domain.Models {
       var hide = Keyboard.IsAltOn();
       var recursive = Keyboard.IsShiftOn();
       var items = item switch {
-        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Value),
+        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Rating.Value),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
         KeywordM keyword => _core.MediaItemsM.GetMediaItems(keyword, recursive),
         GeoNameM geoName => _core.MediaItemsM.GetMediaItems(geoName, recursive),
@@ -130,7 +130,7 @@ namespace PictureManager.Domain.Models {
       var tabTitle = and || hide
         ? null
         : item switch {
-          RatingTreeM rating => rating.Value.ToString(),
+          RatingTreeM rating => rating.Rating.Value.ToString(),
           PersonM person => person.Name,
           KeywordM keyword => keyword.Name,
           GeoNameM geoName => geoName.Name,

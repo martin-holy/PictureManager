@@ -2,10 +2,10 @@
 
 namespace PictureManager.Domain.Models {
   public sealed class RatingTreeM : TreeItem {
-    public int Value { get; }
+    public RatingM Rating { get; }
 
     public RatingTreeM(int value) {
-      Value = value;
+      Rating = new(value);
     }
   }
 }

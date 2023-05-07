@@ -13,7 +13,7 @@
         <StackPanel/>
       </ItemsPanelTemplate>
 
-      <DataTemplate x:Key="itemTempalte" DataType="{x:Type mhubc:TreeItem}">
+      <DataTemplate DataType="{x:Type mhubc:TreeItem}">
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -167,8 +167,7 @@
 
                   <ItemsControl
                     ItemsSource="{Binding FilterAnd}"
-                    ItemsPanel="{StaticResource panelTempalte}"
-                    ItemTemplate="{StaticResource itemTempalte}"/>
+                    ItemsPanel="{StaticResource panelTempalte}"/>
                 </DockPanel>
 
                 <DockPanel>
@@ -182,8 +181,7 @@
 
                   <ItemsControl
                     ItemsSource="{Binding FilterOr}"
-                    ItemsPanel="{StaticResource panelTempalte}"
-                    ItemTemplate="{StaticResource itemTempalte}"/>
+                    ItemsPanel="{StaticResource panelTempalte}"/>
                 </DockPanel>
 
                 <DockPanel>
@@ -197,8 +195,7 @@
 
                   <ItemsControl
                     ItemsSource="{Binding FilterNot}"
-                    ItemsPanel="{StaticResource panelTempalte}"
-                    ItemTemplate="{StaticResource itemTempalte}"/>
+                    ItemsPanel="{StaticResource panelTempalte}"/>
                 </DockPanel>
               </UniformGrid>
 

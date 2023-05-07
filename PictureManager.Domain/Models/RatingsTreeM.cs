@@ -13,6 +13,6 @@ namespace PictureManager.Domain.Models {
     }
 
     public RatingTreeM GetRatingByValue(int value) =>
-      Items.Cast<RatingTreeM>().Single(x => x.Value == value);
+      Items.Cast<RatingTreeM>().Single(x => x.Rating.Value == value);
   }
 }

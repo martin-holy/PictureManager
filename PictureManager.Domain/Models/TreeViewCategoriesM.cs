@@ -74,7 +74,7 @@ namespace PictureManager.Domain.Models {
           if (_core.MediaItemsM.IsEditModeOn)
             _core.MediaItemsM.SetMetadata(item);
           else
-            _core.ThumbnailsGridsM.Current?.Filter.Set(r, DisplayFilter.Or);
+            _core.ThumbnailsGridsM.Current?.Filter.Set(r.Rating, DisplayFilter.Or);
           break;
 
         case GeoNameM:
