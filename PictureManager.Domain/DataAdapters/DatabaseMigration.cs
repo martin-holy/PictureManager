@@ -18,7 +18,15 @@ Viewers
  are stored in separate files for each drive
  */
 
+/* migration from version 2 to 3
+Segments
+  old => ID|MediaItemId|PersonId|SegmentBox(centerX,centerY,radius)|Keywords
+  new => ID|MediaItemId|PersonId|SegmentBox(left,top,size)|Keywords
+ */
+
 using MH.Utils;
+using System.IO;
+using System.Linq;
 
 namespace PictureManager.Domain.DataAdapters {
   public static class DatabaseMigration {
@@ -26,7 +34,7 @@ namespace PictureManager.Domain.DataAdapters {
       var core = Core.Instance;
 
       // 0 => 1
-      if (oldVersion == 0) {
+      if (oldVersion < 1) {
         SimpleDB.MigrateFile(
           core.FavoriteFoldersM.DataAdapter.TableFilePath,
           record => $"{record}|Favorite folder name");
@@ -45,18 +53,37 @@ namespace PictureManager.Domain.DataAdapters {
             var lio = record.LastIndexOf('|');
             return $"{record[..lio]}||{record[lio..]}";
           });
-
-        oldVersion = newVersion;
       }
 
       // 1 => 2
-      if (oldVersion == 1) {
+      if (oldVersion < 2) {
         core.FavoriteFoldersM.DataAdapter.IsModified = true;
         core.FoldersM.DataAdapter.IsModified = true;
         core.MediaItemsM.DataAdapter.IsModified = true;
         core.SegmentsM.DataAdapter.IsModified = true;
         core.VideoClipsM.DataAdapter.IsModified = true;
         core.VideoClipsM.TreeCategory.GroupsM.DataAdapter.IsModified = true;
+      }
+
+      // 2 => 3
+      if (oldVersion < 3) {
+        var files = Directory.GetFiles("db")
+          .Where(x => x.StartsWith("db" + Path.DirectorySeparatorChar + "Segments."));
+
+        foreach (var file in files) {
+          SimpleDB.MigrateFile(
+          file,
+          record => {
+            var values = record.Split('|');
+            var oldRect = values[3].Split(',');
+            var x = int.Parse(oldRect[0]);
+            var y = int.Parse(oldRect[1]);
+            var r = int.Parse(oldRect[2]);
+            var newRect = string.Join(',', x - r, y - r, r * 2);
+
+            return string.Join('|', values[0], values[1], values[2], newRect, values[4]);
+          });
+        }
       }
     }
   }

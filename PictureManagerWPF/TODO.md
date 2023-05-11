@@ -39,14 +39,6 @@
   - remove segments after changing person
 ## Segment matching
   - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
-## SegmentRect
-  - rewrite segment X, Y, Radius
-    - change X, Y to top left corner
-    - change Radius to Size
-    - use RotationTransform for X, Y recalc
-  - rect doesn't stay on the edge of an image when editing
-  - moving beyond the edge of an image should stop changing x,y,c
-  - rect is cropped when zoomed in
 ## MH.UI.WPF
   # Style
    - Label - remove default padding?
@@ -95,7 +87,6 @@
   - add background behind text in IconTextButton
   - make ExpandCollapseToggleStyle and TreeViewItemFocusVisual as resource for CatTreeView and TreeWrapView
   - merge CatTreeView and TreeWrapView templates
-  - Try to do RangeSlider with grid with 3 columns or rows with GridSplitter as Thumbs
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 
@@ -106,7 +97,7 @@
   - change Dictionaries for object with implementation IEquatable and replace them with HashSets
   - Virtual images from video:
     - media type: VideoImage
-    - props: timestamp of image and media item (video) id
+    - props: time stamp of image and media item (video) id
     - can have keywords, people, comment, ... 
     - has own thumbnail icon
     - opening from thumbnail will show paused video 
@@ -114,7 +105,7 @@
 ## Folders
   - GeoNames for Folders
 ## MediaItems
-  - pridat k rotate taky flip H a V
+  - add flip H a V
   - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 ## CatTreeView
   - filter na delku videa

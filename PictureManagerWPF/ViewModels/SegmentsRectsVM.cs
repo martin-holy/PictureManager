@@ -1,8 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Input;
-using MH.Utils.BaseClasses;
-using PictureManager.Domain;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
+using System.Windows;
+using System.Windows.Input;
 
 namespace PictureManager.ViewModels {
   public sealed class SegmentsRectsVM : ObservableObject {
@@ -24,7 +23,7 @@ namespace PictureManager.ViewModels {
       SetCurrentCommand = new(SetCurrent);
       CreateCommand = new(Create, () => SegmentsRectsM.AreVisible);
       EditCommand = new(Edit);
-      EndEditCommand = new(() => SegmentsRectsM.EndEdit());
+      EndEditCommand = new(SegmentsRectsM.EndEdit);
       DeleteCommand = new(SegmentsRectsM.Delete);
     }
 
@@ -52,7 +51,7 @@ namespace PictureManager.ViewModels {
 
       e.Handled = true;
       var pos = e.GetPosition(_view);
-      SegmentsRectsM.StartEdit((int)pos.X, (int)pos.Y);
+      SegmentsRectsM.Edit(pos.X, pos.Y);
     }
   }
 }
