@@ -166,10 +166,10 @@ namespace PictureManager.ViewModels {
         ? segment.MediaItem.FilePath
         : segment.MediaItem.FilePathCache;
       var rect = new Int32Rect(
-        (int)(segment.X - segment.Radius),
-        (int)(segment.Y - segment.Radius),
-        (int)segment.Radius * 2,
-        (int)segment.Radius * 2);
+        (int)segment.X,
+        (int)segment.Y,
+        (int)segment.Size,
+        (int)segment.Size);
 
       try {
         Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)

@@ -102,7 +102,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(SegmentsM.DataAdapter);
 
-        SimpleDB.Migrate(2, DatabaseMigration.Resolver);
+        SimpleDB.Migrate(3, DatabaseMigration.Resolver);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);

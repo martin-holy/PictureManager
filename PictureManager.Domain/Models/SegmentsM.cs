@@ -1,14 +1,15 @@
+using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
+using MH.Utils.HelperClasses;
+using MH.Utils.Interfaces;
+using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.HelperClasses;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
-using MH.Utils.HelperClasses;
-using PictureManager.Domain.DataAdapters;
-using PictureManager.Domain.HelperClasses;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models {
@@ -35,7 +36,6 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
     public ObservableCollection<object> SegmentsDrawer { get; } = new();
-    public ObservableCollection<Tuple<int, int, int, bool>> SegmentToolTipRects { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
@@ -62,7 +62,6 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> AddSelectedToDrawerCommand { get; }
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
-    public RelayCommand<SegmentM> SegmentToolTipReloadCommand { get; }
     public RelayCommand<object> GroupConfirmedCommand { get; }
     public RelayCommand<object> CompareAllGroupsCommand { get; }
     public RelayCommand<object> SortCommand { get; }
@@ -81,7 +80,6 @@ namespace PictureManager.Domain.Models {
         () => Selected.Count > 0);
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
       SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown);
-      SegmentToolTipReloadCommand = new(SegmentToolTipReload);
       GroupConfirmedCommand = new(() => Reload(false, true));
       CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
       SortCommand = new(() => Reload(true, true));
@@ -107,7 +105,7 @@ namespace PictureManager.Domain.Models {
     public void DeselectAll() =>
       Selecting.DeselectAll(_selected, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
-    public void SetSelected(SegmentM segment, bool value) =>
+    public void SetSelected(ISelectable segment, bool value) =>
       Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
 
     private object CanDrag(object source) =>
@@ -152,8 +150,8 @@ namespace PictureManager.Domain.Models {
         ? Selected.ToArray()
         : new[] { one };
 
-    public SegmentM AddNewSegment(int x, int y, int radius, MediaItemM mediaItem) {
-      var newSegment = new SegmentM(DataAdapter.GetNextId(), x, y, radius) { MediaItem = mediaItem };
+    public SegmentM AddNewSegment(double x, double y, int size, MediaItemM mediaItem) {
+      var newSegment = new SegmentM(DataAdapter.GetNextId(), x, y, size) { MediaItem = mediaItem };
       mediaItem.Segments ??= new();
       mediaItem.Segments.Add(newSegment);
       DataAdapter.All.Add(newSegment.Id, newSegment);
@@ -164,7 +162,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public SegmentM GetCopy(SegmentM s) =>
-      new(DataAdapter.GetNextId(), s.X, s.Y, s.Radius) {
+      new(DataAdapter.GetNextId(), s.X, s.Y, s.Size) {
         MediaItem = s.MediaItem,
         Person = s.Person,
         Keywords = s.Keywords?.ToList()
@@ -391,29 +389,6 @@ namespace PictureManager.Domain.Models {
       }
       catch (Exception ex) {
         Log.Error(ex);
-      }
-    }
-
-    private void SegmentToolTipReload(SegmentM segment) {
-      SegmentToolTipRects.Clear();
-      if (segment?.MediaItem?.Segments == null) return;
-
-      segment.MediaItem.SetThumbSize();
-      segment.MediaItem.SetInfoBox();
-
-      var rotated = segment.MediaItem.Orientation is 6 or 8;
-      var scale = rotated
-        ? segment.MediaItem.Height / (double)segment.MediaItem.ThumbWidth
-        : segment.MediaItem.Width / (double)segment.MediaItem.ThumbWidth;
-
-      foreach (var s in segment.MediaItem.Segments) {
-        var (newX, newY) = SegmentsRectsM.ConvertPos(s.X, s.Y, 1, segment.MediaItem, true);
-
-        SegmentToolTipRects.Add(new(
-          (int)((newX - s.Radius) / scale),
-          (int)((newY - s.Radius) / scale),
-          (int)((s.Radius * 2) / scale),
-          s == segment));
       }
     }
 

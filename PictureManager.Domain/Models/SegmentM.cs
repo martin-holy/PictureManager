@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     private PersonM _person;
     private double _x;
     private double _y;
-    private double _radius;
+    private double _size;
 
     public int Id { get; }
     public MediaItemM MediaItem { get; set; }
@@ -27,8 +27,8 @@ namespace PictureManager.Domain.Models {
 
         // bounds check
         if (MediaItem != null) {
-          if (value < Radius) _x = Radius;
-          if (value > MediaItem.Width - Radius) _x = MediaItem.Width - Radius;
+          if (value < 0) _x = 0;
+          if (value > MediaItem.Width - Size) _x = MediaItem.Width - Size;
         }
 
         OnPropertyChanged();
@@ -42,25 +42,23 @@ namespace PictureManager.Domain.Models {
 
         // bounds check
         if (MediaItem != null) {
-          if (value < Radius) _y = Radius;
-          if (value > MediaItem.Height - Radius) _y = MediaItem.Height - Radius;
+          if (value < 0) _y = 0;
+          if (value > MediaItem.Height - Size) _y = MediaItem.Height - Size;
         }
 
         OnPropertyChanged();
       }
     }
 
-    public double Radius {
-      get => _radius;
+    public double Size {
+      get => _size;
       set {
-        _radius = value;
+        _size = value;
 
         // bounds check
         if (MediaItem != null) {
-          var min = Math.Min(MediaItem.Width, MediaItem.Height) / 2;
-          _radius = value > min ? min : value;
-          X = _x;
-          Y = _y;
+          var max = Math.Min(MediaItem.Width, MediaItem.Height);
+          _size = value > max ? max : value;
         }
 
         OnPropertyChanged();
@@ -75,11 +73,11 @@ namespace PictureManager.Domain.Models {
 
     public SegmentM() { }
 
-    public SegmentM(int id, double x, double y, double radius) {
+    public SegmentM(int id, double x, double y, double size) {
       Id = id;
       X = x;
       Y = y;
-      Radius = radius;
+      Size = size;
     }
 
     #region IEquatable implementation
@@ -89,41 +87,5 @@ namespace PictureManager.Domain.Models {
     public static bool operator ==(SegmentM a, SegmentM b) => a?.Equals(b) ?? b is null;
     public static bool operator !=(SegmentM a, SegmentM b) => !(a == b);
     #endregion IEquatable implementation
-
-    #region RotateTransform X, Y
-    public double RotateTransformGetX(double x) =>
-      MediaItem.Orientation switch {
-        (int)MediaOrientation.Rotate90 => Y,
-        (int)MediaOrientation.Rotate180 => MediaItem.Width - x,
-        (int)MediaOrientation.Rotate270 => MediaItem.Height - Y,
-        _ => x
-      };
-
-    public void RotateTransformSetX(double x) {
-      switch (MediaItem.Orientation) {
-        case (int)MediaOrientation.Rotate90: Y = x; break;
-        case (int)MediaOrientation.Rotate180: X = MediaItem.Width - x; break;
-        case (int)MediaOrientation.Rotate270: Y = MediaItem.Height - x; break;
-        default: X = x; break;
-      }
-    }
-
-    public double RotateTransformGetY(double y) =>
-      MediaItem.Orientation switch {
-        (int)MediaOrientation.Rotate90 => MediaItem.Width - X,
-        (int)MediaOrientation.Rotate180 => MediaItem.Height - y,
-        (int)MediaOrientation.Rotate270 => X,
-        _ => y
-      };
-
-    public void RotateTransformSetY(double y) {
-      switch (MediaItem.Orientation) {
-        case (int)MediaOrientation.Rotate90: X = MediaItem.Width - y; break;
-        case (int)MediaOrientation.Rotate180: Y = MediaItem.Height - y; break;
-        case (int)MediaOrientation.Rotate270: X = y; break;
-        default: Y = y; break;
-      }
-    }
-    #endregion RotateTransform X, Y
   }
 }

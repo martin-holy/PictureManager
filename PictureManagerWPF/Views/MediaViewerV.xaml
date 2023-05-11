@@ -129,19 +129,19 @@
                      ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
       <!-- Segments Rects -->
-      <ContentPresenter
-        HorizontalAlignment="Left"
-        VerticalAlignment="Top"
-        Content="{Binding SegmentsVM.SegmentsRectsVM, Source={x:Static pm:App.Ui}}"
-        Width="{Binding ElementName=image, Path=ActualWidth}"
-        Height="{Binding ElementName=image, Path=ActualHeight}">
+      <Canvas>
+        <ContentPresenter
+          HorizontalAlignment="Left"
+          VerticalAlignment="Top"
+          Content="{Binding SegmentsVM.SegmentsRectsVM, Source={x:Static pm:App.Ui}}">
 
-        <ContentPresenter.RenderTransform>
-          <TranslateTransform
-            X="{Binding ElementName=zoom, Path=TransformX}"
-            Y="{Binding ElementName=zoom, Path=TransformY}"/>
-        </ContentPresenter.RenderTransform>
-      </ContentPresenter>
+          <ContentPresenter.RenderTransform>
+            <TranslateTransform
+              X="{Binding ElementName=zoom, Path=TransformX}"
+              Y="{Binding ElementName=zoom, Path=TransformY}"/>
+          </ContentPresenter.RenderTransform>
+        </ContentPresenter>
+      </Canvas>
     </Grid>
 
     <DataTemplate.Triggers>

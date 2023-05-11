@@ -5,5 +5,5 @@ namespace PictureManager.Domain {
   public enum CollisionResult { Rename, Replace, Skip }
   public enum FileOperationMode { Copy, Move, Delete }
   public enum DisplayFilter { None = 0, And = 1, Or = 2, Not = 3 }
-  public enum SegmentEditMode { Move, ResizeEdge, ResizeCorner }
+  public enum SegmentEditMode { Move, ResizeEdge, ResizeCorner, ResizeLeftEdge, ResizeTopEdge, ResizeRightEdge, ResizeBottomEdge }
 }
