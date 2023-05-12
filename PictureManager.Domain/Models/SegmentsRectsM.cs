@@ -64,7 +64,7 @@ namespace PictureManager.Domain.Models {
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
       var xDiff = Math.Abs(segment.X + (segment.Size / 2) - x);
       var yDiff = Math.Abs(segment.Y + (segment.Size / 2) - y);
-      var limit = 5 * Scale;
+      var limit = 10;
 
       if (xDiff < limit && yDiff < limit)
         return SegmentEditMode.Move;
