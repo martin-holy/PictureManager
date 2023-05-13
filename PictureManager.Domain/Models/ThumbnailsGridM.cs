@@ -23,6 +23,7 @@ namespace PictureManager.Domain.Models {
     private bool _reWrapItems;
     private bool _scrollToTop;
     private object _scrollToItem;
+    private double _thumbScale;
     private TreeWrapGroup _filteredRoot = new();
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
@@ -32,7 +33,7 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
     public MediaItemsFilterM Filter { get; } = new();
-    public Func<object, int> ItemWidthGetter { get; } = o => ((MediaItemM)o).ThumbWidth + 6;
+    public Func<object, int> ItemWidthGetter { get; }
     public bool ReWrapItems { get => _reWrapItems; set { _reWrapItems = value; OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
@@ -50,7 +51,7 @@ namespace PictureManager.Domain.Models {
         : $"{FilteredItems.IndexOf(SelectedItems[0]) + 1}/{FilteredItems.Count}";
 
     public bool NeedReload { get; set; }
-    public double ThumbScale { get; set; }
+    public double ThumbScale { get => _thumbScale; set { _thumbScale = value; OnPropertyChanged(); } }
 
     public RelayCommand<object> SortCommand { get; }
     public RelayCommand<object> SelectAllCommand { get; }
@@ -62,6 +63,7 @@ namespace PictureManager.Domain.Models {
       _core = core;
       ThumbScale = thumbScale;
       CanDragFunc = CanDrag;
+      ItemWidthGetter = GetItemWidth;
       MainTabsItem = new(this, tabTitle);
 
       SortCommand = new(() => SoftLoad(FilteredItems, true, false));
@@ -92,6 +94,15 @@ namespace PictureManager.Domain.Models {
       if (source is not MediaItemM) return null;
       var data = FilteredItems.Where(x => x.IsSelected).Select(p => p.FilePath).ToArray();
       return data.Length == 0 ? null : data;
+    }
+
+    private int GetItemWidth(object o) {
+      var width = ((MediaItemM)o).ThumbWidth;
+
+      if (ThumbScale != ThumbnailsGridsM.DefaultThumbScale)
+        width = (int)Math.Round((width / ThumbnailsGridsM.DefaultThumbScale) * ThumbScale, 0);
+
+      return width + 6;
     }
 
     public void Clear() {
@@ -172,13 +183,7 @@ namespace PictureManager.Domain.Models {
     private void Zoom(int delta) {
       if (delta < 0 && ThumbScale < .1) return;
       ThumbScale += delta > 0 ? .05 : -.05;
-      ResetThumbsSize();
       ReWrapItems = true;
-    }
-
-    private void ResetThumbsSize() {
-      foreach (var item in LoadedItems)
-        item.SetThumbSize(true);
     }
 
     public List<MediaItemM> GetSelectedOrAll() =>

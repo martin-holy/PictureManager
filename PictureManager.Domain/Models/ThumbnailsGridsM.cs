@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Models {
     private ThumbnailsGridM _current;
     
     public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
-    public double DefaultThumbScale { get; set; } = 1.0;
+    public static double DefaultThumbScale { get; set; } = 1.0;
 
     public RelayCommand<string> AddThumbnailsGridCommand { get; }
     public RelayCommand<object> CopyPathsCommand { get; }

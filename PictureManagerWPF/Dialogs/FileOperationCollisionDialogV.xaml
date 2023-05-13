@@ -7,7 +7,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="../Views/MediaItemThumbnailV.xaml"/>
+          <ResourceDictionary Source="../Views/MediaItemThumbnailLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>

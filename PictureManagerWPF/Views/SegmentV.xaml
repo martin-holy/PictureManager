@@ -11,7 +11,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
+          <ResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
         <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
       </ResourceDictionary>
@@ -43,7 +43,7 @@
       </Border.InputBindings>
 
       <Border.ToolTip>
-        <ToolTip Padding="0">
+        <ToolTip Padding="0" BorderThickness="0">
           <DockPanel>
             <Grid DockPanel.Dock="Top">
               <!-- Thumbnail -->
