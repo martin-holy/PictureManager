@@ -79,7 +79,7 @@ namespace PictureManager.Domain.Models {
         () => SegmentsDrawerUpdate(Selected.ToArray(), true),
         () => Selected.Count > 0);
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
-      SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown);
+      SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => SelectedCount > 0);
       GroupConfirmedCommand = new(() => Reload(false, true));
       CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
       SortCommand = new(() => Reload(true, true));
@@ -317,6 +317,14 @@ namespace PictureManager.Domain.Models {
         .ToArray();
 
     private void SetSelectedAsUnknown() {
+      var msgCount = SelectedCount == 1
+        ? "selected segment"
+        : $"{SelectedCount} selected segments";
+      var msg = $"Do you want to set {msgCount} as unknown?";
+
+      if (Core.DialogHostShow(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
+        return;
+
       foreach (var segment in Selected)
         ChangePerson(segment, null);
 

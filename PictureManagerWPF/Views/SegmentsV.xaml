@@ -93,7 +93,7 @@
 
         <mhc:IconButton
           ToolTip="Set selected as Unknown"
-          Icon="{StaticResource IconQuestion}"
+          Icon="{StaticResource IconUnknownSegment}"
           Command="{Binding SegmentsM.SetSelectedAsUnknownCommand}"/>
         <mhc:IconButton
           ToolTip="Open Segments drawer"
