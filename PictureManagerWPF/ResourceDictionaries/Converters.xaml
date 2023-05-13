@@ -10,6 +10,7 @@
 
   <converters:ImageSourceConverter x:Key="ImageSourceConverter"/>
   <converters:MarkedTagsItemsCountConverter x:Key="MarkedTagsItemsCountConverter"/>
+  <converters:MediaItemThumbScaleConvertor x:Key="MediaItemThumbScaleConvertor"/>
   <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
   <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
   <converters:RatingConverter x:Key="RatingConverter"/>

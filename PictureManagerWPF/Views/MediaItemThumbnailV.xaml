@@ -3,29 +3,45 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-  xmlns:models="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:vm="clr-namespace:PictureManager.ViewModels"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
-  <DataTemplate DataType="{x:Type models:MediaItemM}">
+  <DataTemplate DataType="{x:Type m:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
-        <sys:Int32 x:Key="ThumbnailInfoMinSize">170</sys:Int32>
+        <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
     <Border
       x:Name="border"
-      Width="{Binding ThumbWidth}"
-      Height="{Binding ThumbHeight}"
+      Width="{Binding ThumbWidth, Converter={StaticResource MediaItemThumbScaleConvertor}}"
+      Height="{Binding ThumbHeight, Converter={StaticResource MediaItemThumbScaleConvertor}}"
       BorderThickness="2"
       BorderBrush="Black"
       Margin="1"
       ClipToBounds="True">
 
-      <Grid x:Name="PART_Grid">
+      <b:Interaction.Triggers>
+        <b:EventTrigger EventName="MouseEnter">
+          <b:InvokeCommandAction
+            Command="vm:MediaItemVideoPreviewVM.ShowVideoPreviewCommand"
+            CommandParameter="{Binding ElementName=grid}"/>
+        </b:EventTrigger>
+
+        <b:EventTrigger EventName="MouseLeave">
+          <b:InvokeCommandAction
+            Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"
+            CommandParameter="{Binding ElementName=grid}"/>
+        </b:EventTrigger>
+      </b:Interaction.Triggers>
+
+      <Grid x:Name="grid">
         <!-- Thumbnail Image -->
         <Image
           Source="{Binding IsAsync=True, Converter={StaticResource MediaItemThumbnailSourceConverter}}"
@@ -41,8 +57,7 @@
           Opacity="0.77"
           Visibility="{Binding MediaType, 
                        Converter={StaticResource AllToVisibilityConverter},
-                       ConverterParameter={x:Static pmd:MediaType.Video}}">
-        </ContentControl>
+                       ConverterParameter={x:Static pmd:MediaType.Video}}"/>
 
         <!-- Video Clips over layer -->
         <Path
@@ -56,24 +71,10 @@
           Visibility="{Binding HasVideoClips, Converter={StaticResource AllToVisibilityConverter}}"/>
 
         <!-- Thumbnail Info Box -->
-        <ItemsControl x:Name="info" ItemsSource="{Binding InfoBoxThumb}">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal"/>
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
-
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Border Style="{StaticResource SBorderTextThumb}">
-                <TextBlock
-                  Style="{StaticResource STextBlock}"
-                  TextWrapping="Wrap"
-                  Text="{Binding}"/>
-              </Border>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <ItemsControl
+          x:Name="info"
+          ItemsSource="{Binding InfoBoxThumb}"
+          Style="{StaticResource InfoBoxThumbStyle}"/>
 
         <!-- Selected over layer -->
         <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
@@ -102,14 +103,10 @@
         <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
       </DataTrigger>
 
-      <Trigger SourceName="border" Property="IsMouseOver" Value="True">
-        <Setter TargetName="info" Property="Visibility" Value="Hidden"/>
-      </Trigger>
-
       <DataTrigger Value="True">
         <DataTrigger.Binding>
           <MultiBinding Converter="{StaticResource EqualityConverter}">
-            <Binding Path="ThumbWidth"/>
+            <Binding Path="Width" ElementName="border"/>
             <Binding Source="{StaticResource SignLessThan}"/>
             <Binding Source="{StaticResource ThumbnailInfoMinSize}"/>
           </MultiBinding>

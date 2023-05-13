@@ -1,16 +1,14 @@
-﻿using MH.UI.WPF.Utils;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace PictureManager.ViewModels {
   public static class MediaItemVideoPreviewVM {
     public static MediaElement VideoPreview { get; }
-    public static RelayCommand<object> ShowVideoPreviewCommand { get; }
+    public static RelayCommand<Grid> ShowVideoPreviewCommand { get; }
     public static RelayCommand<object> HideVideoPreviewCommand { get; }
 
     static MediaItemVideoPreviewVM() {
@@ -29,8 +27,7 @@ namespace PictureManager.ViewModels {
       };
     }
 
-    private static void ShowVideoPreview(object o) {
-      var grid = (o as DependencyObject)?.FindChild<Grid>("PART_Grid");
+    private static void ShowVideoPreview(Grid grid) {
       if (grid?.DataContext is not MediaItemM mi || mi.MediaType != MediaType.Video) return;
 
       var rotation = new TransformGroup();

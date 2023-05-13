@@ -3,7 +3,6 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:vm="clr-namespace:PictureManager.ViewModels"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
@@ -14,6 +13,7 @@
 
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml"/>
+          <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
         <ContextMenu
@@ -36,47 +36,6 @@
             IsChecked="{Binding SortByFileFirst}"
             Command="{Binding SortCommand}"/>
         </ContextMenu>
-
-        <DataTemplate DataType="{x:Type m:MediaItemM}">
-          <DataTemplate.Resources>
-            <ResourceDictionary>
-              <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
-              </ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary>
-          </DataTemplate.Resources>
-
-          <ContentPresenter Content="{Binding}">
-            <b:Interaction.Triggers>
-              <b:EventTrigger EventName="MouseEnter">
-                <b:InvokeCommandAction
-                  Command="vm:MediaItemVideoPreviewVM.ShowVideoPreviewCommand"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}}"/>
-              </b:EventTrigger>
-
-              <b:EventTrigger EventName="MouseLeave">
-                <b:InvokeCommandAction
-                  Command="vm:MediaItemVideoPreviewVM.HideVideoPreviewCommand"
-                  CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ContentPresenter}}"/>
-              </b:EventTrigger>
-
-              <b:EventTrigger EventName="PreviewMouseUp">
-                <b:InvokeCommandAction
-                  Command="{Binding Path=DataContext.(m:ThumbnailsGridM.SelectMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType=mhc:TreeWrapView}}"
-                  EventArgsConverter="{StaticResource MouseButtonConverter}"/>
-              </b:EventTrigger>
-
-              <b:EventTrigger EventName="MouseLeftButtonDown">
-                <b:InvokeCommandAction
-                  Command="{Binding Path=DataContext.(m:ThumbnailsGridM.OpenMediaItemCommand),
-                            RelativeSource={RelativeSource AncestorType=mhc:TreeWrapView}}"
-                  EventArgsConverter="{StaticResource MouseButtonConverter}"/>
-              </b:EventTrigger>
-            </b:Interaction.Triggers>
-          </ContentPresenter>
-        </DataTemplate>
-
       </ResourceDictionary>
     </DataTemplate.Resources>
 
@@ -97,6 +56,16 @@
       </mhc:TreeWrapView.InputBindings>
 
       <b:Interaction.Triggers>
+        <b:EventTrigger EventName="PreviewMouseUp">
+          <b:InvokeCommandAction
+            Command="{Binding SelectMediaItemCommand}"
+            EventArgsConverter="{StaticResource MouseButtonConverter}"/>
+        </b:EventTrigger>
+        <b:EventTrigger EventName="PreviewMouseLeftButtonDown">
+          <b:InvokeCommandAction
+            Command="{Binding OpenMediaItemCommand}"
+            EventArgsConverter="{StaticResource MouseButtonConverter}"/>
+        </b:EventTrigger>
         <b:EventTrigger EventName="PreviewMouseWheel">
           <b:InvokeCommandAction
             Command="{Binding ZoomCommand}"

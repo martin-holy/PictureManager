@@ -21,6 +21,8 @@
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
         <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
 
+        <ResourceDictionary Source="Views/Styles/InfoBoxThumbStyle.xaml"/>
+
         <ResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>

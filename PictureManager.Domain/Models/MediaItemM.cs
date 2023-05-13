@@ -46,7 +46,6 @@ namespace PictureManager.Domain.Models {
 
     public int ThumbWidth { get => _thumbWidth; set { _thumbWidth = value; OnPropertyChanged(); } }
     public int ThumbHeight { get => _thumbHeight; set { _thumbHeight = value; OnPropertyChanged(); } }
-    public int ThumbSize { get; set; }
     public MediaType MediaType { get => _mediaType; set { _mediaType = value; OnPropertyChanged(); } }
     public bool HasVideoClips { get => _hasVideoClips; set { _hasVideoClips = value; OnPropertyChanged(); } }
     public ObservableCollection<SegmentM> Segments { get; set; }
@@ -64,7 +63,7 @@ namespace PictureManager.Domain.Models {
         _ => 0,
       };
 
-    // TODO rethink
+    // TODO rethink and nullable type using more memory than just double
     public double? Lat { get; set; }
     public double? Lng { get; set; }
 
@@ -78,20 +77,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetThumbSize(bool reload = false) {
-
-      if (ThumbSize != 0 && !reload) return;
+      if (ThumbWidth != 0 && ThumbHeight != 0 && !reload) return;
       if (Width == 0 || Height == 0) return;
 
-      // TODO pass core as parameter
-      var core = Core.Instance;
-      // TODO pass scale as parameter
-      var thumbScale = core.ThumbnailsGridsM.Current?.ThumbScale
-                       ?? core.ThumbnailsGridsM.DefaultThumbScale;
-
       // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int)(Core.Settings.ThumbnailSize * thumbScale);
+      var desiredSize = (int)(Core.Settings.ThumbnailSize * ThumbnailsGridsM.DefaultThumbScale);
       var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
-      
+
       // TODO move rotation check to GetThumbSize or create func for getting w & h rotated
       Imaging.GetThumbSize(
         rotated ? Height : Width,
@@ -103,7 +95,6 @@ namespace PictureManager.Domain.Models {
       IsPanoramic = w > desiredSize;
       ThumbWidth = w;
       ThumbHeight = h;
-      ThumbSize = (int)((w > h ? w : h) / thumbScale);
     }
 
     // TODO update just when needed
