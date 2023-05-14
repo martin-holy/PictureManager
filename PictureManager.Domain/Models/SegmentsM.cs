@@ -35,7 +35,6 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<object> LoadedGrouped { get; } = new();
     public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public List<SegmentM> Selected => _selected;
-    public ObservableCollection<object> SegmentsDrawer { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
@@ -59,7 +58,6 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
-    public RelayCommand<object> AddSelectedToDrawerCommand { get; }
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
     public RelayCommand<object> GroupConfirmedCommand { get; }
@@ -68,16 +66,12 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
-    public RelayCommand<object> OpenSegmentsDrawerCommand { get; }
 
     public SegmentsM(Core core) {
       _core = core;
       SegmentsRectsM = new(this);
-      SegmentsDrawerM = new(this);
+      SegmentsDrawerM = new(this, _core);
 
-      AddSelectedToDrawerCommand = new(
-        () => SegmentsDrawerUpdate(Selected.ToArray(), true),
-        () => Selected.Count > 0);
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
       SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => SelectedCount > 0);
       GroupConfirmedCommand = new(() => Reload(false, true));
@@ -88,8 +82,6 @@ namespace PictureManager.Domain.Models {
       SegmentMatchingCommand = new(
         SegmentMatching,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
-      OpenSegmentsDrawerCommand = new(
-        () =>_core.ToolsTabsM.Activate(SegmentsDrawerM.ToolsTabsItem, true));
 
       CanDragFunc = CanDrag;
 
@@ -117,32 +109,6 @@ namespace PictureManager.Domain.Models {
       SegmentUiSize = size;
       SegmentUiFullWidth = size + 6; // + border, margin
       ConfirmedPanelWidth = (SegmentUiFullWidth * 2) + scrollBarSize;
-    }
-
-    public void SegmentsDrawerUpdate(SegmentM[] segments, bool add) {
-      if (!add && Core.DialogHostShow(new MessageDialog(
-            "Segments Drawer",
-            "Do you want to remove segments from drawer?",
-            Res.IconQuestion,
-            true)) != 1)
-        return;
-
-      var count = SegmentsDrawer.Count;
-
-      if (add)
-        foreach (var segment in segments.Except(SegmentsDrawer).ToArray())
-          SegmentsDrawer.Add(segment);
-      else
-        foreach (var segment in segments)
-          SegmentsDrawer.Remove(segment);
-
-      if (count != SegmentsDrawer.Count)
-        DataAdapter.AreTablePropsModified = true;
-    }
-
-    public void SegmentsDrawerRemove(SegmentM segment) {
-      if (SegmentsDrawer.Remove(segment))
-        DataAdapter.AreTablePropsModified = true;
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>

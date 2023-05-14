@@ -4,7 +4,6 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <DataTemplate DataType="{x:Type vm:SegmentsVM}">
@@ -98,7 +97,7 @@
         <mhc:IconButton
           ToolTip="Open Segments drawer"
           Icon="{StaticResource IconDrawer}"
-          Command="{Binding SegmentsM.OpenSegmentsDrawerCommand}"/>
+          Command="{Binding SegmentsM.SegmentsDrawerM.OpenCommand}"/>
         <mhc:IconButton
           ToolTip="Compare all groups of segments"
           Icon="{StaticResource IconCompare}"

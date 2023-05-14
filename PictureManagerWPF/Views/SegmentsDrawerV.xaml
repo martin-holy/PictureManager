@@ -11,6 +11,7 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="SegmentV.xaml" />
+          <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
@@ -18,7 +19,7 @@
     <mhc:VirtualizingWrapPanel
       Margin="2,0,0,0"
       ItemWidth="{Binding SegmentsM.SegmentUiFullWidth}"
-      ItemsToWrap="{Binding SegmentsM.SegmentsDrawer}"
+      ItemsToWrap="{Binding GroupedItems}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

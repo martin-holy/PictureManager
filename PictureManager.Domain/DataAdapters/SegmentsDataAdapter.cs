@@ -48,7 +48,7 @@ namespace PictureManager.Domain.DataAdapters {
       TableProps.Add(nameof(_model.CompareSegmentSize), _model.CompareSegmentSize.ToString());
       TableProps.Add(nameof(_model.SimilarityLimit), _model.SimilarityLimit.ToString());
       TableProps.Add(nameof(_model.SimilarityLimitMin), _model.SimilarityLimitMin.ToString());
-      TableProps.Add(nameof(_model.SegmentsDrawer), string.Join(",", _model.SegmentsDrawer.Cast<SegmentM>().Select(x => x.Id)));
+      TableProps.Add("SegmentsDrawer", string.Join(",", _model.SegmentsDrawerM.Items.Select(x => x.Id)));
     }
 
     public override void LinkReferences() {
@@ -96,11 +96,11 @@ namespace PictureManager.Domain.DataAdapters {
         _model.SimilarityLimit = int.Parse(similarityLimit);
       if (TableProps.TryGetValue(nameof(_model.SimilarityLimitMin), out var similarityLimitMin))
         _model.SimilarityLimitMin = int.Parse(similarityLimitMin);
-      if (TableProps.TryGetValue(nameof(_model.SegmentsDrawer), out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-        _model.SegmentsDrawer.Clear();
+      if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
+        _model.SegmentsDrawerM.Items.Clear();
 
         foreach (var segmentId in segmentsDrawer.Split(','))
-          _model.SegmentsDrawer.Add(All[int.Parse(segmentId)]);
+          _model.SegmentsDrawerM.Items.Add(All[int.Parse(segmentId)]);
       }
 
       // table props are not needed any more

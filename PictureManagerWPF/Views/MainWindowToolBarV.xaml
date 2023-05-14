@@ -128,12 +128,12 @@
             <mhc:IconButton
               ToolTip="Open Segments drawer"
               Icon="{StaticResource IconDrawer}"
-              Command="{Binding OpenSegmentsDrawerCommand}"/>
+              Command="{Binding SegmentsDrawerM.OpenCommand}"/>
 
             <mhc:IconButton
               ToolTip="Add selected to Segments drawer"
               Icon="{StaticResource IconDrawerAdd}"
-              Command="{Binding AddSelectedToDrawerCommand}"/>
+              Command="{Binding SegmentsDrawerM.AddSelectedCommand}"/>
 
             <mhc:IconButton
               ToolTip="Segment Matching"
