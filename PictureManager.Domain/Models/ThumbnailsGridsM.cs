@@ -142,7 +142,7 @@ namespace PictureManager.Domain.Models {
       else
         AddThumbnailsGrid(tabTitle);
 
-      await Current.LoadByTag(items);
+      await Current.LoadByTag(items.ToArray());
     }
   }
 }
