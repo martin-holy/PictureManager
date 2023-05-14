@@ -257,7 +257,7 @@ namespace PictureManager.Domain {
         if (PersonDetailM.PersonM?.Equals(e.Data.Person) == true)
           PersonDetailM.ReloadPersonSegments();
 
-        SegmentsM.SegmentsDrawerRemove(e.Data);
+        SegmentsM.SegmentsDrawerM.Remove(e.Data);
       };
 
       MainTabsM.TabClosedEventHandler += (_, e) => {
