@@ -19,6 +19,8 @@ namespace MH.UI.WPF.Controls {
     private double _verticalOffset;
     private object _topItem;
     private object _topItemBeforeReload;
+    private bool _isSizeChanging;
+    private bool _isReWraping;
     private readonly Dictionary<ObservableCollection<object>, TreeWrapGroup> _treeWrapGroups = new();
 
     public ScrollViewer ScrollViewer { get; set; }
@@ -115,12 +117,14 @@ namespace MH.UI.WPF.Controls {
 
       ScrollViewer = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
 
-      ScrollViewer.ScrollChanged += (_, _) =>
-        _topItem = GetTopItem();
+      ScrollViewer.ScrollChanged += (_, _) => {
+        if (!_isSizeChanging && !_isReWraping)
+          _topItem = GetTopItem();
+      };
 
-      LayoutUpdated += (_, _) => {
+      LayoutUpdated += (_, _) => {       
         if (_topItemBeforeReload != null) {
-          ScrollTo(_topItemBeforeReload);
+          ScrollToTwice(_topItemBeforeReload);
           _topItemBeforeReload = null;
         }
 
@@ -139,23 +143,25 @@ namespace MH.UI.WPF.Controls {
         SetSource();
 
       SizeChanged += (_, e) => {
-        if (e.WidthChanged)
+        if (e.WidthChanged) {
+          _isSizeChanging = true;
           WidthChangedEventHandler(this, EventArgs.Empty);
+          _isSizeChanging = false;
+        }
       };
     }
 
     private object GetTopItem() {
-      FrameworkElement topElement = null;
+      object item = null;
 
       VisualTreeHelper.HitTest(this, null, (e) => {
-        if (e.VisualHit is FrameworkElement elm) {
-          topElement = elm;
+        if (e.VisualHit is FrameworkElement elm
+        && (elm.DataContext is TreeWrapRow or TreeWrapGroup)) {
+          item = elm.DataContext;
           return HitTestResultBehavior.Stop;
         }
         return HitTestResultBehavior.Continue;
       }, new PointHitTestParameters(new(10, 10)));
-
-      var item = topElement?.DataContext;
 
       return item is TreeWrapRow row && row.Items.Count > 0
         ? row.Items[0]
@@ -274,8 +280,9 @@ namespace MH.UI.WPF.Controls {
       if (ReloadAutoScroll)
         _topItemBeforeReload = _topItem;
 
+      _isReWraping = true;
       AddAll(Root);
-      ScrollTo(_topItem);
+      _isReWraping = false;
     }
 
     private static void ScrollToTopChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
@@ -324,6 +331,12 @@ namespace MH.UI.WPF.Controls {
 
       _verticalOffset = offset;
       ScrollViewer?.ScrollToHorizontalOffset(0);
+    }
+
+    private void ScrollToTwice(object item) {
+      // yep twice :D
+      ScrollTo(item);
+      ScrollTo(item);
     }
 
     private static bool FindItem(object item, TreeWrapGroup root, List<object> result) {
