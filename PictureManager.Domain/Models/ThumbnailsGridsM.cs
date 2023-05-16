@@ -26,8 +26,8 @@ namespace PictureManager.Domain.Models {
       AddThumbnailsGridCommand = new(AddThumbnailsGrid);
 
       CopyPathsCommand = new(
-        () => Clipboard.SetText(string.Join("\n", Current.SelectedItems.Select(x => x.FilePath))),
-        () => Current?.SelectedItems.Any() == true);
+        () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
+        () => Current?.Selected.Items.Any() == true);
 
       LoadByTagCommand = new(async item => await LoadByTag(item));
 
@@ -84,7 +84,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private void OnGridSelectionChanged(object o, EventArgs e) {
-      _core.MediaItemsM.Current = ((ThumbnailsGridM)o).SelectedItems.FirstOrDefault();
+      _core.MediaItemsM.Current = ((ThumbnailsGridM)o).Selected.Items.FirstOrDefault();
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 

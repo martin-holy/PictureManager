@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Models {
       thumbsGrid.GroupByFolders = false;
       thumbsGrid.GroupByDate = false;
       thumbsGrid.FilteredItems.Clear();
-      thumbsGrid.DeselectAll();
+      thumbsGrid.Selected.DeselectAll();
 
       if (similar != null)
         thumbsGrid.FilteredItems.AddRange(similar.Cast<MediaItemM>());

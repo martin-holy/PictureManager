@@ -31,8 +31,8 @@ namespace PictureManager.Domain.Models {
 
       SelectCommand = new(Select);
       AddSelectedCommand = new(
-        () => Update(SegmentsM.Selected.ToArray(), true),
-        () => SegmentsM.SelectedCount > 0);
+        () => Update(SegmentsM.Selected.Items.ToArray(), true),
+        () => SegmentsM.Selected.Items.Count > 0);
       OpenCommand = new(
         () => {
           Reload();
@@ -58,7 +58,7 @@ namespace PictureManager.Domain.Models {
 
     private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        SegmentsM.Select(Items.ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
+        SegmentsM.Selected.Select(Items.ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 
     private void Update(SegmentM[] segments, bool add) {

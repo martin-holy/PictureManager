@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 namespace PictureManager.Domain.Models {
   public sealed class ThumbnailsGridM : ObservableObject {
     private readonly Core _core;
-    private readonly List<MediaItemM> _selectedItems = new();
     private readonly Dictionary<string, string> _dateFormats = new() { { "d", "d. " }, { "M", "MMMM " }, { "y", "yyyy" } };
 
     private bool _groupByFolders = true;
@@ -29,7 +28,7 @@ namespace PictureManager.Domain.Models {
     public event EventHandler SelectionChangedEventHandler = delegate { };
     public event EventHandler FilteredChangedEventHandler = delegate { };
 
-    public List<MediaItemM> SelectedItems => _selectedItems;
+    public Selecting<MediaItemM> Selected { get; } = new();
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
     public MediaItemsFilterM Filter { get; } = new();
@@ -40,15 +39,14 @@ namespace PictureManager.Domain.Models {
     public TreeWrapGroup FilteredRoot { get => _filteredRoot; private set { _filteredRoot = value; OnPropertyChanged(); } }
     public HeaderedListItem<object, string> MainTabsItem { get; }
     public DragDropHelper.CanDragFunc CanDragFunc { get; }
-    public int SelectedCount => SelectedItems.Count;
 
     public bool GroupByFolders { get => _groupByFolders; set { _groupByFolders = value; OnPropertyChanged(); } }
     public bool GroupByDate { get => _groupByDate; set { _groupByDate = value; OnPropertyChanged(); } }
     public bool SortByFileFirst { get => _sortByFileFirst; set { _sortByFileFirst = value; OnPropertyChanged(); } }
     public string PositionSlashCount =>
-      SelectedItems.Count == 0
+      Selected.Items.Count == 0
         ? FilteredItems.Count.ToString()
-        : $"{FilteredItems.IndexOf(SelectedItems[0]) + 1}/{FilteredItems.Count}";
+        : $"{FilteredItems.IndexOf(Selected.Items[0]) + 1}/{FilteredItems.Count}";
 
     public bool NeedReload { get; set; }
     public double ThumbScale { get => _thumbScale; set { _thumbScale = value; OnPropertyChanged(); } }
@@ -67,12 +65,12 @@ namespace PictureManager.Domain.Models {
       MainTabsItem = new(this, tabTitle);
 
       SortCommand = new(() => SoftLoad(FilteredItems, true, false));
-      SelectAllCommand = new(() => SelectAll());
+      SelectAllCommand = new(() => Selected.Select(FilteredItems));
       ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
 
       SelectMediaItemCommand = new(e => {
         if (e.DataContext is MediaItemM mi)
-          Select(mi, e.IsCtrlOn, e.IsShiftOn);
+          Selected.Select(FilteredItems, mi, e.IsCtrlOn, e.IsShiftOn);
       });
 
       OpenMediaItemCommand = new(
@@ -80,12 +78,14 @@ namespace PictureManager.Domain.Models {
         e => e.ClickCount == 2);
 
       Filter.FilterChangedEventHandler += delegate { SoftLoad(LoadedItems, true, true); };
+      Selected.ItemsChangedEventHandler += delegate { SelectionChanged(); };
+      Selected.AllDeselectedEventHandler += delegate { SelectionChanged(); };
     }
 
     private void OpenMediaItem(MediaItemM mi) {
       if (mi == null) return;
 
-      DeselectAll();
+      Selected.DeselectAll();
       _core.MainWindowM.IsFullScreen = true;
       _core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), mi);
     }
@@ -106,10 +106,10 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Clear() {
-      foreach (var item in SelectedItems)
+      foreach (var item in Selected.Items)
         item.IsSelected = false;
 
-      SelectedItems.Clear();
+      Selected.Items.Clear();
       LoadedItems.Clear();
       FilteredItems.Clear();
       FilteredRoot.Items.Clear();
@@ -122,41 +122,19 @@ namespace PictureManager.Domain.Models {
     }
 
     private void SelectionChanged() {
+      if (this != _core.ThumbnailsGridsM.Current) return;
+
       SelectionChangedEventHandler(this, EventArgs.Empty);
-      OnPropertyChanged(nameof(SelectedCount));
       OnPropertyChanged(nameof(PositionSlashCount));
     }
 
-    public void SetSelected(MediaItemM mi, bool value, bool withEvent = true) =>
-      Selecting.SetSelected(_selectedItems, mi, value, withEvent ? SelectionChanged : null);
-    
-    private void Select(MediaItemM mi, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select(_selectedItems, FilteredItems, mi, isCtrlOn, isShiftOn, SelectionChanged);
-
     public void UpdateSelected() {
-      foreach (var mi in SelectedItems)
+      foreach (var mi in Selected.Items)
         mi.IsSelected = true;
 
-      foreach (var mi in FilteredItems.Except(SelectedItems))
+      foreach (var mi in FilteredItems.Except(Selected.Items))
         mi.IsSelected = false;
 
-      SelectionChanged();
-    }
-
-    public void DeselectAll() {
-      foreach (var mi in SelectedItems)
-        mi.IsSelected = false;
-
-      SelectedItems.Clear();
-      SelectionChanged();
-    }
-
-    private void SelectAll() {
-      foreach (var mi in FilteredItems)
-        mi.IsSelected = true;
-
-      SelectedItems.Clear();
-      SelectedItems.AddRange(FilteredItems);
       SelectionChanged();
     }
 
@@ -168,9 +146,9 @@ namespace PictureManager.Domain.Models {
           NeedReload = true;
 
         if (isCurrent)
-          SetSelected(item, false, false);
+          Selected.SetSelected(item, false);
         else
-          SelectedItems.Remove(item);
+          Selected.Items.Remove(item);
       }
 
       if (!isCurrent) return;
@@ -187,7 +165,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public List<MediaItemM> GetSelectedOrAll() =>
-      SelectedItems.Count == 0 ? FilteredItems : SelectedItems;
+      Selected.Items.Count == 0 ? FilteredItems : Selected.Items.ToList();
 
     public void Shuffle() {
       LoadedItems.Shuffle();
@@ -214,18 +192,19 @@ namespace PictureManager.Domain.Models {
     private MediaItemM GetItemToScrollTo() =>
       FilteredItems.Contains(_core.MediaItemsM.Current)
         ? _core.MediaItemsM.Current
-        : SelectedItems.Count != 0
-          ? SelectedItems[0]
+        : Selected.Items.Count != 0
+          ? Selected.Items[0]
           : null;
 
     public void SelectAndScrollToCurrentMediaItem() {
       var mi = GetItemToScrollTo();
 
-      DeselectAll();
+      Selected.DeselectAll();
       if (mi == null) return;
 
-      SetSelected(mi, true);
+      Selected.SetSelected(mi, true);
       ScrollToItem = mi;
+      SelectionChanged();
     }
 
     public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
@@ -312,7 +291,7 @@ namespace PictureManager.Domain.Models {
       if (hide) {
         LoadedItems.Remove(mi);
         FilteredItems.Remove(mi);
-        if (SelectedItems.Remove(mi))
+        if (Selected.Items.Remove(mi))
           mi.IsSelected = false;
 
         return;
@@ -363,7 +342,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SoftLoad(IEnumerable<MediaItemM> items, bool sort, bool filter) {
-      if (SelectedItems.Count > 0)
+      if (Selected.Items.Count > 0)
         ScrollToTop = true;
 
       IEnumerable<MediaItemM> toLoad = items.ToArray();

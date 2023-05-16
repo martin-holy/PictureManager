@@ -140,6 +140,15 @@ namespace PictureManager.Domain {
         MediaItemsM.Delete(e.Data.MediaItems);
       };
 
+      #region PeopleM EventHandlers
+
+      PeopleM.Selected.AllDeselectedEventHandler += delegate {
+        SegmentsM.Selected.DeselectAll();
+      };
+
+      PeopleM.Selected.ItemsChangedEventHandler += (_, e) =>
+        SegmentsM.Select(e.Data);
+
       PeopleM.AfterItemRenameEventHandler += (_, e) => {
         MediaItemsM.UpdateInfoBoxWithPerson((PersonM)e.Data);
       };
@@ -158,6 +167,10 @@ namespace PictureManager.Domain {
         SegmentsM.Reload();
       };
 
+      #endregion
+
+      #region KeywordsM EventHandlers
+
       KeywordsM.AfterItemRenameEventHandler += (_, e) => {
         MediaItemsM.UpdateInfoBoxWithKeyword((KeywordM)e.Data);
       };
@@ -167,6 +180,10 @@ namespace PictureManager.Domain {
         SegmentsM.RemoveKeywordFromSegments(e.Data);
         MediaItemsM.RemoveKeywordFromMediaItems(e.Data);
       };
+
+      #endregion
+
+      #region MediaItemsM EventHandlers
 
       MediaItemsM.MediaItemDeletedEventHandler += (_, e) => {
         SegmentsM.Delete(e.Data.Segments);
@@ -208,10 +225,7 @@ namespace PictureManager.Domain {
         }
       };
 
-      SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
-        PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-        e.Data.Item1.MediaItem.SetInfoBox();
-      };
+      #endregion
 
       ThumbnailsGridsM.PropertyChanged += (_, e) => {
         if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
@@ -238,6 +252,20 @@ namespace PictureManager.Domain {
         }
       };
 
+      #region SegmentsM EventHandlers
+
+      SegmentsM.Selected.AllDeselectedEventHandler += delegate {
+        PeopleM.Selected.DeselectAll();
+      };
+
+      SegmentsM.Selected.ItemsChangedEventHandler += (_, e) =>
+        PeopleM.Select(e.Data);
+
+      SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
+        PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+        e.Data.Item1.MediaItem.SetInfoBox();
+      };
+
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
         if (e.Data.Any(x => x.Equals(PersonDetailM.PersonM)))
           PersonDetailM.ReloadPersonSegments();
@@ -260,13 +288,17 @@ namespace PictureManager.Domain {
         SegmentsM.SegmentsDrawerM.Remove(e.Data);
       };
 
+      #endregion
+
+      #region MainTabsM EventHandlers
+
       MainTabsM.TabClosedEventHandler += (_, e) => {
         switch (e.Data.Content) {
           case ThumbnailsGridM grid:
             ThumbnailsGridsM.CloseGrid(grid);
             break;
           case PeopleM people:
-            people.DeselectAll();
+            people.Selected.DeselectAll();
             break;
         }
       };
@@ -276,9 +308,11 @@ namespace PictureManager.Domain {
           ThumbnailsGridsM.SetCurrentGrid(MainTabsM.Selected?.Content as ThumbnailsGridM);
 
           if ((MainTabsM.Selected?.Content as PeopleM) == null)
-            PeopleM.DeselectAll();
+            PeopleM.Selected.DeselectAll();
         }
       };
+
+      #endregion
     }
 
     private void Loaded() {
@@ -289,8 +323,8 @@ namespace PictureManager.Domain {
     }
 
     private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {
-      var sCount = SegmentsM.Selected.Count;
-      var pCount = item is PersonM ? 0 : PeopleM.Selected.Count;
+      var sCount = SegmentsM.Selected.Items.Count;
+      var pCount = item is PersonM ? 0 : PeopleM.Selected.Items.Count;
       var miCount = MediaItemsM.IsEditModeOn ? MediaItemsM.GetActive().Length : 0;
       
       if (sCount == 0 && pCount == 0 && miCount == 0) return null;
