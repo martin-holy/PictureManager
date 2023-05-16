@@ -66,7 +66,7 @@ namespace PictureManager.Domain.Models {
       var yDiff = Math.Abs(segment.Y + (segment.Size / 2) - y);
       var limit = 10;
 
-      if (xDiff < limit && yDiff < limit)
+      if (xDiff < limit && yDiff < limit && segment.Size > 20)
         return SegmentEditMode.Move;
 
       if (Math.Abs(xDiff - yDiff) < limit)
