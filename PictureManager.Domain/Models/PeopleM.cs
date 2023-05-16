@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
+    private readonly Core _core;
     private readonly CategoryGroupsM _categoryGroupsM;
     private TreeWrapGroup _peopleRoot;
     private object _scrollToItem;
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
-    public List<PersonM> Selected { get; } = new();
+    public Selecting<PersonM> Selected { get; } = new();
     public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
     public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     
@@ -28,6 +29,7 @@ namespace PictureManager.Domain.Models {
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
     public PeopleM(Core core, CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
+      _core = core;
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
       MainTabsItem = new(this, "People");
@@ -144,21 +146,18 @@ namespace PictureManager.Domain.Models {
         .Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
-      ToggleKeyword(Selected, keyword);
+      ToggleKeyword(Selected.Items, keyword);
 
     private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
+        Selected.Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
     }
 
-    public void Select(List<PersonM> list, PersonM p, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select(Selected, list, p, isCtrlOn, isShiftOn, null);
-
-    public void DeselectAll() =>
-      Selecting.DeselectAll(Selected, null);
-
-    public void SetSelected(PersonM p, bool value) =>
-      Selecting.SetSelected(Selected, p, value, null);
+    public void Select(IEnumerable<SegmentM> segments) =>
+      Selected.Select(segments
+        .Where(x => x.Person != null)
+        .Select(x => x.Person)
+        .Distinct());
 
     public void Reload() {
       var root = new TreeWrapGroup();

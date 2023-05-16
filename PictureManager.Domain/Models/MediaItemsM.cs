@@ -99,7 +99,7 @@ namespace PictureManager.Domain.Models {
         (grid) => grid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
 
       SelectNotModifiedCommand = new(
-        SelectNotModified,
+        (grid) => grid.Selected.Select(grid.FilteredItems.Except(ModifiedItems)),
         (grid) => grid?.FilteredItems.Count > 0);
     }
 
@@ -114,12 +114,6 @@ namespace PictureManager.Domain.Models {
           grid.SoftLoad(grid.LoadedItems, true, true);
         })
       );
-    }
-
-    private void SelectNotModified(ThumbnailsGridM grid) {
-      // TODO deselect all and than select modified
-      foreach (var mi in grid.FilteredItems)
-        grid.SetSelected(mi, !ModifiedItems.Contains(mi));
     }
 
     /// <summary>
@@ -328,7 +322,7 @@ namespace PictureManager.Domain.Models {
       _ = Core.DialogHostShow(fop);
 
       if (mode == FileOperationMode.Move)
-        _core.ThumbnailsGridsM.Current.Remove(_core.ThumbnailsGridsM.Current.SelectedItems.ToList(), true);
+        _core.ThumbnailsGridsM.Current.Remove(_core.ThumbnailsGridsM.Current.Selected.Items.ToList(), true);
     }
 
     private void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
@@ -352,7 +346,7 @@ namespace PictureManager.Domain.Models {
           var result = FileOperationCollisionDialogM.Show(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.SetSelected(mi, false));
+            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.Selected.SetSelected(mi, false));
             continue;
           }
 
@@ -700,7 +694,7 @@ namespace PictureManager.Domain.Models {
           : new[] { Current }
         : _core.ThumbnailsGridsM.Current == null
           ? Array.Empty<MediaItemM>()
-          : _core.ThumbnailsGridsM.Current.SelectedItems.ToArray();
+          : _core.ThumbnailsGridsM.Current.Selected.Items.ToArray();
 
     public void SetMetadata(object item) {
       var items = GetActive();

@@ -57,8 +57,8 @@ namespace PictureManager.Domain.Models {
       Current = current;
       MousePosToRawImage(ref x, ref y, Scale, MediaItem);
       _editMode = GetEditMode(x, y, Current.Segment);
-      SegmentsM.DeselectAll();
-      SegmentsM.SetSelected(current.Segment, true);
+      SegmentsM.Selected.DeselectAll();
+      SegmentsM.Selected.SetSelected(current.Segment, true);
     }
 
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
@@ -225,7 +225,7 @@ namespace PictureManager.Domain.Models {
       MediaItemSegmentsRects.Clear();
       if (MediaItem?.Segments == null) return;
 
-      SegmentsM.DeselectAll();
+      SegmentsM.Selected.DeselectAll();
 
       foreach (var segment in MediaItem.Segments)
         MediaItemSegmentsRects.Add(new(segment, Scale));

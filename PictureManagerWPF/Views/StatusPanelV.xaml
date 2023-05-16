@@ -73,7 +73,7 @@
               Visibility="{Binding MediaViewerM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding ThumbnailsGridsM.Current.SelectedCount}"/>
+              <TextBlock Text="{Binding ThumbnailsGridsM.Current.Selected.Items.Count}"/>
             </Border>
 
             <!-- Modified -->

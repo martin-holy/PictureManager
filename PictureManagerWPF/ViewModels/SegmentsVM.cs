@@ -71,7 +71,7 @@ namespace PictureManager.ViewModels {
              .SelectMany(x => x.Items.Cast<SegmentM>())
              .ToList();
 
-        SegmentsM.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
+        SegmentsM.Selected.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
       }
     }
 

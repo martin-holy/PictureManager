@@ -2,7 +2,6 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.HelperClasses;
 using System;
@@ -24,7 +23,6 @@ namespace PictureManager.Domain.Models {
     private bool _groupConfirmedSegments;
     private bool _matchingAutoSort = true;
     private bool _reloadAutoScroll = true;
-    private readonly List<SegmentM> _selected = new();
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public SegmentsDataAdapter DataAdapter { get; set; }
@@ -34,15 +32,14 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> MediaItemsForMatching { get; set; }
     public ObservableCollection<object> LoadedGrouped { get; } = new();
     public ObservableCollection<object> ConfirmedGrouped { get; } = new();
-    public List<SegmentM> Selected => _selected;
+    public Selecting<SegmentM> Selected { get; } = new();
     public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
     public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
     public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
-    public int SelectedCount => Selected.Count;
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
-    public bool MultiplePeopleSelected => Selected.GroupBy(x => x.Person).Count() > 1 || Selected.Count(x => x.Person == null) > 1;
+    public bool MultiplePeopleSelected => Selected.Items.GroupBy(x => x.Person).Count() > 1 || Selected.Items.Count(x => x.Person == null) > 1;
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
     public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
     public bool NeedReload { get; set; }
@@ -55,7 +52,6 @@ namespace PictureManager.Domain.Models {
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsKeywordChangedEvent = delegate { };
-    public event EventHandler SelectedChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
@@ -73,7 +69,7 @@ namespace PictureManager.Domain.Models {
       SegmentsDrawerM = new(this, _core);
 
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
-      SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => SelectedCount > 0);
+      SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => Selected.Items.Count > 0);
       GroupConfirmedCommand = new(() => Reload(false, true));
       CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
       SortCommand = new(() => Reload(true, true));
@@ -85,20 +81,15 @@ namespace PictureManager.Domain.Models {
 
       CanDragFunc = CanDrag;
 
-      SelectedChangedEventHandler += (_, _) => {
-        OnPropertyChanged(nameof(SelectedCount));
+      Selected.Items.CollectionChanged += delegate {
         OnPropertyChanged(nameof(MultiplePeopleSelected));
       };
     }
 
-    public void Select(List<SegmentM> list, SegmentM segment, bool isCtrlOn, bool isShiftOn) =>
-      Selecting.Select(_selected, list, segment, isCtrlOn, isShiftOn, () => SelectedChangedEventHandler(this, EventArgs.Empty));
-
-    public void DeselectAll() =>
-      Selecting.DeselectAll(_selected, () => SelectedChangedEventHandler(this, EventArgs.Empty));
-
-    public void SetSelected(ISelectable segment, bool value) =>
-      Selecting.SetSelected(_selected, segment, value, () => SelectedChangedEventHandler(this, EventArgs.Empty));
+    public void Select(IEnumerable<PersonM> people) =>
+      Selected.Select(people
+        .Where(x => x.Segment != null)
+        .Select(x => x.Segment));
 
     private object CanDrag(object source) =>
       source is SegmentM segmentM
@@ -112,8 +103,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>
-      Selected.Contains(one)
-        ? Selected.ToArray()
+      Selected.Items.Contains(one)
+        ? Selected.Items.ToArray()
         : new[] { one };
 
     public SegmentM AddNewSegment(double x, double y, int size, MediaItemM mediaItem) {
@@ -154,12 +145,12 @@ namespace PictureManager.Domain.Models {
     /// </summary>
     /// <param name="person"></param>
     public void SetSelectedAsPerson(PersonM person) {
-      var unknownPeople = Selected
+      var unknownPeople = Selected.Items
         .Where(x => x.Person?.Id < 0)
         .Select(x => x.Person)
         .Distinct()
         .ToHashSet();
-      var segments = Selected
+      var segments = Selected.Items
         .Where(x => x.Person == null || x.Person.Id > 0)
         .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)));
 
@@ -168,7 +159,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in segments)
         ChangePerson(segment, person);
 
-      DeselectAll();
+      Selected.DeselectAll();
 
       SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(segments)));
     }
@@ -222,10 +213,10 @@ namespace PictureManager.Domain.Models {
     /// or the newly created person with the highest unused negative id.
     /// </summary>
     private void SetSelectedAsSamePerson() {
-      if (Selected.Count == 0) return;
+      if (Selected.Items.Count == 0) return;
 
       SegmentM[] toUpdate;
-      var newPerson = Selected
+      var newPerson = Selected.Items
         .Where(x => x.Person != null)
         .Select(x => x.Person)
         .Distinct()
@@ -245,23 +236,23 @@ namespace PictureManager.Domain.Models {
           if (usedIds.Contains(i)) continue;
           newPerson = new(i, $"P {i}");
 
-          if (!Core.Instance.PeopleM.DataAdapter.All.ContainsKey(newPerson.Id))
-            Core.Instance.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
+          if (!_core.PeopleM.DataAdapter.All.ContainsKey(newPerson.Id))
+            _core.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
           break;
         }
 
-        toUpdate = Selected.ToArray();
+        toUpdate = Selected.Items.ToArray();
       }
       else {
         // take just segments with unknown people
-        var selectedUnknown = Selected
+        var selectedUnknown = Selected.Items
           .Where(x => x.Person?.Id < 0)
           .Select(x => x.Person)
           .Distinct()
           .ToHashSet();
         toUpdate = DataAdapter.All.Values
           .Where(x => x.Person?.Id < 0 && x.Person != newPerson && selectedUnknown.Contains(x.Person))
-          .Concat(Selected.Where(x => x.Person == null))
+          .Concat(Selected.Items.Where(x => x.Person == null))
           .ToArray();
 
         // remove not used not named people (id < 0)
@@ -271,7 +262,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in toUpdate)
         ChangePerson(segment, newPerson);
 
-      DeselectAll();
+      Selected.DeselectAll();
       SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(toUpdate)));
     }
 
@@ -283,19 +274,19 @@ namespace PictureManager.Domain.Models {
         .ToArray();
 
     private void SetSelectedAsUnknown() {
-      var msgCount = SelectedCount == 1
+      var msgCount = Selected.Items.Count == 1
         ? "selected segment"
-        : $"{SelectedCount} selected segments";
+        : $"{Selected.Items.Count} selected segments";
       var msg = $"Do you want to set {msgCount} as unknown?";
 
       if (Core.DialogHostShow(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
         return;
 
-      foreach (var segment in Selected)
+      foreach (var segment in Selected.Items)
         ChangePerson(segment, null);
 
-      DeselectAll();
-      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(Selected)));
+      Selected.DeselectAll();
+      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(Selected.Items)));
     }
 
     private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
@@ -314,7 +305,7 @@ namespace PictureManager.Domain.Models {
       ToggleKeyword(DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
-      ToggleKeyword(Selected, keyword);
+      ToggleKeyword(Selected.Items, keyword);
 
     public void RemovePersonFromSegments(PersonM person) {
       foreach (var segment in DataAdapter.All.Values.Where(s => s.Person?.Equals(person) == true)) {
@@ -340,7 +331,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.All.Remove(segment.Id);
 
       SegmentDeletedEventHandler(this, new(segment));
-      SetSelected(segment, false);
+      Selected.SetSelected(segment, false);
       ChangePerson(segment, null);
 
       // remove Segment from MediaItem
@@ -399,7 +390,7 @@ namespace PictureManager.Domain.Models {
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
       ReloadAutoScroll = false;
-      DeselectAll();
+      Selected.DeselectAll();
       Loaded.Clear();
 
       foreach (var segment in GetSegments(mediaItems, mode))
