@@ -120,7 +120,7 @@
         ShowRoot="True"
         ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
         Root="{Binding AllSegmentsRoot}"
-        ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}"
+        ScrollToTop="{Binding ScrollToTop, Mode=TwoWay}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}">
 

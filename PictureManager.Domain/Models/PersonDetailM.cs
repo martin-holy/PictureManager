@@ -10,15 +10,14 @@ namespace PictureManager.Domain.Models {
     private readonly PeopleM _peopleM;
     private readonly SegmentsM _segmentsM;
     private PersonM _personM;
-    private object _scrollToItem;
+    private bool _scrollToTop;
     private TreeWrapGroup _allSegmentsRoot;
 
-    private readonly HeaderedListItem<object, string> _toolsTabsItem;
-
+    public HeaderedListItem<object, string> ToolsTabsItem;
     public List<SegmentM> AllSegments { get; } = new();
     public ObservableCollection<object> AllSegmentsGrouped { get; } = new();
-    public PersonM PersonM { get => _personM; private set { _personM = value; OnPropertyChanged(); } }
-    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public PersonM PersonM { get => _personM; set { _personM = value; ReloadPersonSegments(); OnPropertyChanged(); } }
+    public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
@@ -28,7 +27,7 @@ namespace PictureManager.Domain.Models {
     public PersonDetailM(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
       _segmentsM = segmentsM;
-      _toolsTabsItem = new(this, "Person");
+      ToolsTabsItem = new(this, "Person");
 
       CanDropFunc = CanDrop;
       TopSegmentsDropAction = TopSegmentsDrop;
@@ -51,14 +50,12 @@ namespace PictureManager.Domain.Models {
 
     private void SetPerson(PersonM person) {
       PersonM = person;
-      ReloadPersonSegments();
-      Core.Instance.ToolsTabsM.Activate(_toolsTabsItem, true);
+      Core.Instance.ToolsTabsM.Activate(ToolsTabsItem, true);
     }
 
     public void ReloadPersonSegments() {
-      if (PersonM == null) return;
+      ScrollToTop = true;
       AllSegmentsRoot = PersonM.GetSegments(_segmentsM.DataAdapter.All.Values, AllSegments);
-      ScrollToItem = (AllSegmentsRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
       OnPropertyChanged(nameof(AllSegments)); // this is for the count
     }
 
