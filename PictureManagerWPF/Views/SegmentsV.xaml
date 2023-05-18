@@ -10,6 +10,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PersonThumbnailV.xaml"/>
           <ResourceDictionary Source="SegmentV.xaml"/>
           <ResourceDictionary Source="../ResourceDictionaries/CustomControlStyles/ItemsGroupV.xaml"/>
         </ResourceDictionary.MergedDictionaries>

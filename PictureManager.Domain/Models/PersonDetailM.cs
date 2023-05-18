@@ -50,10 +50,6 @@ namespace PictureManager.Domain.Models {
       _peopleM.ToggleTopSegment(PersonM, data as SegmentM);
 
     private void SetPerson(PersonM person) {
-      _peopleM.Selected.DeselectAll();
-      if (person != null)
-        _peopleM.Selected.Select(null, person, false, false);
-
       PersonM = person;
       ReloadPersonSegments();
       Core.Instance.ToolsTabsM.Activate(_toolsTabsItem, true);
@@ -68,7 +64,7 @@ namespace PictureManager.Domain.Models {
 
     private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        _segmentsM.Selected.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
+        _segmentsM.Select(AllSegments, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
   }
 }

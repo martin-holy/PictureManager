@@ -34,6 +34,7 @@
         <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/SetSegmentPersonDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
 
         <ResourceDictionary Source="Views/MainMenuV.xaml"/>
