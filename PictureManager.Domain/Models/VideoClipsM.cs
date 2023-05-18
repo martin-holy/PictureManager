@@ -158,7 +158,8 @@ namespace PictureManager.Domain.Models {
         ? _mediaItemsM.MediaItemVideoClips[mi]
         : new();
 
-      OnPropertyChanged(nameof(TreeCategory.Items));
+      TreeRoot.Clear();
+      TreeRoot.Add(TreeCategory);
     }
 
     private void UpdateClipsTitles() {
