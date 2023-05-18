@@ -213,6 +213,9 @@ namespace PictureManager.Domain.Models {
         person.UpdateDisplayKeywords();
       }
 
+      if (persons.Contains(_core.PersonDetailM.PersonM))
+        _core.PersonDetailM.PersonM = person;
+
       foreach (var oldPerson in persons)
         Core.Instance.PeopleM.DataAdapter.All.Remove(oldPerson.Id);
     }
