@@ -379,32 +379,29 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM, bool inGroups) {
       if (segmentM.MediaItem == null) return null;
 
-      List<MediaItemM> items;
-
-      if (segmentM.Person == null) {
-        if (inGroups
-            && LoadedGrouped.Count > 0
-            && ((ItemsGroup)LoadedGrouped[^1]).Items.Cast<SegmentM>().Any(x => x.Person == null)) {
-          items = ((ItemsGroup)LoadedGrouped[^1]).Items
-            .Cast<SegmentM>()
-            .Where(x => x.Person == null)
-            .Select(x => x.MediaItem)
-            .Distinct()
-            .ToList();
-        }
-        else
-          items = new() { segmentM.MediaItem };
-      }
-      else {
-        items = DataAdapter.All.Values
+      if (segmentM.Person != null)
+        return DataAdapter.All.Values
           .Where(x => x.Person == segmentM.Person)
           .Select(x => x.MediaItem)
           .Distinct()
           .OrderBy(x => x.FileName)
           .ToList();
+
+      if (SegmentsDrawerM.Items.Contains(segmentM))
+        return SegmentsDrawerM.Items.Select(x => x.MediaItem).OrderBy(x => x.FilePath).ToList();
+
+      if (inGroups) {
+        var items = ((ItemsGroup)LoadedGrouped[^1]).Items
+          .Cast<SegmentM>()
+          .Where(x => x.Person == null)
+          .Select(x => x.MediaItem)
+          .Distinct();
+
+        if (items.Any())
+          return items.ToList();
       }
 
-      return items;
+      return null;
     }
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
