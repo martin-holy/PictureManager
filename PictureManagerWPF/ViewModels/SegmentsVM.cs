@@ -64,14 +64,20 @@ namespace PictureManager.ViewModels {
           .OfType<ItemsGroup>()
           .LastOrDefault(x => wrapPanel.WrappedItems.IndexOf(x) < rowIndex);
         var list = itemsGroup != null
-          ? itemsGroup.Items.Cast<SegmentM>().ToList()
+          ? itemsGroup.Items
           : wrapPanel.WrappedItems
              .OfType<VirtualizingWrapPanelRow>()
              .Where(x => wrapPanel.WrappedItems.IndexOf(x) <= rowIndex)
-             .SelectMany(x => x.Items.Cast<SegmentM>())
-             .ToList();
+             .SelectMany(x => x.Items);
 
-        SegmentsM.Selected.Select(list, segmentM, e.IsCtrlOn, e.IsShiftOn);
+        var people = list.OfType<PersonM>().ToList();
+        var segments = list.OfType<SegmentM>().ToList();
+
+        if (people.Count > 0)
+          _core.PeopleM.Select(people, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
+
+        if (segments.Count > 0)
+          SegmentsM.Select(segments, segmentM, e.IsCtrlOn, e.IsShiftOn);
       }
     }
 

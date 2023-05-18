@@ -25,7 +25,6 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
-    public event EventHandler<ObjectEventArgs<PersonM>> PersonTopSegmentsChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
     public PeopleM(Core core, CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
@@ -123,8 +122,6 @@ namespace PictureManager.Domain.Models {
       if (person.TopSegments?.Count > 0)
         person.Segment = (SegmentM)person.TopSegments[0];
 
-      PersonTopSegmentsChangedEventHandler(this, new(person));
-
       DataAdapter.IsModified = true;
     }
 
@@ -148,16 +145,19 @@ namespace PictureManager.Domain.Models {
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
       ToggleKeyword(Selected.Items, keyword);
 
-    private void Select(MouseButtonEventArgs e) {
-      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        Selected.Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
+    public void Select(List<PersonM> people, PersonM person, bool isCtrlOn, bool isShiftOn) {
+      if (!isCtrlOn && !isShiftOn)
+        _core.SegmentsM.Selected.DeselectAll();
+
+      Selected.Select(people, person, isCtrlOn, isShiftOn);
+      _core.SegmentsM.Selected.Add(Selected.Items.Select(x => x.Segment));
+      _core.SegmentsM.SetCanSelectAsSamePerson();
     }
 
-    public void Select(IEnumerable<SegmentM> segments) =>
-      Selected.Select(segments
-        .Where(x => x.Person != null)
-        .Select(x => x.Person)
-        .Distinct());
+    private void Select(MouseButtonEventArgs e) {
+      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
+        Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
+    }
 
     public void Reload() {
       var root = new TreeWrapGroup();

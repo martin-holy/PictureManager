@@ -99,7 +99,7 @@ namespace PictureManager.Domain.Models {
         (grid) => grid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
 
       SelectNotModifiedCommand = new(
-        (grid) => grid.Selected.Select(grid.FilteredItems.Except(ModifiedItems)),
+        (grid) => grid.Selected.Set(grid.FilteredItems.Except(ModifiedItems)),
         (grid) => grid?.FilteredItems.Count > 0);
     }
 
@@ -346,7 +346,7 @@ namespace PictureManager.Domain.Models {
           var result = FileOperationCollisionDialogM.Show(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.Selected.SetSelected(mi, false));
+            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.Selected.Set(mi, false));
             continue;
           }
 

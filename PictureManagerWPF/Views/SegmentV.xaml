@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:converters="clr-namespace:PictureManager.Converters"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
@@ -13,7 +12,6 @@
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-        <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
@@ -214,7 +212,7 @@
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding IsSelected}" Value="True"/>
           <Condition
-             Binding="{Binding SegmentsM.MultiplePeopleSelected,
+             Binding="{Binding SegmentsM.CanSelectAsSamePerson,
                        Source={x:Static pm:App.Core},
                        Converter={StaticResource AllToBoolConverter}}"
              Value="True"/>

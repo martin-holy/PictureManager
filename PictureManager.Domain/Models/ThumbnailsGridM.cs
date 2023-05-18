@@ -65,7 +65,7 @@ namespace PictureManager.Domain.Models {
       MainTabsItem = new(this, tabTitle);
 
       SortCommand = new(() => SoftLoad(FilteredItems, true, false));
-      SelectAllCommand = new(() => Selected.Select(FilteredItems));
+      SelectAllCommand = new(() => Selected.Set(FilteredItems));
       ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
 
       SelectMediaItemCommand = new(e => {
@@ -146,7 +146,7 @@ namespace PictureManager.Domain.Models {
           NeedReload = true;
 
         if (isCurrent)
-          Selected.SetSelected(item, false);
+          Selected.Set(item, false);
         else
           Selected.Items.Remove(item);
       }
@@ -202,7 +202,7 @@ namespace PictureManager.Domain.Models {
       Selected.DeselectAll();
       if (mi == null) return;
 
-      Selected.SetSelected(mi, true);
+      Selected.Set(mi, true);
       ScrollToItem = mi;
       SelectionChanged();
     }

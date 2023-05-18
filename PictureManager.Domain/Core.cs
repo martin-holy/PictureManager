@@ -142,13 +142,6 @@ namespace PictureManager.Domain {
 
       #region PeopleM EventHandlers
 
-      PeopleM.Selected.AllDeselectedEventHandler += delegate {
-        SegmentsM.Selected.DeselectAll();
-      };
-
-      PeopleM.Selected.ItemsChangedEventHandler += (_, e) =>
-        SegmentsM.Select(e.Data);
-
       PeopleM.AfterItemRenameEventHandler += (_, e) => {
         MediaItemsM.UpdateInfoBoxWithPerson((PersonM)e.Data);
       };
@@ -156,11 +149,6 @@ namespace PictureManager.Domain {
       PeopleM.PersonDeletedEventHandler += (_, e) => {
         MediaItemsM.RemovePersonFromMediaItems(e.Data);
         SegmentsM.RemovePersonFromSegments(e.Data);
-      };
-
-      PeopleM.PersonTopSegmentsChangedEventHandler += (_, e) => {
-        if (SegmentsM.MatchingAutoSort && SegmentsM.Loaded.Any(x => e.Data.Equals(x.Person)))
-          SegmentsM.Reload(false, true);
       };
 
       PeopleM.PeopleKeywordChangedEvent += delegate {
@@ -254,16 +242,8 @@ namespace PictureManager.Domain {
 
       #region SegmentsM EventHandlers
 
-      SegmentsM.Selected.AllDeselectedEventHandler += delegate {
-        PeopleM.Selected.DeselectAll();
-      };
-
-      SegmentsM.Selected.ItemsChangedEventHandler += (_, e) =>
-        PeopleM.Select(e.Data);
-
       SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
         PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
-        e.Data.Item1.MediaItem.SetInfoBox();
       };
 
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {

@@ -58,7 +58,7 @@ namespace PictureManager.Domain.Models {
 
     private void Select(MouseButtonEventArgs e) {
       if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        SegmentsM.Selected.Select(Items.ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
+        SegmentsM.Select(Items.ToList(), segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
 
     private void Update(SegmentM[] segments, bool add) {

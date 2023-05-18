@@ -3,6 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace PictureManager.Domain.Models {
     private int _similarityLimitMin = 80;
     private bool _groupSegments = true;
     private bool _groupConfirmedSegments;
+    private bool _canSelectAsSamePerson;
     private bool _matchingAutoSort = true;
     private bool _reloadAutoScroll = true;
 
@@ -39,7 +41,7 @@ namespace PictureManager.Domain.Models {
     public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
     public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
     public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
-    public bool MultiplePeopleSelected => Selected.Items.GroupBy(x => x.Person).Count() > 1 || Selected.Items.Count(x => x.Person == null) > 1;
+    public bool CanSelectAsSamePerson { get => _canSelectAsSamePerson; set { _canSelectAsSamePerson = value; OnPropertyChanged(); } }
     public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
     public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
     public bool NeedReload { get; set; }
@@ -80,21 +82,30 @@ namespace PictureManager.Domain.Models {
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       CanDragFunc = CanDrag;
-
-      Selected.Items.CollectionChanged += delegate {
-        OnPropertyChanged(nameof(MultiplePeopleSelected));
-      };
     }
 
-    public void Select(IEnumerable<PersonM> people) =>
-      Selected.Select(people
-        .Where(x => x.Segment != null)
-        .Select(x => x.Segment));
+    public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
+      if (!isCtrlOn && !isShiftOn)
+        _core.PeopleM.Selected.DeselectAll();
+
+      Selected.Select(segments, segment, isCtrlOn, isShiftOn);
+      _core.PeopleM.Selected.Add(Selected.Items
+        .Where(x => x.Person != null)
+        .Select(x => x.Person)
+        .Distinct());
+      SetCanSelectAsSamePerson();
+    }
 
     private object CanDrag(object source) =>
       source is SegmentM segmentM
         ? GetOneOrSelected(segmentM)
         : null;
+
+    public void SetCanSelectAsSamePerson() {
+      CanSelectAsSamePerson =
+        Selected.Items.GroupBy(x => x.Person).Count() > 1
+        || Selected.Items.Count(x => x.Person == null) > 1;
+    }
 
     public void SetSegmentUiSize(double size, double scrollBarSize) {
       SegmentUiSize = size;
@@ -213,17 +224,18 @@ namespace PictureManager.Domain.Models {
     /// or the newly created person with the highest unused negative id.
     /// </summary>
     private void SetSelectedAsSamePerson() {
-      if (Selected.Items.Count == 0) return;
+      if (!CanSelectAsSamePerson) return;
 
+      PersonM newPerson = null;
       SegmentM[] toUpdate;
-      var newPerson = Selected.Items
+      var people = Selected.Items
         .Where(x => x.Person != null)
         .Select(x => x.Person)
         .Distinct()
-        .OrderByDescending(x => x.Id)
-        .FirstOrDefault();
+        .OrderBy(x => x.Name)
+        .ToArray();
 
-      if (newPerson == null) {
+      if (people.Length == 0) {
         // create person with unused min ID
         var usedIds = DataAdapter.All.Values
           .Where(x => x.Person?.Id < 0)
@@ -244,26 +256,33 @@ namespace PictureManager.Domain.Models {
         toUpdate = Selected.Items.ToArray();
       }
       else {
-        // take just segments with unknown people
-        var selectedUnknown = Selected.Items
-          .Where(x => x.Person?.Id < 0)
-          .Select(x => x.Person)
-          .Distinct()
-          .ToHashSet();
-        toUpdate = DataAdapter.All.Values
-          .Where(x => x.Person?.Id < 0 && x.Person != newPerson && selectedUnknown.Contains(x.Person))
-          .Concat(Selected.Items.Where(x => x.Person == null))
-          .ToArray();
+        if (people.Length == 1)
+          newPerson = people[0];
+        else {
+          var spd = new SetSegmentPersonDialogM(this, people);
+          if (Core.DialogHostShow(spd) != 1) return;
+          newPerson = spd.Person;
+          toUpdate = spd.Segments;
+        }
 
-        // remove not used not named people (id < 0)
-        MergePeople(newPerson, selectedUnknown.Where(x => !x.Equals(newPerson)).ToArray());
+        toUpdate = GetSegmentsToUpdate(newPerson, people);
+        MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
       }
 
       foreach (var segment in toUpdate)
         ChangePerson(segment, newPerson);
 
       Selected.DeselectAll();
+      _core.PeopleM.Selected.DeselectAll();
       SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(toUpdate)));
+    }
+
+    public SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
+      var oldPeople = people.Where(x => !x.Equals(person)).ToHashSet();
+      return DataAdapter.All.Values
+        .Where(x => oldPeople.Contains(x.Person))
+        .Concat(Selected.Items.Where(x => x.Person == null))
+        .ToArray();
     }
 
     private PersonM[] GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
@@ -331,7 +350,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.All.Remove(segment.Id);
 
       SegmentDeletedEventHandler(this, new(segment));
-      Selected.SetSelected(segment, false);
+      Selected.Set(segment, false);
       ChangePerson(segment, null);
 
       // remove Segment from MediaItem
@@ -585,14 +604,14 @@ namespace PictureManager.Domain.Models {
       }
 
       if (GroupConfirmedSegments) {
-        foreach (var (_, segment, similar) in tmp) {
+        foreach (var (person, _, similar) in tmp) {
           var group = new ItemsGroup();
-          group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, segment.Person.Name));
+          group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, person.Name));
           ConfirmedGrouped.Add(group);
-          group.Items.Add(segment);
+          group.Items.Add(person);
 
           foreach (var simGroup in similar.OrderByDescending(x => x.sim))
-            group.Items.Add(simGroup.segment);
+            group.Items.Add(simGroup.person);
         }
       }
       else {
@@ -600,7 +619,7 @@ namespace PictureManager.Domain.Models {
         foreach (var group in tmp
           .GroupBy(x => x.person.DisplayKeywords == null
             ? zzzz
-            : string.Join(", ", x.segment.Person.DisplayKeywords.Select(k => k.Name)))
+            : string.Join(", ", x.person.DisplayKeywords.Select(k => k.Name)))
           .OrderBy(g => g.Key)
           .ThenBy(g => g.First().person.Name)) {
 
@@ -611,8 +630,8 @@ namespace PictureManager.Domain.Models {
           itemsGroup.Info.Add(infoItem);
           ConfirmedGrouped.Add(itemsGroup);
 
-          foreach (var (_, segment, _) in group)
-            itemsGroup.Items.Add(segment);
+          foreach (var (person, _, _) in group)
+            itemsGroup.Items.Add(person);
         }
       }
     }

@@ -57,8 +57,7 @@ namespace PictureManager.Domain.Models {
       Current = current;
       MousePosToRawImage(ref x, ref y, Scale, MediaItem);
       _editMode = GetEditMode(x, y, Current.Segment);
-      SegmentsM.Selected.DeselectAll();
-      SegmentsM.Selected.SetSelected(current.Segment, true);
+      SegmentsM.Select(null, current.Segment, false, false);
     }
 
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
