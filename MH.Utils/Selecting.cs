@@ -9,22 +9,45 @@ namespace MH.Utils {
   public class Selecting<T> where T : ISelectable {
     public ObservableCollection<T> Items { get; } = new();
 
-    public event EventHandler<ObjectEventArgs<T>> ItemChangedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<T[]>> ItemsChangedEventHandler = delegate { };
     public event EventHandler AllDeselectedEventHandler = delegate { };
 
-    public bool SetSelected(T item, bool value) {
+    public bool Set(T item, bool value) {
       if (item.IsSelected == value) return false;
 
       item.IsSelected = value;
 
-      if (value)
+      if (value && !Items.Contains(item)) {
         Items.Add(item);
-      else
-        Items.Remove(item);
+        return true;
+      }
 
-      ItemChangedEventHandler(this, new(item));
-      return true;
+      if (!value && Items.Contains(item)) {
+        Items.Remove(item);
+        return true;
+      }
+
+      return false;
+    }
+
+    public bool Set(IEnumerable<T> items, bool value) {
+      var change = false;
+
+      foreach (var item in items)
+        if (Set(item, value))
+          change = true;
+
+      return change;
+    }
+
+    public void Set(IEnumerable<T> items) {
+      if (Set(Items.Except(items), false) || Set(items.Except(Items), true))
+        ItemsChangedEventHandler(this, new(Items.ToArray()));
+    }
+
+    public void Add(IEnumerable<T> items) {
+      if (Set(items.Except(Items), true))
+        ItemsChangedEventHandler(this, new(Items.ToArray()));
     }
 
     public void DeselectAll() {
@@ -37,31 +60,12 @@ namespace MH.Utils {
       AllDeselectedEventHandler(this, EventArgs.Empty);
     }
 
-    public void Select(IEnumerable<T> items) {
-      var change = false;
-
-      foreach (var item in Items.Except(items).ToArray()) {
-        item.IsSelected = false;
-        Items.Remove(item);
-        change = true;
-      }
-
-      foreach (var item in items.Except(Items).ToArray()) {
-        item.IsSelected = true;
-        Items.Add(item);
-        change = true;
-      }
-
-      if (change)
-        ItemsChangedEventHandler(this, new(Items.ToArray()));
-    }
-
     public void Select(List<T> items, T item, bool isCtrlOn, bool isShiftOn) {
       // single select
       if (!isCtrlOn && !isShiftOn) {
         DeselectAll();
 
-        if (SetSelected(item, true))
+        if (Set(item, true))
           ItemsChangedEventHandler(this, new(Items.ToArray()));
 
         return;
@@ -69,7 +73,7 @@ namespace MH.Utils {
 
       // single invert select
       if (isCtrlOn) {
-        if (SetSelected(item, !item.IsSelected))
+        if (Set(item, !item.IsSelected))
           ItemsChangedEventHandler(this, new(Items.ToArray()));
 
         return;
@@ -90,7 +94,7 @@ namespace MH.Utils {
       }
 
       for (var i = from; i < to + 1; i++)
-        if (SetSelected(items[i], true))
+        if (Set(items[i], true))
           change = true;
 
       if (change)
