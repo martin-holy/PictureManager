@@ -149,6 +149,7 @@ namespace PictureManager.Domain {
       PeopleM.PersonDeletedEventHandler += (_, e) => {
         MediaItemsM.RemovePersonFromMediaItems(e.Data);
         SegmentsM.RemovePersonFromSegments(e.Data);
+        ToolsTabsM.Deactivate(PersonDetailM.ToolsTabsItem);
       };
 
       PeopleM.PeopleKeywordChangedEvent += delegate {
