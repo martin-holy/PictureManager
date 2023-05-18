@@ -151,12 +151,21 @@
           Visibility="Hidden"/>
 
         <!-- Buttons -->
-        <StackPanel
+        <DockPanel
           x:Name="buttons"
-          Orientation="Horizontal"
-          HorizontalAlignment="Right"
           VerticalAlignment="Top"
           Visibility="Hidden">
+
+          <!-- Open Person Detail Control -->
+          <mhc:IconButton
+            x:Name="personDetailBtn"
+            DockPanel.Dock="Right"
+            Icon="{StaticResource IconInformation}"
+            Width="20"
+            Height="20"
+            Command="{Binding PersonDetailM.SetPersonCommand,
+                      Source={x:Static pm:App.Core}}"
+            CommandParameter="{Binding Person}"/>
 
           <!-- Same Person Button -->
           <StackPanel
@@ -184,16 +193,7 @@
               Command="{Binding SegmentsM.SetSelectedAsSamePersonCommand,
                         Source={x:Static pm:App.Core}}"/>
           </StackPanel>
-
-          <!-- Open Person Detail Control -->
-          <mhc:IconButton
-            Icon="{StaticResource IconInformation}"
-            Width="20"
-            Height="20"
-            Command="{Binding PersonDetailM.SetPersonCommand,
-                      Source={x:Static pm:App.Core}}"
-            CommandParameter="{Binding Person}"/>
-        </StackPanel>
+        </DockPanel>
       </Grid>
     </Border>
 
@@ -203,6 +203,7 @@
       </DataTrigger>
       <DataTrigger Binding="{Binding Person}" Value="{x:Null}">
         <Setter TargetName="noPersonIcon" Property="Visibility" Value="Visible"/>
+        <Setter TargetName="personDetailBtn" Property="Visibility" Value="Collapsed"/>
       </DataTrigger>
       <Trigger SourceName="root" Property="IsMouseOver" Value="True">
         <Setter TargetName="noPersonIcon" Property="Visibility" Value="Hidden"/>
