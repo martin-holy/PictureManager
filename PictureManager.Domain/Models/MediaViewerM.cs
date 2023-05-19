@@ -73,7 +73,7 @@ namespace PictureManager.Domain.Models {
     public void Deactivate() {
       PresentationPanel.Stop();
       MediaItems.Clear();
-      Current = null;
+      SetMediaItemSource(null);
     }
 
     public void SetMediaItems(List<MediaItemM> mediaItems, MediaItemM current) {
