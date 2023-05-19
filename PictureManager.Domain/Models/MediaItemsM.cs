@@ -117,21 +117,18 @@ namespace PictureManager.Domain.Models {
     }
 
     /// <summary>
-    ///
+    /// Sets Current to one after or one before selection
     /// </summary>
-    /// <param name="all"></param>
-    /// <param name="selected"></param>
-    /// <returns>Returns next MediaItem from all after last in the selected or one before first or null</returns>
-    public void SetNewCurrent(List<MediaItemM> all, List<MediaItemM> selected) {
-      if (all == null || selected == null || selected.Count == 0)
+    public void SetNewCurrent(List<MediaItemM> items, List<MediaItemM> selected) {
+      if (items == null || selected == null || selected.Count == 0)
         Current = null;
 
-      var index = all.IndexOf(selected[^1]) + 1;
-      if (index == all.Count)
-        index = all.IndexOf(selected[0]) - 1;
+      var index = items.IndexOf(selected[^1]) + 1;
+      if (index == items.Count)
+        index = items.IndexOf(selected[0]) - 1;
 
       Current = index >= 0
-        ? all[index]
+        ? items[index]
         : null;
     }
 
@@ -321,8 +318,10 @@ namespace PictureManager.Domain.Models {
 
       _ = Core.DialogHostShow(fop);
 
-      if (mode == FileOperationMode.Move)
-        _core.ThumbnailsGridsM.Current.Remove(_core.ThumbnailsGridsM.Current.Selected.Items.ToList(), true);
+      if (mode == FileOperationMode.Move) {
+        SetNewCurrent(_core.ThumbnailsGridsM.Current.FilteredItems, items);
+        _core.ThumbnailsGridsM.Current.Remove(items, true);
+      }
     }
 
     private void CopyMove(FileOperationMode mode, List<MediaItemM> items, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
