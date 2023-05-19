@@ -122,7 +122,8 @@ namespace PictureManager.Domain.Models {
     }
 
     private void SelectionChanged() {
-      if (this != _core.ThumbnailsGridsM.Current) return;
+      if (this != _core.ThumbnailsGridsM.Current
+        || _core.MediaViewerM.IsVisible) return;
 
       SelectionChangedEventHandler(this, EventArgs.Empty);
       OnPropertyChanged(nameof(PositionSlashCount));
