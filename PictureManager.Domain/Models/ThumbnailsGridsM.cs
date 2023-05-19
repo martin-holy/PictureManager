@@ -84,7 +84,6 @@ namespace PictureManager.Domain.Models {
     }
 
     private void OnGridSelectionChanged(object o, EventArgs e) {
-      _core.MediaItemsM.Current = ((ThumbnailsGridM)o).Selected.Items.FirstOrDefault();
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 

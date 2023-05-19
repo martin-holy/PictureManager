@@ -69,8 +69,10 @@ namespace PictureManager.Domain.Models {
       ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
 
       SelectMediaItemCommand = new(e => {
-        if (e.DataContext is MediaItemM mi)
+        if (e.DataContext is MediaItemM mi) {
           Selected.Select(FilteredItems, mi, e.IsCtrlOn, e.IsShiftOn);
+          _core.MediaItemsM.Current = Selected.Items.Contains(mi) ? mi : null;
+        }
       });
 
       OpenMediaItemCommand = new(
