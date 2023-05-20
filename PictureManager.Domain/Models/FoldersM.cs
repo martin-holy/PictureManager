@@ -247,11 +247,12 @@ namespace PictureManager.Domain.Models {
           CopyMove(mode, srcFolder, destFolder, fop.Progress, token);
         }
         catch (Exception ex) {
-          Core.DialogHostShow(new ErrorDialogM(ex));
+          Tasks.RunOnUiThread(() => Core.DialogHostShow(new ErrorDialogM(ex)));
         }
       }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
       Core.DialogHostShow(fop);
+      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
 
     private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
@@ -283,8 +284,6 @@ namespace PictureManager.Domain.Models {
           break;
         }
       }
-
-      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
 
     private static void CopyMoveFilesAndCache(FileOperationMode mode, string srcDirPath, string destDirPath,
