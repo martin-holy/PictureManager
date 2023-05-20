@@ -423,11 +423,21 @@ namespace PictureManager.Domain.Models {
           info.Title = title;
       }
 
+      foreach (var mi in Selected.Items.Where(x => !FilteredItems.Contains(x)).ToArray())
+        Selected.Set(mi, false);
+
       OnPropertyChanged(nameof(PositionSlashCount));
       FilteredChangedEventHandler(this, EventArgs.Empty);
       NeedReload = false;
-      ScrollToItem = GetItemToScrollTo();
       Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
+
+      if (FilteredItems.Contains(_core.MediaItemsM.Current))
+        ScrollToItem = _core.MediaItemsM.Current;
+      else {
+        _core.MediaItemsM.Current = null;
+        if (Selected.Items.Count != 0)
+          ScrollToItem = Selected.Items[0];
+      }
     }
   }
 }
