@@ -99,7 +99,7 @@ namespace PictureManager.Domain.Models {
         (grid) => grid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
 
       SelectNotModifiedCommand = new(
-        (grid) => grid.Selected.Set(grid.FilteredItems.Except(ModifiedItems)),
+        (grid) => grid.Selected.Set(grid.FilteredItems.Except(ModifiedItems).ToArray()),
         (grid) => grid?.FilteredItems.Count > 0);
     }
 
