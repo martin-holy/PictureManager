@@ -85,6 +85,7 @@ namespace PictureManager.Domain.Models {
 
     private void OnGridSelectionChanged(object o, EventArgs e) {
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      _core.StatusPanelM.Update();
     }
 
     private void OnGridFilteredChanged(object o, EventArgs e) {
