@@ -94,20 +94,33 @@ namespace PictureManager.Domain.Models {
         return false;
 
       // People
+      var miPeople = new List<PersonM>();
+      if (mi.People != null)
+        miPeople.AddRange(mi.People);
+      if (mi.Segments != null)
+        miPeople.AddRange(mi.Segments.Where(x => x.Person != null).Select(x => x.Person));
+
       var notPeople = FilterNot.OfType<PersonM>();
-      if (notPeople.Any() && mi.People != null && notPeople.Any(fp => mi.People.Any(p => p == fp))) return false;
+      if (notPeople.Any() && miPeople.Any() && notPeople.Any(fp => miPeople.Any(p => p == fp))) return false;
       var andPeople = FilterAnd.OfType<PersonM>();
-      if (andPeople.Any() && (mi.People == null || !andPeople.All(fp => mi.People.Any(p => p == fp)))) return false;
+      if (andPeople.Any() && (!miPeople.Any() || !andPeople.All(fp => miPeople.Any(p => p == fp)))) return false;
       var orPeople = FilterOr.OfType<PersonM>();
-      if (orPeople.Any() && (mi.People == null || !orPeople.Any(fp => mi.People.Any(p => p == fp)))) return false;
+      if (orPeople.Any() && (!miPeople.Any() || !orPeople.Any(fp => miPeople.Any(p => p == fp)))) return false;
 
       // Keywords
+      var miKeywords = new List<KeywordM>();
+      miKeywords.AddRange(miPeople.Where(x => x.Keywords != null).SelectMany(x => x.Keywords));
+      if (mi.Keywords != null)
+        miKeywords.AddRange(mi.Keywords);
+      if (mi.Segments != null)
+        miKeywords.AddRange(mi.Segments.Where(x => x.Keywords != null).SelectMany(x => x.Keywords));
+
       var notKeywords = FilterNot.OfType<KeywordM>();
-      if (notKeywords.Any() && mi.Keywords != null && notKeywords.Any(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName)))) return false;
+      if (notKeywords.Any() && miKeywords.Any() && notKeywords.Any(fk => miKeywords.Any(mik => mik.FullName.StartsWith(fk.FullName)))) return false;
       var andKeywords = FilterAnd.OfType<KeywordM>();
-      if (andKeywords.Any() && (mi.Keywords == null || !andKeywords.All(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))) return false;
+      if (andKeywords.Any() && (!miKeywords.Any() || !andKeywords.All(fk => miKeywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))) return false;
       var orKeywords = FilterOr.OfType<KeywordM>();
-      if (orKeywords.Any() && (mi.Keywords == null || !orKeywords.Any(fk => mi.Keywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))) return false;
+      if (orKeywords.Any() && (!miKeywords.Any() || !orKeywords.Any(fk => miKeywords.Any(mik => mik.FullName.StartsWith(fk.FullName))))) return false;
 
       return true;
     }
