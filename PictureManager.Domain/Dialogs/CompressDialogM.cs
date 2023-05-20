@@ -40,7 +40,7 @@ namespace PictureManager.Domain.Dialogs {
 
       Buttons = new DialogButton[] {
         new("Compress", Res.IconImage, compressCommand, true, false),
-        new("Cancel", Res.IconXCross, CloseCommand, false, true) };
+        new("Close", Res.IconXCross, CloseCommand, false, true) };
     }
 
     public async Task Cancel() {
