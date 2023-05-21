@@ -12,7 +12,7 @@
     <Version>$(Year).$(Month).$(Date).$(Time)</Version>
     <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
     <Authors>Martin Holý</Authors>
-    <Copyright>Martin Holý (2015 - 2022)</Copyright>
+    <Copyright>Martin Holý (2015 - 2023)</Copyright>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
