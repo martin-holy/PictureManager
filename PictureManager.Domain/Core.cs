@@ -123,7 +123,6 @@ namespace PictureManager.Domain {
 
           if (!isFullScreen) {
             ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
-            TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
 
             if (SegmentsM.NeedReload) {
               SegmentsM.NeedReload = false;
@@ -132,6 +131,8 @@ namespace PictureManager.Domain {
 
             MediaViewerM.Deactivate();
           }
+
+          TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
         }
       };
 
