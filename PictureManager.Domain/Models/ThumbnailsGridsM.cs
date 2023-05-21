@@ -50,7 +50,6 @@ namespace PictureManager.Domain.Models {
       if (grid.Equals(Current)) {
         Current = null;
         _core.MediaItemsM.Current = null;
-        _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       }
     }
 
