@@ -67,8 +67,6 @@ namespace PictureManager.Domain.Models {
     public double? Lat { get; set; }
     public double? Lng { get; set; }
 
-    public bool IsPanoramic { get; set; }
-
     public MediaItemM(int id, FolderM folder, string fileName) {
       Id = id;
       Folder = folder;
@@ -92,7 +90,6 @@ namespace PictureManager.Domain.Models {
         out var w,
         out var h);
 
-      IsPanoramic = w > desiredSize;
       ThumbWidth = w;
       ThumbHeight = h;
     }

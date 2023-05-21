@@ -66,7 +66,7 @@ namespace PictureManager.Domain.Models {
 
       MediaPlayerM.RepeatEnded += () => {
         if (PresentationPanel.IsPaused)
-          PresentationPanel.Start(false);
+          PresentationPanel.Start(Current, false);
       };
     }
 
@@ -96,15 +96,7 @@ namespace PictureManager.Domain.Models {
 
     public void Next() {
       Current = MediaItems[++_indexOfCurrent];
-
-      if (PresentationPanel.IsRunning && (Current.MediaType == MediaType.Video ||
-        (Current.IsPanoramic && PresentationPanel.PlayPanoramicImages))) {
-
-        PresentationPanel.Pause();
-
-        if (Current.MediaType == MediaType.Image && Current.IsPanoramic)
-          PresentationPanel.Start(true);
-      }
+      PresentationPanel.Next(Current);
     }
 
     public bool CanPrevious() =>
