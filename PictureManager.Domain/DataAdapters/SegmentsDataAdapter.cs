@@ -99,8 +99,14 @@ namespace PictureManager.Domain.DataAdapters {
       if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
         _model.SegmentsDrawerM.Items.Clear();
 
+        var drawer = new List<SegmentM>();
         foreach (var segmentId in segmentsDrawer.Split(','))
-          _model.SegmentsDrawerM.Items.Add(All[int.Parse(segmentId)]);
+          drawer.Add(All[int.Parse(segmentId)]);
+
+        foreach (var segment in drawer
+          .OrderBy(x => x.MediaItem.Folder.FullPath)
+          .ThenBy(x => x.MediaItem.FileName))
+          _model.SegmentsDrawerM.Items.Add(segment);
       }
 
       // table props are not needed any more

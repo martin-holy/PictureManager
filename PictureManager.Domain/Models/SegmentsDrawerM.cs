@@ -71,9 +71,18 @@ namespace PictureManager.Domain.Models {
 
       var count = Items.Count;
 
-      if (add)
-        foreach (var segment in segments.Except(Items).ToArray())
+      if (add) {
+        var sorted = Items
+          .Concat(segments.Except(Items))
+          .OrderBy(x => x.MediaItem.Folder.FullPath)
+          .ThenBy(x => x.MediaItem.FileName)
+          .ToArray();
+
+        Items.Clear();
+
+        foreach (var segment in sorted)
           Items.Add(segment);
+      }
       else
         foreach (var segment in segments)
           Items.Remove(segment);
