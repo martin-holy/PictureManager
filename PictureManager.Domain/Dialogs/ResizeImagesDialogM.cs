@@ -48,8 +48,7 @@ namespace PictureManager.Domain.Dialogs {
       _items = items.Where(x => x.MediaType == MediaType.Image).ToArray();
       ProgressMax = _items.Length;
 
-      DirPaths = new(Core.Settings.DirectorySelectFolders.Split(new[] { Environment.NewLine },
-        StringSplitOptions.RemoveEmptyEntries));
+      DirPaths = new(Core.Settings.DirectorySelectFolders.Split(','));
 
       SetMaxMpx();
     }
@@ -107,7 +106,7 @@ namespace PictureManager.Domain.Dialogs {
         finally {
           _cts.Dispose();
           _cts = null;
-          Result = 1;
+          Tasks.RunOnUiThread(() => { Result = 1; });
         }
       });
     }
@@ -126,7 +125,7 @@ namespace PictureManager.Domain.Dialogs {
 
       if (!DirPaths.Contains(dir.SelectedFolder.FullPath)) {
         DirPaths.Insert(0, dir.SelectedFolder.FullPath);
-        Core.Settings.DirectorySelectFolders = string.Join(Environment.NewLine, DirPaths);
+        Core.Settings.DirectorySelectFolders = string.Join(',', DirPaths);
         Core.Settings.Save();
       }
 
