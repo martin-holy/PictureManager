@@ -207,8 +207,7 @@ namespace PictureManager.Domain {
 
       MediaItemsM.PropertyChanged += (_, e) => {
         if (nameof(MediaItemsM.Current).Equals(e.PropertyName)) {
-          if (MediaViewerM.IsVisible)
-            StatusPanelM.Update();
+          StatusPanelM.Update();
 
           if (MainWindowM.IsFullScreen)
             TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
