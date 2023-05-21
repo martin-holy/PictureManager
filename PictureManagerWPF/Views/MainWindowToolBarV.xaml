@@ -140,16 +140,16 @@
               Icon="{StaticResource IconEquals}"
               Command="{Binding SegmentMatchingCommand}"/>
           </StackPanel>
-
-          <Separator/>
-
+          
           <!-- Presentation ToolBar -->
           <StackPanel
             VerticalAlignment="Center"
             Orientation="Horizontal"
             DataContext="{Binding MediaViewerM.PresentationPanel}"
-            IsEnabled="{Binding MediaViewerM.Current, Source={x:Static pm:App.Core}, Converter={StaticResource AllToBoolConverter}}">
+            Visibility="{Binding MediaViewerM.IsVisible, Source={x:Static pm:App.Core}, Converter={StaticResource AllToVisibilityConverter}}">
 
+            <Separator/>
+            
             <!-- Play/Stop -->
             <mhc:IconButton Command="{Binding PresentationCommand}">
               <mhc:IconButton.Style>
