@@ -1,6 +1,6 @@
-﻿using System.Timers;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using System.Timers;
 
 namespace PictureManager.Domain.Models {
   public sealed class PresentationPanelM : ObservableObject {
@@ -34,7 +34,7 @@ namespace PictureManager.Domain.Models {
       set {
         _isAnimationOn = value;
         if (!value)
-          Start(false);
+          Start(_mediaViewerM.Current, false);
         OnPropertyChanged();
       }
     }
@@ -65,8 +65,11 @@ namespace PictureManager.Domain.Models {
       _timer?.Dispose();
     }
 
-    public void Start(bool delay) {
-      if (delay && _mediaViewerM.Current.MediaType == MediaType.Image && _mediaViewerM.Current.IsPanoramic && PlayPanoramicImages) {
+    public void Start(MediaItemM current, bool delay) {
+      if (delay
+        && PlayPanoramicImages
+        && current.MediaType == MediaType.Image 
+        && MediaItemsM.IsPanoramic(current)) {
         Pause();
         MinAnimationDuration = Interval * 1000;
         IsAnimationOn = true;
@@ -99,7 +102,7 @@ namespace PictureManager.Domain.Models {
       if (IsAnimationOn || IsRunning || IsPaused)
         Stop();
       else
-        Start(true);
+        Start(_mediaViewerM.Current, true);
     }
 
     private void Next() {
@@ -110,6 +113,17 @@ namespace PictureManager.Domain.Models {
         else
           Stop();
       });
+    }
+
+    public void Next(MediaItemM current) {
+      var isPanoramic = MediaItemsM.IsPanoramic(current);
+
+      if (IsRunning && (current.MediaType == MediaType.Video || (isPanoramic && PlayPanoramicImages))) {
+        Pause();
+
+        if (current.MediaType == MediaType.Image && isPanoramic)
+          Start(current, true);
+      }
     }
   }
 }
