@@ -38,11 +38,13 @@ namespace PictureManager.Domain.Models {
 
     private static List<object> GetSimilar(MediaItemM[] items, int limit, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
       // get hashes
-      if (hashes.Count == 0)
-        GetHashes(items, hashes, hashMethod);
+      var newItems = items.Where(x => !hashes.ContainsKey(x)).ToArray();
+      if (newItems.Length > 0)
+        GetHashes(newItems, hashes, hashMethod);
 
       // get similar
-      return Imaging.GetSimilarImages(hashes, limit);
+      var toCompare = hashes.Where(x => items.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value);
+      return Imaging.GetSimilarImages(toCompare, limit);
     }
 
     private static void GetHashes(MediaItemM[] items, Dictionary<object, long> hashes, Imaging.ImageHashFunc hashMethod) {
