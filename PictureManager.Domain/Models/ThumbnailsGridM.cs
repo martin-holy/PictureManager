@@ -411,6 +411,9 @@ namespace PictureManager.Domain.Models {
       }
 
       AfterLoad(true);
+
+      if (_core.MediaViewerM.IsVisible && FilteredItems.Count > 0)
+        OpenMediaItem(FilteredItems[0]);
     }
 
     private void AfterLoad(bool maxSizeSelection) {
