@@ -480,9 +480,7 @@ namespace PictureManager.Domain.Models {
 
       // add segments with Person != null with all similar segments with Person == null
       string GetKeywords(SegmentM segment) =>
-        segment.Keywords == null
-          ? string.Empty
-          : string.Join(", ", KeywordsM.GetAllKeywords(segment.Keywords).Select(k => k.Name));
+        string.Join(", ", KeywordsM.GetAllKeywords(segment.Keywords).Select(k => k.Name));
 
       var samePerson = Loaded
         .Where(x => x.Person?.Id > 0)
@@ -617,9 +615,9 @@ namespace PictureManager.Domain.Models {
       else {
         const string zzzz = "zzzz";
         foreach (var group in tmp
-          .GroupBy(x => x.person.DisplayKeywords == null
+          .GroupBy(x => x.person.Keywords == null
             ? zzzz
-            : string.Join(", ", x.person.DisplayKeywords.Select(k => k.Name)))
+            : string.Join(", ", KeywordsM.GetAllKeywords(x.person.Keywords).Select(k => k.Name)))
           .OrderBy(g => g.Key)
           .ThenBy(g => g.First().person.Name)) {
 
