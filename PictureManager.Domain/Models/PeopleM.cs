@@ -68,7 +68,7 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} item already exists!"
         : null;
 
@@ -90,7 +90,7 @@ namespace PictureManager.Domain.Models {
         : $"{name} group already exists!";
 
     public PersonM GetPerson(string name, bool create) =>
-      DataAdapter.All.Values.SingleOrDefault(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      DataAdapter.All.Values.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ?? (create
         ? (PersonM)ModelItemCreate(this, name)
         : null);

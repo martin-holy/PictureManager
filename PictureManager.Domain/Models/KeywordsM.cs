@@ -55,7 +55,7 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      root.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.CurrentCulture))
+      root.Items.OfType<KeywordM>().Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} item already exists!"
         : null;
 
