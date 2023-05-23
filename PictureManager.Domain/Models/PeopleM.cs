@@ -173,10 +173,6 @@ namespace PictureManager.Domain.Models {
 
       PeopleRoot = root;
       ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
-
-      // TODO do it just for loaded
-      foreach (var person in DataAdapter.All.Values)
-        person.UpdateDisplayKeywords();
     }
 
     private static void AddPeopleToGroups(TreeWrapGroup root, string groupTitle, IEnumerable<PersonM> people) {

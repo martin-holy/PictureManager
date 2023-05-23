@@ -127,12 +127,15 @@ namespace PictureManager.Domain.Models {
     }
 
     public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) {
+      if (keywords == null)
+        return Enumerable.Empty<KeywordM>();
+
       var allKeywords = new List<KeywordM>();
 
       foreach (var keyword in keywords)
         Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
 
-      return allKeywords.Distinct().OrderBy(x => x.FullName);
+      return allKeywords.Distinct().OrderBy(x => x.FullName).ToArray();
     }
   }
 }

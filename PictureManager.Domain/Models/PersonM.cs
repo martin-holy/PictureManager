@@ -19,13 +19,12 @@ namespace PictureManager.Domain.Models {
     #endregion
 
     private SegmentM _segment;
-    private ObservableCollection<KeywordM> _displayKeywords;
 
     public int Id { get; }
     public SegmentM Segment { get => _segment; set { _segment = value; OnPropertyChanged(); } }
     public ObservableCollection<object> TopSegments { get; set; }
     public List<KeywordM> Keywords { get; set; }
-    public ObservableCollection<KeywordM> DisplayKeywords { get => _displayKeywords; set { _displayKeywords = value; OnPropertyChanged(); } }
+    public IEnumerable<KeywordM> DisplayKeywords => KeywordsM.GetAllKeywords(Keywords);
 
     public PersonM() { }
 
@@ -34,22 +33,8 @@ namespace PictureManager.Domain.Models {
     }
 
     public void UpdateDisplayKeywords() {
-      DisplayKeywords?.Clear();
-
-      if (Keywords == null) {
-        if (DisplayKeywords != null)
-          DisplayKeywords = null;
-
-        return;
-      }
-
-      if (DisplayKeywords == null) {
-        DisplayKeywords = new();
-        OnPropertyChanged(nameof(DisplayKeywords));
-      }
-
-      foreach (var keyword in KeywordsM.GetAllKeywords(Keywords))
-        DisplayKeywords.Add(keyword);
+      OnPropertyChanged(nameof(Keywords));
+      OnPropertyChanged(nameof(DisplayKeywords));
     }
 
     public TreeWrapGroup GetSegments(IEnumerable<SegmentM> source, List<SegmentM> allSegments) {
@@ -60,9 +45,7 @@ namespace PictureManager.Domain.Models {
 
       var groupedByKeywords = source
         .Where(x => x.Person == this)
-        .GroupBy(x => x.Keywords == null
-          ? string.Empty
-          : string.Join(", ", KeywordsM.GetAllKeywords(x.Keywords).Select(k => k.Name)))
+        .GroupBy(x => string.Join(", ", KeywordsM.GetAllKeywords(x.Keywords).Select(k => k.Name)))
         .OrderBy(x => x.Key)
         .ToArray();
 

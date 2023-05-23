@@ -60,7 +60,7 @@
         <DockPanel
           Margin="4,0,0,0"
           VerticalAlignment="Center"
-          Visibility="{Binding PersonM.DisplayKeywords, Converter={StaticResource AllToVisibilityConverter}}">
+          Visibility="{Binding PersonM.Keywords, Converter={StaticResource AllToVisibilityConverter}}">
           
           <Path
             Style="{StaticResource MH.Styles.Icon}"

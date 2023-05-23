@@ -49,10 +49,6 @@ namespace PictureManager.ViewModels {
         await CompareAsync();
         SegmentsM.Reload(true, true);
       });
-
-      // TODO do it just when needed
-      foreach (var person in _core.PeopleM.DataAdapter.All.Values)
-        person.UpdateDisplayKeywords();
     }
 
     private void Select(MouseButtonEventArgs e) {
