@@ -40,7 +40,7 @@ namespace PictureManager.Domain.Models {
 
     private FolderKeywordM GetForFolder(FolderM folder, ITreeItem fkRoot) {
       var fk = fkRoot.Items.Cast<FolderKeywordM>()
-        .SingleOrDefault(x => x.Name.Equals(folder.Name, StringComparison.Ordinal));
+        .SingleOrDefault(x => x.Name.Equals(folder.Name, StringComparison.OrdinalIgnoreCase));
 
       if (fk == null) {
         // remove placeholder

@@ -205,7 +205,7 @@ namespace PictureManager.Domain.Models {
         drivesNames.Add(driveName);
 
         // add Drive to the database and to the tree if not already exists
-        if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.CurrentCultureIgnoreCase)) is not { } item) {
+        if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.OrdinalIgnoreCase)) is not { } item) {
           item = new DriveM(DataAdapter.GetNextId(), driveName, this);
           DataAdapter.All.Add(item.Id, item);
           Items.Add(item);
@@ -221,7 +221,7 @@ namespace PictureManager.Domain.Models {
 
       // set available drives
       foreach (var item in Items.Cast<FolderM>()) {
-        item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.CurrentCultureIgnoreCase));
+        item.IsAvailable = drivesNames.Any(x => x.Equals(item.Name, StringComparison.OrdinalIgnoreCase));
         item.IsHidden = !IsFolderVisible(item);
       }
     }
