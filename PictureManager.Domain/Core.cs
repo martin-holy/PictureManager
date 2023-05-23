@@ -249,22 +249,24 @@ namespace PictureManager.Domain {
       };
 
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(PersonDetailM.PersonM)))
+        if (e.Data.Item2.Any(x => x.Equals(PersonDetailM.PersonM)))
           PersonDetailM.ReloadPersonSegments();
-        SegmentsM.Reload();
+
+        SegmentsM.ReloadIfContains(e.Data.Item1);
 
         if (MediaViewerM.IsVisible)
           MediaViewerM.Current?.SetInfoBox();
       };
 
       SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
-        if (e.Data.Any(x => x.Equals(PersonDetailM.PersonM)))
+        if (e.Data.Item1.Select(x => x.Person).Any(x => x.Equals(PersonDetailM.PersonM)))
           PersonDetailM.ReloadPersonSegments();
-        SegmentsM.Reload();
+
+        SegmentsM.ReloadIfContains(e.Data.Item1);
       };
 
       SegmentsM.SegmentDeletedEventHandler += (_, e) => {
-        if (PersonDetailM.PersonM?.Equals(e.Data.Person) == true)
+        if (e.Data.Person.Equals(PersonDetailM.PersonM))
           PersonDetailM.ReloadPersonSegments();
 
         SegmentsM.SegmentsDrawerM.Remove(e.Data);

@@ -52,8 +52,8 @@ namespace PictureManager.Domain.Models {
     public CanDragFunc CanDragFunc { get; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
-    public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsPersonChangedEvent = delegate { };
-    public event EventHandler<ObjectEventArgs<PersonM[]>> SegmentsKeywordChangedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<(SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
+    public event EventHandler<ObjectEventArgs<(SegmentM[], KeywordM)>> SegmentsKeywordChangedEvent = delegate { };
     public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
@@ -163,7 +163,14 @@ namespace PictureManager.Domain.Models {
         .ToHashSet();
       var segments = Selected.Items
         .Where(x => x.Person == null || x.Person.Id > 0)
-        .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)));
+        .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)))
+        .ToArray();
+      var people = segments
+        .Where(x => x.Person != null)
+        .Select(x => x.Person)
+        .Concat(new[] { person })
+        .Distinct()
+        .ToArray();
 
       MergePeople(person, unknownPeople.ToArray());
 
@@ -172,7 +179,7 @@ namespace PictureManager.Domain.Models {
 
       Selected.DeselectAll();
 
-      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(segments)));
+      SegmentsPersonChangedEvent(this, new((segments, people)));
     }
 
     /// <summary>
@@ -272,12 +279,14 @@ namespace PictureManager.Domain.Models {
         MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
       }
 
+      var affectedPeople = people.Concat(new[] { newPerson }).Distinct().ToArray();
+
       foreach (var segment in toUpdate)
         ChangePerson(segment, newPerson);
 
       Selected.DeselectAll();
       _core.PeopleM.Selected.DeselectAll();
-      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(toUpdate)));
+      SegmentsPersonChangedEvent(this, new((toUpdate, affectedPeople)));
     }
 
     public SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
@@ -304,11 +313,12 @@ namespace PictureManager.Domain.Models {
       if (Core.DialogHostShow(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
         return;
 
-      foreach (var segment in Selected.Items)
+      var segments = Selected.Items.ToArray();
+      foreach (var segment in segments)
         ChangePerson(segment, null);
 
       Selected.DeselectAll();
-      SegmentsPersonChangedEvent(this, new(GetPeopleFromSegments(Selected.Items)));
+      SegmentsPersonChangedEvent(this, new((segments, null)));
     }
 
     private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
@@ -320,7 +330,7 @@ namespace PictureManager.Domain.Models {
       foreach (var segment in segments)
         ToggleKeyword(segment, keyword);
 
-      SegmentsKeywordChangedEvent(this, new(GetPeopleFromSegments(segments)));
+      SegmentsKeywordChangedEvent(this, new((segments.ToArray(), keyword)));
     }
 
     public void RemoveKeywordFromSegments(KeywordM keyword) =>
@@ -417,6 +427,11 @@ namespace PictureManager.Domain.Models {
 
       Reload(true, true);
       ReloadAutoScroll = true;
+    }
+
+    public void ReloadIfContains(IEnumerable<SegmentM> segments) {
+      if (Loaded.Any(x => segments.Equals(x)))
+        Reload();
     }
 
     public void Reload() =>
