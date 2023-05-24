@@ -78,7 +78,7 @@
           Style="{StaticResource InfoBoxThumbStyle}"/>
 
         <!-- Selected over layer -->
-        <Grid Visibility="{Binding IsSelected, Converter={StaticResource AllToVisibilityConverter}}">
+        <Grid x:Name="selectedOverLayer" Visibility="Hidden">
           <Polygon
             Width="40"
             Height="40"
@@ -102,6 +102,7 @@
     <DataTemplate.Triggers>
       <DataTrigger Binding="{Binding IsSelected}" Value="True">
         <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+        <Setter TargetName="selectedOverLayer" Property="Visibility" Value="Visible"/>
       </DataTrigger>
 
       <DataTrigger Value="True">
