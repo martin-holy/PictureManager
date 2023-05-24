@@ -22,6 +22,7 @@
       x:Name="border"
       Width="{Binding ThumbWidth, Converter={StaticResource MediaItemThumbScaleConvertor}}"
       Height="{Binding ThumbHeight, Converter={StaticResource MediaItemThumbScaleConvertor}}"
+      MaxWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
       BorderThickness="2"
       BorderBrush="Black"
       Margin="1"
