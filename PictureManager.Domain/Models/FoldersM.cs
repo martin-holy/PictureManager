@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
@@ -13,6 +6,12 @@ using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Dialogs;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public class FoldersM : TreeCategoryBase {
@@ -23,8 +22,6 @@ namespace PictureManager.Domain.Models {
     public event EventHandler<ObjectEventArgs<FolderM>> FolderDeletedEventHandler = delegate { };
     public static readonly FolderM FolderPlaceHolder = new(0, string.Empty, null);
 
-    public RelayCommand<FolderM> SetAsFolderKeywordCommand { get; }
-
     public FoldersM(Core core, ViewersM viewersM) : base(Res.IconFolder, Category.Folders, "Folders") {
       _core = core;
       _viewersM = viewersM;
@@ -32,8 +29,6 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
       CanCopyItem = true;
       IsExpanded = true;
-
-      SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
 
       AttachEvents();
     }
@@ -128,8 +123,7 @@ namespace PictureManager.Domain.Models {
       root.Items.SetInOrder(item, x => x.Name);
 
       // reload FolderKeywords
-      if (rootFolder.IsFolderKeyword || rootFolder.FolderKeyword != null)
-        _core.FolderKeywordsM.Load(DataAdapter.All.Values);
+      _core.FolderKeywordsM.LoadIfContains(rootFolder);
 
       return item;
     }
@@ -147,8 +141,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
 
       // reload FolderKeywords
-      if (folder.IsFolderKeyword || folder.FolderKeyword != null)
-        _core.FolderKeywordsM.Load(DataAdapter.All.Values);
+      _core.FolderKeywordsM.LoadIfContains(folder);
     }
 
     protected override void ModelItemDelete(ITreeItem item) {
@@ -177,7 +170,7 @@ namespace PictureManager.Domain.Models {
         DataAdapter.IsModified = true;
       }
 
-      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
+      _core.FolderKeywordsM.Load();
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) {
@@ -252,7 +245,7 @@ namespace PictureManager.Domain.Models {
       }).ContinueWith(_ => Tasks.RunOnUiThread(() => fop.Result = 1));
 
       Core.DialogHostShow(fop);
-      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
+      _core.FolderKeywordsM.Load();
     }
 
     private void CopyMove(FileOperationMode mode, FolderM srcFolder, FolderM destFolder, IProgress<object[]> progress, CancellationToken token) {
@@ -485,12 +478,6 @@ namespace PictureManager.Domain.Models {
       }
 
       return output.Where(f => IsFolderVisible(f)).ToList();
-    }
-
-    public void SetAsFolderKeyword(FolderM folder) {
-      folder.IsFolderKeyword = true;
-      DataAdapter.IsModified = true;
-      _core.FolderKeywordsM.Load(DataAdapter.All.Values);
     }
   }
 }

@@ -83,7 +83,7 @@ namespace PictureManager.Domain.DataAdapters {
 
       _model.Current?.UpdateHashSets();
       _foldersM.AddDrives();
-      _folderKeywordsM.Load(_foldersM.DataAdapter.All.Values);
+      _folderKeywordsM.Load();
       _categoryGroupsM.UpdateVisibility(_model.Current);
     }
   }

@@ -77,6 +77,7 @@ namespace PictureManager.Domain {
 
       CategoryGroupsM.DataAdapter = new(CategoryGroupsM, KeywordsM, PeopleM);
       FavoriteFoldersM.DataAdapter = new(FavoriteFoldersM, FoldersM);
+      FolderKeywordsM.DataAdapter = new(FoldersM);
       FoldersM.DataAdapter = new(FoldersM);
       GeoNamesM.DataAdapter = new(GeoNamesM);
       KeywordsM.DataAdapter = new(KeywordsM, CategoryGroupsM);
@@ -92,7 +93,8 @@ namespace PictureManager.Domain {
       return Task.Run(() => {
         Sdb.AddDataAdapter(CategoryGroupsM.DataAdapter); // needs to be before People and Keywords
         Sdb.AddDataAdapter(KeywordsM.DataAdapter);
-        Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers and FavoriteFolders
+        Sdb.AddDataAdapter(FoldersM.DataAdapter); // needs to be before Viewers, FavoriteFolders and FolderKeywords
+        Sdb.AddDataAdapter(FolderKeywordsM.DataAdapter); // needs to be before Viewers
         Sdb.AddDataAdapter(ViewersM.DataAdapter);
         Sdb.AddDataAdapter(PeopleM.DataAdapter); // needs to be before Segments
         Sdb.AddDataAdapter(GeoNamesM.DataAdapter);
@@ -102,7 +104,7 @@ namespace PictureManager.Domain {
         Sdb.AddDataAdapter(FavoriteFoldersM.DataAdapter);
         Sdb.AddDataAdapter(SegmentsM.DataAdapter);
 
-        SimpleDB.Migrate(3, DatabaseMigration.Resolver);
+        SimpleDB.Migrate(4, DatabaseMigration.Resolver);
 
         Sdb.LoadAllTables(progress);
         Sdb.LinkReferences(progress);

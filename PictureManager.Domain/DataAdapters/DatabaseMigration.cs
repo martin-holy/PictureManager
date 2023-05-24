@@ -24,9 +24,19 @@ Segments
   new => ID|MediaItemId|PersonId|SegmentBox(left,top,size)|Keywords
  */
 
+/* migration from version 3 to 4
+Folders
+  old => ID|Name|Parent|IsFolderKeyword
+  new => ID|Name|Parent
+FolderKeywords
+  new => ID
+ */
+
 using MH.Utils;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PictureManager.Domain.DataAdapters {
   public static class DatabaseMigration {
@@ -72,17 +82,48 @@ namespace PictureManager.Domain.DataAdapters {
 
         foreach (var file in files) {
           SimpleDB.MigrateFile(
-          file,
-          record => {
-            var values = record.Split('|');
-            var oldRect = values[3].Split(',');
-            var x = int.Parse(oldRect[0]);
-            var y = int.Parse(oldRect[1]);
-            var r = int.Parse(oldRect[2]);
-            var newRect = string.Join(',', x - r, y - r, r * 2);
+            file,
+            record => {
+              var values = record.Split('|');
+              var oldRect = values[3].Split(',');
+              var x = int.Parse(oldRect[0]);
+              var y = int.Parse(oldRect[1]);
+              var r = int.Parse(oldRect[2]);
+              var newRect = string.Join(',', x - r, y - r, r * 2);
 
-            return string.Join('|', values[0], values[1], values[2], newRect, values[4]);
-          });
+              return string.Join('|', values[0], values[1], values[2], newRect, values[4]);
+            });
+        }
+      }
+
+      // 3 => 4
+      if (oldVersion < 4) {
+        var fks = new List<string>();
+        var files = Directory.GetFiles("db")
+          .Where(x => x.StartsWith("db" + Path.DirectorySeparatorChar + "Folders."));
+
+        foreach (var file in files) {
+          fks.Clear();
+
+          SimpleDB.MigrateFile(
+            file,
+            record => {
+              var values = record.Split('|');
+
+              if (values[3] == "1")
+                fks.Add(values[0]);
+
+              return string.Join('|', values[0], values[1], values[2]);
+            });
+
+          if (fks.Count == 0) continue;
+
+          using var sw = new StreamWriter(file.Replace("Folders", "FolderKeywords"), false, Encoding.UTF8, 65536);
+          
+          foreach (var fk in fks)
+            sw.WriteLine(fk);
+
+          sw.Close();
         }
       }
     }

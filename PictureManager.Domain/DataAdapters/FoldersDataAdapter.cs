@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace PictureManager.Domain.DataAdapters {
   /// <summary>
-  /// DB fields: ID|Name|Parent|IsFolderKeyword
+  /// DB fields: ID|Name|Parent
   /// </summary>
   public class FoldersDataAdapter : DataAdapter<FolderM> {
     private readonly FoldersM _model;
 
-    public FoldersDataAdapter(FoldersM model) : base("Folders", 4) {
+    public FoldersDataAdapter(FoldersM model) : base("Folders", 3) {
       _model = model;
     }
 
@@ -29,21 +29,14 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override FolderM FromCsv(string[] csv) =>
       string.IsNullOrEmpty(csv[2])
-        ? new DriveM(int.Parse(csv[0]), csv[1], null) {
-          IsFolderKeyword = csv[3] == "1"
-        }
-        : new FolderM(int.Parse(csv[0]), csv[1], null) {
-          IsFolderKeyword = csv[3] == "1"
-        };
+        ? new DriveM(int.Parse(csv[0]), csv[1], null)
+        : new FolderM(int.Parse(csv[0]), csv[1], null);
 
     public override string ToCsv(FolderM folder) =>
       string.Join("|",
         folder.Id.ToString(),
         folder.Name,
-        (folder.Parent as FolderM)?.Id.ToString() ?? string.Empty,
-        folder.IsFolderKeyword
-          ? "1"
-          : string.Empty);
+        (folder.Parent as FolderM)?.Id.ToString() ?? string.Empty);
 
     public override void LinkReferences() {
       _model.Items.Clear();

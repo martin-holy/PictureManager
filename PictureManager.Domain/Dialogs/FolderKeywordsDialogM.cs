@@ -28,22 +28,16 @@ namespace PictureManager.Domain.Dialogs {
         new("Remove", Res.IconXCross, removeCommand),
         new("Close", Res.IconXCross, CloseCommand, false, true) };
 
-      foreach (var folder in _core.FoldersM.DataAdapter.All.Values
-        .Where(x => x.IsFolderKeyword)
-        .OrderBy(x => x.FullPath)) {
+      foreach (var folder in _core.FolderKeywordsM.DataAdapter.All.Values.OrderBy(x => x.FullPath))
         Items.Add(folder);
-      }
     }
 
     private void Remove(FolderM folder) {
       if (folder == null) return;
       if (Core.DialogHostShow(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
 
-      folder.IsFolderKeyword = false;
+      _core.FolderKeywordsM.Remove(folder);
       Items.Remove(folder);
-
-      _core.FoldersM.DataAdapter.IsModified = true;
-      _core.FolderKeywordsM.Load(_core.FoldersM.DataAdapter.All.Values);
     }
   }
 }
