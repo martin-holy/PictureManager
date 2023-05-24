@@ -13,7 +13,6 @@
   <converters:MediaItemThumbScaleConvertor x:Key="MediaItemThumbScaleConvertor"/>
   <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
   <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
-  <converters:RatingConverter x:Key="RatingConverter"/>
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
   
   <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter"/>

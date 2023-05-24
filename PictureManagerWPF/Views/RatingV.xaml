@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate DataType="{x:Type m:RatingM}">
     <StackPanel Orientation="Horizontal">
@@ -11,11 +12,11 @@
         </Style>
       </StackPanel.Resources>
 
-      <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=0}"/>
-      <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=1}"/>
-      <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=2}"/>
-      <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=3}"/>
-      <Path Fill="{Binding Value, Converter={StaticResource RatingConverter}, ConverterParameter=4}"/>
+      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=0}"/>
+      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=1}"/>
+      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=2}"/>
+      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=3}"/>
+      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=4}"/>
     </StackPanel>
   </DataTemplate>
 </ResourceDictionary>
