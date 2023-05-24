@@ -1,18 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
+using PictureManager.Domain.DataAdapters;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordsM : TreeCategoryBase {
+    public FolderKeywordsDataAdapter DataAdapter { get; set; }
     public List<FolderKeywordM> All { get; } = new();
     public static readonly FolderKeywordM FolderKeywordPlaceHolder = new(string.Empty, null);
+    public RelayCommand<FolderM> SetAsFolderKeywordCommand { get; }
 
-    public FolderKeywordsM() : base(Res.IconFolderPuzzle, Category.FolderKeywords, "Folder Keywords") { }
+    public FolderKeywordsM() : base(Res.IconFolderPuzzle, Category.FolderKeywords, "Folder Keywords") {
+      SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
+    }
 
-    public void Load(IEnumerable<FolderM> folders) {
+    public void LoadIfContains(FolderM folder) {
+      if (DataAdapter.All.ContainsKey(folder.Id) || folder.FolderKeyword != null)
+        Load();
+    }
+
+    public void Load() {
       foreach (var fk in All) {
         fk.Folders.Clear();
         fk.Items.Clear();
@@ -21,7 +33,7 @@ namespace PictureManager.Domain.Models {
       Items.Clear();
       All.Clear();
 
-      foreach (var folder in folders.Where(x => x.IsFolderKeyword))
+      foreach (var folder in DataAdapter.All.Values)
         LoadRecursive(folder, this);
 
       foreach (var fk in All) {
@@ -61,5 +73,17 @@ namespace PictureManager.Domain.Models {
 
     public void LinkFolderWithFolderKeyword(FolderM folder, FolderKeywordM folderKeyword) =>
       LinkWithFolder(folder, GetForFolder(folder, folderKeyword));
+
+    private void SetAsFolderKeyword(FolderM folder) {
+      DataAdapter.All.Add(folder.Id, folder);
+      DataAdapter.IsModified = true;
+      Load();
+    }
+
+    public void Remove(FolderM folder) {
+      DataAdapter.All.Remove(folder.Id);
+      DataAdapter.IsModified = true;
+      Load();
+    }
   }
 }

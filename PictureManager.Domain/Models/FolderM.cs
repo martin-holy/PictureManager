@@ -20,14 +20,12 @@ namespace PictureManager.Domain.Models {
 
     private bool _isAccessible;
     private bool _isAvailable;
-    private bool _isFolderKeyword;
 
     public int Id { get; }
     public List<MediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIconName(); } }
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
-    public bool IsFolderKeyword { get => _isFolderKeyword; set { _isFolderKeyword = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
 
