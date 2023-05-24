@@ -17,7 +17,6 @@
 ## MediaItems
   - D:\!test\364__32_original.jpg nejde ulozit metadata, nebo crop (resave without metadata in xnview fix the file)
   - error (there is too much metadata to be written to the bitmap) (20210902_083901_Martin.jpg)
-  - Compare: after deleted remove items from list
 ## VideoPlayer
   - Display aspect ratio different from video width and height ratio
     use DB width and height for aspect ratio and add way to change it
@@ -33,16 +32,11 @@
 ## PeopleV
   - reload when opened and person or group is created/renamed/moved in the tree
   - reload when keyword is toggled on person
-## Person
-  - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## Person Detail
-  - remove segments after changing person
+  - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
 ## Segment matching
   - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
 ## MH.UI.WPF
-  # Style
-   - Label - remove default padding?
-   - MH.Styles.IconShadow
   # Custom Window
    - minimize window will break full screen mode
 
@@ -50,14 +44,12 @@
 # Update
 ##
   - zrusit tabstop tam kde to nema smysl, jako treba status bar, clips slide panel, ...
-  - check strings Equals and set StringComparison Ordinal for strings from code and CurrentCulture for string for/from user
-  - static delegates
   - Rethink hierarchical keywords moving
   - check how many RAM consumes referencing objects like Folder have list of MediaItems or MediaItem have list of keywords and people, ...
   - join FileOperationDialogM and FileOperationCollisionDialogM
   - change all Tree View Categories like Video Clips
   - Log button
-  - make thumbnail images sharper
+  - make thumbnail images sharper (size is 2.7x bigger)
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
@@ -67,26 +59,20 @@
   - Folder move: rethink selecting target folder after move
 ## VideoClips:
   - recreate video thumbnails button
-## Folders
-  - remove IsFolderKeyword from Folder, store info in separate db file
-## Segments
-  - remove DisplayKeywords from Person and use Keywords.GetAllKeywords
-  - rename Confirmed Segments to Persons (People) and use PersonThumbnailV instead of SegmentV
-    - how to deal with selection. it is useful to select confirmed segment and other segment
-## PersonV
-  - add button "set as unknown" for selected segments
-  - when loading media items for person => open first media item when mediaViewer is visible
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - replace behaviors with InputBindings where possible
   - where to declare ResourceConverter because it is used in MH.UI and PM
-  - use RelativeSource AncestorType= without x:Type in MH.UI.WPF
   - use Grid instead of StackPanel when is used many times like in TreeItemV
-## WPF Controls
+## MH.UI.WPF
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
   - make ExpandCollapseToggleStyle and TreeViewItemFocusVisual as resource for CatTreeView and TreeWrapView
   - merge CatTreeView and TreeWrapView templates
+  - use RelativeSource AncestorType= without x:Type
+  # Style
+   - Label - remove default padding?
+   - MH.Styles.IconShadow
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
 
@@ -156,9 +142,6 @@
     - sort like in the tree
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
-  - add groups to SegmentDrawer
-  - open from SegmentDrawer will open media item and load all other segments from SegmentDrawer
-  - tagging keyword on segment will show options to set it to segment or person
   - filter for segment resolution
 
 
