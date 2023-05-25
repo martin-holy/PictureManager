@@ -167,9 +167,14 @@ namespace PictureManager.Domain.Models {
         AddPeopleToGroups(root, group.Name, group.Items.Cast<PersonM>());
 
       // add people without group
-      var peopleWithoutGroup = Items.OfType<PersonM>().ToArray();
+      var peopleWithoutGroup = Items.OfType<PersonM>();
       if (peopleWithoutGroup.Any())
         AddPeopleToGroups(root, string.Empty, peopleWithoutGroup);
+
+      // add unknown people
+      var unknownPeople = DataAdapter.All.Values.Where(x => x.Id < 0).OrderBy(x => x.Id);
+      if (unknownPeople.Any())
+        AddPeopleToGroups(root, "?", unknownPeople);
 
       PeopleRoot = root;
       ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
