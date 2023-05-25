@@ -251,7 +251,7 @@ namespace PictureManager.Domain {
       };
 
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-        if (e.Data.Item2.Any(x => x.Equals(PersonDetailM.PersonM)))
+        if (e.Data.Item2?.Any(x => x.Equals(PersonDetailM.PersonM)) == true)
           PersonDetailM.ReloadPersonSegments();
 
         SegmentsM.ReloadIfContains(e.Data.Item1);

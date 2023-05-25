@@ -314,11 +314,16 @@ namespace PictureManager.Domain.Models {
         return;
 
       var segments = Selected.Items.ToArray();
+      var people = segments
+        .Where(x => x.Person != null)
+        .Select(x => x.Person)
+        .Distinct()
+        .ToArray();
       foreach (var segment in segments)
         ChangePerson(segment, null);
 
       Selected.DeselectAll();
-      SegmentsPersonChangedEvent(this, new((segments, null)));
+      SegmentsPersonChangedEvent(this, new((segments, people)));
     }
 
     private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
