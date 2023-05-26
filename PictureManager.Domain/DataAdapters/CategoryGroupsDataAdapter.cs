@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.DataAdapters {
@@ -44,9 +43,9 @@ namespace PictureManager.Domain.DataAdapters {
       _keywordsM.Items.Clear();
 
       foreach (var (cg, csv) in AllCsv) {
-        var items = new List<int>();
-        if (!string.IsNullOrEmpty(csv[3]))
-          items.AddRange(csv[3].Split(',').Select(int.Parse));
+        var items = string.IsNullOrEmpty(csv[3])
+          ? Enumerable.Empty<int>()
+          : csv[3].Split(',').Select(int.Parse);
 
         switch (cg.Category) {
           case Category.People:
@@ -66,7 +65,7 @@ namespace PictureManager.Domain.DataAdapters {
               item.Parent = cg;
               cg.Items.Add(item);
             }
-              
+
             break;
         }
 
