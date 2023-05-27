@@ -34,9 +34,9 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(KeywordM keyword) =>
       string.Join("|",
-        keyword.Id.ToString(),
+        keyword.GetHashCode().ToString(),
         keyword.Name,
-        (keyword.Parent as KeywordM)?.Id.ToString());
+        (keyword.Parent as KeywordM)?.GetHashCode().ToString());
 
     public override void LinkReferences() {
       // clear done in CategoryGroups
@@ -46,13 +46,13 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var (keyword, csv) in AllCsv) {
         // reference to parent and back reference to children
         if (!string.IsNullOrEmpty(csv[2])) {
-          keyword.Parent = All[int.Parse(csv[2])];
+          keyword.Parent = AllDict[int.Parse(csv[2])];
           keyword.Parent.Items.Add(keyword);
         }
       }
 
       // add loose keywords
-      foreach (var keywordM in All.Values.Where(x => x.Parent == null)) {
+      foreach (var keywordM in AllDict.Values.Where(x => x.Parent == null)) {
         keywordM.Parent = _model;
         _model.Items.Add(keywordM);
       }

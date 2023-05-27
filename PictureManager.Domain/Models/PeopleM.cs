@@ -39,7 +39,7 @@ namespace PictureManager.Domain.Models {
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new PersonM(DataAdapter.GetNextId(), name) { Parent = root };
       Tree.SetInOrder(root.Items, item, x => x.Name);
-      DataAdapter.All.Add(item.Id, item);
+      DataAdapter.All.Add(item);
 
       return item;
     }
@@ -57,7 +57,7 @@ namespace PictureManager.Domain.Models {
       person.Segment = null;
       person.TopSegments = null;
       person.Keywords = null;
-      DataAdapter.All.Remove(person.Id);
+      DataAdapter.All.Remove(person);
       PersonDeletedEventHandler(this, new(person));
       DataAdapter.IsModified = true;
     }
@@ -68,7 +68,7 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+      DataAdapter.All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} item already exists!"
         : null;
 
@@ -90,7 +90,7 @@ namespace PictureManager.Domain.Models {
         : $"{name} group already exists!";
 
     public PersonM GetPerson(string name, bool create) =>
-      DataAdapter.All.Values.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+      DataAdapter.All.SingleOrDefault(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
       ?? (create
         ? (PersonM)ModelItemCreate(this, name)
         : null);
@@ -139,7 +139,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void RemoveKeywordFromPeople(KeywordM keyword) =>
-      ToggleKeyword(DataAdapter.All.Values
+      ToggleKeyword(DataAdapter.All
         .Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
@@ -172,7 +172,7 @@ namespace PictureManager.Domain.Models {
         AddPeopleToGroups(root, string.Empty, peopleWithoutGroup);
 
       // add unknown people
-      var unknownPeople = DataAdapter.All.Values.Where(x => x.Id < 0).OrderBy(x => x.Id);
+      var unknownPeople = DataAdapter.All.Where(x => x.Id < 0).OrderBy(x => x.Id);
       if (unknownPeople.Any())
         AddPeopleToGroups(root, "?", unknownPeople);
 

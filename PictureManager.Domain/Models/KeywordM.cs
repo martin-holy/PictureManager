@@ -7,7 +7,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Parent
   /// </summary>
-  public sealed class KeywordM : TreeItem, IEquatable<KeywordM>, IRecord {
+  public sealed class KeywordM : TreeItem, IEquatable<KeywordM> {
     #region IEquatable implementation
     public bool Equals(KeywordM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as KeywordM);

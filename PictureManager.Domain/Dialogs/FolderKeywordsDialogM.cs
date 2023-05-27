@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Dialogs {
         new("Remove", Res.IconXCross, removeCommand),
         new("Close", Res.IconXCross, CloseCommand, false, true) };
 
-      foreach (var folder in _core.FolderKeywordsM.DataAdapter.All.Values.OrderBy(x => x.FullPath))
+      foreach (var folder in _core.FolderKeywordsM.DataAdapter.All.OrderBy(x => x.FullPath))
         Items.Add(folder);
     }
 

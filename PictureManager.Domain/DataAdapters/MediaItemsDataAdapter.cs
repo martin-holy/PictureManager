@@ -21,7 +21,7 @@ namespace PictureManager.Domain.DataAdapters {
     }
 
     public override void Save() =>
-      SaveDriveRelated(All.Values
+      SaveDriveRelated(All
         .GroupBy(x => Tree.GetTopParent(x.Folder))
         .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
@@ -37,21 +37,21 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(MediaItemM mediaItem) =>
       string.Join("|",
-        mediaItem.Id.ToString(),
-        mediaItem.Folder.Id.ToString(),
+        mediaItem.GetHashCode().ToString(),
+        mediaItem.Folder.GetHashCode().ToString(),
         mediaItem.FileName,
         mediaItem.Width.ToString(),
         mediaItem.Height.ToString(),
         mediaItem.Orientation.ToString(),
         mediaItem.Rating.ToString(),
         mediaItem.Comment ?? string.Empty,
-        mediaItem.GeoName?.Id.ToString(),
+        mediaItem.GeoName?.GetHashCode().ToString(),
         mediaItem.People == null
           ? string.Empty
-          : string.Join(",", mediaItem.People.Select(x => x.Id)),
+          : string.Join(",", mediaItem.People.Select(x => x.GetHashCode().ToString())),
         mediaItem.Keywords == null
           ? string.Empty
-          : string.Join(",", mediaItem.Keywords.Select(x => x.Id)),
+          : string.Join(",", mediaItem.Keywords.Select(x => x.GetHashCode().ToString())),
         mediaItem.IsOnlyInDb
           ? "1"
           : string.Empty);
@@ -59,18 +59,18 @@ namespace PictureManager.Domain.DataAdapters {
     public override void LinkReferences() {
       foreach (var (mi, csv) in AllCsv) {
         // reference to Folder and back reference from Folder to MediaItems
-        mi.Folder = _foldersM.DataAdapter.All[int.Parse(csv[1])];
+        mi.Folder = _foldersM.DataAdapter.AllDict[int.Parse(csv[1])];
         mi.Folder.MediaItems.Add(mi);
 
         // reference to People
-        mi.People = LinkList(csv[9], _peopleM.DataAdapter.All);
+        mi.People = LinkList(csv[9], _peopleM.DataAdapter.AllDict);
 
         // reference to Keywords
-        mi.Keywords = LinkList(csv[10], _keywordsM.DataAdapter.All);
+        mi.Keywords = LinkList(csv[10], _keywordsM.DataAdapter.AllDict);
 
         // reference to GeoName
         if (!string.IsNullOrEmpty(csv[8]))
-          mi.GeoName = _geoNamesM.DataAdapter.All[int.Parse(csv[8])];
+          mi.GeoName = _geoNamesM.DataAdapter.AllDict[int.Parse(csv[8])];
       }
     }
   }

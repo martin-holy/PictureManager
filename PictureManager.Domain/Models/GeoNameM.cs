@@ -7,7 +7,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|ToponymName|FCode|Parent
   /// </summary>
-  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM>, IRecord {
+  public sealed class GeoNameM : TreeItem, IEquatable<GeoNameM> {
     #region IEquatable implementation
     public bool Equals(GeoNameM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as GeoNameM);

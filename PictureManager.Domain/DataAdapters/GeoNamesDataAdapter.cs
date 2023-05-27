@@ -17,11 +17,11 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(GeoNameM geoName) =>
       string.Join("|",
-        geoName.Id.ToString(),
+        geoName.GetHashCode().ToString(),
         geoName.Name,
         geoName.ToponymName,
         geoName.Fcode,
-        (geoName.Parent as GeoNameM)?.Id.ToString());
+        (geoName.Parent as GeoNameM)?.GetHashCode().ToString());
 
     public override void LinkReferences() {
       _model.Items.Clear();
@@ -29,7 +29,7 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var (geoName, csv) in AllCsv) {
         // reference to parent and back reference to children
         geoName.Parent = !string.IsNullOrEmpty(csv[4])
-          ? All[int.Parse(csv[4])]
+          ? AllDict[int.Parse(csv[4])]
           : _model;
         geoName.Parent.Items.Add(geoName);
       }

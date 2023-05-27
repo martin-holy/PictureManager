@@ -133,7 +133,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public IEnumerable<MediaItemM> GetMediaItems(PersonM person) =>
-      DataAdapter.All.Values.Where(mi =>
+      DataAdapter.All.Where(mi =>
           mi.People?.Contains(person) == true ||
           mi.Segments?.Any(s => s.Person == person) == true)
         .OrderBy(mi => mi.FileName);
@@ -143,7 +143,7 @@ namespace PictureManager.Domain.Models {
       if (recursive) Tree.GetThisAndItemsRecursive(keyword, ref keywords);
       var set = new HashSet<KeywordM>(keywords);
 
-      return DataAdapter.All.Values
+      return DataAdapter.All
         .Where(mi => mi.Keywords?.Any(k => set.Contains(k)) == true
           || mi.Segments?.Any(s => s.Keywords?.Any(k => set.Contains(k)) == true) == true);
     }
@@ -153,7 +153,7 @@ namespace PictureManager.Domain.Models {
       if (recursive) Tree.GetThisAndItemsRecursive(geoName, ref geoNames);
       var set = new HashSet<GeoNameM>(geoNames);
 
-      return DataAdapter.All.Values.Where(mi => set.Contains(mi.GeoName))
+      return DataAdapter.All.Where(mi => set.Contains(mi.GeoName))
         .OrderBy(x => x.FileName);
     }
 
@@ -185,7 +185,7 @@ namespace PictureManager.Domain.Models {
       }
 
       copy.Folder.MediaItems.Add(copy);
-      DataAdapter.All.Add(copy.Id, copy);
+      DataAdapter.All.Add(copy);
       OnPropertyChanged(nameof(MediaItemsCount));
 
       return copy;
@@ -229,7 +229,7 @@ namespace PictureManager.Domain.Models {
       //item.Folder = null;
 
       // remove from DB
-      DataAdapter.All.Remove(item.Id);
+      DataAdapter.All.Remove(item);
 
       OnPropertyChanged(nameof(MediaItemsCount));
 
@@ -389,7 +389,7 @@ namespace PictureManager.Domain.Models {
             // Segments
             foreach (var segment in mi.Segments ?? Enumerable.Empty<SegmentM>()) {
               File.Delete(segment.FilePathCache);
-              var srcSegmentPath = Path.Combine(srcDirPathCache, $"segment_{segment.Id}.jpg");
+              var srcSegmentPath = Path.Combine(srcDirPathCache, $"segment_{segment.GetHashCode()}.jpg");
               if (File.Exists(srcSegmentPath))
                 File.Move(srcSegmentPath, segment.FilePathCache);
             }
@@ -405,7 +405,7 @@ namespace PictureManager.Domain.Models {
 
     public MediaItemM AddNew(FolderM folder, string fileName) {
       var mi = new MediaItemM(DataAdapter.GetNextId(), folder, fileName);
-      DataAdapter.All.Add(mi.Id, mi);
+      DataAdapter.All.Add(mi);
       OnPropertyChanged(nameof(MediaItemsCount));
       folder.MediaItems.Add(mi);
 
@@ -413,26 +413,26 @@ namespace PictureManager.Domain.Models {
     }
 
     public void UpdateInfoBoxWithPerson(PersonM person) {
-      foreach (var mi in DataAdapter.All.Values
+      foreach (var mi in DataAdapter.All
                  .Where(mi => mi.InfoBoxPeople != null && mi.People?.Contains(person) == true))
         mi.SetInfoBox();
     }
 
     public void UpdateInfoBoxWithKeyword(KeywordM keyword) {
-      foreach (var mi in DataAdapter.All.Values
+      foreach (var mi in DataAdapter.All
                  .Where(mi => mi.InfoBoxKeywords != null && mi.Keywords?.Contains(keyword) == true))
         mi.SetInfoBox();
     }
 
     public void RemovePersonFromMediaItems(PersonM person) {
-      foreach (var mi in DataAdapter.All.Values.Where(mi => mi.People?.Contains(person) == true)) {
+      foreach (var mi in DataAdapter.All.Where(mi => mi.People?.Contains(person) == true)) {
         mi.People = ListExtensions.Toggle(mi.People, person, true);
         DataAdapter.IsModified = true;
       }
     }
 
     public void RemoveKeywordFromMediaItems(KeywordM keyword) {
-      foreach (var mi in DataAdapter.All.Values.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
+      foreach (var mi in DataAdapter.All.Where(mi => mi.Keywords?.Contains(keyword) == true)) {
         mi.Keywords = KeywordsM.Toggle(mi.Keywords, keyword);
         DataAdapter.IsModified = true;
       }

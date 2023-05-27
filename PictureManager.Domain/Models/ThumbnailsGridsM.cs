@@ -114,7 +114,7 @@ namespace PictureManager.Domain.Models {
       var hide = Keyboard.IsAltOn();
       var recursive = Keyboard.IsShiftOn();
       var items = item switch {
-        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Values.Where(x => x.Rating == rating.Rating.Value),
+        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Where(x => x.Rating == rating.Rating.Value),
         PersonM person => _core.MediaItemsM.GetMediaItems(person),
         KeywordM keyword => _core.MediaItemsM.GetMediaItems(keyword, recursive),
         GeoNameM geoName => _core.MediaItemsM.GetMediaItems(geoName, recursive),

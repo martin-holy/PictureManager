@@ -1,8 +1,16 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
+using System;
 
 namespace PictureManager.Domain.Models {
-  public sealed class FavoriteFolderM : TreeItem, IRecord {
+  public sealed class FavoriteFolderM : TreeItem, IEquatable<FavoriteFolderM> {
+    #region IEquatable implementation
+    public bool Equals(FavoriteFolderM other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as FavoriteFolderM);
+    public override int GetHashCode() => Id;
+    public static bool operator ==(FavoriteFolderM a, FavoriteFolderM b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(FavoriteFolderM a, FavoriteFolderM b) => !(a == b);
+    #endregion
+
     private FolderM _folder;
 
     public int Id { get; }

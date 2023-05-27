@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
-  public class FolderM : TreeItem, IEquatable<FolderM>, IRecord {
+  public class FolderM : TreeItem, IEquatable<FolderM> {
     #region IEquatable implementation
     public bool Equals(FolderM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as FolderM);
@@ -73,7 +73,7 @@ namespace PictureManager.Domain.Models {
 
         // add new Folder to the database
         folder = new(Core.Instance.FoldersM.DataAdapter.GetNextId(), dirName, this);
-        Core.Instance.FoldersM.DataAdapter.All.Add(folder.Id, folder);
+        Core.Instance.FoldersM.DataAdapter.All.Add(folder);
 
         // add new Folder to the tree
         Items.Add(folder);

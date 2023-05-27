@@ -20,23 +20,23 @@ namespace PictureManager.Domain.Models {
       set {
         _selected = value;
         OnPropertyChanged();
-        value.Reload(_core.CategoryGroupsM.DataAdapter.All.Values);
+        value.Reload(_core.CategoryGroupsM.DataAdapter.All);
       }
     }
 
     public RelayCommand<ViewerM> SetCurrentCommand { get; }
-    public RelayCommand<ViewerM> UpdateExcCatGroupsIdsCommand { get; }
+    public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
 
     public ViewersM(Core core) : base(Res.IconEye, Category.Viewers, "Viewers") {
       _core = core;
       SetCurrentCommand = new(SetCurrent);
-      UpdateExcCatGroupsIdsCommand = new(UpdateExcCatGroupsIds);
+      UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new ViewerM(DataAdapter.GetNextId(), name, root);
       root.Items.SetInOrder(item, x => x.Name);
-      DataAdapter.All.Add(item.Id, item);
+      DataAdapter.All.Add(item);
 
       return item;
     }
@@ -54,17 +54,17 @@ namespace PictureManager.Domain.Models {
       viewer.IncludedFolders.Clear();
       viewer.ExcludedFolders.Clear();
       viewer.ExcludedKeywords.Clear();
-      DataAdapter.All.Remove(viewer.Id);
+      DataAdapter.All.Remove(viewer);
       DataAdapter.IsModified = true;
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+      DataAdapter.All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} item already exists!"
         : null;
 
-    private void UpdateExcCatGroupsIds() {
-      Selected.UpdateExcCatGroupsIds();
+    private void UpdateExcludedCategoryGroups() {
+      Selected.UpdateExcludedCategoryGroups();
       DataAdapter.IsModified = true;
     }
 

@@ -191,7 +191,7 @@
 
             <b:Interaction.Triggers>
               <b:EventTrigger EventName="PreviewMouseUp">
-                <b:InvokeCommandAction Command="{Binding ViewersM.UpdateExcCatGroupsIdsCommand}"/>
+                <b:InvokeCommandAction Command="{Binding ViewersM.UpdateExcludedCategoryGroupsCommand}"/>
               </b:EventTrigger>
             </b:Interaction.Triggers>
 

@@ -1,5 +1,4 @@
 ﻿using MH.Utils;
-using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
 using System.Linq;
 
@@ -31,12 +30,11 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(CategoryGroupM categoryGroup) =>
       string.Join("|",
-        categoryGroup.Id.ToString(),
+        categoryGroup.GetHashCode().ToString(),
         categoryGroup.Name,
         (int)categoryGroup.Category,
         string.Join(",", categoryGroup.Items
-          .OfType<IRecord>()
-          .Select(x => x.Id.ToString())));
+          .Select(x => x.GetHashCode().ToString())));
 
     public override void LinkReferences() {
       _peopleM.Items.Clear();
@@ -51,7 +49,7 @@ namespace PictureManager.Domain.DataAdapters {
           case Category.People:
             cg.Parent = _peopleM;
             _peopleM.Items.Add(cg);
-            foreach (var item in items.Select(id => _peopleM.DataAdapter.All[id])) {
+            foreach (var item in items.Select(id => _peopleM.DataAdapter.AllDict[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }
@@ -61,7 +59,7 @@ namespace PictureManager.Domain.DataAdapters {
           case Category.Keywords:
             cg.Parent = _keywordsM;
             _keywordsM.Items.Add(cg);
-            foreach (var item in items.Select(id => _keywordsM.DataAdapter.All[id])) {
+            foreach (var item in items.Select(id => _keywordsM.DataAdapter.AllDict[id])) {
               item.Parent = cg;
               cg.Items.Add(item);
             }

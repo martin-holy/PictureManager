@@ -40,22 +40,22 @@ namespace PictureManager.Domain.Models {
       }
 
       // People
-      AddToSearchResult(_core.PeopleM.DataAdapter.All.Values
+      AddToSearchResult(_core.PeopleM.DataAdapter.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, (x.Parent as CategoryGroupM)?.Name, x)));
 
       // Keywords
-      AddToSearchResult(_core.KeywordsM.DataAdapter.All.Values
+      AddToSearchResult(_core.KeywordsM.DataAdapter.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x.FullName, x)));
 
       // GeoNames
-      AddToSearchResult(_core.GeoNamesM.DataAdapter.All.Values
+      AddToSearchResult(_core.GeoNamesM.DataAdapter.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
         .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x.FullName, x)));
 
       // Folders
-      var result = _core.FoldersM.DataAdapter.All.Values
+      var result = _core.FoldersM.DataAdapter.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
                 && _core.ViewersM.CanViewerSee(x))
         .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x.FullPath, x)).ToList();

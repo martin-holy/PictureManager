@@ -17,7 +17,7 @@ namespace PictureManager.Domain.Models {
       var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIconName(category)) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       Tree.SetInOrder(parent.Items, group, x => x.Name);
-      DataAdapter.All.Add(group.Id, group);
+      DataAdapter.All.Add(group);
 
       return group;
     }
@@ -47,13 +47,8 @@ namespace PictureManager.Domain.Models {
           cat.ItemMove(item, cat, false);
 
       group.Parent.Items.Remove(group);
-      DataAdapter.All.Remove(((CategoryGroupM)group).Id);
+      DataAdapter.All.Remove((CategoryGroupM)group);
       DataAdapter.IsModified = true;
-    }
-
-    public void UpdateVisibility(ViewerM viewer) {
-      foreach (var (id, group) in DataAdapter.All)
-        group.IsHidden = viewer?.ExcCatGroupsIds.Contains(id) == true;
     }
   }
 }

@@ -24,7 +24,7 @@ namespace PictureManager.Domain.Models {
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
       var item = new KeywordM(DataAdapter.GetNextId(), name, root);
       Tree.SetInOrder(root.Items, item, x => x.Name);
-      DataAdapter.All.Add(item.Id, item);
+      DataAdapter.All.Add(item);
 
       return item;
     }
@@ -43,7 +43,7 @@ namespace PictureManager.Domain.Models {
       foreach (var keyword in keywords) {
         keyword.Parent = null;
         keyword.Items = null;
-        DataAdapter.All.Remove(keyword.Id);
+        DataAdapter.All.Remove(keyword);
         KeywordDeletedEventHandler(this, new(keyword));
         DataAdapter.IsModified = true;
       }
@@ -83,7 +83,7 @@ namespace PictureManager.Domain.Models {
       var pathNames = fullPath.Split('/');
 
       // get top level Keyword => Parent is not Keyword but Keywords or CategoryGroup
-      var keyword = DataAdapter.All.Values.SingleOrDefault(x => x.Parent is not KeywordM && x.Name.Equals(pathNames[0]));
+      var keyword = DataAdapter.All.SingleOrDefault(x => x.Parent is not KeywordM && x.Name.Equals(pathNames[0]));
 
       // return Keyword if it was found and is 1 level type
       if (keyword != null && pathNames.Length == 1)
@@ -107,7 +107,7 @@ namespace PictureManager.Domain.Models {
       foreach (var k in list)
         Tree.GetThisAndParentRecursive(k, ref allKeywords);
 
-      if (allKeywords.Any(x => x.Id.Equals(keyword.Id))) {
+      if (allKeywords.Any(x => x.Equals(keyword))) {
         list.Remove(keyword);
         if (list.Count == 0)
           list = null;

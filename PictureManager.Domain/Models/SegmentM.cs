@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace PictureManager.Domain.Models {
-  public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable, IRecord {
+  public sealed class SegmentM : ObservableObject, IEquatable<SegmentM>, ISelectable {
     private bool _isSelected;
 
     #region DB Properties
@@ -69,7 +69,7 @@ namespace PictureManager.Domain.Models {
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
     public Dictionary<SegmentM, double> Similar { get; set; }
     public double SimMax { get; set; }
-    public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{Id}.jpg");
+    public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{GetHashCode().ToString()}.jpg");
 
     public SegmentM() { }
 
