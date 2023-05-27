@@ -6,7 +6,6 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordsM : TreeCategoryBase {
@@ -20,7 +19,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void LoadIfContains(FolderM folder) {
-      if (DataAdapter.All.ContainsKey(folder.Id) || folder.FolderKeyword != null)
+      if (DataAdapter.All.Contains(folder) || folder.FolderKeyword != null)
         Load();
     }
 
@@ -33,8 +32,12 @@ namespace PictureManager.Domain.Models {
       Items.Clear();
       All.Clear();
 
-      foreach (var folder in DataAdapter.All.Values)
-        LoadRecursive(folder, this);
+      if (DataAdapter.AllDict == null)
+        foreach (var folder in DataAdapter.All)
+          LoadRecursive(folder, this);
+      else
+        foreach (var folder in DataAdapter.AllDict.Values)
+          LoadRecursive(folder, this);
 
       foreach (var fk in All) {
         if (fk.Folders.All(x => !Core.Instance.FoldersM.IsFolderVisible(x)))
@@ -75,13 +78,13 @@ namespace PictureManager.Domain.Models {
       LinkWithFolder(folder, GetForFolder(folder, folderKeyword));
 
     private void SetAsFolderKeyword(FolderM folder) {
-      DataAdapter.All.Add(folder.Id, folder);
+      DataAdapter.All.Add(folder);
       DataAdapter.IsModified = true;
       Load();
     }
 
     public void Remove(FolderM folder) {
-      DataAdapter.All.Remove(folder.Id);
+      DataAdapter.All.Remove(folder);
       DataAdapter.IsModified = true;
       Load();
     }

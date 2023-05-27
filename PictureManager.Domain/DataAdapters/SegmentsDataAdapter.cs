@@ -21,7 +21,7 @@ namespace PictureManager.Domain.DataAdapters {
     }
 
     public override void Save() =>
-      SaveDriveRelated(All.Values
+      SaveDriveRelated(All
         .GroupBy(x => Tree.GetTopParent(x.MediaItem.Folder))
         .ToDictionary(x => x.Key.Name, x => x.AsEnumerable()));
 
@@ -32,15 +32,15 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(SegmentM segment) =>
       string.Join("|",
-        segment.Id.ToString(),
-        segment.MediaItem.Id.ToString(),
+        segment.GetHashCode().ToString(),
+        segment.MediaItem.GetHashCode().ToString(),
         segment.Person == null
           ? "0"
-          : segment.Person.Id.ToString(),
-        string.Join(",", (int)segment.X, (int)segment.Y, (int)segment.Size),
+          : segment.Person.GetHashCode().ToString(),
+        string.Join(",", ((int)segment.X).ToString(), ((int)segment.Y).ToString(), ((int)segment.Size).ToString()),
         segment.Keywords == null
           ? string.Empty
-          : string.Join(",", segment.Keywords.Select(x => x.Id)));
+          : string.Join(",", segment.Keywords.Select(x => x.GetHashCode().ToString())));
 
     public override void PropsToCsv() {
       TableProps.Clear();
@@ -48,14 +48,14 @@ namespace PictureManager.Domain.DataAdapters {
       TableProps.Add(nameof(_model.CompareSegmentSize), _model.CompareSegmentSize.ToString());
       TableProps.Add(nameof(_model.SimilarityLimit), _model.SimilarityLimit.ToString());
       TableProps.Add(nameof(_model.SimilarityLimitMin), _model.SimilarityLimitMin.ToString());
-      TableProps.Add("SegmentsDrawer", string.Join(",", _model.SegmentsDrawerM.Items.Select(x => x.Id)));
+      TableProps.Add("SegmentsDrawer", string.Join(",", _model.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
     }
 
     public override void LinkReferences() {
       var withoutMediaItem = new List<SegmentM>();
 
       foreach (var (segment, csv) in AllCsv) {
-        if (_mediaItemsM.DataAdapter.All.TryGetValue(int.Parse(csv[1]), out var mi)) {
+        if (_mediaItemsM.DataAdapter.AllDict.TryGetValue(int.Parse(csv[1]), out var mi)) {
           segment.MediaItem = mi;
           mi.Segments ??= new();
           mi.Segments.Add(segment);
@@ -63,11 +63,11 @@ namespace PictureManager.Domain.DataAdapters {
           var personId = int.Parse(csv[2]);
 
           if (personId != 0) {
-            if (!_peopleM.DataAdapter.All.TryGetValue(personId, out var person)) {
+            if (!_peopleM.DataAdapter.AllDict.TryGetValue(personId, out var person)) {
               // this needs to stay because not all segments have to be loaded
               // (segments from other drives)
               person = new(personId, $"P {personId}");
-              _peopleM.DataAdapter.All.Add(person.Id, person);
+              _peopleM.DataAdapter.AllDict.Add(person.GetHashCode(), person);
             }
 
             segment.Person = person;
@@ -79,12 +79,12 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         // reference to Keywords
-        segment.Keywords = LinkList(csv[4], _keywordsM.DataAdapter.All);
+        segment.Keywords = LinkList(csv[4], _keywordsM.DataAdapter.AllDict);
       }
 
       // in case MediaItem was deleted
       foreach (var segment in withoutMediaItem)
-        _ = All.Remove(segment.Id);
+        _ = AllDict.Remove(segment.GetHashCode());
 
       // Table Properties
       if (TableProps == null) return;
@@ -99,13 +99,13 @@ namespace PictureManager.Domain.DataAdapters {
       if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
         _model.SegmentsDrawerM.Items.Clear();
 
-        var drawer = new List<SegmentM>();
-        foreach (var segmentId in segmentsDrawer.Split(','))
-          drawer.Add(All[int.Parse(segmentId)]);
-
-        foreach (var segment in drawer
+        var drawer = segmentsDrawer
+          .Split(',')
+          .Select(id => AllDict[int.Parse(id)])
           .OrderBy(x => x.MediaItem.Folder.FullPath)
-          .ThenBy(x => x.MediaItem.FileName))
+          .ThenBy(x => x.MediaItem.FileName);
+
+        foreach (var segment in drawer)
           _model.SegmentsDrawerM.Items.Add(segment);
       }
 

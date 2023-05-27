@@ -1,10 +1,17 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain.Models {
-  public sealed class VideoClipM : TreeItem, IRecord {
+  public sealed class VideoClipM : TreeItem, IEquatable<VideoClipM> {
+    #region IEquatable implementation
+    public bool Equals(VideoClipM other) => Id == other?.Id;
+    public override bool Equals(object obj) => Equals(obj as VideoClipM);
+    public override int GetHashCode() => Id;
+    public static bool operator ==(VideoClipM a, VideoClipM b) => a?.Equals(b) ?? b is null;
+    public static bool operator !=(VideoClipM a, VideoClipM b) => !(a == b);
+    #endregion
+
     private string _title;
     private int _timeStart;
     private int _timeEnd;
@@ -54,7 +61,7 @@ namespace PictureManager.Domain.Models {
 
     private string GetThumbPath() {
       var fpc = MediaItem.FilePathCache;
-      return $"{fpc[..fpc.LastIndexOf('.')]}_clip_{Id}.jpg";
+      return $"{fpc[..fpc.LastIndexOf('.')]}_clip_{GetHashCode().ToString()}.jpg";
     }
 
     public void SetMarker(bool start, int ms, double volume, double speed) {

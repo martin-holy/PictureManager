@@ -34,9 +34,9 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(FolderM folder) =>
       string.Join("|",
-        folder.Id.ToString(),
+        folder.GetHashCode().ToString(),
         folder.Name,
-        (folder.Parent as FolderM)?.Id.ToString() ?? string.Empty);
+        (folder.Parent as FolderM)?.GetHashCode().ToString() ?? string.Empty);
 
     public override void LinkReferences() {
       _model.Items.Clear();
@@ -44,7 +44,7 @@ namespace PictureManager.Domain.DataAdapters {
       foreach (var (folder, csv) in AllCsv) {
         // reference to Parent and back reference from Parent to SubFolder
         folder.Parent = !string.IsNullOrEmpty(csv[2])
-          ? All[int.Parse(csv[2])]
+          ? AllDict[int.Parse(csv[2])]
           : _model;
         folder.Parent.Items.Add(folder);
       }

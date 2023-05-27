@@ -10,7 +10,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
   /// </summary>
-  public sealed class ViewerM : TreeItem, IEquatable<ViewerM>, IRecord {
+  public sealed class ViewerM : TreeItem, IEquatable<ViewerM> {
     #region IEquatable implementation
     public bool Equals(ViewerM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as ViewerM);
@@ -24,30 +24,30 @@ namespace PictureManager.Domain.Models {
     public ObservableCollection<FolderM> IncludedFolders { get; } = new();
     public ObservableCollection<FolderM> ExcludedFolders { get; } = new();
     public ObservableCollection<KeywordM> ExcludedKeywords { get; } = new();
-    public HashSet<int> ExcCatGroupsIds { get; } = new();
+    public HashSet<CategoryGroupM> ExcludedCategoryGroups { get; } = new();
     public ObservableCollection<ListItem<CategoryGroupM>> CategoryGroups { get; } = new();
 
-    private readonly HashSet<int> _incFoIds = new();
-    private readonly HashSet<int> _incFoTreeIds = new();
-    private readonly HashSet<int> _excFoIds = new();
-    private readonly HashSet<int> _excKeywordsIds = new();
+    private HashSet<FolderM> _incFolders;
+    private HashSet<FolderM> _incFoldersTree;
+    private HashSet<FolderM> _excFolders;
+    private HashSet<KeywordM> _excKeywords;
 
     public ViewerM(int id, string name, ITreeItem parent) : base(Res.IconEye, name) {
       Id = id;
       Parent = parent;
     }
 
-    public void UpdateExcCatGroupsIds() {
-      ExcCatGroupsIds.Clear();
+    public void UpdateExcludedCategoryGroups() {
+      ExcludedCategoryGroups.Clear();
       foreach (var cg in CategoryGroups.Where(x => !x.IsSelected))
-        ExcCatGroupsIds.Add(cg.Content.Id);
+        ExcludedCategoryGroups.Add(cg.Content);
     }
 
     public void Reload(IEnumerable<CategoryGroupM> categoryGroups) {
       ReloadCategoryGroups(categoryGroups);
 
       foreach (var licg in CategoryGroups)
-        licg.IsSelected = !ExcCatGroupsIds.Contains(licg.Content.Id);
+        licg.IsSelected = !ExcludedCategoryGroups.Contains(licg.Content);
     }
 
     private void ReloadCategoryGroups(IEnumerable<CategoryGroupM> categoryGroups) {
@@ -62,24 +62,17 @@ namespace PictureManager.Domain.Models {
     }
 
     public void UpdateHashSets() {
-      _incFoIds.Clear();
-      _incFoTreeIds.Clear();
-      _excFoIds.Clear();
-      _excKeywordsIds.Clear();
+      _incFolders = IncludedFolders.ToHashSet();
+      _excFolders = ExcludedFolders.ToHashSet();
+      _excKeywords = ExcludedKeywords.ToHashSet();
+      _incFoldersTree = new();
 
       foreach (var folder in IncludedFolders) {
-        _incFoIds.Add(folder.Id);
         var fos = new List<FolderM>();
         Tree.GetThisAndParentRecursive(folder, ref fos);
         foreach (var fo in fos)
-          _incFoTreeIds.Add(fo.Id);
+          _incFoldersTree.Add(fo);
       }
-
-      foreach (var folder in ExcludedFolders)
-        _excFoIds.Add(folder.Id);
-
-      foreach (var keyword in ExcludedKeywords)
-        _excKeywordsIds.Add(keyword.Id);
     }
 
     public bool CanSee(FolderM folder) {
@@ -88,9 +81,9 @@ namespace PictureManager.Domain.Models {
       // If Any part of Included Folder ID matches Test Folder ID
       var testFos = new List<FolderM>();
       Tree.GetThisAndParentRecursive(folder, ref testFos);
-      var incContain = testFos.Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id))
-                       || _incFoTreeIds.Any(incFoId => incFoId == folder.Id);
-      var excContain = testFos.Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
+      var incContain = testFos.Any(testFo => _incFolders.Any(incFo => incFo == testFo))
+                       || _incFoldersTree.Any(incFo => incFo == folder);
+      var excContain = testFos.Any(testFo => _excFolders.Any(excFo => excFo == testFo));
 
       return incContain && !excContain;
     }
@@ -99,8 +92,8 @@ namespace PictureManager.Domain.Models {
       // If Any part of Test Folder ID matches Any Included Folder ID
       var testFos = new List<FolderM>();
       Tree.GetThisAndParentRecursive(folder, ref testFos);
-      var incContain = testFos.Any(testFo => _incFoIds.Any(incFoId => incFoId == testFo.Id));
-      var excContain = testFos.Any(testFo => _excFoIds.Any(excFoId => excFoId == testFo.Id));
+      var incContain = testFos.Any(testFo => _incFolders.Any(incFo => incFo == testFo));
+      var excContain = testFos.Any(testFo => _excFolders.Any(excFo => excFo == testFo));
 
       return incContain && !excContain;
     }
@@ -112,8 +105,8 @@ namespace PictureManager.Domain.Models {
     /// <returns>True if viewer can see MediaItem</returns>
     public bool CanSee(MediaItemM mi) {
       if (mi.People == null && mi.Keywords == null && mi.Segments == null) return true;
-      if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
-      if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcCatGroupsIds.Contains(cg.Id)) == true) return false;
+      if (mi.People?.Any(p => p.Parent is CategoryGroupM cg && ExcludedCategoryGroups.Contains(cg)) == true) return false;
+      if (mi.Segments?.Any(s => s.Person?.Parent is CategoryGroupM cg && ExcludedCategoryGroups.Contains(cg)) == true) return false;
 
       var keywords = new List<ITreeItem>();
       if (mi.Keywords != null)
@@ -125,8 +118,8 @@ namespace PictureManager.Domain.Models {
         foreach (var keyword in segment.Keywords)
           Tree.GetThisAndParentRecursive(keyword, ref keywords);
 
-      if (keywords.OfType<CategoryGroupM>().Any(cg => ExcCatGroupsIds.Contains(cg.Id))) return false;
-      if (keywords.OfType<KeywordM>().Any(k => _excKeywordsIds.Contains(k.Id))) return false;
+      if (keywords.OfType<CategoryGroupM>().Any(cg => ExcludedCategoryGroups.Contains(cg))) return false;
+      if (keywords.OfType<KeywordM>().Any(k => _excKeywords.Contains(k))) return false;
 
       return true;
     }

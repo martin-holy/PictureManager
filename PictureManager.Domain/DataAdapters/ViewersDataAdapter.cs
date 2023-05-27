@@ -35,12 +35,12 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(ViewerM viewer) =>
       string.Join("|",
-        viewer.Id.ToString(),
+        viewer.GetHashCode().ToString(),
         viewer.Name,
-        string.Join(",", viewer.IncludedFolders.Select(x => x.Id)),
-        string.Join(",", viewer.ExcludedFolders.Select(x => x.Id)),
-        string.Join(",", viewer.ExcCatGroupsIds),
-        string.Join(",", viewer.ExcludedKeywords.Select(x => x.Id)),
+        string.Join(",", viewer.IncludedFolders.Select(x => x.GetHashCode().ToString())),
+        string.Join(",", viewer.ExcludedFolders.Select(x => x.GetHashCode().ToString())),
+        string.Join(",", viewer.ExcludedCategoryGroups.Select(x => x.GetHashCode().ToString())),
+        string.Join(",", viewer.ExcludedKeywords.Select(x => x.GetHashCode().ToString())),
         viewer.IsDefault
           ? "1"
           : string.Empty);
@@ -52,8 +52,8 @@ namespace PictureManager.Domain.DataAdapters {
         // reference to IncludedFolders
         if (!string.IsNullOrEmpty(csv[2]))
           foreach (var folderId in csv[2].Split(',').Select(int.Parse)) {
-            var f = _foldersM.DataAdapter.All.ContainsKey(folderId)
-              ? _foldersM.DataAdapter.All[folderId]
+            var f = _foldersM.DataAdapter.AllDict.TryGetValue(folderId, out var incF)
+              ? incF
               : new(folderId, "?", null);
             viewer.IncludedFolders.SetInOrder(f, x => x.FullPath);
           }
@@ -61,8 +61,8 @@ namespace PictureManager.Domain.DataAdapters {
         // reference to ExcludedFolders
         if (!string.IsNullOrEmpty(csv[3]))
           foreach (var folderId in csv[3].Split(',').Select(int.Parse)) {
-            var f = _foldersM.DataAdapter.All.ContainsKey(folderId)
-              ? _foldersM.DataAdapter.All[folderId]
+            var f = _foldersM.DataAdapter.AllDict.TryGetValue(folderId, out var excF)
+              ? excF
               : new(folderId, "?", null);
             viewer.ExcludedFolders.SetInOrder(f, x => x.FullPath);
           }
@@ -70,12 +70,12 @@ namespace PictureManager.Domain.DataAdapters {
         // ExcludedCategoryGroups
         if (!string.IsNullOrEmpty(csv[4]))
           foreach (var groupId in csv[4].Split(','))
-            viewer.ExcCatGroupsIds.Add(int.Parse(groupId));
+            viewer.ExcludedCategoryGroups.Add(_categoryGroupsM.DataAdapter.AllDict[int.Parse(groupId)]);
 
         // ExcKeywords
         if (!string.IsNullOrEmpty(csv[5]))
           foreach (var keywordId in csv[5].Split(','))
-            viewer.ExcludedKeywords.Add(_keywordsM.DataAdapter.All[int.Parse(keywordId)]);
+            viewer.ExcludedKeywords.Add(_keywordsM.DataAdapter.AllDict[int.Parse(keywordId)]);
 
         // adding Viewer to Viewers
         _model.Items.Add(viewer);
@@ -84,7 +84,9 @@ namespace PictureManager.Domain.DataAdapters {
       _model.Current?.UpdateHashSets();
       _foldersM.AddDrives();
       _folderKeywordsM.Load();
-      _categoryGroupsM.UpdateVisibility(_model.Current);
+
+      foreach (var group in _categoryGroupsM.DataAdapter.AllDict.Values)
+        group.IsHidden = _model.Current?.ExcludedCategoryGroups.Contains(group) == true;
     }
   }
 }

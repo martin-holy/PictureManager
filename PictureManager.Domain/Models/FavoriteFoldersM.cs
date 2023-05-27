@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Models {
       var ff = (FavoriteFolderM)item;
       ff.Parent.Items.Remove(ff);
       ff.Folder = null;
-      DataAdapter.All.Remove(ff.Id);
+      DataAdapter.All.Remove(ff);
       DataAdapter.IsModified = true;
     }
 
@@ -38,7 +38,7 @@ namespace PictureManager.Domain.Models {
     }
 
     protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      DataAdapter.All.Values.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+      DataAdapter.All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
         ? $"{name} item already exists!"
         : null;
 
@@ -49,11 +49,11 @@ namespace PictureManager.Domain.Models {
       };
 
       Items.SetInOrder(ff, x => x.Name);
-      DataAdapter.All.Add(ff.Id, ff);
+      DataAdapter.All.Add(ff);
     }
 
     public void ItemDelete(FolderM folder) {
-      if (DataAdapter.All.Values.SingleOrDefault(x => x.Folder.Equals(folder)) is { } ff)
+      if (DataAdapter.All.SingleOrDefault(x => x.Folder.Equals(folder)) is { } ff)
         ModelItemDelete(ff);
     }
   }

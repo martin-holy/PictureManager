@@ -122,7 +122,7 @@ namespace PictureManager.Domain.Models {
       var newSegment = new SegmentM(DataAdapter.GetNextId(), x, y, size) { MediaItem = mediaItem };
       mediaItem.Segments ??= new();
       mediaItem.Segments.Add(newSegment);
-      DataAdapter.All.Add(newSegment.Id, newSegment);
+      DataAdapter.All.Add(newSegment);
       Loaded.Add(newSegment);
       NeedReload = true;
 
@@ -142,7 +142,7 @@ namespace PictureManager.Domain.Models {
         .Select(x => x.Person)
         .Distinct()
         .ToHashSet();
-      var newSegments = DataAdapter.All.Values
+      var newSegments = DataAdapter.All
         .Where(x => people.Contains(x.Person))
         .Except(Loaded);
 
@@ -163,7 +163,7 @@ namespace PictureManager.Domain.Models {
         .ToHashSet();
       var segments = Selected.Items
         .Where(x => x.Person == null || x.Person.Id > 0)
-        .Concat(DataAdapter.All.Values.Where(x => unknownPeople.Contains(x.Person)))
+        .Concat(DataAdapter.All.Where(x => unknownPeople.Contains(x.Person)))
         .ToArray();
       var people = segments
         .Where(x => x.Person != null)
@@ -224,7 +224,7 @@ namespace PictureManager.Domain.Models {
         _core.PersonDetailM.PersonM = person;
 
       foreach (var oldPerson in persons)
-        Core.Instance.PeopleM.DataAdapter.All.Remove(oldPerson.Id);
+        Core.Instance.PeopleM.DataAdapter.All.Remove(oldPerson);
     }
 
     /// <summary>
@@ -247,7 +247,7 @@ namespace PictureManager.Domain.Models {
 
       if (people.Length == 0) {
         // create person with unused min ID
-        var usedIds = DataAdapter.All.Values
+        var usedIds = DataAdapter.All
           .Where(x => x.Person?.Id < 0)
           .Select(x => x.Person.Id)
           .Distinct()
@@ -257,9 +257,8 @@ namespace PictureManager.Domain.Models {
         for (var i = -1; i > usedIds.Min() - 2; i--) {
           if (usedIds.Contains(i)) continue;
           newPerson = new(i, $"P {i}");
+          _core.PeopleM.DataAdapter.All.Add(newPerson);
 
-          if (!_core.PeopleM.DataAdapter.All.ContainsKey(newPerson.Id))
-            _core.PeopleM.DataAdapter.All.Add(newPerson.Id, newPerson);
           break;
         }
 
@@ -291,7 +290,7 @@ namespace PictureManager.Domain.Models {
 
     public SegmentM[] GetSegmentsToUpdate(PersonM person, IEnumerable<PersonM> people) {
       var oldPeople = people.Where(x => !x.Equals(person)).ToHashSet();
-      return DataAdapter.All.Values
+      return DataAdapter.All
         .Where(x => oldPeople.Contains(x.Person))
         .Concat(Selected.Items.Where(x => x.Person == null))
         .ToArray();
@@ -339,13 +338,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public void RemoveKeywordFromSegments(KeywordM keyword) =>
-      ToggleKeyword(DataAdapter.All.Values.Where(x => x.Keywords?.Contains(keyword) == true), keyword);
+      ToggleKeyword(DataAdapter.All.Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
       ToggleKeyword(Selected.Items, keyword);
 
     public void RemovePersonFromSegments(PersonM person) {
-      foreach (var segment in DataAdapter.All.Values.Where(s => s.Person?.Equals(person) == true)) {
+      foreach (var segment in DataAdapter.All.Where(s => s.Person?.Equals(person) == true)) {
         segment.Person = null;
         DataAdapter.IsModified = true;
       }
@@ -365,7 +364,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Delete(SegmentM segment) {
-      DataAdapter.All.Remove(segment.Id);
+      DataAdapter.All.Remove(segment);
 
       SegmentDeletedEventHandler(this, new(segment));
       Selected.Set(segment, false);
@@ -398,7 +397,7 @@ namespace PictureManager.Domain.Models {
       if (segmentM.MediaItem == null) return null;
 
       if (segmentM.Person != null)
-        return DataAdapter.All.Values
+        return DataAdapter.All
           .Where(x => x.Person == segmentM.Person)
           .Select(x => x.MediaItem)
           .Distinct()
@@ -466,12 +465,12 @@ namespace PictureManager.Domain.Models {
             .Distinct()
             .ToHashSet();
 
-          return DataAdapter.All.Values
+          return DataAdapter.All
             .Where(x => x.Person != null && people.Contains(x.Person))
             .OrderBy(x => x.MediaItem.FileName)
             .ToArray();
         case 3: // one segment from each person
-          return DataAdapter.All.Values
+          return DataAdapter.All
             .Where(x => x.Person != null)
             .GroupBy(x => x.Person.Id)
             .Select(x => x.First())
@@ -559,13 +558,13 @@ namespace PictureManager.Domain.Models {
           .OrderByDescending(x => x.Value);
 
         foreach (var simSegment in simSegments) {
-          if (set.Add(segment.Id)) group.Items.Add(segment);
-          if (set.Add(simSegment.Key.Id)) group.Items.Add(simSegment.Key);
+          if (set.Add(segment.GetHashCode())) group.Items.Add(segment);
+          if (set.Add(simSegment.Key.GetHashCode())) group.Items.Add(simSegment.Key);
         }
       }
 
       // add rest of the segments
-      foreach (var segment in unknown.Where(x => !set.Contains(x.Id)))
+      foreach (var segment in unknown.Where(x => !set.Contains(x.GetHashCode())))
         group.Items.Add(segment);
 
       group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));

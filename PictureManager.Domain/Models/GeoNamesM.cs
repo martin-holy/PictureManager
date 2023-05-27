@@ -28,7 +28,7 @@ namespace PictureManager.Domain.Models {
         GeoNameM parentGeoName = null;
         foreach (XmlNode geoname in geonames) {
           var geoNameId = int.Parse(geoname.SelectSingleNode("geonameId")?.InnerText ?? "0");
-          var dbGeoName = DataAdapter.All.Values.SingleOrDefault(x => x.Id == geoNameId);
+          var dbGeoName = DataAdapter.All.SingleOrDefault(x => x.Id == geoNameId);
 
           if (dbGeoName == null) {
             dbGeoName = new(
@@ -38,7 +38,7 @@ namespace PictureManager.Domain.Models {
               geoname.SelectSingleNode("fcode")?.InnerText,
               parentGeoName);
 
-            DataAdapter.All.Add(dbGeoName.Id, dbGeoName);
+            DataAdapter.All.Add(dbGeoName);
             parentGeoName?.Items.Add(dbGeoName);
             Tasks.RunOnUiThread(() => DataAdapter.IsModified = true);
           }

@@ -18,7 +18,7 @@ namespace PictureManager.Domain.HelperClasses {
       if (People != null) {
         MediaItem.People = new(People.Length);
         foreach (var person in People)
-          MediaItem.People.Add(core.PeopleM.GetPerson(person.ToString(), true));
+          MediaItem.People.Add(core.PeopleM.GetPerson(person, true));
       }
 
       MediaItem.Keywords = null;
@@ -33,8 +33,8 @@ namespace PictureManager.Domain.HelperClasses {
 
       if (!string.IsNullOrEmpty(GeoName)) {
         // TODO find/create GeoName
-        MediaItem.GeoName = core.GeoNamesM.DataAdapter.All.Values
-          .SingleOrDefault(x => x.Id == int.Parse(GeoName));
+        MediaItem.GeoName = core.GeoNamesM.DataAdapter.All
+          .SingleOrDefault(x => x.GetHashCode() == int.Parse(GeoName));
       }
     }
   }

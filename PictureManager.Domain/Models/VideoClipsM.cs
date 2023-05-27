@@ -68,14 +68,13 @@ namespace PictureManager.Domain.Models {
         Name = name,
         IsSelected = true
       };
-
-      if (!_mediaItemsM.MediaItemVideoClips.ContainsKey(CurrentMediaItem))
-        _mediaItemsM.MediaItemVideoClips.Add(CurrentMediaItem, TreeCategory.Items);
+      
+      _mediaItemsM.MediaItemVideoClips.TryAdd(CurrentMediaItem, TreeCategory.Items);
 
       root.Items.Add(item);
       CurrentVideoClip = item;
       CurrentMediaItem.HasVideoClips = true;
-      DataAdapter.All.Add(item.Id, item);
+      DataAdapter.All.Add(item);
       UpdateClipsTitles();
       SetMarker(true);
       ScrollToItem = item;
@@ -100,7 +99,7 @@ namespace PictureManager.Domain.Models {
       vc.People = null;
       vc.Keywords = null;
 
-      DataAdapter.All.Remove(vc.Id);
+      DataAdapter.All.Remove(vc);
       DataAdapter.IsModified = true;
       UpdateClipsTitles();
     }
@@ -154,8 +153,8 @@ namespace PictureManager.Domain.Models {
 
     private void SetCurrentMediaItem(MediaItemM mi) {
       CurrentMediaItem = mi;
-      TreeCategory.Items = mi != null && _mediaItemsM.MediaItemVideoClips.ContainsKey(mi)
-        ? _mediaItemsM.MediaItemVideoClips[mi]
+      TreeCategory.Items = mi != null && _mediaItemsM.MediaItemVideoClips.TryGetValue(mi, out var clips)
+        ? clips
         : new();
 
       TreeRoot.Clear();

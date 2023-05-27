@@ -117,7 +117,7 @@ namespace PictureManager.Domain.Models {
       var item = new FolderM(DataAdapter.GetNextId(), name, root) { IsAccessible = true };
 
       // add new Folder to the database
-      DataAdapter.All.Add(item.Id, item);
+      DataAdapter.All.Add(item);
 
       // add new Folder to the tree
       root.Items.SetInOrder(item, x => x.Name);
@@ -162,7 +162,7 @@ namespace PictureManager.Domain.Models {
       Tree.GetThisAndItemsRecursive(item, ref folders);
 
       foreach (var f in folders) {
-        DataAdapter.All.Remove(f.Id);
+        DataAdapter.All.Remove(f);
         FolderDeletedEventHandler(this, new(f));
 
         f.Parent = null;
@@ -200,7 +200,7 @@ namespace PictureManager.Domain.Models {
         // add Drive to the database and to the tree if not already exists
         if (Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(driveName, StringComparison.OrdinalIgnoreCase)) is not { } item) {
           item = new DriveM(DataAdapter.GetNextId(), driveName, this);
-          DataAdapter.All.Add(item.Id, item);
+          DataAdapter.All.Add(item);
           Items.Add(item);
         }
 

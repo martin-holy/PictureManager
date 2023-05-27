@@ -53,8 +53,8 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(VideoClipM vc) =>
       string.Join("|",
-        vc.Id.ToString(),
-        vc.MediaItem.Id.ToString(),
+        vc.GetHashCode().ToString(),
+        vc.MediaItem.GetHashCode().ToString(),
         vc.TimeStart.ToString(),
         vc.TimeEnd.ToString(),
         vc.Name ?? string.Empty,
@@ -66,15 +66,15 @@ namespace PictureManager.Domain.DataAdapters {
         vc.Comment ?? string.Empty,
         vc.People == null
           ? string.Empty
-          : string.Join(",", vc.People.Select(x => x.Id)),
+          : string.Join(",", vc.People.Select(x => x.GetHashCode().ToString())),
         vc.Keywords == null
           ? string.Empty
-          : string.Join(",", vc.Keywords.Select(x => x.Id)));
+          : string.Join(",", vc.Keywords.Select(x => x.GetHashCode().ToString())));
 
     public override void LinkReferences() {
       foreach (var (vc, csv) in AllCsv) {
         // reference to MediaItem
-        vc.MediaItem = _mediaItemsM.DataAdapter.All[int.Parse(csv[1])];
+        vc.MediaItem = _mediaItemsM.DataAdapter.AllDict[int.Parse(csv[1])];
         vc.MediaItem.HasVideoClips = true;
 
         // set parent for clips not in an group
@@ -87,10 +87,10 @@ namespace PictureManager.Domain.DataAdapters {
         }
 
         // reference to People
-        vc.People = LinkList(csv[9], _peopleM.DataAdapter.All);
+        vc.People = LinkList(csv[9], _peopleM.DataAdapter.AllDict);
 
         // reference to Keywords
-        vc.Keywords = LinkList(csv[10], _keywordsM.DataAdapter.All);
+        vc.Keywords = LinkList(csv[10], _keywordsM.DataAdapter.AllDict);
       }
     }
   }

@@ -26,15 +26,15 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(FavoriteFolderM ff) =>
       string.Join("|",
-        ff.Id.ToString(),
-        ff.Folder.Id.ToString(),
+        ff.GetHashCode().ToString(),
+        ff.Folder.GetHashCode().ToString(),
         ff.Name);
 
     public override void LinkReferences() {
       _model.Items.Clear();
 
       foreach (var (ff, csv) in AllCsv) {
-        ff.Folder = _foldersM.DataAdapter.All[int.Parse(csv[1])];
+        ff.Folder = _foldersM.DataAdapter.AllDict[int.Parse(csv[1])];
         ff.Parent = _model;
         _model.Items.Add(ff);
       }

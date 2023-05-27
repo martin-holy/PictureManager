@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +8,7 @@ namespace PictureManager.Domain.Models {
   /// <summary>
   /// DB fields: ID|Name|Segments|Keywords
   /// </summary>
-  public sealed class PersonM : TreeItem, IEquatable<PersonM>, IRecord {
+  public sealed class PersonM : TreeItem, IEquatable<PersonM> {
     #region IEquatable implementation
     public bool Equals(PersonM other) => Id == other?.Id;
     public override bool Equals(object obj) => Equals(obj as PersonM);

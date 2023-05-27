@@ -2,8 +2,6 @@
 using MH.Utils.EventsArgs;
 using static MH.Utils.DragDropHelper;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class PersonDetailM : ObservableObject {
@@ -15,7 +13,6 @@ namespace PictureManager.Domain.Models {
 
     public HeaderedListItem<object, string> ToolsTabsItem;
     public List<SegmentM> AllSegments { get; } = new();
-    public ObservableCollection<object> AllSegmentsGrouped { get; } = new();
     public PersonM PersonM { get => _personM; set { _personM = value; ReloadPersonSegments(); OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public TreeWrapGroup AllSegmentsRoot { get => _allSegmentsRoot; private set { _allSegmentsRoot = value; OnPropertyChanged(); } }
@@ -55,7 +52,7 @@ namespace PictureManager.Domain.Models {
 
     public void ReloadPersonSegments() {
       ScrollToTop = true;
-      AllSegmentsRoot = PersonM.GetSegments(_segmentsM.DataAdapter.All.Values, AllSegments);
+      AllSegmentsRoot = PersonM.GetSegments(_segmentsM.DataAdapter.All, AllSegments);
       OnPropertyChanged(nameof(AllSegments)); // this is for the count
     }
 

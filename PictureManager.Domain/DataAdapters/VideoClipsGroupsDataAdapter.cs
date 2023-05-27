@@ -28,18 +28,18 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override string ToCsv(VideoClipsGroupM vcg) =>
       string.Join("|",
-        vcg.Id.ToString(),
+        vcg.GetHashCode().ToString(),
         vcg.Name ?? string.Empty,
-        vcg.MediaItem.Id.ToString(),
+        vcg.MediaItem.GetHashCode().ToString(),
         vcg.Items.Count == 0
           ? string.Empty
-          : string.Join(",", vcg.Items.Cast<VideoClipM>().Select(x => x.Id)));
+          : string.Join(",", vcg.Items.Select(x => x.GetHashCode().ToString())));
 
     public override void LinkReferences() {
       _mediaItemsM.MediaItemVideoClips.Clear();
 
       foreach (var (group, csv) in AllCsv) {
-        group.MediaItem = _mediaItemsM.DataAdapter.All[int.Parse(csv[2])];
+        group.MediaItem = _mediaItemsM.DataAdapter.AllDict[int.Parse(csv[2])];
         group.MediaItem.HasVideoClips = true;
         group.Parent = _videoClipsM.TreeCategory;
 
@@ -47,7 +47,7 @@ namespace PictureManager.Domain.DataAdapters {
           var ids = csv[3].Split(',');
 
           foreach (var vcId in ids) {
-            var vc = _videoClipsM.DataAdapter.All[int.Parse(vcId)];
+            var vc = _videoClipsM.DataAdapter.AllDict[int.Parse(vcId)];
             vc.Parent = group;
             group.Items.Add(vc);
           }
