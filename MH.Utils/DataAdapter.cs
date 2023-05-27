@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 
 namespace MH.Utils {
-  public abstract class DataAdapter<T> : IDataAdapter where T : IRecord {
+  public abstract class DataAdapter<T> : IDataAdapter {
     private bool _isModified;
     private bool _areTablePropsModified;
 
@@ -35,8 +35,9 @@ namespace MH.Utils {
     public int MaxId { get; set; }
     public int PropsCount { get; }
     public Dictionary<string, string> TableProps { get; } = new();
-    public Dictionary<int, T> All { get; } = new();
-    public List<(T, string[])> AllCsv { get; } = new();
+    public Dictionary<int, T> AllDict { get; set; } = new();
+    public HashSet<T> All { get; set; }
+    public List<(T, string[])> AllCsv { get; set; } = new();
 
     public DataAdapter(string tableName, int propsCount) {
       TableName = tableName;
@@ -51,7 +52,7 @@ namespace MH.Utils {
     public virtual void LinkReferences() { }
 
     public virtual void Load() {
-      All.Clear();
+      AllDict.Clear();
       AllCsv.Clear();
 
       if (SimpleDB.LoadFromFile(ParseLine, TableFilePath)) return;
@@ -61,7 +62,7 @@ namespace MH.Utils {
     }
 
     public virtual void Save() =>
-      SaveToFile(All.Values);
+      SaveToFile(All);
 
     public void SaveToFile(IEnumerable<T> items) {
       if (SimpleDB.SaveToFile(items, ToCsv, TableFilePath))
@@ -84,7 +85,9 @@ namespace MH.Utils {
       string.Join(Path.DirectorySeparatorChar, "db", $"{tableName}.{drive[..1]}.csv");
 
     public void Clear() {
-      AllCsv.Clear();
+      AllCsv = null;
+      All = AllDict.Values.ToHashSet();
+      AllDict = null;
     }
 
     public void ParseLine(string line) {
@@ -94,7 +97,7 @@ namespace MH.Utils {
 
       var record = FromCsv(props);
 
-      All.Add(record.Id, record);
+      AllDict.Add(record.GetHashCode(), record);
       AllCsv.Add(new(record, props));
     }
 
@@ -120,25 +123,22 @@ namespace MH.Utils {
         AreTablePropsModified = false;
     }
 
-    public static IEnumerable<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) =>
+    public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) =>
       string.IsNullOrEmpty(csv)
-        ? Enumerable.Empty<TI>()
+        ? null
         : csv
           .Split(',')
-          .Select(x => int.Parse(x))
-          .Where(x => source.ContainsKey(x))
-          .Select(x => source[x]);
+          .Select(int.Parse)
+          .Where(source.ContainsKey)
+          .Select(x => source[x])
+          .ToList();
 
-    public static List<TI> LinkList<TI>(string csv, Dictionary<int, TI> source) {
-      var records = IdToRecord(csv, source);
-      return records.Any()
-        ? records.ToList()
-        : null;
-    }
+    public static List<TI> LinkList<TI>(string csv, Dictionary<int, TI> source) =>
+      IdToRecord(csv, source);
 
     public static ObservableCollection<object> LinkObservableCollection<TI>(string csv, Dictionary<int, TI> source) {
       var records = IdToRecord(csv, source);
-      if (!records.Any()) return null;
+      if (records == null) return null;
 
       var collection = new ObservableCollection<object>();
 
