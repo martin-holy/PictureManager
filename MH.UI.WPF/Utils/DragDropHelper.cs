@@ -54,11 +54,11 @@ namespace MH.UI.WPF.Utils {
 
       if ((bool)e.NewValue) {
         fe.PreviewMouseLeftButtonDown += StartDrag;
-        fe.MouseMove += Draging;
+        fe.MouseMove += Dragging;
       }
       else {
         fe.PreviewMouseLeftButtonDown -= StartDrag;
-        fe.MouseMove -= Draging;
+        fe.MouseMove -= Dragging;
       }
     }
 
@@ -87,7 +87,7 @@ namespace MH.UI.WPF.Utils {
       _isActive = true;
     }
 
-    private static void Draging(object sender, MouseEventArgs e) {
+    private static void Dragging(object sender, MouseEventArgs e) {
       if (!_isActive || e.LeftButton != MouseButtonState.Pressed
         || !HasDragStarted(e) || sender is not DependencyObject d) return;
 
