@@ -35,9 +35,9 @@ namespace MH.Utils {
     public int MaxId { get; set; }
     public int PropsCount { get; }
     public Dictionary<string, string> TableProps { get; } = new();
-    public Dictionary<int, T> AllDict { get; set; } = new();
+    public Dictionary<int, T> AllDict { get; set; }
     public HashSet<T> All { get; set; }
-    public List<(T, string[])> AllCsv { get; set; } = new();
+    public List<(T, string[])> AllCsv { get; set; }
 
     public DataAdapter(string tableName, int propsCount) {
       TableName = tableName;
@@ -52,8 +52,8 @@ namespace MH.Utils {
     public virtual void LinkReferences() { }
 
     public virtual void Load() {
-      AllDict.Clear();
-      AllCsv.Clear();
+      AllDict = new();
+      AllCsv = new();
 
       if (SimpleDB.LoadFromFile(ParseLine, TableFilePath)) return;
 
