@@ -26,6 +26,7 @@ namespace PictureManager {
     }
 
     private void SetDelegates() {
+      Dialog.Show = DialogHost.Show;
       Core.DialogHostShow = DialogHost.Show;
       Core.FileOperationDelete = FileOperationDelete;
       Core.GetDisplayScale = GetDisplayScale;

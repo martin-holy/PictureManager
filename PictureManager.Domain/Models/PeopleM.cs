@@ -1,6 +1,5 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -8,21 +7,17 @@ using PictureManager.Domain.DataAdapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PictureManager.Domain.ViewModels;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly Core _core;
     private readonly CategoryGroupsM _categoryGroupsM;
-    private TreeWrapGroup _peopleRoot;
-    private object _scrollToItem;
 
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
+    public PeopleVM View { get; }
     public Selecting<PersonM> Selected { get; } = new();
-    public TreeWrapGroup PeopleRoot { get => _peopleRoot; private set { _peopleRoot = value; OnPropertyChanged(); } }
-    public object ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
-    
-    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
@@ -32,8 +27,7 @@ namespace PictureManager.Domain.Models {
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
       MainTabsItem = new(this, "People");
-
-      SelectCommand = new(Select);
+      View = new(this);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -150,77 +144,8 @@ namespace PictureManager.Domain.Models {
         _core.SegmentsM.Selected.DeselectAll();
 
       Selected.Select(people, person, isCtrlOn, isShiftOn);
-      _core.SegmentsM.Selected.Add(Selected.Items.Select(x => x.Segment));
+      _core.SegmentsM.Selected.Add(Selected.Items.Where(x => x.Segment != null).Select(x => x.Segment));
       _core.SegmentsM.SetCanSelectAsSamePerson();
-    }
-
-    private void Select(MouseButtonEventArgs e) {
-      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        Select(null, segmentM.Person, e.IsCtrlOn, e.IsShiftOn);
-    }
-
-    public void Reload() {
-      var root = new TreeWrapGroup();
-
-      // add people in groups
-      foreach (var group in Items.OfType<CategoryGroupM>().Where(x => !x.IsHidden))
-        AddPeopleToGroups(root, group.Name, group.Items.Cast<PersonM>());
-
-      // add people without group
-      var peopleWithoutGroup = Items.OfType<PersonM>();
-      if (peopleWithoutGroup.Any())
-        AddPeopleToGroups(root, string.Empty, peopleWithoutGroup);
-
-      // add unknown people
-      var unknownPeople = DataAdapter.All.Where(x => x.Id < 0).OrderBy(x => x.Id);
-      if (unknownPeople.Any())
-        AddPeopleToGroups(root, "?", unknownPeople);
-
-      PeopleRoot = root;
-      ScrollToItem = (PeopleRoot?.Items.FirstOrDefault() as TreeWrapGroup)?.Items.FirstOrDefault();
-    }
-
-    private static void AddPeopleToGroups(TreeWrapGroup root, string groupTitle, IEnumerable<PersonM> people) {
-      var pGroup = new TreeWrapGroup();
-      root.Items.Add(pGroup);
-      pGroup.Info.Add(new(Res.IconPeople, groupTitle));
-
-      var groupedByKeywords = people
-            .GroupBy(x => x.DisplayKeywords == null
-              ? string.Empty
-              : string.Join(", ", x.DisplayKeywords.Select(dk => dk.Name)))
-            .OrderBy(x => x.Key)
-            .ToArray();
-
-      switch (groupedByKeywords.Length) {
-        case 0:
-          return;
-        case 1: {
-          foreach (var person in groupedByKeywords[0].OrderBy(x => x.Name))
-            pGroup.Items.Add(person);
-
-          pGroup.Info.Add(new(Res.IconImageMultiple, pGroup.Items.Count.ToString()));
-
-          return;
-        }
-      }
-
-      var count = 0;
-      foreach (var group in groupedByKeywords) {
-        var kGroup = new TreeWrapGroup();
-        pGroup.Items.Add(kGroup);
-
-        if (!group.Key.Equals(string.Empty))
-          kGroup.Info.Add(new(Res.IconTag, group.Key));
-
-        foreach (var person in group.OrderBy(p => p.Name))
-          kGroup.Items.Add(person);
-
-        kGroup.Info.Add(new(Res.IconImageMultiple, kGroup.Items.Count.ToString()));
-        count += kGroup.Items.Count;
-      }
-
-      pGroup.Info.Add(new(Res.IconImageMultiple, count.ToString()));
     }
   }
 }
