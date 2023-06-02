@@ -27,6 +27,7 @@
 ## TreeViewCategories
   - Folder reload after folder move => reload is maybe to soon
   - ScrollTo in TreeViewSearch doesn't work when People category is collapsed just for the first time
+  - click on rating stars doesn't set metadata
 ## FolderKeywords
   - do not show expand buttons in TreeView when there is nothing to expand
 ## PeopleV
@@ -50,6 +51,7 @@
   - change all Tree View Categories like Video Clips
   - Log button
   - make thumbnail images sharper (size is 2.7x bigger)
+  - change Tree.GetThisAndParentRecursive using yield like in FoldersDataAdapter
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
@@ -62,7 +64,7 @@
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - replace behaviors with InputBindings where possible
-  - where to declare ResourceConverter because it is used in MH.UI and PM
+  - change converters using MarkupExtension like in RatingConverter
   - use Grid instead of StackPanel when is used many times like in TreeItemV
 ## MH.UI.WPF
   - use button foreground and background for icon in IconButton and IconToggleButton
@@ -75,12 +77,13 @@
    - MH.Styles.IconShadow
 ## Keywords
   - use only one method to get keywords in which will be filtering by current viewer
+## Dialog
+  - add CanExecute for buttons like Yes/Ok
 
 
 # New
 ##
   - Log to file
-  - change Dictionaries for object with implementation IEquatable and replace them with HashSets
   - Virtual images from video:
     - media type: VideoImage
     - props: time stamp of image and media item (video) id
