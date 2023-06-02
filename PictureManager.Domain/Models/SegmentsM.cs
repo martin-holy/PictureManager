@@ -434,7 +434,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ReloadIfContains(IEnumerable<SegmentM> segments) {
-      if (Loaded.Any(x => segments.Equals(x)))
+      if (Loaded.Any(segments.Contains))
         Reload();
     }
 
