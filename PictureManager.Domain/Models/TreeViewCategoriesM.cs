@@ -112,7 +112,7 @@ namespace PictureManager.Domain.Models {
         case ITreeCategory cat:
           if (cat is PeopleM) {
             _core.MainTabsM.Activate(_core.PeopleM.MainTabsItem);
-            _core.PeopleM.Reload();
+            _core.PeopleM.View.Reload();
           }
           break;
       }
