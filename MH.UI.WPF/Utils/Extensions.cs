@@ -24,6 +24,15 @@ namespace MH.UI.WPF.Utils {
       }
     }
 
+    public static FrameworkElement FindTopTemplatedParent(this FrameworkElement child) {
+      var parent = child?.TemplatedParent as FrameworkElement;
+      while (true) {
+        if (parent == null) return null;
+        if (parent.TemplatedParent == null) return parent;
+        parent = parent.TemplatedParent as FrameworkElement;
+      }
+    }
+
     public static T FindThisOrParent<T>(FrameworkElement child, string name) where T : FrameworkElement {
       while (true) {
         if (child == null) return null;
