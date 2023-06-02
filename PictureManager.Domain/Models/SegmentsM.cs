@@ -265,8 +265,10 @@ namespace PictureManager.Domain.Models {
         toUpdate = Selected.Items.ToArray();
       }
       else {
-        if (people.Length == 1)
+        if (people.Length == 1) {
           newPerson = people[0];
+          toUpdate = GetSegmentsToUpdate(newPerson, people);
+        }
         else {
           var spd = new SetSegmentPersonDialogM(this, people);
           if (Core.DialogHostShow(spd) != 1) return;
@@ -274,7 +276,6 @@ namespace PictureManager.Domain.Models {
           toUpdate = spd.Segments;
         }
 
-        toUpdate = GetSegmentsToUpdate(newPerson, people);
         MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
       }
 
