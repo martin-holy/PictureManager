@@ -1,4 +1,5 @@
 ﻿using MH.Utils.Dialogs;
+using System;
 
 namespace MH.Utils.BaseClasses {
   public class Dialog : ObservableObject {
@@ -11,6 +12,7 @@ namespace MH.Utils.BaseClasses {
     public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
     public int Result { get => _result; set { _result = value; OnPropertyChanged(); } }
     public DialogButton[] Buttons { get => _buttons; set { _buttons = value; OnPropertyChanged(); } }
+    public static Func<Dialog, int> Show { get; set; }
 
     public RelayCommand<object> CloseCommand { get; set; }
     public RelayCommand<object> YesOkCommand { get; set; }
