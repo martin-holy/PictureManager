@@ -35,6 +35,16 @@ namespace MH.Utils {
       }
     }
 
+    public static IEnumerable<T> GetThisAndParentRecursive<T>(this T self) where T : ITreeItem {
+      yield return self;
+
+      var parent = self.Parent;
+      while (parent is T t) {
+        yield return t;
+        parent = parent.Parent;
+      }
+    }
+
     public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) where T : ITreeItem {
       var list = new List<T>();
       GetThisAndParentRecursive(self, ref list);
