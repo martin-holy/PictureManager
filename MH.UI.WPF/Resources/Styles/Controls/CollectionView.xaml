@@ -24,9 +24,10 @@
           <Border
             x:Name="border"
             Background="Transparent"
-            Margin="10,0,0,0"
-            Width="10"
-            Height="10">
+            Margin="5,0,0,0"
+            Padding="5,5,0,5"
+            Width="20"
+            Height="20">
 
             <Path
               x:Name="path"
@@ -40,7 +41,7 @@
 
           <ControlTemplate.Triggers>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="border" Property="Margin" Value="10,5,0,0"/>
+              <Setter TargetName="border" Property="Margin" Value="5,5,0,0"/>
               <Setter TargetName="path" Property="Fill" Value="{StaticResource MH.Control.Static.Text}"/>
               <Setter TargetName="path" Property="RenderTransform">
                 <Setter.Value>
@@ -186,7 +187,7 @@
 
   <HierarchicalDataTemplate
     DataType="{x:Type mhu:CollectionViewGroup}"
-    ItemsSource="{Binding WrappedItems}">
+    ItemsSource="{Binding Items}">
 
     <Border
       x:Name="border"
@@ -196,19 +197,6 @@
       Background="#88000000"
       Height="30"
       Padding="20,0,0,0">
-
-      <b:Interaction.Triggers>
-        <b:EventTrigger EventName="SizeChanged">
-          <b:InvokeCommandAction
-            Command="{Binding SizeChangedCommand}"
-            CommandParameter="{Binding ActualWidth, ElementName=border}"/>
-        </b:EventTrigger>
-        <b:EventTrigger EventName="Loaded">
-          <b:InvokeCommandAction
-            Command="{Binding SizeChangedCommand}"
-            CommandParameter="{Binding ActualWidth, ElementName=border}"/>
-        </b:EventTrigger>
-      </b:Interaction.Triggers>
 
       <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
         <Grid.ColumnDefinitions>
@@ -240,6 +228,18 @@
           FontWeight="Bold"/>
       </Grid>
     </Border>
+
+    <HierarchicalDataTemplate.Triggers>
+      <DataTrigger Value="True">
+        <DataTrigger.Binding>
+          <MultiBinding Converter="{mhConv:SetPropertyConverter}" ConverterParameter="Width">
+            <Binding Path="DataContext" ElementName="border"/>
+            <Binding Path="ActualWidth" ElementName="border"/>
+          </MultiBinding>
+        </DataTrigger.Binding>
+        <Setter TargetName="border" Property="Tag" Value="{x:Null}"/>
+      </DataTrigger>
+    </HierarchicalDataTemplate.Triggers>
   </HierarchicalDataTemplate>
 
   <DataTemplate DataType="{x:Type mhu:CollectionViewRow}">
