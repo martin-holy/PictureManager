@@ -2,16 +2,28 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhud="clr-namespace:MH.Utils.Dialogs;assembly=MH.Utils"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils"
-  xmlns:rd="clr-namespace:MH.UI.WPF.Resources">
+  xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
+  xmlns:utils="clr-namespace:MH.Utils;assembly=MH.Utils"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../../Effects.xaml"/>
     <ResourceDictionary Source="../Icon.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <DataTemplate DataType="{x:Type mhubc:ListItem}">
+  <mhu:KeyDataTemplateSelector x:Key="KeyDataTemplateSelector">
+    <mhu:KeyDataTemplateSelector.Keys>
+      <x:Array Type="{x:Type sys:String}">
+        <sys:String>MH.Utils.CollectionViewGroupByItem`1</sys:String>
+      </x:Array>
+    </mhu:KeyDataTemplateSelector.Keys>
+  </mhu:KeyDataTemplateSelector>
+
+  <DataTemplate
+    DataType="{x:Type utils:CollectionViewGroupByItem`1}"
+    x:Key="MH.Utils.CollectionViewGroupByItem`1">
+
     <Border
       BorderThickness="1"
       BorderBrush="Black"
@@ -25,12 +37,12 @@
           DockPanel.Dock="Left"
           Style="{StaticResource MH.Styles.Icon}"
           Effect="{StaticResource MH.Effects.DropShadow}"
-          Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
-          Fill="{Binding IconName, Converter={StaticResource ResourceConverter},
+          Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+          Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
                  ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
 
         <TextBlock
-          Text="{Binding Name}"
+          Text="{Binding Title}"
           VerticalAlignment="Center"
           Margin="5,0,5,0"/>
       </DockPanel>
@@ -39,7 +51,10 @@
 
   <DataTemplate DataType="{x:Type mhud:GroupByDialog}">
     <UniformGrid Rows="2" Width="300" Height="200">
-      <ItemsControl ItemsSource="{Binding Available}" Margin="2">
+      <ItemsControl
+        ItemsSource="{Binding Available}"
+        ItemTemplateSelector="{StaticResource KeyDataTemplateSelector}"
+        Margin="2">
         <ItemsControl.ItemsPanel>
           <ItemsPanelTemplate>
             <WrapPanel
@@ -67,7 +82,9 @@
           VerticalAlignment="Center"
           Visibility="Hidden"/>
 
-        <ItemsControl ItemsSource="{Binding Chosen}">
+        <ItemsControl
+          ItemsSource="{Binding Chosen}"
+          ItemTemplateSelector="{StaticResource KeyDataTemplateSelector}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>
               <WrapPanel

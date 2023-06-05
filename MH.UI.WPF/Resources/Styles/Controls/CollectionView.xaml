@@ -5,7 +5,9 @@
   xmlns:mhu="clr-namespace:MH.Utils;assembly=MH.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
-  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../../Effects.xaml"/>
@@ -136,6 +138,15 @@
     </Setter>
   </Style>
 
+  <wpfu:KeyDataTemplateSelector x:Key="KeyDataTemplateSelector">
+    <wpfu:KeyDataTemplateSelector.Keys>
+      <x:Array Type="{x:Type sys:String}">
+        <sys:String>MH.Utils.CollectionViewGroup`1</sys:String>
+        <sys:String>MH.Utils.CollectionViewRow`1</sys:String>
+      </x:Array>
+    </wpfu:KeyDataTemplateSelector.Keys>
+  </wpfu:KeyDataTemplateSelector>
+
   <Style x:Key="MH.Styles.Controls.CollectionView" TargetType="mhc:CollectionView">
     <Setter Property="Background" Value="{StaticResource MH.Control.Static.Background}"/>
     <Setter Property="BorderBrush" Value="{StaticResource MH.Control.Static.Border}"/>
@@ -145,6 +156,7 @@
     <Setter Property="Padding" Value="1"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
     <Setter Property="ItemContainerStyle" Value="{StaticResource MH.Styles.Controls.CollectionViewItem}"/>
+    <Setter Property="ItemTemplateSelector" Value="{StaticResource KeyDataTemplateSelector}"/>
     <Setter Property="FocusManager.IsFocusScope" Value="True"/>
     <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
     <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
@@ -186,7 +198,8 @@
   </Style>
 
   <HierarchicalDataTemplate
-    DataType="{x:Type mhu:CollectionViewGroup}"
+    DataType="{x:Type mhu:CollectionViewGroup`1}"
+    x:Key="MH.Utils.CollectionViewGroup`1"
     ItemsSource="{Binding Items}">
 
     <Border
@@ -242,7 +255,7 @@
     </HierarchicalDataTemplate.Triggers>
   </HierarchicalDataTemplate>
 
-  <DataTemplate DataType="{x:Type mhu:CollectionViewRow}">
+  <DataTemplate DataType="{x:Type mhu:CollectionViewRow`1}" x:Key="MH.Utils.CollectionViewRow`1">
     <ItemsControl ItemsSource="{Binding Items}">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseUp">
