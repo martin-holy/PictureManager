@@ -72,11 +72,10 @@ namespace MH.Utils {
       foreach (var item in items)
         Root.ReGroupItem(item, toReWrap, toReGroup);
 
-
-      // TODO do not sort until now, sort everything affected before re wrap 
-
-      foreach (var group in toReWrap)
+      foreach (var group in toReWrap) {
+        group.Source.Sort(ItemOrderBy);
         group.ReWrap();
+      }
 
       foreach (var group in toReGroup)
         GroupIt(group, new() { group.GroupBy });
