@@ -1,9 +1,9 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.WPF.Utils;
+using MH.Utils;
+using MH.Utils.BaseClasses;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using MH.UI.WPF.Utils;
-using MH.Utils;
 using Keyboard = System.Windows.Input.Keyboard;
 
 namespace MH.UI.WPF.Controls {
@@ -11,13 +11,13 @@ namespace MH.UI.WPF.Controls {
     public ScrollViewer ScrollViewer { get; set; }
 
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
-      nameof(View), typeof(MH.Utils.CollectionView), typeof(CollectionView));
+      nameof(View), typeof(ICollectionView), typeof(CollectionView));
 
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(
       nameof(ScrollViewerSpeedFactor), typeof(double), typeof(CollectionView), new(2.5));
 
-    public MH.Utils.CollectionView View {
-      get => (MH.Utils.CollectionView)GetValue(ViewProperty);
+    public ICollectionView View {
+      get => (ICollectionView)GetValue(ViewProperty);
       set => SetValue(ViewProperty, value);
     }
 
@@ -41,12 +41,12 @@ namespace MH.UI.WPF.Controls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      ItemsSource = new[] { View.Root };
+      ItemsSource = new[] { View.ObjectRoot };
     }
 
     private void SelectItem(MouseButtonEventArgs e) {
       var item = (e.OriginalSource as FrameworkElement)?.FindTopTemplatedParent()?.DataContext;
-      var row = (e.Source as FrameworkElement)?.DataContext as CollectionViewRow;
+      var row = (e.Source as FrameworkElement)?.DataContext;
 
       if (item == null || row == null) return;
 
@@ -62,7 +62,7 @@ namespace MH.UI.WPF.Controls {
         isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       }
 
-      View.Select(row.Group.Source, item, isCtrlOn, isShiftOn);
+      View.Select(row, item, isCtrlOn, isShiftOn);
     }
   }
 }
