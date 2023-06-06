@@ -56,6 +56,7 @@ namespace MH.Utils {
       }
 
       GroupIt(group, dlg.Chosen.Cast<CollectionViewGroupByItem<T>>().ToList());
+      group.IsExpanded = true;
     }
 
     public void GroupIt(CollectionViewGroup<T> group, List<CollectionViewGroupByItem<T>> items, int index = 0) {
@@ -69,8 +70,10 @@ namespace MH.Utils {
         .OrderBy(x => x.Title)
         .ToArray();
 
-      if (groups.Length == 1 && string.IsNullOrEmpty(groups[0].Title))
+      if (groups.Length == 1 && string.IsNullOrEmpty(groups[0].Title)) {
+        group.GroupBy = null;
         return;
+      }
 
       group.Items.Clear();
 
@@ -253,20 +256,8 @@ namespace MH.Utils {
       // done if the Group is not grouped and an item was already in the Source
       if (GroupBy == null) return;
 
-      var title = GroupBy.ItemGroupBy(item, GroupBy.Parameter);
-
-      // GroupBy is not null but items are not in groups
-      // because there is only one group without Title
-      if (Items.FirstOrDefault() is CollectionViewRow<T>) {
-        if (string.IsNullOrEmpty(title))
-          toReWrap.Add(this);
-        else
-          toReGroup.Add(this);
-
-        return;
-      }
-
       // find existing group for the item and remove the item from other groups
+      var title = GroupBy.ItemGroupBy(item, GroupBy.Parameter);
       CollectionViewGroup<T> newGroup = null;
       foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray()) {
         if (group.Icon.Equals(GroupBy.Icon, StringComparison.Ordinal)
@@ -292,15 +283,7 @@ namespace MH.Utils {
       // remove the Group from its Parent if it is empty
       if (Source.Count == 0) {
         Parent?.Items.Remove(this);
-
-        // reGroup the Parent if it has only one Group without Title
-        if (Parent?.Items.Count == 1
-            && Parent.Items[0] is CollectionViewGroup<T> g
-            && string.IsNullOrEmpty(g.Title)) {
-          Parent.Items.Clear();
-          toReWrap.Add(Parent);
-          return;
-        }
+        return;
       }
 
       // schedule the Group for reWrap if doesn't have any subGroups
