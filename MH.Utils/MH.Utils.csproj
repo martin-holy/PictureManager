@@ -4,9 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.24.5</AssemblyVersion>
-    <FileVersion>1.24.5</FileVersion>
-    <Version>1.24.5</Version>
+    <AssemblyVersion>1.24.6</AssemblyVersion>
+    <FileVersion>1.24.6</FileVersion>
+    <Version>1.24.6</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>

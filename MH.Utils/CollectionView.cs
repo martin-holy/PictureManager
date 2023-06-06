@@ -49,6 +49,12 @@ namespace MH.Utils {
 
       if (Dialog.Show(dlg) != 1) return;
 
+      if (dlg.Chosen.Count == 0) {
+        group.Items.Clear();
+        group.ReWrap();
+        return;
+      }
+
       GroupIt(group, dlg.Chosen.Cast<CollectionViewGroupByItem<T>>().ToList());
     }
 
