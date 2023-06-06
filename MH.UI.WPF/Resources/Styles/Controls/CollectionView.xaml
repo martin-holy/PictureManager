@@ -202,44 +202,46 @@
     x:Key="MH.Utils.CollectionViewGroup`1"
     ItemsSource="{Binding Items}">
 
-    <Border
-      x:Name="border"
-      BorderBrush="Black"
-      BorderThickness="1"
-      Margin="1,2,0,2"
-      Background="#88000000"
-      Height="30"
-      Padding="20,0,0,0">
+    <Border Background="Transparent" Padding="1,2,1,2">
+      <Border
+        x:Name="border"
+        BorderBrush="Black"
+        BorderThickness="1"
+        Margin="0"
+        Background="#88000000"
+        Height="30"
+        Padding="20,0,0,0">
 
-      <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
-          <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
+        <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
 
-        <mhc:IconButton
-          Icon="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-          Foreground="{Binding Icon, Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
-          ToolTip="Group by"
-          Command="{Binding View.OpenGroupByDialogCommand}"
-          CommandParameter="{Binding}"/>
+          <mhc:IconButton
+            Icon="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+            Foreground="{Binding Icon, Converter={StaticResource ResourceConverter},
+                         ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+            ToolTip="Group by"
+            Command="{Binding View.OpenGroupByDialogCommand}"
+            CommandParameter="{Binding}"/>
 
-        <TextBlock
-          Grid.Column="1"
-          Text="{Binding Title}"
-          VerticalAlignment="Center"
-          Margin="5,0,5,0"
-          FontSize="16"/>
+          <TextBlock
+            Grid.Column="1"
+            Text="{Binding Title}"
+            VerticalAlignment="Center"
+            Margin="5,0,5,0"
+            FontSize="16"/>
 
-        <TextBlock
-          Grid.Column="2"
-          Text="{Binding Source.Count}"
-          VerticalAlignment="Center"
-          Margin="5,0,5,0"
-          FontWeight="Bold"/>
-      </Grid>
+          <TextBlock
+            Grid.Column="2"
+            Text="{Binding Source.Count}"
+            VerticalAlignment="Center"
+            Margin="5,0,5,0"
+            FontWeight="Bold"/>
+        </Grid>
+      </Border>
     </Border>
 
     <HierarchicalDataTemplate.Triggers>
@@ -268,7 +270,7 @@
 
       <ItemsControl.ItemsPanel>
         <ItemsPanelTemplate>
-          <StackPanel Orientation="Horizontal"/>
+          <StackPanel Orientation="Horizontal" Background="Transparent"/>
         </ItemsPanelTemplate>
       </ItemsControl.ItemsPanel>
     </ItemsControl>
