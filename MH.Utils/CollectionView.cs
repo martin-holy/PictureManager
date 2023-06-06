@@ -4,17 +4,26 @@ using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 
 namespace MH.Utils {
-  public interface ICollectionView {
+  public interface ICollectionView : INotifyPropertyChanged {
     public object ObjectRoot { get; }
+    public List<object> ScrollToItem { get; set; }
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn);
+    public bool SetTopItem(object o);
   }
 
-  public class CollectionView<T> : ICollectionView {
+  public class CollectionView<T> : ObservableObject, ICollectionView {
+    private List<object> _scrollToItem;
+
     public object ObjectRoot => Root;
     public CollectionViewGroup<T> Root { get; set; }
+    public T TopItem { get; set; }
+    public CollectionViewGroup<T> TopGroup { get; set; }
+    public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
 
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
@@ -79,6 +88,56 @@ namespace MH.Utils {
 
       foreach (var group in toReGroup)
         GroupIt(group, new() { group.GroupBy });
+
+      ScrollToTopItem();
+    }
+
+    public bool SetTopItem(object o) {
+      var row = o as CollectionViewRow<T>;
+      var group = o as CollectionViewGroup<T>;
+
+      // if group is not present any more, take group parent
+
+      TopItem = default;
+      TopGroup = null;
+
+      if (group != null)
+        TopGroup = group;
+      else if (row != null) {
+        TopGroup = row.Group;
+        if (row.Items.Count > 0) {
+          // TODO if item is selected => get next or previews not selected item in group or null
+          TopItem = row.Items[0];
+        }
+      }
+
+      return row != null || group != null;
+    }
+
+    private void ScrollToTopItem() {
+      // this is for removed groups
+      if (TopGroup.Parent == null) return;
+
+      var items = new List<object>();
+
+      if (TopItem != null)
+        foreach (var row in TopGroup.Items.OfType<CollectionViewRow<T>>()) {
+          if (!row.Items.Contains(TopItem)) continue;
+          items.Add(row);
+          break;
+        }
+
+      items.Add(TopGroup);
+
+      var group = TopGroup.Parent;
+      while (group != null) {
+        items.Add(group);
+        group.IsExpanded = true;
+        group = group.Parent;
+      }
+      items.Reverse();
+
+      ScrollToItem = items;
     }
   }
 
@@ -87,7 +146,7 @@ namespace MH.Utils {
     private double _width;
 
     public CollectionView<T> View { get; set; }
-    public CollectionViewGroup<T> Parent { get; }
+    public CollectionViewGroup<T> Parent { get; set; }
     public ObservableCollection<T> Source { get; } = new();
     public ObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T> GroupBy { get; set; }
@@ -95,9 +154,11 @@ namespace MH.Utils {
     public string Icon { get; }
     public string Title { get; }
 
+    // TODO lazy load OnExpanded
     public bool IsExpanded {
       get => _isExpanded;
       set {
+        if (value == _isExpanded) return;
         _isExpanded = value;
         ExpandedChangedEvent(this, EventArgs.Empty);
         OnPropertyChanged();
@@ -115,6 +176,14 @@ namespace MH.Utils {
         View = Parent.View;
 
       UpdateSource(source);
+
+      Items.CollectionChanged += (_, e) => {
+        if (e.Action is not (NotifyCollectionChangedAction.Reset or NotifyCollectionChangedAction.Remove) ||
+            e.OldItems == null) return;
+
+        foreach (var group in e.OldItems.OfType<CollectionViewGroup<T>>())
+          group.Parent = null;
+      };
     }
 
     public void UpdateSource(IEnumerable<T> items) {
@@ -140,7 +209,8 @@ namespace MH.Utils {
         AddItem(item);
     }
 
-    private void AddItem(object item) {
+    // TODO AddItems(IEnumerable<T> items)
+    private void AddItem(T item) {
       CollectionViewRow<T> row = null;
 
       if (Items.Count > 0)
@@ -255,7 +325,7 @@ namespace MH.Utils {
 
   public class CollectionViewRow<T> {
     public CollectionViewGroup<T> Group { get; }
-    public ObservableCollection<object> Items { get; } = new();
+    public ObservableCollection<T> Items { get; } = new();
     public bool IsExpanded { get; set; } = true;
 
     public CollectionViewRow(CollectionViewGroup<T> group) {
