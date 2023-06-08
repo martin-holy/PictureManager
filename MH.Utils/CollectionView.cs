@@ -12,18 +12,23 @@ namespace MH.Utils {
   public interface ICollectionView : INotifyPropertyChanged {
     public object ObjectRoot { get; }
     public List<object> ScrollToItem { get; set; }
+    public bool IsSizeChanging { get; set; }
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn);
     public bool SetTopItem(object o);
   }
 
   public class CollectionView<T> : ObservableObject, ICollectionView {
     private List<object> _scrollToItem;
+    private bool _isSizeChanging;
+    private T _topItem;
+    private CollectionViewGroup<T> _topGroup;
 
     public object ObjectRoot => Root;
     public CollectionViewGroup<T> Root { get; set; }
     public T TopItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
     public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
 
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
@@ -41,6 +46,20 @@ namespace MH.Utils {
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (row is not CollectionViewRow<T> r || item is not T i) return;
       Select(r.Group.Source, i, isCtrlOn, isShiftOn);
+    }
+
+    private void OnSizeChanging(bool value) {
+      _isSizeChanging = value;
+
+      if (value) {
+        _topItem = TopItem;
+        _topGroup = TopGroup;
+      }
+      else {
+        TopItem = _topItem;
+        TopGroup = _topGroup;
+        ScrollToTopItem();
+      }
     }
 
     private void OpenGroupByDialog(CollectionViewGroup<T> group) {
@@ -98,14 +117,15 @@ namespace MH.Utils {
       foreach (var group in toReGroup)
         GroupIt(group, new() { group.GroupBy });
 
+      if (toReWrap.Count == 0 && toReGroup.Count == 0)
+        return;
+
       ScrollToTopItem();
     }
 
     public bool SetTopItem(object o) {
       var row = o as CollectionViewRow<T>;
       var group = o as CollectionViewGroup<T>;
-
-      // if group is not present any more, take group parent
 
       TopItem = default;
       TopGroup = null;
@@ -124,8 +144,7 @@ namespace MH.Utils {
     }
 
     private void ScrollToTopItem() {
-      // this is for removed groups
-      if (TopGroup.Parent == null) return;
+      if (TopGroup?.Parent == null) return;
 
       var items = new List<object>();
 
