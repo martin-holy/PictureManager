@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using PictureManager.Domain.Dialogs;
 
 namespace PictureManager.Domain.Models {
   public sealed class TreeViewCategoriesM : ObservableObject {
@@ -83,11 +84,11 @@ namespace PictureManager.Domain.Models {
           break;
 
         case KeywordM k:
-          _core.ToggleKeyword(k);
+          ToggleDialogM.ToggleKeyword(_core, k);
           break;
 
         case PersonM p:
-          _core.TogglePerson(p);
+          ToggleDialogM.TogglePerson(_core, p);
           break;
 
         case FavoriteFolderM ff:

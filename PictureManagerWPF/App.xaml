@@ -36,6 +36,7 @@
         <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SetSegmentPersonDialogV.xaml"/>
         <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
+        <ResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
 
         <ResourceDictionary Source="Views/MainMenuV.xaml"/>
         <ResourceDictionary Source="Views/MainTabsV.xaml"/>

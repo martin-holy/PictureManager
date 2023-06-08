@@ -15,6 +15,7 @@
     public const string IconDriveError = "IconDriveError";
     public const string IconCd = "IconCd";
     public const string IconSave = "IconSave";
+    public const string IconSegment = "IconSegment";
     public const string IconSettings = "IconSettings";
     public const string IconStar = "IconStar";
     public const string IconSort = "IconSort";
