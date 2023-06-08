@@ -57,12 +57,20 @@ namespace MH.UI.WPF.Controls {
           ScrollViewer.ScrollToVerticalOffset(_verticalOffset);
           _verticalOffset = 0;
         }
+
+        if (View.IsSizeChanging)
+          View.IsSizeChanging = false;
+      };
+
+      SizeChanged += (_, e) => {
+        if (e.WidthChanged)
+          View.IsSizeChanging = true;
       };
 
       ItemsSource = new[] { View.ObjectRoot };
 
       View.PropertyChanged += (_, e) => {
-        if (nameof(View.ScrollToItem).Equals(e.PropertyName) && View.ScrollToItem != null) {
+        if (nameof(View.ScrollToItem).Equals(e.PropertyName) && View.ScrollToItem != null && IsVisible) {
           ScrollTo(View.ScrollToItem);
           View.ScrollToItem = null;
         }
