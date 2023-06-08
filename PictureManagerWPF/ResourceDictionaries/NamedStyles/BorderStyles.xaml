@@ -10,7 +10,7 @@
     <Setter Property="VerticalAlignment" Value="Top"/>
     <Setter Property="Padding" Value="2,1,2,1" />
     <Setter Property="CornerRadius" Value="5" />
-    <Setter Property="Margin" Value="3,0,0,0"/>
+    <Setter Property="Margin" Value="1"/>
     <Setter Property="MinWidth" Value="24" />
   </Style>
 

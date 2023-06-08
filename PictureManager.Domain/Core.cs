@@ -1,6 +1,5 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.Models;
 using System;
@@ -307,67 +306,6 @@ namespace PictureManager.Domain {
       ThumbnailsGridsM.DefaultThumbScale = 1 / scale;
       SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
-    }
-
-    private MessageDialog ToggleOrGetDialog(string title, object item, string itemName) {
-      var sCount = SegmentsM.Selected.Items.Count;
-      var pCount = item is PersonM ? 0 : PeopleM.Selected.Items.Count;
-      var miCount = MediaItemsM.IsEditModeOn ? MediaItemsM.GetActive().Length : 0;
-      
-      if (sCount == 0 && pCount == 0 && miCount == 0) return null;
-
-      var oneOption = new[] { sCount, pCount, miCount }.Count(x => x > 0) == 1;
-
-      if (oneOption && miCount > 0) {
-        MediaItemsM.SetMetadata(item);
-        return null;
-      }
-
-      var md = new MessageDialog(title, null, Res.IconQuestion, true);
-      var buttons = new List<DialogButton>();
-      var msgA = $"Do you want to toggle #{itemName} on selected";
-      var msgB = new List<string>();
-      var msgS = sCount > 1 ? $"Segments ({sCount})" : "Segment";
-      var msgP = pCount > 1 ? $"People ({pCount})" : "Person";
-      var msgMi = miCount > 1 ? $"Media Items ({miCount})" : "Media Item";
-
-      void AddOption(string msg, int result, string icon) {
-        buttons.Add(oneOption
-          ? new("Yes", Res.IconCheckMark, md.SetResult(result), true)
-          : new(msg, icon, md.SetResult(result)));
-        msgB.Add(msg);
-      }
-
-      if (sCount > 0) AddOption(msgS, 1, Res.IconEquals);
-      if (pCount > 0) AddOption(msgP, 2, Res.IconPeople);
-      if (miCount > 0) AddOption(msgMi, 3, Res.IconImage);
-      if (oneOption) buttons.Add(new("No", Res.IconXCross, md.SetResult(0), false, true));
-
-      md.Buttons = buttons.ToArray();
-      md.Message = oneOption
-        ? $"{msgA} {msgB[0]}?"
-        : $"{msgA} {string.Join(" or ", msgB)}?";
-
-      return md;
-    }
-
-    public void ToggleKeyword(KeywordM keyword) {
-      if (ToggleOrGetDialog("Toggle Keyword", keyword, keyword.FullName) is not { } md) return;
-
-      switch (DialogHostShow(md)) {
-        case 1: SegmentsM.ToggleKeywordOnSelected(keyword); break;
-        case 2: PeopleM.ToggleKeywordOnSelected(keyword); break;
-        case 3: MediaItemsM.SetMetadata(keyword); break;
-      }
-    }
-
-    public void TogglePerson(PersonM person) {
-      if (ToggleOrGetDialog("Toggle Person", person, person.Name) is not { } md) return;
-
-      switch (DialogHostShow(md)) {
-        case 1: SegmentsM.SetSelectedAsPerson(person); break;
-        case 3: MediaItemsM.SetMetadata(person); break;
-      }
     }
 
     private static Core _instance;
