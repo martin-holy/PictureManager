@@ -155,7 +155,7 @@ namespace PictureManager.Domain {
       };
 
       PeopleM.PeopleKeywordChangedEvent += (_, e) => {
-        PeopleM.View.ReGroupItems(e.Data);
+        PeopleM.View.Root.ReGroupItems(e.Data);
         SegmentsM.Reload();
       };
 

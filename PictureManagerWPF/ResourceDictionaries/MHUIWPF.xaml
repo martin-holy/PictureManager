@@ -1,12 +1,11 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:utils="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
   
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
-    
-    <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ButtonBase.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/ComboBox.xaml"/>
     <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/GridSplitter.xaml"/>
@@ -83,4 +82,12 @@
   <Style TargetType="{x:Type mhc:TreeWrapView}" BasedOn="{StaticResource MH.Styles.Controls.TreeWrapView}"/>
   <Style TargetType="{x:Type mhc:VirtualizingWrapPanel}" BasedOn="{StaticResource MH.Styles.Controls.VirtualizingWrapPanel}"/>
   <Style TargetType="{x:Type mhc:ZoomAndPan}" BasedOn="{StaticResource MH.Styles.Controls.ZoomAndPan}"/>
+
+  <utils:KeyDataTemplateSelector x:Key="MH.Styles.Controls.DialogHost.DialogTemplateSelector">
+    <utils:KeyDataTemplateSelector.Keys>
+      <x:Array Type="{x:Type sys:String}">
+        <sys:String>MH.UI.Dialogs.GroupByDialog`1</sys:String>
+      </x:Array>
+    </utils:KeyDataTemplateSelector.Keys>
+  </utils:KeyDataTemplateSelector>
 </ResourceDictionary>

@@ -19,6 +19,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
   </ItemGroup>
 

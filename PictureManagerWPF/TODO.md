@@ -79,7 +79,17 @@
   - use only one method to get keywords in which will be filtering by current viewer
 ## Dialog
   - add CanExecute for buttons like Yes/Ok
-
+## Segments
+  - with segment creation create unknown person (#1234) as well so that every segment has person
+## GroupByDialog
+  - add switch And & Or for selected group by items
+## People
+  - on person deselect, deselect segment as well
+## ToggleDialog
+  - make it static or returning one instance
+  - show selected items on dialog
+## MediaViewer
+  - hide cursor only in presentation mode
 
 # New
 ##
@@ -120,6 +130,7 @@
   - v nahledech na videa neustale prehravat video vytvoreny ze screenshotu toho videa ve velikosti nahledu, takze to snad 
     nebude narocny a bude se to moc prehravat porad a kdyz se na nahled najede mysi tak se bude prehravat puvodni video
   - umoznit zmenit nahled u videa
+  - TimeLine for thumbnails showing dates and number of day from first date in folder
 ## Viewers
   - Rename Viewers to Workspaces
 ## DB
