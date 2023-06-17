@@ -105,7 +105,9 @@
           </ItemsControl.ItemContainerStyle>
         </ItemsControl>
 
-        <ContentPresenter Content="{Binding Content}"/>
+        <ContentPresenter
+          Content="{Binding Content}"
+          ContentTemplateSelector="{Binding ElementName=root, Path=DataContext.(mhc:DialogHost.DialogTemplateSelector)}"/>
       </DockPanel>
     </DockPanel>
   </DataTemplate>

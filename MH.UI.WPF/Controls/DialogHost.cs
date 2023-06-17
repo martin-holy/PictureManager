@@ -1,11 +1,13 @@
 ﻿using MH.Utils.BaseClasses;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MH.UI.WPF.Controls {
   public class DialogHost {
     public Dialog Content { get; }
     public CustomWindow Window { get; }
+    public DataTemplateSelector DialogTemplateSelector { get; }
 
     private DialogHost(Dialog content) {
       Content = content;
@@ -19,6 +21,8 @@ namespace MH.UI.WPF.Controls {
         SizeToContent = SizeToContent.WidthAndHeight,
         Style = Application.Current.FindResource("MH.Styles.Controls.CustomWindow") as Style
       };
+
+      DialogTemplateSelector = Application.Current.FindResource("MH.Styles.Controls.DialogHost.DialogTemplateSelector") as DataTemplateSelector;
 
       content.PropertyChanged += (_, e) => {
         if (nameof(content.Result).Equals(e.PropertyName, StringComparison.Ordinal))

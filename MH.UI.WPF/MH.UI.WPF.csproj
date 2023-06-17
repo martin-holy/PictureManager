@@ -5,9 +5,9 @@
     <UseWPF>true</UseWPF>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý</Copyright>
-    <AssemblyVersion>1.39.7</AssemblyVersion>
-    <FileVersion>1.39.7</FileVersion>
-    <Version>1.39.7</Version>
+    <AssemblyVersion>1.39.8</AssemblyVersion>
+    <FileVersion>1.39.8</FileVersion>
+    <Version>1.39.8</Version>
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MH.UI\MH.UI.csproj" />
     <ProjectReference Include="..\MH.Utils\MH.Utils.csproj" />
   </ItemGroup>
 
