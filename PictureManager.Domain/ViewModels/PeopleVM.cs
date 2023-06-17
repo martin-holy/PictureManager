@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.Utils;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace PictureManager.Domain.ViewModels {
     private const string _unknown = "Unknown";
     private readonly PeopleM _peopleM;
 
-    private static readonly List<CollectionViewGroupByItem<PersonM>> _defaultGroups = new() {
+    private static readonly CollectionViewGroupByItem<PersonM>[] _defaultGroups = {
       new(Res.IconPeopleMultiple, "Group", null, ItemGroupByGroup),
       new(Res.IconTagLabel, "Keywords", null, ItemGroupByKeywords)
     };
@@ -24,24 +25,88 @@ namespace PictureManager.Domain.ViewModels {
     public override void Select(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
       _peopleM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
 
-    public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) =>
-      _defaultGroups
-        .Concat(source
-          .Where(x => x.Keywords != null)
-          .SelectMany(x => x.Keywords)
-          .SelectMany(x => x.GetThisAndParentRecursive())
-          .Distinct()
-          .OrderBy(x => x.FullName)
-          .Select(x => new CollectionViewGroupByItem<PersonM>(Res.IconTag, x.FullName, x, ItemGroupByKeyword)));
+    public override bool GroupRecursive(CollectionViewGroup<PersonM> group) {
+      if (group.RecursiveItem?.Parameter is not KeywordM keyword 
+          || keyword.Items == null 
+          || !keyword.Name.Equals(group.Title)) return false;
+
+      group.IsGroupedRecursive = true;
+
+      var groups = keyword.Items
+        .Select(k => new CollectionViewGroup<PersonM>(
+          group,
+          null,
+          k.IconName,
+          k.Name,
+          group.Source
+            .Where(p => p?.Keywords.Contains(k) == true)
+            .OrderBy(ItemOrderBy)
+            .ToArray()))
+        .Where(x => x.Source.Count > 0)
+        .OrderBy(x => x.Title)
+        .ToArray();
+
+      if (groups.Length == 0) {
+        group.IsGroupedRecursive = false;
+        return false;
+      }
+
+      // TODO add group with people without any sub keyword
+
+      if (groups.Length == 1 && string.IsNullOrEmpty(groups[0].Title)) {
+        group.GroupByItems = null;
+        group.IsGroupedRecursive = false;
+        return false;
+      }
+
+      group.Items.Clear();
+
+      foreach (var g in groups) {
+        group.Items.Add(g);
+
+        if (g.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive)
+          g.GroupByThenBy();
+      }
+
+      return true;
+    }
+
+    public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
+      var all = source
+        .Where(x => x.Keywords != null)
+        .SelectMany(x => x.Keywords)
+        .SelectMany(x => x.GetThisAndParentRecursive())
+        .Distinct()
+        .ToDictionary(x => x, x => new CollectionViewGroupByItem<PersonM>(Res.IconTag, x.Name, x, ItemGroupByKeyword));
+      
+      var top = new List<CollectionViewGroupByItem<PersonM>>();
+
+      foreach (var item in all.OrderBy(x => x.Key.FullName)) {
+        if (item.Key.Parent is not KeywordM parent) {
+          top.Add(item.Value);
+          continue;
+        }
+
+        var groupItem = all[parent];
+        item.Value.Parent = groupItem;
+        groupItem.Items.Add(item.Value);
+      }
+
+      foreach (var item in _defaultGroups)
+        item.IsSelected = false;
+
+      return _defaultGroups.Concat(top);
+    }
 
     public override string ItemOrderBy(PersonM item) =>
       item.Name;
 
     public void Reload() {
+      Root.ModeGroupRecursive = true;
       Root.UpdateSource(_peopleM.DataAdapter.All
         .Where(x => x.Parent is not CategoryGroupM { IsHidden: true }));
-
-      GroupIt(Root, _defaultGroups);
+      Root.GroupByItems = _defaultGroups;
+      Root.GroupByThenBy();
       Root.IsExpanded = true;
     }
 
