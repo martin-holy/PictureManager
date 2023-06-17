@@ -1,5 +1,5 @@
-﻿using MH.UI.WPF.Utils;
-using MH.Utils;
+﻿using MH.UI.Interfaces;
+using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
 using System.Collections.Generic;
 using System.Windows;
@@ -9,28 +9,18 @@ using System.Windows.Media;
 using Keyboard = System.Windows.Input.Keyboard;
 
 namespace MH.UI.WPF.Controls {
-  public class CollectionView : TreeView {
+  public class CollectionView : TreeViewBase {
     private double _verticalOffset;
-
-    public ScrollViewer ScrollViewer { get; set; }
 
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
       nameof(View), typeof(ICollectionView), typeof(CollectionView));
-
-    public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(
-      nameof(ScrollViewerSpeedFactor), typeof(double), typeof(CollectionView), new(2.5));
 
     public ICollectionView View {
       get => (ICollectionView)GetValue(ViewProperty);
       set => SetValue(ViewProperty, value);
     }
 
-    public double ScrollViewerSpeedFactor {
-      get => (double)GetValue(ScrollViewerSpeedFactorProperty);
-      set => SetValue(ScrollViewerSpeedFactorProperty, value);
-    }
-
-    public RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
+    public new RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
 
     static CollectionView() {
       DefaultStyleKeyProperty.OverrideMetadata(
@@ -44,8 +34,6 @@ namespace MH.UI.WPF.Controls {
 
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
-
-      ScrollViewer = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
 
       ScrollViewer.ScrollChanged += (_, _) => {
         SetTopItem();
