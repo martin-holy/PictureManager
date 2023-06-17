@@ -22,8 +22,8 @@ namespace MH.Utils.BaseClasses {
 
     public event EventHandler ExpandedChangedEventHandler = delegate { };
 
-    protected TreeItem() { }
-    protected TreeItem(string iconName, string name) : base(iconName, name) { }
+    public TreeItem() { }
+    public TreeItem(string iconName, string name) : base(iconName, name) { }
 
     public bool HasThisParent(ITreeItem parent) {
       var p = Parent;
