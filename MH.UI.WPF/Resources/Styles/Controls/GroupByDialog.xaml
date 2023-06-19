@@ -21,19 +21,19 @@
       
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <RadioButton
-          IsChecked="{Binding Group.ModeGroupBy}"
+          IsChecked="{Binding ModeGroupBy}"
           Content="Group by"
           Margin="5"/>
 
         <RadioButton
-          IsChecked="{Binding Group.ModeGroupByThenBy}"
+          IsChecked="{Binding ModeGroupByThenBy}"
           Content="Group by - Then by"
           Margin="5"/>
       </StackPanel>
 
       <CheckBox
         Grid.Row="2"
-        IsChecked="{Binding Group.ModeGroupRecursive}"
+        IsChecked="{Binding ModeGroupRecursive}"
         Content="Group recursive"
         Margin="5"/>
     </Grid>
