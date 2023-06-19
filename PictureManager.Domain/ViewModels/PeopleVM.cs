@@ -1,6 +1,7 @@
 ﻿using MH.UI.Controls;
 using MH.Utils;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,6 +19,16 @@ namespace PictureManager.Domain.ViewModels {
       _peopleM = peopleM;
     }
 
+    public void Reload() {
+      Root.UpdateSource(_peopleM.DataAdapter.All
+        .Where(x => x.Parent is not CategoryGroupM { IsHidden: true }));
+      Root.GroupMode = GroupMode.ThanByRecursive;
+      Root.GroupByItems = _defaultGroups;
+      Root.RecursiveItem = Root.GroupByItems[0];
+      Root.GroupByThenBy();
+      Root.IsExpanded = true;
+    }
+
     // TODO change SegmentUiFullWidth to int
     public override int GetItemWidth(object item) =>
       (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
@@ -25,59 +36,14 @@ namespace PictureManager.Domain.ViewModels {
     public override void Select(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
       _peopleM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
 
-    public override bool GroupRecursive(CollectionViewGroup<PersonM> group) {
-      if (group.RecursiveItem?.Parameter is not KeywordM keyword 
-          || keyword.Items == null 
-          || !keyword.Name.Equals(group.Title)) return false;
-
-      group.IsGroupedRecursive = true;
-
-      var groups = keyword.Items
-        .Select(k => new CollectionViewGroup<PersonM>(
-          group,
-          null,
-          k.IconName,
-          k.Name,
-          group.Source
-            .Where(p => p?.Keywords.Contains(k) == true)
-            .OrderBy(ItemOrderBy)
-            .ToArray()))
-        .Where(x => x.Source.Count > 0)
-        .OrderBy(x => x.Title)
-        .ToArray();
-
-      if (groups.Length == 0) {
-        group.IsGroupedRecursive = false;
-        return false;
-      }
-
-      // TODO add group with people without any sub keyword
-
-      if (groups.Length == 1 && string.IsNullOrEmpty(groups[0].Title)) {
-        group.GroupByItems = null;
-        group.IsGroupedRecursive = false;
-        return false;
-      }
-
-      group.Items.Clear();
-
-      foreach (var g in groups) {
-        group.Items.Add(g);
-
-        if (g.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive)
-          g.GroupByThenBy();
-      }
-
-      return true;
-    }
-
     public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
       var all = source
         .Where(x => x.Keywords != null)
         .SelectMany(x => x.Keywords)
         .SelectMany(x => x.GetThisAndParentRecursive())
         .Distinct()
-        .ToDictionary(x => x, x => new CollectionViewGroupByItem<PersonM>(Res.IconTag, x.Name, x, ItemGroupByKeyword));
+        .ToDictionary(x => x, x => new CollectionViewGroupByItem<PersonM>(
+          Res.IconTag, x.Name, x, ItemGroupByKeyword));
       
       var top = new List<CollectionViewGroupByItem<PersonM>>();
 
@@ -101,34 +67,36 @@ namespace PictureManager.Domain.ViewModels {
     public override string ItemOrderBy(PersonM item) =>
       item.Name;
 
-    public void Reload() {
-      Root.ModeGroupRecursive = true;
-      Root.UpdateSource(_peopleM.DataAdapter.All
-        .Where(x => x.Parent is not CategoryGroupM { IsHidden: true }));
-      Root.GroupByItems = _defaultGroups;
-      Root.GroupByThenBy();
-      Root.IsExpanded = true;
+    private static Tuple<object, string>[] ItemGroupByGroup(PersonM item, object parameter, bool isRecursive) =>
+      isRecursive
+        ? null
+        : item.Parent == null
+          ? new Tuple<object, string>[] { new(null, _unknown) }
+          : item.Parent is CategoryGroupM cg
+            ? new Tuple<object, string>[] { new(cg, cg.Name) }
+            : null;
+
+    private static Tuple<object, string>[] ItemGroupByKeywords(PersonM item, object parameter, bool isRecursive) =>
+      isRecursive
+        ? null
+        : item.DisplayKeywords == null
+          ? null
+          : new Tuple<object, string>[] { new(null, string.Join(", ", item.DisplayKeywords.Select(dk => dk.Name))) };
+
+    private static Tuple<object, string>[] ItemGroupByKeyword(PersonM item, object parameter, bool isRecursive) {
+      if (item.Keywords == null || parameter is not KeywordM keyword) return null;
+
+      var keywords = item.Keywords.SelectMany(x => x.GetThisAndParentRecursive());
+
+      if (!isRecursive)
+        return keywords.Contains(keyword)
+          ? new Tuple<object, string>[] { new(keyword, keyword.Name) }
+          : null;
+
+      return keywords
+        .Where(x => x.Parent.Equals(keyword))
+        .Select(x => new Tuple<object, string>(x, x.Name))
+        .ToArray();
     }
-
-    private static string ItemGroupByGroup(PersonM item, object parameter) =>
-      item.Parent == null
-        ? _unknown
-        : item.Parent is CategoryGroupM
-          ? item.Parent.Name
-          : string.Empty;
-
-    private static string ItemGroupByKeywords(PersonM item, object parameter) =>
-      item.DisplayKeywords == null
-        ? string.Empty
-        : string.Join(", ", item.DisplayKeywords.Select(dk => dk.Name));
-
-    private static string ItemGroupByKeyword(PersonM item, object parameter) =>
-      parameter is not KeywordM keyword
-        ? string.Empty
-        : item.Keywords?
-          .SelectMany(x => x.GetThisAndParentRecursive())
-          .Contains(keyword) == true
-            ? keyword.FullName
-            : string.Empty;
   }
 }
