@@ -23,7 +23,7 @@ namespace MH.UI.Controls {
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
     public CollectionView(string icon, string title) {
-      Root = new(null, null, icon, title, null) { View = this };
+      Root = new(null, new(null, title), null, icon, null) { View = this };
 
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
@@ -32,7 +32,6 @@ namespace MH.UI.Controls {
     public virtual IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source) => throw new NotImplementedException();
     public virtual string ItemOrderBy(T item) => throw new NotImplementedException();
     public virtual void Select(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) => throw new NotImplementedException();
-    public virtual bool GroupRecursive(CollectionViewGroup<T> group) => throw new NotImplementedException();
 
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (row is not CollectionViewRow<T> r || item is not T i) return;

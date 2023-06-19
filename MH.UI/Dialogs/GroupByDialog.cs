@@ -8,10 +8,16 @@ using System.Linq;
 
 namespace MH.UI.Dialogs {
   public class GroupByDialog<T> : Dialog {
+    private bool _modeGroupBy = true;
+    private bool _modeGroupByThenBy;
+    private bool _modeGroupRecursive;
+
     public TreeItem Root { get; } = new();
     public Selecting<TreeItem> Selected { get; } = new();
     public Action<object, bool, bool> SelectAction => Select;
-    public CollectionViewGroup<T> Group { get; set; }
+    public bool ModeGroupBy { get => _modeGroupBy; set { _modeGroupBy = value; OnPropertyChanged(); } }
+    public bool ModeGroupByThenBy { get => _modeGroupByThenBy; set { _modeGroupByThenBy = value; OnPropertyChanged(); } }
+    public bool ModeGroupRecursive { get => _modeGroupRecursive; set { _modeGroupRecursive = value; OnPropertyChanged(); } }
 
     public GroupByDialog() : base("Chose items for grouping", "IconGroup") {
       Buttons = new DialogButton[] {
@@ -20,7 +26,9 @@ namespace MH.UI.Dialogs {
     }
 
     public void Open(CollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
-      Group = group;
+      ModeGroupBy = group.GroupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
+      ModeGroupByThenBy = group.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive;
+      ModeGroupRecursive = group.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
       Root.Items.Clear();
 
       foreach (var item in items)
@@ -34,11 +42,11 @@ namespace MH.UI.Dialogs {
         return;
       }
 
-      group.GroupMode = group.ModeGroupByThenBy
-        ? group.ModeGroupRecursive
+      group.GroupMode = ModeGroupByThenBy
+        ? ModeGroupRecursive
           ? GroupMode.ThanByRecursive
           : GroupMode.ThanBy
-        : group.ModeGroupRecursive
+        : ModeGroupRecursive
           ? GroupMode.GroupByRecursive
           : GroupMode.GroupBy;
 

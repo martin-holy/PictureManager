@@ -17,9 +17,6 @@ namespace MH.UI.Controls {
   public class CollectionViewGroup<T> : ObservableObject {
     private bool _isExpanded;
     private double _width;
-    private bool _modeGroupBy = true;
-    private bool _modeGroupByThenBy;
-    private bool _modeGroupRecursive;
 
     public CollectionView<T> View { get; set; }
     public CollectionViewGroup<T> Parent { get; set; }
@@ -27,48 +24,27 @@ namespace MH.UI.Controls {
     public ObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> RecursiveItem { get; set; }
+    public Tuple<object, string> GroupedBy { get; set; }
     public GroupMode GroupMode { get; set; }
     public bool IsGroupedRecursive { get; set; }
-    public bool ModeGroupBy { get => _modeGroupBy; set { _modeGroupBy = value; OnPropertyChanged(); } }
-    public bool ModeGroupByThenBy { get => _modeGroupByThenBy; set { _modeGroupByThenBy = value; OnPropertyChanged(); } }
-    public bool ModeGroupRecursive { get => _modeGroupRecursive; set { _modeGroupRecursive = value; OnPropertyChanged(); } }
     public double Width { get => _width; set => SetWidth(value); }
     public string Icon { get; }
     public string Title { get; }
     // TODO lazy load OnExpanded
     public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
 
-    /* Modes
-     * GroupBy:
-     *  - grouped by all items
-     *  - nothing is set to sub groups
-     * GroupBy with recursive:
-     *  - grouped by all items
-     *  - group sub groups recursive (where to store item?)
-     * GroupByThanBy:
-     *  - group by first item
-     *  - send next items to sub groups
-     * GroupByThanBy with recursive:
-     *  - group by first item
-     *  - group sub groups recursive (where to store item?)
-     *  - send next items to sub groups or recursive sub groups
-     *
-     *
-     * try to store not [1..] for sub group, but all and use the first one for recursive group
-     * and the rest for thanBy
-     */
-
-    public CollectionViewGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> recursiveItem, string icon, string title, IEnumerable<T> source) {
+    public CollectionViewGroup(CollectionViewGroup<T> parent, Tuple<object, string> groupedBy, CollectionViewGroupByItem<T> recursiveItem, string icon, IEnumerable<T> source) {
       Parent = parent;
+      GroupedBy = groupedBy;
       Icon = icon;
-      Title = title;
+      Title = groupedBy == null ? string.Empty : groupedBy.Item2;
 
       Init(recursiveItem);
       UpdateSource(source);
 
       Items.CollectionChanged += (_, e) => {
-        if (e.Action is not (NotifyCollectionChangedAction.Reset or NotifyCollectionChangedAction.Remove) ||
-            e.OldItems == null) return;
+        if (e.Action is not (NotifyCollectionChangedAction.Reset or NotifyCollectionChangedAction.Remove)
+            || e.OldItems == null) return;
 
         foreach (var group in e.OldItems.OfType<CollectionViewGroup<T>>())
           group.Parent = null;
@@ -81,13 +57,10 @@ namespace MH.UI.Controls {
       View = Parent.View;
       GroupMode = Parent.GroupMode;
 
-      if (Parent.GroupByItems == null)
-        return;
+      if (Parent.GroupByItems == null) return;
 
-      if (recursiveItem != null)
-        RecursiveItem = recursiveItem;
-      else if (Parent.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive)
-        RecursiveItem = Parent.GroupByItems[0];
+      if (Parent.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive)
+        RecursiveItem = recursiveItem ?? Parent.GroupByItems[0];
 
       if (Parent.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive) {
         if (Parent.IsGroupedRecursive)
@@ -111,42 +84,28 @@ namespace MH.UI.Controls {
     public void GroupBy() {
       var empty = Source.ToArray();
       var groups = GroupByItems
-        .Select(item => Source
-          .OrderBy(View.ItemOrderBy)
-          .GroupBy(x => item.ItemGroupBy(x, item.Parameter))
-          .Where(x => !string.IsNullOrEmpty(x.Key))
-          .Select(x => new CollectionViewGroup<T>(this, GroupMode == GroupMode.GroupByRecursive ? item : null, item.IconName, x.Key, x))
-          .ToArray())
+        .Select(item => GetGroups(this, item, false))
         .SelectMany(x => x)
         .OrderBy(x => x.Title);
 
       Items.Clear();
 
       foreach (var g in groups) {
-        empty = empty.Except(g.Source).ToArray();
         Items.Add(g);
+        empty = empty.Except(g.Source).ToArray();
 
         if (GroupMode == GroupMode.GroupByRecursive)
-          View.GroupRecursive(g);
+          GroupRecursive(g);
       }
 
       if (empty.Length != 0)
-        Items.Insert(0, new CollectionViewGroup<T>(this, null, string.Empty, string.Empty, empty));
+        Items.Insert(0, new CollectionViewGroup<T>(this, null, null, string.Empty, empty));
     }
 
     public void GroupByThenBy() {
-      // TODO remove GroupByItems.Length == 0, it should by null
       if (GroupByItems == null) return;
 
-      if (GroupByItems.Length == 0)
-        return;
-
-      var groups = Source
-        .OrderBy(View.ItemOrderBy)
-        .GroupBy(x => GroupByItems[0].ItemGroupBy(x, GroupByItems[0].Parameter))
-        .Select(x => new CollectionViewGroup<T>(this, null, GroupByItems[0].IconName, x.Key, x))
-        .OrderBy(x => x.Title)
-        .ToArray();
+      var groups = GetGroups(this, GroupByItems[0], true).ToArray();
 
       if (groups.Length == 1 && string.IsNullOrEmpty(groups[0].Title)) {
         GroupByItems = null;
@@ -155,17 +114,50 @@ namespace MH.UI.Controls {
 
       Items.Clear();
 
-      foreach (var g in groups) {
+      foreach (var g in groups.OrderBy(x => x.Title)) {
         Items.Add(g);
 
-        if (GroupMode == GroupMode.ThanByRecursive && View.GroupRecursive(g))
+        if (GroupMode == GroupMode.ThanByRecursive && GroupRecursive(g))
           continue;
 
         g.GroupByThenBy();
       }
     }
 
-    // BUG maybe root is not regrouped when changing person group or there is no event after personGroupChanged
+    public static IEnumerable<CollectionViewGroup<T>> GetGroups(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupBy, bool withEmpty) =>
+      parent.Source
+        .SelectMany(item => GetGroupBys(item, groupBy, parent.IsGroupedRecursive, withEmpty)
+          .Select(group => new { group, item }))
+        .GroupBy(x => x.group, x => x.item)
+        .Select(x => new CollectionViewGroup<T>(parent, x.Key, groupBy, groupBy.IconName, x));
+
+    public static IEnumerable<Tuple<object, string>> GetGroupBys(T item, CollectionViewGroupByItem<T> groupBy, bool isRecursive, bool withEmpty) =>
+      groupBy.ItemGroupBy(item, groupBy.Parameter, isRecursive)
+      ?? (withEmpty
+        ? new Tuple<object, string>[] { new(null, string.Empty) }
+        : Enumerable.Empty<Tuple<object, string>>());
+
+    public static bool GroupRecursive(CollectionViewGroup<T> group) {
+      group.IsGroupedRecursive = true;
+      var groups = GetGroups(group, group.RecursiveItem, false).ToArray();
+
+      if (groups.Length == 0) {
+        group.IsGroupedRecursive = false;
+        return false;
+      }
+
+      group.Items.Clear();
+
+      foreach (var g in groups.OrderBy(x => x.Title)) {
+        group.Items.Add(g);
+
+        if (g.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive)
+          g.GroupByThenBy();
+      }
+
+      return true;
+    }
+
     public void ReGroupItems(IEnumerable<T> items) {
       var toReWrap = new List<CollectionViewGroup<T>>();
       var toReGroup = new List<CollectionViewGroup<T>>();
@@ -173,10 +165,8 @@ namespace MH.UI.Controls {
       foreach (var item in items)
         ReGroupItem(item, toReWrap, toReGroup);
 
-      foreach (var group in toReWrap) {
-        group.Source.Sort(View.ItemOrderBy);
+      foreach (var group in toReWrap)
         group.ReWrap();
-      }
 
       foreach (var group in toReGroup)
         group.GroupIt();
@@ -188,39 +178,46 @@ namespace MH.UI.Controls {
     }
 
     public void ReGroupItem(T item, List<CollectionViewGroup<T>> toReWrap, List<CollectionViewGroup<T>> toReGroup) {
+      var itemAdded = false;
+      var groupByItem = IsGroupedRecursive ? RecursiveItem : GroupByItems?[0];
+
       // add the item to the source if is not present
       if (!Source.Contains(item)) {
         Source.Add(item);
+        itemAdded = true;
 
         // if the group is not grouped schedule it for ReWrap
-        if (GroupByItems == null) {
+        if (groupByItem == null) {
           toReWrap.Add(this);
           return;
         }
       }
 
       // done if the group is not grouped and the item was already in the source
-      if (GroupByItems == null) return;
+      if (groupByItem == null) return;
 
       // find existing group for the item and remove the item from other groups
-      var title = GroupByItems[0].ItemGroupBy(item, GroupByItems[0].Parameter);
-      CollectionViewGroup<T> newGroup = null;
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray()) {
-        if (group.Icon.Equals(GroupByItems[0].IconName, StringComparison.Ordinal)
-            && group.Title.Equals(title, StringComparison.CurrentCulture))
-          newGroup = group;
-        else
-          group.RemoveItem(item, toReWrap);
-      }
+      var groupBys = GetGroupBys(item, groupByItem, IsGroupedRecursive, true);
 
-      // create new group for the item if it was not found
-      if (newGroup == null) {
-        newGroup = new(this, null, GroupByItems[0].IconName, title, null);
-        Items.SetInOrder(newGroup, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
-      }
+      foreach (var gby in groupBys) {
+        CollectionViewGroup<T> newGroup = null;
 
-      // reGroup subGroups
-      newGroup.ReGroupItem(item, toReWrap, toReGroup);
+        foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray()) {
+          if (Equals(gby.Item1, group.GroupedBy?.Item1))
+            newGroup = group;
+          else if (!itemAdded)
+            group.RemoveItem(item, toReWrap);
+        }
+
+        // create new group for the item if it was not found
+        if (newGroup == null) {
+          newGroup = new(this, gby, null, groupByItem.IconName, null);
+          Items.SetInOrder(newGroup, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
+        }
+
+        // reGroup subGroups
+        newGroup.ReGroupItem(item, toReWrap, toReGroup);
+      }
     }
 
     public void RemoveItem(T item, List<CollectionViewGroup<T>> toReWrap) {
@@ -260,6 +257,7 @@ namespace MH.UI.Controls {
     public void ReWrap() {
       if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
 
+      Source.Sort(View.ItemOrderBy);
       Items.Clear();
 
       foreach (var item in Source)
