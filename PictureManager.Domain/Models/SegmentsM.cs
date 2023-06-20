@@ -172,7 +172,7 @@ namespace PictureManager.Domain.Models {
         .Distinct()
         .ToArray();
 
-      MergePeople(person, unknownPeople.ToArray());
+      _core.PeopleM.MergePeople(person, unknownPeople.ToArray());
 
       foreach (var segment in segments)
         ChangePerson(segment, person);
@@ -180,51 +180,6 @@ namespace PictureManager.Domain.Models {
       Selected.DeselectAll();
 
       SegmentsPersonChangedEvent(this, new((segments, people)));
-    }
-
-    /// <summary>
-    /// Update Person TopSegments and Keywords from Persons
-    /// and than remove not used Persons from DB
-    /// </summary>
-    /// <param name="person"></param>
-    /// <param name="persons"></param>
-    private void MergePeople(PersonM person, PersonM[] persons) {
-      var topSegments = persons
-        .Where(x => x.TopSegments != null)
-        .SelectMany(x => x.TopSegments)
-        .Distinct()
-        .ToArray();
-      var keywords = persons
-        .Where(x => x.Keywords != null)
-        .SelectMany(x => x.Keywords)
-        .Distinct()
-        .ToArray();
-
-      if (topSegments.Any()) {
-        if (person.TopSegments == null) {
-          person.TopSegments = new();
-          person.OnPropertyChanged(nameof(person.TopSegments));
-        }
-        
-        foreach (var segment in topSegments)
-          person.TopSegments.Add(segment);
-
-        person.Segment = (SegmentM)person.TopSegments[0];
-      }
-
-      if (keywords.Any()) {
-        person.Keywords ??= new();
-        foreach (var keyword in keywords)
-          person.Keywords.Add(keyword);
-
-        person.UpdateDisplayKeywords();
-      }
-
-      if (persons.Contains(_core.PersonDetailM.PersonM))
-        _core.PersonDetailM.PersonM = person;
-
-      foreach (var oldPerson in persons)
-        Core.Instance.PeopleM.DataAdapter.All.Remove(oldPerson);
     }
 
     /// <summary>
@@ -276,7 +231,7 @@ namespace PictureManager.Domain.Models {
           toUpdate = spd.Segments;
         }
 
-        MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
+        _core.PeopleM.MergePeople(newPerson, people.Where(x => !x.Equals(newPerson)).ToArray());
       }
 
       var affectedPeople = people.Concat(new[] { newPerson }).Distinct().ToArray();
