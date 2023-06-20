@@ -24,7 +24,7 @@ namespace MH.UI.Controls {
     public ObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> RecursiveItem { get; set; }
-    public Tuple<object, string> GroupedBy { get; set; }
+    public object GroupedBy { get; set; }
     public GroupMode GroupMode { get; set; }
     public bool IsGroupedRecursive { get; set; }
     public double Width { get => _width; set => SetWidth(value); }
@@ -33,25 +33,21 @@ namespace MH.UI.Controls {
     // TODO lazy load OnExpanded
     public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
 
-    public CollectionViewGroup(CollectionViewGroup<T> parent, Tuple<object, string> groupedBy, CollectionViewGroupByItem<T> recursiveItem, string icon, IEnumerable<T> source) {
+    public CollectionViewGroup(CollectionViewGroup<T> parent, string icon, string title, object groupedBy, CollectionViewGroupByItem<T> recursiveItem, IEnumerable<T> source) {
       Parent = parent;
-      GroupedBy = groupedBy;
       Icon = icon;
-      Title = groupedBy == null ? string.Empty : groupedBy.Item2;
-
-      Init(recursiveItem);
+      Title = title;
+      GroupedBy = groupedBy;
       UpdateSource(source);
 
       Items.CollectionChanged += (_, e) => {
         if (e.Action is not (NotifyCollectionChangedAction.Reset or NotifyCollectionChangedAction.Remove)
             || e.OldItems == null) return;
 
-        foreach (var group in e.OldItems.OfType<CollectionViewGroup<T>>())
-          group.Parent = null;
+        foreach (var g in e.OldItems.OfType<CollectionViewGroup<T>>())
+          g.Parent = null;
       };
-    }
 
-    private void Init(CollectionViewGroupByItem<T> recursiveItem) {
       if (Parent == null) return;
 
       View = Parent.View;
@@ -99,7 +95,7 @@ namespace MH.UI.Controls {
       }
 
       if (empty.Length != 0)
-        Items.Insert(0, new CollectionViewGroup<T>(this, null, null, string.Empty, empty));
+        Items.Insert(0, new CollectionViewGroup<T>(this, string.Empty, string.Empty, null, null, empty));
     }
 
     public void GroupByThenBy() {
@@ -124,19 +120,6 @@ namespace MH.UI.Controls {
       }
     }
 
-    public static IEnumerable<CollectionViewGroup<T>> GetGroups(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupBy, bool withEmpty) =>
-      parent.Source
-        .SelectMany(item => GetGroupBys(item, groupBy, parent.IsGroupedRecursive, withEmpty)
-          .Select(group => new { group, item }))
-        .GroupBy(x => x.group, x => x.item)
-        .Select(x => new CollectionViewGroup<T>(parent, x.Key, groupBy, groupBy.IconName, x));
-
-    public static IEnumerable<Tuple<object, string>> GetGroupBys(T item, CollectionViewGroupByItem<T> groupBy, bool isRecursive, bool withEmpty) =>
-      groupBy.ItemGroupBy(item, groupBy.Parameter, isRecursive)
-      ?? (withEmpty
-        ? new Tuple<object, string>[] { new(null, string.Empty) }
-        : Enumerable.Empty<Tuple<object, string>>());
-
     public static bool GroupRecursive(CollectionViewGroup<T> group) {
       group.IsGroupedRecursive = true;
       var groups = GetGroups(group, group.RecursiveItem, false).ToArray();
@@ -158,12 +141,30 @@ namespace MH.UI.Controls {
       return true;
     }
 
-    public void ReGroupItems(IEnumerable<T> items) {
+    public static IEnumerable<CollectionViewGroup<T>> GetGroups(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupBy, bool withEmpty) =>
+      parent.Source
+        .SelectMany(item => GetGroupBys(item, groupBy, parent.IsGroupedRecursive, withEmpty)
+          .Select(group => new { group, item }))
+        .GroupBy(x => x.group, x => x.item)
+        .Select(x => new CollectionViewGroup<T>(parent, groupBy.IconName, x.Key.Item2, x.Key.Item1, groupBy, x));
+
+    public static IEnumerable<Tuple<object, string>> GetGroupBys(T item, CollectionViewGroupByItem<T> groupBy, bool isRecursive, bool withEmpty) =>
+      groupBy.ItemGroupBy(item, groupBy.Parameter, isRecursive)
+      ?? (withEmpty
+        ? new Tuple<object, string>[] { new(null, string.Empty) }
+        : Enumerable.Empty<Tuple<object, string>>());
+
+    public void ReGroupItems(IEnumerable<T> items, bool remove) {
+      if (items == null) return;
       var toReWrap = new List<CollectionViewGroup<T>>();
       var toReGroup = new List<CollectionViewGroup<T>>();
 
-      foreach (var item in items)
-        ReGroupItem(item, toReWrap, toReGroup);
+      if (remove)
+        foreach (var item in items)
+          RemoveItem(item, toReWrap);
+      else
+        foreach (var item in items)
+          ReGroupItem(item, toReWrap, toReGroup);
 
       foreach (var group in toReWrap)
         group.ReWrap();
@@ -203,7 +204,7 @@ namespace MH.UI.Controls {
         CollectionViewGroup<T> newGroup = null;
 
         foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray()) {
-          if (Equals(gby.Item1, group.GroupedBy?.Item1))
+          if (Equals(gby.Item1, group.GroupedBy))
             newGroup = group;
           else if (!itemAdded)
             group.RemoveItem(item, toReWrap);
@@ -211,7 +212,7 @@ namespace MH.UI.Controls {
 
         // create new group for the item if it was not found
         if (newGroup == null) {
-          newGroup = new(this, gby, null, groupByItem.IconName, null);
+          newGroup = new(this, groupByItem.IconName, gby.Item2, gby.Item1, null, null);
           Items.SetInOrder(newGroup, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
         }
 

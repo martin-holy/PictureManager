@@ -23,8 +23,7 @@ namespace MH.UI.Controls {
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
     public CollectionView(string icon, string title) {
-      Root = new(null, new(null, title), null, icon, null) { View = this };
-
+      Root = new (null, icon, title, null, null, null) { View = this };
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
 
@@ -54,6 +53,9 @@ namespace MH.UI.Controls {
 
     private void OpenGroupByDialog(CollectionViewGroup<T> group) =>
       _groupByDialog.Open(group, GetGroupByItems(group.Source));
+
+    public static Tuple<object, string>[] GroupedBy(object groupedBy, string title) =>
+      new Tuple<object, string>[] { new(groupedBy, title) };
 
     public bool SetTopItem(object o) {
       var row = o as CollectionViewRow<T>;
