@@ -20,6 +20,7 @@ namespace PictureManager.Domain.Models {
     public Selecting<PersonM> Selected { get; } = new();
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
+    public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleDeletedEvent = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
     public PeopleM(Core core, CategoryGroupsM categoryGroupsM) : base(Res.IconPeopleMultiple, Category.People, "People") {
@@ -53,6 +54,7 @@ namespace PictureManager.Domain.Models {
       person.Keywords = null;
       DataAdapter.All.Remove(person);
       PersonDeletedEventHandler(this, new(person));
+      PeopleDeletedEvent(this, new(new[] { person }));
       DataAdapter.IsModified = true;
     }
 
@@ -146,6 +148,53 @@ namespace PictureManager.Domain.Models {
       Selected.Select(people, person, isCtrlOn, isShiftOn);
       _core.SegmentsM.Selected.Add(Selected.Items.Where(x => x.Segment != null).Select(x => x.Segment));
       _core.SegmentsM.SetCanSelectAsSamePerson();
+    }
+
+    /// <summary>
+    /// Update Person TopSegments and Keywords from People
+    /// and then remove not used People from DB
+    /// </summary>
+    /// <param name="person"></param>
+    /// <param name="people"></param>
+    public void MergePeople(PersonM person, PersonM[] people) {
+      var topSegments = people
+        .Where(x => x.TopSegments != null)
+        .SelectMany(x => x.TopSegments)
+        .Distinct()
+        .ToArray();
+      var keywords = people
+        .Where(x => x.Keywords != null)
+        .SelectMany(x => x.Keywords)
+        .Distinct()
+        .ToArray();
+
+      if (topSegments.Any()) {
+        if (person.TopSegments == null) {
+          person.TopSegments = new();
+          person.OnPropertyChanged(nameof(person.TopSegments));
+        }
+        
+        foreach (var segment in topSegments)
+          person.TopSegments.Add(segment);
+
+        person.Segment = (SegmentM)person.TopSegments[0];
+      }
+
+      if (keywords.Any()) {
+        person.Keywords ??= new();
+        foreach (var keyword in keywords)
+          person.Keywords.Add(keyword);
+
+        person.UpdateDisplayKeywords();
+      }
+
+      if (people.Contains(_core.PersonDetailM.PersonM))
+        _core.PersonDetailM.PersonM = person;
+
+      foreach (var oldPerson in people)
+        DataAdapter.All.Remove(oldPerson);
+
+      PeopleDeletedEvent(this, new(people));
     }
   }
 }
