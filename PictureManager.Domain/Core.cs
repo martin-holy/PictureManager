@@ -154,8 +154,12 @@ namespace PictureManager.Domain {
         ToolsTabsM.Deactivate(PersonDetailM.ToolsTabsItem);
       };
 
+      PeopleM.PeopleDeletedEvent += (_, e) => {
+        PeopleM.View.Root.ReGroupItems(e.Data, true);
+      };
+
       PeopleM.PeopleKeywordChangedEvent += (_, e) => {
-        PeopleM.View.Root.ReGroupItems(e.Data);
+        PeopleM.View.Root.ReGroupItems(e.Data, false);
         SegmentsM.Reload();
       };
 
