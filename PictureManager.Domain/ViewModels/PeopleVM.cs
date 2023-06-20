@@ -11,8 +11,8 @@ namespace PictureManager.Domain.ViewModels {
     private readonly PeopleM _peopleM;
 
     private static readonly CollectionViewGroupByItem<PersonM>[] _defaultGroups = {
-      new(Res.IconPeopleMultiple, "Group", null, ItemGroupByGroup),
-      new(Res.IconTagLabel, "Keywords", null, ItemGroupByKeywords)
+      new(Res.IconPeopleMultiple, "Group", null, GroupItemByGroup),
+      new(Res.IconTagLabel, "Keywords", null, GroupItemByKeywords)
     };
 
     public PeopleVM(PeopleM peopleM) : base(Res.IconPeopleMultiple, "People") {
@@ -43,7 +43,7 @@ namespace PictureManager.Domain.ViewModels {
         .SelectMany(x => x.GetThisAndParentRecursive())
         .Distinct()
         .ToDictionary(x => x, x => new CollectionViewGroupByItem<PersonM>(
-          Res.IconTag, x.Name, x, ItemGroupByKeyword));
+          Res.IconTag, x.Name, x, GroupItemByKeyword));
       
       var top = new List<CollectionViewGroupByItem<PersonM>>();
 
@@ -67,30 +67,30 @@ namespace PictureManager.Domain.ViewModels {
     public override string ItemOrderBy(PersonM item) =>
       item.Name;
 
-    private static Tuple<object, string>[] ItemGroupByGroup(PersonM item, object parameter, bool isRecursive) =>
+    private static Tuple<object, string>[] GroupItemByGroup(PersonM item, object parameter, bool isRecursive) =>
       isRecursive
         ? null
         : item.Parent == null
-          ? new Tuple<object, string>[] { new(null, _unknown) }
+          ? GroupedBy(null, _unknown)
           : item.Parent is CategoryGroupM cg
-            ? new Tuple<object, string>[] { new(cg, cg.Name) }
+            ?  GroupedBy(cg, cg.Name)
             : null;
 
-    private static Tuple<object, string>[] ItemGroupByKeywords(PersonM item, object parameter, bool isRecursive) =>
+    private static Tuple<object, string>[] GroupItemByKeywords(PersonM item, object parameter, bool isRecursive) =>
       isRecursive
         ? null
         : item.DisplayKeywords == null
           ? null
-          : new Tuple<object, string>[] { new(null, string.Join(", ", item.DisplayKeywords.Select(dk => dk.Name))) };
+          : GroupedBy(null, string.Join(", ", item.DisplayKeywords.Select(dk => dk.Name)));
 
-    private static Tuple<object, string>[] ItemGroupByKeyword(PersonM item, object parameter, bool isRecursive) {
+    private static Tuple<object, string>[] GroupItemByKeyword(PersonM item, object parameter, bool isRecursive) {
       if (item.Keywords == null || parameter is not KeywordM keyword) return null;
 
       var keywords = item.Keywords.SelectMany(x => x.GetThisAndParentRecursive());
 
       if (!isRecursive)
         return keywords.Contains(keyword)
-          ? new Tuple<object, string>[] { new(keyword, keyword.Name) }
+          ? GroupedBy(keyword, keyword.Name)
           : null;
 
       return keywords
