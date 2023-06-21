@@ -260,6 +260,9 @@ namespace PictureManager.Domain {
 
         SegmentsM.ReloadIfContains(e.Data.Item1);
 
+        // TODO fix this after changing logic that every segment has person until is changed to real person
+        PeopleM.View.Root.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null), false);
+
         if (MediaViewerM.IsVisible)
           MediaViewerM.Current?.SetInfoBox();
       };
