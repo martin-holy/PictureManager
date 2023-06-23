@@ -361,7 +361,11 @@ namespace PictureManager.Domain.Models {
           .ToList();
 
       if (SegmentsDrawerM.Items.Contains(segmentM))
-        return SegmentsDrawerM.Items.Select(x => x.MediaItem).OrderBy(x => x.FilePath).ToList();
+        return SegmentsDrawerM.Items
+          .Select(x => x.MediaItem)
+          .Distinct()
+          .OrderBy(x => x.FilePath)
+          .ToList();
 
       if (inGroups) {
         var items = ((ItemsGroup)LoadedGrouped[^1]).Items
