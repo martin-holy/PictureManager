@@ -3,10 +3,12 @@ using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MH.UI.Controls {
   public class CollectionView<T> : ObservableObject, ICollectionView {
+    private CollectionViewGroup<T> _root;
     private List<object> _scrollToItem;
     private bool _isSizeChanging;
     private T _topItem;
@@ -14,7 +16,7 @@ namespace MH.UI.Controls {
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public object ObjectRoot => Root;
-    public CollectionViewGroup<T> Root { get; set; }
+    public CollectionViewGroup<T> Root { get => _root; set { _root = value; OnPropertyChanged(); } }
     public T TopItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
     public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
@@ -22,8 +24,7 @@ namespace MH.UI.Controls {
 
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
-    public CollectionView(string icon, string title) {
-      Root = new (null, icon, title, null, null, null) { View = this };
+    public CollectionView() {
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
 
@@ -35,6 +36,15 @@ namespace MH.UI.Controls {
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (row is not CollectionViewRow<T> r || item is not T i) return;
       Select(r.Group.Source, i, isCtrlOn, isShiftOn);
+    }
+
+    public void SetRoot(string icon, string title, IEnumerable<T> source) {
+      var collection = new ObservableCollection<T>();
+      
+      foreach (var item in source)
+        collection.Add(item);
+
+      Root = new(null, null, collection) { Icon = icon, Title = title, View = this };
     }
 
     private void OnSizeChanging(bool value) {
@@ -53,9 +63,6 @@ namespace MH.UI.Controls {
 
     private void OpenGroupByDialog(CollectionViewGroup<T> group) =>
       _groupByDialog.Open(group, GetGroupByItems(group.Source));
-
-    public static Tuple<object, string>[] GroupedBy(object groupedBy, string title) =>
-      new Tuple<object, string>[] { new(groupedBy, title) };
 
     public bool SetTopItem(object o) {
       var row = o as CollectionViewRow<T>;

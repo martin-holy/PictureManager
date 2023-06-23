@@ -30,6 +30,7 @@ namespace MH.UI.Dialogs {
       ModeGroupByThenBy = group.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive;
       ModeGroupRecursive = group.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
       Root.Items.Clear();
+      Selected.DeselectAll();
 
       foreach (var item in items)
         Root.Items.Add(item);
@@ -51,10 +52,6 @@ namespace MH.UI.Dialogs {
           : GroupMode.GroupBy;
 
       group.GroupByItems = Selected.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
-
-      if (group.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive)
-        group.RecursiveItem = group.GroupByItems[0];
-      
       group.GroupIt();
       group.IsExpanded = true;
     }
