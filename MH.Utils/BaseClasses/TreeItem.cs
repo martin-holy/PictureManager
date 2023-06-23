@@ -56,5 +56,10 @@ namespace MH.Utils.BaseClasses {
       foreach (var item in Items.OfType<ITreeItem>())
         item.ExpandAll();
     }
+
+    public void AddItem(ITreeItem item) {
+      Items.Add(item);
+      item.Parent = this;
+    }
   }
 }
