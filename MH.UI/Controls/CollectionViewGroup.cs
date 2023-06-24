@@ -149,6 +149,7 @@ namespace MH.UI.Controls {
 
       if (toReWrap.Count == 0) return;
 
+      if (toReWrap.Any(IsFullyExpanded))
       View.ScrollToTopItem();
     }
 
@@ -266,5 +267,8 @@ namespace MH.UI.Controls {
       foreach (var item in Items.OfType<CollectionViewGroup<T>>())
         item.ExpandAll();
     }
+
+    public static bool IsFullyExpanded(CollectionViewGroup<T> group) =>
+      group.IsExpanded && (group.Parent == null || IsFullyExpanded(group.Parent));
   }
 }
