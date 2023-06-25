@@ -15,7 +15,8 @@ namespace PictureManager.Domain.ViewModels {
 
     public void Reload() {
       var source = _peopleM.DataAdapter.All
-        .Where(x => x.Parent is not CategoryGroupM { IsHidden: true });
+        .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
+        .OrderBy(x => x.Name);
       SetRoot(Res.IconPeopleMultiple, "People", source);
       Root.GroupMode = GroupMode.GroupByRecursive;
       Root.GroupByItems = new [] { GetPeopleGroups(Root.Source) };
