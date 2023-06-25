@@ -135,7 +135,7 @@ namespace MH.UI.Controls {
 
     public void ReGroupItems(IEnumerable<T> items, bool remove) {
       if (items == null) return;
-      var toReWrap = new List<CollectionViewGroup<T>>();
+      var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
       if (remove)
         foreach (var item in items)
@@ -153,7 +153,7 @@ namespace MH.UI.Controls {
         View.ScrollToTopItem();
     }
 
-    public void ReGroupItem(T item, List<CollectionViewGroup<T>> toReWrap) {
+    public void ReGroupItem(T item, HashSet<CollectionViewGroup<T>> toReWrap) {
       var itemAdded = false;
       var isGrouping = GroupByItems != null || GroupedBy?.Items?.Count > 0;
 
@@ -194,7 +194,7 @@ namespace MH.UI.Controls {
         emptyGroup?.ReGroupItem(item, toReWrap);
     }
 
-    public void RemoveItem(T item, List<CollectionViewGroup<T>> toReWrap) {
+    public void RemoveItem(T item, HashSet<CollectionViewGroup<T>> toReWrap) {
       if (!Source.Remove(item)) return;
 
       // remove the Group from its Parent if it is empty
@@ -210,7 +210,7 @@ namespace MH.UI.Controls {
       }
 
       // remove the Item from subGroups
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>())
+      foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray())
         group.RemoveItem(item, toReWrap);
     }
 
@@ -231,7 +231,6 @@ namespace MH.UI.Controls {
       });
     }
 
-    // TODO AddItems(IEnumerable<T> items)
     private void AddItem(T item, IList<object> items) {
       CollectionViewRow<T> row = null;
 
