@@ -342,7 +342,7 @@ namespace PictureManager.Domain.Models {
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
         if (File.Exists(destFilePath)) {
-          var result = FileOperationCollisionDialogM.Show(mi.FilePath, destFilePath, ref miNewFileName);
+          var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
             Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.Selected.Set(mi, false));

@@ -5,7 +5,6 @@ using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Models;
 using System.IO;
 using System.Linq;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class FileOperationCollisionDialogM : Dialog {
@@ -36,7 +35,7 @@ namespace PictureManager.Domain.Dialogs {
         new("Skip", null, new(() => Result = (int)CollisionResult.Skip)) }; 
     }
 
-    public static CollisionResult Show(string srcFilePath, string destFilePath, ref string fileName) {
+    public static CollisionResult Open(string srcFilePath, string destFilePath, ref string fileName) {
       var result = CollisionResult.Skip;
       var outFileName = fileName;
 
