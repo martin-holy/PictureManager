@@ -21,7 +21,7 @@ namespace MH.UI.Controls {
     public CollectionView<T> View { get; set; }
     public CollectionViewGroup<T> Parent { get; set; }
     public ObservableCollection<T> Source { get; }
-    public ObservableCollection<object> Items { get; } = new();
+    public ExtObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
     public GroupMode GroupMode { get; set; }
@@ -150,7 +150,7 @@ namespace MH.UI.Controls {
       if (toReWrap.Count == 0) return;
 
       if (toReWrap.Any(IsFullyExpanded))
-      View.ScrollToTopItem();
+        View.ScrollToTopItem();
     }
 
     public void ReGroupItem(T item, List<CollectionViewGroup<T>> toReWrap) {
@@ -159,7 +159,7 @@ namespace MH.UI.Controls {
 
       // add the item to the source if is not present
       if (!Source.Contains(item)) {
-        Source.Add(item);
+        Source.SetInOrder(item, View.ItemOrderBy);
         itemAdded = true;
 
         // if the group is not grouped schedule it for ReWrap
@@ -172,28 +172,26 @@ namespace MH.UI.Controls {
       // done if the group is not grouped and the item was already in the source
       if (!isGrouping) return;
 
-      // find existing group for the item and remove the item from other groups
+      // find group for the item and remove the item from other groups
       var groupFound = false;
-      var emptyGroup = Items
-        .OfType<CollectionViewGroup<T>>()
-        .SingleOrDefault(x => x.GroupedBy == null);
+      CollectionViewGroup<T> emptyGroup = null;
 
       foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray())
-        if (group.GroupedBy?.ItemGroupBy(item, group.GroupedBy.Parameter) == true) {
-          group.ReGroupItem(item, toReWrap);
-          groupFound = true;
-        }
-        else if (!itemAdded && !ReferenceEquals(group, emptyGroup))
-          group.RemoveItem(item, toReWrap);
+        if (group.GroupedBy == null)
+          emptyGroup = group;
+        else
+          if (group.GroupedBy.ItemGroupBy(item, group.GroupedBy.Parameter)) {
+            group.ReGroupItem(item, toReWrap);
+            groupFound = true;
+          }
+          else if (!itemAdded)
+            group.RemoveItem(item, toReWrap);
 
       // add/remove the item in/from the empty group
-      if (emptyGroup == null) return;
       if (groupFound)
-        emptyGroup.RemoveItem(item, toReWrap);
-      else if (!emptyGroup.Source.Contains(item)) {
-        emptyGroup.Source.Add(item);
-        toReWrap.Add(emptyGroup);
-      }
+        emptyGroup?.RemoveItem(item, toReWrap);
+      else
+        emptyGroup?.ReGroupItem(item, toReWrap);
     }
 
     public void RemoveItem(T item, List<CollectionViewGroup<T>> toReWrap) {
@@ -225,35 +223,36 @@ namespace MH.UI.Controls {
     public void ReWrap() {
       if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
 
-      Source.Sort(View.ItemOrderBy);
-      Items.Clear();
+      Items.Execute(items => {
+        items.Clear();
 
-      foreach (var item in Source)
-        AddItem(item);
+        foreach (var item in Source)
+          AddItem(item, items);
+      });
     }
 
     // TODO AddItems(IEnumerable<T> items)
-    private void AddItem(T item) {
+    private void AddItem(T item, IList<object> items) {
       CollectionViewRow<T> row = null;
 
-      if (Items.Count > 0)
-        row = Items[^1] as CollectionViewRow<T>;
+      if (items.Count > 0)
+        row = items[^1] as CollectionViewRow<T>;
 
-      row ??= AddRow();
+      row ??= AddRow(items);
 
       var usedSpace = row.Items.Sum(x => View.GetItemWidth(x));
       var itemWidth = View.GetItemWidth(item);
 
       if (Width - usedSpace < itemWidth)
-        row = AddRow();
+        row = AddRow(items);
 
       row.Items.Add(item);
     }
 
-    private CollectionViewRow<T> AddRow() {
+    private CollectionViewRow<T> AddRow(ICollection<object> items) {
       var row = new CollectionViewRow<T>(this);
       try {
-        Items.Add(row);
+        items.Add(row);
       }
       catch (Exception) {
         // BUG in .NET remove try/catch after update to new .NET version
