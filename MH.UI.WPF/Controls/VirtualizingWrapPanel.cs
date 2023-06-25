@@ -253,6 +253,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     public void ReWrap() {
+      if (WrappedItems == null) return;
       WrappedItems.Clear();
       AddAll();
       ScrollTopRowOrItem();
