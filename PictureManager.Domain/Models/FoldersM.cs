@@ -314,7 +314,7 @@ namespace PictureManager.Domain.Models {
         // if the file with the same name exists in the destination
         // show dialog with options to Rename, Replace or Skip the file
         if (File.Exists(destFilePath)) {
-          var result = FileOperationCollisionDialogM.Show(srcFilePath, destFilePath, ref destFileName);
+          var result = FileOperationCollisionDialogM.Open(srcFilePath, destFilePath, ref destFileName);
 
           switch (result) {
             case CollisionResult.Rename: {
