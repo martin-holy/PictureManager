@@ -94,7 +94,7 @@
         IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
         CanOpen="{Binding ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
         Content="{Binding ToolsTabsM}"
-        Width="360"/>
+        Width="362"/>
     </mhc:SlidePanelsGrid.PanelRight>
 
     <!-- Status Panel -->
