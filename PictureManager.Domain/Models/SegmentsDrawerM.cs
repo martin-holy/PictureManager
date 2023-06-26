@@ -30,11 +30,7 @@ namespace PictureManager.Domain.Models {
       AddSelectedCommand = new(
         () => Update(SegmentsM.Selected.Items.ToArray(), true),
         () => SegmentsM.Selected.Items.Count > 0);
-      OpenCommand = new(
-        () => {
-          Reload();
-          core.ToolsTabsM.Activate(ToolsTabsItem, true);
-        });
+      OpenCommand = new(() => Open(core.ToolsTabsM));
     }
 
     private object CanDrag(object source) =>
@@ -53,7 +49,7 @@ namespace PictureManager.Domain.Models {
     private void DoDrop(object data, bool haveSameOrigin) =>
       Update(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
 
-    private void Update(IEnumerable<SegmentM> segments, bool add) {
+    private void Update(SegmentM[] segments, bool add) {
       if (!add && Core.DialogHostShow(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
@@ -76,23 +72,25 @@ namespace PictureManager.Domain.Models {
 
       if (count != Items.Count) {
         SegmentsM.DataAdapter.AreTablePropsModified = true;
-        Reload();
+        Root.ReGroupItems(segments, !add);
       }
     }
 
     public void Remove(SegmentM segment) {
       if (!Items.Remove(segment)) return;
       SegmentsM.DataAdapter.AreTablePropsModified = true;
-      Reload();
+      Root.ReGroupItems(new[] { segment }, true);
     }
 
-    public void Reload() {
+    private void Open(ToolsTabsM tt) {
       var gbi = GetGroupByItems(Items).ToArray();
-      SetRoot(Res.IconSegment, "Segments", Items);
+      SetRoot(Res.IconSegment, "Segments", Items.OrderBy(x => x.MediaItem.FileName));
       Root.GroupMode = GroupMode.GroupByRecursive;
       Root.GroupByItems = gbi.Length == 0 ? null : gbi;
       Root.GroupIt();
       Root.ExpandAll();
+
+      tt.Activate(ToolsTabsItem, true);
     }
 
     public override int GetItemWidth(object item) =>
