@@ -131,5 +131,17 @@ namespace MH.Utils {
 
       return root;
     }
+
+    public static T FindChild<T>(IEnumerable<ITreeItem> items, Func<T, bool> equals) {
+      foreach (var item in items) {
+        if (equals((T)item))
+          return (T)item;
+
+        var res = FindChild(item.Items, equals);
+        if (res != null) return res;
+      }
+
+      return default;
+    }
   }
 }
