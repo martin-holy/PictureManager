@@ -202,6 +202,7 @@ namespace PictureManager.Domain.Models {
 
       if (people.Length == 0) {
         // create person with unused min ID
+        var id = -1;
         var usedIds = DataAdapter.All
           .Where(x => x.Person?.Id < 0)
           .Select(x => x.Person.Id)
@@ -209,14 +210,15 @@ namespace PictureManager.Domain.Models {
           .OrderByDescending(x => x)
           .ToArray();
 
-        for (var i = -1; i > usedIds.Min() - 2; i--) {
-          if (usedIds.Contains(i)) continue;
-          newPerson = new(i, $"P {i}");
-          _core.PeopleM.DataAdapter.All.Add(newPerson);
+        if (usedIds.Any())
+          for (var i = -1; i > usedIds.Min() - 2; i--) {
+            if (usedIds.Contains(i)) continue;
+            id = i;
+            break;
+          }
 
-          break;
-        }
-
+        newPerson = new(id, $"P {id}");
+        _core.PeopleM.DataAdapter.All.Add(newPerson);
         toUpdate = Selected.Items.ToArray();
       }
       else {
