@@ -79,13 +79,13 @@ namespace PictureManager.Domain {
       FolderKeywordsM.DataAdapter = new(FoldersM);
       FoldersM.DataAdapter = new(FoldersM);
       GeoNamesM.DataAdapter = new(GeoNamesM);
-      KeywordsM.DataAdapter = new(KeywordsM, CategoryGroupsM);
+      KeywordsM.DataAdapter = new(KeywordsM);
       MediaItemsM.DataAdapter = new(FoldersM, PeopleM, KeywordsM, GeoNamesM);
       PeopleM.DataAdapter = new(PeopleM, SegmentsM, KeywordsM);
       SegmentsM.DataAdapter = new(SegmentsM, MediaItemsM, PeopleM, KeywordsM);
       VideoClipsM.DataAdapter = new(VideoClipsM, MediaItemsM, KeywordsM, PeopleM);
       VideoClipsM.TreeCategory.GroupsM.DataAdapter = new(VideoClipsM.TreeCategory.GroupsM, VideoClipsM, MediaItemsM);
-      ViewersM.DataAdapter = new(ViewersM, FoldersM, KeywordsM, FolderKeywordsM, CategoryGroupsM);
+      ViewersM.DataAdapter = new(ViewersM, FoldersM, KeywordsM, CategoryGroupsM);
     }
 
     public Task InitAsync(IProgress<string> progress) {
@@ -113,6 +113,14 @@ namespace PictureManager.Domain {
 
         progress.Report("Loading drives");
       });
+    }
+
+    public void AfterInit() {
+      if (KeywordsM.AutoAddedGroup == null)
+        KeywordsM.AutoAddedGroup = CategoryGroupsM.GroupCreate("Auto Added", Category.Keywords);
+
+      FoldersM.AddDrives();
+      FolderKeywordsM.Load();
     }
 
     private void AttachEvents() {

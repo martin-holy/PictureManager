@@ -11,14 +11,12 @@ namespace PictureManager.Domain.DataAdapters {
     private readonly ViewersM _model;
     private readonly FoldersM _foldersM;
     private readonly KeywordsM _keywordsM;
-    private readonly FolderKeywordsM _folderKeywordsM;
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public ViewersDataAdapter(ViewersM model, FoldersM f, KeywordsM k, FolderKeywordsM fk, CategoryGroupsM g) : base("Viewers", 7) {
+    public ViewersDataAdapter(ViewersM model, FoldersM f, KeywordsM k, CategoryGroupsM g) : base("Viewers", 7) {
       _model = model;
       _foldersM = f;
       _keywordsM = k;
-      _folderKeywordsM = fk;
       _categoryGroupsM = g;
     }
 
@@ -82,8 +80,6 @@ namespace PictureManager.Domain.DataAdapters {
       }
 
       _model.Current?.UpdateHashSets();
-      _foldersM.AddDrives();
-      _folderKeywordsM.Load();
 
       foreach (var group in _categoryGroupsM.DataAdapter.AllDict.Values)
         group.IsHidden = _model.Current?.ExcludedCategoryGroups.Contains(group) == true;
