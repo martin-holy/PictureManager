@@ -84,7 +84,11 @@ namespace PictureManager.Domain.Models {
 
     private void Open(ToolsTabsM tt) {
       var gbi = GetGroupByItems(Items).ToArray();
-      SetRoot(Res.IconSegment, "Segments", Items.OrderBy(x => x.MediaItem.FileName));
+      var source = Items
+        .OrderBy(x => x.MediaItem.Folder.FullPath)
+        .ThenBy(x => x.MediaItem.FileName);
+
+      SetRoot(Res.IconSegment, "Segments", source);
       Root.GroupMode = GroupMode.GroupByRecursive;
       Root.GroupByItems = gbi.Length == 0 ? null : gbi;
       Root.GroupIt();

@@ -366,7 +366,8 @@ namespace PictureManager.Domain.Models {
         return SegmentsDrawerM.Items
           .Select(x => x.MediaItem)
           .Distinct()
-          .OrderBy(x => x.FilePath)
+          .OrderBy(x => x.Folder.FullPath)
+          .ThenBy(x => x.FileName)
           .ToList();
 
       if (inGroups) {
