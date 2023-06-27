@@ -68,7 +68,7 @@ namespace MH.UI.WPF.Controls {
     private void SelectItem(MouseButtonEventArgs e) {
       var item = (e.OriginalSource as FrameworkElement)?.FindTopTemplatedParent()?.DataContext;
       var row = (e.Source as FrameworkElement)?.DataContext;
-      var btn = (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
+      var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
 
       if (item == null || row == null || btn != null) return;
 
