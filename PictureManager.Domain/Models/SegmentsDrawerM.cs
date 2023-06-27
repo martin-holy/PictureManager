@@ -72,14 +72,14 @@ namespace PictureManager.Domain.Models {
 
       if (count != Items.Count) {
         SegmentsM.DataAdapter.AreTablePropsModified = true;
-        Root.ReGroupItems(segments, !add);
+        ReGroupItems(segments, !add);
       }
     }
 
     public void Remove(SegmentM segment) {
       if (!Items.Remove(segment)) return;
       SegmentsM.DataAdapter.AreTablePropsModified = true;
-      Root.ReGroupItems(new[] { segment }, true);
+      ReGroupItems(new[] { segment }, true);
     }
 
     private void Open(ToolsTabsM tt) {
