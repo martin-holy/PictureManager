@@ -145,8 +145,20 @@ namespace PictureManager.Domain.Models {
       if (!isCtrlOn && !isShiftOn)
         _core.SegmentsM.Selected.DeselectAll();
 
+      var segmentsBefore = Selected.Items
+        .Where(x => x.Segment != null)
+        .Select(x => x.Segment)
+        .ToArray();
+
       Selected.Select(people, person, isCtrlOn, isShiftOn);
-      _core.SegmentsM.Selected.Add(Selected.Items.Where(x => x.Segment != null).Select(x => x.Segment));
+
+      var segmentsAfter = Selected.Items
+        .Where(x => x.Segment != null)
+        .Select(x => x.Segment)
+        .ToArray();
+
+      _core.SegmentsM.Selected.Set(segmentsBefore.Except(segmentsAfter), false);
+      _core.SegmentsM.Selected.Add(segmentsAfter);
       _core.SegmentsM.SetCanSelectAsSamePerson();
     }
 
