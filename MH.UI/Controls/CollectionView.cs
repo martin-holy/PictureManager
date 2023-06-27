@@ -47,6 +47,9 @@ namespace MH.UI.Controls {
       Root = new(null, null, collection) { Icon = icon, Title = title, View = this };
     }
 
+    public void ReGroupItems(IEnumerable<T> items, bool remove) =>
+      Root?.ReGroupItems(items, remove);
+
     private void OnSizeChanging(bool value) {
       _isSizeChanging = value;
 
