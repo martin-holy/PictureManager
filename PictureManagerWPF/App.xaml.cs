@@ -14,19 +14,18 @@ namespace PictureManager {
     protected override async void OnStartup(StartupEventArgs e) {
       base.OnStartup(e);
 
-      AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs e) {
-        Core.DialogHostShow(new ErrorDialogM((Exception)e.ExceptionObject));
+      AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs args) {
+        Core.DialogHostShow(new ErrorDialogM((Exception)args.ExceptionObject));
       };
 
-      CommandManager.RequerySuggested += (o, e) => {
-        RelayCommand.InvokeCanExecuteChanged(o, e);
-      };
+      CommandManager.RequerySuggested += RelayCommand.InvokeCanExecuteChanged;
 
       var splashScreen = new SplashScreenV();
       MainWindow = splashScreen;
       MainWindow.Show();
 
       await Core.Instance.InitAsync(splashScreen.ProgressMessage);
+      Core.Instance.AfterInit();
 
       Current.Properties[nameof(AppProperty.Core)] = Core.Instance;
       Current.Properties[nameof(AppProperty.Ui)] = new AppCore();

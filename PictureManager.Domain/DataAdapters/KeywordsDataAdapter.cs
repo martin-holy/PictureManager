@@ -10,11 +10,9 @@ namespace PictureManager.Domain.DataAdapters {
   /// </summary>
   public class KeywordsDataAdapter : DataAdapter<KeywordM> {
     private readonly KeywordsM _model;
-    private readonly CategoryGroupsM _categoryGroupsM;
 
-    public KeywordsDataAdapter(KeywordsM model, CategoryGroupsM cg) : base("Keywords", 3) {
+    public KeywordsDataAdapter(KeywordsM model) : base("Keywords", 3) {
       _model = model;
-      _categoryGroupsM = cg;
     }
 
     public static IEnumerable<T> GetAll<T>(ITreeItem root) {
@@ -60,8 +58,7 @@ namespace PictureManager.Domain.DataAdapters {
       // group for keywords automatically added from MediaItems metadata
       _model.AutoAddedGroup = _model.Items
         .OfType<CategoryGroupM>()
-        .SingleOrDefault(x => x.Name.Equals("Auto Added"))
-        ?? _categoryGroupsM.GroupCreate("Auto Added", Category.Keywords);
+        .SingleOrDefault(x => x.Name.Equals("Auto Added"));
     }
   }
 }
