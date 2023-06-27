@@ -14,6 +14,7 @@
 
       <wpfc:TreeViewBase
         Style="{StaticResource MH.Styles.Controls.TreeViewBase}"
+        ScrollViewerSpeedFactor="1"
         SelectAction="{Binding SelectAction}"
         ItemsSource="{Binding Root.Items}"
         ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem}"
