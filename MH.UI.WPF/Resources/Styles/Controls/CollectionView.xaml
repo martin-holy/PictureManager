@@ -64,7 +64,7 @@
 
           <TextBlock
             Grid.Column="2"
-            Text="{Binding Source.Count}"
+            Text="{Binding SourceCount}"
             VerticalAlignment="Center"
             Margin="5,0,5,0"
             FontWeight="Bold"/>
