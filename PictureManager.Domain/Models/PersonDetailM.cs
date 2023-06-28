@@ -58,7 +58,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void ReloadIfContains(IEnumerable<SegmentM> segments) {
-      if (PersonM != null && segments.Select(x => x.Person).Any(x => PersonM.Equals(x)))
+      if (PersonM != null && segments.Select(x => x.Person).Any(x => ReferenceEquals(PersonM, x)))
        ReloadPersonSegments();
     }
 
