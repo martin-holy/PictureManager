@@ -2,6 +2,7 @@
 using MH.Utils.EventsArgs;
 using static MH.Utils.DragDropHelper;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class PersonDetailM : ObservableObject {
@@ -54,6 +55,11 @@ namespace PictureManager.Domain.Models {
       ScrollToTop = true;
       AllSegmentsRoot = PersonM.GetSegments(_segmentsM.DataAdapter.All, AllSegments);
       OnPropertyChanged(nameof(AllSegments)); // this is for the count
+    }
+
+    public void ReloadIfContains(IEnumerable<SegmentM> segments) {
+      if (PersonM != null && segments.Select(x => x.Person).Any(x => PersonM.Equals(x)))
+       ReloadPersonSegments();
     }
 
     private void Select(MouseButtonEventArgs e) {

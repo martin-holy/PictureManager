@@ -276,16 +276,12 @@ namespace PictureManager.Domain {
       };
 
       SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
-        if (e.Data.Item1.Select(x => x.Person).Any(x => x.Equals(PersonDetailM.PersonM)))
-          PersonDetailM.ReloadPersonSegments();
-
+        PersonDetailM.ReloadIfContains(e.Data.Item1);
         SegmentsM.ReloadIfContains(e.Data.Item1);
       };
 
       SegmentsM.SegmentDeletedEventHandler += (_, e) => {
-        if (e.Data.Person.Equals(PersonDetailM.PersonM))
-          PersonDetailM.ReloadPersonSegments();
-
+        PersonDetailM.ReloadIfContains(new[] { e.Data });
         SegmentsM.SegmentsDrawerM.Remove(e.Data);
       };
 
