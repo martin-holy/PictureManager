@@ -3,7 +3,6 @@ using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace MH.UI.Controls {
@@ -39,12 +38,7 @@ namespace MH.UI.Controls {
     }
 
     public void SetRoot(string icon, string title, IEnumerable<T> source) {
-      var collection = new ObservableCollection<T>();
-      
-      foreach (var item in source)
-        collection.Add(item);
-
-      Root = new(null, null, collection) { Icon = icon, Title = title, View = this };
+      Root = new(null, null, source.ToList()) { Icon = icon, Title = title, View = this };
     }
 
     public void ReGroupItems(IEnumerable<T> items, bool remove) =>
