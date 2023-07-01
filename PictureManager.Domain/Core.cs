@@ -147,7 +147,7 @@ namespace PictureManager.Domain {
 
       FoldersM.FolderDeletedEventHandler += (_, e) => {
         FavoriteFoldersM.ItemDelete(e.Data);
-        MediaItemsM.Delete(e.Data.MediaItems);
+        MediaItemsM.Delete(e.Data.MediaItems.ToList());
       };
 
       #region PeopleM EventHandlers
@@ -267,6 +267,7 @@ namespace PictureManager.Domain {
           PersonDetailM.ReloadPersonSegments();
 
         SegmentsM.ReloadIfContains(e.Data.Item1);
+        SegmentsM.SegmentsView?.ReGroupItems(e.Data.Item1, false);
 
         // TODO fix this after changing logic that every segment has person until is changed to real person
         PeopleM.View.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null), false);
@@ -278,11 +279,13 @@ namespace PictureManager.Domain {
       SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
         PersonDetailM.ReloadIfContains(e.Data.Item1);
         SegmentsM.ReloadIfContains(e.Data.Item1);
+        SegmentsM.SegmentsView?.ReGroupItems(e.Data.Item1, false);
       };
 
       SegmentsM.SegmentDeletedEventHandler += (_, e) => {
         PersonDetailM.ReloadIfContains(new[] { e.Data });
         SegmentsM.SegmentsDrawerM.Remove(e.Data);
+        SegmentsM.SegmentsView?.ReGroupItems(new[] { e.Data }, true);
       };
 
       #endregion
