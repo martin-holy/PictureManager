@@ -17,7 +17,9 @@ namespace PictureManager.Domain.Models {
     public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
     public PeopleVM View { get; }
+    public PeopleToolsTabM PeopleToolsTabM { get; set; }
     public Selecting<PersonM> Selected { get; } = new();
+    public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleDeletedEvent = delegate { };
@@ -29,6 +31,13 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
       MainTabsItem = new(this, "People");
       View = new(this);
+
+      OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
+    }
+
+    private void OpenPeopleToolsTab() {
+      PeopleToolsTabM ??= new(_core, this);
+      _core.ToolsTabsM.Activate(PeopleToolsTabM.ToolsTabsItem, true);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -208,5 +217,19 @@ namespace PictureManager.Domain.Models {
 
       PeopleDeletedEvent(this, new(people));
     }
+
+    public static PersonM[] GetFromMediaItems(MediaItemM[] mediaItems) =>
+      mediaItems == null
+        ? Array.Empty<PersonM>()
+        : mediaItems
+            .Where(x => x.People != null)
+            .SelectMany(x => x.People)
+            .Concat(mediaItems
+              .Where(y => y.Segments != null)
+              .SelectMany(y => y.Segments)
+              .Where(y => y.Person != null)
+              .Select(y => y.Person))
+            .Distinct()
+            .ToArray();
   }
 }
