@@ -23,21 +23,30 @@ namespace PictureManager.Domain.Models {
     private void ReloadFrom() {
       var md = new MessageDialog(
         "Reload People",
-        "Choice source for people to load.",
+        "From which source do you want to load the people?",
         Res.IconPeople,
         true);
 
       md.Buttons = new DialogButton[] {
         new("Thumbnails", null, md.SetResult(1), true),
-        new("Media Viewer", null, md.SetResult(2)) };
+        new("Media Viewer", null, md.SetResult(2)),
+        new("All people", null, md.SetResult(3))
+      };
 
       var result = Core.DialogHostShow(md);
       if (result < 1) return;
 
       switch (result) {
-        case 1: Reload(PeopleM.GetFromMediaItems(_core.ThumbnailsGridsM.Current?.GetSelectedOrAll().ToArray()));
+        case 1:
+          Reload(PeopleM.GetFromMediaItems(_core.ThumbnailsGridsM.Current?.GetSelectedOrAll().ToArray()));
           break;
-        case 2 : Reload(PeopleM.GetFromMediaItems(_core.MediaViewerM.MediaItems?.ToArray()));
+        case 2:
+          Reload(PeopleM.GetFromMediaItems(_core.MediaViewerM.MediaItems?.ToArray()));
+          break;
+        case 3:
+          Reload(_peopleM.DataAdapter.All
+            .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
+            .OrderBy(x => x.Name));
           break;
       }
     }
