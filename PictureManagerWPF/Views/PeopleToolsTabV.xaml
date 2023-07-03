@@ -1,0 +1,27 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF">
+
+  <DataTemplate DataType="{x:Type m:PeopleToolsTabM}">
+    <DataTemplate.Resources>
+      <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PersonThumbnailV.xaml" />
+        </ResourceDictionary.MergedDictionaries>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <DockPanel>
+      <mhc:IconButton
+        DockPanel.Dock="Top"
+        ToolTip="Reload from"
+        Icon="{StaticResource IconRefresh}"
+        Command="{Binding ReloadFromCommand}"
+        HorizontalAlignment="Left"/>
+
+      <mhc:CollectionView View="{Binding}"/>
+    </DockPanel>
+  </DataTemplate>
+</ResourceDictionary>

@@ -8,6 +8,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="PeopleToolsTabV.xaml"/>
           <ResourceDictionary Source="PersonDetailV.xaml"/>
           <ResourceDictionary Source="SegmentsDrawerV.xaml"/>
           <ResourceDictionary Source="VideoClipsV.xaml"/>
