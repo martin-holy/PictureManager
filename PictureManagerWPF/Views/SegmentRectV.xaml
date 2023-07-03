@@ -60,15 +60,16 @@
     </Border>
 
     <DataTemplate.Triggers>
+      <DataTrigger Binding="{Binding Segment.Person}" Value="{x:Null}">
+        <Setter TargetName="PART_ResizeBorder" Property="ToolTip" Value="{x:Null}"/>
+        <Setter TargetName="PART_ResizeBorder" Property="BorderBrush" Value="Red"/>
+      </DataTrigger>
       <DataTrigger Binding="{Binding Segment.IsSelected}" Value="True">
         <Setter TargetName="PART_ResizeBorder" Property="BorderBrush" Value="LimeGreen"/>
       </DataTrigger>
       <Trigger Property="IsMouseOver" Value="True">
         <Setter TargetName="PART_ResizeBorder" Property="BorderThickness" Value="2"/>
       </Trigger>
-      <DataTrigger Binding="{Binding Segment.Person}" Value="{x:Null}">
-        <Setter TargetName="PART_ResizeBorder" Property="ToolTip" Value="0"/>
-      </DataTrigger>
       <MultiDataTrigger>
         <MultiDataTrigger.Conditions>
           <Condition Binding="{Binding SegmentsM.SegmentsRectsM.IsEditOn, Source={x:Static pm:App.Core}}" Value="False"/>
