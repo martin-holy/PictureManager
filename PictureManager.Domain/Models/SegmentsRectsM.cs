@@ -50,6 +50,7 @@ namespace PictureManager.Domain.Models {
       _editMode = SegmentEditMode.ResizeEdge;
       _isCurrentModified = true;
       Current = new(SegmentsM.AddNewSegment(x, y, 0, MediaItem), Scale);
+      SegmentsM.Select(null, Current.Segment, false, false);
       MediaItemSegmentsRects.Add(Current);
     }
 
