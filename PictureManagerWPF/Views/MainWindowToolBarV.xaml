@@ -141,6 +141,13 @@
               Command="{Binding SegmentMatchingCommand}"/>
           </StackPanel>
           
+          <Separator/>
+
+          <mhc:IconButton
+            ToolTip="People"
+            Icon="{StaticResource IconPeopleMultiple}"
+            Command="{Binding PeopleM.OpenPeopleToolsTabCommand}"/>
+          
           <!-- Presentation ToolBar -->
           <StackPanel
             VerticalAlignment="Center"
