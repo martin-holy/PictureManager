@@ -4,6 +4,7 @@ using MH.Utils.BaseClasses;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils.Extensions;
 
 namespace MH.UI.Controls {
   public class CollectionView<T> : ObservableObject, ICollectionView {
@@ -14,7 +15,7 @@ namespace MH.UI.Controls {
     private CollectionViewGroup<T> _topGroup;
     private readonly GroupByDialog<T> _groupByDialog = new();
 
-    public object ObjectRoot => Root;
+    public ExtObservableCollection<object> RootHolder { get; } = new();
     public CollectionViewGroup<T> Root { get => _root; set { _root = value; OnPropertyChanged(); } }
     public T TopItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
@@ -37,12 +38,37 @@ namespace MH.UI.Controls {
       Select(r.Group.Source, i, isCtrlOn, isShiftOn);
     }
 
-    public void SetRoot(string icon, string title, IEnumerable<T> source) {
-      Root = new(null, null, source.ToList()) { Icon = icon, Title = title, View = this };
+    public void SetRoot(string icon, string title, List<T> source) {
+      Root = new(null, null, source) { Icon = icon, Title = title, View = this };
+      RootHolder.Execute(items => {
+        items.Clear();
+        items.Add(Root);
+      });
     }
 
-    public void ReGroupItems(IEnumerable<T> items, bool remove) =>
-      Root?.ReGroupItems(items, remove);
+    public void ReGroupItems(IEnumerable<T> items, bool remove) {
+      if (Root == null || items == null) return;
+      var toReWrap = new HashSet<CollectionViewGroup<T>>();
+
+      if (remove)
+        foreach (var item in items)
+          Root.RemoveItem(item, toReWrap);
+      else
+        foreach (var item in items) {
+          var gbis = GetGroupByItems(new[] { item }).ToArray();
+          Root.InsertItem(item, toReWrap, gbis);
+          //ReGroupItem(item, toReWrap);
+        }
+          
+
+      foreach (var group in toReWrap)
+        group.ReWrap();
+
+      if (toReWrap.Count == 0) return;
+
+      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded))
+        ScrollToTopItem();
+    }
 
     private void OnSizeChanging(bool value) {
       _isSizeChanging = value;
