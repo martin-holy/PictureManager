@@ -61,5 +61,10 @@ namespace MH.Utils.BaseClasses {
       Items.Add(item);
       item.Parent = this;
     }
+
+    public void AddItems(IEnumerable<ITreeItem> items) {
+      foreach (var item in items)
+        AddItem(item);
+    }
   }
 }
