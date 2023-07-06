@@ -55,7 +55,7 @@ namespace MH.UI.WPF.Controls {
           View.IsSizeChanging = true;
       };
 
-      ItemsSource = new[] { View.ObjectRoot };
+      ItemsSource = View.RootHolder;
 
       View.PropertyChanged += (_, e) => {
         if (nameof(View.ScrollToItem).Equals(e.PropertyName) && View.ScrollToItem != null && IsVisible) {
