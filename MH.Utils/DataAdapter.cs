@@ -123,15 +123,18 @@ namespace MH.Utils {
         AreTablePropsModified = false;
     }
 
-    public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) =>
-      string.IsNullOrEmpty(csv)
-        ? null
-        : csv
-          .Split(',')
-          .Select(int.Parse)
-          .Where(source.ContainsKey)
-          .Select(x => source[x])
-          .ToList();
+    public static List<TI> IdToRecord<TI>(string csv, Dictionary<int, TI> source) {
+      if (string.IsNullOrEmpty(csv)) return null;
+
+      var items = csv
+        .Split(',')
+        .Select(int.Parse)
+        .Where(source.ContainsKey)
+        .Select(x => source[x])
+        .ToList();
+
+      return items.Count == 0 ? null : items;
+    }
 
     public static List<TI> LinkList<TI>(string csv, Dictionary<int, TI> source) =>
       IdToRecord(csv, source);
