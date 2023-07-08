@@ -18,7 +18,9 @@ namespace MH.UI.Controls {
     public ExtObservableCollection<object> RootHolder { get; } = new();
     public CollectionViewGroup<T> Root { get => _root; set { _root = value; OnPropertyChanged(); } }
     public T TopItem { get; set; }
+    public T LastSelectedItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
+    public CollectionViewRow<T> LastSelectedRow { get; set; }
     public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
 
@@ -35,6 +37,8 @@ namespace MH.UI.Controls {
 
     public void Select(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (row is not CollectionViewRow<T> r || item is not T i) return;
+      LastSelectedItem = i;
+      LastSelectedRow = r;
       Select(r.Group.Source, i, isCtrlOn, isShiftOn);
     }
 
