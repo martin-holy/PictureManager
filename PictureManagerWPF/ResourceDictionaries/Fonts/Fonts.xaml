@@ -8,6 +8,6 @@
   <system:Double x:Key="ButtonFontSize">10</system:Double>
   <system:Double x:Key="MenuFontSize">14</system:Double>
   <system:Double x:Key="ContextMenuFontSize">14</system:Double>
-  <system:Double x:Key="TabItemFontSize">26</system:Double>
+  <system:Double x:Key="TabItemFontSize">20</system:Double>
     
 </ResourceDictionary>
