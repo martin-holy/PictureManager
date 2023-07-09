@@ -16,88 +16,68 @@
           <ResourceDictionary Source="ThumbnailsGridV.xaml"/>
           <ResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
+
+        <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <DockPanel Grid.Column="0" ZIndex="1" Width="40">
+              <mhc:IconButton
+                DockPanel.Dock="Top"
+                Icon="{StaticResource IconPlus}"
+                Width="24"
+                Height="24"
+                Padding="6"
+                ToolTip="Add Thumbnails Grid Tab"
+                HorizontalAlignment="Center"
+                Command="{Binding ThumbnailsGridsM.AddThumbnailsGridCommand,
+                      Source={x:Static pm:App.Core}}"/>
+
+              <TabPanel
+                IsItemsHost="True"
+                KeyboardNavigation.TabIndex="1"
+                Margin="0"/>
+            </DockPanel>
+
+            <ItemsControl Grid.Column="1" ItemsSource="{Binding Items}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Grid/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <ContentPresenter Content="{Binding Content}"/>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+
+              <ItemsControl.ItemContainerStyle>
+                <Style>
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                      <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+          </Grid>
+        </ControlTemplate>
       </ResourceDictionary>
     </DataTemplate.Resources>
-    
+
     <TabControl
       x:Name="Tabs"
       Background="Transparent"
       BorderThickness="0"
       TabStripPlacement="Left"
       ItemsSource="{Binding Items}"
-      SelectedItem="{Binding Selected, Mode=TwoWay}">
-
-      <TabControl.Style>
-        <Style TargetType="{x:Type TabControl}">
-          <Setter Property="Template">
-            <Setter.Value>
-              <ControlTemplate TargetType="{x:Type TabControl}">
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                  </Grid.ColumnDefinitions>
-
-                  <StackPanel
-                    Grid.Column="0"
-                    Orientation="Vertical"
-                    ZIndex="1"
-                    Width="46">
-
-                    <mhc:IconButton
-                      Icon="{StaticResource IconPlus}"
-                      Width="24"
-                      Height="24"
-                      Padding="6"
-                      ToolTip="Add Thumbnails Grid Tab"
-                      HorizontalAlignment="Center"
-                      Command="{Binding ThumbnailsGridsM.AddThumbnailsGridCommand,
-                                Source={x:Static pm:App.Core}}"/>
-
-                    <TabPanel
-                      IsItemsHost="True"
-                      KeyboardNavigation.TabIndex="1"
-                      Margin="0"/>
-                  </StackPanel>
-
-                  <ItemsControl
-                    Grid.Column="1"
-                    ItemsSource="{Binding Items}">
-                    
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <Grid/>
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <ContentPresenter Content="{Binding Content}"/>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                    <ItemsControl.ItemContainerStyle>
-                      <Style>
-                        <Style.Triggers>
-                          <DataTrigger
-                            Binding="{Binding IsSelected}"
-                            Value="False">
-
-                            <Setter
-                              Property="ContentPresenter.Visibility"
-                              Value="Hidden"/>
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </ItemsControl.ItemContainerStyle>
-                  </ItemsControl>
-                  
-                </Grid>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </TabControl.Style>
+      SelectedItem="{Binding Selected, Mode=TwoWay}"
+      Template="{StaticResource TabControlTemplate}">
 
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="SizeChanged">
@@ -113,32 +93,22 @@
       </b:Interaction.Triggers>
 
       <TabControl.ItemContainerStyle>
-        <Style
-          TargetType="{x:Type TabItem}"
-          BasedOn="{StaticResource {x:Type TabItem}}">
-
-          <Setter
-            Property="MaxHeight"
-            Value="{Binding Path=DataContext.(m:MainTabsM.TabMaxHeight), ElementName=Tabs}"/>
-          <Setter
-            Property="IsSelected"
-            Value="{Binding IsSelected, Mode=TwoWay}"/>
-          <Setter
-            Property="Header"
-            Value="{Binding}"/>
+        <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+          <Setter Property="MaxHeight" Value="{Binding Path=DataContext.(m:MainTabsM.TabMaxHeight), ElementName=Tabs}"/>
+          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+          <Setter Property="Header" Value="{Binding}"/>
           
           <Setter Property="HeaderTemplate">
             <Setter.Value>
               <DataTemplate>
-                <StackPanel
+                <DockPanel
                   x:Name="TabHeader"
-                  Orientation="Vertical"
                   ContextMenu="{Binding Content,
                                 Converter={StaticResource ResourceConverter},
                                 ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToContextMenu}}"
                   Background="Transparent">
                   
-                  <Grid Height="28">
+                  <Grid DockPanel.Dock="Top" Height="28">
                     <!-- Close button -->
                     <mhc:IconButton
                       Icon="{StaticResource IconXCross}"
@@ -169,9 +139,7 @@
                       <Path.Style>
                         <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
                           <Style.Triggers>
-                            <DataTrigger
-                              Binding="{Binding IsMouseOver, ElementName=TabHeader}"
-                              Value="True">
+                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=TabHeader}" Value="True">
                               <Setter Property="Visibility" Value="Hidden"/>
                             </DataTrigger>
                           </Style.Triggers>
@@ -188,7 +156,6 @@
                   <!-- Tab text -->
                   <TextBlock
                     Text="{Binding ContentHeader}"
-                    Margin="0,8"
                     Effect="{StaticResource MH.Effects.DropShadow}"
                     FontSize="{StaticResource TabItemFontSize}">
 
@@ -197,7 +164,7 @@
                     </TextBlock.LayoutTransform>
                   </TextBlock>
                   
-                </StackPanel>
+                </DockPanel>
               </DataTemplate>
             </Setter.Value>
           </Setter>
