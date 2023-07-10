@@ -11,8 +11,10 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="PeopleV.xaml"/>
+          <ResourceDictionary Source="PeopleViewV.xaml"/>
+          <ResourceDictionary Source="SegmentV.xaml"/>
           <ResourceDictionary Source="SegmentsV.xaml"/>
+          <ResourceDictionary Source="SegmentsViewV.xaml"/>
           <ResourceDictionary Source="ThumbnailsGridV.xaml"/>
           <ResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>

@@ -3,6 +3,7 @@ using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.HelperClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using System;
@@ -26,10 +27,11 @@ namespace PictureManager.Domain.Models {
     private bool _matchingAutoSort = true;
     private bool _reloadAutoScroll = true;
 
-    public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public SegmentsDataAdapter DataAdapter { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public SegmentsDrawerM SegmentsDrawerM { get; }
+    public SegmentsView SegmentsView { get; private set; }
+    public object MainTabsItem { get; set; }
     public List<SegmentM> Loaded { get; } = new();
     public List<MediaItemM> MediaItemsForMatching { get; set; }
     public ObservableCollection<object> LoadedGrouped { get; } = new();
@@ -64,6 +66,7 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
     public RelayCommand<object> SegmentMatchingCommand { get; }
+    public RelayCommand<object> OpenSegmentsViewCommand { get; }
 
     public SegmentsM(Core core) {
       _core = core;
@@ -79,6 +82,9 @@ namespace PictureManager.Domain.Models {
       ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
       SegmentMatchingCommand = new(
         SegmentMatching,
+        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+      OpenSegmentsViewCommand = new(
+        OpenSegmentsView,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
 
       CanDragFunc = CanDrag;
@@ -254,13 +260,6 @@ namespace PictureManager.Domain.Models {
         .ToArray();
     }
 
-    private PersonM[] GetPeopleFromSegments(IEnumerable<SegmentM> segments) =>
-      segments
-        .Where(x => x.Person != null)
-        .Select(x => x.Person)
-        .Distinct()
-        .ToArray();
-
     private void SetSelectedAsUnknown() {
       var msgCount = Selected.Items.Count == 1
         ? "selected segment"
@@ -354,6 +353,14 @@ namespace PictureManager.Domain.Models {
     public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM, bool inGroups) {
       if (segmentM.MediaItem == null) return null;
 
+      if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segmentM))
+        return SegmentsView.CvSegments.LastSelectedRow.Group.Source
+          .Select(x => x.MediaItem)
+          .Distinct()
+          .OrderBy(x => x.Folder.FullPath)
+          .ThenBy(x => x.FileName)
+          .ToList();
+
       if (segmentM.Person != null)
         return DataAdapter.All
           .Where(x => x.Person == segmentM.Person)
@@ -381,7 +388,7 @@ namespace PictureManager.Domain.Models {
           return items.ToList();
       }
 
-      return null;
+      return new() { segmentM.MediaItem };
     }
 
     public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
@@ -617,14 +624,15 @@ namespace PictureManager.Domain.Models {
     }
 
     private void ViewMediaItemsWithSegment(SegmentM segmentM) {
-      var items = GetMediaItemsWithSegment(segmentM, _core.MainTabsM.Selected == MainTabsItem);
+      var matchingIsActive = ReferenceEquals(_core.MainTabsM.Selected.Content, this);
+      var items = GetMediaItemsWithSegment(segmentM, matchingIsActive);
       if (items == null) return;
 
       _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
       _core.MainWindowM.IsFullScreen = true;
     }
 
-    private void SegmentMatching() {
+    private static int GetSegmentsToLoadUserInput() {
       var md = new MessageDialog(
         "Segment Matching",
         "Do you want to load all segments, segments with persons \nor one segment from each person?",
@@ -636,14 +644,27 @@ namespace PictureManager.Domain.Models {
         new("Segments with persons", null, md.SetResult(2)),
         new("One from each", null, md.SetResult(3)) };
 
-      var result = Core.DialogHostShow(md);
+      return Core.DialogHostShow(md);
+    }
 
+    private void SegmentMatching() {
+      var result = GetSegmentsToLoadUserInput();
       if (result < 1) return;
 
       MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
-      _core.MainTabsM.Activate(MainTabsItem);
+      _core.MainTabsM.Activate(MainTabsItem, "Segment Matching");
 
       LoadSegments(MediaItemsForMatching, result);
+    }
+
+    private void OpenSegmentsView() {
+      var result = GetSegmentsToLoadUserInput();
+      if (result < 1) return;
+
+      SegmentsView ??= new(_core.PeopleM, this);
+      MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
+      _core.MainTabsM.Activate(SegmentsView, "Segments");
+      SegmentsView.Reload(GetSegments(MediaItemsForMatching, result).ToList());
     }
   }
 }

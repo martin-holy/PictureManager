@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using MH.Utils.BaseClasses;
@@ -7,6 +8,7 @@ namespace PictureManager.Domain.Models {
   public sealed class MainTabsM : ObservableObject {
     private HeaderedListItem<object, string> _selected;
     private double _tabsActualHeight;
+    private readonly Dictionary<object, HeaderedListItem<object, string>> _tabs = new();
 
     public RelayCommand<double> UpdateTabHeadersSizeCommand { get; }
     public RelayCommand<HeaderedListItem<object, string>> CloseTabCommand { get; }
@@ -25,6 +27,15 @@ namespace PictureManager.Domain.Models {
         OnPropertyChanged(nameof(TabMaxHeight));
     }
 
+    public void Activate(object item, string title) {
+      if (!_tabs.TryGetValue(item, out var tab)) {
+        tab = new(item, title);
+        _tabs.Add(item, tab);
+      }
+
+      Activate(tab);
+    }
+
     public void Activate(HeaderedListItem<object, string> item) {
       if (!Items.Contains(item))
         AddItem(item);
@@ -35,6 +46,11 @@ namespace PictureManager.Domain.Models {
     public void AddItem(HeaderedListItem<object, string> item) {
       Items.Add(item);
       Selected = item;
+    }
+
+    public void CloseTab(object item) {
+      if (_tabs.TryGetValue(item, out var tab))
+        CloseTab(tab);
     }
 
     private void CloseTab(HeaderedListItem<object, string> item) {

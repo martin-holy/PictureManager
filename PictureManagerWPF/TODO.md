@@ -30,17 +30,20 @@
   - click on rating stars doesn't set metadata
 ## FolderKeywords
   - do not show expand buttons in TreeView when there is nothing to expand
+## PeopleM
+  - remove deleted people from selection. MergePeople, ...
 ## PeopleV
   - reload when opened and person or group is created/renamed/moved in the tree
-  - reload when keyword is toggled on person
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
+  - set top segment from selected person after PeopleMerge
 ## Segment matching
   - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
 ## MH.UI.WPF
   # Custom Window
    - minimize window will break full screen mode
-
+## Viewer
+  - adding drives on viewer change does not work
 
 # Update
 ##
@@ -52,6 +55,9 @@
   - Log button
   - make thumbnail images sharper (size is 2.7x bigger)
   - change Tree.GetThisAndParentRecursive using yield like in FoldersDataAdapter
+  - show media items with selected people
+  - replace Equals with ReferenceEquals where possible
+  - make base class for ToolsTabsM and MainTabsM
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
@@ -81,15 +87,19 @@
   - add CanExecute for buttons like Yes/Ok
 ## Segments
   - with segment creation create unknown person (#1234) as well so that every segment has person
-## GroupByDialog
-  - add switch And & Or for selected group by items
-## People
-  - on person deselect, deselect segment as well
 ## ToggleDialog
   - make it static or returning one instance
   - show selected items on dialog
 ## MediaViewer
   - hide cursor only in presentation mode
+## SegmentsMatching
+  - from selected people and segments
+## PeopleV
+  - show keywords groups in GroupByDialog
+## SegmentV
+  - make selection bigger. remove margin and replace it by transparent border
+## CollectionViewGroup
+  - update icon for expand all
 
 # New
 ##
@@ -140,23 +150,14 @@
   - keep list of modified, make MediaItems implementation universal
   - listen in DataAdapter on OnPropertyChanged and on ObservableCollection to log changes for overview
     and automatic setting IsModified
-## VirtualizingWrapPanel
-  - find item for scroll to with combination group|items
-  - filter or group by GroupItems
-    - list of GroupItems (folder, date, keyword, person, rating, geoName, ...) with link to items
-    - not all GroupItems have to be active from the first load
-  - group is expander
-  - try to not scroll to top on reload
-  - make VWP like Tree where:
-    - Root can contain Group or Item
-    - Group can contain Group or Item
-    - Item can contain Item
 ## Segments
   - keywords:
     - sort like in the tree
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - filter for segment resolution
+## ToolsTabs
+  - add people from actual ThumbnailsGrid or from MediaItems loaded in MediaViewer
 
 
 #Shortcuts:

@@ -13,15 +13,6 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <DockPanel>
-      <mhc:IconButton
-        DockPanel.Dock="Top"
-        ToolTip="Reload from"
-        Icon="{StaticResource IconRefresh}"
-        Command="{Binding ReloadFromCommand}"
-        HorizontalAlignment="Left"/>
-
-      <mhc:CollectionView View="{Binding}"/>
-    </DockPanel>
+    <mhc:CollectionView View="{Binding}"/>
   </DataTemplate>
 </ResourceDictionary>

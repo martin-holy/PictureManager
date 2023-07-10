@@ -106,15 +106,13 @@ namespace PictureManager.Domain.Models {
           break;
 
         case ViewerM v:
-          _core.MainTabsM.Activate(_core.ViewersM.ViewerMainTabsItem);
+          _core.MainTabsM.Activate(_core.ViewerDetailM, "Viewer");
           _core.ViewersM.Selected = v;
           break;
 
         case ITreeCategory cat:
-          if (cat is PeopleM) {
-            _core.MainTabsM.Activate(_core.PeopleM.MainTabsItem);
-            _core.PeopleM.View.Reload();
-          }
+          if (cat is PeopleM)
+            _core.PeopleM.OpenPeopleView();
           break;
       }
     }

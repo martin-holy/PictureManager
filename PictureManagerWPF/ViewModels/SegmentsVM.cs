@@ -19,7 +19,6 @@ using System.Windows.Controls;
 namespace PictureManager.ViewModels {
   public sealed class SegmentsVM : ObservableObject {
     private readonly Core _core;
-    private readonly AppCore _coreVM;
     private readonly IProgress<int> _progress;
     private readonly Dictionary<SegmentM, System.Drawing.Bitmap> _compareBitmaps = new();
     
@@ -31,9 +30,8 @@ namespace PictureManager.ViewModels {
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
     public RelayCommand<object> CompareCommand { get; }
 
-    public SegmentsVM(Core core, AppCore coreVM, SegmentsM segmentsM) {
+    public SegmentsVM(Core core, SegmentsM segmentsM) {
       _core = core;
-      _coreVM = coreVM;
       SegmentsM = segmentsM;
       
       _progress = new Progress<int>(x => {
@@ -41,7 +39,7 @@ namespace PictureManager.ViewModels {
         _core.TitleProgressBarM.ValueB = x;
       });
 
-      SegmentsM.MainTabsItem = new(this, "Segment Matching");
+      SegmentsM.MainTabsItem = this;
       SegmentsRectsVM = new(SegmentsM.SegmentsRectsM);
 
       SelectCommand = new(Select);

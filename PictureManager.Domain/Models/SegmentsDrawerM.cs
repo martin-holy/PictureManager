@@ -2,18 +2,16 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.ViewModels;
-using System.Collections.Generic;
+using PictureManager.Domain.CollectionViews;
 using System.Collections.ObjectModel;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.Models {
-  public sealed class SegmentsDrawerM : CollectionView<SegmentM> {
+  public sealed class SegmentsDrawerM : CollectionViewSegments {
     private readonly SegmentsM _segmentsM;
 
     public ObservableCollection<SegmentM> Items { get; } = new();
-    public readonly HeaderedListItem<object, string> ToolsTabsItem;
     public CanDragFunc CanDragFunc { get; }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction DoDropAction { get; }
@@ -21,9 +19,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> AddSelectedCommand { get; }
     public RelayCommand<object> OpenCommand { get; }
 
-    public SegmentsDrawerM(SegmentsM segmentsM, Core core) {
+    public SegmentsDrawerM(SegmentsM segmentsM, Core core) : base(segmentsM) {
       _segmentsM = segmentsM;
-      ToolsTabsItem = new(this, "Segments");
 
       CanDragFunc = CanDrag;
       CanDropFunc = CanDrop;
@@ -52,7 +49,7 @@ namespace PictureManager.Domain.Models {
       Update(data as SegmentM[] ?? new[] { data as SegmentM }, !haveSameOrigin);
 
     private void Update(SegmentM[] segments, bool add) {
-      if (!add && Core.DialogHostShow(new MessageDialog(
+      if (!add && Dialog.Show(new MessageDialog(
           "Segments Drawer",
           "Do you want to remove segments from drawer?",
           Res.IconQuestion,
@@ -85,37 +82,15 @@ namespace PictureManager.Domain.Models {
     }
 
     private void Open(ToolsTabsM tt) {
-      var gbi = GetGroupByItems(Items).ToArray();
       var source = Items
         .OrderBy(x => x.MediaItem.Folder.FullPath)
         .ThenBy(x => x.MediaItem.FileName)
         .ToList();
+      var groupByItems = GroupByItems.GetFoldersFromSegments(source).ToArray();
 
-      SetRoot(Res.IconSegment, "Segments", source);
-      Root.GroupMode = GroupMode.GroupByRecursive;
-      Root.GroupByItems = gbi.Length == 0 ? null : gbi;
-      Root.GroupIt();
-      Root.ExpandAll();
-
-      tt.Activate(ToolsTabsItem, true);
+      Reload(source, GroupMode.GroupByRecursive, groupByItems);
+      ExpandAll(Root);
+      tt.Activate(this, "Segments", true);
     }
-
-    public override int GetItemWidth(object item) =>
-      (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
-
-    public override void Select(IEnumerable<SegmentM> source, SegmentM item, bool isCtrlOn, bool isShiftOn) =>
-      _segmentsM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
-
-    public override IEnumerable<CollectionViewGroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {
-      var src = source.ToArray();
-      var top = new List<CollectionViewGroupByItem<SegmentM>>();
-      top.AddRange(GroupByItems.GetFoldersFromSegments(src));
-      top.AddRange(GroupByItems.GetKeywordsFromSegments(src));
-
-      return top;
-    }
-
-    public override string ItemOrderBy(SegmentM item) =>
-      item.MediaItem.FileName;
   }
 }

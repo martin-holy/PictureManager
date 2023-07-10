@@ -1,26 +1,18 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using PictureManager.Domain.ViewModels;
-using System.Collections.Generic;
+using PictureManager.Domain.CollectionViews;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class PeopleToolsTabM : CollectionView<PersonM> {
+  public sealed class PeopleToolsTabM : CollectionViewPeople {
     private readonly Core _core;
-    private readonly PeopleM _peopleM;
 
-    public HeaderedListItem<object, string> ToolsTabsItem;
-    public RelayCommand<object> ReloadFromCommand { get; }
-
-    public PeopleToolsTabM(Core core, PeopleM peopleM) {
+    public PeopleToolsTabM(Core core, PeopleM peopleM) : base(peopleM) {
       _core = core;
-      _peopleM = peopleM;
-      ToolsTabsItem = new(this, "People");
-      ReloadFromCommand = new(ReloadFrom);
     }
 
-    private void ReloadFrom() {
+    public void ReloadFrom() {
       var md = new MessageDialog(
         "Reload People",
         "From which source do you want to load the people?",
@@ -33,52 +25,16 @@ namespace PictureManager.Domain.Models {
         new("All people", null, md.SetResult(3))
       };
 
-      var result = Core.DialogHostShow(md);
+      var result = Dialog.Show(md);
       if (result < 1) return;
 
-      switch (result) {
-        case 1:
-          Reload(PeopleM.GetFromMediaItems(_core.ThumbnailsGridsM.Current?.GetSelectedOrAll().ToArray()));
-          break;
-        case 2:
-          Reload(PeopleM.GetFromMediaItems(_core.MediaViewerM.MediaItems?.ToArray()));
-          break;
-        case 3:
-          Reload(_peopleM.DataAdapter.All
-            .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
-            .OrderBy(x => x.Name));
-          break;
-      }
+      var items = result switch {
+        1 => PeopleM.GetFromMediaItems(_core.ThumbnailsGridsM.Current?.GetSelectedOrAll().ToArray()),
+        2 => PeopleM.GetFromMediaItems(_core.MediaViewerM.MediaItems?.ToArray()),
+        3 => PeopleM.GetAll(PeopleM),
+        _ => Enumerable.Empty<PersonM>() };
+
+      Reload(items.OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null);
     }
-
-    private void Reload(IEnumerable<PersonM> items) {
-      var source = items
-        .OrderBy(x => x.Name)
-        .ToList();
-
-      SetRoot(Res.IconPeopleMultiple, "People", source);
-      Root.GroupMode = GroupMode.GroupByRecursive;
-      Root.GroupIt();
-      Root.IsExpanded = true;
-    }
-
-    // TODO change SegmentUiFullWidth to int
-    public override int GetItemWidth(object item) =>
-      (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
-
-    public override void Select(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
-      _peopleM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
-
-    public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
-      var src = source.ToArray();
-      var top = new List<CollectionViewGroupByItem<PersonM>>();
-      top.Add(GroupByItems.GetPeopleGroupsInGroupFromPeople(src));
-      top.AddRange(GroupByItems.GetKeywordsFromPeople(src));
-
-      return top;
-    }
-
-    public override string ItemOrderBy(PersonM item) =>
-      item.Name;
   }
 }
