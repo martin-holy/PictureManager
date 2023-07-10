@@ -41,33 +41,43 @@
         Padding="20,0,0,0">
 
         <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-          </Grid.ColumnDefinitions>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+              <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-          <wpfc:IconButton
-            Icon="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-            Foreground="{Binding Icon, Converter={StaticResource ResourceConverter},
-                         ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
-            ToolTip="Group by"
-            Command="{Binding View.OpenGroupByDialogCommand}"
-            CommandParameter="{Binding}"/>
+            <wpfc:IconButton
+              Icon="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+              Foreground="{Binding Icon, Converter={StaticResource ResourceConverter},
+                           ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+              ToolTip="Group by"
+              Command="{Binding View.OpenGroupByDialogCommand}"
+              CommandParameter="{Binding}"/>
 
-          <TextBlock
-            Grid.Column="1"
-            Text="{Binding Title}"
-            VerticalAlignment="Center"
-            Margin="5,0,5,0"
-            FontSize="16"/>
+            <TextBlock
+              Grid.Column="1"
+              Text="{Binding Title}"
+              VerticalAlignment="Center"
+              Margin="5,0,5,0"
+              FontSize="16"/>
 
-          <TextBlock
-            Grid.Column="2"
-            Text="{Binding SourceCount}"
-            VerticalAlignment="Center"
-            Margin="5,0,5,0"
-            FontWeight="Bold"/>
+            <TextBlock
+              Grid.Column="2"
+              Text="{Binding SourceCount}"
+              VerticalAlignment="Center"
+              Margin="5,0,5,0"
+              FontWeight="Bold"/>
+          </Grid>
+
+          <Grid x:Name="toolsGrid" HorizontalAlignment="Right" Visibility="Hidden">
+            <wpfc:IconButton
+              Icon="{StaticResource IconBug}"
+              ToolTip="Expand all"
+              Command="{Binding View.ExpandAllCommand}"
+              CommandParameter="{Binding}"/>
+          </Grid>
         </Grid>
       </Border>
     </Border>
@@ -82,6 +92,10 @@
         </DataTrigger.Binding>
         <Setter TargetName="border" Property="Tag" Value="{x:Null}"/>
       </DataTrigger>
+
+      <Trigger SourceName="border" Property="IsMouseOver" Value="True">
+        <Setter TargetName="toolsGrid" Property="Visibility" Value="Visible"/>
+      </Trigger>
     </HierarchicalDataTemplate.Triggers>
   </HierarchicalDataTemplate>
 
