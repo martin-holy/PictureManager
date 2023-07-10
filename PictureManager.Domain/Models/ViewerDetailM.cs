@@ -16,10 +16,7 @@ namespace PictureManager.Domain.Models {
 
     public ViewerDetailM(ViewersM viewersM) {
       ViewersM = viewersM;
-
-      ViewersM.ViewerMainTabsItem = new(this, "Viewer");
-
-      CanDragFolder = (source) => source is FolderM ? source : null;
+      CanDragFolder = source => source is FolderM ? source : null;
       CanDropFolderIncluded = (a, b, c) => CanDropFolder(a, b, c, true);
       CanDropFolderExcluded = (a, b, c) => CanDropFolder(a, b, c, false);
       DoDropFolderIncluded = (a, b) => DoDropFolder(a, b, true);

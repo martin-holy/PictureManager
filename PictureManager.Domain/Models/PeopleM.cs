@@ -7,17 +7,16 @@ using PictureManager.Domain.DataAdapters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.ViewModels;
+using PictureManager.Domain.DataViews;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
     private readonly Core _core;
     private readonly CategoryGroupsM _categoryGroupsM;
 
-    public HeaderedListItem<object, string> MainTabsItem { get; set; }
     public PeopleDataAdapter DataAdapter { get; set; }
-    public PeopleVM View { get; }
-    public PeopleToolsTabM PeopleToolsTabM { get; set; }
+    public PeopleView PeopleView { get; private set; }
+    public PeopleToolsTabM PeopleToolsTabM { get; private set; }
     public Selecting<PersonM> Selected { get; } = new();
     public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
 
@@ -29,15 +28,20 @@ namespace PictureManager.Domain.Models {
       _core = core;
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
-      MainTabsItem = new(this, "People");
-      View = new(this);
 
       OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     }
 
     private void OpenPeopleToolsTab() {
       PeopleToolsTabM ??= new(_core, this);
-      _core.ToolsTabsM.Activate(PeopleToolsTabM.ToolsTabsItem, true);
+      PeopleToolsTabM.ReloadFrom();
+      _core.ToolsTabsM.Activate(PeopleToolsTabM, "People", true);
+    }
+
+    public void OpenPeopleView() {
+      PeopleView ??= new(this);
+      PeopleView.Reload();
+      _core.MainTabsM.Activate(PeopleView, "People");
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -231,5 +235,20 @@ namespace PictureManager.Domain.Models {
               .Select(y => y.Person))
             .Distinct()
             .ToArray();
+
+    public static PersonM[] GetFromSegments(SegmentM[] segments) =>
+      segments == null
+        ? Array.Empty<PersonM>()
+        : segments
+          .Where(x => x.Person != null)
+          .Select(x => x.Person)
+          .Distinct()
+          .ToArray();
+
+    public static PersonM[] GetAll(PeopleM peopleM) =>
+      peopleM.DataAdapter.All
+        .Where(x => x.Parent is not CategoryGroupM { IsHidden: true })
+        .OrderBy(x => x.Name)
+        .ToArray();
   }
 }

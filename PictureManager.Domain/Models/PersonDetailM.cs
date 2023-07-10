@@ -12,7 +12,6 @@ namespace PictureManager.Domain.Models {
     private bool _scrollToTop;
     private TreeWrapGroup _allSegmentsRoot;
 
-    public HeaderedListItem<object, string> ToolsTabsItem;
     public List<SegmentM> AllSegments { get; } = new();
     public PersonM PersonM { get => _personM; set { _personM = value; ReloadPersonSegments(); OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
@@ -25,7 +24,6 @@ namespace PictureManager.Domain.Models {
     public PersonDetailM(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
       _segmentsM = segmentsM;
-      ToolsTabsItem = new(this, "Person");
 
       CanDropFunc = CanDrop;
       TopSegmentsDropAction = TopSegmentsDrop;
@@ -48,7 +46,7 @@ namespace PictureManager.Domain.Models {
 
     private void SetPerson(PersonM person) {
       PersonM = person;
-      Core.Instance.ToolsTabsM.Activate(ToolsTabsItem, true);
+      Core.Instance.ToolsTabsM.Activate(this, "Person", true);
     }
 
     public void ReloadPersonSegments() {

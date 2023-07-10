@@ -21,7 +21,6 @@ namespace PictureManager.Domain.Models {
     public VideoClipM CurrentVideoClip { get; set; }
     public MediaPlayerM MediaPlayerM { get; set; }
     public Action<string> CreateThumbnail { get; set; }
-    public readonly HeaderedListItem<object, string> ToolsTabsItem;
 
     public RelayCommand<bool> SetMarkerCommand { get; }
     public RelayCommand<PlayType> SetPlayTypeCommand { get; }
@@ -36,7 +35,6 @@ namespace PictureManager.Domain.Models {
       TreeRoot = new() { TreeCategory };
       MediaPlayerM = player;
       MediaPlayerM.SelectNextClip = SelectNext;
-      ToolsTabsItem = new(this, "Clips");
 
       SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
       SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
