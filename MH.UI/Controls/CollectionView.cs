@@ -1,22 +1,22 @@
 ﻿using MH.UI.Dialogs;
 using MH.UI.Interfaces;
 using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MH.Utils.Extensions;
 
 namespace MH.UI.Controls {
   public class CollectionView<T> : ObservableObject, ICollectionView {
-    private CollectionViewGroup<T> _root;
     private List<object> _scrollToItem;
     private bool _isSizeChanging;
     private T _topItem;
     private CollectionViewGroup<T> _topGroup;
+    private readonly List<CollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public ExtObservableCollection<object> RootHolder { get; } = new();
-    public CollectionViewGroup<T> Root { get => _root; set { _root = value; OnPropertyChanged(); } }
+    public CollectionViewGroup<T> Root { get; set; }
     public T TopItem { get; set; }
     public T LastSelectedItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
@@ -24,9 +24,11 @@ namespace MH.UI.Controls {
     public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
 
+    public RelayCommand<CollectionViewGroup<T>> ExpandAllCommand { get; }
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
     public CollectionView() {
+      ExpandAllCommand = new(ExpandAll);
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
 
@@ -42,28 +44,35 @@ namespace MH.UI.Controls {
       Select(r.Group.Source, i, isCtrlOn, isShiftOn);
     }
 
-    public void SetRoot(string icon, string title, List<T> source) {
-      Root = new(null, null, source) { Icon = icon, Title = title, View = this };
+    // TODO scroll to top
+    public void SetRoot(CollectionViewGroup<T> root) {
+      Root = root;
       RootHolder.Execute(items => {
         items.Clear();
         items.Add(Root);
       });
+
+      _groupByItemsRoots.Clear();
+      _groupByItemsRoots.Add(Root);
     }
 
-    public void ReGroupItems(IEnumerable<T> items, bool remove) {
+    // TODO only re group if root contains items
+    public void ReGroupItems(T[] items, bool remove) {
       if (Root == null || items == null) return;
       var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
       if (remove)
         foreach (var item in items)
           Root.RemoveItem(item, toReWrap);
-      else
+      else {
+        foreach (var gbiRoot in _groupByItemsRoots)
+          gbiRoot.UpdateGroupByItems(GetGroupByItems(items).ToArray());
+
         foreach (var item in items) {
           var gbis = GetGroupByItems(new[] { item }).ToArray();
           Root.InsertItem(item, toReWrap, gbis);
-          //ReGroupItem(item, toReWrap);
         }
-          
+      }
 
       foreach (var group in toReWrap)
         group.ReWrap();
@@ -88,8 +97,16 @@ namespace MH.UI.Controls {
       }
     }
 
-    private void OpenGroupByDialog(CollectionViewGroup<T> group) =>
-      _groupByDialog.Open(group, GetGroupByItems(group.Source));
+    public void ExpandAll(CollectionViewGroup<T> group) {
+      RootHolder.Clear();
+      group.ExpandAll();
+      RootHolder.Add(Root);
+    }
+
+    private void OpenGroupByDialog(CollectionViewGroup<T> group) {
+      if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
+        _groupByItemsRoots.Add(group);
+    }
 
     public bool SetTopItem(object o) {
       var row = o as CollectionViewRow<T>;

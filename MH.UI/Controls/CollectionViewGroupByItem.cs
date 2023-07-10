@@ -42,17 +42,25 @@ namespace MH.UI.Controls {
       return root;
     }
 
-    public static void Update(CollectionViewGroupByItem<T> item, CollectionViewGroupByItem<T>[] items) {
-      var newGbi = Tree.FindChild<CollectionViewGroupByItem<T>>(
-        items, x => ReferenceEquals(x.Parameter, item.Parameter));
+    public void Update(CollectionViewGroupByItem<T>[] items) {
+      var newItems = Tree.FindChild<CollectionViewGroupByItem<T>>(
+          items, x => ReferenceEquals(x.Parameter, Parameter))?.Items
+        .Cast<CollectionViewGroupByItem<T>>()
+        .ToArray();
 
-      if (newGbi == null) return;
+      if (newItems == null) return;
 
-      foreach (var itemItem in item.Items.Cast<CollectionViewGroupByItem<T>>())
-        Update(itemItem, items);
+      var itemItems = Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
 
-      foreach (var gbi in newGbi.Items.Except(item.Items).ToArray())
-        item.Items.SetInOrder(gbi, x => x.Name);
+      foreach (var itemItem in itemItems)
+        itemItem.Update(items);
+
+      foreach (var newItem in newItems) {
+        if (itemItems.Any(x => ReferenceEquals(x.Parameter, newItem.Parameter)))
+          continue;
+
+        Items.SetInOrder(newItem, x => x.Name);
+      }
     }
   }
 }

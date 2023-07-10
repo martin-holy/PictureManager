@@ -25,7 +25,7 @@ namespace MH.UI.Dialogs {
         new("Cancel", "IconXCross", CloseCommand, false, true) };
     }
 
-    public void Open(CollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
+    public bool Open(CollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
       ModeGroupBy = group.GroupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
       ModeGroupByThenBy = group.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive;
       ModeGroupRecursive = group.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
@@ -35,12 +35,13 @@ namespace MH.UI.Dialogs {
       foreach (var item in items)
         Root.Items.Add(item);
 
-      if (Show(this) != 1) return;
+      if (Show(this) != 1) return false;
 
       if (Selected.Items.Count == 0) {
+        group.GroupByItems = null;
         group.Items.Clear();
         group.ReWrap();
-        return;
+        return true;
       }
 
       group.GroupMode = ModeGroupByThenBy
@@ -54,6 +55,8 @@ namespace MH.UI.Dialogs {
       group.GroupByItems = Selected.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
       group.GroupIt();
       group.IsExpanded = true;
+
+      return true;
     }
 
     private void Select(object item, bool isCtrlOn, bool isShiftOn) {
