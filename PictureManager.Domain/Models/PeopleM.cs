@@ -182,15 +182,19 @@ namespace PictureManager.Domain.Models {
     /// <param name="person"></param>
     /// <param name="people"></param>
     public void MergePeople(PersonM person, PersonM[] people) {
+      if (people.Length == 0) return;
+
       var topSegments = people
         .Where(x => x.TopSegments != null)
         .SelectMany(x => x.TopSegments)
         .Distinct()
         .ToArray();
+
       var keywords = people
         .Where(x => x.Keywords != null)
         .SelectMany(x => x.Keywords)
         .Distinct()
+        .Except(person.Keywords ?? Enumerable.Empty<KeywordM>())
         .ToArray();
 
       if (topSegments.Any()) {
