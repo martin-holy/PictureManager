@@ -5,9 +5,10 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
 
-  <DataTemplate DataType="{x:Type m:PersonDetailM}">
+  <DataTemplate DataType="{x:Type dataViews:PersonDetail}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
@@ -32,7 +33,7 @@
           Text="{Binding PersonM.Name}"
           Foreground="{StaticResource MH.Brushes.Text}"
           FontSize="20"
-          Padding="8"
+          Padding="4"
           HorizontalAlignment="Center"
           VerticalAlignment="Center"/>
 
@@ -98,7 +99,6 @@
 
       <mhc:VirtualizingWrapPanel
         Grid.Row="4"
-        Margin="2,0,0,0"
         MinHeight="106"
         ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
         ItemsToWrap="{Binding PersonM.TopSegments}"
@@ -116,31 +116,12 @@
       </mhc:VirtualizingWrapPanel>
 
       <!-- All Segments -->
-      <mhc:TreeWrapView
+      <mhc:CollectionView
         Grid.Row="5"
-        Margin="2,0,0,0"
-        ShowRoot="True"
-        ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
-        Root="{Binding AllSegmentsRoot}"
-        ScrollToTop="{Binding ScrollToTop, Mode=TwoWay}"
+        View="{Binding AllSegments}"
         mhu:DragDropHelper.IsDragEnabled="True"
-        mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}">
+        mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 
-        <b:Interaction.Triggers>
-          <b:EventTrigger EventName="WidthChangedEventHandler">
-            <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
-          </b:EventTrigger>
-        </b:Interaction.Triggers>
-      </mhc:TreeWrapView>
-
-      <b:Interaction.Triggers>
-        <b:EventTrigger EventName="PreviewMouseUp">
-          <b:InvokeCommandAction
-            Command="{Binding SelectCommand}"
-            EventArgsConverter="{StaticResource MouseButtonConverter}"
-            EventArgsConverterParameter="System.Windows.Controls.Image"/>
-        </b:EventTrigger>
-      </b:Interaction.Triggers>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>

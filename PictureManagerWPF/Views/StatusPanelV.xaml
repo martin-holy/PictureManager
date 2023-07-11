@@ -218,7 +218,7 @@
                     <Border.InputBindings>
                       <MouseBinding
                         MouseAction="LeftClick"
-                        Command="{Binding PersonDetailM.SetPersonCommand, Source={x:Static pm:App.Core}}"
+                        Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
                         CommandParameter="{Binding}"/>
                     </Border.InputBindings>
 

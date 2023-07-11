@@ -163,8 +163,7 @@
             Icon="{StaticResource IconInformation}"
             Width="20"
             Height="20"
-            Command="{Binding PersonDetailM.SetPersonCommand,
-                      Source={x:Static pm:App.Core}}"
+            Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
             CommandParameter="{Binding Person}"/>
 
           <!-- Same Person Button -->

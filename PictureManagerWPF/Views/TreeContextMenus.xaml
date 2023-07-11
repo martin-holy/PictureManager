@@ -51,7 +51,7 @@
       <CompositeCollection>
         <MenuItem
           Header="Detail"
-          Command="{Binding PersonDetailM.SetPersonCommand, Source={x:Static pm:App.Core}}"
+          Command="{Binding PeopleM.OpenPersonDetailCommand, Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
         <MenuItem
           Header="Rename"
