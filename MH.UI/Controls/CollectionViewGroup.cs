@@ -92,14 +92,12 @@ namespace MH.UI.Controls {
         parent.Items.Add(group);
       }
 
-      // TODO use RemoveIfEmpty
       if (parent.Items.Count == 1
           && parent.Items[0] is CollectionViewGroup<T> { GroupedBy: { IsGroup: true } } g
           && g.Items.Count == 0) {
         parent.Items.Clear();
         parent.ReWrap();
       }
-      //RemoveGroupIfEmpty(parent);
 
       if (notInGroups.Count == 0 || parent.Items.Count == 0) return;
       notInGroups.TrimExcess();
@@ -127,15 +125,14 @@ namespace MH.UI.Controls {
       }
     }
 
-    public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap, CollectionViewGroupByItem<T>[] itemGroupBys) {
-      var itemAdded = false;
-      var isGrouping = GroupByItems != null || GroupedBy?.Items?.Count > 0;
+    public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
+      var recursive = GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
+      var isGrouping = GroupByItems != null || (recursive && GroupedBy?.Items?.Count > 0);
 
       // add the item to the source if is not present
       if (!Source.Contains(item)) {
         Source.AddInOrder(item, (a, b) => string.Compare(View.ItemOrderBy(a), View.ItemOrderBy(b), StringComparison.CurrentCultureIgnoreCase) > 0);
         OnPropertyChanged(nameof(SourceCount));
-        itemAdded = true;
 
         // if the group is not grouped schedule it for ReWrap
         if (!isGrouping) {
@@ -147,79 +144,60 @@ namespace MH.UI.Controls {
       // done if the group is not grouped and the item was already in the source
       if (!isGrouping) return;
 
-      // find group for the item and remove the item from other groups
+      if (GroupByItems != null && Items.FirstOrDefault() is CollectionViewRow<T>) {
+        GroupIt();
+        ExpandAll();
+        return;
+      }
+
+      CollectionViewGroupByItem<T>[] groupByItems = null;
+
+      if (GroupByItems != null && GroupedBy is null or { Items: { Count: 0 } }) {
+        if (GroupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive)
+          groupByItems = GroupByItems.ToArray();
+        else if (GroupByItems.Length > 0)
+          groupByItems = new[] { GroupByItems[0] };
+      }
+      else if (recursive && GroupedBy?.Items?.Count > 0)
+        groupByItems = GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
+
+      if (groupByItems == null || groupByItems.All(x => x.IsGroup && x.Items?.Count == 0)) return;
+
       var groups = Items.OfType<CollectionViewGroup<T>>().ToArray();
-      var groupFound = false;
-      CollectionViewGroup<T> emptyGroup = null;
+      var inGroups = new List<CollectionViewGroup<T>>();
 
-      foreach (var group in groups)
-        if (group.GroupedBy == null)
-          emptyGroup = group;
-        else if (group.GroupedBy.ItemGroupBy(item, group.GroupedBy.Parameter)) {
-          group.InsertItem(item, toReWrap, itemGroupBys);
-          groupFound = true;
-        }
-        else if (!itemAdded)
-          group.RemoveItem(item, toReWrap);
+      foreach (var gbi in groupByItems) {
+        if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
 
-      if (groupFound) {
-        emptyGroup?.RemoveItem(item, toReWrap);
-        return;
-      }
+        var group = groups.SingleOrDefault(x => ReferenceEquals(x.GroupedBy?.Parameter, gbi.Parameter));
 
-      if (PatchGroups(this, item, toReWrap, itemGroupBys, emptyGroup)) {
-        emptyGroup?.RemoveItem(item, toReWrap);
-        return;
-      }
-
-      if (groups.Length == 0) {
-        toReWrap.Add(this);
-        return;
-      }
-
-      if (emptyGroup == null) {
-        emptyGroup = new(this, null, new() { item });
-        Items.Insert(0, emptyGroup);
-      }
-      else
-        emptyGroup.InsertItem(item, toReWrap, itemGroupBys);
-    }
-
-    // ted to vypada dobre, ale je tam bug
-    // po prirazeni persona, v nepersonoj priradit keyword a pak priradit persona a vznikne 
-    // prazdna skupina, ktera by se mela odstranit, ale protoze tam je, tak dalsi prirazenej person
-    // znemozni otevreni prazdne skupiny. mozna tam ma bejt rewrap
-
-    // dalsi bug je, kdyz ma segment uz keyword a prida se mu dalsi, tak se ta dalsi groupa nevytvori
-
-    // BUG sort groups or add in order
-    private static bool PatchGroups(CollectionViewGroup<T> parent, T item, ISet<CollectionViewGroup<T>> toReWrap, CollectionViewGroupByItem<T>[] groupByItems, CollectionViewGroup<T> emptyGroup) {
-      if (parent.GroupByItems != null && parent.Items.FirstOrDefault() is CollectionViewRow<T>) {
-        parent.GroupIt();
-        parent.ExpandAll();
-        return true;
-      }
-      
-      if (parent.GroupedBy?.Items?.Count > 0) {
-        var fit = false;
-
-        foreach (var gbi in parent.GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>()) {
-          if (gbi.ItemGroupBy(item, gbi.Parameter)) {
-            fit = true;
-            var group = CreateGroup(parent, gbi, null);
-            if (group == null) continue;
-
-            parent.Items.Sort(x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
-            group.GroupIt();
-            group.ExpandAll();
-            parent.Items.Add(group);
-          }
+        if (group != null)
+          group.InsertItem(item, toReWrap);
+        else {
+          group = new(this, gbi, new() { item });
+          group.GroupIt();
+          group.ExpandAll();
+          Items.SetInOrder(group, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
         }
 
-        return fit;
+        inGroups.Add(group);
       }
-      
-      return false;
+
+      if (inGroups.Count == 0) {
+        var emptyGroup = groups.SingleOrDefault(x => x.GroupedBy == null);
+
+        if (emptyGroup == null) {
+          emptyGroup = new(this, null, new() { item }) { IsExpanded = true };
+          Items.Insert(0, emptyGroup);
+        }
+        else
+          emptyGroup.InsertItem(item, toReWrap);
+
+        inGroups.Add(emptyGroup);
+      }
+
+      foreach (var group in groups.Except(inGroups))
+        group.RemoveItem(item, toReWrap);
     }
 
     public void UpdateGroupByItems(CollectionViewGroupByItem<T>[] newGroupByItems) {
@@ -229,43 +207,32 @@ namespace MH.UI.Controls {
         gbi.Update(newGroupByItems);
     }
 
-    private static bool RemoveGroupIfEmpty(CollectionViewGroup<T> group) {
+    private static bool RemoveGroupIfEmpty(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+      var removed = false;
       while (true) {
         if (group == null) break;
 
-        if (group.Source.Count == 0) {
-          group.Parent?.Items.Remove(group);
-          group.Items.Clear();
-          group.ReWrap();
-          return true;
-        }
-
+        // the group have 0 items or
+        // the group have only one sub group of type (all from source except what fit to siblings) or
         // the group have only one empty sub group of type (group of CollectionViewGroupByItem)
-        if (group.Items.Count == 1 && group.Items[0] is CollectionViewGroup<T> { GroupedBy: { IsGroup: true } } g && g.Items.Count == 0) {
-          // BUG tenhle radek tam nesmi bejt na vlozeni, ale musi bejt na odebrani
+        if (group.Source.Count == 0
+            || (group.Items.Count == 1 && group.Items[0] is CollectionViewGroup<T> gr
+              && (gr.GroupedBy == null || gr.GroupedBy is { IsGroup: true } g && g.Items.Count == 0))) {
           group.Parent?.Items.Remove(group);
-          group.Items.Clear();
-          group.ReWrap();
-          return true;
+          removed = true;
         }
-
-        // the group have only one sub group of type (all from source except what fit to siblings)
-        if (group.Items.Count == 1 && group.Items[0] is CollectionViewGroup<T> { GroupedBy: null }) {
-          group.Parent?.Items.Remove(group);
-          group.Items.Clear();
-          group.ReWrap();
-          return true;
-        }
+        else if (removed)
+          toReWrap?.Add(group);
 
         group = group.Parent;
       }
 
-      return false;
+      return removed;
     }
 
     public void RemoveItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
       if (!Source.Remove(item)) return;
-      if (RemoveGroupIfEmpty(this)) return;
+      if (RemoveGroupIfEmpty(this, toReWrap)) return;
 
       if (Source.Count == 0) {
         Parent?.Items.Remove(this);

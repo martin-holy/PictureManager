@@ -56,7 +56,6 @@ namespace MH.UI.Controls {
       _groupByItemsRoots.Add(Root);
     }
 
-    // TODO only re group if root contains items
     public void ReGroupItems(T[] items, bool remove) {
       if (Root == null || items == null) return;
       var toReWrap = new HashSet<CollectionViewGroup<T>>();
@@ -68,10 +67,8 @@ namespace MH.UI.Controls {
         foreach (var gbiRoot in _groupByItemsRoots)
           gbiRoot.UpdateGroupByItems(GetGroupByItems(items).ToArray());
 
-        foreach (var item in items) {
-          var gbis = GetGroupByItems(new[] { item }).ToArray();
-          Root.InsertItem(item, toReWrap, gbis);
-        }
+        foreach (var item in items)
+          Root.InsertItem(item, toReWrap);
       }
 
       foreach (var group in toReWrap)
