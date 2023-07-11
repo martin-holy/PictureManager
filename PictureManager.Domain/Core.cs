@@ -273,7 +273,7 @@ namespace PictureManager.Domain {
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
 
         // TODO fix this after changing logic that every segment has person until is changed to real person
-        PeopleM.PeopleView.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
+        PeopleM.PeopleView?.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
 
         if (MediaViewerM.IsVisible)
           MediaViewerM.Current?.SetInfoBox();
