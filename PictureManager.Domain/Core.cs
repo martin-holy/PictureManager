@@ -25,7 +25,6 @@ namespace PictureManager.Domain {
     public MediaItemsM MediaItemsM { get; }
     public MediaViewerM MediaViewerM { get; }
     public PeopleM PeopleM { get; }
-    public PersonDetailM PersonDetailM { get; }
     public RatingsTreeM RatingsTreeM { get; }
     public SegmentsM SegmentsM { get; }
     public StatusPanelM StatusPanelM { get; }
@@ -64,7 +63,6 @@ namespace PictureManager.Domain {
       MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
       MediaViewerM = new(this);
       PeopleM = new(this, CategoryGroupsM); // MainWindowM
-      PersonDetailM = new(PeopleM, SegmentsM);
       RatingsTreeM = new();
       StatusPanelM = new(this);
       ThumbnailsGridsM = new(this);
@@ -159,7 +157,9 @@ namespace PictureManager.Domain {
       PeopleM.PersonDeletedEventHandler += (_, e) => {
         MediaItemsM.RemovePersonFromMediaItems(e.Data);
         SegmentsM.RemovePersonFromSegments(e.Data);
-        ToolsTabsM.Deactivate(PersonDetailM);
+
+        if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
+          ToolsTabsM.Deactivate(PeopleM.PersonDetail);
       };
 
       PeopleM.PeopleDeletedEvent += (_, e) => {
@@ -265,9 +265,7 @@ namespace PictureManager.Domain {
       };
 
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
-        if (e.Data.Item2?.Any(x => x.Equals(PersonDetailM.PersonM)) == true)
-          PersonDetailM.ReloadPersonSegments();
-
+        PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
         SegmentsM.ReloadIfContains(e.Data.Item1);
         SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
@@ -280,13 +278,13 @@ namespace PictureManager.Domain {
       };
 
       SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
-        PersonDetailM.ReloadIfContains(e.Data.Item1);
+        PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
         SegmentsM.ReloadIfContains(e.Data.Item1);
         SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
       };
 
       SegmentsM.SegmentDeletedEventHandler += (_, e) => {
-        PersonDetailM.ReloadIfContains(new[] { e.Data });
+        PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true);
         SegmentsM.SegmentsDrawerM.Remove(e.Data);
         SegmentsM.SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, true);
       };

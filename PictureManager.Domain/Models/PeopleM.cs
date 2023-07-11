@@ -17,8 +17,10 @@ namespace PictureManager.Domain.Models {
     public PeopleDataAdapter DataAdapter { get; set; }
     public PeopleView PeopleView { get; private set; }
     public PeopleToolsTabM PeopleToolsTabM { get; private set; }
+    public PersonDetail PersonDetail { get; private set; }
     public Selecting<PersonM> Selected { get; } = new();
     public RelayCommand<object> OpenPeopleToolsTabCommand { get; }
+    public RelayCommand<PersonM> OpenPersonDetailCommand { get; }
 
     public event EventHandler<ObjectEventArgs<PersonM>> PersonDeletedEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleDeletedEvent = delegate { };
@@ -30,6 +32,7 @@ namespace PictureManager.Domain.Models {
       CanMoveItem = true;
 
       OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
+      OpenPersonDetailCommand = new(OpenPersonDetail);
     }
 
     private void OpenPeopleToolsTab() {
@@ -42,6 +45,12 @@ namespace PictureManager.Domain.Models {
       PeopleView ??= new(this);
       PeopleView.Reload();
       _core.MainTabsM.Activate(PeopleView, "People");
+    }
+
+    public void OpenPersonDetail(PersonM person) {
+      PersonDetail ??= new(this, _core.SegmentsM);
+      PersonDetail.Reload(person);
+      _core.ToolsTabsM.Activate(PersonDetail, "Person", true);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
@@ -217,8 +226,8 @@ namespace PictureManager.Domain.Models {
         person.UpdateDisplayKeywords();
       }
 
-      if (people.Contains(_core.PersonDetailM.PersonM))
-        _core.PersonDetailM.PersonM = person;
+      if (PersonDetail != null && people.Contains(PersonDetail?.PersonM))
+        PersonDetail?.Reload(person);
 
       foreach (var oldPerson in people)
         DataAdapter.All.Remove(oldPerson);
