@@ -1,100 +1,13 @@
 ﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace MH.UI.WPF.Utils {
   public static class Imaging {
-    public static FormatConvertedBitmap ToGray(this BitmapSource bitmapSource) =>
-      new(bitmapSource, PixelFormats.Gray8, BitmapPalettes.Gray256, 0.0);
-
-    public static CroppedBitmap Cropp(this BitmapSource bitmapSource, Int32Rect sourceRect) =>
-      new(bitmapSource, sourceRect);
-
-    public static Task<int[]> GetImageDimensionsAsync(string filePath) {
-      return Task.Run(() => {
-        try {
-          using Stream srcFileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-          var decoder = BitmapDecoder.Create(srcFileStream, BitmapCreateOptions.None, BitmapCacheOption.None);
-          var frame = decoder.Frames[0];
-          return new[] { frame.PixelWidth, frame.PixelHeight };
-        }
-        catch (Exception) {
-          return null;
-        }
-      });
-    }
-
-    public static Bitmap ToBitmap(this BitmapSource bitmapSource) {
-      var format = bitmapSource.Format.ToImaging();
-      var bmp = new Bitmap(bitmapSource.PixelWidth, bitmapSource.PixelHeight, format);
-
-      if (format == System.Drawing.Imaging.PixelFormat.Format8bppIndexed) {
-        var cp = bmp.Palette;
-        for (var i = 0; i < 256; i++)
-          cp.Entries[i] = System.Drawing.Color.FromArgb(i, i, i);
-        bmp.Palette = cp;
-      }
-
-      var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, bmp.PixelFormat);
-      bitmapSource.CopyPixels(Int32Rect.Empty, data.Scan0, data.Height * data.Stride, data.Stride);
-      bmp.UnlockBits(data);
-      return bmp;
-    }
-
-    public static BitmapSource ToBitmapSource(this Bitmap bitmap) {
-      var format = bitmap.PixelFormat.ToWPF();
-
-      var bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
-
-      var bitmapSource = BitmapSource.Create(bitmapData.Width, bitmapData.Height,
-          bitmap.HorizontalResolution, bitmap.VerticalResolution, format, null,
-          bitmapData.Scan0, bitmapData.Stride * bitmapData.Height, bitmapData.Stride);
-
-      bitmap.UnlockBits(bitmapData);
-      return bitmapSource;
-    }
-
-    public static System.Drawing.Imaging.PixelFormat ToImaging(this System.Windows.Media.PixelFormat pixelFormat) {
-      if (pixelFormat == PixelFormats.Indexed8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
-      if (pixelFormat == PixelFormats.Gray8) return System.Drawing.Imaging.PixelFormat.Format8bppIndexed;
-      if (pixelFormat == PixelFormats.Bgr24) return System.Drawing.Imaging.PixelFormat.Format24bppRgb;
-      if (pixelFormat == PixelFormats.Bgr32) return System.Drawing.Imaging.PixelFormat.Format32bppRgb;
-      if (pixelFormat == PixelFormats.Bgra32) return System.Drawing.Imaging.PixelFormat.Format32bppArgb;
-      throw new NotImplementedException($"Conversion from pixel format {pixelFormat} is not supported.");
-    }
-
-    public static System.Windows.Media.PixelFormat ToWPF(this System.Drawing.Imaging.PixelFormat pixelFormat) {
-      return pixelFormat switch {
-        System.Drawing.Imaging.PixelFormat.Format1bppIndexed => PixelFormats.BlackWhite,
-        System.Drawing.Imaging.PixelFormat.Format4bppIndexed => PixelFormats.Gray4,
-        System.Drawing.Imaging.PixelFormat.Format8bppIndexed => PixelFormats.Gray8,
-        System.Drawing.Imaging.PixelFormat.Format24bppRgb => PixelFormats.Bgr24,
-        System.Drawing.Imaging.PixelFormat.Format32bppRgb => PixelFormats.Bgr32,
-        System.Drawing.Imaging.PixelFormat.Format32bppArgb => PixelFormats.Bgra32,
-        _ => throw new NotImplementedException($"Conversion from pixel format {pixelFormat} is not supported."),
-      };
-    }
-
-    public static BitmapSource GetBitmapSource(string filePath) {
-      using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-      var bmp = new BitmapImage();
-      bmp.BeginInit();
-      bmp.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-      bmp.StreamSource = fileStream;
-      bmp.EndInit();
-      bmp.Freeze();
-
-      return bmp;
-    }
-
     public static BitmapSource GetCroppedBitmapSource(string filePath, Int32Rect rect, int size) {
       if (rect.Width == 0 || rect.Height == 0) return null;
       using Stream fileStream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
