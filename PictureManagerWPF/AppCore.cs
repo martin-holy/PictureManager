@@ -9,7 +9,7 @@ using System.Windows;
 namespace PictureManager {
   public sealed class AppCore : ObservableObject {
     public MediaItemsVM MediaItemsVM { get; }
-    public SegmentsVM SegmentsVM { get; }
+    public SegmentsRectsVM SegmentsRectsVM { get; }
     public static MediaPlayer FullVideo { get; private set; }
 
     public static RelayCommand<object> TestButtonCommand { get; } = new(() => Tests.Run());
@@ -22,7 +22,7 @@ namespace PictureManager {
       MH.UI.WPF.Resources.Dictionaries.IconNameToBrush = ResourceDictionaries.Dictionaries.IconNameToBrush;
 
       MediaItemsVM = new(App.Core, App.Core.MediaItemsM);
-      SegmentsVM = new(App.Core, App.Core.SegmentsM);
+      SegmentsRectsVM = new(App.Core.SegmentsM.SegmentsRectsM);
     }
 
     private void SetDelegates() {

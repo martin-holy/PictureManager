@@ -47,7 +47,7 @@
           <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
           <MenuItem Header="Copy Paths" Command="{Binding ThumbnailsGridsM.CopyPathsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
-          <MenuItem Header="Segment Matching" Command="{Binding SegmentsM.SegmentMatchingCommand}">
+          <MenuItem Header="Segments" Command="{Binding SegmentsM.OpenSegmentsViewCommand}">
             <MenuItem.Icon>
               <Path Data="{StaticResource IconEquals}"/>
             </MenuItem.Icon>

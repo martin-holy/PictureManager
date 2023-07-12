@@ -67,8 +67,6 @@ namespace PictureManager.Domain.Models {
     #endregion DB Properties
 
     public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public Dictionary<SegmentM, double> Similar { get; set; }
-    public double SimMax { get; set; }
     public string FilePathCache => IOExtensions.PathCombine(Path.GetDirectoryName(MediaItem.FilePathCache), $"segment_{GetHashCode().ToString()}.jpg");
 
     public SegmentM() { }

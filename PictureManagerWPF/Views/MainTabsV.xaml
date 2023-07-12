@@ -13,7 +13,6 @@
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="PeopleViewV.xaml"/>
           <ResourceDictionary Source="SegmentV.xaml"/>
-          <ResourceDictionary Source="SegmentsV.xaml"/>
           <ResourceDictionary Source="SegmentsViewV.xaml"/>
           <ResourceDictionary Source="ThumbnailsGridV.xaml"/>
           <ResourceDictionary Source="ViewerV.xaml"/>
