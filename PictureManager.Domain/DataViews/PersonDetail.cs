@@ -4,6 +4,7 @@ using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils.EventsArgs;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.DataViews {
@@ -16,6 +17,7 @@ namespace PictureManager.Domain.DataViews {
     public PersonM PersonM { get => _personM; set { _personM = value; OnPropertyChanged(); } }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public PersonDetail(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
@@ -24,6 +26,7 @@ namespace PictureManager.Domain.DataViews {
 
       CanDropFunc = CanDrop;
       TopSegmentsDropAction = TopSegmentsDrop;
+      SelectCommand = new(Select);
     }
 
     private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
@@ -68,6 +71,11 @@ namespace PictureManager.Domain.DataViews {
       var items = segments.Where(x => ReferenceEquals(PersonM, x.Person)).ToArray();
       if (items.Length == 0) return;
       AllSegments.ReGroupItems(items, remove);
+    }
+
+    private void Select(MouseButtonEventArgs e) {
+      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
+        _segmentsM.Select(AllSegments.Root.Source, segmentM, e.IsCtrlOn, e.IsShiftOn);
     }
   }
 }
