@@ -34,19 +34,19 @@
 
         <b:EventTrigger EventName="PreviewMouseDown">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.CreateCommand, Source={x:Static pm:App.Ui}}"
+            Command="{Binding SegmentsRectsVM.CreateCommand, Source={x:Static pm:App.Ui}}"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseMove">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.EditCommand, Source={x:Static pm:App.Ui}}"
+            Command="{Binding SegmentsRectsVM.EditCommand, Source={x:Static pm:App.Ui}}"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
 
         <b:EventTrigger EventName="PreviewMouseUp">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.EndEditCommand, Source={x:Static pm:App.Ui}}"/>
+            Command="{Binding SegmentsRectsVM.EndEditCommand, Source={x:Static pm:App.Ui}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -110,7 +110,6 @@
 
       <!-- Media Player Control Panel -->
       <mhc:MediaPlayerControlPanel
-        Grid.Row="1"
         x:Name="controlPanel"
         Player="{Binding ElementName=player}"
         Height="30"
@@ -133,7 +132,7 @@
         <ContentPresenter
           HorizontalAlignment="Left"
           VerticalAlignment="Top"
-          Content="{Binding SegmentsVM.SegmentsRectsVM, Source={x:Static pm:App.Ui}}">
+          Content="{Binding SegmentsRectsVM, Source={x:Static pm:App.Ui}}">
 
           <ContentPresenter.RenderTransform>
             <TranslateTransform

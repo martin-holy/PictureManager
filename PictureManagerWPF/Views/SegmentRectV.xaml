@@ -28,8 +28,7 @@
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDown">
           <b:InvokeCommandAction
-            Command="{Binding SegmentsVM.SegmentsRectsVM.SetCurrentCommand,
-                      Source={x:Static pm:App.Ui}}"
+            Command="{Binding SegmentsRectsVM.SetCurrentCommand, Source={x:Static pm:App.Ui}}"
             PassEventArgsToCommand="True"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
@@ -53,8 +52,7 @@
           ToolTip="Delete"
           Margin="2"
           Cursor="Arrow"
-          Command="{Binding SegmentsVM.SegmentsRectsVM.DeleteCommand,
-                    Source={x:Static pm:App.Ui}}"
+          Command="{Binding SegmentsRectsVM.DeleteCommand, Source={x:Static pm:App.Ui}}"
           CommandParameter="{Binding}"/>
       </Grid>
     </Border>
