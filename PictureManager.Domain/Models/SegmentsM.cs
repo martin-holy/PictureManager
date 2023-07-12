@@ -1,14 +1,11 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.HelperClasses;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
-using PictureManager.Domain.HelperClasses;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using static MH.Utils.DragDropHelper;
@@ -17,37 +14,15 @@ namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
     private readonly Core _core;
     private double _segmentUiSize;
-    private int _segmentSize = 100;
-    private int _compareSegmentSize = 32;
-    private int _similarityLimit = 90;
-    private int _similarityLimitMin = 80;
-    private bool _groupSegments = true;
-    private bool _groupConfirmedSegments;
     private bool _canSelectAsSamePerson;
-    private bool _matchingAutoSort = true;
-    private bool _reloadAutoScroll = true;
 
     public SegmentsDataAdapter DataAdapter { get; set; }
     public SegmentsRectsM SegmentsRectsM { get; }
     public SegmentsDrawerM SegmentsDrawerM { get; }
     public SegmentsView SegmentsView { get; private set; }
-    public object MainTabsItem { get; set; }
-    public List<SegmentM> Loaded { get; } = new();
-    public List<MediaItemM> MediaItemsForMatching { get; set; }
-    public ObservableCollection<object> LoadedGrouped { get; } = new();
-    public ObservableCollection<object> ConfirmedGrouped { get; } = new();
     public Selecting<SegmentM> Selected { get; } = new();
-    public int SegmentSize { get => _segmentSize; set { _segmentSize = value; OnPropertyChanged(); } }
-    public int CompareSegmentSize { get => _compareSegmentSize; set { _compareSegmentSize = value; OnPropertyChanged(); } }
-    public int SimilarityLimit { get => _similarityLimit; set { _similarityLimit = value; OnPropertyChanged(); } }
-    public int SimilarityLimitMin { get => _similarityLimitMin; set { _similarityLimitMin = value; OnPropertyChanged(); } }
-    public bool GroupSegments { get => _groupSegments; set { _groupSegments = value; OnPropertyChanged(); } }
-    public bool GroupConfirmedSegments { get => _groupConfirmedSegments; set { _groupConfirmedSegments = value; OnPropertyChanged(); } }
+    public static int SegmentSize = 100;
     public bool CanSelectAsSamePerson { get => _canSelectAsSamePerson; set { _canSelectAsSamePerson = value; OnPropertyChanged(); } }
-    public bool MatchingAutoSort { get => _matchingAutoSort; set { _matchingAutoSort = value; OnPropertyChanged(); } }
-    public bool ReloadAutoScroll { get => _reloadAutoScroll; set { _reloadAutoScroll = value; OnPropertyChanged(); } }
-    public bool NeedReload { get; set; }
-    public double ConfirmedPanelWidth { get; private set; }
     public double SegmentUiFullWidth { get; set; }
     public double SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
 
@@ -60,12 +35,7 @@ namespace PictureManager.Domain.Models {
 
     public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
     public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
-    public RelayCommand<object> GroupConfirmedCommand { get; }
-    public RelayCommand<object> CompareAllGroupsCommand { get; }
-    public RelayCommand<object> SortCommand { get; }
-    public RelayCommand<object> GroupMatchingPanelCommand { get; }
     public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
-    public RelayCommand<object> SegmentMatchingCommand { get; }
     public RelayCommand<object> OpenSegmentsViewCommand { get; }
 
     public SegmentsM(Core core) {
@@ -75,14 +45,7 @@ namespace PictureManager.Domain.Models {
 
       SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
       SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => Selected.Items.Count > 0);
-      GroupConfirmedCommand = new(() => Reload(false, true));
-      CompareAllGroupsCommand = new(() => LoadSegments(MediaItemsForMatching, 1));
-      SortCommand = new(() => Reload(true, true));
-      GroupMatchingPanelCommand = new(() => Reload(true, false));
       ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
-      SegmentMatchingCommand = new(
-        SegmentMatching,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
       OpenSegmentsViewCommand = new(
         OpenSegmentsView,
         () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
@@ -116,7 +79,6 @@ namespace PictureManager.Domain.Models {
     public void SetSegmentUiSize(double size, double scrollBarSize) {
       SegmentUiSize = size;
       SegmentUiFullWidth = size + 6; // + border, margin
-      ConfirmedPanelWidth = (SegmentUiFullWidth * 2) + scrollBarSize;
     }
 
     public SegmentM[] GetOneOrSelected(SegmentM one) =>
@@ -129,8 +91,7 @@ namespace PictureManager.Domain.Models {
       mediaItem.Segments ??= new();
       mediaItem.Segments.Add(newSegment);
       DataAdapter.All.Add(newSegment);
-      Loaded.Add(newSegment);
-      NeedReload = true;
+      SegmentsView?.CvSegments.ReGroupItems(new[] { newSegment }, false);
 
       return newSegment;
     }
@@ -141,20 +102,6 @@ namespace PictureManager.Domain.Models {
         Person = s.Person,
         Keywords = s.Keywords?.ToList()
       };
-
-    public void AddSegmentsForComparison() {
-      var people = Loaded
-        .Where(x => x.Person != null)
-        .Select(x => x.Person)
-        .Distinct()
-        .ToHashSet();
-      var newSegments = DataAdapter.All
-        .Where(x => people.Contains(x.Person))
-        .Except(Loaded);
-
-      foreach (var segment in newSegments)
-        Loaded.Add(segment);
-    }
 
     /// <summary>
     /// Sets new Person to all Segments that are selected 
@@ -197,7 +144,7 @@ namespace PictureManager.Domain.Models {
     private void SetSelectedAsSamePerson() {
       if (!CanSelectAsSamePerson) return;
 
-      PersonM newPerson = null;
+      PersonM newPerson;
       SegmentM[] toUpdate;
       var people = Selected.Items
         .Where(x => x.Person != null)
@@ -287,18 +234,18 @@ namespace PictureManager.Domain.Models {
       DataAdapter.IsModified = true;
     }
 
-    private void ToggleKeyword(IEnumerable<SegmentM> segments, KeywordM keyword) {
+    private void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
       foreach (var segment in segments)
         ToggleKeyword(segment, keyword);
 
-      SegmentsKeywordChangedEvent(this, new((segments.ToArray(), keyword)));
+      SegmentsKeywordChangedEvent(this, new((segments, keyword)));
     }
 
     public void RemoveKeywordFromSegments(KeywordM keyword) =>
-      ToggleKeyword(DataAdapter.All.Where(x => x.Keywords?.Contains(keyword) == true), keyword);
+      ToggleKeyword(DataAdapter.All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
     public void ToggleKeywordOnSelected(KeywordM keyword) =>
-      ToggleKeyword(Selected.Items, keyword);
+      ToggleKeyword(Selected.Items.ToArray(), keyword);
 
     public void RemovePersonFromSegments(PersonM person) {
       foreach (var segment in DataAdapter.All.Where(s => s.Person?.Equals(person) == true)) {
@@ -322,7 +269,6 @@ namespace PictureManager.Domain.Models {
 
     public void Delete(SegmentM segment) {
       DataAdapter.All.Remove(segment);
-
       SegmentDeletedEventHandler(this, new(segment));
       Selected.Set(segment, false);
       ChangePerson(segment, null);
@@ -330,14 +276,6 @@ namespace PictureManager.Domain.Models {
       // remove Segment from MediaItem
       if (segment.MediaItem.Segments.Remove(segment) && !segment.MediaItem.Segments.Any())
         segment.MediaItem.Segments = null;
-
-      segment.Similar?.Clear();
-      
-      if (Loaded.Remove(segment))
-        Reload();
-
-      foreach (var simSegment in Loaded)
-        simSegment.Similar?.Remove(segment);
 
       try {
         if (File.Exists(segment.FilePathCache))
@@ -350,7 +288,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM, bool inGroups) {
+    public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM) {
       if (segmentM.MediaItem == null) return null;
 
       if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segmentM))
@@ -377,46 +315,7 @@ namespace PictureManager.Domain.Models {
           .ThenBy(x => x.FileName)
           .ToList();
 
-      if (inGroups) {
-        var items = ((ItemsGroup)LoadedGrouped[^1]).Items
-          .Cast<SegmentM>()
-          .Where(x => x.Person == null)
-          .Select(x => x.MediaItem)
-          .Distinct();
-
-        if (items.Any())
-          return items.ToList();
-      }
-
       return new() { segmentM.MediaItem };
-    }
-
-    public void LoadSegments(List<MediaItemM> mediaItems, int mode) {
-      ReloadAutoScroll = false;
-      Selected.DeselectAll();
-      Loaded.Clear();
-
-      foreach (var segment in GetSegments(mediaItems, mode))
-        Loaded.Add(segment);
-
-      Reload(true, true);
-      ReloadAutoScroll = true;
-    }
-
-    public void ReloadIfContains(IEnumerable<SegmentM> segments) {
-      if (Loaded.Any(segments.Contains))
-        Reload();
-    }
-
-    public void Reload() =>
-      Reload(MatchingAutoSort, MatchingAutoSort);
-
-    public void Reload(bool segments, bool confirmedSegments) {
-      if (segments)
-        ReloadLoadedGrouped();
-
-      if (confirmedSegments)
-        ReloadConfirmedGrouped();
     }
 
     private SegmentM[] GetSegments(List<MediaItemM> mediaItems, int mode) {
@@ -450,182 +349,8 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    private void ReloadLoadedGrouped() {
-      ItemsGroup group;
-      LoadedGrouped.Clear();
-
-      if (!GroupSegments) {
-        group = new();
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, "?"));
-        LoadedGrouped.Add(group);
-
-        foreach (var segment in Loaded)
-          group.Items.Add(segment);
-
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
-
-        return;
-      }
-
-      // add segments with Person != null with all similar segments with Person == null
-      string GetKeywords(SegmentM segment) =>
-        string.Join(", ", KeywordsM.GetAllKeywords(segment.Keywords).Select(k => k.Name));
-
-      var samePerson = Loaded
-        .Where(x => x.Person?.Id > 0)
-        .GroupBy(x => new { x.Person, dk = GetKeywords(x) })
-        .OrderBy(x => x.Key.Person.Name)
-        .ThenBy(x => x.Key.dk)
-        .Concat(Loaded
-          .Where(x => x.Person?.Id < 0)
-          .GroupBy(x => new { x.Person, dk = GetKeywords(x) })
-          .OrderByDescending(x => x.Key.Person.Id)
-          .ThenBy(x => x.Key.dk));
-
-      foreach (var segments in samePerson) {
-        var sims = new List<(SegmentM segment, double sim)>();
-
-        group = new();
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, segments.Key.Person.Name));
-        if (!segments.Key.dk.Equals(string.Empty))
-          group.Info.Add(new ItemsGroupInfoItem(Res.IconTag, segments.Key.dk));
-        LoadedGrouped.Add(group);
-
-        foreach (var segment in segments.OrderBy(x => x.MediaItem.FileName)) {
-          group.Items.Add(segment);
-          if (segment.Similar == null) continue;
-          sims.AddRange(segment.Similar
-            .Where(x => x.Key.Person == null && x.Value >= SimilarityLimit)
-            .Select(x => (x.Key, x.Value)));
-        }
-
-        // order by number of similar than by similarity
-        foreach (var segment in sims
-          .GroupBy(x => x.segment)
-          .OrderByDescending(g => g.Count())
-          .Select(g => g.OrderByDescending(x => x.sim).First().segment)) {
-          group.Items.Add(segment);
-        }
-
-        group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
-      }
-
-      // add segments with Person == null ordered by similar
-      var unknown = Loaded.Where(x => x.Person == null).ToArray();
-      if (unknown.Length == 0) return;
-      var set = new HashSet<int>();
-      var withSimilar = unknown
-        .Where(x => x.Similar != null)
-        .OrderByDescending(x => x.SimMax);
-
-      group = new();
-      group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, "0"));
-      LoadedGrouped.Add(group);
-
-      foreach (var segment in withSimilar) {
-        var simSegments = segment.Similar
-          .Where(x => x.Key.Person == null && x.Value >= SimilarityLimit)
-          .OrderByDescending(x => x.Value);
-
-        foreach (var simSegment in simSegments) {
-          if (set.Add(segment.GetHashCode())) group.Items.Add(segment);
-          if (set.Add(simSegment.Key.GetHashCode())) group.Items.Add(simSegment.Key);
-        }
-      }
-
-      // add rest of the segments
-      foreach (var segment in unknown.Where(x => !set.Contains(x.GetHashCode())))
-        group.Items.Add(segment);
-
-      group.Info.Add(new ItemsGroupInfoItem(Res.IconImageMultiple, group.Items.Count.ToString()));
-    }
-
-    /// <summary>
-    /// Compares segments with same person to other segments with same person
-    /// and select top segment from each person for display
-    /// </summary>
-    private void ReloadConfirmedGrouped() {
-      var groups = Loaded
-        .Where(x => x.Person?.Id > 0)
-        .GroupBy(x => x.Person)
-        .OrderBy(x => x.First().Person.Name)
-        .Concat(Loaded
-          .Where(x => x.Person?.Id < 0)
-          .GroupBy(x => x.Person)
-          .OrderByDescending(x => x.Key.Id))
-        .ToArray();
-
-      var tmp = new List<(PersonM person, SegmentM segment, List<(PersonM person, SegmentM segment, double sim)> similar)>();
-
-      SegmentM GetTopSegment(IEnumerable<SegmentM> segments) =>
-        (segments.First().Person?.TopSegments?.Cast<SegmentM>() ?? segments).First();
-
-      ConfirmedGrouped.Clear();
-
-      // get segments
-      foreach (var gA in groups) {
-        (PersonM person, SegmentM segment, List<(PersonM person, SegmentM segment, double sim)> similar) confirmedSegment = new() {
-          person = gA.Key,
-          segment = GetTopSegment(gA),
-          similar = new()
-        };
-
-        tmp.Add(confirmedSegment);
-        if (gA.All(x => x.Similar == null)) continue;
-
-        foreach (var gB in groups) {
-          if (gA.Key == gB.Key) continue;
-
-          var sims = new List<double>();
-
-          foreach (var segmentA in gA)
-            foreach (var segmentB in gB)
-              if (segmentA.Similar != null && segmentA.Similar.TryGetValue(segmentB, out var sim) && sim >= SimilarityLimit)
-                sims.Add(sim);
-
-          if (sims.Count == 0) continue;
-
-          var simMedian = sims.OrderBy(x => x).ToArray()[sims.Count / 2];
-          confirmedSegment.similar.Add(new(gB.Key, GetTopSegment(gB), simMedian));
-        }
-      }
-
-      if (GroupConfirmedSegments) {
-        foreach (var (person, _, similar) in tmp) {
-          var group = new ItemsGroup();
-          group.Info.Add(new ItemsGroupInfoItem(Res.IconPeople, person.Name));
-          ConfirmedGrouped.Add(group);
-          group.Items.Add(person);
-
-          foreach (var simGroup in similar.OrderByDescending(x => x.sim))
-            group.Items.Add(simGroup.person);
-        }
-      }
-      else {
-        const string zzzz = "zzzz";
-        foreach (var group in tmp
-          .GroupBy(x => x.person.Keywords == null
-            ? zzzz
-            : string.Join(", ", KeywordsM.GetAllKeywords(x.person.Keywords).Select(k => k.Name)))
-          .OrderBy(g => g.Key)
-          .ThenBy(g => g.First().person.Name)) {
-
-          var itemsGroup = new ItemsGroup();
-          var infoItem = group.Key.Equals(zzzz)
-            ? new ItemsGroupInfoItem(Res.IconEmpty, string.Empty)
-            : new ItemsGroupInfoItem(Res.IconTag, group.Key);
-          itemsGroup.Info.Add(infoItem);
-          ConfirmedGrouped.Add(itemsGroup);
-
-          foreach (var (person, _, _) in group)
-            itemsGroup.Items.Add(person);
-        }
-      }
-    }
-
     private void ViewMediaItemsWithSegment(SegmentM segmentM) {
-      var matchingIsActive = ReferenceEquals(_core.MainTabsM.Selected.Content, this);
-      var items = GetMediaItemsWithSegment(segmentM, matchingIsActive);
+      var items = GetMediaItemsWithSegment(segmentM);
       if (items == null) return;
 
       _core.MediaViewerM.SetMediaItems(items, segmentM.MediaItem);
@@ -634,7 +359,7 @@ namespace PictureManager.Domain.Models {
 
     private static int GetSegmentsToLoadUserInput() {
       var md = new MessageDialog(
-        "Segment Matching",
+        "Segments",
         "Do you want to load all segments, segments with persons \nor one segment from each person?",
         Res.IconQuestion,
         true);
@@ -647,24 +372,13 @@ namespace PictureManager.Domain.Models {
       return Core.DialogHostShow(md);
     }
 
-    private void SegmentMatching() {
-      var result = GetSegmentsToLoadUserInput();
-      if (result < 1) return;
-
-      MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
-      _core.MainTabsM.Activate(MainTabsItem, "Segment Matching");
-
-      LoadSegments(MediaItemsForMatching, result);
-    }
-
     private void OpenSegmentsView() {
       var result = GetSegmentsToLoadUserInput();
       if (result < 1) return;
 
       SegmentsView ??= new(_core.PeopleM, this);
-      MediaItemsForMatching = _core.ThumbnailsGridsM.Current.GetSelectedOrAll();
       _core.MainTabsM.Activate(SegmentsView, "Segments");
-      SegmentsView.Reload(GetSegments(MediaItemsForMatching, result).ToList());
+      SegmentsView.Reload(GetSegments(_core.ThumbnailsGridsM.Current.GetSelectedOrAll(), result).ToList());
     }
   }
 }

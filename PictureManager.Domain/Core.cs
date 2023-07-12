@@ -130,12 +130,6 @@ namespace PictureManager.Domain {
 
           if (!isFullScreen) {
             ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
-
-            if (SegmentsM.NeedReload) {
-              SegmentsM.NeedReload = false;
-              SegmentsM.Reload();
-            }
-
             MediaViewerM.Deactivate();
           }
 
@@ -170,7 +164,6 @@ namespace PictureManager.Domain {
       PeopleM.PeopleKeywordChangedEvent += (_, e) => {
         PeopleM.PeopleView.ReGroupItems(e.Data, false);
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, false);
-        SegmentsM.Reload();
       };
 
       #endregion
@@ -266,7 +259,6 @@ namespace PictureManager.Domain {
 
       SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
         PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
-        SegmentsM.ReloadIfContains(e.Data.Item1);
         SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data.Item2?.Where(x => x.Segment != null).ToArray(), false);
 
@@ -279,7 +271,6 @@ namespace PictureManager.Domain {
 
       SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
         PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
-        SegmentsM.ReloadIfContains(e.Data.Item1);
         SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
       };
 

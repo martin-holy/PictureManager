@@ -136,11 +136,6 @@
               Command="{Binding SegmentsDrawerM.AddSelectedCommand}"/>
 
             <mhc:IconButton
-              ToolTip="Segment Matching"
-              Icon="{StaticResource IconEquals}"
-              Command="{Binding SegmentMatchingCommand}"/>
-
-            <mhc:IconButton
               ToolTip="Segments View"
               Icon="{StaticResource IconSegment}"
               Command="{Binding OpenSegmentsViewCommand}"/>

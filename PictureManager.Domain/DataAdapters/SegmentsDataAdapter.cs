@@ -44,10 +44,7 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override void PropsToCsv() {
       TableProps.Clear();
-      TableProps.Add(nameof(_model.SegmentSize), _model.SegmentSize.ToString());
-      TableProps.Add(nameof(_model.CompareSegmentSize), _model.CompareSegmentSize.ToString());
-      TableProps.Add(nameof(_model.SimilarityLimit), _model.SimilarityLimit.ToString());
-      TableProps.Add(nameof(_model.SimilarityLimitMin), _model.SimilarityLimitMin.ToString());
+      TableProps.Add(nameof(SegmentsM.SegmentSize), SegmentsM.SegmentSize.ToString());
       TableProps.Add("SegmentsDrawer", string.Join(",", _model.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
     }
 
@@ -88,14 +85,8 @@ namespace PictureManager.Domain.DataAdapters {
 
       // Table Properties
       if (TableProps == null) return;
-      if (TableProps.TryGetValue(nameof(_model.SegmentSize), out var segmentSize))
-        _model.SegmentSize = int.Parse(segmentSize);
-      if (TableProps.TryGetValue(nameof(_model.CompareSegmentSize), out var compareSegmentSize))
-        _model.CompareSegmentSize = int.Parse(compareSegmentSize);
-      if (TableProps.TryGetValue(nameof(_model.SimilarityLimit), out var similarityLimit))
-        _model.SimilarityLimit = int.Parse(similarityLimit);
-      if (TableProps.TryGetValue(nameof(_model.SimilarityLimitMin), out var similarityLimitMin))
-        _model.SimilarityLimitMin = int.Parse(similarityLimitMin);
+      if (TableProps.TryGetValue(nameof(SegmentsM.SegmentSize), out var segmentSize))
+        SegmentsM.SegmentSize = int.Parse(segmentSize);
       if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
         _model.SegmentsDrawerM.Items.Clear();
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using MH.UI.WPF.Utils;
+using MH.Utils;
+using PictureManager.Domain;
+using PictureManager.Domain.Models;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,11 +10,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using PictureManager.Domain;
-using PictureManager.Domain.Models;
-using PictureManager.Utils;
 
 namespace PictureManager.Converters {
   public class SegmentThumbnailSourceConverter : IMultiValueConverter {
@@ -37,7 +39,7 @@ namespace PictureManager.Converters {
         src.BeginInit();
         src.CacheOption = BitmapCacheOption.OnLoad;
         src.UriSource = new(segment.FilePathCache);
-        src.Rotation = Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
+        src.Rotation = Utils.Imaging.MediaOrientation2Rotation((MediaOrientation)segment.MediaItem.Orientation);
 
         if (segment.Equals(IgnoreImageCacheSegment)) {
           IgnoreImageCacheSegment = null;
@@ -72,7 +74,7 @@ namespace PictureManager.Converters {
           using (partition)
             while (partition.MoveNext()) {
               var segment = partition.Current;
-              App.Ui.SegmentsVM.CreateThumbnail(segment);
+              CreateThumbnail(segment);
               segment?.OnPropertyChanged(nameof(segment.FilePathCache));
             }
           return Task.CompletedTask;
@@ -83,6 +85,28 @@ namespace PictureManager.Converters {
 
       _isRunning = false;
       StartQueue();
+    }
+
+    public static void CreateThumbnail(SegmentM segment) {
+      var filePath = segment.MediaItem.MediaType == MediaType.Image
+        ? segment.MediaItem.FilePath
+        : segment.MediaItem.FilePathCache;
+      var rect = new Int32Rect(
+        (int)segment.X,
+        (int)segment.Y,
+        (int)segment.Size,
+        (int)segment.Size);
+
+      try {
+        Imaging.GetCroppedBitmapSource(filePath, rect, SegmentsM.SegmentSize)
+          ?.SaveAsJpg(80, segment.FilePathCache);
+
+        IgnoreImageCacheSegment = segment;
+        segment.OnPropertyChanged(nameof(segment.FilePathCache));
+      }
+      catch (Exception ex) {
+        Log.Error(ex, filePath);
+      }
     }
   }
 }

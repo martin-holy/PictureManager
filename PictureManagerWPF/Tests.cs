@@ -2,7 +2,6 @@
 using PictureManager.Domain;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,6 @@ namespace PictureManager {
       //var wtest = new WTest();
       //wtest.Show();
       //App.Db.SetModified<Viewers>();
-      //TestFaceCompare2();
       //TestTryParseDoubleUniversal();
 
       //var x = PictureManager.Domain.Core.DialogHostShow(new MessageDialog("test", "test message která je delší a delší a delší", Res.IconPeople, true));
@@ -38,45 +36,6 @@ namespace PictureManager {
 
       var list = new List<double>() { a, b, c, d, e, f, g, h };
     }
-
-    private static void TestFaceCompare2() {
-      var faceA = new Bitmap(@"d:\face.jpg");
-      var faceB = new Bitmap(@"d:\face2.jpg");
-      var faceC = new Bitmap(@"d:\face3.jpg");
-      var faceR1 = new Bitmap(@"d:\faceR1a.jpg");
-      var faceR2 = new Bitmap(@"d:\faceR2b.jpg");
-      var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
-      var m1 = tm.ProcessImage(faceA, faceB).Max(x => x.Similarity);
-      var m2 = tm.ProcessImage(faceA, faceC).Max(x => x.Similarity);
-      var m3 = tm.ProcessImage(faceR1, faceR2).Max(x => x.Similarity);
-    }
-
-    /*private async static void TestFaceCompare() {
-      var facesA = (App.Core.PeopleM.All.Single(x => x.Id == 479)).TopSegments.Cast<SegmentM>().ToArray();
-      var facesB = App.Core.SegmentsM.All.Where(x => x.PersonId == -44).ToArray();
-      var tm = new Accord.Imaging.ExhaustiveTemplateMatching(0);
-
-      foreach (var face in facesA) {
-        face.Similar?.Clear();
-        face.SimMax = 0;
-      }
-
-      foreach (var faceA in facesA) {
-        await SegmentsM.SetComparePictureAsync(faceA, 32);
-        faceA.Similar ??= new();
-
-        foreach (var faceB in facesB) {
-          await SegmentsM.SetComparePictureAsync(faceB, 32);
-
-          var matchings = tm.ProcessImage(faceB.ComparePicture, faceA.ComparePicture);
-          var sim = Math.Round(matchings.Max(x => x.Similarity) * 100, 1);
-          if (sim < 80) continue;
-
-          faceA.Similar.Add(faceB, sim);
-          if (faceA.SimMax < sim) faceA.SimMax = sim;
-        }
-      }
-    }*/
 
     private static void ChangeDate() {
       var progress = new MH.Utils.Dialogs.ProgressBarDialog("Change date", Res.IconCalendar, true, 1);
