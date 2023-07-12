@@ -34,7 +34,7 @@ namespace PictureManager.Domain.Models {
         3 => PeopleM.GetAll(PeopleM),
         _ => Enumerable.Empty<PersonM>() };
 
-      Reload(items.OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null);
+      Reload(items.OrderBy(x => x.Name).ToList(), GroupMode.GroupBy, null, true);
     }
   }
 }

@@ -11,18 +11,8 @@ namespace PictureManager.Domain.CollectionViews {
       PeopleM = peopleM;
     }
 
-    public void Reload(List<PersonM> source, GroupMode groupMode, CollectionViewGroupByItem<PersonM>[] groupByItems) {
-      var root = new CollectionViewGroup<PersonM>(null, null, source) {
-        Icon = Res.IconPeopleMultiple,
-        Title = "People",
-        View = this,
-        GroupMode = groupMode,
-        GroupByItems = groupByItems?.Length == 0 ? null : groupByItems,
-        IsExpanded = true
-      };
-      
-      root.GroupIt();
-      SetRoot(root);
+    public void Reload(List<PersonM> source, GroupMode groupMode, CollectionViewGroupByItem<PersonM>[] groupByItems, bool expandAll) {
+      SetRoot(new(source, Res.IconPeopleMultiple, "People", this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {

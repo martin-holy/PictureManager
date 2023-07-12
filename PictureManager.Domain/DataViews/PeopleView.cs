@@ -11,7 +11,7 @@ namespace PictureManager.Domain.DataViews {
       var source = PeopleM.GetAll(PeopleM).ToList();
       var groupByItems = GetGroupByItems(source).ToArray();
 
-      Reload(source, GroupMode.ThanByRecursive, groupByItems);
+      Reload(source, GroupMode.ThenByRecursive, groupByItems, false);
 
       if (Root.Items.Count > 0 && Root.Items[0] is CollectionViewGroup<PersonM> group)
         group.IsExpanded = true;

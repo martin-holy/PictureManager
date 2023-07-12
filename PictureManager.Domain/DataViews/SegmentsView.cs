@@ -24,7 +24,7 @@ namespace PictureManager.Domain.DataViews {
         .OrderBy(x => x.Name)
         .ToList();
 
-      CvPeople.Reload(source, GroupMode.GroupByRecursive, null);
+      CvPeople.Reload(source, GroupMode.GroupByRecursive, null, true);
     }
 
     private void ReloadSegments(List<SegmentM> items) {
@@ -37,8 +37,7 @@ namespace PictureManager.Domain.DataViews {
         GroupByItems.GetKeywordsInGroupFromSegments(items)
       };
 
-      CvSegments.Reload(source, GroupMode.ThanByRecursive, groupByItems);
-      CvSegments.ExpandAll(CvSegments.Root);
+      CvSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);
     }
   }
 }
