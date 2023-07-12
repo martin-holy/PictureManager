@@ -144,7 +144,7 @@ namespace MH.UI.Controls {
       // done if the group is not grouped and the item was already in the source
       if (!isGrouping) return;
 
-      if (GroupByItems != null && Items.FirstOrDefault() is CollectionViewRow<T>) {
+      if (GroupByItems != null && Items.FirstOrDefault() is null or CollectionViewRow<T>) {
         GroupIt();
         ExpandAll();
         return;
@@ -187,12 +187,11 @@ namespace MH.UI.Controls {
         var emptyGroup = groups.SingleOrDefault(x => x.GroupedBy == null);
 
         if (emptyGroup == null) {
-          emptyGroup = new(this, null, new() { item }) { IsExpanded = true };
+          emptyGroup = new(this, null, new()) { IsExpanded = true };
           Items.Insert(0, emptyGroup);
         }
-        else
-          emptyGroup.InsertItem(item, toReWrap);
 
+          emptyGroup.InsertItem(item, toReWrap);
         inGroups.Add(emptyGroup);
       }
 
