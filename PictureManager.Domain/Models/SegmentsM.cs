@@ -376,9 +376,10 @@ namespace PictureManager.Domain.Models {
       var result = GetSegmentsToLoadUserInput();
       if (result < 1) return;
 
+      var segments = GetSegments(_core.ThumbnailsGridsM.Current.GetSelectedOrAll(), result).ToList();
       SegmentsView ??= new(_core.PeopleM, this);
       _core.MainTabsM.Activate(SegmentsView, "Segments");
-      SegmentsView.Reload(GetSegments(_core.ThumbnailsGridsM.Current.GetSelectedOrAll(), result).ToList());
+      SegmentsView.Reload(segments);
     }
   }
 }
