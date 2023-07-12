@@ -45,10 +45,12 @@ namespace MH.UI.Controls {
     }
 
     // TODO scroll to top
-    public void SetRoot(CollectionViewGroup<T> root) {
-      Root = root;
+    public void SetRoot(CollectionViewGroup<T> root, bool expandAll) {
       RootHolder.Execute(items => {
         items.Clear();
+        Root = root;
+        Root.GroupIt();
+        if (expandAll) Root.ExpandAll();
         items.Add(Root);
       });
 

@@ -8,16 +8,16 @@ using System.Linq;
 
 namespace MH.UI.Dialogs {
   public class GroupByDialog<T> : Dialog {
-    private bool _modeGroupBy = true;
-    private bool _modeGroupByThenBy;
-    private bool _modeGroupRecursive;
+    private bool _isRecursive;
+    private bool _isGroupBy = true;
+    private bool _isThenBy;
 
     public TreeItem Root { get; } = new();
     public Selecting<TreeItem> Selected { get; } = new();
     public Action<object, bool, bool> SelectAction => Select;
-    public bool ModeGroupBy { get => _modeGroupBy; set { _modeGroupBy = value; OnPropertyChanged(); } }
-    public bool ModeGroupByThenBy { get => _modeGroupByThenBy; set { _modeGroupByThenBy = value; OnPropertyChanged(); } }
-    public bool ModeGroupRecursive { get => _modeGroupRecursive; set { _modeGroupRecursive = value; OnPropertyChanged(); } }
+    public bool IsRecursive { get => _isRecursive; set { _isRecursive = value; OnPropertyChanged(); } }
+    public bool IsGroupBy { get => _isGroupBy; set { _isGroupBy = value; OnPropertyChanged(); } }
+    public bool IsThenBy { get => _isThenBy; set { _isThenBy = value; OnPropertyChanged(); } }
 
     public GroupByDialog() : base("Chose items for grouping", "IconGroup") {
       Buttons = new DialogButton[] {
@@ -26,9 +26,9 @@ namespace MH.UI.Dialogs {
     }
 
     public bool Open(CollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
-      ModeGroupBy = group.GroupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
-      ModeGroupByThenBy = group.GroupMode is GroupMode.ThanBy or GroupMode.ThanByRecursive;
-      ModeGroupRecursive = group.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
+      IsRecursive = group.IsRecursive;
+      IsGroupBy = group.IsGroupBy;
+      IsThenBy = group.IsThenBy;
       Root.Items.Clear();
       Selected.DeselectAll();
 
@@ -44,14 +44,9 @@ namespace MH.UI.Dialogs {
         return true;
       }
 
-      group.GroupMode = ModeGroupByThenBy
-        ? ModeGroupRecursive
-          ? GroupMode.ThanByRecursive
-          : GroupMode.ThanBy
-        : ModeGroupRecursive
-          ? GroupMode.GroupByRecursive
-          : GroupMode.GroupBy;
-
+      group.IsRecursive = IsRecursive;
+      group.IsGroupBy = IsGroupBy;
+      group.IsThenBy = IsThenBy;
       group.GroupByItems = Selected.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
       group.GroupIt();
       group.IsExpanded = true;

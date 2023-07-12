@@ -8,8 +8,8 @@ namespace MH.UI.Controls {
   public enum GroupMode {
     GroupBy,
     GroupByRecursive,
-    ThanBy,
-    ThanByRecursive
+    ThenBy,
+    ThenByRecursive
   }
 
   public class CollectionViewGroup<T> : ObservableObject {
@@ -23,10 +23,12 @@ namespace MH.UI.Controls {
     public ExtObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
-    public GroupMode GroupMode { get; set; }
     public double Width { get => _width; set => SetWidth(value); }
     public string Icon { get; set; }
     public string Title { get; set; }
+    public bool IsRecursive { get; set; }
+    public bool IsGroupBy { get; set; }
+    public bool IsThenBy { get; set; }
     // TODO lazy load OnExpanded
     public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
 
@@ -42,26 +44,33 @@ namespace MH.UI.Controls {
       if (Parent == null) return;
 
       View = Parent.View;
-      GroupMode = Parent.GroupMode;
+      IsRecursive = Parent.IsRecursive;
+      IsGroupBy = Parent.IsGroupBy;
+      IsThenBy = Parent.IsThenBy;
 
-      if (Parent.GroupByItems == null
-          || GroupMode is not (GroupMode.ThanBy or GroupMode.ThanByRecursive)) return;
+      if (Parent.GroupByItems == null || !IsThenBy) return;
 
-      if (GroupMode == GroupMode.ThanByRecursive && Parent.GroupedBy?.Items?.Count > 0)
+      if (IsRecursive && Parent.GroupedBy?.Items?.Count > 0)
         GroupByItems = Parent.GroupByItems.ToArray();
       else if (Parent.GroupByItems.Length > 1)
         GroupByItems = Parent.GroupByItems[1..];
     }
 
+    public CollectionViewGroup(List<T> source, string icon, string title, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(null, null, source) {
+      Icon = icon;
+      Title = title;
+      View = view;
+      IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
+      IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive;
+      IsRecursive = groupMode is GroupMode.GroupByRecursive or GroupMode.ThenByRecursive;
+      GroupByItems = groupByItems?.Length == 0 ? null : groupByItems;
+    }
+
     public void GroupIt() {
-      switch (GroupMode) {
-        case GroupMode.GroupBy or GroupMode.GroupByRecursive:
-          CreateGroups(this, GroupByItems);
-          break;
-        case GroupMode.ThanBy or GroupMode.ThanByRecursive:
-          GroupByThenBy();
-          break;
-      }
+      if (IsGroupBy)
+        CreateGroups(this, GroupByItems);
+      else if (IsThenBy) 
+        GroupByThenBy();
     }
 
     private static CollectionViewGroup<T> CreateGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupBy, ICollection<T> notInGroup) {
@@ -86,7 +95,7 @@ namespace MH.UI.Controls {
         var group = CreateGroup(parent, gbi, notInGroups);
         if (group == null) continue;
         if (gbi.IsGroup) group.IsExpanded = true;
-        if (parent.GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive && gbi.Items?.Count > 0)
+        if (parent.IsRecursive && gbi.Items?.Count > 0)
           CreateGroups(group, gbi.Items.Cast<CollectionViewGroupByItem<T>>());
 
         parent.Items.Add(group);
@@ -110,7 +119,7 @@ namespace MH.UI.Controls {
       CreateGroups(this, new[] { GroupByItems[0] });
 
       foreach (var group in Items.OfType<CollectionViewGroup<T>>()) {
-        if (GroupMode == GroupMode.ThanByRecursive) {
+        if (IsRecursive) {
           var subGroups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
 
           if (subGroups.Length > 0) {
@@ -126,8 +135,7 @@ namespace MH.UI.Controls {
     }
 
     public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
-      var recursive = GroupMode is GroupMode.GroupByRecursive or GroupMode.ThanByRecursive;
-      var isGrouping = GroupByItems != null || (recursive && GroupedBy?.Items?.Count > 0);
+      var isGrouping = GroupByItems != null || (IsRecursive && GroupedBy?.Items?.Count > 0);
 
       // add the item to the source if is not present
       if (!Source.Contains(item)) {
@@ -153,12 +161,12 @@ namespace MH.UI.Controls {
       CollectionViewGroupByItem<T>[] groupByItems = null;
 
       if (GroupByItems != null && GroupedBy is null or { Items: { Count: 0 } }) {
-        if (GroupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive)
+        if (IsGroupBy)
           groupByItems = GroupByItems.ToArray();
         else if (GroupByItems.Length > 0)
           groupByItems = new[] { GroupByItems[0] };
       }
-      else if (recursive && GroupedBy?.Items?.Count > 0)
+      else if (IsRecursive && GroupedBy?.Items?.Count > 0)
         groupByItems = GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
 
       if (groupByItems == null || groupByItems.All(x => x.IsGroup && x.Items?.Count == 0)) return;
