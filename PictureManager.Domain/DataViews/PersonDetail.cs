@@ -62,8 +62,7 @@ namespace PictureManager.Domain.DataViews {
         GroupByItems.GetKeywordsInGroupFromSegments(items)
       };
 
-      AllSegments.Reload(source, GroupMode.ThanByRecursive, groupByItems);
-      AllSegments.ExpandAll(AllSegments.Root);
+      AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);
     }
 
     public void ReGroupIfContains(IEnumerable<SegmentM> segments, bool remove) {
