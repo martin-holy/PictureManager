@@ -48,7 +48,7 @@ namespace MH.UI.Dialogs {
       group.IsGroupBy = IsGroupBy;
       group.IsThenBy = IsThenBy;
       group.GroupByItems = Selected.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
-      group.GroupIt();
+      CollectionViewGroup<T>.GroupIt(group);
       group.IsExpanded = true;
 
       return true;

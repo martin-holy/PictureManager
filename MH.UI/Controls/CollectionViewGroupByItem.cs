@@ -42,6 +42,7 @@ namespace MH.UI.Controls {
       return root;
     }
 
+    // TODO remove items as well
     public void Update(CollectionViewGroupByItem<T>[] items) {
       var newItems = Tree.FindChild<CollectionViewGroupByItem<T>>(
           items, x => ReferenceEquals(x.Parameter, Parameter))?.Items

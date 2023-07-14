@@ -66,71 +66,83 @@ namespace MH.UI.Controls {
       GroupByItems = groupByItems?.Length == 0 ? null : groupByItems;
     }
 
-    public void GroupIt() {
-      if (IsGroupBy)
-        CreateGroups(this, GroupByItems);
-      else if (IsThenBy) 
-        GroupByThenBy();
-    }
+    public static void GroupIt(CollectionViewGroup<T> parent) {
+      var groupByItems = GetGroupByItems(parent);
+      if (groupByItems == null) return;
 
-    private static CollectionViewGroup<T> CreateGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupBy, ICollection<T> notInGroup) {
-      var source = new List<T>();
+      CollectionViewGroup<T> emptyGroup = null;
+      var newGroups = groupByItems
+        .Select(x => new object[] { x, null })
+        .ToArray();
 
-      foreach (var item in parent.Source.Where(x => groupBy.ItemGroupBy(x, groupBy.Parameter))) {
-        source.Add(item);
-        notInGroup?.Remove(item);
-      }
-
-      return source.Count == 0
-        ? null
-        : new(parent, groupBy, source);
-    }
-
-    private static void CreateGroups(CollectionViewGroup<T> parent, IEnumerable<CollectionViewGroupByItem<T>> groupBys) {
-      if (parent == null || groupBys == null) return;
-      var notInGroups = parent.Source.ToList();
       parent.Items.Clear();
 
-      foreach (var gbi in groupBys) {
-        var group = CreateGroup(parent, gbi, notInGroups);
-        if (group == null) continue;
-        if (gbi.IsGroup) group.IsExpanded = true;
-        if (parent.IsRecursive && gbi.Items?.Count > 0)
-          CreateGroups(group, gbi.Items.Cast<CollectionViewGroupByItem<T>>());
+      foreach (var item in parent.Source) {
+        var fit = false;
 
-        parent.Items.Add(group);
-      }
-
-      if (parent.Items.Count == 1
-          && parent.Items[0] is CollectionViewGroup<T> { GroupedBy: { IsGroup: true } } g
-          && g.Items.Count == 0) {
-        parent.Items.Clear();
-        parent.ReWrap();
-      }
-
-      if (notInGroups.Count == 0 || parent.Items.Count == 0) return;
-      notInGroups.TrimExcess();
-      parent.Items.Insert(0, new CollectionViewGroup<T>(parent, null, notInGroups));
-    }
-
-    private void GroupByThenBy() {
-      if (GroupByItems == null) return;
-
-      CreateGroups(this, new[] { GroupByItems[0] });
-
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>()) {
-        if (IsRecursive) {
-          var subGroups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
-
-          if (subGroups.Length > 0) {
-            foreach (var subGroup in subGroups)
-              subGroup.GroupByThenBy();
-
-            continue;
-          }
+        foreach (var grp in newGroups) {
+          var gbi = (CollectionViewGroupByItem<T>)grp[0];
+          if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
+          grp[1] ??= new CollectionViewGroup<T>(parent, gbi, new());
+          ((CollectionViewGroup<T>)grp[1]).Source.Add(item);
+          fit = true;
         }
 
-        group.GroupByThenBy();
+        if (fit) continue;
+        emptyGroup ??= new(parent, null, new());
+        emptyGroup.Source.Add(item);
+      }
+
+      if (emptyGroup != null) {
+        GroupIt(emptyGroup);
+        parent.Items.Add(emptyGroup);
+      }
+
+      foreach (var newGroup in newGroups.Where(x => x[1] != null).Select(x => (CollectionViewGroup<T>)x[1])) {
+        GroupIt(newGroup);
+        parent.Items.Add(newGroup);
+      }
+    }
+
+    public static CollectionViewGroupByItem<T>[] GetGroupByItems(CollectionViewGroup<T> group) {
+      CollectionViewGroupByItem<T>[] groupByItems = null;
+
+      if (group.GroupByItems != null && group.GroupedBy is null or { Items: { Count: 0 } }) {
+        if (group.IsGroupBy)
+          groupByItems = group.GroupByItems.ToArray();
+        else if (group.IsThenBy && group.GroupByItems.Length > 0)
+          groupByItems = new[] { group.GroupByItems[0] };
+      }
+      else if (group.IsRecursive && group.GroupedBy?.Items?.Count > 0)
+        groupByItems = group.GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
+
+      return groupByItems;
+    }
+
+    public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+      var groups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
+
+      if (groups.Length > 0) {
+        foreach (var subGroup in groups)
+          RemoveEmptyGroups(subGroup, toReWrap);
+
+        return;
+      }
+
+      var removed = false;
+      while (true) {
+        if (group == null) break;
+
+        if (group.Source.Count == 0
+            || (group.GroupedBy is { IsGroup: true } && group.Items.Count == 0)
+            || (group.GroupedBy == null && group.Parent?.Items.Count == 1)) {
+          group.Parent?.Items.Remove(group);
+          removed = true;
+        }
+        else if (removed)
+          toReWrap?.Add(group);
+
+        group = group.Parent;
       }
     }
 
@@ -153,23 +165,13 @@ namespace MH.UI.Controls {
       if (!isGrouping) return;
 
       if (GroupByItems != null && Items.FirstOrDefault() is null or CollectionViewRow<T>) {
-        GroupIt();
+        GroupIt(this);
         ExpandAll();
         return;
       }
 
-      CollectionViewGroupByItem<T>[] groupByItems = null;
-
-      if (GroupByItems != null && GroupedBy is null or { Items: { Count: 0 } }) {
-        if (IsGroupBy)
-          groupByItems = GroupByItems.ToArray();
-        else if (GroupByItems.Length > 0)
-          groupByItems = new[] { GroupByItems[0] };
-      }
-      else if (IsRecursive && GroupedBy?.Items?.Count > 0)
-        groupByItems = GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
-
-      if (groupByItems == null || groupByItems.All(x => x.IsGroup && x.Items?.Count == 0)) return;
+      var groupByItems = GetGroupByItems(this);
+      if (groupByItems == null) return;
 
       var groups = Items.OfType<CollectionViewGroup<T>>().ToArray();
       var inGroups = new List<CollectionViewGroup<T>>();
@@ -183,7 +185,7 @@ namespace MH.UI.Controls {
           group.InsertItem(item, toReWrap);
         else {
           group = new(this, gbi, new() { item });
-          group.GroupIt();
+          GroupIt(group);
           group.ExpandAll();
           Items.SetInOrder(group, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
         }
@@ -199,7 +201,7 @@ namespace MH.UI.Controls {
           Items.Insert(0, emptyGroup);
         }
 
-          emptyGroup.InsertItem(item, toReWrap);
+        emptyGroup.InsertItem(item, toReWrap);
         inGroups.Add(emptyGroup);
       }
 
@@ -214,50 +216,21 @@ namespace MH.UI.Controls {
         gbi.Update(newGroupByItems);
     }
 
-    private static bool RemoveGroupIfEmpty(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
-      var removed = false;
-      while (true) {
-        if (group == null) break;
-
-        // the group have 0 items or
-        // the group have only one sub group of type (all from source except what fit to siblings) or
-        // the group have only one empty sub group of type (group of CollectionViewGroupByItem)
-        if (group.Source.Count == 0
-            || (group.Items.Count == 1 && group.Items[0] is CollectionViewGroup<T> gr
-              && (gr.GroupedBy == null || gr.GroupedBy is { IsGroup: true } g && g.Items.Count == 0))) {
-          group.Parent?.Items.Remove(group);
-          removed = true;
-        }
-        else if (removed)
-          toReWrap?.Add(group);
-
-        group = group.Parent;
-      }
-
-      return removed;
-    }
-
     public void RemoveItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
       if (!Source.Remove(item)) return;
-      if (RemoveGroupIfEmpty(this, toReWrap)) return;
 
       if (Source.Count == 0) {
         Parent?.Items.Remove(this);
-        Items.Clear();
         return;
       }
 
       OnPropertyChanged(nameof(SourceCount));
 
-      // schedule the Group for reWrap if doesn't have any subGroups
-      if (Items.FirstOrDefault() is CollectionViewRow<T>) {
+      if (Items.FirstOrDefault() is CollectionViewRow<T>)
         toReWrap.Add(this);
-        return;
-      }
-
-      // remove the Item from subGroups
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray())
-        group.RemoveItem(item, toReWrap);
+      else
+        foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray())
+          group.RemoveItem(item, toReWrap);
     }
 
     private void SetWidth(double width) {

@@ -49,7 +49,8 @@ namespace MH.UI.Controls {
       RootHolder.Execute(items => {
         items.Clear();
         Root = root;
-        Root.GroupIt();
+        CollectionViewGroup<T>.GroupIt(Root);
+        CollectionViewGroup<T>.RemoveEmptyGroups(Root, null);
         if (expandAll) Root.ExpandAll();
         items.Add(Root);
       });
@@ -72,6 +73,8 @@ namespace MH.UI.Controls {
         foreach (var item in items)
           Root.InsertItem(item, toReWrap);
       }
+
+      CollectionViewGroup<T>.RemoveEmptyGroups(Root, toReWrap);
 
       foreach (var group in toReWrap)
         group.ReWrap();
