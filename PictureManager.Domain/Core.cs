@@ -157,12 +157,12 @@ namespace PictureManager.Domain {
       };
 
       PeopleM.PeopleDeletedEvent += (_, e) => {
-        PeopleM.PeopleView.ReGroupItems(e.Data, true);
+        PeopleM.PeopleView?.ReGroupItems(e.Data, true);
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, true);
       };
 
       PeopleM.PeopleKeywordChangedEvent += (_, e) => {
-        PeopleM.PeopleView.ReGroupItems(e.Data, false);
+        PeopleM.PeopleView?.ReGroupItems(e.Data, false);
         SegmentsM.SegmentsView?.CvPeople.ReGroupItems(e.Data, false);
       };
 
