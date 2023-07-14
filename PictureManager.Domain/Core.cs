@@ -9,6 +9,10 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain {
   public sealed class Core {
+    private static Core _instance;
+    private static readonly object _lock = new();
+    public static Core Instance { get { lock (_lock) { return _instance ??= new(); } } }
+
     public SimpleDB Sdb { get; }
     public MainTabsM MainTabsM { get; } = new();
     public ToolsTabsM ToolsTabsM { get; } = new();
@@ -313,9 +317,5 @@ namespace PictureManager.Domain {
       SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
     }
-
-    private static Core _instance;
-    private static readonly object Lock = new();
-    public static Core Instance { get { lock (Lock) { return _instance ??= new(); } } }
   }
 }
