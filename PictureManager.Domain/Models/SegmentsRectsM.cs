@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsRectsM : ObservableObject {
+    private const int _editLimit = 10;
     private double _startX;
     private double _startY;
     private bool _isNew;
@@ -55,28 +56,36 @@ namespace PictureManager.Domain.Models {
     }
 
     public void SetCurrent(SegmentRectM current, double x, double y) {
-      Current = current;
       MousePosToRawImage(ref x, ref y, Scale, MediaItem);
-      _editMode = GetEditMode(x, y, Current.Segment);
+      _editMode = GetEditMode(x, y, current.Segment);
+      if (_editMode == SegmentEditMode.None) return;
+      Current = current;
       SegmentsM.Select(null, current.Segment, false, false);
     }
 
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
       var xDiff = Math.Abs(segment.X + (segment.Size / 2) - x);
       var yDiff = Math.Abs(segment.Y + (segment.Size / 2) - y);
-      var limit = 10;
 
-      if (xDiff < limit && yDiff < limit && segment.Size > 20)
+      if (xDiff < _editLimit && yDiff < _editLimit && segment.Size > 20)
         return SegmentEditMode.Move;
 
-      if (Math.Abs(xDiff - yDiff) < limit)
-        return SegmentEditMode.ResizeCorner;
-      else
-        return GetResizeEdgeEditMode(x, y, segment);
+      if (!IsCloseToEdge(_editLimit, x, y, segment))
+        return SegmentEditMode.None;
+
+      return Math.Abs(xDiff - yDiff) < _editLimit
+        ? SegmentEditMode.ResizeCorner
+        : GetResizeEdgeEditMode(x, y, segment);
     }
 
+    private static bool IsCloseToEdge(double limit, double x, double y, SegmentM segment) =>
+         Math.Abs(x - segment.X) < limit
+      || Math.Abs(y - segment.Y) < limit
+      || Math.Abs(x - segment.X - segment.Size) < limit
+      || Math.Abs(y - segment.Y - segment.Size) < limit;
+
     private SegmentEditMode GetResizeEdgeEditMode(double x, double y, SegmentM segment) {
-      var edge = SegmentEditMode.ResizeLeftEdge;
+      var edge = SegmentEditMode.None;
 
       if (_isNew) {
         edge = Math.Abs(_startX - x) > Math.Abs(_startY - y)
@@ -95,7 +104,7 @@ namespace PictureManager.Domain.Models {
         var rDiff = Math.Abs(x - segment.X - segment.Size);
         var tDiff = Math.Abs(y - segment.Y);
         var bDiff = Math.Abs(y - segment.Y - segment.Size);
-        var minDiff = (new double[] { lDiff, rDiff, tDiff, bDiff }).Min();
+        var minDiff = new[] { lDiff, rDiff, tDiff, bDiff }.Min();
 
         if (lDiff == minDiff)
           edge = SegmentEditMode.ResizeLeftEdge;
