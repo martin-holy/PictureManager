@@ -66,14 +66,15 @@ namespace PictureManager.Domain.Models {
     private SegmentEditMode GetEditMode(double x, double y, SegmentM segment) {
       var xDiff = Math.Abs(segment.X + (segment.Size / 2) - x);
       var yDiff = Math.Abs(segment.Y + (segment.Size / 2) - y);
+      var limit = _editLimit / Scale;
 
-      if (xDiff < _editLimit && yDiff < _editLimit && segment.Size > 20)
+      if (xDiff < limit && yDiff < limit && segment.Size > 20)
         return SegmentEditMode.Move;
 
-      if (!IsCloseToEdge(_editLimit, x, y, segment))
+      if (!IsCloseToEdge(limit, x, y, segment))
         return SegmentEditMode.None;
 
-      return Math.Abs(xDiff - yDiff) < _editLimit
+      return Math.Abs(xDiff - yDiff) < limit
         ? SegmentEditMode.ResizeCorner
         : GetResizeEdgeEditMode(x, y, segment);
     }
