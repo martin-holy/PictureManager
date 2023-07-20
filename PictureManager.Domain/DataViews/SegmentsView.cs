@@ -29,8 +29,7 @@ namespace PictureManager.Domain.DataViews {
 
     private void ReloadSegments(List<SegmentM> items) {
       var source = items
-        .OrderBy(x => x.MediaItem.Folder.FullPath)
-        .ThenBy(x => x.MediaItem.FileName)
+        .OrderBy(x => x.MediaItem.FileName)
         .ToList();
       var groupByItems = new[] {
         GroupByItems.GetPeopleInGroupFromSegments(items),
