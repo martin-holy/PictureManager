@@ -100,5 +100,22 @@ namespace MH.Utils {
       if (change)
         ItemsChangedEventHandler(this, new(Items.ToArray()));
     }
+
+    public static TI GetNotSelectedItem<TI>(IList<TI> items, TI item) where TI : ISelectable {
+      if (items == null || item == null) return default;
+      if (!item.IsSelected) return item;
+      var index = items.IndexOf(item);
+      if (index < 0) return default;
+
+      for (int i = index + 1; i < items.Count; i++)
+        if (!items[i].IsSelected)
+          return items[i];
+
+      for (int i = index - 1; i > -1; i--)
+        if (!items[i].IsSelected)
+          return items[i];
+
+      return default;
+    }
   }
 }
