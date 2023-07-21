@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,13 +26,13 @@ namespace PictureManager.Domain.CollectionViews {
       return top;
     }
 
-    public override int GetItemWidth(object item) =>
+    public override int GetItemWidth(SegmentM item) =>
       (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
 
-    public override string ItemOrderBy(SegmentM item) =>
-      item.MediaItem.FileName;
+    public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
+      string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);
 
-    public override void Select(IEnumerable<SegmentM> source, SegmentM item, bool isCtrlOn, bool isShiftOn) =>
+    public override void OnSelectItem(IEnumerable<SegmentM> source, SegmentM item, bool isCtrlOn, bool isShiftOn) =>
       _segmentsM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
   }
 }
