@@ -1,8 +1,8 @@
 ﻿using MH.Utils.Extensions;
-using System.Collections.ObjectModel;
+using MH.Utils.Interfaces;
 
 namespace MH.UI.Controls {
-  public class CollectionViewRow<T> {
+  public class CollectionViewRow<T> where T : ISelectable {
     public CollectionViewGroup<T> Group { get; }
     public ExtObservableCollection<T> Items { get; } = new();
     public bool IsExpanded { get; set; } = true;

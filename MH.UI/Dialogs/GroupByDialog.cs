@@ -2,12 +2,13 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Dialogs {
-  public class GroupByDialog<T> : Dialog {
+  public class GroupByDialog<T> : Dialog where T : ISelectable {
     private bool _isRecursive;
     private bool _isGroupBy = true;
     private bool _isThenBy;

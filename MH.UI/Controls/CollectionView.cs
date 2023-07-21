@@ -1,13 +1,15 @@
 ﻿using MH.UI.Dialogs;
 using MH.UI.Interfaces;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Controls {
-  public abstract class CollectionView<T> : ObservableObject, ICollectionView {
+  public abstract class CollectionView<T> : ObservableObject, ICollectionView where T : ISelectable {
     private List<object> _scrollToItems;
     private bool _scrollToTop;
     private bool _isSizeChanging;
@@ -146,10 +148,8 @@ namespace MH.UI.Controls {
         TopGroup = group;
       else if (row != null) {
         TopGroup = row.Group;
-        if (row.Items.Count > 0) {
-          // TODO if item is selected => get next or previews not selected item in group or null
-          TopItem = row.Items[0];
-        }
+        if (row.Items.Count > 0)
+          TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Items[0]);
       }
 
       return row != null || group != null;

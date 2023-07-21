@@ -1,5 +1,6 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -13,7 +14,7 @@ namespace MH.UI.Controls {
     ThenByRecursive
   }
 
-  public class CollectionViewGroup<T> : ObservableObject {
+  public class CollectionViewGroup<T> : ObservableObject where T : ISelectable {
     private bool _isExpanded;
     private double _width;
 
