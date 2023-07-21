@@ -4,6 +4,7 @@ using MH.Utils.BaseClasses;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using Keyboard = System.Windows.Input.Keyboard;
@@ -20,6 +21,7 @@ namespace MH.UI.WPF.Controls {
       set => SetValue(ViewProperty, value);
     }
 
+    public RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; }
     public new RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
 
     static CollectionView() {
@@ -29,6 +31,7 @@ namespace MH.UI.WPF.Controls {
     }
 
     public CollectionView() {
+      OpenItemCommand = new(OpenItem);
       SelectItemCommand = new(SelectItem);
     }
 
@@ -55,18 +58,48 @@ namespace MH.UI.WPF.Controls {
           View.IsSizeChanging = true;
       };
 
+      PreviewMouseLeftButtonUp += (_, e) => {
+        if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
+            && e.OriginalSource is ToggleButton { Name: "Expander" } btn) {
+          View.SetExpanded(btn.DataContext);
+        }
+      };
+
       ItemsSource = View.RootHolder;
 
       View.PropertyChanged += (_, e) => {
-        if (nameof(View.ScrollToItem).Equals(e.PropertyName) && View.ScrollToItem != null && IsVisible) {
-          ScrollTo(View.ScrollToItem);
-          View.ScrollToItem = null;
+        switch (e.PropertyName) {
+          case nameof(View.ScrollToItems):
+            if (View.ScrollToItems != null && IsVisible) {
+              ScrollTo(View.ScrollToItems);
+              View.ScrollToItems = null;
+            }
+
+            break;
+          case nameof(View.ScrollToTop):
+            if (View.ScrollToTop) {
+              ScrollViewer?.ScrollToTop();
+              ScrollViewer?.UpdateLayout();
+              View.ScrollToTop = false;
+            }
+
+            break;
         }
       };
     }
 
+    private static object GetDataContext(object source) =>
+      ((source as FrameworkElement)?.Parent as FrameworkElement)?
+      .FindTopTemplatedParent()?
+      .DataContext;
+
+    private void OpenItem(MouseButtonEventArgs e) {
+      if (e.ChangedButton != MouseButton.Left) return;
+      View.OpenItem(GetDataContext(e.OriginalSource));
+    }
+
     private void SelectItem(MouseButtonEventArgs e) {
-      var item = (e.OriginalSource as FrameworkElement)?.FindTopTemplatedParent()?.DataContext;
+      var item = GetDataContext(e.OriginalSource);
       var row = (e.Source as FrameworkElement)?.DataContext;
       var btn = e.OriginalSource as Button ?? (e.OriginalSource as FrameworkElement)?.TryFindParent<Button>();
 
@@ -84,7 +117,7 @@ namespace MH.UI.WPF.Controls {
         isShiftOn = (Keyboard.Modifiers & ModifierKeys.Shift) > 0;
       }
 
-      View.Select(row, item, isCtrlOn, isShiftOn);
+      View.SelectItem(row, item, isCtrlOn, isShiftOn);
     }
 
     private void SetTopItem() {

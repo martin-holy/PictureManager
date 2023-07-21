@@ -5,8 +5,7 @@
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:utils="clr-namespace:MH.UI.WPF.Utils">
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -257,10 +256,9 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="mhc:TreeViewBase">
-          <mhc:WheelSpeedScrollViewer
+          <ScrollViewer
             x:Name="PART_ScrollViewer"
             Focusable="False"
-            SpeedFactor="{TemplateBinding ScrollViewerSpeedFactor}"
             Padding="{TemplateBinding Padding}" 
             CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}" 
             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
@@ -268,7 +266,7 @@
             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
 
             <ItemsPresenter/>
-          </mhc:WheelSpeedScrollViewer>
+          </ScrollViewer>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
