@@ -44,11 +44,13 @@ namespace MH.UI.Dialogs {
         return true;
       }
 
+      group.IsRoot = true;
       group.IsRecursive = IsRecursive;
       group.IsGroupBy = IsGroupBy;
       group.IsThenBy = IsThenBy;
       group.GroupByItems = Selected.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
       CollectionViewGroup<T>.GroupIt(group);
+      group.View.RemoveEmptyGroups(group, null);
       group.IsExpanded = true;
 
       return true;

@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Controls {
-  public class CollectionView<T> : ObservableObject, ICollectionView {
-    private List<object> _scrollToItem;
+  public abstract class CollectionView<T> : ObservableObject, ICollectionView {
+    private List<object> _scrollToItems;
+    private bool _scrollToTop;
     private bool _isSizeChanging;
     private T _topItem;
     private CollectionViewGroup<T> _topGroup;
-    private readonly List<CollectionViewGroup<T>> _groupByItemsRoots = new();
+    private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public ExtObservableCollection<object> RootHolder { get; } = new();
@@ -21,46 +22,66 @@ namespace MH.UI.Controls {
     public T LastSelectedItem { get; set; }
     public CollectionViewGroup<T> TopGroup { get; set; }
     public CollectionViewRow<T> LastSelectedRow { get; set; }
-    public List<object> ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public List<object> ScrollToItems { get => _scrollToItems; set { _scrollToItems = value; OnPropertyChanged(); } }
+    public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
 
-    public RelayCommand<CollectionViewGroup<T>> ExpandAllCommand { get; }
+    public RelayCommand<object> ExpandAllCommand { get; }
+    public RelayCommand<object> CollapseAllCommand { get; }
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
-    public CollectionView() {
-      ExpandAllCommand = new(ExpandAll);
+    protected CollectionView() {
+      ExpandAllCommand = new(_ => SetExpanded(TopGroup, true), _ => TopGroup != null);
+      CollapseAllCommand = new(_ => SetExpanded(TopGroup, false), _ => TopGroup != null);
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
 
-    public virtual int GetItemWidth(object item) => throw new NotImplementedException();
-    public virtual IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source) => throw new NotImplementedException();
-    public virtual string ItemOrderBy(T item) => throw new NotImplementedException();
-    public virtual void Select(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) => throw new NotImplementedException();
+    public abstract int GetItemWidth(T item);
+    public abstract IEnumerable<CollectionViewGroupByItem<T>> GetGroupByItems(IEnumerable<T> source);
+    public abstract int SortCompare(T itemA, T itemB);
+    public virtual void OnOpenItem(T item) { }
+    public virtual void OnSelectItem(IEnumerable<T> source, T item, bool isCtrlOn, bool isShiftOn) { }
 
-    public void Select(object row, object item, bool isCtrlOn, bool isShiftOn) {
+    public void OpenItem(object item) {
+      if (item is T i) OnOpenItem(i);
+    }
+
+    public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (row is not CollectionViewRow<T> r || item is not T i) return;
       LastSelectedItem = i;
       LastSelectedRow = r;
-      Select(r.Group.Source, i, isCtrlOn, isShiftOn);
+      OnSelectItem(r.Group.Source, i, isCtrlOn, isShiftOn);
     }
 
-    // TODO scroll to top
-    public void SetRoot(CollectionViewGroup<T> root, bool expandAll) {
+    public void Update(Action<IList<object>> itemsAction) {
+      if (itemsAction == null) return;
       RootHolder.Execute(items => {
         items.Clear();
+        itemsAction(items);
+        items.Add(Root);
+      });
+    }
+
+    public void SetRoot(CollectionViewGroup<T> root, bool expandAll) {
+      ScrollToTop = true;
+      Update(_ => {
         Root = root;
         CollectionViewGroup<T>.GroupIt(Root);
         CollectionViewGroup<T>.RemoveEmptyGroups(Root, null);
-        if (expandAll) Root.ExpandAll();
-        items.Add(Root);
+        if (expandAll) Root.SetExpanded(true);
       });
 
       _groupByItemsRoots.Clear();
       _groupByItemsRoots.Add(Root);
     }
 
+    public void ReWrapAll() {
+      Update(_ => CollectionViewGroup<T>.ReWrapAll(Root));
+    }
+
     public void ReGroupItems(T[] items, bool remove) {
       if (Root == null || items == null) return;
+
       var toReWrap = new HashSet<CollectionViewGroup<T>>();
 
       if (remove)
@@ -74,15 +95,15 @@ namespace MH.UI.Controls {
           Root.InsertItem(item, toReWrap);
       }
 
-      CollectionViewGroup<T>.RemoveEmptyGroups(Root, toReWrap);
+      RemoveEmptyGroups(Root, toReWrap);
+    }
 
-      foreach (var group in toReWrap)
-        group.ReWrap();
-
+    public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+      toReWrap ??= new HashSet<CollectionViewGroup<T>>();
+      CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap);
       if (toReWrap.Count == 0) return;
-
-      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded))
-        ScrollToTopItem();
+      foreach (var g in toReWrap) g.ReWrap();
+      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded)) ScrollToTopItem();
     }
 
     private void OnSizeChanging(bool value) {
@@ -99,11 +120,15 @@ namespace MH.UI.Controls {
       }
     }
 
-    public void ExpandAll(CollectionViewGroup<T> group) {
-      RootHolder.Clear();
-      group.ExpandAll();
-      RootHolder.Add(Root);
+    public void SetExpanded(object group) {
+      if (group is CollectionViewGroup<T> g)
+        Update(_ => g.SetExpanded(g.IsExpanded));
+
+      // TODO scroll to the group after
     }
+
+    public void SetExpanded(CollectionViewGroup<T> group, bool value) =>
+      Update(_ => group.SetExpanded(value));
 
     private void OpenGroupByDialog(CollectionViewGroup<T> group) {
       if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
@@ -130,29 +155,42 @@ namespace MH.UI.Controls {
       return row != null || group != null;
     }
 
+    // BUG if groups are added, like when person doesn't have any keywords and after ReGroup it has, than TopItem is not in TopGroup   
     public void ScrollToTopItem() {
-      if (TopGroup?.Parent == null) return;
+      if (TopGroup == null) return;
 
-      var items = new List<object>();
+      CollectionViewGroup<T> group = TopGroup;
+      CollectionViewRow<T> row = null;
 
       if (TopItem != null)
-        foreach (var row in TopGroup.Items.OfType<CollectionViewRow<T>>()) {
-          if (!row.Items.Contains(TopItem)) continue;
-          items.Add(row);
-          break;
-        }
+        CollectionViewGroup<T>.FindItem(TopGroup, TopItem, ref group, ref row);
 
-      items.Add(TopGroup);
+      ScrollToItems = GetItemBranch(group, row);
+    }
 
-      var group = TopGroup.Parent;
+    public void ScrollToItem(T item) {
+      CollectionViewGroup<T> group = null;
+      CollectionViewRow<T> row = null;
+      if (!CollectionViewGroup<T>.FindItem(Root, item, ref group, ref row)) return;
+      ScrollToItems = GetItemBranch(group, row);
+    }
+
+    private static List<object> GetItemBranch(CollectionViewGroup<T> group, CollectionViewRow<T> row) {
+      if (group == null && row == null) return null;
+      var items = new List<object>();
+      
+      if (row != null)
+        items.Add(row);
+
       while (group != null) {
         items.Add(group);
         group.IsExpanded = true;
         group = group.Parent;
       }
+
       items.Reverse();
 
-      ScrollToItem = items;
+      return items;
     }
   }
 }
