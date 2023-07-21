@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,13 +26,13 @@ namespace PictureManager.Domain.CollectionViews {
     }
 
     // TODO change SegmentUiFullWidth to int
-    public override int GetItemWidth(object item) =>
+    public override int GetItemWidth(PersonM item) =>
       (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
 
-    public override string ItemOrderBy(PersonM item) =>
-      item.Name;
+    public override int SortCompare(PersonM itemA, PersonM itemB) =>
+      string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
 
-    public override void Select(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
+    public override void OnSelectItem(IEnumerable<PersonM> source, PersonM item, bool isCtrlOn, bool isShiftOn) =>
       PeopleM.Select(source.ToList(), item, isCtrlOn, isShiftOn);
   }
 }
