@@ -15,10 +15,10 @@ namespace MH.Utils.Extensions {
       }
     }
 
-    public static void AddInOrder<T>(this List<T> list, T item, Func<T, T, bool> compare) {
+    public static void AddInOrder<T>(this List<T> list, T item, Func<T, T, int> compare) {
       int i;
       for (i = 0; i < list.Count; i++)
-        if (compare.Invoke(list[i], item))
+        if (compare.Invoke(list[i], item) > 0)
           break;
 
       list.Insert(i, item);
