@@ -242,12 +242,56 @@ namespace MH.UI.Controls {
     public void ReWrap() {
       if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
 
-      Items.Execute(items => {
-        items.Clear();
+      var newRows = WrapSource().ToArray();
 
-        foreach (var item in Source)
-          AddItem(item, items);
-      });
+      // add or remove rows to match the source
+      if (Items.Count > newRows.Length) {
+      Items.Execute(items => {
+          while (items.Count > newRows.Length)
+            items.RemoveAt(items.Count - 1);
+        }, NotifyCollectionChangedAction.Remove);
+      }
+      else if (Items.Count < newRows.Length) {
+        Items.Execute(items => {
+          while (items.Count < newRows.Length)
+            AddRow(items);
+        }, NotifyCollectionChangedAction.Add);
+      }
+
+      for (int i = 0; i < newRows.Length; i++) {
+        var oldRow = (CollectionViewRow<T>)Items[i];
+        var newRow = newRows[i];
+
+        if (oldRow.Items.SequenceEqual(newRow))
+          continue;
+
+        oldRow.Items.Execute(items => {
+        items.Clear();
+          foreach (var item in newRow)
+            items.Add(item);
+        });
+      }
+    }
+
+    private IEnumerable<IList<T>> WrapSource() {
+      var index = 0;
+      var usedSpace = 0;
+
+      for (int i = 0; i < Source.Count; i++) {
+        var item = Source[i];
+        var itemWidth = View.GetItemWidth(item);
+
+        if (Width - usedSpace < itemWidth) {
+          yield return Source.GetRange(index, i - index);
+          index = i;
+          usedSpace = 0;
+        }
+
+        usedSpace += itemWidth;
+      }
+
+      yield return Source.GetRange(index, Source.Count - index);
+    }
     }
 
     private void AddItem(T item, IList<object> items) {
