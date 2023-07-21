@@ -9,7 +9,7 @@ namespace MH.Utils.Extensions {
 
     public ExtObservableCollection(IEnumerable<T> items) : base(items) { }
 
-    public void Execute(Action<IList<T>> itemsAction) {
+    public void Execute(Action<IList<T>> itemsAction, NotifyCollectionChangedAction changedAction = NotifyCollectionChangedAction.Reset) {
       itemsAction(Items);
       OnPropertyChanged(new("Count"));
       OnPropertyChanged(new("Item[]"));
