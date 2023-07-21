@@ -123,10 +123,12 @@ namespace MH.UI.Controls {
     }
 
     public void SetExpanded(object group) {
-      if (group is CollectionViewGroup<T> g)
-        Update(_ => g.SetExpanded(g.IsExpanded));
-
-      // TODO scroll to the group after
+      if (group is not CollectionViewGroup<T> g) return;
+      
+      Update(_ => g.SetExpanded(g.IsExpanded));
+      TopItem = default;
+      TopGroup = g;
+      ScrollToTopItem();
     }
 
     public void SetExpanded(CollectionViewGroup<T> group, bool value) =>
@@ -176,11 +178,14 @@ namespace MH.UI.Controls {
     }
 
     private static List<object> GetItemBranch(CollectionViewGroup<T> group, CollectionViewRow<T> row) {
-      if (group == null && row == null) return null;
+      if (group == null) return null;
       var items = new List<object>();
       
       if (row != null)
         items.Add(row);
+
+      items.Add(group);
+      group = group.Parent;
 
       while (group != null) {
         items.Add(group);
