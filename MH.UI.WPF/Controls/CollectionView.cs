@@ -71,6 +71,7 @@ namespace MH.UI.WPF.Controls {
         switch (e.PropertyName) {
           case nameof(View.ScrollToItems):
             if (View.ScrollToItems != null && IsVisible) {
+              ScrollViewer?.UpdateLayout();
               ScrollTo(View.ScrollToItems);
               View.ScrollToItems = null;
             }
