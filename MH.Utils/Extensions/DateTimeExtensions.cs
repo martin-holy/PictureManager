@@ -39,5 +39,32 @@ namespace MH.Utils.Extensions {
 
       return dt.Hour == 0 && dt.Minute == 0 && dt.Second == 0 || string.IsNullOrEmpty(timeFormat) ? dateF : $"{dateF}, {timeF}";
     }
+
+    public static string DateFromString(string text, Dictionary<string, string> dateFormats) {
+      if (text.Length < 8
+          || !int.TryParse(text[..4], out var y)
+          || !int.TryParse(text[4..6], out var m)
+          || !int.TryParse(text[6..8], out var d)) return string.Empty;
+
+      var locDateFormats = dateFormats.ToDictionary(df => df.Key, df => df.Value);
+      if (m == 0) {
+        locDateFormats["M"] = string.Empty;
+        m = 1;
+      }
+
+      if (d == 0) {
+        locDateFormats["d"] = string.Empty;
+        d = 1;
+      }
+
+      try {
+        var dt = new DateTime(y, m, d);
+        var dateFormat = locDateFormats.Aggregate(string.Empty, (f, current) => f + current.Value);
+        return dt.ToString(dateFormat, CultureInfo.CurrentCulture);
+      }
+      catch (Exception) {
+        return string.Empty;
+      }
+    }
   }
 }
