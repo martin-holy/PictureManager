@@ -157,15 +157,14 @@ namespace MH.UI.Controls {
       return row != null || group != null;
     }
 
-    // BUG if groups are added, like when person doesn't have any keywords and after ReGroup it has, than TopItem is not in TopGroup   
     public void ScrollToTopItem() {
-      if (TopGroup == null) return;
+      if (TopItem == null && TopGroup == null) return;
 
       CollectionViewGroup<T> group = TopGroup;
       CollectionViewRow<T> row = null;
 
       if (TopItem != null)
-        CollectionViewGroup<T>.FindItem(TopGroup, TopItem, ref group, ref row);
+        CollectionViewGroup<T>.FindItem(TopGroup ?? Root, TopItem, ref group, ref row);
 
       ScrollToItems = GetItemBranch(group, row);
     }
