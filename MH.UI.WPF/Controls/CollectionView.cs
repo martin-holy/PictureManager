@@ -143,8 +143,10 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
-      _verticalOffset = ScrollViewer.VerticalOffset
-        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
+      // TODO create item based scroll to top
+      // this is pixel based scroll to top
+      /*_verticalOffset = ScrollViewer.VerticalOffset
+        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;*/
     }
   }
 }
