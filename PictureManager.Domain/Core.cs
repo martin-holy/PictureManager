@@ -1,6 +1,7 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -27,12 +28,12 @@ namespace PictureManager.Domain {
     public KeywordsM KeywordsM { get; }
     public MainWindowM MainWindowM { get; }
     public MediaItemsM MediaItemsM { get; }
+    public MediaItemsViews MediaItemsViews { get; }
     public MediaViewerM MediaViewerM { get; }
     public PeopleM PeopleM { get; }
     public RatingsTreeM RatingsTreeM { get; }
     public SegmentsM SegmentsM { get; }
     public StatusPanelM StatusPanelM { get; }
-    public ThumbnailsGridsM ThumbnailsGridsM { get; }
     public TreeViewCategoriesM TreeViewCategoriesM { get; }
     public VideoClipsM VideoClipsM { get; }
     public ViewersM ViewersM { get; }
@@ -56,7 +57,7 @@ namespace PictureManager.Domain {
 
       ViewersM = new(this); // CategoryGroupsM
       ViewerDetailM = new(ViewersM);
-      SegmentsM = new(this); // MainTabsM, MediaViewerM, MainWindowM, ThumbnailsGridsM
+      SegmentsM = new(this); // MainTabsM, MediaViewerM, MainWindowM, MediaItemsViews
       CategoryGroupsM = new();
       FavoriteFoldersM = new();
       FolderKeywordsM = new();
@@ -64,12 +65,12 @@ namespace PictureManager.Domain {
       GeoNamesM = new();
       KeywordsM = new(CategoryGroupsM);
       MainWindowM = new(this);
-      MediaItemsM = new(this, SegmentsM, ViewersM); // ThumbnailsGridsM
+      MediaItemsM = new(this, SegmentsM); // MediaItemsViews
+      MediaItemsViews = new(this);
       MediaViewerM = new(this);
       PeopleM = new(this, CategoryGroupsM); // MainWindowM
       RatingsTreeM = new();
       StatusPanelM = new(this);
-      ThumbnailsGridsM = new(this);
       TreeViewCategoriesM = new(this);
       VideoClipsM = new(MediaItemsM, MediaViewerM.MediaPlayerM);
 
@@ -133,7 +134,7 @@ namespace PictureManager.Domain {
           MediaViewerM.IsVisible = isFullScreen;
 
           if (!isFullScreen) {
-            ThumbnailsGridsM.Current?.SelectAndScrollToCurrentMediaItem();
+            MediaItemsViews.Current?.SelectAndScrollToCurrentMediaItem();
             MediaViewerM.Deactivate();
           }
 
@@ -193,7 +194,7 @@ namespace PictureManager.Domain {
       };
 
       MediaItemsM.MediaItemsDeletedEventHandler += (_, e) => {
-        ThumbnailsGridsM.RemoveMediaItems(e.Data);
+        MediaItemsViews.RemoveMediaItems(e.Data);
 
         if (MediaViewerM.IsVisible) {
           MediaViewerM.MediaItems.Remove(e.Data[0]);
@@ -211,7 +212,7 @@ namespace PictureManager.Domain {
         foreach (var __ in e.Data)
           MediaItemsM.DataAdapter.IsModified = true;
 
-        ThumbnailsGridsM.ReloadGridsIfContains(e.Data);
+        MediaItemsViews.ReloadViewIfContains(e.Data);
       };
 
       MediaItemsM.MetadataChangedEventHandler += (_, _) => {
@@ -230,8 +231,8 @@ namespace PictureManager.Domain {
 
       #endregion
 
-      ThumbnailsGridsM.PropertyChanged += (_, e) => {
-        if (nameof(ThumbnailsGridsM.Current).Equals(e.PropertyName)) {
+      MediaItemsViews.PropertyChanged += (_, e) => {
+        if (nameof(MediaItemsViews.Current).Equals(e.PropertyName)) {
           TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
           MainWindowM.OnPropertyChanged(nameof(MainWindowM.CanOpenStatusPanel));
         }
@@ -290,8 +291,8 @@ namespace PictureManager.Domain {
 
       MainTabsM.TabClosedEventHandler += (_, e) => {
         switch (e.Data.Content) {
-          case ThumbnailsGridM grid:
-            ThumbnailsGridsM.CloseGrid(grid);
+          case MediaItemsView miView:
+            MediaItemsViews.CloseView(miView);
             break;
           case PeopleM people:
             people.Selected.DeselectAll();
@@ -301,9 +302,9 @@ namespace PictureManager.Domain {
 
       MainTabsM.PropertyChanged += (_, e) => {
         if (nameof(MainTabsM.Selected).Equals(e.PropertyName)) {
-          ThumbnailsGridsM.SetCurrentGrid(MainTabsM.Selected?.Content as ThumbnailsGridM);
+          MediaItemsViews.SetCurrentView(MainTabsM.Selected?.Content as MediaItemsView);
 
-          if ((MainTabsM.Selected?.Content as PeopleM) == null)
+          if (MainTabsM.Selected?.Content as PeopleM == null)
             PeopleM.Selected.DeselectAll();
         }
       };
@@ -313,7 +314,7 @@ namespace PictureManager.Domain {
 
     private void Loaded() {
       var scale = GetDisplayScale();
-      ThumbnailsGridsM.DefaultThumbScale = 1 / scale;
+      MediaItemsViews.DefaultThumbScale = 1 / scale;
       SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
     }

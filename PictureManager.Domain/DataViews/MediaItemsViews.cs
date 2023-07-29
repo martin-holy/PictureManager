@@ -1,111 +1,102 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PictureManager.Domain.Models {
-  public sealed class ThumbnailsGridsM : ObservableObject {
+namespace PictureManager.Domain.DataViews {
+  public sealed class MediaItemsViews : ObservableObject {
     private readonly Core _core;
-    private List<ThumbnailsGridM> _all { get; } = new();
-    private ThumbnailsGridM _current;
+    private List<MediaItemsView> _all { get; } = new();
+    private MediaItemsView _current;
     
-    public ThumbnailsGridM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+    public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public static double DefaultThumbScale { get; set; } = 1.0;
 
-    public RelayCommand<string> AddThumbnailsGridCommand { get; }
+    public RelayCommand<string> AddViewCommand { get; }
     public RelayCommand<object> CopyPathsCommand { get; }
     public RelayCommand<object> LoadByTagCommand { get; }
     public RelayCommand<object> ShuffleCommand { get; }
 
-    public ThumbnailsGridsM(Core core) {
+    public MediaItemsViews(Core core) {
       _core = core;
-
-      AddThumbnailsGridCommand = new(AddThumbnailsGrid);
-
+      AddViewCommand = new(AddView);
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
         () => Current?.Selected.Items.Any() == true);
-
       LoadByTagCommand = new(async item => await LoadByTag(item));
-
       ShuffleCommand = new(
         () => Current.Shuffle(),
         () => Current?.FilteredItems.Count > 0);
     }
 
     public void RemoveMediaItems(List<MediaItemM> items) {
-      foreach (var grid in _all)
-        grid.Remove(items, Current == grid);
+      foreach (var view in _all)
+        view.Remove(items, Current == view);
     }
 
-    public void CloseGrid(ThumbnailsGridM grid) {
-      grid.Clear();
-      grid.SelectionChangedEventHandler -= OnGridSelectionChanged;
-      grid.FilteredChangedEventHandler -= OnGridFilteredChanged;
-      _all.Remove(grid);
+    public void CloseView(MediaItemsView view) {
+      view.Clear();
+      view.SelectionChangedEventHandler -= OnViewSelectionChanged;
+      view.FilteredChangedEventHandler -= OnViewFilteredChanged;
+      _all.Remove(view);
 
-      if (grid.Equals(Current)) {
+      if (view.Equals(Current)) {
         Current = null;
         _core.MediaItemsM.Current = null;
       }
     }
 
-    public void SetCurrentGrid(ThumbnailsGridM grid) {
-      Current = grid;
-      if (Current == null) return;
-      Current.UpdateSelected();
-
-      if (Current.NeedReload)
-        Current.SoftLoad(Current.LoadedItems, true, true);
+    public void SetCurrentView(MediaItemsView view) {
+      Current = view;
+      Current?.UpdateSelected();
+      _core.MediaItemsM.Current = Current?.Selected.Items.Count > 0
+        ? Current.Selected.Items[0]
+        : null;
     }
 
-    public void AddThumbnailsGridIfNotActive(string tabTitle) {
-      if (_core.MainTabsM.Selected?.Content is ThumbnailsGridM grid) {
+    public void AddViewIfNotActive(string tabTitle) {
+      if (_core.MainTabsM.Selected?.Content is MediaItemsView view) {
         if (tabTitle != null)
-          grid.MainTabsItem.ContentHeader = tabTitle;
+          view.MainTabsItem.ContentHeader = tabTitle;
 
         return;
       }
 
-      AddThumbnailsGrid(tabTitle);
+      AddView(tabTitle);
     }
 
-    public void AddThumbnailsGrid(string tabTitle) {
-      var grid = new ThumbnailsGridM(_core, DefaultThumbScale, tabTitle);
-      _all.Add(grid);
-      Current = grid;
-      grid.SelectionChangedEventHandler += OnGridSelectionChanged;
-      grid.FilteredChangedEventHandler += OnGridFilteredChanged;
-      _core.MainTabsM.AddItem(grid.MainTabsItem);
+    public void AddView(string tabTitle) {
+      var view = new MediaItemsView(_core, DefaultThumbScale, tabTitle);
+      _all.Add(view);
+      Current = view;
+      view.SelectionChangedEventHandler += OnViewSelectionChanged;
+      view.FilteredChangedEventHandler += OnViewFilteredChanged;
+      _core.MainTabsM.AddItem(view.MainTabsItem);
     }
 
-    private void OnGridSelectionChanged(object o, EventArgs e) {
+    private void OnViewSelectionChanged(object o, EventArgs e) {
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
       _core.StatusPanelM.Update();
     }
 
-    private void OnGridFilteredChanged(object o, EventArgs e) {
+    private void OnViewFilteredChanged(object o, EventArgs e) {
       _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 
-    public void ReloadGridsIfContains(MediaItemM[] mediaItems) {
-      foreach (var grid in _all) {
-        if (!grid.FilteredItems.Any(mediaItems.Contains)) continue;
-        if (grid.Equals(Current))
-          grid.SoftLoad(grid.LoadedItems, true, true);
-        else
-          grid.NeedReload = true;
-      }
+    public void ReloadViewIfContains(MediaItemM[] mediaItems) {
+      foreach (var view in _all)
+        view.ReGroupItems(view.FilteredItems.Where(mediaItems.Contains).ToArray(), false);
     }
 
     public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
       if (item is FolderM { IsAccessible: false }) return;
 
       item.IsSelected = true;
-      AddThumbnailsGridIfNotActive(and || hide ? null : item.Name);
+      AddViewIfNotActive(and || hide ? null : item.Name);
       await Current.LoadByFolder(item, and, hide, recursive);
     }
 
@@ -137,9 +128,9 @@ namespace PictureManager.Domain.Models {
         };
 
       if (and || hide)
-        AddThumbnailsGridIfNotActive(tabTitle);
+        AddViewIfNotActive(tabTitle);
       else
-        AddThumbnailsGrid(tabTitle);
+        AddView(tabTitle);
 
       await Current.LoadByTag(items.ToArray());
     }

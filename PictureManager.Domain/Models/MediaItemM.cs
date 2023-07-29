@@ -1,6 +1,7 @@
 ﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
@@ -79,7 +80,7 @@ namespace PictureManager.Domain.Models {
       if (Width == 0 || Height == 0) return;
 
       // TODO: move next and last line calculation elsewhere
-      var desiredSize = (int)(Core.Settings.ThumbnailSize * ThumbnailsGridsM.DefaultThumbScale);
+      var desiredSize = (int)(Core.Settings.ThumbnailSize * MediaItemsViews.DefaultThumbScale);
       var rotated = Orientation is (int)MediaOrientation.Rotate90 or (int)MediaOrientation.Rotate270;
 
       // TODO move rotation check to GetThumbSize or create func for getting w & h rotated

@@ -3,7 +3,6 @@ using PictureManager.Domain;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
 using PictureManager.Domain.TreeCategories;
-using PictureManager.ViewModels;
 
 namespace PictureManager.ResourceDictionaries {
   public static class Dictionaries {
@@ -42,21 +41,17 @@ namespace PictureManager.ResourceDictionaries {
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToIcon = new() {
+      { typeof(MediaItemsView), Res.IconFolder },
       { typeof(PeopleView), Res.IconPeople },
       { typeof(SegmentsView), Res.IconSegment },
-      { typeof(ViewerDetailM), Res.IconEye },
-      { typeof(ThumbnailsGridM), Res.IconFolder }
+      { typeof(ViewerDetailM), Res.IconEye }
     };
 
     public static readonly Dictionary<object, object> MainTabsTypeToIconBrush = new() {
+      { typeof(MediaItemsView), "ColorBrushFolder" },
       { typeof(PeopleView), "ColorBrushPeople" },
       { typeof(SegmentsView), "ColorBrushWhite" },
-      { typeof(ViewerDetailM), "ColorBrushWhite" },
-      { typeof(ThumbnailsGridM), "ColorBrushFolder" }
-    };
-
-    public static readonly Dictionary<object, object> MainTabsTypeToContextMenu = new() {
-      { typeof(ThumbnailsGridM), "ThumbnailsGridContextMenu" }
+      { typeof(ViewerDetailM), "ColorBrushWhite" }
     };
   }
 }

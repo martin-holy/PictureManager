@@ -4,6 +4,7 @@ using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Utils;
@@ -19,7 +20,6 @@ namespace PictureManager.Domain.Models {
   public sealed class MediaItemsM : ObservableObject {
     private readonly Core _core;
     private readonly SegmentsM _segmentsM;
-    private readonly ViewersM _viewersM;
 
     private bool _isEditModeOn;
     private MediaItemM _current;
@@ -44,10 +44,10 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> DeleteCommand { get; }
     public RelayCommand<object> RotateCommand { get; }
     public RelayCommand<object> RenameCommand { get; }
-    public RelayCommand<ThumbnailsGridM> ImagesToVideoCommand { get; }
+    public RelayCommand<MediaItemsView> ImagesToVideoCommand { get; }
     public RelayCommand<object> EditCommand { get; }
     public RelayCommand<object> SaveEditCommand { get; }
-    public RelayCommand<ThumbnailsGridM> SelectNotModifiedCommand { get; }
+    public RelayCommand<MediaItemsView> SelectNotModifiedCommand { get; }
     public RelayCommand<object> CancelEditCommand { get; }
     public RelayCommand<object> CommentCommand { get; }
     public RelayCommand<object> ResizeImagesCommand { get; }
@@ -56,10 +56,9 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
 
-    public MediaItemsM(Core core, SegmentsM segmentsM, ViewersM viewersM) {
+    public MediaItemsM(Core core, SegmentsM segmentsM) {
       _core = core;
       _segmentsM = segmentsM;
-      _viewersM = viewersM;
 
       CompressCommand = new(Compress, () => GetActive().Any());
       DeleteCommand = new(Delete, () => GetActive().Any());
@@ -67,8 +66,8 @@ namespace PictureManager.Domain.Models {
       RenameCommand = new(Rename, () => Current != null);
 
       ResizeImagesCommand = new(
-        () => Core.DialogHostShow(new ResizeImagesDialogM(_core.ThumbnailsGridsM.Current.GetSelectedOrAll())),
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+        () => Core.DialogHostShow(new ResizeImagesDialogM(_core.MediaItemsViews.Current.GetSelectedOrAll())),
+        () => _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       EditCommand = new(
         () => IsEditModeOn = true,
@@ -79,12 +78,12 @@ namespace PictureManager.Domain.Models {
       CommentCommand = new(Comment, () => Current != null);
 
       ReloadMetadataCommand = new(
-        () => ReloadMetadata(_core.ThumbnailsGridsM.Current.GetSelectedOrAll()),
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+        () => ReloadMetadata(_core.MediaItemsViews.Current.GetSelectedOrAll()),
+        () => _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       AddGeoNamesFromFilesCommand = new(
         () => AddGeoNamesFromFiles(Core.Settings.GeoNamesUserName),
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+        () => _core.MediaItemsViews.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
 
       ReloadMetadataInFolderCommand = new(
         x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()), true),
@@ -92,44 +91,28 @@ namespace PictureManager.Domain.Models {
 
       RebuildThumbnailsCommand = new(
         x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
-        x => x is FolderM || _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+        x => x is FolderM || _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       ImagesToVideoCommand = new(
-        ImagesToVideo,
-        (grid) => grid?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
+        ImagesToVideo, 
+        view => view?.FilteredItems.Count(x => x.IsSelected && x.MediaType == MediaType.Image) > 1);
 
       SelectNotModifiedCommand = new(
-        (grid) => grid.Selected.Set(grid.FilteredItems.Except(ModifiedItems).ToArray()),
-        (grid) => grid?.FilteredItems.Count > 0);
+        view => view.Selected.Set(view.FilteredItems.Except(ModifiedItems).ToArray()),
+        view => view?.FilteredItems.Count > 0);
     }
 
-    private void ImagesToVideo(ThumbnailsGridM grid) {
-      Core.DialogHostShow(new ImagesToVideoDialogM(grid.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
+    private void ImagesToVideo(MediaItemsView view) {
+      Core.DialogHostShow(new ImagesToVideoDialogM(view.FilteredItems.Where(x => x.IsSelected && x.MediaType == MediaType.Image),
         (folder, fileName) => {
           var mi = AddNew(folder, fileName);
           var mim = new MediaItemMetadata(mi);
           ReadMetadata(mim, false);
           mi.SetThumbSize();
-          grid.LoadedItems.Add(mi);
-          grid.SoftLoad(grid.LoadedItems, true, true);
+          view.LoadedItems.Add(mi);
+          view.SoftLoad(view.LoadedItems, true, true);
         })
       );
-    }
-
-    /// <summary>
-    /// Sets Current to one after or one before selection
-    /// </summary>
-    public void SetNewCurrent(List<MediaItemM> items, List<MediaItemM> selected) {
-      if (items == null || selected == null || selected.Count == 0)
-        Current = null;
-
-      var index = items.IndexOf(selected[^1]) + 1;
-      if (index == items.Count)
-        index = items.IndexOf(selected[0]) - 1;
-
-      Current = index >= 0
-        ? items[index]
-        : null;
     }
 
     public IEnumerable<MediaItemM> GetMediaItems(PersonM person) =>
@@ -258,10 +241,10 @@ namespace PictureManager.Domain.Models {
         Res.IconQuestion,
         true)) != 1) return;
 
-      var currentThumbsGrid = _core.ThumbnailsGridsM.Current;
-      SetNewCurrent(
-        currentThumbsGrid != null
-          ? currentThumbsGrid.FilteredItems
+      var view = _core.MediaItemsViews.Current;
+      Current = ListExtensions.GetNextOrPreviousItem(
+        view != null
+          ? view.FilteredItems
           : _core.MediaViewerM.MediaItems,
         items);
       DeleteFromDbAndDrive(items);
@@ -319,8 +302,8 @@ namespace PictureManager.Domain.Models {
       _ = Core.DialogHostShow(fop);
 
       if (mode == FileOperationMode.Move) {
-        SetNewCurrent(_core.ThumbnailsGridsM.Current.FilteredItems, items);
-        _core.ThumbnailsGridsM.Current.Remove(items, true);
+        Current = ListExtensions.GetNextOrPreviousItem(_core.MediaItemsViews.Current.FilteredItems, items);
+        _core.MediaItemsViews.Current.Remove(items, true);
       }
     }
 
@@ -345,7 +328,7 @@ namespace PictureManager.Domain.Models {
           var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Tasks.RunOnUiThread(() => _core.ThumbnailsGridsM.Current.Selected.Set(mi, false));
+            Tasks.RunOnUiThread(() => _core.MediaItemsViews.Current.Selected.Set(mi, false));
             continue;
           }
 
@@ -456,7 +439,7 @@ namespace PictureManager.Domain.Models {
 
       var progress = new ProgressBarDialog("Adding GeoNames ...", Res.IconLocationCheckin, true, 1);
       progress.AddEvents(
-        _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        _core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         async mi => {
@@ -492,7 +475,7 @@ namespace PictureManager.Domain.Models {
       var mediaItems = source switch {
         FolderM folder => folder.GetMediaItems(recursive),
         List<MediaItemM> items => items,
-        _ => _core.ThumbnailsGridsM.Current.GetSelectedOrAll(),
+        _ => _core.MediaItemsViews.Current.GetSelectedOrAll(),
       };
 
       foreach (var mi in mediaItems) {
@@ -501,7 +484,7 @@ namespace PictureManager.Domain.Models {
         File.Delete(mi.FilePathCache);
       }
 
-      _core.ThumbnailsGridsM.Current.ReWrapItems = true;
+      _core.MediaItemsViews.Current.ReWrapAll();
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
@@ -659,7 +642,7 @@ namespace PictureManager.Domain.Models {
 
       try {
         Rename(Current, inputDialog.Answer + Path.GetExtension(Current.FileName));
-        _core.ThumbnailsGridsM.Current?.SoftLoad(_core.ThumbnailsGridsM.Current.FilteredItems, true, false);
+        _core.MediaItemsViews.Current?.SoftLoad(_core.MediaItemsViews.Current.FilteredItems, true, false);
         OnPropertyChanged(nameof(Current));
       }
       catch (Exception ex) {
@@ -691,9 +674,9 @@ namespace PictureManager.Domain.Models {
         ? Current == null
           ? Array.Empty<MediaItemM>()
           : new[] { Current }
-        : _core.ThumbnailsGridsM.Current == null
+        : _core.MediaItemsViews.Current == null
           ? Array.Empty<MediaItemM>()
-          : _core.ThumbnailsGridsM.Current.Selected.Items.ToArray();
+          : _core.MediaItemsViews.Current.Selected.Items.ToArray();
 
     public void SetMetadata(object item) {
       var items = GetActive();

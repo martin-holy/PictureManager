@@ -48,7 +48,7 @@ namespace PictureManager.Domain.Models {
       ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
       OpenSegmentsViewCommand = new(
         OpenSegmentsView,
-        () => _core.ThumbnailsGridsM.Current?.FilteredItems.Count > 0);
+        () => _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       CanDragFunc = CanDrag;
     }
@@ -376,7 +376,7 @@ namespace PictureManager.Domain.Models {
       var result = GetSegmentsToLoadUserInput();
       if (result < 1) return;
 
-      var segments = GetSegments(_core.ThumbnailsGridsM.Current.GetSelectedOrAll(), result).ToList();
+      var segments = GetSegments(_core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToList();
       SegmentsView ??= new(_core.PeopleM, this);
       _core.MainTabsM.Activate(SegmentsView, "Segments");
       SegmentsView.Reload(segments);

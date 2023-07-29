@@ -2,6 +2,7 @@
 using MH.Utils.EventsArgs;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaViewerM : ObservableObject {
@@ -130,6 +131,11 @@ namespace PictureManager.Domain.Models {
       }
 
       if (mediaItem == null) return;
+
+      if (!File.Exists(mediaItem.FilePath)) {
+        _core.MediaItemsM.Delete(new List<MediaItemM> { mediaItem });
+        return;
+      }
 
       if (mediaItem.MediaType == MediaType.Video) {
         var data = GetVideoMetadata(mediaItem.Folder.FullPath, mediaItem.FileName);

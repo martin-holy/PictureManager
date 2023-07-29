@@ -14,7 +14,7 @@
 
         <MenuItem
           Header="Load"
-          Command="{Binding ThumbnailsGridsM.LoadByTagCommand,
+          Command="{Binding MediaItemsViews.LoadByTagCommand,
                     Source={x:Static pm:App.Core}}"
           CommandParameter="{Binding}"/>
       </ContextMenu>

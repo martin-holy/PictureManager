@@ -61,9 +61,9 @@ namespace PictureManager.Domain.Models {
           break;
         }
         case string[] dragged: { // MediaItems
-          if (_core.ThumbnailsGridsM.Current == null) break;
+          if (_core.MediaItemsViews.Current == null) break;
 
-          var selected = _core.ThumbnailsGridsM.Current.FilteredItems
+          var selected = _core.MediaItemsViews.Current.FilteredItems
             .Where(x => x.IsSelected)
             .Select(p => p.FilePath)
             .OrderBy(p => p)
@@ -100,7 +100,7 @@ namespace PictureManager.Domain.Models {
 
         case string[]: // MediaItems
           _core.MediaItemsM.CopyMove(foMode,
-            _core.ThumbnailsGridsM.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
+            _core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
             destFolder);
           _core.MediaItemsM.DataAdapter.IsModified = true;
 

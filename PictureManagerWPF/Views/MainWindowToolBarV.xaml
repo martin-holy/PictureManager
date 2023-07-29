@@ -90,7 +90,7 @@
 
           <!-- Filters Panel -->
           <ContentPresenter
-            Content="{Binding ThumbnailsGridsM.Current.Filter}"
+            Content="{Binding MediaItemsViews.Current.Filter}"
             ContentTemplate="{StaticResource MediaItemsFilterV}"/>
 
           <!-- DB Button -->
@@ -198,7 +198,7 @@
           <!-- Image Comparer -->
           <StackPanel
             Orientation="Horizontal"
-            Visibility="{Binding ThumbnailsGridsM.Current, Converter={StaticResource AllToVisibilityConverter}}">
+            Visibility="{Binding MediaItemsViews.Current, Converter={StaticResource AllToVisibilityConverter}}">
 
             <Separator/>
 
@@ -206,13 +206,13 @@
               ToolTip="Compare images using average hash"
               Icon="{StaticResource IconCompare}"
               Command="{Binding ImageComparerM.AverageHashCommand}"
-              CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
+              CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <mhc:IconButton
               ToolTip="Compare images using p hash"
               Icon="{StaticResource IconCompare}"
               Command="{Binding ImageComparerM.PHashCommand}"
-              CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
+              CommandParameter="{Binding MediaItemsViews.Current}"/>
 
             <mhc:PopupSlider
               ToolTip="Compare limit"

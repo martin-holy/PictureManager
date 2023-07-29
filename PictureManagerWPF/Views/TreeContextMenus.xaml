@@ -10,19 +10,19 @@
   <x:Array Type="{x:Type sys:Object}" x:Key="TagItemTreeContextMenu">
     <MenuItem
       Header="Load"
-      Command="{Binding ThumbnailsGridsM.LoadByTagCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding MediaItemsViews.LoadByTagCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter And"
-      Command="{Binding ThumbnailsGridsM.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding MediaItemsViews.Current.Filter.SetAndCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter Or"
-      Command="{Binding ThumbnailsGridsM.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding MediaItemsViews.Current.Filter.SetOrCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Filter Not"
-      Command="{Binding ThumbnailsGridsM.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}"
+      Command="{Binding MediaItemsViews.Current.Filter.SetNotCommand, Source={x:Static pm:App.Core}}"
       CommandParameter="{Binding}"/>
   </x:Array>
 

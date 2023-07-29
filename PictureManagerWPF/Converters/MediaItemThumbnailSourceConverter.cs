@@ -3,6 +3,7 @@ using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using PictureManager.Utils;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
@@ -15,7 +16,13 @@ namespace PictureManager.Converters {
         if (value is not MediaItemM mi)
           return Binding.DoNothing;
 
-        if (!File.Exists(mi.FilePathCache))
+        // TODO use buffer system like in segment
+        if (!File.Exists(mi.FilePathCache)) {
+          if (!File.Exists(mi.FilePath)) {
+            Core.Instance.MediaItemsM.Delete(new List<MediaItemM> { mi });
+            return Binding.DoNothing;
+          }
+
           Imaging.CreateThumbnailAsync(
             mi.MediaType,
             mi.FilePath,
@@ -23,6 +30,7 @@ namespace PictureManager.Converters {
             Core.Settings.ThumbnailSize,
             0,
             Core.Settings.JpegQualityLevel).GetAwaiter().GetResult();
+        }
 
         var orientation = mi.Orientation;
         // swap 90 and 270 degrees for video
