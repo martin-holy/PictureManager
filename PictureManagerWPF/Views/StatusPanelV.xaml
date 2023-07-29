@@ -64,7 +64,7 @@
               <TextBlock
                 x:Name="tbPositionSlashCount"
                 Style="{StaticResource STextBlock}"
-                Text="{Binding ThumbnailsGridsM.Current.PositionSlashCount}"/>
+                Text="{Binding MediaItemsViews.Current.PositionSlashCount}"/>
             </Border>
 
             <!-- Selected -->
@@ -73,7 +73,7 @@
               Visibility="{Binding MediaViewerM.IsVisible,
                            Converter={StaticResource AllToVisibilityConverter}, 
                            ConverterParameter={StaticResource False}}">
-              <TextBlock Text="{Binding ThumbnailsGridsM.Current.Selected.Items.Count}"/>
+              <TextBlock Text="{Binding MediaItemsViews.Current.Selected.Items.Count}"/>
             </Border>
 
             <!-- Modified -->

@@ -29,7 +29,7 @@ namespace PictureManager.Domain.Models {
       if (result < 1) return;
 
       var items = result switch {
-        1 => PeopleM.GetFromMediaItems(_core.ThumbnailsGridsM.Current?.GetSelectedOrAll().ToArray()),
+        1 => PeopleM.GetFromMediaItems(_core.MediaItemsViews.Current?.GetSelectedOrAll().ToArray()),
         2 => PeopleM.GetFromMediaItems(_core.MediaViewerM.MediaItems?.ToArray()),
         3 => PeopleM.GetAll(PeopleM),
         _ => Enumerable.Empty<PersonM>() };

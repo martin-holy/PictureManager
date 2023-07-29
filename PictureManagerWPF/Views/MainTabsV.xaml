@@ -11,10 +11,10 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="MediaItemsViewV.xaml"/>
           <ResourceDictionary Source="PeopleViewV.xaml"/>
           <ResourceDictionary Source="SegmentV.xaml"/>
           <ResourceDictionary Source="SegmentsViewV.xaml"/>
-          <ResourceDictionary Source="ThumbnailsGridV.xaml"/>
           <ResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
@@ -32,10 +32,9 @@
                 Width="24"
                 Height="24"
                 Padding="6"
-                ToolTip="Add Thumbnails Grid Tab"
+                ToolTip="Add Media Items View Tab"
                 HorizontalAlignment="Center"
-                Command="{Binding ThumbnailsGridsM.AddThumbnailsGridCommand,
-                      Source={x:Static pm:App.Core}}"/>
+                Command="{Binding MediaItemsViews.AddViewCommand, Source={x:Static pm:App.Core}}"/>
 
               <TabPanel
                 IsItemsHost="True"
@@ -102,13 +101,7 @@
           <Setter Property="HeaderTemplate">
             <Setter.Value>
               <DataTemplate>
-                <DockPanel
-                  x:Name="TabHeader"
-                  ContextMenu="{Binding Content,
-                                Converter={StaticResource ResourceConverter},
-                                ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToContextMenu}}"
-                  Background="Transparent">
-                  
+                <DockPanel x:Name="TabHeader" Background="Transparent">
                   <Grid DockPanel.Dock="Top" Height="28">
                     <!-- Close button -->
                     <mhc:IconButton

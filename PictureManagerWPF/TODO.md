@@ -44,6 +44,12 @@
    - minimize window will break full screen mode
 ## Viewer
   - adding drives on viewer change does not work
+## StatusPanel
+  - rating right margin
+## SegmentsRects
+  - rect can be drawn from out of image range
+## ThumbnailsGrid
+  - problem with scroll when thumbnail is wither than window
 
 # Update
 ##
@@ -58,6 +64,7 @@
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
   - make base class for ToolsTabsM and MainTabsM
+  - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## DB
   - remove direct access to Helper.IsModified
 ## TreeViewCategories
@@ -65,6 +72,8 @@
   - select/mark searched item after selecting item in search result
   - Items can be null, to save memory
   - Folder move: rethink selecting target folder after move
+  - change it to tab control with tab for each category
+  - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
 ## VideoClips:
   - recreate video thumbnails button
 ## XAML
@@ -100,6 +109,13 @@
   - make selection bigger. remove margin and replace it by transparent border
 ## CollectionViewGroup
   - update icon for expand all
+## Tabs
+  - base class for all tabs (TreeViewCategory tabs, tools tabs and main tabs)
+    and allow moving tab to left|middle|right panel
+## MediaItemsView
+  - replace mouse wheel + CTRL for zoom with slider
+## SegmentsRects
+  - sort by X for correct overlap
 
 # New
 ##
@@ -111,6 +127,11 @@
     - has own thumbnail icon
     - opening from thumbnail will show paused video 
       - so I need another video player mode to scroll trough VideoImages and than to next media item or MediaViewer will have mix of images, videos and videoImages?
+## one source for MediaItemsView and MediaViewer
+  - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
+    so I can choice how to display filtered data: in MediaItemsView or MediaViewer
+    and choice show selected or all
+    ...
 ## Folders
   - GeoNames for Folders
 ## MediaItems
@@ -156,8 +177,6 @@
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - filter for segment resolution
-## ToolsTabs
-  - add people from actual ThumbnailsGrid or from MediaItems loaded in MediaViewer
 
 
 #Shortcuts:

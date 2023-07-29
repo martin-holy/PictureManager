@@ -41,11 +41,11 @@
           <MenuItem Header="Compress" Command="{Binding MediaItemsM.CompressCommand}"/>
           <MenuItem Header="Rebuild Thumbnails" Command="{Binding MediaItemsM.RebuildThumbnailsCommand}"/>
           <MenuItem Header="Rotate" InputGestureText="Ctrl+R" Command="{Binding MediaItemsM.RotateCommand}"/>
-          <MenuItem Header="Select Not Modified" Command="{Binding MediaItemsM.SelectNotModifiedCommand}" CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
-          <MenuItem Header="Shuffle" Command="{Binding ThumbnailsGridsM.ShuffleCommand}"/>
+          <MenuItem Header="Select Not Modified" Command="{Binding MediaItemsM.SelectNotModifiedCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
+          <MenuItem Header="Shuffle" Command="{Binding MediaItemsViews.ShuffleCommand}"/>
           <MenuItem Header="Resize Images" Command="{Binding MediaItemsM.ResizeImagesCommand}"/>
-          <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding ThumbnailsGridsM.Current}"/>
-          <MenuItem Header="Copy Paths" Command="{Binding ThumbnailsGridsM.CopyPathsCommand}"/>
+          <MenuItem Header="Images to Video" Command="{Binding MediaItemsM.ImagesToVideoCommand}" CommandParameter="{Binding MediaItemsViews.Current}"/>
+          <MenuItem Header="Copy Paths" Command="{Binding MediaItemsViews.CopyPathsCommand}"/>
           <MenuItem Header="Rename" InputGestureText="F2" Command="{Binding MediaItemsM.RenameCommand}"/>
           <MenuItem Header="Segments" Command="{Binding SegmentsM.OpenSegmentsViewCommand}">
             <MenuItem.Icon>

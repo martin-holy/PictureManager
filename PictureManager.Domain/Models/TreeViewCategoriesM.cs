@@ -75,7 +75,7 @@ namespace PictureManager.Domain.Models {
           if (_core.MediaItemsM.IsEditModeOn)
             _core.MediaItemsM.SetMetadata(item);
           else
-            _core.ThumbnailsGridsM.Current?.Filter.Set(r.Rating, DisplayFilter.Or);
+            _core.MediaItemsViews.Current?.Filter.Set(r.Rating, DisplayFilter.Or);
           break;
 
         case GeoNameM:
@@ -102,7 +102,7 @@ namespace PictureManager.Domain.Models {
           if (_core.MediaViewerM.IsVisible)
             _core.MainWindowM.IsFullScreen = false;
 
-          _ = _core.ThumbnailsGridsM.LoadByFolder(item, e.IsCtrlOn, e.IsAltOn, e.IsShiftOn);
+          _ = _core.MediaItemsViews.LoadByFolder(item, e.IsCtrlOn, e.IsAltOn, e.IsShiftOn);
           break;
 
         case ViewerM v:
@@ -137,9 +137,9 @@ namespace PictureManager.Domain.Models {
         ? _core.MediaItemsM.Current == null
           ? Array.Empty<MediaItemM>()
           : new[] { _core.MediaItemsM.Current }
-        : _core.ThumbnailsGridsM.Current == null
+        : _core.MediaItemsViews.Current == null
           ? Array.Empty<MediaItemM>()
-          : _core.ThumbnailsGridsM.Current.GetSelectedOrAll().ToArray();
+          : _core.MediaItemsViews.Current.GetSelectedOrAll().ToArray();
 
       if (mediaItems.Length == 0) {
         OnPropertyChanged(nameof(MarkedTags));
