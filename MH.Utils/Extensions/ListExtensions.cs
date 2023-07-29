@@ -60,5 +60,19 @@ namespace MH.Utils.Extensions {
 
       return list;
     }
+
+    public static T GetNextOrPreviousItem<T>(IList<T> items, IList<T> selected) {
+      if (items == null) return default;
+      if (selected == null) return default;
+      if (selected.Count == 0) return default;
+
+      var index = items.IndexOf(selected[^1]) + 1;
+      if (index == items.Count)
+        index = items.IndexOf(selected[0]) - 1;
+
+      return index >= 0
+        ? items[index]
+        : default;
+    }
   }
 }
