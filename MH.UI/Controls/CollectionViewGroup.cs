@@ -149,6 +149,7 @@ namespace MH.UI.Controls {
     }
 
     // TODO do not open group if it was closed
+    // BUG when all segments doesn't have person and few of them are selected and hierarchical keywords are set and than person is set with = sign
     public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
       var groupByItems = GetGroupByItems(this);
 
@@ -360,6 +361,12 @@ namespace MH.UI.Controls {
       if (Items.Count == 0) return;
       foreach (var group in Items.OfType<CollectionViewGroup<T>>())
         group.SetExpanded(value);
+    }
+
+    public void Clear() {
+      Items.Clear();
+      Source.Clear();
+      OnPropertyChanged(nameof(SourceCount));
     }
 
     public static bool IsFullyExpanded(CollectionViewGroup<T> group) =>
