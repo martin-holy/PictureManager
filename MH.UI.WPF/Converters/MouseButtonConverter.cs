@@ -16,9 +16,9 @@ namespace MH.UI.WPF.Converters {
       if (value is not MouseButtonEventArgs e) return null;
 
       var args = new MH.Utils.EventsArgs.MouseButtonEventArgs() {
-        IsSourceDesired = desiredSource == null || e.OriginalSource.GetType().FullName.Equals(desiredSource),
+        IsSourceDesired = desiredSource == null || e.OriginalSource.GetType().FullName?.Equals(desiredSource) == true,
         OriginalSource = e.OriginalSource,
-        DataContext = (e.OriginalSource as FrameworkElement)?.DataContext,
+        DataContext = (e.OriginalSource as FrameworkElement)?.DataContext ?? (e.OriginalSource as FrameworkContentElement)?.DataContext,
         ClickCount = e.ClickCount,
         IsAltOn = (Keyboard.Modifiers & ModifierKeys.Alt) > 0
       };
