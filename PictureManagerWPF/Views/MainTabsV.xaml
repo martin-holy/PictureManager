@@ -25,7 +25,7 @@
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <DockPanel Grid.Column="0" ZIndex="1" Width="40">
+            <DockPanel Grid.Column="0" ZIndex="1">
               <mhc:IconButton
                 DockPanel.Dock="Top"
                 Icon="{StaticResource IconPlus}"
@@ -106,9 +106,9 @@
                     <!-- Close button -->
                     <mhc:IconButton
                       Icon="{StaticResource IconXCross}"
-                      Width="24"
-                      Height="24"
-                      Padding="6"
+                      Width="18"
+                      Height="18"
+                      Padding="4"
                       ToolTip="Close"
                       HorizontalAlignment="Center"
                       Command="{Binding Path=DataContext.(m:MainTabsM.CloseTabCommand), ElementName=Tabs}"
