@@ -5,7 +5,6 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:dataViews="clr-namespace:PictureManager.Domain.DataViews;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type dataViews:PersonDetail}">
@@ -19,7 +18,6 @@
 
     <Grid>
       <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
@@ -91,39 +89,18 @@
       </DockPanel>
 
       <!-- Top Segments -->
-      <TextBlock
+      <mhc:CollectionView
         Grid.Row="3"
-        Text="Top Segments:"
-        Margin="5"
-        Foreground="{StaticResource MH.Brushes.Text}"/>
-
-      <mhc:VirtualizingWrapPanel
-        Grid.Row="4"
-        MinHeight="106"
-        ItemWidth="{Binding SegmentsM.SegmentUiFullWidth, Source={x:Static pm:App.Core}}"
-        ItemsToWrap="{Binding PersonM.TopSegments}"
+        View="{Binding TopSegments}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.IsDropEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
         mhu:DragDropHelper.CanDrop="{Binding CanDropFunc}"
-        mhu:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}">
-
-        <b:Interaction.Triggers>
-          <b:EventTrigger EventName="WidthChangedEventHandler">
-            <b:ChangePropertyAction PropertyName="ReWrapItems" Value="True"/>
-          </b:EventTrigger>
-          <b:EventTrigger EventName="PreviewMouseUp">
-            <b:InvokeCommandAction
-              Command="{Binding SelectCommand}"
-              EventArgsConverter="{StaticResource MouseButtonConverter}"
-              EventArgsConverterParameter="System.Windows.Controls.Image"/>
-          </b:EventTrigger>
-        </b:Interaction.Triggers>
-      </mhc:VirtualizingWrapPanel>
+        mhu:DragDropHelper.DoDrop="{Binding TopSegmentsDropAction}"/>
 
       <!-- All Segments -->
       <mhc:CollectionView
-        Grid.Row="5"
+        Grid.Row="4"
         View="{Binding AllSegments}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>

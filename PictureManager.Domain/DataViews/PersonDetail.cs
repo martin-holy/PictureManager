@@ -4,7 +4,6 @@ using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.Models;
 using System.Collections.Generic;
 using System.Linq;
-using MH.Utils.EventsArgs;
 using static MH.Utils.DragDropHelper;
 
 namespace PictureManager.Domain.DataViews {
@@ -14,19 +13,19 @@ namespace PictureManager.Domain.DataViews {
     private PersonM _personM;
 
     public CollectionViewSegments AllSegments { get; }
+    public CollectionViewSegments TopSegments { get; }
     public PersonM PersonM { get => _personM; set { _personM = value; OnPropertyChanged(); } }
     public CanDropFunc CanDropFunc { get; }
     public DoDropAction TopSegmentsDropAction { get; }
-    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public PersonDetail(PeopleM peopleM, SegmentsM segmentsM) {
       _peopleM = peopleM;
       _segmentsM = segmentsM;
       AllSegments = new(segmentsM);
+      TopSegments = new(segmentsM);
 
       CanDropFunc = CanDrop;
       TopSegmentsDropAction = TopSegmentsDrop;
-      SelectCommand = new(Select);
     }
 
     private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
@@ -38,20 +37,25 @@ namespace PictureManager.Domain.DataViews {
       return MH.Utils.DragDropEffects.None;
     }
 
-    private void TopSegmentsDrop(object data, bool haveSameOrigin) =>
+    private void TopSegmentsDrop(object data, bool haveSameOrigin) {
       _peopleM.ToggleTopSegment(PersonM, data as SegmentM);
+      ReloadTopSegments();
+    }
 
     public void Reload(PersonM person) {
       PersonM = person;
 
       if (PersonM == null) {
-        AllSegments.Root.Items.Clear();
+        AllSegments.Root.Clear();
+        TopSegments.Root.Clear();
         return;
       }
 
       ReloadAllSegments(_segmentsM.DataAdapter.All
         .Where(x => ReferenceEquals(x.Person, PersonM))
         .ToList());
+
+      ReloadTopSegments();
     }
 
     private void ReloadAllSegments(IReadOnlyCollection<SegmentM> items) {
@@ -62,7 +66,17 @@ namespace PictureManager.Domain.DataViews {
         GroupByItems.GetKeywordsInGroupFromSegments(items)
       };
 
-      AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true);
+      AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, "All");
+    }
+
+    private void ReloadTopSegments() {
+      if (PersonM.TopSegments == null) {
+        TopSegments.Root.Clear();
+        return;
+      }
+
+      var source = PersonM.TopSegments.Cast<SegmentM>().ToList();
+      TopSegments.Reload(source, GroupMode.GroupBy, null, true, "Top");
     }
 
     public void ReGroupIfContains(IEnumerable<SegmentM> segments, bool remove) {
@@ -70,11 +84,7 @@ namespace PictureManager.Domain.DataViews {
       var items = segments.Where(x => ReferenceEquals(PersonM, x.Person)).ToArray();
       if (items.Length == 0) return;
       AllSegments.ReGroupItems(items, remove);
-    }
-
-    private void Select(MouseButtonEventArgs e) {
-      if (e.IsSourceDesired && e.DataContext is SegmentM segmentM)
-        _segmentsM.Select(AllSegments.Root.Source, segmentM, e.IsCtrlOn, e.IsShiftOn);
+      TopSegments.ReGroupItems(items, remove);
     }
   }
 }

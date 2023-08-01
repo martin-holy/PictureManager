@@ -12,8 +12,8 @@ namespace PictureManager.Domain.CollectionViews {
       _segmentsM = segmentsM;
     }
 
-    public void Reload(List<SegmentM> source, GroupMode groupMode, CollectionViewGroupByItem<SegmentM>[] groupByItems, bool expandAll) {
-      SetRoot(new(source, Res.IconSegment, "Segments", this, groupMode, groupByItems), expandAll);
+    public void Reload(List<SegmentM> source, GroupMode groupMode, CollectionViewGroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle = "Segments") {
+      SetRoot(new(source, Res.IconSegment, rootTitle, this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<SegmentM>> GetGroupByItems(IEnumerable<SegmentM> source) {
