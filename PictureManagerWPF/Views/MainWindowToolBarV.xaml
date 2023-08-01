@@ -168,7 +168,6 @@
                 <Style
                   TargetType="{x:Type mhc:IconButton}"
                   BasedOn="{StaticResource MH.Styles.Controls.IconButton}">
-                  <Setter Property="Background" Value="White"/>
                   <Setter Property="Icon" Value="{StaticResource IconPlay}"/>
                   <Setter Property="ToolTip" Value="Stop presentation"/>
                   <Style.Triggers>
