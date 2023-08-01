@@ -1,19 +1,28 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
+using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using System;
 
 namespace PictureManager.Domain.BaseClasses {
   public class TreeCategoryBase : TreeCategory {
+    private ITreeItem _scrollToItem;
+
+    public Category Category { get; }
+    public TreeCategoryBase[] Root { get; }
+    public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemCreateEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemRenameEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemDeleteEventHandler = delegate { };
 
-    public Category Category { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public TreeCategoryBase(string iconName, Category category, string name) : base(iconName, name) {
+      Root = new[] { this };
       Category = category;
+      SelectCommand = new(OnItemSelect);
     }
 
     protected virtual string ValidateNewItemName(ITreeItem root, string name) => throw new NotImplementedException();
@@ -25,6 +34,8 @@ namespace PictureManager.Domain.BaseClasses {
     protected virtual void ModelGroupCreate(ITreeItem root, string name) => throw new NotImplementedException();
     protected virtual void ModelGroupRename(ITreeGroup group, string name) => throw new NotImplementedException();
     protected virtual void ModelGroupDelete(ITreeGroup group) => throw new NotImplementedException();
+
+    public virtual void OnItemSelect(MouseButtonEventArgs e) { }
 
     public override void ItemCreate(ITreeItem root) {
       if (!GetNewName(true, string.Empty, out var newName,
@@ -88,6 +99,11 @@ namespace PictureManager.Domain.BaseClasses {
       if (!DeleteAccepted(group.Name)) return;
 
       ModelGroupDelete(group);
+    }
+
+    public void ScrollTo(ITreeItem item) {
+      item.ExpandTo();
+      ScrollToItem = item;
     }
 
     private static bool GetNewName(bool forItem, string oldName, out string newName, ITreeItem item, Func<ITreeItem, string, string> validator, string icon) {

@@ -1,10 +1,19 @@
-﻿using PictureManager.Domain.BaseClasses;
+﻿using MH.Utils.EventsArgs;
+using PictureManager.Domain.BaseClasses;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class RatingsTreeM : TreeCategoryBase {
     public RatingsTreeM() : base(Res.IconStar, Category.Ratings, "Ratings") {
       Load();
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not RatingTreeM r) return;
+      if (Core.Instance.MediaItemsM.IsEditModeOn)
+        Core.Instance.MediaItemsM.SetMetadata(r);
+      else
+        Core.Instance.MediaItemsViews.Current?.Filter.Set(r.Rating, DisplayFilter.Or);
     }
 
     private void Load() {

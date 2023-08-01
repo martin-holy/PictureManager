@@ -2,10 +2,10 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <DataTemplate DataType="{x:Type m:TreeViewCategoriesM}">
     <DataTemplate.Resources>
@@ -16,116 +16,144 @@
           <ResourceDictionary Source="RatingTreeV.xaml"/>
           <ResourceDictionary Source="TreeContextMenus.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
 
-    <Grid Background="{StaticResource ColorBrushBackground}">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="*"/>
-      </Grid.RowDefinitions>
+        <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto"/>
+              <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-      <Border
-        Grid.Row="0"
-        BorderThickness="0,0,0,4"
-        BorderBrush="{StaticResource AccentColorBrush4}">
+            <DockPanel Grid.Row="0" ZIndex="1">
+              <StackPanel
+                DockPanel.Dock="Right"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right">
 
-        <DockPanel Height="34">
-
-          <!-- TreeView Categories Navigation Bar -->
-          <ItemsControl ItemsSource="{Binding Items}" DockPanel.Dock="Left">
-            <ItemsControl.ItemsPanel>
-              <ItemsPanelTemplate>
-                <StackPanel Orientation="Horizontal"/>
-              </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-
-            <ItemsControl.ItemTemplate>
-              <DataTemplate>
+                <!-- Search -->
                 <mhc:IconButton
                   Width="28"
                   Height="28"
-                  ToolTip="{Binding Name}"
-                  Command="{Binding TreeViewCategoriesM.ScrollToCommand,
-                            Source={x:Static pm:App.Core}}"
-                  CommandParameter="{Binding}"
-                  Icon="{Binding IconName, Converter={StaticResource ResourceConverter}}"
-                  Foreground="{Binding IconName,
-                               Converter={StaticResource ResourceConverter},
-                               ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
-              </DataTemplate>
-            </ItemsControl.ItemTemplate>
-          </ItemsControl>
+                  Icon="{StaticResource IconMagnify}"
+                  ToolTip="Search"
+                  Command="{Binding ShowSearchCommand}"/>
 
-          <StackPanel
-            DockPanel.Dock="Right"
-            Orientation="Horizontal"
-            HorizontalAlignment="Right">
-
-            <!-- Search -->
-            <mhc:IconButton
-              Width="28"
-              Height="28"
-              Icon="{StaticResource IconMagnify}"
-              ToolTip="Search"
-              Command="{Binding ShowSearchCommand}"/>
-
-            <!-- Button to pin slide panel -->
-            <mhc:IconToggleButton
-              Icon="{StaticResource IconPin}"
-              Width="20"
-              Height="20"
-              IsThreeState="False"
-              IsChecked="{Binding IsPinned, RelativeSource=
+                <!-- Button to pin slide panel -->
+                <mhc:IconToggleButton
+                  Icon="{StaticResource IconPin}"
+                  Width="20"
+                  Height="20"
+                  IsThreeState="False"
+                  IsChecked="{Binding IsPinned, RelativeSource=
                          {RelativeSource AncestorType=mhc:SlidePanel}}"
-              ToolTip="Pin panel"/>
-          </StackPanel>
-        </DockPanel>
-      </Border>
+                  ToolTip="Pin panel"/>
+              </StackPanel>
 
-      <!-- CatTreeView Categories -->
-      <mhc:CatTreeView
-        x:Name="tree"
-        Grid.Row="1"
+              <TabPanel
+                IsItemsHost="True"
+                KeyboardNavigation.TabIndex="1"
+                Margin="2,0,0,0"/>
+            </DockPanel>
+
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <Grid/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <mhc:CatTreeView
+                    ItemsSource="{Binding Root}"
+                    ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+
+                    <!-- Disable Selecting -->
+                    <mhc:CatTreeView.ItemContainerStyle>
+                      <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MH.Styles.Controls.TreeViewItem}">
+                        <Setter Property="IsSelected" Value="False"/>
+                        <Style.Triggers>
+                          <EventTrigger RoutedEvent="Selected">
+                            <BeginStoryboard>
+                              <Storyboard>
+                                <BooleanAnimationUsingKeyFrames
+                                  Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
+                                  <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"/>
+                                </BooleanAnimationUsingKeyFrames>
+                              </Storyboard>
+                            </BeginStoryboard>
+                          </EventTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </mhc:CatTreeView.ItemContainerStyle>
+
+                    <b:Interaction.Triggers>
+                      <b:EventTrigger EventName="MouseLeftButtonUp">
+                        <b:InvokeCommandAction
+                          Command="{Binding SelectCommand}"
+                          EventArgsConverter="{StaticResource MouseButtonConverter}"/>
+                      </b:EventTrigger>
+                    </b:Interaction.Triggers>
+                  </mhc:CatTreeView>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+
+              <ItemsControl.ItemContainerStyle>
+                <Style>
+                  <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
+                      <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
+                    </DataTrigger>
+                  </Style.Triggers>
+                </Style>
+              </ItemsControl.ItemContainerStyle>
+            </ItemsControl>
+          </Grid>
+        </ControlTemplate>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <Grid Background="{StaticResource MH.Brushes.Background}">
+      <TabControl
+        x:Name="Tabs"
+        Background="Transparent"
+        BorderThickness="0"
+        TabStripPlacement="Top"
         ItemsSource="{Binding Items}"
-        ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+        SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+        Template="{StaticResource TabControlTemplate}">
 
-        <!-- Disable Selecting -->
-        <mhc:CatTreeView.ItemContainerStyle>
-          <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MH.Styles.Controls.TreeViewItem}">
-            <Setter Property="IsSelected" Value="False"/>
-            <Style.Triggers>
-              <EventTrigger RoutedEvent="Selected">
-                <BeginStoryboard>
-                  <Storyboard>
-                    <BooleanAnimationUsingKeyFrames
-                      Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
-                      <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"/>
-                    </BooleanAnimationUsingKeyFrames>
-                  </Storyboard>
-                </BeginStoryboard>
-              </EventTrigger>
-            </Style.Triggers>
+        <TabControl.ItemContainerStyle>
+          <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+            <Setter Property="ToolTip" Value="{Binding Name}"/>
+            <Setter Property="Header" Value="{Binding}"/>
+            <Setter Property="HeaderTemplate">
+              <Setter.Value>
+                <DataTemplate DataType="{x:Type mhubc:TreeItem}">
+                  <Path
+                    Style="{StaticResource MH.Styles.Icon}"
+                    Width="24"
+                    Height="24"
+                    Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
+                    Fill="{Binding IconName,
+                           Converter={StaticResource ResourceConverter},
+                           ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+                    Effect="{StaticResource MH.Effects.DropShadow}"/>
+                </DataTemplate>
+              </Setter.Value>
+            </Setter>
           </Style>
-        </mhc:CatTreeView.ItemContainerStyle>
+        </TabControl.ItemContainerStyle>
+      </TabControl>
 
-        <b:Interaction.Triggers>
-          <b:EventTrigger EventName="MouseLeftButtonUp">
-            <b:InvokeCommandAction
-              Command="{Binding SelectCommand}"
-              EventArgsConverter="{StaticResource MouseButtonConverter}"/>
-          </b:EventTrigger>
-        </b:Interaction.Triggers>
-      </mhc:CatTreeView>
-
-      <!-- Search -->
-      <ContentPresenter Grid.Row="1" Content="{Binding TreeViewSearchM}"/>
+      <ContentPresenter Content="{Binding TreeViewSearchM}" Margin="0,3,0,0"/>
     </Grid>
 
     <DataTemplate.Triggers>
       <!-- BlurEffect when Search is visible -->
       <DataTrigger Binding="{Binding TreeViewSearchM.IsVisible}" Value="True">
-        <Setter TargetName="tree" Property="Effect">
+        <Setter TargetName="Tabs" Property="Effect">
           <Setter.Value>
             <BlurEffect Radius="4" KernelType="Gaussian"/>
           </Setter.Value>

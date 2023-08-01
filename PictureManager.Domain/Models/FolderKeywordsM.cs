@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -17,6 +18,9 @@ namespace PictureManager.Domain.Models {
     public FolderKeywordsM() : base(Res.IconFolderPuzzle, Category.FolderKeywords, "Folder Keywords") {
       SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
     }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) =>
+      Core.Instance.FoldersM.OnItemSelect(e);
 
     public void LoadIfContains(FolderM folder) {
       if (DataAdapter.All.Contains(folder) || folder.FolderKeyword != null)

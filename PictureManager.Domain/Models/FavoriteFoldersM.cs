@@ -2,6 +2,7 @@
 using System.Linq;
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -16,6 +17,13 @@ namespace PictureManager.Domain.Models {
     public FavoriteFoldersM() : base(Res.IconFolderStar, Category.FavoriteFolders, "Favorites") {
       CanMoveItem = true;
       AddToFavoritesCommand = new(item => ItemCreate(this, item));
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not FavoriteFolderM ff) return;
+      if (!Core.Instance.FoldersM.IsFolderVisible(ff.Folder)) return;
+      Core.Instance.TreeViewCategoriesM.SelectedCategory = Core.Instance.FoldersM;
+      Core.Instance.FoldersM.ScrollTo(ff.Folder);
     }
 
     protected override void ModelItemRename(ITreeItem item, string name) {

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
+using MH.Utils.EventsArgs;
+using PictureManager.Domain.BaseClasses;
+using PictureManager.Domain.DataAdapters;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
-using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
-using PictureManager.Domain.BaseClasses;
-using PictureManager.Domain.DataAdapters;
 
 namespace PictureManager.Domain.Models {
   public sealed class GeoNamesM : TreeCategoryBase {
@@ -15,6 +16,12 @@ namespace PictureManager.Domain.Models {
 
     public GeoNamesM() : base(Res.IconLocationCheckin, Category.GeoNames, "GeoNames") {
       NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(Core.Settings.GeoNamesUserName));
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not GeoNameM g) return;
+      if (Core.Instance.MediaItemsM.IsEditModeOn)
+        Core.Instance.MediaItemsM.SetMetadata(g);
     }
 
     public GeoNameM InsertGeoNameHierarchy(double lat, double lng, string userName) {
