@@ -192,6 +192,7 @@ namespace PictureManager.Domain.DataViews {
 
     private async Task ReadMetadata(List<MediaItemMetadata> items) {
       if (items.Count == 0) return;
+      IsLoading = false;
       IsImporting = true;
       ImportCount = items.Count;
       ImportDoneCount = 0;
@@ -217,6 +218,7 @@ namespace PictureManager.Domain.DataViews {
           _core.MediaItemsM.Delete(mim.MediaItem);
 
       IsImporting = false;
+      IsLoading = true;
     }
 
     private void AddMediaItems(List<MediaItemM> items, bool and = false, bool hide = false) {
