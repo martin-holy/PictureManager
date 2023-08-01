@@ -88,6 +88,13 @@ namespace PictureManager.Domain.Models {
 
       switch (src) {
         case FolderM srcData: // Folder
+          if (Dialog.Show(new MessageDialog(
+                $"{(copy ? "Copy" : "Move")} folder",
+                $"Do you really want to {(copy ? "copy" : "move")} folder '{srcData.Name}' to '{dest.Name}'?",
+                Res.IconQuestion,
+                true)) != 1)
+            return;
+
           CopyMove(foMode, srcData, destFolder);
 
           // reload last selected source if was moved
@@ -99,6 +106,13 @@ namespace PictureManager.Domain.Models {
           break;
 
         case string[]: // MediaItems
+          if (Dialog.Show(new MessageDialog(
+                $"{(copy ? "Copy" : "Move")} media items",
+                $"Do you really want to {(copy ? "copy" : "move")} media items to '{dest.Name}'?",
+                Res.IconQuestion,
+                true)) != 1)
+            return;
+
           _core.MediaItemsM.CopyMove(foMode,
             _core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToList(),
             destFolder);
