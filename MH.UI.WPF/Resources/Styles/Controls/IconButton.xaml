@@ -14,18 +14,16 @@
     <Setter Property="Width" Value="26"/>
     <Setter Property="Height" Value="26"/>
     <Setter Property="SnapsToDevicePixels" Value="True"/>
-    <Setter Property="Background" Value="{StaticResource MH.Brushes.Foreground}"/>
-    <Setter Property="Foreground" Value="{StaticResource MH.Brushes.Foreground}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource MH.Control.Static.Text}"/>
     <Setter Property="Effect" Value="{StaticResource MH.Effects.DropShadow}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type c:IconButton}">
-          <Grid>
-            <Border
-              x:Name="background" 
-              Background="{TemplateBinding Background}"
-              Opacity="0"
-              CornerRadius="3"/>
+          <Border
+            x:Name="background" 
+            Background="{TemplateBinding Background}"
+            CornerRadius="3">
 
             <Path
               x:Name="icon"
@@ -33,16 +31,16 @@
               Fill="{TemplateBinding Foreground}"
               Margin="{TemplateBinding Padding}"
               Stretch="Uniform"/>
-          </Grid>
+          </Border>
 
           <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="true">
-              <Setter TargetName="background" Property="Opacity" Value="0.2"/>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="background" Property="Background" Value="{StaticResource MH.Button.MouseOver.Background}"/>
             </Trigger>
-            <Trigger Property="IsPressed" Value="true">
-              <Setter TargetName="background" Property="Opacity" Value="0.3"/>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="background" Property="Background" Value="{StaticResource MH.Button.Pressed.Background}"/>
             </Trigger>
-            <Trigger Property="IsEnabled" Value="false">
+            <Trigger Property="IsEnabled" Value="False">
               <Setter TargetName="icon" Property="Opacity" Value="0.3"/>
             </Trigger>
           </ControlTemplate.Triggers>

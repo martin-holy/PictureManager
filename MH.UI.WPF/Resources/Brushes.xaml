@@ -27,6 +27,8 @@
   <Color x:Key="GrayColor3">#696969</Color>
   <Color x:Key="GrayColor5">#FFB9B9B9</Color>
   <Color x:Key="GrayColor6">#FFCCCCCC</Color>
+  <Color x:Key="White20">#33FFFFFF</Color>
+  <Color x:Key="White30">#4CFFFFFF</Color>
  
   <SolidColorBrush x:Key="MH.Brushes.Background" Color="{StaticResource BackgroundColor}"/>
   <SolidColorBrush x:Key="MH.Brushes.Foreground" Color="{StaticResource ForegroundColor}"/>
@@ -69,6 +71,9 @@
   <SolidColorBrush x:Key="MH.Control.Selected.Border" Color="#FF26A0DA"/>
   <SolidColorBrush x:Key="MH.Control.Highlight.Background" Color="#3D26A0DA"/>
   <SolidColorBrush x:Key="MH.Control.Highlight.Border" Color="#FF26A0DA"/>
+
+  <SolidColorBrush x:Key="MH.Button.MouseOver.Background" Color="{StaticResource White20}"/>
+  <SolidColorBrush x:Key="MH.Button.Pressed.Background" Color="{StaticResource White30}"/>
 
   <!-- ComboBox -->
   <SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="{StaticResource GrayColor2}"/>
