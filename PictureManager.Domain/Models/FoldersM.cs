@@ -1,5 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
@@ -28,12 +29,19 @@ namespace PictureManager.Domain.Models {
 
       CanMoveItem = true;
       CanCopyItem = true;
-      IsExpanded = true;
 
       AttachEvents();
     }
 
     private void AttachEvents() {
+      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
+
+      AfterItemRenameEventHandler += (_, e) => {
+        // reload if the folder was selected before
+        if (e.Data is FolderM { IsSelected: true } folder)
+          OnItemSelect(new() { DataContext = folder });
+      };
+
       AfterItemDeleteEventHandler += (_, e) => {
         // delete folder, sub folders and mediaItems from file system
         if (e.Data is FolderM folder && Directory.Exists(folder.FullPath))
@@ -46,6 +54,16 @@ namespace PictureManager.Domain.Models {
 
       if (item.IsExpanded)
         item.LoadSubFolders(false);
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      // SHIFT key => recursive
+      // MBL => show, MBL+ctrl => and, MBL+alt => hide
+      if (e.DataContext is not ITreeItem item) return;
+      if (_core.MediaViewerM.IsVisible)
+        _core.MainWindowM.IsFullScreen = false;
+
+      _ = _core.MediaItemsViews.LoadByFolder(item, e.IsCtrlOn, e.IsAltOn, e.IsShiftOn);
     }
 
     public override bool CanDrop(object src, ITreeItem dest) {
@@ -100,7 +118,7 @@ namespace PictureManager.Domain.Models {
           // reload last selected source if was moved
           if (foMode == FileOperationMode.Move && srcData.IsSelected && Tree.GetByPath(destFolder, srcData.Name, Path.DirectorySeparatorChar) != null) {
             destFolder.ExpandTo();
-            _core.TreeViewCategoriesM.Select(new MouseButtonEventArgs() { DataContext = destFolder });
+            OnItemSelect(new() { DataContext = destFolder });
           }
 
           break;

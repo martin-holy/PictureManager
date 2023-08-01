@@ -1,13 +1,15 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.DataViews;
+using PictureManager.Domain.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PictureManager.Domain.DataViews;
 
 namespace PictureManager.Domain.Models {
   public sealed class PeopleM : TreeCategoryBase {
@@ -33,6 +35,8 @@ namespace PictureManager.Domain.Models {
 
       OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
       OpenPersonDetailCommand = new(OpenPersonDetail);
+
+      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
     }
 
     private void OpenPeopleToolsTab() {
@@ -51,6 +55,20 @@ namespace PictureManager.Domain.Models {
       PersonDetail ??= new(this, _core.SegmentsM);
       PersonDetail.Reload(person);
       _core.ToolsTabsM.Activate(PersonDetail, "Person", true);
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not ITreeItem item) return;
+
+      switch (item) {
+        case PersonM p:
+          ToggleDialogM.TogglePerson(Core.Instance, p);
+          break;
+        case ITreeCategory cat:
+          if (cat is PeopleM)
+            _core.PeopleM.OpenPeopleView();
+          break;
+      }
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {

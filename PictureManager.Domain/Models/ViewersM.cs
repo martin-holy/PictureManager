@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
-using MH.Utils.BaseClasses;
+﻿using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using System;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class ViewersM : TreeCategoryBase {
@@ -31,6 +32,12 @@ namespace PictureManager.Domain.Models {
       _core = core;
       SetCurrentCommand = new(SetCurrent);
       UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not ViewerM v) return;
+      _core.MainTabsM.Activate(_core.ViewerDetailM, "Viewer");
+      _core.ViewersM.Selected = v;
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {

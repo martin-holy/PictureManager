@@ -1,11 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Dialogs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class KeywordsM : TreeCategoryBase {
@@ -19,6 +21,12 @@ namespace PictureManager.Domain.Models {
     public KeywordsM(CategoryGroupsM categoryGroupsM) : base(Res.IconTagLabel, Category.Keywords, "Keywords") {
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
+      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
+    }
+
+    public override void OnItemSelect(MouseButtonEventArgs e) {
+      if (e.DataContext is not KeywordM k) return;
+      ToggleDialogM.ToggleKeyword(Core.Instance, k);
     }
 
     protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
