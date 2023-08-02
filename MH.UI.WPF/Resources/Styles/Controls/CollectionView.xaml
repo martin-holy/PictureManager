@@ -70,7 +70,8 @@
             Text="{Binding SourceCount}"
             VerticalAlignment="Center"
             Margin="5,0,5,0"
-            FontWeight="Bold"/>
+            FontWeight="Bold"
+            FontSize="14"/>
         </Grid>
       </Border>
     </Border>
