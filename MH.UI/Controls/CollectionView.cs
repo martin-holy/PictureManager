@@ -27,6 +27,7 @@ namespace MH.UI.Controls {
     public List<object> ScrollToItems { get => _scrollToItems; set { _scrollToItems = value; OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
+    public bool SelectionDisabled { get; set; }
 
     public RelayCommand<object> ExpandAllCommand { get; }
     public RelayCommand<object> CollapseAllCommand { get; }
@@ -49,7 +50,7 @@ namespace MH.UI.Controls {
     }
 
     public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
-      if (row is not CollectionViewRow<T> r || item is not T i) return;
+      if (SelectionDisabled || row is not CollectionViewRow<T> r || item is not T i) return;
       LastSelectedItem = i;
       LastSelectedRow = r;
       OnSelectItem(r.Group.Source, i, isCtrlOn, isShiftOn);
@@ -169,6 +170,7 @@ namespace MH.UI.Controls {
       ScrollToItems = GetItemBranch(group, row);
     }
 
+    // BUG in segments when there is no person and after assigning person scroll is to top
     public void ScrollToItem(T item) {
       CollectionViewGroup<T> group = null;
       CollectionViewRow<T> row = null;
