@@ -121,12 +121,12 @@ namespace MH.UI.Controls {
       return groupByItems;
     }
 
-    public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+    public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap, List<CollectionViewGroup<T>> removedGroups) {
       var groups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
 
       if (groups.Length > 0) {
         foreach (var subGroup in groups)
-          RemoveEmptyGroups(subGroup, toReWrap);
+          RemoveEmptyGroups(subGroup, toReWrap, removedGroups);
 
         return;
       }
@@ -139,6 +139,7 @@ namespace MH.UI.Controls {
             || (group.GroupedBy is { IsGroup: true } && group.Items.Count == 0)
             || (group.GroupedBy == null && group.Parent?.Items.Count == 1)) {
           group.Parent?.Items.Remove(group);
+          removedGroups?.Add(group);
           removed = true;
         }
         else if (removed)
@@ -238,6 +239,7 @@ namespace MH.UI.Controls {
       if (Math.Abs(Width - width) < 1) return;
       _width = width;
       ReWrap();
+      View.GroupWidthChanged(this);
     }
 
     public static void ReWrapAll(CollectionViewGroup<T> group) {
@@ -322,29 +324,7 @@ namespace MH.UI.Controls {
       return true;
     }
 
-    public void AddItem(T item) {
-      Source.Add(item);
-      AddItem(item, Items);
-    }
-
-    private void AddItem(T item, IList<object> items) {
-      CollectionViewRow<T> row = null;
-
-      if (items.Count > 0)
-        row = items[^1] as CollectionViewRow<T>;
-
-      row ??= AddRow(items);
-
-      var usedSpace = row.Items.Sum(x => View.GetItemWidth(x));
-      var itemWidth = View.GetItemWidth(item);
-
-      if (Width - usedSpace < itemWidth)
-        row = AddRow(items);
-
-      row.Items.Add(item);
-    }
-
-    private CollectionViewRow<T> AddRow(ICollection<object> items) {
+    private void AddRow(ICollection<object> items) {
       var row = new CollectionViewRow<T>(this);
       try {
         items.Add(row);
@@ -352,7 +332,6 @@ namespace MH.UI.Controls {
       catch (Exception) {
         // BUG in .NET remove try/catch after update to new .NET version
       }
-      return row;
     }
 
     public void SetExpanded(bool value) {

@@ -12,9 +12,12 @@ namespace MH.UI.Controls {
   public abstract class CollectionView<T> : ObservableObject, ICollectionView where T : ISelectable {
     private List<object> _scrollToItems;
     private bool _scrollToTop;
+    private int _scrollToIndex = -1;
     private bool _isSizeChanging;
     private T _topItem;
+    private T _pendingScrollToItem;
     private CollectionViewGroup<T> _topGroup;
+    private CollectionViewGroup<T> _pendingScrollToGroup;
     private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
@@ -26,8 +29,10 @@ namespace MH.UI.Controls {
     public CollectionViewRow<T> LastSelectedRow { get; set; }
     public List<object> ScrollToItems { get => _scrollToItems; set { _scrollToItems = value; OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
+    public int ScrollToIndex { get => _scrollToIndex; set { _scrollToIndex = value; OnPropertyChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
     public bool SelectionDisabled { get; set; }
+    public bool IsScrollUnitItem { get; set; } = true;
 
     public RelayCommand<object> ExpandAllCommand { get; }
     public RelayCommand<object> CollapseAllCommand { get; }
@@ -65,12 +70,12 @@ namespace MH.UI.Controls {
       });
     }
 
-    public void SetRoot(CollectionViewGroup<T> root, bool expandAll) {
+    public void SetRoot(CollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
       ScrollToTop = true;
       Update(_ => {
         Root = root;
         CollectionViewGroup<T>.GroupIt(Root);
-        CollectionViewGroup<T>.RemoveEmptyGroups(Root, null);
+        if (removeEmpty) CollectionViewGroup<T>.RemoveEmptyGroups(Root, null, null);
         if (expandAll) Root.SetExpanded(true);
       });
 
@@ -102,11 +107,14 @@ namespace MH.UI.Controls {
     }
 
     public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
+      var removedGroups = new List<CollectionViewGroup<T>>();
       toReWrap ??= new HashSet<CollectionViewGroup<T>>();
-      CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap);
+      CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
+      if (removedGroups.Contains(TopGroup)) TopGroup = null;
       if (toReWrap.Count == 0) return;
       foreach (var g in toReWrap) g.ReWrap();
-      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded)) ScrollToTopItem();
+      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded))
+        ScrollTo(TopGroup ?? Root, TopItem);
     }
 
     private void OnSizeChanging(bool value) {
@@ -119,7 +127,7 @@ namespace MH.UI.Controls {
       else {
         TopItem = _topItem;
         TopGroup = _topGroup;
-        ScrollToTopItem();
+        ScrollTo(TopGroup, TopItem);
       }
     }
 
@@ -129,7 +137,7 @@ namespace MH.UI.Controls {
       Update(_ => g.SetExpanded(g.IsExpanded));
       TopItem = default;
       TopGroup = g;
-      ScrollToTopItem();
+      ScrollTo(TopGroup, TopItem);
     }
 
     public void SetExpanded(CollectionViewGroup<T> group, bool value) =>
@@ -158,24 +166,54 @@ namespace MH.UI.Controls {
       return row != null || group != null;
     }
 
-    public void ScrollToTopItem() {
-      if (TopItem == null && TopGroup == null) return;
-
-      CollectionViewGroup<T> group = TopGroup;
-      CollectionViewRow<T> row = null;
-
-      if (TopItem != null)
-        CollectionViewGroup<T>.FindItem(TopGroup ?? Root, TopItem, ref group, ref row);
-
-      ScrollToItems = GetItemBranch(group, row);
+    public void GroupWidthChanged(CollectionViewGroup<T> group) {
+      if (!ReferenceEquals(group, _pendingScrollToGroup)) return;
+      ScrollTo(_pendingScrollToGroup, _pendingScrollToItem);
+      _pendingScrollToItem = default;
+      _pendingScrollToGroup = null;
     }
 
-    // BUG in segments when there is no person and after assigning person scroll is to top
-    public void ScrollToItem(T item) {
-      CollectionViewGroup<T> group = null;
+    public void ScrollTo(CollectionViewGroup<T> group, T item) {
+      if (group == null && item == null) return;
+
       CollectionViewRow<T> row = null;
-      if (!CollectionViewGroup<T>.FindItem(Root, item, ref group, ref row)) return;
-      ScrollToItems = GetItemBranch(group, row);
+
+      if (item != null) {
+        CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
+
+        // group doesn't have rows yet 
+        if (row == null && !(group.Width > 0)) {
+          _pendingScrollToGroup = group;
+          _pendingScrollToItem = TopItem;
+          return;
+        }
+      }
+
+      if (IsScrollUnitItem) {
+        int index = 0;
+        GetTreeItemIndex(ref index, Root, group, row);
+        ScrollToIndex = index;
+      }
+      else
+        ScrollToItems = GetItemBranch(group, row);
+    }
+
+    public static bool GetTreeItemIndex(ref int index, CollectionViewGroup<T> parent, CollectionViewGroup<T> group, CollectionViewRow<T> row) {
+      if (ReferenceEquals(parent, group)) {
+        index += group.Items.IndexOf(row) + 1;
+        return true;
+      }
+      
+      if (parent.Items.OfType<CollectionViewRow<T>>().Any())
+        index += parent.Items.Count;
+
+      foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>()) {
+        index++;
+        if (!g.IsExpanded) continue;
+        if (GetTreeItemIndex(ref index, g, group, row)) break;
+      }
+
+      return false;
     }
 
     private static List<object> GetItemBranch(CollectionViewGroup<T> group, CollectionViewRow<T> row) {
