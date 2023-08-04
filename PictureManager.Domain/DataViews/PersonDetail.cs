@@ -46,8 +46,8 @@ namespace PictureManager.Domain.DataViews {
       PersonM = person;
 
       if (PersonM == null) {
-        AllSegments.Root.Clear();
-        TopSegments.Root.Clear();
+        AllSegments.Root?.Clear();
+        TopSegments.Root?.Clear();
         return;
       }
 
@@ -69,15 +69,12 @@ namespace PictureManager.Domain.DataViews {
       AllSegments.Reload(source, GroupMode.ThenByRecursive, groupByItems, true, "All");
     }
 
-    private void ReloadTopSegments() {
-      if (PersonM.TopSegments == null) {
-        TopSegments.Root.Clear();
-        return;
-      }
-
-      var source = PersonM.TopSegments.Cast<SegmentM>().ToList();
-      TopSegments.Reload(source, GroupMode.GroupBy, null, true, "Top");
-    }
+    private void ReloadTopSegments() =>
+      TopSegments.Reload(
+        PersonM.TopSegments == null
+          ? new()
+          : PersonM.TopSegments.Cast<SegmentM>().ToList(),
+        GroupMode.GroupBy, null, true, "Top", false);
 
     public void ReGroupIfContains(IEnumerable<SegmentM> segments, bool remove) {
       if (PersonM == null) return;
