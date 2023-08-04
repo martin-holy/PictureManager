@@ -1,7 +1,6 @@
 ﻿using MH.UI.Interfaces;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -69,22 +68,9 @@ namespace MH.UI.WPF.Controls {
 
       View.PropertyChanged += (_, e) => {
         switch (e.PropertyName) {
-          case nameof(View.ScrollToItems):
-            if (View.ScrollToItems != null && IsVisible) {
-              ScrollViewer?.UpdateLayout();
-              ScrollTo(View.ScrollToItems);
-              View.ScrollToItems = null;
-            }
-
-            break;
-          case nameof(View.ScrollToTop):
-            if (View.ScrollToTop) {
-              ScrollViewer?.ScrollToTop();
-              ScrollViewer?.UpdateLayout();
-              View.ScrollToTop = false;
-            }
-
-            break;
+          case nameof(View.ScrollToIndex): ScrollToIndex(); break;
+          case nameof(View.ScrollToItems): ScrollToItems(); break;
+          case nameof(View.ScrollToTop): ScrollToTop(); break;
         }
       };
     }
@@ -130,10 +116,20 @@ namespace MH.UI.WPF.Controls {
       }, new PointHitTestParameters(new(10, 10)));
     }
 
-    private void ScrollTo(List<object> items) {
-      var parent = this as ItemsControl;
+    // VirtualizingPanel.ScrollUnit == Item
+    private void ScrollToIndex() {
+      if (View.ScrollToIndex < 0) return;
+      _verticalOffset = View.ScrollToIndex;
+      View.ScrollToIndex = -1;
+    }
 
-      foreach (var item in items) {
+    // VirtualizingPanel.ScrollUnit == Pixel
+    private void ScrollToItems() {
+      if (View.ScrollToItems == null || !IsVisible || ScrollViewer == null) return;
+      ScrollViewer.UpdateLayout();
+
+      var parent = this as ItemsControl;
+      foreach (var item in View.ScrollToItems) {
         var index = parent.Items.IndexOf(item);
         if (index < 0) break;
         var panel = parent.GetChildOfType<VirtualizingStackPanel>();
@@ -143,10 +139,17 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
-      // TODO create item based scroll to top
-      // this is pixel based scroll to top
-      /*_verticalOffset = ScrollViewer.VerticalOffset
-        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;*/
+      _verticalOffset = ScrollViewer.VerticalOffset
+        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
+
+      View.ScrollToItems = null;
+    }
+
+    private void ScrollToTop() {
+      if (!View.ScrollToTop) return;
+      ScrollViewer?.ScrollToTop();
+      ScrollViewer?.UpdateLayout();
+      View.ScrollToTop = false;
     }
   }
 }
