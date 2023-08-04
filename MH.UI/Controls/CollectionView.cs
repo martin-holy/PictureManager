@@ -191,17 +191,19 @@ namespace MH.UI.Controls {
 
       if (IsScrollUnitItem) {
         int index = 0;
-        GetTreeItemIndex(ref index, Root, group, row);
+        bool found = false;
+        GetTreeItemIndex(ref index, ref found, Root, group, row);
         ScrollToIndex = index;
       }
       else
         ScrollToItems = GetItemBranch(group, row);
     }
 
-    public static bool GetTreeItemIndex(ref int index, CollectionViewGroup<T> parent, CollectionViewGroup<T> group, CollectionViewRow<T> row) {
+    public static void GetTreeItemIndex(ref int index, ref bool found, CollectionViewGroup<T> parent, CollectionViewGroup<T> group, CollectionViewRow<T> row) {
       if (ReferenceEquals(parent, group)) {
         index += group.Items.IndexOf(row) + 1;
-        return true;
+        found = true;
+        return;
       }
       
       if (parent.Items.OfType<CollectionViewRow<T>>().Any())
@@ -210,10 +212,9 @@ namespace MH.UI.Controls {
       foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>()) {
         index++;
         if (!g.IsExpanded) continue;
-        if (GetTreeItemIndex(ref index, g, group, row)) break;
+        GetTreeItemIndex(ref index, ref found, g, group, row);
+        if (found) break;
       }
-
-      return false;
     }
 
     private static List<object> GetItemBranch(CollectionViewGroup<T> group, CollectionViewRow<T> row) {
