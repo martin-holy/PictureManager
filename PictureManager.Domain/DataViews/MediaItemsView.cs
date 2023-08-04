@@ -148,7 +148,7 @@ namespace PictureManager.Domain.DataViews {
       if (mi == null) return;
 
       Selected.Set(mi, true);
-      ScrollToItem(mi);
+      ScrollTo(Root, mi);
       SelectionChanged();
     }
 
@@ -296,11 +296,11 @@ namespace PictureManager.Domain.DataViews {
       //Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
 
       if (FilteredItems.Contains(_core.MediaItemsM.Current))
-        ScrollToItem(_core.MediaItemsM.Current);
+        ScrollTo(Root, _core.MediaItemsM.Current);
       else {
         _core.MediaItemsM.Current = null;
         if (Selected.Items.Count != 0)
-          ScrollToItem(Selected.Items[0]);
+          ScrollTo(Root, Selected.Items[0]);
       }
     }
   }
