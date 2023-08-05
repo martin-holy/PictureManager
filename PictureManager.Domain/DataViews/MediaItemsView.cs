@@ -93,7 +93,7 @@ namespace PictureManager.Domain.DataViews {
       foreach (var mi in Selected.Items)
         mi.IsSelected = true;
 
-      foreach (var mi in FilteredItems.Except(Selected.Items))
+      foreach (var mi in FilteredItems.Except(Selected.Items).Where(x => x.IsSelected))
         mi.IsSelected = false;
 
       SelectionChanged();
