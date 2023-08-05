@@ -127,7 +127,7 @@ namespace PictureManager.Domain.DataViews {
 
     public void Shuffle() {
       LoadedItems.Shuffle();
-      SoftLoad(LoadedItems, true, true);
+      SoftLoad(LoadedItems, false, true);
     }
 
     // TODO sort
