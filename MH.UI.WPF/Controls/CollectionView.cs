@@ -1,6 +1,7 @@
 ﻿using MH.UI.Interfaces;
 using MH.UI.WPF.Utils;
 using MH.Utils.BaseClasses;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -11,6 +12,7 @@ using Keyboard = System.Windows.Input.Keyboard;
 namespace MH.UI.WPF.Controls {
   public class CollectionView : TreeViewBase {
     private double _verticalOffset;
+    private double _verticalOffset2;
 
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
       nameof(View), typeof(ICollectionView), typeof(CollectionView));
@@ -37,8 +39,13 @@ namespace MH.UI.WPF.Controls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
-      ScrollViewer.ScrollChanged += (_, _) => {
-        SetTopItem();
+      ScrollViewer.ScrollChanged += (_, e) => {
+        if (e.ExtentHeightChange == 0)
+          SetTopItem();
+        else if (e.VerticalChange == 0)
+          _verticalOffset = _verticalOffset2;
+        else
+          _verticalOffset2 = Math.Abs(e.VerticalChange);
       };
 
       LayoutUpdated += (_, _) => {
