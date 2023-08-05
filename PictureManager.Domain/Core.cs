@@ -301,12 +301,8 @@ namespace PictureManager.Domain {
       };
 
       MainTabsM.PropertyChanged += (_, e) => {
-        if (nameof(MainTabsM.Selected).Equals(e.PropertyName)) {
+        if (nameof(MainTabsM.Selected).Equals(e.PropertyName))
           MediaItemsViews.SetCurrentView(MainTabsM.Selected?.Content as MediaItemsView);
-
-          if (MainTabsM.Selected?.Content as PeopleM == null)
-            PeopleM.Selected.DeselectAll();
-        }
       };
 
       #endregion
