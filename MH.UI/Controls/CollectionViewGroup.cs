@@ -138,8 +138,11 @@ namespace MH.UI.Controls {
         if (group == null) break;
 
         if (group.Source.Count == 0
-            || (group.GroupedBy is { IsGroup: true } && group.Items.Count == 0)
-            || (group.GroupedBy == null && group.Parent?.Items.Count == 1)) {
+            || (group.GroupedBy is { IsGroup: true }
+                && group.Items.Count == 0)
+            || (group.GroupedBy == null
+                && group.Parent?.Items.Count == 1
+                && !group.Items.OfType<CollectionViewGroup<T>>().Any())) {
           group.Parent?.Items.Remove(group);
           removedGroups?.Add(group);
           removed = true;
@@ -151,8 +154,6 @@ namespace MH.UI.Controls {
       }
     }
 
-    // TODO do not open group if it was closed
-    // BUG when all segments doesn't have person and few of them are selected and hierarchical keywords are set and than person is set with = sign
     public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
       var groupByItems = GetGroupByItems(this);
 
@@ -171,7 +172,12 @@ namespace MH.UI.Controls {
       // done if the group is not grouped and the item was already in the source
       if (groupByItems == null) return;
 
-      if (Items.FirstOrDefault() is null or CollectionViewRow<T>) {
+      var first = Items.FirstOrDefault();
+      if (first == null
+          || first is CollectionViewRow<T>
+          || (first is CollectionViewGroup<T> { GroupedBy: not null } fg
+              && GroupedBy != null
+              && !ReferenceEquals(fg.GroupedBy, GroupedBy))) {
         GroupIt(this);
         SetExpanded(true);
         return;
