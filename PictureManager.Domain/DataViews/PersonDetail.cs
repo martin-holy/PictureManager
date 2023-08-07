@@ -81,6 +81,9 @@ namespace PictureManager.Domain.DataViews {
       var items = segments.Where(x => ReferenceEquals(PersonM, x.Person)).ToArray();
       if (items.Length == 0) return;
       AllSegments.ReGroupItems(items, remove);
+      if (PersonM.TopSegments == null) return;
+      items = items.Where(PersonM.TopSegments.Contains).ToArray();
+      if (items.Length == 0) return;
       TopSegments.ReGroupItems(items, remove);
     }
   }
