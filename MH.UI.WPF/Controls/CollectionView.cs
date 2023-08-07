@@ -13,6 +13,7 @@ namespace MH.UI.WPF.Controls {
   public class CollectionView : TreeViewBase {
     private double _verticalOffset;
     private bool _isScrolling;
+    private int _scrollToAttempts;
 
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
       nameof(View), typeof(ICollectionView), typeof(CollectionView));
@@ -49,8 +50,15 @@ namespace MH.UI.WPF.Controls {
       };
 
       LayoutUpdated += (_, _) => {
-        if (_verticalOffset > 0)
+        if (_verticalOffset > 0) {
           ScrollViewer.ScrollToVerticalOffset(_verticalOffset);
+
+          _scrollToAttempts--;
+          if (_scrollToAttempts < 0) {
+            _isScrolling = false;
+            _verticalOffset = 0;
+          }
+        }
 
         if (View.IsSizeChanging)
           View.IsSizeChanging = false;
@@ -139,6 +147,7 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
+      _scrollToAttempts = 5;
       _verticalOffset = View.IsScrollUnitItem
         ? View.ScrollToIndex
         : ScrollViewer.VerticalOffset
