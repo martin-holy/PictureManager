@@ -15,9 +15,7 @@ namespace MH.UI.Controls {
     private int _scrollToIndex = -1;
     private bool _isSizeChanging;
     private T _topItem;
-    private T _pendingScrollToItem;
     private CollectionViewGroup<T> _topGroup;
-    private CollectionViewGroup<T> _pendingScrollToGroup;
     private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
@@ -33,14 +31,11 @@ namespace MH.UI.Controls {
     public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
     public bool SelectionDisabled { get; set; }
     public bool IsScrollUnitItem { get; set; } = true;
+    public int GroupContentOffset { get; set; } = 0;
 
-    public RelayCommand<object> ExpandAllCommand { get; }
-    public RelayCommand<object> CollapseAllCommand { get; }
     public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
     protected CollectionView() {
-      ExpandAllCommand = new(_ => SetExpanded(TopGroup, true), _ => TopGroup != null);
-      CollapseAllCommand = new(_ => SetExpanded(TopGroup, false), _ => TopGroup != null);
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
     }
 
@@ -140,9 +135,6 @@ namespace MH.UI.Controls {
       ScrollTo(TopGroup, TopItem);
     }
 
-    public void SetExpanded(CollectionViewGroup<T> group, bool value) =>
-      Update(_ => group.SetExpanded(value));
-
     private void OpenGroupByDialog(CollectionViewGroup<T> group) {
       if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
         _groupByItemsRoots.Add(group);
@@ -166,28 +158,16 @@ namespace MH.UI.Controls {
       return row != null || group != null;
     }
 
-    public void GroupWidthChanged(CollectionViewGroup<T> group) {
-      if (!ReferenceEquals(group, _pendingScrollToGroup)) return;
-      ScrollTo(_pendingScrollToGroup, _pendingScrollToItem);
-      _pendingScrollToItem = default;
-      _pendingScrollToGroup = null;
-    }
-
     public void ScrollTo(CollectionViewGroup<T> group, T item) {
       if (group == null && item == null) return;
 
       CollectionViewRow<T> row = null;
 
-      if (item != null) {
+      if (item != null)
         CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
 
-        // group doesn't have rows yet 
-        if (row == null && !(group.Width > 0)) {
-          _pendingScrollToGroup = group;
-          _pendingScrollToItem = TopItem;
-          return;
-        }
-      }
+      TopGroup = group;
+      TopItem = item;
 
       if (IsScrollUnitItem) {
         int index = 0;
@@ -195,8 +175,8 @@ namespace MH.UI.Controls {
         GetTreeItemIndex(ref index, ref found, Root, group, row);
         ScrollToIndex = index;
       }
-      else
-        ScrollToItems = GetItemBranch(group, row);
+
+      ScrollToItems = GetItemBranch(group, row);
     }
 
     public static void GetTreeItemIndex(ref int index, ref bool found, CollectionViewGroup<T> parent, CollectionViewGroup<T> group, CollectionViewRow<T> row) {
@@ -211,7 +191,14 @@ namespace MH.UI.Controls {
 
       foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>()) {
         index++;
-        if (!g.IsExpanded) continue;
+        if (!g.IsExpanded) {
+          if (ReferenceEquals(g, group)) {
+            found = true;
+            break;
+          }
+
+          continue;
+        }
         GetTreeItemIndex(ref index, ref found, g, group, row);
         if (found) break;
       }

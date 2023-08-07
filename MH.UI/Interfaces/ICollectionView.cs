@@ -6,8 +6,9 @@ namespace MH.UI.Interfaces {
   public interface ICollectionView : INotifyPropertyChanged {
     public ExtObservableCollection<object> RootHolder { get; }
     public List<object> ScrollToItems { get; set; }
-    public bool ScrollToTop { get; set; }
     public int ScrollToIndex { get; set; }
+    public bool ScrollToTop { get; set; }
+    public bool IsScrollUnitItem { get; set; }
     public bool IsSizeChanging { get; set; }
     public void OpenItem(object item);
     public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn);

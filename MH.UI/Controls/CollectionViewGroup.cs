@@ -32,7 +32,8 @@ namespace MH.UI.Controls {
     public bool IsRecursive { get; set; }
     public bool IsGroupBy { get; set; }
     public bool IsThenBy { get; set; }
-    public bool IsExpanded { get => _isExpanded; set { _isExpanded = value; OnPropertyChanged(); } }
+    public bool IsExpanded { get => _isExpanded; set => SetIsExpanded(value); }
+    public bool IsReWrapPending { get; set; } = true;
 
     public CollectionViewGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupedBy, List<T> source) {
       Parent = parent;
@@ -49,6 +50,7 @@ namespace MH.UI.Controls {
       IsRecursive = Parent.IsRecursive;
       IsGroupBy = Parent.IsGroupBy;
       IsThenBy = Parent.IsThenBy;
+      Width = Parent.Width - View.GroupContentOffset;
 
       if (IsRoot || Parent.GroupByItems == null || !IsThenBy) return;
 
@@ -239,7 +241,9 @@ namespace MH.UI.Controls {
       if (Math.Abs(Width - width) < 1) return;
       _width = width;
       ReWrap();
-      View.GroupWidthChanged(this);
+
+      foreach (var group in Items.OfType<CollectionViewGroup<T>>())
+        group.Width = width - View.GroupContentOffset;
     }
 
     public static void ReWrapAll(CollectionViewGroup<T> group) {
@@ -254,6 +258,16 @@ namespace MH.UI.Controls {
 
     public void ReWrap() {
       if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
+
+      if (!IsExpanded) {
+        IsReWrapPending = true;
+
+        // placeholder for expander
+        if (Items.Count == 0)
+          Items.Add(new CollectionViewRow<T>(this));
+
+        return;
+      }
 
       var newRows = WrapSource().ToArray();
 
@@ -308,18 +322,16 @@ namespace MH.UI.Controls {
 
     public static bool FindItem(CollectionViewGroup<T> parent, T item, ref CollectionViewGroup<T> group, ref CollectionViewRow<T> row) {
       if (!parent.Source.Contains(item)) return false;
+      parent.IsExpanded = true;
 
       foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>())
         if (FindItem(g, item, ref group, ref row))
           return true;
 
       group = parent;
-
-      foreach (var r in parent.Items.OfType<CollectionViewRow<T>>()) {
-        if (!r.Items.Contains(item)) continue;
-        row = r;
-        break;
-      }
+      row = parent.Items
+        .OfType<CollectionViewRow<T>>()
+        .FirstOrDefault(x => x.Items.Contains(item));
 
       return true;
     }
@@ -332,6 +344,17 @@ namespace MH.UI.Controls {
       catch (Exception) {
         // BUG in .NET remove try/catch after update to new .NET version
       }
+    }
+
+    private void SetIsExpanded(bool value) {
+      _isExpanded = value;
+
+      if (_isExpanded && IsReWrapPending) {
+        ReWrap();
+        IsReWrapPending = false;
+      }
+
+      OnPropertyChanged(nameof(IsExpanded));
     }
 
     public void SetExpanded(bool value) {
