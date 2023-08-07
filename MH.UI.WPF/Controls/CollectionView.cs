@@ -12,7 +12,7 @@ using Keyboard = System.Windows.Input.Keyboard;
 namespace MH.UI.WPF.Controls {
   public class CollectionView : TreeViewBase {
     private double _verticalOffset;
-    private double _verticalOffset2;
+    private bool _isScrolling;
 
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
       nameof(View), typeof(ICollectionView), typeof(CollectionView));
@@ -40,30 +40,29 @@ namespace MH.UI.WPF.Controls {
       base.OnApplyTemplate();
 
       ScrollViewer.ScrollChanged += (_, e) => {
-        if (e.ExtentHeightChange == 0)
+        if (!View.IsSizeChanging && !_isScrolling)
           SetTopItem();
-        else if (e.VerticalChange == 0)
-          _verticalOffset = _verticalOffset2;
-        else
-          _verticalOffset2 = Math.Abs(e.VerticalChange);
+
+        if (Math.Abs(e.VerticalOffset - _verticalOffset) > 0) return;
+        _isScrolling = false;
+        _verticalOffset = 0;
       };
 
       LayoutUpdated += (_, _) => {
-        if (_verticalOffset > 0) {
-          ScrollViewer.ScrollToHorizontalOffset(0);
+        if (_verticalOffset > 0)
           ScrollViewer.ScrollToVerticalOffset(_verticalOffset);
-          _verticalOffset = 0;
-        }
 
         if (View.IsSizeChanging)
           View.IsSizeChanging = false;
       };
 
       SizeChanged += (_, e) => {
-        if (e.WidthChanged)
+        if (e.PreviousSize is not { Width: 0, Height: 0 })
           View.IsSizeChanging = true;
       };
 
+      // TODO expand all in one update, so maybe removing binding to IsSelected?
+      // keep binding for double click 
       PreviewMouseLeftButtonUp += (_, e) => {
         if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
             && e.OriginalSource is ToggleButton { Name: "Expander" } btn) {
@@ -75,7 +74,6 @@ namespace MH.UI.WPF.Controls {
 
       View.PropertyChanged += (_, e) => {
         switch (e.PropertyName) {
-          case nameof(View.ScrollToIndex): ScrollToIndex(); break;
           case nameof(View.ScrollToItems): ScrollToItems(); break;
           case nameof(View.ScrollToTop): ScrollToTop(); break;
         }
@@ -123,20 +121,15 @@ namespace MH.UI.WPF.Controls {
       }, new PointHitTestParameters(new(10, 10)));
     }
 
-    // VirtualizingPanel.ScrollUnit == Item
-    private void ScrollToIndex() {
-      if (View.ScrollToIndex < 0) return;
-      _verticalOffset = View.ScrollToIndex;
-      View.ScrollToIndex = -1;
-    }
-
-    // VirtualizingPanel.ScrollUnit == Pixel
     private void ScrollToItems() {
       if (View.ScrollToItems == null || !IsVisible || ScrollViewer == null) return;
+      var items = View.ScrollToItems;
+      View.ScrollToItems = null;
+      _isScrolling = true;
       ScrollViewer.UpdateLayout();
 
       var parent = this as ItemsControl;
-      foreach (var item in View.ScrollToItems) {
+      foreach (var item in items) {
         var index = parent.Items.IndexOf(item);
         if (index < 0) break;
         var panel = parent.GetChildOfType<VirtualizingStackPanel>();
@@ -146,10 +139,10 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
-      _verticalOffset = ScrollViewer.VerticalOffset
-        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
-
-      View.ScrollToItems = null;
+      _verticalOffset = View.IsScrollUnitItem
+        ? View.ScrollToIndex
+        : ScrollViewer.VerticalOffset
+          + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
     }
 
     private void ScrollToTop() {
