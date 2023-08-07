@@ -66,6 +66,8 @@ namespace MH.UI.Controls {
     }
 
     public void SetRoot(CollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
+      TopGroup = null;
+      TopItem = default;
       ScrollToTop = true;
       Update(_ => {
         Root = root;
