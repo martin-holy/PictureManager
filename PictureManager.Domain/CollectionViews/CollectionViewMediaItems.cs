@@ -20,7 +20,7 @@ namespace PictureManager.Domain.CollectionViews {
     }
 
     public void Reload(List<MediaItemM> source, GroupMode groupMode, CollectionViewGroupByItem<MediaItemM>[] groupByItems, bool expandAll) {
-      SetRoot(new(source, Res.IconImageMultiple, "Media Items", this, groupMode, groupByItems), expandAll);
+      SetRoot(new CollectionViewGroup<MediaItemM>(source, Res.IconImageMultiple, "Media Items", this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {

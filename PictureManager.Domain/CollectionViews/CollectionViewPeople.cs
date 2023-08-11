@@ -13,7 +13,7 @@ namespace PictureManager.Domain.CollectionViews {
     }
 
     public void Reload(List<PersonM> source, GroupMode groupMode, CollectionViewGroupByItem<PersonM>[] groupByItems, bool expandAll) {
-      SetRoot(new(source, Res.IconPeopleMultiple, "People", this, groupMode, groupByItems), expandAll);
+      SetRoot(new CollectionViewGroup<PersonM>(source, Res.IconPeopleMultiple, "People", this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
