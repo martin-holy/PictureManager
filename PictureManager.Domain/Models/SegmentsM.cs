@@ -292,7 +292,7 @@ namespace PictureManager.Domain.Models {
       if (segmentM.MediaItem == null) return null;
 
       if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segmentM))
-        return SegmentsView.CvSegments.LastSelectedRow.Group.Source
+        return SegmentsView.CvSegments.LastSelectedRow.Parent.Source
           .Select(x => x.MediaItem)
           .Distinct()
           .OrderBy(x => x.Folder.FullPath)
