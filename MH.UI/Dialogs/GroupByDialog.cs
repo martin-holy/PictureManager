@@ -1,4 +1,5 @@
 ﻿using MH.UI.Controls;
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
@@ -26,7 +27,7 @@ namespace MH.UI.Dialogs {
         new("Cancel", "IconXCross", CloseCommand, false, true) };
     }
 
-    public bool Open(CollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
+    public bool Open(ICollectionViewGroup<T> group, IEnumerable<TreeItem> items) {
       IsRecursive = group.IsRecursive;
       IsGroupBy = group.IsGroupBy;
       IsThenBy = group.IsThenBy;

@@ -15,16 +15,16 @@ namespace MH.UI.Controls {
     private int _scrollToIndex = -1;
     private bool _isSizeChanging;
     private T _topItem;
-    private CollectionViewGroup<T> _topGroup;
-    private readonly HashSet<CollectionViewGroup<T>> _groupByItemsRoots = new();
+    private ICollectionViewGroup<T> _topGroup;
+    private readonly HashSet<ICollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public ExtObservableCollection<object> RootHolder { get; } = new();
-    public CollectionViewGroup<T> Root { get; set; }
+    public ICollectionViewGroup<T> Root { get; set; }
     public T TopItem { get; set; }
     public T LastSelectedItem { get; set; }
-    public CollectionViewGroup<T> TopGroup { get; set; }
-    public CollectionViewRow<T> LastSelectedRow { get; set; }
+    public ICollectionViewGroup<T> TopGroup { get; set; }
+    public ICollectionViewRow<T> LastSelectedRow { get; set; }
     public List<object> ScrollToItems { get => _scrollToItems; set { _scrollToItems = value; OnPropertyChanged(); } }
     public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
     public int ScrollToIndex { get => _scrollToIndex; set { _scrollToIndex = value; OnPropertyChanged(); } }
@@ -33,7 +33,7 @@ namespace MH.UI.Controls {
     public bool IsScrollUnitItem { get; set; } = true;
     public int GroupContentOffset { get; set; } = 0;
 
-    public RelayCommand<CollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
+    public RelayCommand<ICollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 
     protected CollectionView() {
       OpenGroupByDialogCommand = new(OpenGroupByDialog);
@@ -50,10 +50,10 @@ namespace MH.UI.Controls {
     }
 
     public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
-      if (SelectionDisabled || row is not CollectionViewRow<T> r || item is not T i) return;
+      if (SelectionDisabled || row is not ICollectionViewRow<T> r || item is not T i) return;
       LastSelectedItem = i;
       LastSelectedRow = r;
-      OnSelectItem(r.Group.Source, i, isCtrlOn, isShiftOn);
+      OnSelectItem(r.Parent.Source, i, isCtrlOn, isShiftOn);
     }
 
     public void Update(Action<IList<object>> itemsAction) {
@@ -65,7 +65,7 @@ namespace MH.UI.Controls {
       });
     }
 
-    public void SetRoot(CollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
+    public void SetRoot(ICollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
       TopGroup = null;
       TopItem = default;
       ScrollToTop = true;
@@ -87,7 +87,7 @@ namespace MH.UI.Controls {
     public void ReGroupItems(T[] items, bool remove) {
       if (Root == null || items == null) return;
 
-      var toReWrap = new HashSet<CollectionViewGroup<T>>();
+      var toReWrap = new HashSet<ICollectionViewGroup<T>>();
 
       if (remove)
         foreach (var item in items)
@@ -103,9 +103,9 @@ namespace MH.UI.Controls {
       RemoveEmptyGroups(Root, toReWrap);
     }
 
-    public void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap) {
-      var removedGroups = new List<CollectionViewGroup<T>>();
-      toReWrap ??= new HashSet<CollectionViewGroup<T>>();
+    public void RemoveEmptyGroups(ICollectionViewGroup<T> group, ISet<ICollectionViewGroup<T>> toReWrap) {
+      var removedGroups = new List<ICollectionViewGroup<T>>();
+      toReWrap ??= new HashSet<ICollectionViewGroup<T>>();
       CollectionViewGroup<T>.RemoveEmptyGroups(group, toReWrap, removedGroups);
       if (removedGroups.Contains(TopGroup)) TopGroup = null;
       if (toReWrap.Count == 0) return;
@@ -129,7 +129,7 @@ namespace MH.UI.Controls {
     }
 
     public void SetExpanded(object group) {
-      if (group is not CollectionViewGroup<T> g) return;
+      if (group is not ICollectionViewGroup<T> g) return;
       
       Update(_ => g.SetExpanded(g.IsExpanded));
       TopItem = default;
@@ -137,14 +137,14 @@ namespace MH.UI.Controls {
       ScrollTo(TopGroup, TopItem);
     }
 
-    private void OpenGroupByDialog(CollectionViewGroup<T> group) {
+    private void OpenGroupByDialog(ICollectionViewGroup<T> group) {
       if (_groupByDialog.Open(group, GetGroupByItems(group.Source)))
         _groupByItemsRoots.Add(group);
     }
 
     public bool SetTopItem(object o) {
-      var row = o as CollectionViewRow<T>;
-      var group = o as CollectionViewGroup<T>;
+      var row = o as ICollectionViewRow<T>;
+      var group = o as ICollectionViewGroup<T>;
 
       TopItem = default;
       TopGroup = null;
@@ -152,18 +152,18 @@ namespace MH.UI.Controls {
       if (group != null)
         TopGroup = group;
       else if (row != null) {
-        TopGroup = row.Group;
+        TopGroup = row.Parent;
         if (row.Items.Count > 0)
-          TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Items[0]);
+          TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
       }
 
       return row != null || group != null;
     }
 
-    public void ScrollTo(CollectionViewGroup<T> group, T item) {
+    public void ScrollTo(ICollectionViewGroup<T> group, T item) {
       if (group == null && item == null) return;
 
-      CollectionViewRow<T> row = null;
+      ICollectionViewRow<T> row = default;
 
       if (item != null)
         CollectionViewGroup<T>.FindItem(group, item, ref group, ref row);
@@ -181,17 +181,17 @@ namespace MH.UI.Controls {
       ScrollToItems = GetItemBranch(group, row);
     }
 
-    public static void GetTreeItemIndex(ref int index, ref bool found, CollectionViewGroup<T> parent, CollectionViewGroup<T> group, CollectionViewRow<T> row) {
+    public static void GetTreeItemIndex(ref int index, ref bool found, ICollectionViewGroup<T> parent, ICollectionViewGroup<T> group, ICollectionViewRow<T> row) {
       if (ReferenceEquals(parent, group)) {
         index += group.Items.IndexOf(row) + 1;
         found = true;
         return;
       }
       
-      if (parent.Items.OfType<CollectionViewRow<T>>().Any())
+      if (parent.Items.OfType<ICollectionViewRow<T>>().Any())
         index += parent.Items.Count;
 
-      foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>()) {
+      foreach (var g in parent.Items.OfType<ICollectionViewGroup<T>>()) {
         index++;
         if (!g.IsExpanded) {
           if (ReferenceEquals(g, group)) {
@@ -206,7 +206,7 @@ namespace MH.UI.Controls {
       }
     }
 
-    private static List<object> GetItemBranch(CollectionViewGroup<T> group, CollectionViewRow<T> row) {
+    private static List<object> GetItemBranch(ICollectionViewGroup<T> group, ICollectionViewRow<T> row) {
       if (group == null) return null;
       var items = new List<object>();
       

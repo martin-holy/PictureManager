@@ -1,4 +1,4 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Interfaces;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
@@ -14,15 +14,12 @@ namespace MH.UI.Controls {
     ThenByRecursive
   }
 
-  public class CollectionViewGroup<T> : ObservableObject where T : ISelectable {
-    private bool _isExpanded;
+  public class CollectionViewGroup<T> : CollectionViewItem<T>, ICollectionViewGroup<T> where T : ISelectable {
     private double _width;
 
     public CollectionView<T> View { get; set; }
-    public CollectionViewGroup<T> Parent { get; set; }
     public List<T> Source { get; }
     public int SourceCount => Source.Count;
-    public ExtObservableCollection<object> Items { get; } = new();
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
     public double Width { get => _width; set => SetWidth(value); }
@@ -32,11 +29,9 @@ namespace MH.UI.Controls {
     public bool IsRecursive { get; set; }
     public bool IsGroupBy { get; set; }
     public bool IsThenBy { get; set; }
-    public bool IsExpanded { get => _isExpanded; set => SetIsExpanded(value); }
     public bool IsReWrapPending { get; set; } = true;
 
-    public CollectionViewGroup(CollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupedBy, List<T> source) {
-      Parent = parent;
+    public CollectionViewGroup(ICollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupedBy, List<T> source) : base(parent) {
       Icon = groupedBy == null ? string.Empty : groupedBy.IconName;
       Title = groupedBy == null ? string.Empty : groupedBy.Name;
       GroupedBy = groupedBy;
@@ -60,7 +55,7 @@ namespace MH.UI.Controls {
         GroupByItems = Parent.GroupByItems[1..];
     }
 
-    public CollectionViewGroup(List<T> source, string icon, string title, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(null, null, source) {
+    public CollectionViewGroup(List<T> source, string icon, string title, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(default, null, source) {
       Icon = icon;
       Title = title;
       View = view;
@@ -70,11 +65,11 @@ namespace MH.UI.Controls {
       GroupByItems = groupByItems?.Length == 0 ? null : groupByItems;
     }
 
-    public static void GroupIt(CollectionViewGroup<T> parent) {
+    public static void GroupIt(ICollectionViewGroup<T> parent) {
       var groupByItems = GetGroupByItems(parent);
       if (groupByItems == null) return;
 
-      CollectionViewGroup<T> emptyGroup = null;
+      ICollectionViewGroup<T> emptyGroup = null;
       var newGroups = groupByItems
         .Select(x => new object[] { x, null })
         .ToArray();
@@ -88,12 +83,12 @@ namespace MH.UI.Controls {
           var gbi = (CollectionViewGroupByItem<T>)grp[0];
           if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
           grp[1] ??= new CollectionViewGroup<T>(parent, gbi, new());
-          ((CollectionViewGroup<T>)grp[1]).Source.Add(item);
+          ((ICollectionViewGroup<T>)grp[1]).Source.Add(item);
           fit = true;
         }
 
         if (fit) continue;
-        emptyGroup ??= new(parent, null, new());
+        emptyGroup ??= new CollectionViewGroup<T>(parent, null, new());
         emptyGroup.Source.Add(item);
       }
 
@@ -102,13 +97,13 @@ namespace MH.UI.Controls {
         parent.Items.Add(emptyGroup);
       }
 
-      foreach (var newGroup in newGroups.Where(x => x[1] != null).Select(x => (CollectionViewGroup<T>)x[1])) {
+      foreach (var newGroup in newGroups.Where(x => x[1] != null).Select(x => (ICollectionViewGroup<T>)x[1])) {
         GroupIt(newGroup);
         parent.Items.Add(newGroup);
       }
     }
 
-    public static CollectionViewGroupByItem<T>[] GetGroupByItems(CollectionViewGroup<T> group) {
+    public static CollectionViewGroupByItem<T>[] GetGroupByItems(ICollectionViewGroup<T> group) {
       CollectionViewGroupByItem<T>[] groupByItems = null;
 
       if (group.GroupByItems != null && (group.IsRoot || group.GroupedBy is null or { Items: { Count: 0 } })) {
@@ -123,8 +118,8 @@ namespace MH.UI.Controls {
       return groupByItems;
     }
 
-    public static void RemoveEmptyGroups(CollectionViewGroup<T> group, ISet<CollectionViewGroup<T>> toReWrap, List<CollectionViewGroup<T>> removedGroups) {
-      var groups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
+    public static void RemoveEmptyGroups(ICollectionViewGroup<T> group, ISet<ICollectionViewGroup<T>> toReWrap, List<ICollectionViewGroup<T>> removedGroups) {
+      var groups = group.Items.OfType<ICollectionViewGroup<T>>().ToArray();
 
       if (groups.Length > 0) {
         foreach (var subGroup in groups)
@@ -142,7 +137,7 @@ namespace MH.UI.Controls {
                 && group.Items.Count == 0)
             || (group.GroupedBy == null
                 && group.Parent?.Items.Count == 1
-                && !group.Items.OfType<CollectionViewGroup<T>>().Any())) {
+                && !group.Items.OfType<ICollectionViewGroup<T>>().Any())) {
           group.Parent?.Items.Remove(group);
           removedGroups?.Add(group);
           removed = true;
@@ -154,7 +149,7 @@ namespace MH.UI.Controls {
       }
     }
 
-    public void InsertItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
+    public void InsertItem(T item, ISet<ICollectionViewGroup<T>> toReWrap) {
       var groupByItems = GetGroupByItems(this);
 
       // add the item to the source if is not present
@@ -174,8 +169,8 @@ namespace MH.UI.Controls {
 
       var first = Items.FirstOrDefault();
       if (first == null
-          || first is CollectionViewRow<T>
-          || (first is CollectionViewGroup<T> { GroupedBy: not null } fg
+          || first is ICollectionViewRow<T>
+          || (first is ICollectionViewGroup<T> { GroupedBy: not null } fg
               && GroupedBy != null
               && !ReferenceEquals(fg.GroupedBy, GroupedBy))) {
         GroupIt(this);
@@ -183,8 +178,8 @@ namespace MH.UI.Controls {
         return;
       }
 
-      var groups = Items.OfType<CollectionViewGroup<T>>().ToArray();
-      var inGroups = new List<CollectionViewGroup<T>>();
+      var groups = Items.OfType<ICollectionViewGroup<T>>().ToArray();
+      var inGroups = new List<ICollectionViewGroup<T>>();
 
       foreach (var gbi in groupByItems) {
         if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
@@ -194,10 +189,10 @@ namespace MH.UI.Controls {
         if (group != null)
           group.InsertItem(item, toReWrap);
         else {
-          group = new(this, gbi, new() { item });
+          group = new CollectionViewGroup<T>(this, gbi, new() { item });
           GroupIt(group);
           group.SetExpanded(true);
-          Items.SetInOrder(group, x => x is CollectionViewGroup<T> g ? g.Title : string.Empty);
+          Items.SetInOrder(group, x => x is ICollectionViewGroup<T> g ? g.Title : string.Empty);
         }
 
         inGroups.Add(group);
@@ -207,7 +202,7 @@ namespace MH.UI.Controls {
         var emptyGroup = groups.SingleOrDefault(x => x.GroupedBy == null);
 
         if (emptyGroup == null) {
-          emptyGroup = new(this, null, new()) { IsExpanded = true };
+          emptyGroup = new CollectionViewGroup<T>(this, null, new()) { IsExpanded = true };
           Items.Insert(0, emptyGroup);
         }
 
@@ -226,7 +221,7 @@ namespace MH.UI.Controls {
         gbi.Update(newGroupByItems);
     }
 
-    public void RemoveItem(T item, ISet<CollectionViewGroup<T>> toReWrap) {
+    public void RemoveItem(T item, ISet<ICollectionViewGroup<T>> toReWrap) {
       if (!Source.Remove(item)) return;
 
       if (Source.Count == 0) {
@@ -236,10 +231,10 @@ namespace MH.UI.Controls {
 
       OnPropertyChanged(nameof(SourceCount));
 
-      if (Items.FirstOrDefault() is CollectionViewRow<T>)
+      if (Items.FirstOrDefault() is ICollectionViewRow<T>)
         toReWrap.Add(this);
       else
-        foreach (var group in Items.OfType<CollectionViewGroup<T>>().ToArray())
+        foreach (var group in Items.OfType<ICollectionViewGroup<T>>().ToArray())
           group.RemoveItem(item, toReWrap);
     }
 
@@ -248,12 +243,12 @@ namespace MH.UI.Controls {
       _width = width;
       ReWrap();
 
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>())
+      foreach (var group in Items.OfType<ICollectionViewGroup<T>>())
         group.Width = width - View.GroupContentOffset;
     }
 
-    public static void ReWrapAll(CollectionViewGroup<T> group) {
-      var groups = group.Items.OfType<CollectionViewGroup<T>>().ToArray();
+    public static void ReWrapAll(ICollectionViewGroup<T> group) {
+      var groups = group.Items.OfType<ICollectionViewGroup<T>>().ToArray();
 
       if (groups.Length == 0)
         group.ReWrap();
@@ -263,14 +258,12 @@ namespace MH.UI.Controls {
     }
 
     public void ReWrap() {
-      if (Items.FirstOrDefault() is CollectionViewGroup<T> || !(Width > 0)) return;
+      if (Items.FirstOrDefault() is ICollectionViewGroup<T> || !(Width > 0)) return;
 
       if (!IsExpanded) {
         IsReWrapPending = true;
-
         // placeholder for expander
-        if (Items.Count == 0)
-          Items.Add(new CollectionViewRow<T>(this));
+        if (Items.Count == 0) AddRow(Items);
 
         return;
       }
@@ -292,13 +285,13 @@ namespace MH.UI.Controls {
       }
 
       for (int i = 0; i < newRows.Length; i++) {
-        var oldRow = (CollectionViewRow<T>)Items[i];
+        var oldRow = Items[i];
         var newRow = newRows[i];
 
-        if (oldRow.Items.SequenceEqual(newRow))
+        if (oldRow.Leaves.SequenceEqual(newRow))
           continue;
 
-        oldRow.Items.Execute(items => {
+        oldRow.Leaves.Execute(items => {
           items.Clear();
           foreach (var item in newRow)
             items.Add(item);
@@ -326,23 +319,23 @@ namespace MH.UI.Controls {
       yield return Source.GetRange(index, Source.Count - index);
     }
 
-    public static bool FindItem(CollectionViewGroup<T> parent, T item, ref CollectionViewGroup<T> group, ref CollectionViewRow<T> row) {
+    public static bool FindItem(ICollectionViewGroup<T> parent, T item, ref ICollectionViewGroup<T> group, ref ICollectionViewRow<T> row) {
       if (!parent.Source.Contains(item)) return false;
       parent.IsExpanded = true;
 
-      foreach (var g in parent.Items.OfType<CollectionViewGroup<T>>())
+      foreach (var g in parent.Items.OfType<ICollectionViewGroup<T>>())
         if (FindItem(g, item, ref group, ref row))
           return true;
 
       group = parent;
       row = parent.Items
-        .OfType<CollectionViewRow<T>>()
-        .FirstOrDefault(x => x.Items.Contains(item));
+        .OfType<ICollectionViewRow<T>>()
+        .FirstOrDefault(x => x.Leaves.Contains(item));
 
       return true;
     }
 
-    private void AddRow(ICollection<object> items) {
+    private void AddRow(ICollection<ICollectionViewItem<T>> items) {
       var row = new CollectionViewRow<T>(this);
       try {
         items.Add(row);
@@ -352,22 +345,17 @@ namespace MH.UI.Controls {
       }
     }
 
-    private void SetIsExpanded(bool value) {
-      _isExpanded = value;
-
-      if (_isExpanded && IsReWrapPending) {
-        ReWrap();
-        IsReWrapPending = false;
-      }
-
-      OnPropertyChanged(nameof(IsExpanded));
+    public override void OnIsExpandedChanged(bool value) {
+      if (!value || !IsReWrapPending) return;
+      ReWrap();
+      IsReWrapPending = false;
     }
 
     public void SetExpanded(bool value) {
       if (IsExpanded != value)
         IsExpanded = value;
       if (Items.Count == 0) return;
-      foreach (var group in Items.OfType<CollectionViewGroup<T>>())
+      foreach (var group in Items.OfType<ICollectionViewGroup<T>>())
         group.SetExpanded(value);
     }
 
@@ -377,7 +365,7 @@ namespace MH.UI.Controls {
       OnPropertyChanged(nameof(SourceCount));
     }
 
-    public static bool IsFullyExpanded(CollectionViewGroup<T> group) =>
+    public static bool IsFullyExpanded(ICollectionViewGroup<T> group) =>
       group.IsExpanded && (group.Parent == null || IsFullyExpanded(group.Parent));
   }
 }
