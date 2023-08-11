@@ -90,7 +90,7 @@
   </HierarchicalDataTemplate>
 
   <DataTemplate x:Key="MH.UI.Controls.CollectionViewRow`1" DataType="{x:Type uic:CollectionViewRow`1}">
-    <ItemsControl ItemsSource="{Binding Items}">
+    <ItemsControl ItemsSource="{Binding Leaves}">
       <b:Interaction.Triggers>
         <b:EventTrigger EventName="PreviewMouseDoubleClick">
           <b:InvokeCommandAction
