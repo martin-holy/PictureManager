@@ -73,7 +73,7 @@ namespace MH.UI.Controls {
         Root = root;
         CollectionViewGroup<T>.GroupIt(Root);
         if (removeEmpty) CollectionViewGroup<T>.RemoveEmptyGroups(Root, null, null);
-        if (expandAll) Root.SetExpanded(true);
+        if (expandAll) Root.SetExpanded<ICollectionViewGroup<T>>(true);
       });
 
       _groupByItemsRoots.Clear();
@@ -131,7 +131,7 @@ namespace MH.UI.Controls {
     public void SetExpanded(object group) {
       if (group is not ICollectionViewGroup<T> g) return;
       
-      Update(_ => g.SetExpanded(g.IsExpanded));
+      Update(_ => g.SetExpanded<ICollectionViewGroup<T>>(g.IsExpanded));
       TopItem = default;
       TopGroup = g;
       ScrollTo(TopGroup, TopItem);
@@ -153,7 +153,7 @@ namespace MH.UI.Controls {
         TopGroup = group;
       else if (row != null) {
         TopGroup = row.Parent;
-        if (row.Items.Count > 0)
+        if (row.Leaves.Count > 0)
           TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
       }
 
@@ -170,61 +170,14 @@ namespace MH.UI.Controls {
 
       TopGroup = group;
       TopItem = item;
+      ICollectionViewItem<T> scrollToItem = row != null ? row : group;
 
-      if (IsScrollUnitItem) {
-        int index = 0;
-        bool found = false;
-        GetTreeItemIndex(ref index, ref found, Root, group, row);
-        ScrollToIndex = index;
-      }
+      if (IsScrollUnitItem)
+        ScrollToIndex = CollectionViewItem<T>.GetIndex(Root, scrollToItem);
 
-      ScrollToItems = GetItemBranch(group, row);
-    }
-
-    public static void GetTreeItemIndex(ref int index, ref bool found, ICollectionViewGroup<T> parent, ICollectionViewGroup<T> group, ICollectionViewRow<T> row) {
-      if (ReferenceEquals(parent, group)) {
-        index += group.Items.IndexOf(row) + 1;
-        found = true;
-        return;
-      }
-      
-      if (parent.Items.OfType<ICollectionViewRow<T>>().Any())
-        index += parent.Items.Count;
-
-      foreach (var g in parent.Items.OfType<ICollectionViewGroup<T>>()) {
-        index++;
-        if (!g.IsExpanded) {
-          if (ReferenceEquals(g, group)) {
-            found = true;
-            break;
-          }
-
-          continue;
-        }
-        GetTreeItemIndex(ref index, ref found, g, group, row);
-        if (found) break;
-      }
-    }
-
-    private static List<object> GetItemBranch(ICollectionViewGroup<T> group, ICollectionViewRow<T> row) {
-      if (group == null) return null;
-      var items = new List<object>();
-      
-      if (row != null)
-        items.Add(row);
-
-      items.Add(group);
-      group = group.Parent;
-
-      while (group != null) {
-        items.Add(group);
-        group.IsExpanded = true;
-        group = group.Parent;
-      }
-
-      items.Reverse();
-
-      return items;
+      var items = CollectionViewItem<T>.GetBranch(scrollToItem, true);
+      if (items == null) return;
+      ScrollToItems = items.Cast<object>().ToList();
     }
   }
 }

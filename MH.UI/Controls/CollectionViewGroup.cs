@@ -167,14 +167,24 @@ namespace MH.UI.Controls {
       // done if the group is not grouped and the item was already in the source
       if (groupByItems == null) return;
 
-      var first = Items.FirstOrDefault();
+      // TODO BUG in segments when there are no people and no keywords => set keyword and than person to one segment
+      // this code works in case of the bug, but also recreates groups in other cases
+      // when is not needed causing wrong scroll to alter because groups has ben recreated 
+      /*var first = Items.FirstOrDefault();
       if (first == null
           || first is ICollectionViewRow<T>
           || (first is ICollectionViewGroup<T> { GroupedBy: not null } fg
               && GroupedBy != null
               && !ReferenceEquals(fg.GroupedBy, GroupedBy))) {
         GroupIt(this);
-        SetExpanded(true);
+        SetExpanded<ICollectionViewGroup<T>>(true);
+        return;
+      }*/
+
+      var first = Items.FirstOrDefault();
+      if (first is null or ICollectionViewRow<T>) {
+        GroupIt(this);
+        SetExpanded<ICollectionViewGroup<T>>(true);
         return;
       }
 
@@ -191,7 +201,7 @@ namespace MH.UI.Controls {
         else {
           group = new CollectionViewGroup<T>(this, gbi, new() { item });
           GroupIt(group);
-          group.SetExpanded(true);
+          group.SetExpanded<ICollectionViewGroup<T>>(true);
           Items.SetInOrder(group, x => x is ICollectionViewGroup<T> g ? g.Title : string.Empty);
         }
 
@@ -351,21 +361,10 @@ namespace MH.UI.Controls {
       IsReWrapPending = false;
     }
 
-    public void SetExpanded(bool value) {
-      if (IsExpanded != value)
-        IsExpanded = value;
-      if (Items.Count == 0) return;
-      foreach (var group in Items.OfType<ICollectionViewGroup<T>>())
-        group.SetExpanded(value);
-    }
-
     public void Clear() {
       Items.Clear();
       Source.Clear();
       OnPropertyChanged(nameof(SourceCount));
     }
-
-    public static bool IsFullyExpanded(ICollectionViewGroup<T> group) =>
-      group.IsExpanded && (group.Parent == null || IsFullyExpanded(group.Parent));
   }
 }

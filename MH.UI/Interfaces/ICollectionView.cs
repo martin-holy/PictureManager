@@ -36,7 +36,6 @@ namespace MH.UI.Interfaces {
     public void InsertItem(T item, ISet<ICollectionViewGroup<T>> toReWrap);
     public void RemoveItem(T item, ISet<ICollectionViewGroup<T>> toReWrap);
     public void ReWrap();
-    public void SetExpanded(bool value);
     public void UpdateGroupByItems(CollectionViewGroupByItem<T>[] newGroupByItems);
   }
 
