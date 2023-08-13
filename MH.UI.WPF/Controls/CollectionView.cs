@@ -11,7 +11,7 @@ using Keyboard = System.Windows.Input.Keyboard;
 
 namespace MH.UI.WPF.Controls {
   public class CollectionView : TreeViewBase {
-    private double _verticalOffset;
+    private double _verticalOffset = -1;
     private bool _isScrolling;
     private int _scrollToAttempts;
 
@@ -46,17 +46,17 @@ namespace MH.UI.WPF.Controls {
 
         if (Math.Abs(e.VerticalOffset - _verticalOffset) > 0) return;
         _isScrolling = false;
-        _verticalOffset = 0;
+        _verticalOffset = -1;
       };
 
       LayoutUpdated += (_, _) => {
-        if (_verticalOffset > 0) {
+        if (_verticalOffset > -1) {
           ScrollViewer.ScrollToVerticalOffset(_verticalOffset);
 
           _scrollToAttempts--;
           if (_scrollToAttempts < 0) {
             _isScrolling = false;
-            _verticalOffset = 0;
+            _verticalOffset = -1;
           }
         }
 
