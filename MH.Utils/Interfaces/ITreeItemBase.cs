@@ -9,5 +9,7 @@ namespace MH.Utils.Interfaces {
     public ExtObservableCollection<TI> Items { get; set; }
     public ExtObservableCollection<TL> Leaves { get; set; }
     public bool IsExpanded { get; set; }
+
+    public void SetExpanded<T>(bool value) where T : ITreeItemBase<TP, TI, TL>;
   }
 }
