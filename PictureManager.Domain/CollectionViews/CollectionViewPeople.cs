@@ -10,10 +10,11 @@ namespace PictureManager.Domain.CollectionViews {
 
     public CollectionViewPeople(PeopleM peopleM) {
       PeopleM = peopleM;
+      GetTitle = "People";
     }
 
     public void Reload(List<PersonM> source, GroupMode groupMode, CollectionViewGroupByItem<PersonM>[] groupByItems, bool expandAll) {
-      SetRoot(new CollectionViewGroup<PersonM>(source, Res.IconPeopleMultiple, "People", this, groupMode, groupByItems), expandAll);
+      SetRoot(new CollectionViewGroup<PersonM>(source, this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<PersonM>> GetGroupByItems(IEnumerable<PersonM> source) {
