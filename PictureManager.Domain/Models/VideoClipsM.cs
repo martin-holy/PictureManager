@@ -146,7 +146,7 @@ namespace PictureManager.Domain.Models {
     public void SetMediaItem(MediaItemM mi) {
       SetCurrentMediaItem(mi);
       UpdateClipsTitles();
-      TreeCategory.ExpandAll();
+      TreeCategory.SetExpanded<ITreeItem>(true);
     }
 
     private void SetCurrentMediaItem(MediaItemM mi) {

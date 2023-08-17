@@ -10,7 +10,6 @@ using PictureManager.Domain.HelperClasses;
 using PictureManager.Domain.Utils;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -27,7 +26,7 @@ namespace PictureManager.Domain.Models {
     public MediaItemsDataAdapter DataAdapter { get; set; }
     public static HashSet<MediaItemM> ThumbIgnoreCache { get; } = new();
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
-    public Dictionary<MediaItemM, ObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
+    public Dictionary<MediaItemM, ExtObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
     public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public int MediaItemsCount => DataAdapter.All.Count;
     public int ModifiedItemsCount => ModifiedItems.Count;
