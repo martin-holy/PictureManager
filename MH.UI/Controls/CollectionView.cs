@@ -32,6 +32,7 @@ namespace MH.UI.Controls {
     public bool SelectionDisabled { get; set; }
     public bool IsScrollUnitItem { get; set; } = true;
     public int GroupContentOffset { get; set; } = 0;
+    public string GetTitle { get; set; }
 
     public RelayCommand<ICollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 

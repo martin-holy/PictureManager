@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace MH.UI.Interfaces {
-  public interface ICollectionView : INotifyPropertyChanged {
+  public interface ICollectionView : INotifyPropertyChanged, ITitled {
     public ExtObservableCollection<object> RootHolder { get; }
     public List<object> ScrollToItems { get; set; }
     public int ScrollToIndex { get; set; }
@@ -18,7 +18,7 @@ namespace MH.UI.Interfaces {
     public bool SetTopItem(object o);
   }
 
-  public interface ICollectionViewItem<T> : ITreeItemBase<ICollectionViewGroup<T>, ICollectionViewItem<T>, T> where T : ISelectable { }
+  public interface ICollectionViewItem<T> : ILeafyTreeItem<ICollectionViewGroup<T>, ICollectionViewItem<T>, T> where T : ISelectable { }
 
   public interface ICollectionViewGroup<T> : ICollectionViewItem<T> where T : ISelectable {
     public CollectionView<T> View { get; set; }
@@ -26,7 +26,6 @@ namespace MH.UI.Interfaces {
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
     public double Width { get; set; }
-    public string Title { get; set; }
     public bool IsRoot { get; set; }
     public bool IsRecursive { get; set; }
     public bool IsGroupBy { get; set; }

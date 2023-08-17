@@ -23,8 +23,6 @@ namespace MH.UI.Controls {
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
     public double Width { get => _width; set => SetWidth(value); }
-    public string Icon { get; set; }
-    public string Title { get; set; }
     public bool IsRoot { get; set; }
     public bool IsRecursive { get; set; }
     public bool IsGroupBy { get; set; }
@@ -32,8 +30,6 @@ namespace MH.UI.Controls {
     public bool IsReWrapPending { get; set; } = true;
 
     public CollectionViewGroup(ICollectionViewGroup<T> parent, CollectionViewGroupByItem<T> groupedBy, List<T> source) : base(parent) {
-      Icon = groupedBy == null ? string.Empty : groupedBy.IconName;
-      Title = groupedBy == null ? string.Empty : groupedBy.Name;
       GroupedBy = groupedBy;
       Source = source;
 
@@ -55,10 +51,9 @@ namespace MH.UI.Controls {
         GroupByItems = Parent.GroupByItems[1..];
     }
 
-    public CollectionViewGroup(List<T> source, string icon, string title, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(default, null, source) {
-      Icon = icon;
-      Title = title;
+    public CollectionViewGroup(List<T> source, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(default, null, source) {
       View = view;
+      GroupedBy = new(view, null);
       IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
       IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive;
       IsRecursive = groupMode is GroupMode.GroupByRecursive or GroupMode.ThenByRecursive;
@@ -81,7 +76,7 @@ namespace MH.UI.Controls {
 
         foreach (var grp in newGroups) {
           var gbi = (CollectionViewGroupByItem<T>)grp[0];
-          if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
+          if (!gbi.ItemGroupBy(item, gbi.Data)) continue;
           grp[1] ??= new CollectionViewGroup<T>(parent, gbi, new());
           ((ICollectionViewGroup<T>)grp[1]).Source.Add(item);
           fit = true;
@@ -113,7 +108,7 @@ namespace MH.UI.Controls {
           groupByItems = new[] { group.GroupByItems[0] };
       }
       else if (group.IsRecursive && group.GroupedBy?.Items?.Count > 0)
-        groupByItems = group.GroupedBy.Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
+        groupByItems = group.GroupedBy.Items.ToArray();
 
       return groupByItems;
     }
@@ -192,9 +187,9 @@ namespace MH.UI.Controls {
       var inGroups = new List<ICollectionViewGroup<T>>();
 
       foreach (var gbi in groupByItems) {
-        if (!gbi.ItemGroupBy(item, gbi.Parameter)) continue;
+        if (!gbi.ItemGroupBy(item, gbi.Data)) continue;
 
-        var group = groups.SingleOrDefault(x => ReferenceEquals(x.GroupedBy?.Parameter, gbi.Parameter));
+        var group = groups.SingleOrDefault(x => ReferenceEquals(x.GroupedBy?.Data, gbi.Data));
 
         if (group != null)
           group.InsertItem(item, toReWrap);
@@ -202,7 +197,10 @@ namespace MH.UI.Controls {
           group = new CollectionViewGroup<T>(this, gbi, new() { item });
           GroupIt(group);
           group.SetExpanded<ICollectionViewGroup<T>>(true);
-          Items.SetInOrder(group, x => x is ICollectionViewGroup<T> g ? g.Title : string.Empty);
+          Items.SetInOrder(group,
+            x => x is ICollectionViewGroup<T> { GroupedBy: { Data: ITitled gt } }
+              ? gt.GetTitle
+              : string.Empty);
         }
 
         inGroups.Add(group);
