@@ -11,13 +11,12 @@ namespace PictureManager.Domain.Models {
 
     public FolderKeywordM(string name, ITreeItem parent) : base(Res.IconFolderPuzzle, name) {
       Parent = parent;
+    }
 
-      ExpandedChangedEventHandler += (o, _) => {
-        if (o is not FolderKeywordM fk || !fk.IsExpanded) return;
-
-        foreach (var folder in fk.Folders)
-          folder.LoadSubFolders(false);
-      };
+    public override void OnIsExpandedChanged(bool value) {
+      if (!value) return;
+      foreach (var folder in Folders)
+        folder.LoadSubFolders(false);
     }
   }
 }

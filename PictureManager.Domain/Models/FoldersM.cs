@@ -49,13 +49,6 @@ namespace PictureManager.Domain.Models {
       };
     }
 
-    public void HandleItemExpandedChanged(FolderM item) {
-      item.UpdateIconName();
-
-      if (item.IsExpanded)
-        item.LoadSubFolders(false);
-    }
-
     public override void OnItemSelect(MouseButtonEventArgs e) {
       // SHIFT key => recursive
       // MBL => show, MBL+ctrl => and, MBL+alt => hide

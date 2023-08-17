@@ -48,12 +48,11 @@ namespace PictureManager.Domain.Dialogs {
 
     public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
       Parent = parent;
+    }
 
-      ExpandedChangedEventHandler += (_, _) => {
-        if (IsExpanded)
-          LoadSubFolders();
-        UpdateIconName();
-      };
+    public override void OnIsExpandedChanged(bool value) {
+      if (value) LoadSubFolders();
+      UpdateIconName();
     }
 
     private void UpdateIconName() {
