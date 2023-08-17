@@ -6,19 +6,22 @@ using System.Windows.Data;
 
 namespace MH.UI.WPF.Converters {
   public class ResourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      value = TryConvertValue(value, parameter);
-
-      return value == null
-          ? DependencyProperty.UnsetValue
-          : TryFindResource(Application.Current.Resources, value)
-             ?? DependencyProperty.UnsetValue;
-    }
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
+      Convert(value, parameter);
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
       throw new NotSupportedException();
 
-    private static object TryConvertValue(object value, object parameter) {
+    public static object Convert(object value, object parameter) {
+      value = TryConvertValue(value, parameter);
+
+      return value == null
+        ? DependencyProperty.UnsetValue
+        : TryFindResource(Application.Current.Resources, value)
+          ?? DependencyProperty.UnsetValue;
+    }
+
+    public static object TryConvertValue(object value, object parameter) {
       if (value == null) return null;
       if (parameter is Dictionary<object, object> dict) {
         if (!dict.TryGetValue(value, out var dicValue))
