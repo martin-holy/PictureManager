@@ -5,9 +5,9 @@
   xmlns:wpfc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
 
   <wpfu:KeyDataTemplateSelector x:Key="KeyDataTemplateSelector">
     <wpfu:KeyDataTemplateSelector.Keys>
@@ -51,16 +51,15 @@
           </Grid.ColumnDefinitions>
 
           <wpfc:IconButton
-            Icon="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-            Foreground="{Binding Icon, Converter={StaticResource ResourceConverter},
-                          ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+            Icon="{Binding Converter={mhConv:TypeToIconConverter}}"
+            Foreground="{Binding Converter={mhConv:TypeToIconColorConverter}}"
             ToolTip="Group by"
             Command="{Binding View.OpenGroupByDialogCommand}"
             CommandParameter="{Binding}"/>
 
           <TextBlock
             Grid.Column="1"
-            Text="{Binding Title}"
+            Text="{Binding Path=GroupedBy.Data.(mhuInt:ITitled.GetTitle)}"
             VerticalAlignment="Center"
             Margin="5,0,5,0"
             FontSize="16"/>

@@ -2,9 +2,28 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:wpfc="clr-namespace:MH.UI.WPF.Controls"
-  xmlns:uid="clr-namespace:MH.UI.Dialogs;assembly=MH.UI">
+  xmlns:uid="clr-namespace:MH.UI.Dialogs;assembly=MH.UI"
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
+  xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters">
 
   <DataTemplate x:Key="MH.UI.Dialogs.GroupByDialog`1" DataType="{x:Type uid:GroupByDialog`1}">
+    <DataTemplate.Resources>
+      <HierarchicalDataTemplate
+        DataType="{x:Type mhubc:TreeItem`2}"
+        x:Key="MH.Utils.BaseClasses.TreeItem`2"
+        ItemsSource="{Binding Items}">
+
+        <Border
+          Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}"
+          Padding="20,1,2,1">
+
+          <ContentPresenter
+            Content="{Binding Data}"
+            ContentTemplateSelector="{Binding Source={x:Static wpfc:CollectionView.GroupByDialogDataTemplateSelector}}"/>
+        </Border>
+      </HierarchicalDataTemplate>
+    </DataTemplate.Resources>
+
     <Grid>
       <Grid.RowDefinitions>
         <RowDefinition Height="300"/>
@@ -16,8 +35,8 @@
         Style="{StaticResource MH.Styles.Controls.TreeViewBase}"
         ScrollViewerSpeedFactor="1"
         SelectAction="{Binding SelectAction}"
-        ItemsSource="{Binding Root.Items}"
-        ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem}"
+        ItemsSource="{Binding RootItems}"
+        ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem`2}"
         ItemContainerStyle="{StaticResource MH.Styles.Controls.TreeViewItemBaseWithSelection}"/>
       
       <StackPanel Grid.Row="1" Orientation="Horizontal">
