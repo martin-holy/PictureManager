@@ -59,6 +59,7 @@ namespace PictureManager.Domain.DataViews {
 
       Selected.DeselectAll();
       _core.MainWindowM.IsFullScreen = true;
+      // TODO open group or all with default sort or all sorted by groups or ...?
       _core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
     }
 

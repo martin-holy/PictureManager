@@ -15,12 +15,13 @@ namespace PictureManager.Domain.CollectionViews {
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
 
     public CollectionViewMediaItems(double thumbScale) {
+      GetTitle = "Media Items";
       ThumbScale = thumbScale;
       ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
     }
 
     public void Reload(List<MediaItemM> source, GroupMode groupMode, CollectionViewGroupByItem<MediaItemM>[] groupByItems, bool expandAll) {
-      SetRoot(new CollectionViewGroup<MediaItemM>(source, Res.IconImageMultiple, "Media Items", this, groupMode, groupByItems), expandAll);
+      SetRoot(new CollectionViewGroup<MediaItemM>(source, this, groupMode, groupByItems), expandAll);
     }
 
     public override IEnumerable<CollectionViewGroupByItem<MediaItemM>> GetGroupByItems(IEnumerable<MediaItemM> source) {
