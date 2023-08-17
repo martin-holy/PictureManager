@@ -23,6 +23,8 @@ namespace MH.UI.WPF.Controls {
       set => SetValue(ViewProperty, value);
     }
 
+    public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
+
     public RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; }
     public new RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
 
@@ -160,5 +162,16 @@ namespace MH.UI.WPF.Controls {
       ScrollViewer?.UpdateLayout();
       View.ScrollToTop = false;
     }
+  }
+
+  public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
+    public static Func<object, string> TypeToKey { get; set; }
+
+    public override DataTemplate SelectTemplate(object item, DependencyObject container) =>
+      item != null
+      && TypeToKey != null
+      && Application.Current.TryFindResource(TypeToKey(item)) is DataTemplate template
+        ? template
+        : base.SelectTemplate(item, container);
   }
 }
