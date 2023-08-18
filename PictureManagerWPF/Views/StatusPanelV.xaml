@@ -138,7 +138,8 @@
         <!-- Rating -->
         <Border
           Style="{StaticResource SBorderGroup}"
-          Margin="2,2,0,0"
+          Margin="2,0,2,0"
+          VerticalAlignment="Center"
           Visibility="{Binding StatusPanelM.Rating.Count,
                        Converter={StaticResource AllToVisibilityConverter}}">
           <Border Margin="0">
