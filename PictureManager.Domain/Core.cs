@@ -1,5 +1,6 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
+using MH.Utils.Dialogs;
 using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
@@ -313,6 +314,26 @@ namespace PictureManager.Domain {
       MediaItemsViews.DefaultThumbScale = 1 / scale;
       SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
       MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
+    }
+
+    public void SaveMetadataPrompt() {
+      if (MediaItemsM.ModifiedItems.Count > 0 &&
+          DialogHostShow(new MessageDialog(
+            "Metadata Edit",
+            "Some Media Items are modified, do you want to save them?",
+            Res.IconQuestion,
+            true)) == 1)
+        MediaItemsM.SaveEdit();
+    }
+
+    public void SaveDBPrompt() {
+      if (Sdb.Changes > 0 &&
+          DialogHostShow(new MessageDialog(
+            "Database changes",
+            "There are some changes in database, do you want to save them?",
+            Res.IconQuestion,
+            true)) == 1)
+        Sdb.SaveAllTables();
     }
   }
 }

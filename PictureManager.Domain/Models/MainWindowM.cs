@@ -1,5 +1,4 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Dialogs;
 using PictureManager.Domain.Dialogs;
 
 namespace PictureManager.Domain.Models {
@@ -47,24 +46,8 @@ namespace PictureManager.Domain.Models {
     }
 
     private void Closing() {
-      if (CoreM.MediaItemsM.ModifiedItems.Count > 0 &&
-          Core.DialogHostShow(new MessageDialog(
-            "Metadata Edit",
-            "Some Media Items are modified, do you want to save them?",
-            Res.IconQuestion,
-            true)) == 1) {
-        CoreM.MediaItemsM.SaveEdit();
-      }
-
-      if (CoreM.Sdb.Changes > 0 &&
-          Core.DialogHostShow(new MessageDialog(
-            "Database changes",
-            "There are some changes in database, do you want to save them?",
-            Res.IconQuestion,
-            true)) == 1) {
-        CoreM.Sdb.SaveAllTables();
-      }
-
+      CoreM.SaveMetadataPrompt();
+      CoreM.SaveDBPrompt();
       CoreM.Sdb.BackUp();
     }
 
