@@ -124,10 +124,6 @@ namespace PictureManager.Domain.Models {
       var segment = Current.Segment;
 
       MousePosToRawImage(ref x, ref y, Scale, MediaItem);
-      if (x < 0) x = 0;
-      if (y < 0) y = 0;
-      if (x > MediaItem.Width) x = MediaItem.Width;
-      if (y > MediaItem.Height) y = MediaItem.Height;
 
       _isCurrentModified = true;
       if (!IsEditOn) IsEditOn = true;
@@ -228,6 +224,11 @@ namespace PictureManager.Domain.Models {
           y = mY;
           break;
       }
+
+      if (x < 0) x = 0;
+      if (y < 0) y = 0;
+      if (x > mediaItem.Width) x = mediaItem.Width;
+      if (y > mediaItem.Height) y = mediaItem.Height;
     }
 
     private void ReloadMediaItemSegmentRects() {
