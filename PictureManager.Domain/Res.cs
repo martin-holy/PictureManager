@@ -63,6 +63,7 @@ namespace PictureManager.Domain {
       { typeof(GeoNamesM), new(IconLocationCheckin, ColorBrushWhite) },
       { typeof(MediaItemsView), new(IconImageMultiple, ColorBrushWhite) },
       { typeof(PeopleM), new(IconPeopleMultiple, ColorBrushPeople) },
+      { typeof(PeopleToolsTabM), new(IconPeopleMultiple, ColorBrushPeople) },
       { typeof(PeopleView), new(IconPeopleMultiple, ColorBrushPeople) },
       { typeof(PersonDetail), new(IconSegment, ColorBrushWhite) },
       { typeof(PersonM), new(IconPeople, ColorBrushPeople) },
