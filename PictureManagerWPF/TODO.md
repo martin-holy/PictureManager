@@ -37,19 +37,9 @@
 ## Person Detail
   - TopSegments can get cleared when segment from not mounted drive is used and People are modified.
   - set top segment from selected person after PeopleMerge
-## Segment matching
-  - wrap panel forgets scroll to index after opening segment source. changing segment person after scrolls to top
 ## MH.UI.WPF
   # Custom Window
    - minimize window will break full screen mode
-## Viewer
-  - adding drives on viewer change does not work
-## StatusPanel
-  - rating right margin
-## SegmentsRects
-  - rect can be drawn from out of image range
-## ThumbnailsGrid
-  - problem with scroll when thumbnail is wither than window
 
 # Update
 ##
@@ -154,7 +144,6 @@
   - prochazet ve fullscreenu selected, abych si moch oznacit treba dva a prepinat se mezi nima (pozor, delete je za selected)
   - func to zoom to segment
 ## ThumbnailsGrid
-  - Auto groups from People and Keywords
   - Show Folders with images from 4 sub folders, number of files (info only from cache with refresh on expand)
   - vymyslet to tak, aby zustali thumbs selected i kdyz se prepne do viewera a listuje se v nem
     pozor!! kdyz bych ve vieweru editoval/mazal/..., tak bych to aplikoval na selected!!!
