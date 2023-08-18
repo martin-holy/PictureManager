@@ -11,6 +11,7 @@ namespace MH.UI.WPF.Controls {
   public class TreeViewBase : TreeView {
     public ScrollViewer ScrollViewer { get; set; }
 
+    // TODO remove or replace with new one
     public static readonly DependencyProperty ScrollViewerSpeedFactorProperty = DependencyProperty.Register(
       nameof(ScrollViewerSpeedFactor), typeof(double), typeof(TreeViewBase), new(2.5));
 
