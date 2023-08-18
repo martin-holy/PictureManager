@@ -1,5 +1,6 @@
 ﻿using MH.UI.Controls;
 using MH.Utils.BaseClasses;
+using MH.Utils.Interfaces;
 using PictureManager.Domain.CollectionViews;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Models;
@@ -106,6 +107,13 @@ namespace PictureManager.Domain {
         Category.Viewers => IconEye,
         Category.VideoClips => IconMovieClapper,
         _ => IconEmpty
+      };
+
+    public static string TypeToGroupByDialogTemplateKey(object o) =>
+      o switch {
+        PersonM => "PM.Views.List.PersonV",
+        IIconText => "PM.Views.List.IconTextV",
+        _ => null
       };
 
     public static string TypeToIcon(object o, object parameter = null) =>
