@@ -104,11 +104,13 @@ namespace PictureManager.Domain.Models {
       else
         Current = null;
 
+
       DataAdapter.Save();
-      DataAdapter.DB.SaveAllTables();
+      _core.SaveDBPrompt();
       DataAdapter.DB.LoadAllTables(null);
       DataAdapter.DB.LinkReferences(null);
       DataAdapter.DB.ClearDataAdapters();
+      _core.AfterInit();
     }
 
     public bool CanViewerSee(FolderM folder) =>
