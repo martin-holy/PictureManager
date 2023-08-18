@@ -49,6 +49,8 @@
         <ResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
         <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
         <ResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
+        <ResourceDictionary Source="Views/List/PersonV.xaml"/>
+        <ResourceDictionary Source="Views/List/IconTextV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
