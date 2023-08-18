@@ -25,7 +25,7 @@ namespace PictureManager {
       SegmentsRectsVM = new(App.Core.SegmentsM.SegmentsRectsM);
     }
 
-    private void SetDelegates() {
+    private static void SetDelegates() {
       Dialog.Show = DialogHost.Show;
       Core.DialogHostShow = DialogHost.Show;
       Core.FileOperationDelete = FileOperationDelete;
@@ -34,10 +34,13 @@ namespace PictureManager {
       Domain.Utils.Imaging.GetHashPixels = Utils.Imaging.GetHashPixels;
       Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
+      MH.UI.WPF.Converters.TypeToIconConverter.TypeToIcon = Res.TypeToIcon;
+      MH.UI.WPF.Converters.TypeToIconColorConverter.TypeToIconColor = Res.TypeToIconColor;
       MH.UI.WPF.Utils.Init.SetDelegates();
+      GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
       App.Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
-      App.Core.MediaViewerM.GetVideoMetadata = ShellStuff.FileInformation.GetVideoMetadata;
+      App.Core.MediaViewerM.GetVideoMetadata = FileInformation.GetVideoMetadata;
     }
 
     private static double GetDisplayScale() =>
