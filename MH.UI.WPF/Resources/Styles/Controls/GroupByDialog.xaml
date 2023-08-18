@@ -37,7 +37,10 @@
         SelectAction="{Binding SelectAction}"
         ItemsSource="{Binding RootItems}"
         ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem`2}"
-        ItemContainerStyle="{StaticResource MH.Styles.Controls.TreeViewItemBaseWithSelection}"/>
+        ItemContainerStyle="{StaticResource MH.Styles.Controls.TreeViewItemBaseWithSelection}"
+        VirtualizingPanel.ScrollUnit="Item"
+        VirtualizingPanel.CacheLengthUnit="Item"
+        VirtualizingPanel.CacheLength="3"/>
       
       <StackPanel Grid.Row="1" Orientation="Horizontal">
         <RadioButton
