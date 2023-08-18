@@ -1,0 +1,47 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pm="clr-namespace:PictureManager">
+
+  <DataTemplate x:Key="PM.Views.List.PersonV" DataType="{x:Type m:PersonM}">
+    <DockPanel>
+      <Path
+        DockPanel.Dock="Left"
+        Style="{StaticResource MH.Styles.Icon}"
+        Data="{StaticResource IconPeople}"
+        Fill="{StaticResource ColorBrushPeople}"/>
+
+      <TextBlock
+        Style="{StaticResource PM.Styles.TextBlockBase}"
+        Text="{Binding Name}"/>
+    </DockPanel>
+
+    <DataTemplate.Triggers>
+      <DataTrigger
+        Binding="{Binding Path=(m:PersonM.Segment),
+                  Converter={StaticResource AllToBoolConverter}}"
+        Value="True">
+        <Setter Property="ToolTip">
+          <Setter.Value>
+            <ToolTip BorderThickness="0" Padding="0">
+              <Border BorderThickness="1" BorderBrush="Black">
+                <Image
+                  Stretch="Fill"
+                  Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
+                  Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
+                  <Image.Source>
+                    <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
+                      <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
+                      <Binding Path="(m:PersonM.Segment)"/>
+                    </MultiBinding>
+                  </Image.Source>
+                </Image>
+              </Border>
+            </ToolTip>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+</ResourceDictionary>
