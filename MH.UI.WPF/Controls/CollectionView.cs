@@ -167,11 +167,14 @@ namespace MH.UI.WPF.Controls {
   public class GroupByDialogDataTemplateSelector : DataTemplateSelector {
     public static Func<object, string> TypeToKey { get; set; }
 
-    public override DataTemplate SelectTemplate(object item, DependencyObject container) =>
-      item != null
-      && TypeToKey != null
-      && Application.Current.TryFindResource(TypeToKey(item)) is DataTemplate template
+    public override DataTemplate SelectTemplate(object item, DependencyObject container) {
+      if (item == null || TypeToKey == null)
+        return base.SelectTemplate(item, container);
+
+      var key = TypeToKey(item);
+      return key != null && Application.Current.TryFindResource(key) is DataTemplate template
         ? template
         : base.SelectTemplate(item, container);
+    }
   }
 }
