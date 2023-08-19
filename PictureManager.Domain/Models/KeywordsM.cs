@@ -21,7 +21,7 @@ namespace PictureManager.Domain.Models {
     public KeywordsM(CategoryGroupsM categoryGroupsM) : base(Res.IconTagLabel, Category.Keywords, "Keywords") {
       _categoryGroupsM = categoryGroupsM;
       CanMoveItem = true;
-      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
+      AfterItemCreateEventHandler += (_, e) => TreeView.ScrollTo(e.Data);
     }
 
     public override void OnItemSelect(MouseButtonEventArgs e) {

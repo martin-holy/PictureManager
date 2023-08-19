@@ -23,7 +23,7 @@ namespace PictureManager.Domain.Models {
       if (e.DataContext is not FavoriteFolderM ff) return;
       if (!Core.Instance.FoldersM.IsFolderVisible(ff.Folder)) return;
       Core.Instance.TreeViewCategoriesM.SelectedCategory = Core.Instance.FoldersM;
-      Core.Instance.FoldersM.ScrollTo(ff.Folder);
+      Core.Instance.FoldersM.TreeView.ScrollTo(ff.Folder);
     }
 
     protected override void ModelItemRename(ITreeItem item, string name) {

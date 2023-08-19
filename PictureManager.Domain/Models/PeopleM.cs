@@ -36,7 +36,7 @@ namespace PictureManager.Domain.Models {
       OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
       OpenPersonDetailCommand = new(OpenPersonDetail);
 
-      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
+      AfterItemCreateEventHandler += (_, e) => TreeView.ScrollTo(e.Data);
     }
 
     private void OpenPeopleToolsTab() {

@@ -4,19 +4,15 @@ using PictureManager.Domain.DataAdapters;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class VideoClipsM : ObservableObject {
     private readonly MediaItemsM _mediaItemsM;
-    private ITreeItem _scrollToItem;
 
-    public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
     public VideoClipsDataAdapter DataAdapter { get; set; }
     public VideoClipsTreeCategory TreeCategory { get; }
-    public ObservableCollection<ITreeCategory> TreeRoot { get; }
     public MediaItemM CurrentMediaItem { get; set; }
     public VideoClipM CurrentVideoClip { get; set; }
     public MediaPlayerM MediaPlayerM { get; set; }
@@ -32,7 +28,6 @@ namespace PictureManager.Domain.Models {
     public VideoClipsM(MediaItemsM mi, MediaPlayerM player) {
       _mediaItemsM = mi;
       TreeCategory = new(this, mi);
-      TreeRoot = new() { TreeCategory };
       MediaPlayerM = player;
       MediaPlayerM.SelectNextClip = SelectNext;
 
@@ -75,7 +70,7 @@ namespace PictureManager.Domain.Models {
       DataAdapter.All.Add(item);
       UpdateClipsTitles();
       SetMarker(true);
-      ScrollToItem = item;
+      TreeCategory.TreeView.ScrollTo(item);
 
       return item;
     }
@@ -155,8 +150,8 @@ namespace PictureManager.Domain.Models {
         ? clips
         : new();
 
-      TreeRoot.Clear();
-      TreeRoot.Add(TreeCategory);
+      TreeCategory.TreeView.RootHolder.Clear();
+      TreeCategory.TreeView.RootHolder.Add(TreeCategory);
     }
 
     private void UpdateClipsTitles() {

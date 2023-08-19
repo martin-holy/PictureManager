@@ -1,4 +1,5 @@
-﻿using MH.Utils;
+﻿using MH.UI.Controls;
+using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.EventsArgs;
@@ -7,11 +8,8 @@ using System;
 
 namespace PictureManager.Domain.BaseClasses {
   public class TreeCategoryBase : TreeCategory {
-    private ITreeItem _scrollToItem;
-
     public Category Category { get; }
-    public TreeCategoryBase[] Root { get; }
-    public ITreeItem ScrollToItem { get => _scrollToItem; set { _scrollToItem = value; OnPropertyChanged(); } }
+    public TreeView TreeView { get; } = new();
 
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemCreateEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemRenameEventHandler = delegate { };
@@ -20,7 +18,7 @@ namespace PictureManager.Domain.BaseClasses {
     public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
 
     public TreeCategoryBase(string iconName, Category category, string name) : base(iconName, name) {
-      Root = new[] { this };
+      TreeView.RootHolder.Add(this);
       Category = category;
       SelectCommand = new(OnItemSelect);
     }
@@ -99,11 +97,6 @@ namespace PictureManager.Domain.BaseClasses {
       if (!DeleteAccepted(group.Name)) return;
 
       ModelGroupDelete(group);
-    }
-
-    public void ScrollTo(ITreeItem item) {
-      item.ExpandTo();
-      ScrollToItem = item;
     }
 
     private static bool GetNewName(bool forItem, string oldName, out string newName, ITreeItem item, Func<ITreeItem, string, string> validator, string icon) {
