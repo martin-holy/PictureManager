@@ -2,35 +2,24 @@
 using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Controls {
-  public abstract class CollectionView<T> : ObservableObject, ICollectionView where T : ISelectable {
-    private List<object> _scrollToItems;
-    private bool _scrollToTop;
-    private int _scrollToIndex = -1;
-    private bool _isSizeChanging;
+  public abstract class CollectionView<T> : TreeView, ICollectionView where T : ISelectable {
     private T _topItem;
     private ICollectionViewGroup<T> _topGroup;
     private readonly HashSet<ICollectionViewGroup<T>> _groupByItemsRoots = new();
     private readonly GroupByDialog<T> _groupByDialog = new();
 
-    public ExtObservableCollection<object> RootHolder { get; } = new();
     public ICollectionViewGroup<T> Root { get; set; }
     public T TopItem { get; set; }
     public T LastSelectedItem { get; set; }
     public ICollectionViewGroup<T> TopGroup { get; set; }
     public ICollectionViewRow<T> LastSelectedRow { get; set; }
-    public List<object> ScrollToItems { get => _scrollToItems; set { _scrollToItems = value; OnPropertyChanged(); } }
-    public bool ScrollToTop { get => _scrollToTop; set { _scrollToTop = value; OnPropertyChanged(); } }
-    public int ScrollToIndex { get => _scrollToIndex; set { _scrollToIndex = value; OnPropertyChanged(); } }
-    public bool IsSizeChanging { get => _isSizeChanging; set => OnSizeChanging(value); }
     public bool SelectionDisabled { get; set; }
-    public bool IsScrollUnitItem { get; set; } = true;
     public int GroupContentOffset { get; set; } = 0;
     public string GetTitle { get; set; }
 
@@ -115,8 +104,8 @@ namespace MH.UI.Controls {
         ScrollTo(TopGroup ?? Root, TopItem);
     }
 
-    private void OnSizeChanging(bool value) {
-      _isSizeChanging = value;
+    public override void OnSizeChanging(bool value) {
+      base.OnSizeChanging(value);
 
       if (value) {
         _topItem = TopItem;
@@ -143,7 +132,7 @@ namespace MH.UI.Controls {
         _groupByItemsRoots.Add(group);
     }
 
-    public bool SetTopItem(object o) {
+    public override bool SetTopItem(object o) {
       var row = o as ICollectionViewRow<T>;
       var group = o as ICollectionViewGroup<T>;
 
@@ -172,6 +161,9 @@ namespace MH.UI.Controls {
       TopGroup = group;
       TopItem = item;
       ICollectionViewItem<T> scrollToItem = row != null ? row : group;
+
+      // TODO
+      //ScrollTo(scrollToItem);
 
       if (IsScrollUnitItem)
         ScrollToIndex = CollectionViewItem<T>.GetIndex(Root, scrollToItem);
