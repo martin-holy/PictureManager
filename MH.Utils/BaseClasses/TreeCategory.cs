@@ -8,6 +8,30 @@ namespace MH.Utils.BaseClasses {
     public bool CanCopyItem { get; set; }
     public bool CanMoveItem { get; set; }
 
+    public static RelayCommand<ITreeItem> ItemCreateCommand { get; } = new(
+      item => GetCategory(item)?.ItemCreate(item),
+      item => item != null);
+
+    public static RelayCommand<ITreeItem> ItemRenameCommand { get; } = new(
+      item => GetCategory(item)?.ItemRename(item),
+      item => item != null);
+
+    public static RelayCommand<ITreeItem> ItemDeleteCommand { get; } = new(
+      item => GetCategory(item)?.ItemDelete(item),
+      item => item != null);
+
+    public static RelayCommand<ITreeCategory> GroupCreateCommand { get; } = new(
+      item => GetCategory(item)?.GroupCreate(item),
+      item => item != null);
+
+    public static RelayCommand<ITreeGroup> GroupRenameCommand { get; } = new(
+      item => GetCategory(item)?.GroupRename(item),
+      item => item != null);
+
+    public static RelayCommand<ITreeGroup> GroupDeleteCommand { get; } = new(
+      item => GetCategory(item)?.GroupDelete(item),
+      item => item != null);
+
     public TreeCategory(string iconName, string name) : base(iconName, name) { }
 
     public virtual void ItemCreate(ITreeItem root) => throw new NotImplementedException();
@@ -21,7 +45,8 @@ namespace MH.Utils.BaseClasses {
     public virtual void GroupDelete(ITreeGroup group) => throw new NotImplementedException();
     public virtual void GroupMove(ITreeGroup group, ITreeGroup dest, bool aboveDest) => throw new NotImplementedException();
 
-    public virtual bool CanDrop(object src, ITreeItem dest) => CanDrop(src as ITreeItem, dest);
+    public virtual bool CanDrop(object src, ITreeItem dest) =>
+      CanDrop(src as ITreeItem, dest);
 
     public virtual void OnDrop(object src, ITreeItem dest, bool aboveDest, bool copy) {
       // groups
@@ -52,5 +77,8 @@ namespace MH.Utils.BaseClasses {
 
       return true;
     }
+
+    private static ITreeCategory GetCategory(ITreeItem item) =>
+      Tree.GetTopParent(item) as ITreeCategory;
   }
 }
