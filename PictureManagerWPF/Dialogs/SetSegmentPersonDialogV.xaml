@@ -42,7 +42,7 @@
         </ListBox.ItemContainerStyle>
       </ListBox>
 
-      <mhc:CollectionView View="{Binding GroupedSegments}"/>
+      <mhc:CollectionView View="{Binding GroupedSegments}" TreeView="{Binding GroupedSegments}"/>
     </DockPanel>
   </DataTemplate>
 </ResourceDictionary>

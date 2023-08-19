@@ -64,9 +64,7 @@
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <mhc:CatTreeView
-                    ItemsSource="{Binding Root}"
-                    ScrollToItem="{Binding ScrollToItem, Mode=TwoWay}">
+                  <mhc:CatTreeView TreeView="{Binding TreeView}">
 
                     <!-- Disable Selecting -->
                     <mhc:CatTreeView.ItemContainerStyle>

@@ -34,7 +34,7 @@ namespace PictureManager.Domain.Models {
     }
 
     private void AttachEvents() {
-      AfterItemCreateEventHandler += (_, e) => ScrollToItem = e.Data;
+      AfterItemCreateEventHandler += (_, e) => TreeView.ScrollTo(e.Data);
 
       AfterItemRenameEventHandler += (_, e) => {
         // reload if the folder was selected before

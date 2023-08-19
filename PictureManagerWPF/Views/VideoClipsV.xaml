@@ -126,8 +126,7 @@
       <mhc:CatTreeView
         x:Name="CtvClips"
         Grid.Row="2"
-        ItemsSource="{Binding TreeRoot}"
-        ScrollToItem="{Binding ScrollToItem}">
+        TreeView="{Binding TreeCategory.TreeView}">
 
         <b:Interaction.Triggers>
           <b:EventTrigger EventName="SelectedItemChanged">

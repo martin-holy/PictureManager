@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:md="clr-namespace:PictureManager.Domain.Dialogs;assembly=PictureManager.Domain">
@@ -33,11 +33,11 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="New Group"
-      Command="mhc:CatTreeView.GroupCreateCommand"
+      Command="mhubc:TreeCategory.GroupCreateCommand"
       CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
@@ -55,11 +55,11 @@
           CommandParameter="{Binding}"/>
         <MenuItem
           Header="Rename"
-          Command="mhc:CatTreeView.ItemRenameCommand"
+          Command="mhubc:TreeCategory.ItemRenameCommand"
           CommandParameter="{Binding}"/>
         <MenuItem
           Header="Delete"
-          Command="mhc:CatTreeView.ItemDeleteCommand"
+          Command="mhubc:TreeCategory.ItemDeleteCommand"
           CommandParameter="{Binding}"/>
         <Separator/>
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
@@ -81,11 +81,11 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="New Group"
-      Command="mhc:CatTreeView.GroupCreateCommand"
+      Command="mhubc:TreeCategory.GroupCreateCommand"
       CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
@@ -105,7 +105,7 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
 
@@ -116,11 +116,11 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="New Group"
-      Command="mhc:CatTreeView.GroupCreateCommand"
+      Command="mhubc:TreeCategory.GroupCreateCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
   
@@ -131,15 +131,15 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename Group"
-      Command="mhc:CatTreeView.GroupRenameCommand"
+      Command="mhubc:TreeCategory.GroupRenameCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete Group"
-      Command="mhc:CatTreeView.GroupDeleteCommand"
+      Command="mhubc:TreeCategory.GroupDeleteCommand"
       CommandParameter="{Binding}"/>
 
     <!--TODO: Sort-->
@@ -152,7 +152,7 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
   
@@ -163,15 +163,15 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename"
-      Command="mhc:CatTreeView.ItemRenameCommand"
+      Command="mhubc:TreeCategory.ItemRenameCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
-      Command="mhc:CatTreeView.ItemDeleteCommand"
+      Command="mhubc:TreeCategory.ItemDeleteCommand"
       CommandParameter="{Binding}"/>
     <Separator/>
     <MenuItem
@@ -200,11 +200,11 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="Rename"
-      Command="mhc:CatTreeView.ItemRenameCommand"
+      Command="mhubc:TreeCategory.ItemRenameCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
-      Command="mhc:CatTreeView.ItemDeleteCommand"
+      Command="mhubc:TreeCategory.ItemDeleteCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
   
@@ -224,15 +224,15 @@
       <CompositeCollection>
         <MenuItem
           Header="New"
-          Command="mhc:CatTreeView.ItemCreateCommand"
+          Command="mhubc:TreeCategory.ItemCreateCommand"
           CommandParameter="{Binding}"/>
         <MenuItem
           Header="Rename"
-          Command="mhc:CatTreeView.ItemRenameCommand"
+          Command="mhubc:TreeCategory.ItemRenameCommand"
           CommandParameter="{Binding}"/>
         <MenuItem
           Header="Delete"
-          Command="mhc:CatTreeView.ItemDeleteCommand"
+          Command="mhubc:TreeCategory.ItemDeleteCommand"
           CommandParameter="{Binding}"/>
         <Separator/>
         <CollectionContainer Collection="{StaticResource TagItemTreeContextMenu}"/>
@@ -247,11 +247,11 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="Rename"
-      Command="mhc:CatTreeView.ItemRenameCommand"
+      Command="mhubc:TreeCategory.ItemRenameCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete"
-      Command="mhc:CatTreeView.ItemDeleteCommand"
+      Command="mhubc:TreeCategory.ItemDeleteCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
   
@@ -261,15 +261,15 @@
                   RelativeSource={RelativeSource Self}}">
     <MenuItem
       Header="New"
-      Command="mhc:CatTreeView.ItemCreateCommand"
+      Command="mhubc:TreeCategory.ItemCreateCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Rename Group"
-      Command="mhc:CatTreeView.GroupRenameCommand"
+      Command="mhubc:TreeCategory.GroupRenameCommand"
       CommandParameter="{Binding}"/>
     <MenuItem
       Header="Delete Group"
-      Command="mhc:CatTreeView.GroupDeleteCommand"
+      Command="mhubc:TreeCategory.GroupDeleteCommand"
       CommandParameter="{Binding}"/>
   </ContextMenu>
     
