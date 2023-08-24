@@ -4,9 +4,10 @@ using MH.Utils.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils;
 
 namespace MH.UI.Controls {
-  public class CollectionViewGroupByItem<T> : TreeItem<CollectionViewGroupByItem<T>, CollectionViewGroupByItem<T>> {
+  public class CollectionViewGroupByItem<T> : TreeItem {
     public Func<T, object, bool> ItemGroupBy { get; }
     public bool IsGroup { get; set; }
 
@@ -17,11 +18,11 @@ namespace MH.UI.Controls {
     public static List<CollectionViewGroupByItem<TItem>> BuildTree<TItem, TGroup, TSort>(
       IEnumerable<TGroup> source,
       Func<TGroup, CollectionViewGroupByItem<TItem>> getGroupByItem,
-      Func<TGroup, TSort> orderBy) where TGroup : ITreeItem {
+      Func<TGroup, TSort> orderBy) where TGroup : class, ITreeItem {
 
       var root = new List<CollectionViewGroupByItem<TItem>>();
       var all = source
-        .SelectMany(x => x.GetThisAndParents<TGroup>())
+        .SelectMany(x => x.GetThisAndParents())
         .Distinct()
         .ToDictionary(x => x, getGroupByItem);
 
@@ -40,9 +41,9 @@ namespace MH.UI.Controls {
 
     // TODO remove items as well
     public void Update(CollectionViewGroupByItem<T>[] items) {
-      var newItems = FindItem(items, x => ReferenceEquals(x.Data, Data))?.Items.ToArray();
+      var newItems = Tree.FindItem(items, x => ReferenceEquals(x.Data, Data))?.Items.ToArray();
       if (newItems == null) return;
-      var itemItems = Items.ToArray();
+      var itemItems = Items.Cast<CollectionViewGroupByItem<T>>().ToArray();
 
       foreach (var itemItem in itemItems)
         itemItem.Update(items);

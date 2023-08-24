@@ -61,7 +61,7 @@ namespace MH.UI.Dialogs {
 
     private void Select(object item, bool isCtrlOn, bool isShiftOn) {
       if (item is not CollectionViewGroupByItem<T> ti) return;
-      Selected.Select(ti.Parent?.Items.ToList(), ti, isCtrlOn, isShiftOn);
+      Selected.Select(ti.Parent?.Items.Cast<CollectionViewGroupByItem<T>>().ToList(), ti, isCtrlOn, isShiftOn);
     }
   }
 }

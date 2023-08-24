@@ -9,11 +9,10 @@ namespace MH.UI.Interfaces {
     public void SetExpanded(object group);
   }
 
-  public interface ICollectionViewItem<T> : ILeafyTreeItem<ICollectionViewGroup<T>, ICollectionViewItem<T>, T> where T : ISelectable { }
-
-  public interface ICollectionViewGroup<T> : ICollectionViewItem<T> where T : ISelectable {
+  public interface ICollectionViewGroup<T> : ITreeItem where T : ISelectable {
     public CollectionView<T> View { get; set; }
     public List<T> Source { get; }
+    public IEnumerable<ICollectionViewGroup<T>> Groups { get; }
     public CollectionViewGroupByItem<T>[] GroupByItems { get; set; }
     public CollectionViewGroupByItem<T> GroupedBy { get; set; }
     public double Width { get; set; }
@@ -29,5 +28,5 @@ namespace MH.UI.Interfaces {
     public void UpdateGroupByItems(CollectionViewGroupByItem<T>[] newGroupByItems);
   }
 
-  public interface ICollectionViewRow<T> : ICollectionViewItem<T> where T : ISelectable { }
+  public interface ICollectionViewRow<T> : ILeafyTreeItem<T> where T : ISelectable { }
 }

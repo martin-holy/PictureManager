@@ -39,11 +39,12 @@ namespace MH.UI.Controls {
       if (item is T i) OnOpenItem(i);
     }
 
+    // TODO BUG not always unable to select, ok after reload 
     public void SelectItem(object row, object item, bool isCtrlOn, bool isShiftOn) {
       if (SelectionDisabled || row is not ICollectionViewRow<T> r || item is not T i) return;
       LastSelectedItem = i;
       LastSelectedRow = r;
-      OnSelectItem(r.Parent.Source, i, isCtrlOn, isShiftOn);
+      OnSelectItem(((ICollectionViewGroup<T>)r.Parent).Source, i, isCtrlOn, isShiftOn);
     }
 
     public void Update(Action<IList<object>> itemsAction) {
@@ -100,7 +101,7 @@ namespace MH.UI.Controls {
       if (removedGroups.Contains(TopGroup)) TopGroup = null;
       if (toReWrap.Count == 0) return;
       foreach (var g in toReWrap) g.ReWrap();
-      if (toReWrap.Any(CollectionViewGroup<T>.IsFullyExpanded))
+      if (toReWrap.Any(x => x.IsFullyExpanded()))
         ScrollTo(TopGroup ?? Root, TopItem);
     }
 
@@ -142,7 +143,7 @@ namespace MH.UI.Controls {
       if (group != null)
         TopGroup = group;
       else if (row != null) {
-        TopGroup = row.Parent;
+        TopGroup = (ICollectionViewGroup<T>)row.Parent;
         if (row.Leaves.Count > 0)
           TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
       }
@@ -160,17 +161,7 @@ namespace MH.UI.Controls {
 
       TopGroup = group;
       TopItem = item;
-      ICollectionViewItem<T> scrollToItem = row != null ? row : group;
-
-      // TODO
-      //ScrollTo(scrollToItem);
-
-      if (IsScrollUnitItem)
-        ScrollToIndex = CollectionViewItem<T>.GetIndex(Root, scrollToItem);
-
-      var items = CollectionViewItem<T>.GetBranch(scrollToItem, true);
-      if (items == null) return;
-      ScrollToItems = items.Cast<object>().ToList();
+      ScrollTo(row != null ? row : group);
     }
   }
 }

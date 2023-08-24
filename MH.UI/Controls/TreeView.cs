@@ -4,6 +4,7 @@ using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using MH.Utils;
 
 namespace MH.UI.Controls {
   public class TreeView : ObservableObject, ITreeView {
@@ -25,12 +26,12 @@ namespace MH.UI.Controls {
 
     public virtual bool SetTopItem(object o) => true;
 
-    public virtual void ScrollTo(ITreeItem o) {
-      var items = TreeItem.GetBranch(o, true);
+    public virtual void ScrollTo(ITreeItem item) {
+      var items = item.GetBranch(true);
       if (items == null) return;
 
       if (IsScrollUnitItem && RootHolder.Count != 0 && RootHolder[0] is ITreeItem root)
-        ScrollToIndex = TreeItem.GetIndex(root, o);
+        ScrollToIndex = item.GetIndex(root);
 
       ScrollToItems = items.Cast<object>().ToList();
     }
