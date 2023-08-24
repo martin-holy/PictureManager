@@ -1,3 +1,4 @@
+using MH.UI.Interfaces;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
@@ -292,7 +293,7 @@ namespace PictureManager.Domain.Models {
       if (segmentM.MediaItem == null) return null;
 
       if (ReferenceEquals(SegmentsView?.CvSegments.LastSelectedItem, segmentM))
-        return SegmentsView.CvSegments.LastSelectedRow.Parent.Source
+        return ((ICollectionViewGroup<SegmentM>)SegmentsView.CvSegments.LastSelectedRow.Parent).Source
           .Select(x => x.MediaItem)
           .Distinct()
           .OrderBy(x => x.Folder.FullPath)

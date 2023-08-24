@@ -1,10 +1,11 @@
 ﻿using MH.UI.Controls;
+using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MH.Utils.BaseClasses;
 
 namespace PictureManager.Domain.CollectionViews {
   public static class GroupByItems {
@@ -134,8 +135,7 @@ namespace PictureManager.Domain.CollectionViews {
         .OrderBy(x => x.GetTitle)
         .Select(x => new CollectionViewGroupByItem<PersonM>(x, GroupPersonByGroup));
 
-      foreach (var groupItem in groupItems)
-        group.AddItem(groupItem);
+      group.AddItems(groupItems);
 
       return group;
     }
@@ -149,7 +149,7 @@ namespace PictureManager.Domain.CollectionViews {
     private static bool GroupMediaItemByFolder(MediaItemM item, object parameter) =>
       parameter is FolderM folder
       && item.Folder
-        .GetThisAndParents<FolderM>()
+        .GetThisAndParents()
         .Contains(folder);
 
     private static bool GroupMediaItemByPerson(MediaItemM item, object parameter) =>
@@ -160,7 +160,7 @@ namespace PictureManager.Domain.CollectionViews {
     private static bool GroupSegmentByFolder(SegmentM item, object parameter) =>
       parameter is FolderM folder
       && item.MediaItem.Folder
-        .GetThisAndParents<FolderM>()
+        .GetThisAndParents()
         .Contains(folder);
 
     private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
@@ -168,7 +168,7 @@ namespace PictureManager.Domain.CollectionViews {
       || item.Keywords != null
       && parameter is KeywordM keyword
       && item.Keywords
-        .SelectMany(x => x.GetThisAndParents<KeywordM>())
+        .SelectMany(x => x.GetThisAndParents())
         .Contains(keyword);
 
     private static bool GroupSegmentByPerson(SegmentM item, object parameter) =>
@@ -185,7 +185,7 @@ namespace PictureManager.Domain.CollectionViews {
       || item.Keywords != null
       && parameter is KeywordM keyword
       && item.Keywords
-        .SelectMany(x => x.GetThisAndParents<KeywordM>())
+        .SelectMany(x => x.GetThisAndParents())
         .Contains(keyword);
   }
 }
