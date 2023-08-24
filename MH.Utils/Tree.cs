@@ -7,6 +7,76 @@ using System.Linq;
 
 namespace MH.Utils {
   public static class Tree {
+    public static bool IsFullyExpanded(this ITreeItem self) =>
+      self.IsExpanded && (self.Parent == null || IsFullyExpanded(self.Parent));
+
+    public static void ExpandTo(this ITreeItem self) {
+      var items = self.GetThisAndParents().ToList();
+
+      // don't expand this if Items are empty or it's just placeholder
+      if (self.Items.Count == 0 || self.Items[0]?.Parent == null)
+        items.Remove(self);
+
+      items.Reverse();
+
+      foreach (var item in items)
+        item.IsExpanded = true;
+    }
+
+    public static T FindItem<T>(IEnumerable<T> items, Func<T, bool> equals) where T : class, ITreeItem {
+      foreach (var item in items) {
+        if (equals(item))
+          return item;
+
+        var res = FindItem(item.Items.OfType<T>(), equals);
+        if (res != null) return res;
+      }
+
+      return default;
+    }
+
+    public static List<T> GetBranch<T>(this T item, bool expanded) where T : class, ITreeItem {
+      if (item == null) return null;
+      var items = new List<T>();
+
+      while (item != null) {
+        items.Add(item);
+        if (expanded) item.IsExpanded = true;
+        item = item.Parent as T;
+      }
+
+      items.Reverse();
+
+      return items;
+    }
+
+    public static int GetIndex(this ITreeItem item, ITreeItem parent) {
+      int index = 0;
+      bool found = false;
+      GetIndex(item, parent, ref index, ref found);
+      return found ? index : -1;
+    }
+
+    public static void GetIndex(ITreeItem item, ITreeItem parent, ref int index, ref bool found) {
+      if (ReferenceEquals(item, parent)) {
+        found = true;
+        return;
+      }
+      
+      if (parent.Items == null) return;
+
+      foreach (var pItem in parent.Items) {
+        index++;
+        if (ReferenceEquals(item, pItem)) {
+          found = true;
+          break;
+        }
+        if (!pItem.IsExpanded) continue;
+        GetIndex(item, pItem, ref index, ref found);
+        if (found) break;
+      }
+    }
+
     public static T GetTopParent<T>(T item) where T : ITreeItem {
       var top = item;
       var parent = item?.Parent;
@@ -26,6 +96,14 @@ namespace MH.Utils {
         GetThisAndItemsRecursive(item, ref output);
     }
 
+    public static IEnumerable<T> GetThisAndParents<T>(this T item) where T : class, ITreeItem {
+      while (item != null) {
+        yield return item;
+        item = item.Parent as T;
+      }
+    }
+
+    // TODO replace with GetThisAndParents
     public static void GetThisAndParentRecursive<T>(T self, ref List<T> output) where T : ITreeItem {
       output.Add(self);
       var parent = self.Parent;
@@ -40,6 +118,17 @@ namespace MH.Utils {
       GetThisAndParentRecursive(self, ref list);
       list.Reverse();
       return string.Join(separator, list.Select(nameSelector));
+    }
+
+    public static bool HasThisParent(this ITreeItem self, ITreeItem parent) {
+      var p = self.Parent;
+      while (p != null) {
+        if (ReferenceEquals(p, parent))
+          return true;
+        p = p.Parent;
+      }
+
+      return false;
     }
 
     public static void ItemMove(ITreeItem item, ITreeItem dest, bool aboveDest) {
@@ -59,6 +148,14 @@ namespace MH.Utils {
         newParent.Items.SetRelativeTo(item, dest, aboveDest);
       else
         SetInOrder(newParent.Items, item, x => x.Name);
+    }
+
+    public static void SetExpanded<T>(this ITreeItem self, bool value) where T : ITreeItem {
+      if (self.IsExpanded != value)
+        self.IsExpanded = value;
+      if (self.Items == null) return;
+      foreach (var item in self.Items.OfType<T>())
+        item.SetExpanded<T>(value);
     }
 
     public static int SetInOrder<T>(ObservableCollection<T> collection, T item, Func<T, string> keySelector) {
