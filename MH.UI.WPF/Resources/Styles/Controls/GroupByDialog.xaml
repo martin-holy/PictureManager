@@ -9,8 +9,8 @@
   <DataTemplate x:Key="MH.UI.Dialogs.GroupByDialog`1" DataType="{x:Type uid:GroupByDialog`1}">
     <DataTemplate.Resources>
       <HierarchicalDataTemplate
-        DataType="{x:Type mhubc:TreeItem`2}"
-        x:Key="MH.Utils.BaseClasses.TreeItem`2"
+        DataType="{x:Type mhubc:TreeItem}"
+        x:Key="MH.Utils.BaseClasses.TreeItem"
         ItemsSource="{Binding Items}">
 
         <Border
@@ -35,7 +35,7 @@
         Style="{StaticResource MH.Styles.Controls.TreeViewBase}"
         SelectAction="{Binding SelectAction}"
         ItemsSource="{Binding RootItems}"
-        ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem`2}"
+        ItemTemplate="{StaticResource MH.Utils.BaseClasses.TreeItem}"
         ItemContainerStyle="{StaticResource MH.Styles.Controls.TreeViewItemBaseWithSelection}"
         VirtualizingPanel.ScrollUnit="Item"
         VirtualizingPanel.CacheLengthUnit="Item"
