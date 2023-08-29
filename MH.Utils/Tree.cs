@@ -57,6 +57,7 @@ namespace MH.Utils {
       return found ? index : -1;
     }
 
+    // TODO do not count hidden items
     public static void GetIndex(ITreeItem item, ITreeItem parent, ref int index, ref bool found) {
       if (ReferenceEquals(item, parent)) {
         found = true;
