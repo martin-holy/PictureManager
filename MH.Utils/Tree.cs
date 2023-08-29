@@ -78,6 +78,18 @@ namespace MH.Utils {
       }
     }
 
+    public static int GetLevel(this ITreeItem item) {
+      var level = 0;
+      var parent = item.Parent;
+
+      while (parent != null) {
+        level++;
+        parent = parent.Parent;
+      }
+
+      return level;
+    }
+
     public static T GetTopParent<T>(T item) where T : ITreeItem {
       var top = item;
       var parent = item?.Parent;
