@@ -92,8 +92,11 @@ namespace PictureManager.Domain.DataViews {
         view.ReGroupItems(view.FilteredItems.Where(mediaItems.Contains).ToArray(), false);
     }
 
-    public async Task LoadByFolder(ITreeItem item, bool and, bool hide, bool recursive) {
+    public async Task LoadByFolder(ITreeItem item) {
       if (item is FolderM { IsAccessible: false }) return;
+      var and = Keyboard.IsCtrlOn();
+      var hide = Keyboard.IsAltOn();
+      var recursive = Keyboard.IsShiftOn();
 
       item.IsSelected = true;
       AddViewIfNotActive(and || hide ? null : item.Name);

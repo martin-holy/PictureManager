@@ -1,7 +1,6 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.EventsArgs;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
 using System;
@@ -18,8 +17,8 @@ namespace PictureManager.Domain.Models {
       NewGeoNameFromGpsCommand = new(() => NewGeoNameFromGps(Core.Settings.GeoNamesUserName));
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) {
-      if (e.DataContext is not GeoNameM g) return;
+    public override void OnItemSelect(object o) {
+      if (o is not GeoNameM g) return;
       if (Core.Instance.MediaItemsM.IsEditModeOn)
         Core.Instance.MediaItemsM.SetMetadata(g);
     }

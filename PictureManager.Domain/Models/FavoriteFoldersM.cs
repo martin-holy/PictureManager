@@ -1,12 +1,11 @@
-﻿using System;
-using System.Linq;
-using MH.Utils;
+﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using System;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class FavoriteFoldersM : TreeCategoryBase {
@@ -19,8 +18,8 @@ namespace PictureManager.Domain.Models {
       AddToFavoritesCommand = new(item => ItemCreate(this, item));
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) {
-      if (e.DataContext is not FavoriteFolderM ff) return;
+    public override void OnItemSelect(object o) {
+      if (o is not FavoriteFolderM ff) return;
       if (!Core.Instance.FoldersM.IsFolderVisible(ff.Folder)) return;
       Core.Instance.TreeViewCategoriesM.SelectedCategory = Core.Instance.FoldersM;
       Core.Instance.FoldersM.TreeView.ScrollTo(ff.Folder);

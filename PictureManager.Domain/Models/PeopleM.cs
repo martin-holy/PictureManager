@@ -1,6 +1,5 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
@@ -57,8 +56,8 @@ namespace PictureManager.Domain.Models {
       _core.ToolsTabsM.Activate(PersonDetail, "Person", true);
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) {
-      if (e.DataContext is not ITreeItem item) return;
+    public override void OnItemSelect(object o) {
+      if (o is not ITreeItem item) return;
 
       switch (item) {
         case PersonM p:
