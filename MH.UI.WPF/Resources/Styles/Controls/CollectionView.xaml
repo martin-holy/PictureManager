@@ -22,10 +22,8 @@
     x:Key="MH.Styles.Controls.CollectionView"
     TargetType="wpfc:CollectionView"
     BasedOn="{StaticResource MH.Styles.Controls.TreeViewBase}">
+    <Setter Property="ItemContainerStyle" Value="{StaticResource MH.Styles.Controls.TreeViewItemLite}"/>
     <Setter Property="ItemTemplateSelector" Value="{StaticResource KeyDataTemplateSelector}"/>
-    <Setter Property="VirtualizingPanel.ScrollUnit" Value="Item"/>
-    <Setter Property="VirtualizingPanel.CacheLengthUnit" Value="Item"/>
-    <Setter Property="VirtualizingPanel.CacheLength" Value="3"/>
   </Style>
 
   <HierarchicalDataTemplate
@@ -33,49 +31,57 @@
     DataType="{x:Type uic:CollectionViewGroup`1}"
     ItemsSource="{Binding Items}">
 
-    <Border Background="Transparent" Padding="1,2,1,2">
-      <Border
-        x:Name="border"
-        BorderBrush="Black"
-        BorderThickness="1"
-        Margin="0"
-        Background="#88000000"
-        Height="30"
-        Padding="20,0,0,0">
+    <Border
+      x:Name="border"
+      BorderBrush="Black"
+      BorderThickness="1"
+      Margin="1,2,1,2"
+      Background="#88000000"
+      Height="30">
 
-        <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-          </Grid.ColumnDefinitions>
+      <Grid Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-          <wpfc:IconButton
-            Icon="{Binding Converter={mhConv:TypeToIconConverter}}"
-            Foreground="{Binding Converter={mhConv:TypeToIconColorConverter}}"
-            ToolTip="Group by"
-            Command="{Binding View.OpenGroupByDialogCommand}"
-            CommandParameter="{Binding}"/>
+        <ToggleButton
+          x:Name="expander"
+          Grid.Column="0"
+          Style="{StaticResource MH.Styles.Controls.TreeExpandCollapseToggle}"
+          IsChecked="{Binding IsExpanded, Mode=TwoWay}"/>
 
-          <TextBlock
-            Grid.Column="1"
-            Text="{Binding Path=GroupedBy.Data.(mhuInt:ITitled.GetTitle)}"
-            VerticalAlignment="Center"
-            Margin="5,0,5,0"
-            FontSize="16"/>
+        <wpfc:IconButton
+          Grid.Column="1"
+          Icon="{Binding Converter={mhConv:TypeToIconConverter}}"
+          Foreground="{Binding Converter={mhConv:TypeToIconColorConverter}}"
+          ToolTip="Group by"
+          Command="{Binding View.OpenGroupByDialogCommand}"
+          CommandParameter="{Binding}"/>
 
-          <TextBlock
-            Grid.Column="2"
-            Text="{Binding SourceCount}"
-            VerticalAlignment="Center"
-            Margin="5,0,5,0"
-            FontWeight="Bold"
-            FontSize="14"/>
-        </Grid>
-      </Border>
+        <TextBlock
+          Grid.Column="2"
+          Text="{Binding Path=GroupedBy.Data.(mhuInt:ITitled.GetTitle)}"
+          VerticalAlignment="Center"
+          Margin="5,0,5,0"
+          FontSize="16"/>
+
+        <TextBlock
+          Grid.Column="3"
+          Text="{Binding SourceCount}"
+          VerticalAlignment="Center"
+          Margin="5,0,5,0"
+          FontWeight="Bold"
+          FontSize="14"/>
+      </Grid>
     </Border>
 
     <HierarchicalDataTemplate.Triggers>
+      <DataTrigger Binding="{Binding Items.Count}" Value="0">
+        <Setter TargetName="expander" Property="Visibility" Value="Hidden"/>
+      </DataTrigger>
       <DataTrigger Value="True">
         <DataTrigger.Binding>
           <MultiBinding Converter="{mhConv:SetPropertyConverter}" ConverterParameter="Width">
