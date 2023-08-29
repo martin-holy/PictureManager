@@ -17,7 +17,6 @@
   
   <mhConverters:AllToBoolConverter x:Key="AllToBoolConverter"/>
   <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter"/>
-  <mhConverters:MouseButtonConverter x:Key="MouseButtonConverter"/>
   <mhConverters:MouseWheelConverter x:Key="MouseWheelConverter"/>
   <mhConverters:DataTypeConverter x:Key="DataTypeConverter"/>
   <mhConverters:DebugConverter x:Key="DebugConverter"/>
