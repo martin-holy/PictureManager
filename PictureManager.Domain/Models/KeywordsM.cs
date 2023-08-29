@@ -1,6 +1,5 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
@@ -24,8 +23,8 @@ namespace PictureManager.Domain.Models {
       AfterItemCreateEventHandler += (_, e) => TreeView.ScrollTo(e.Data);
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) {
-      if (e.DataContext is not KeywordM k) return;
+    public override void OnItemSelect(object o) {
+      if (o is not KeywordM k) return;
       ToggleDialogM.ToggleKeyword(Core.Instance, k);
     }
 

@@ -10,8 +10,14 @@
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+      </Grid.ColumnDefinitions>
+
+      <!-- Attach ContextMenu -->
       <b:Interaction.Triggers>
-        <!-- Attach ContextMenu -->
         <b:EventTrigger EventName="PreviewMouseRightButtonDown">
           <b:ChangePropertyAction
             PropertyName="ContextMenu"
@@ -21,28 +27,27 @@
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
-      <StackPanel
-        Orientation="Horizontal"
-        Margin="{Binding Converter={StaticResource CatTreeViewMarginConverter}}">
-
-        <Path
-          x:Name="icon"
-          Style="{StaticResource MH.Styles.Icon}"
-          Data="{Binding IconName,
-                 Converter={StaticResource ResourceConverter}}"
-          Fill="{Binding IconName,
-                 Converter={StaticResource ResourceConverter},
-                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
-        
-        <TextBlock
-          x:Name="name"
-          Text="{Binding Name}"
-          VerticalAlignment="Center"
-          Margin="5,0,0,0"
-          FontSize="14"/>
-        
-        <TextBlock Style="{StaticResource TreeItemKeywordsPicCount}"/>
-      </StackPanel>
+      <Path
+        x:Name="icon"
+        Grid.Column="0"
+        Style="{StaticResource MH.Styles.Icon}"
+        Data="{Binding IconName,
+               Converter={StaticResource ResourceConverter}}"
+        Fill="{Binding IconName,
+               Converter={StaticResource ResourceConverter},
+               ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+      
+      <TextBlock
+        x:Name="name"
+        Grid.Column="1"
+        Text="{Binding Name}"
+        VerticalAlignment="Center"
+        Margin="5,0,0,0"
+        FontSize="14"/>
+      
+      <TextBlock
+        Grid.Column="2"
+        Style="{StaticResource TreeItemKeywordsPicCount}"/>
     </Grid>
 
     <HierarchicalDataTemplate.Triggers>
@@ -65,7 +70,6 @@
                   ConverterParameter={x:Type m:FavoriteFolderM}}"
         Value="True">
         <Setter
-          TargetName="grid"
           Property="ToolTip"
           Value="{Binding Path=(m:FavoriteFolderM.Folder).FullPath}"/>
       </DataTrigger>

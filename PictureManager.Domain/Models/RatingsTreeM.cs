@@ -1,5 +1,4 @@
-﻿using MH.Utils.EventsArgs;
-using PictureManager.Domain.BaseClasses;
+﻿using PictureManager.Domain.BaseClasses;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
@@ -8,8 +7,8 @@ namespace PictureManager.Domain.Models {
       Load();
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) {
-      if (e.DataContext is not RatingTreeM r) return;
+    public override void OnItemSelect(object o) {
+      if (o is not RatingTreeM r) return;
       if (Core.Instance.MediaItemsM.IsEditModeOn)
         Core.Instance.MediaItemsM.SetMetadata(r);
       else

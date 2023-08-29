@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using MH.Utils.BaseClasses;
-using MH.Utils.EventsArgs;
+﻿using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.BaseClasses;
 using PictureManager.Domain.DataAdapters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordsM : TreeCategoryBase {
@@ -19,8 +18,8 @@ namespace PictureManager.Domain.Models {
       SetAsFolderKeywordCommand = new(SetAsFolderKeyword);
     }
 
-    public override void OnItemSelect(MouseButtonEventArgs e) =>
-      Core.Instance.FoldersM.OnItemSelect(e);
+    public override void OnItemSelect(object o) =>
+      Core.Instance.FoldersM.OnItemSelect(o);
 
     public void LoadIfContains(FolderM folder) {
       if (DataAdapter.All.Contains(folder) || folder.FolderKeyword != null)

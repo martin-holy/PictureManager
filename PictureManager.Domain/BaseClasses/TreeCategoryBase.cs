@@ -2,25 +2,23 @@
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
-using MH.Utils.EventsArgs;
 using MH.Utils.Interfaces;
 using System;
 
 namespace PictureManager.Domain.BaseClasses {
   public class TreeCategoryBase : TreeCategory {
     public Category Category { get; }
-    public TreeView TreeView { get; } = new();
+    public TreeView<ITreeItem> TreeView { get; } = new();
 
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemCreateEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemRenameEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemDeleteEventHandler = delegate { };
 
-    public RelayCommand<MouseButtonEventArgs> SelectCommand { get; }
-
     public TreeCategoryBase(string iconName, Category category, string name) : base(iconName, name) {
       TreeView.RootHolder.Add(this);
+      // TODO use OnItemSelect override or TreeItemSelectedEvent in derived classes?
+      TreeView.TreeItemSelectedEvent += (_, e) => OnItemSelect(e.Data);
       Category = category;
-      SelectCommand = new(OnItemSelect);
     }
 
     protected virtual string ValidateNewItemName(ITreeItem root, string name) => throw new NotImplementedException();
@@ -33,7 +31,7 @@ namespace PictureManager.Domain.BaseClasses {
     protected virtual void ModelGroupRename(ITreeGroup group, string name) => throw new NotImplementedException();
     protected virtual void ModelGroupDelete(ITreeGroup group) => throw new NotImplementedException();
 
-    public virtual void OnItemSelect(MouseButtonEventArgs e) { }
+    public virtual void OnItemSelect(object item) { }
 
     public override void ItemCreate(ITreeItem root) {
       if (!GetNewName(true, string.Empty, out var newName,

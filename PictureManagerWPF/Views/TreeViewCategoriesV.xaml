@@ -4,7 +4,6 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
 
   <DataTemplate DataType="{x:Type m:TreeViewCategoriesM}">
@@ -64,35 +63,7 @@
 
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                  <mhc:CatTreeView TreeView="{Binding TreeView}">
-
-                    <!-- Disable Selecting -->
-                    <mhc:CatTreeView.ItemContainerStyle>
-                      <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MH.Styles.Controls.TreeViewItem}">
-                        <Setter Property="IsSelected" Value="False"/>
-                        <Style.Triggers>
-                          <EventTrigger RoutedEvent="Selected">
-                            <BeginStoryboard>
-                              <Storyboard>
-                                <BooleanAnimationUsingKeyFrames
-                                  Storyboard.TargetProperty="(TreeViewItem.IsSelected)">
-                                  <DiscreteBooleanKeyFrame KeyTime="00:00:00" Value="False"/>
-                                </BooleanAnimationUsingKeyFrames>
-                              </Storyboard>
-                            </BeginStoryboard>
-                          </EventTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </mhc:CatTreeView.ItemContainerStyle>
-
-                    <b:Interaction.Triggers>
-                      <b:EventTrigger EventName="MouseLeftButtonUp">
-                        <b:InvokeCommandAction
-                          Command="{Binding SelectCommand}"
-                          EventArgsConverter="{StaticResource MouseButtonConverter}"/>
-                      </b:EventTrigger>
-                    </b:Interaction.Triggers>
-                  </mhc:CatTreeView>
+                  <mhc:CatTreeView TreeView="{Binding TreeView}"/>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>
 
