@@ -1,7 +1,7 @@
 ﻿using MH.Utils.Extensions;
+using MH.Utils.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel;
-using MH.Utils.Interfaces;
 
 namespace MH.UI.Interfaces {
   public interface ITreeView : INotifyPropertyChanged {
@@ -11,6 +11,8 @@ namespace MH.UI.Interfaces {
     public bool ScrollToTop { get; set; }
     public bool IsScrollUnitItem { get; set; }
     public bool IsSizeChanging { get; set; }
+    public bool ShowTreeItemSelection { get; set; }
+    public void OnTreeItemSelected(object value);
     public bool SetTopItem(object o);
     public void ScrollTo(ITreeItem o);
   }

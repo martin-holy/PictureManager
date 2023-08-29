@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace MH.UI.Controls {
-  public abstract class CollectionView<T> : TreeView, ICollectionView where T : ISelectable {
+  public abstract class CollectionView<T> : TreeView<ITreeItem>, ICollectionView where T : ISelectable {
     private T _topItem;
     private ICollectionViewGroup<T> _topGroup;
     private readonly HashSet<ICollectionViewGroup<T>> _groupByItemsRoots = new();
