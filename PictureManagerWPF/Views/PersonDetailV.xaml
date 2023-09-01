@@ -92,7 +92,6 @@
       <mhc:CollectionView
         Grid.Row="3"
         View="{Binding TopSegments}"
-        TreeView="{Binding TopSegments}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.IsDropEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"
@@ -103,7 +102,6 @@
       <mhc:CollectionView
         Grid.Row="4"
         View="{Binding AllSegments}"
-        TreeView="{Binding AllSegments}"
         mhu:DragDropHelper.IsDragEnabled="True"
         mhu:DragDropHelper.DragDataType="{x:Type m:SegmentM}"/>
 

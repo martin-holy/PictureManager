@@ -13,6 +13,6 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <mhc:CollectionView View="{Binding}" TreeView="{Binding}"/>
+    <mhc:CollectionView View="{Binding}"/>
   </DataTemplate>
 </ResourceDictionary>
