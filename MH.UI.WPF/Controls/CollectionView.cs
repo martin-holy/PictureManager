@@ -46,7 +46,7 @@ namespace MH.UI.WPF.Controls {
       // keep binding for double click 
       PreviewMouseLeftButtonUp += (_, e) => {
         if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0
-            && e.OriginalSource is ToggleButton { Name: "Expander" } btn) {
+            && e.OriginalSource is ToggleButton { Name: "expander" } btn) {
           View.SetExpanded(btn.DataContext);
         }
       };
