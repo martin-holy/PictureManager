@@ -1,6 +1,8 @@
 ﻿using MH.UI.Interfaces;
 using MH.UI.WPF.Utils;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,6 +12,7 @@ namespace MH.UI.WPF.Controls {
     private double _verticalOffset = -1;
     private bool _isScrolling;
     private int _scrollToAttempts;
+    private Tuple<object[], int?> _pendingScrollToItems;
 
     public ScrollViewer ScrollViewer { get; set; }
 
@@ -38,15 +41,8 @@ namespace MH.UI.WPF.Controls {
       if (TreeView != null) {
         ItemsSource = TreeView.RootHolder;
 
-        TreeView.PropertyChanged += (_, e) => {
-          switch (e.PropertyName) {
-            case nameof(TreeView.ScrollToItems): ScrollToItems(); break;
-            case nameof(TreeView.ScrollToTop): ScrollToTop(); break;
-          }
-        };
-
-        SelectedItemChanged += (_, e) =>
-          TreeView.OnTreeItemSelected(e.NewValue);
+        TreeView.ScrollToTopAction = ScrollToTop;
+        TreeView.ScrollToItemsAction = ScrollToItems;
       }
 
       LayoutUpdated += (_, _) => {
@@ -70,12 +66,20 @@ namespace MH.UI.WPF.Controls {
         if (TreeView != null && e.PreviousSize is not { Width: 0, Height: 0 })
           TreeView.IsSizeChanging = true;
       };
+
+      IsVisibleChanged += (_, _) => {
+        if (!IsVisible || _pendingScrollToItems == null) return;
+        ScrollToItems(_pendingScrollToItems.Item1, _pendingScrollToItems.Item2);
+        _pendingScrollToItems = null;
+      };
     }
 
-    private void ScrollToItems() {
-      if (TreeView.ScrollToItems == null || !IsVisible || ScrollViewer == null) return;
-      var items = TreeView.ScrollToItems;
-      TreeView.ScrollToItems = null;
+    private void ScrollToItems(IEnumerable<object> items, int? scrollToIndex) {
+      if (!IsVisible || ScrollViewer == null) {
+        _pendingScrollToItems = new(items.ToArray(), scrollToIndex);
+        return;
+      }
+
       _isScrolling = true;
       ScrollViewer.UpdateLayout();
 
@@ -90,10 +94,8 @@ namespace MH.UI.WPF.Controls {
         parent = tvi;
       }
 
-      _verticalOffset = TreeView.IsScrollUnitItem
-        ? TreeView.ScrollToIndex
-        : ScrollViewer.VerticalOffset
-          + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
+      _verticalOffset = scrollToIndex ?? ScrollViewer.VerticalOffset
+        + parent.TransformToVisual(ScrollViewer).Transform(new(0, 0)).Y;
 
       if (_verticalOffset > -1)
         _scrollToAttempts = 5;
@@ -102,10 +104,8 @@ namespace MH.UI.WPF.Controls {
     }
 
     private void ScrollToTop() {
-      if (!TreeView.ScrollToTop) return;
       ScrollViewer?.ScrollToTop();
       ScrollViewer?.UpdateLayout();
-      TreeView.ScrollToTop = false;
     }
 
     private void SetTopItem() {
@@ -122,6 +122,7 @@ namespace MH.UI.WPF.Controls {
     /// </summary>
     public void DragDropAutoScroll(DragEventArgs e) {
       const int px = 25;
+      // TODO get the IsScrollUnitItem info from WPF control
       var unit = TreeView.IsScrollUnitItem ? 1 : px;
       var pos = e.GetPosition(this);
       if (pos.Y < px)

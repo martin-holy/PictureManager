@@ -4,7 +4,8 @@
   xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:mhConv="clr-namespace:MH.UI.WPF.Converters"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
+  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
 
   <Style x:Key="{x:Static SystemParameters.FocusVisualStyleKey}">
     <Setter Property="Control.Template">
@@ -129,7 +130,11 @@
     </Setter>
   </Style>
 
-  <Style x:Key="MH.Styles.Controls.TreeViewItemBase" TargetType="TreeViewItem" BasedOn="{StaticResource MH.Styles.Controls.TreeViewItemLite}">
+  <Style
+    x:Key="MH.Styles.Controls.TreeViewItemBase"
+    TargetType="TreeViewItem"
+    BasedOn="{StaticResource MH.Styles.Controls.TreeViewItemLite}">
+
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="TreeViewItem">
@@ -142,6 +147,15 @@
               Background="{StaticResource MH.Control.Static.Background}"
               FocusVisualStyle="{x:Null}"
               MinHeight="25">
+
+              <b:Interaction.Triggers>
+                <b:EventTrigger EventName="MouseLeftButtonUp">
+                  <b:InvokeCommandAction
+                    Command="{Binding TreeView.TreeItemSelectedCommand, RelativeSource=
+                             {RelativeSource AncestorType=mhc:TreeViewBase}}"
+                    CommandParameter="{Binding}"/>
+                </b:EventTrigger>
+              </b:Interaction.Triggers>
 
               <DockPanel Margin="{Binding Converter={mhConv:TreeMarginConverter}, ConverterParameter=16}">
                 <ToggleButton
