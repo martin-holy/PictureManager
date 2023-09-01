@@ -11,7 +11,12 @@ using Keyboard = System.Windows.Input.Keyboard;
 namespace MH.UI.WPF.Controls {
   public class CollectionView : TreeViewBase {
     public static readonly DependencyProperty ViewProperty = DependencyProperty.Register(
-      nameof(View), typeof(ICollectionView), typeof(CollectionView));
+      nameof(View), typeof(ICollectionView), typeof(CollectionView), new(ViewChanged));
+
+    private static void ViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+      if (d is not CollectionView view) return;
+      view.TreeView = view.View;
+    }
 
     public ICollectionView View {
       get => (ICollectionView)GetValue(ViewProperty);
@@ -21,7 +26,7 @@ namespace MH.UI.WPF.Controls {
     public static GroupByDialogDataTemplateSelector GroupByDialogDataTemplateSelector { get; } = new();
 
     public RelayCommand<MouseButtonEventArgs> OpenItemCommand { get; }
-    public new RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
+    public RelayCommand<MouseButtonEventArgs> SelectItemCommand { get; }
 
     static CollectionView() {
       DefaultStyleKeyProperty.OverrideMetadata(
