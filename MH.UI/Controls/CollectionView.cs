@@ -15,7 +15,7 @@ namespace MH.UI.Controls {
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public ICollectionViewGroup<T> Root { get; set; }
-    public T TopItem { get; set; }
+    public new T TopItem { get; set; }
     public T LastSelectedItem { get; set; }
     public ICollectionViewGroup<T> TopGroup { get; set; }
     public ICollectionViewRow<T> LastSelectedRow { get; set; }
@@ -59,7 +59,7 @@ namespace MH.UI.Controls {
     public void SetRoot(ICollectionViewGroup<T> root, bool expandAll, bool removeEmpty = true) {
       TopGroup = null;
       TopItem = default;
-      ScrollToTop = true;
+      ScrollToTopAction?.Invoke();
       Update(_ => {
         Root = root;
         CollectionViewGroup<T>.GroupIt(Root);
@@ -106,8 +106,6 @@ namespace MH.UI.Controls {
     }
 
     public override void OnSizeChanging(bool value) {
-      base.OnSizeChanging(value);
-
       if (value) {
         _topItem = TopItem;
         _topGroup = TopGroup;
