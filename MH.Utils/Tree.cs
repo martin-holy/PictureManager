@@ -36,7 +36,6 @@ namespace MH.Utils {
     }
 
     public static List<T> GetBranch<T>(this T item, bool expanded) where T : class, ITreeItem {
-      if (item == null) return null;
       var items = new List<T>();
 
       while (item != null) {
