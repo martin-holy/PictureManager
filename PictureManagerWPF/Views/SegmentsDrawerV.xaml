@@ -16,7 +16,6 @@
 
     <mhc:CollectionView
       View="{Binding}"
-      TreeView="{Binding}"
       mhu:DragDropHelper.IsDragEnabled="True"
       mhu:DragDropHelper.IsDropEnabled="True"
       mhu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

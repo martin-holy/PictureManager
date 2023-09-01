@@ -54,7 +54,6 @@
       <mhc:CollectionView
         x:Name="view"
         View="{Binding}"
-        TreeView="{Binding}"
         VirtualizingPanel.CacheLength="1"
         wpfu:DragDropHelper.IsDragEnabled="True"
         wpfu:DragDropHelper.CanDrag="{Binding CanDragFunc}"

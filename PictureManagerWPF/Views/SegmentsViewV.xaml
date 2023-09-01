@@ -21,9 +21,9 @@
         <ColumnDefinition Width="*"/>
       </Grid.ColumnDefinitions>
       
-      <mhc:CollectionView View="{Binding CvPeople}" TreeView="{Binding CvPeople}"/>
+      <mhc:CollectionView View="{Binding CvPeople}"/>
       <GridSplitter Grid.Column="1"/>
-      <mhc:CollectionView Grid.Column="2" View="{Binding CvSegments}" TreeView="{Binding CvSegments}"/>
+      <mhc:CollectionView Grid.Column="2" View="{Binding CvSegments}"/>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
