@@ -19,7 +19,6 @@
   <mhConverters:AllToVisibilityConverter x:Key="AllToVisibilityConverter"/>
   <mhConverters:MouseWheelConverter x:Key="MouseWheelConverter"/>
   <mhConverters:DataTypeConverter x:Key="DataTypeConverter"/>
-  <mhConverters:DebugConverter x:Key="DebugConverter"/>
   <mhConverters:EqualityConverter x:Key="EqualityConverter"/>
   <mhConverters:ResourceConverter x:Key="ResourceConverter"/>
 </ResourceDictionary>
