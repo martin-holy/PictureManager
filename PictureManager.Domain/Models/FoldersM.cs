@@ -229,7 +229,7 @@ namespace PictureManager.Domain.Models {
         }
 
         item.IsAccessible = di.IsReady;
-        item.IconName = GetDriveIconName(di.DriveType);
+        item.Icon = GetDriveIconName(di.DriveType);
 
         // add placeholder so the Drive can be expanded
         if (di.IsReady && item.Items.Count == 0)

@@ -15,7 +15,8 @@ namespace PictureManager.Domain.CollectionViews {
     public RelayCommand<MouseWheelEventArgs> ZoomCommand { get; }
 
     public CollectionViewMediaItems(double thumbScale) {
-      GetTitle = "Media Items";
+      Icon = Res.IconImageMultiple;
+      Name = "Media Items";
       ThumbScale = thumbScale;
       ZoomCommand = new(e => Zoom(e.Delta), e => e.IsCtrlOn);
     }
