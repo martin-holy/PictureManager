@@ -50,7 +50,7 @@
         <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
         <ResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
         <ResourceDictionary Source="Views/List/PersonV.xaml"/>
-        <ResourceDictionary Source="Views/List/IconTextV.xaml"/>
+        <ResourceDictionary Source="Views/List/ListItemV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
