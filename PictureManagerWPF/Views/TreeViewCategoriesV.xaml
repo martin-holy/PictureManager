@@ -104,8 +104,8 @@
                     Style="{StaticResource MH.Styles.Icon}"
                     Width="24"
                     Height="24"
-                    Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
-                    Fill="{Binding IconName,
+                    Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+                    Fill="{Binding Icon,
                            Converter={StaticResource ResourceConverter},
                            ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
                     Effect="{StaticResource MH.Effects.DropShadow}"/>

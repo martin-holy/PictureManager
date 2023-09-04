@@ -22,9 +22,9 @@
 
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding IconName,
+            Data="{Binding Icon,
                    Converter={StaticResource ResourceConverter}}"
-            Fill="{Binding IconName,
+            Fill="{Binding Icon,
                    Converter={StaticResource ResourceConverter},
                    ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
 
