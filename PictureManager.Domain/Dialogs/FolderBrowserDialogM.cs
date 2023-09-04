@@ -32,7 +32,7 @@ namespace PictureManager.Domain.Dialogs {
         if (!di.IsReady) continue;
 
         var item = new FolderTreeViewItem(null, di.Name.TrimEnd(Path.DirectorySeparatorChar)) {
-          IconName = FoldersM.GetDriveIconName(di.DriveType)
+          Icon = FoldersM.GetDriveIconName(di.DriveType)
         };
 
         // add placeholder so the Drive can be expanded
@@ -57,7 +57,7 @@ namespace PictureManager.Domain.Dialogs {
 
     private void UpdateIconName() {
       if (Parent != null) // not Drive Folder
-        IconName = IsExpanded
+        Icon = IsExpanded
           ? Res.IconFolderOpen
           : Res.IconFolder;
     }

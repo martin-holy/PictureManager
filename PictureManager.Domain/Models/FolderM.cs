@@ -42,7 +42,7 @@ namespace PictureManager.Domain.Models {
     public void UpdateIconName() {
       if (Parent is FoldersM) return;
 
-      IconName = IsExpanded
+      Icon = IsExpanded
         ? Res.IconFolderOpen
         : !IsAccessible
           ? Res.IconFolderLock
