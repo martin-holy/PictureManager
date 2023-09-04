@@ -34,8 +34,6 @@ namespace PictureManager {
       Domain.Utils.Imaging.GetHashPixels = Utils.Imaging.GetHashPixels;
       Domain.Utils.Imaging.ResizeJpg = MH.UI.WPF.Utils.Imaging.ResizeJpg;
 
-      MH.UI.WPF.Converters.TypeToIconConverter.TypeToIcon = Res.TypeToIcon;
-      MH.UI.WPF.Converters.TypeToIconColorConverter.TypeToIconColor = Res.TypeToIconColor;
       MH.UI.WPF.Utils.Init.SetDelegates();
       GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
