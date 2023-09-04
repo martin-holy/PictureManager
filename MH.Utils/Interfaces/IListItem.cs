@@ -1,7 +1,8 @@
 ﻿namespace MH.Utils.Interfaces {
   public interface IListItem : ISelectable {
-    bool IsHidden { get; set; }
-    string Name { get; set; }
-    string IconName { get; set; }
+    public bool IsHidden { get; set; }
+    public string Icon { get; set; }
+    public string Name { get; set; }
+    public object Data { get; }
   }
 }

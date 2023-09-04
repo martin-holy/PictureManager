@@ -1,22 +1,28 @@
 ﻿using MH.Utils.Interfaces;
+using System.Collections.Specialized;
 
 namespace MH.Utils.BaseClasses {
   public class ListItem : ObservableObject, IListItem {
-    private bool _isSelected;
-    private bool _isHidden;
-    private string _iconName;
+    private protected BitVector32 Bits = new(0);
+
+    private string _icon;
     private string _name;
 
-    public bool IsSelected { get => _isSelected; set { _isSelected = value; OnPropertyChanged(); } }
-    public bool IsHidden { get => _isHidden; set { _isHidden = value; OnPropertyChanged(); } }
-    public string IconName { get => _iconName; set { _iconName = value; OnPropertyChanged(); } }
+    public bool IsSelected { get => Bits[BitsMasks.IsSelected]; set { Bits[BitsMasks.IsSelected] = value; OnPropertyChanged(); } }
+    public bool IsHidden { get => Bits[BitsMasks.IsHidden]; set { Bits[BitsMasks.IsHidden] = value; OnPropertyChanged(); } }
+    public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
+    public object Data { get; set; }
 
     public ListItem() { }
 
-    public ListItem(string iconName, string name) {
-      IconName = iconName;
+    public ListItem(string icon, string name) : this() {
+      Icon = icon;
       Name = name;
+    }
+
+    public ListItem(string icon, string name, object data) : this(icon, name) {
+      Data = data;
     }
   }
 
