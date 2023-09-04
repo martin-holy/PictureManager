@@ -56,7 +56,7 @@ namespace MH.UI.Controls {
 
     public CollectionViewGroup(List<T> source, CollectionView<T> view, GroupMode groupMode, CollectionViewGroupByItem<T>[] groupByItems) : this(default, null, source) {
       View = view;
-      GroupedBy = new(view, null);
+      GroupedBy = new(new ListItem(view.Icon, view.Name, view), null);
       IsGroupBy = groupMode is GroupMode.GroupBy or GroupMode.GroupByRecursive;
       IsThenBy = groupMode is GroupMode.ThenBy or GroupMode.ThenByRecursive;
       IsRecursive = groupMode is GroupMode.GroupByRecursive or GroupMode.ThenByRecursive;
@@ -201,8 +201,8 @@ namespace MH.UI.Controls {
           GroupIt(group);
           group.SetExpanded<ICollectionViewGroup<T>>(true);
           Items.SetInOrder(group,
-            x => x is ICollectionViewGroup<T> { GroupedBy: { Data: ITitled gt } }
-              ? gt.GetTitle
+            x => x is ICollectionViewGroup<T> { GroupedBy: { Data: IListItem gn } }
+              ? gn.Name
               : string.Empty);
         }
 

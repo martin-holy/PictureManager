@@ -21,7 +21,8 @@ namespace MH.UI.Controls {
     public ICollectionViewRow<T> LastSelectedRow { get; set; }
     public bool SelectionDisabled { get; set; }
     public int GroupContentOffset { get; set; } = 0;
-    public string GetTitle { get; set; }
+    public string Icon { get; set; }
+    public string Name { get; set; }
 
     public RelayCommand<ICollectionViewGroup<T>> OpenGroupByDialogCommand { get; }
 

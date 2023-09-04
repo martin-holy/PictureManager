@@ -11,7 +11,7 @@ namespace MH.UI.Controls {
     public Func<T, object, bool> ItemGroupBy { get; }
     public bool IsGroup { get; set; }
 
-    public CollectionViewGroupByItem(ITitled data, Func<T, object, bool> itemGroupBy) : base(null, data) {
+    public CollectionViewGroupByItem(IListItem data, Func<T, object, bool> itemGroupBy) : base(null, data) {
       ItemGroupBy = itemGroupBy;
     }
 
@@ -52,7 +52,7 @@ namespace MH.UI.Controls {
         if (itemItems.Any(x => ReferenceEquals(x.Data, newItem.Data)))
           continue;
 
-        Items.SetInOrder(newItem, x => x.Data is ITitled d ? d.GetTitle : string.Empty);
+        Items.SetInOrder(newItem, x => x.Data is IListItem d ? d.Name : string.Empty);
       }
     }
   }
