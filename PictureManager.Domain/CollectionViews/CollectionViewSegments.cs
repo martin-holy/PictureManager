@@ -10,10 +10,11 @@ namespace PictureManager.Domain.CollectionViews {
 
     public CollectionViewSegments(SegmentsM segmentsM) {
       _segmentsM = segmentsM;
+      Icon = Res.IconSegment;
     }
 
     public void Reload(List<SegmentM> source, GroupMode groupMode, CollectionViewGroupByItem<SegmentM>[] groupByItems, bool expandAll, string rootTitle = "Segments", bool removeEmpty = true) {
-      GetTitle = rootTitle;
+      Name = rootTitle;
       SetRoot(new CollectionViewGroup<SegmentM>(source, this, groupMode, groupByItems), expandAll, removeEmpty);
     }
 

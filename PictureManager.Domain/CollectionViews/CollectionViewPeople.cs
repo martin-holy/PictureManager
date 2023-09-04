@@ -10,7 +10,8 @@ namespace PictureManager.Domain.CollectionViews {
 
     public CollectionViewPeople(PeopleM peopleM) {
       PeopleM = peopleM;
-      GetTitle = "People";
+      Icon = Res.IconPeopleMultiple;
+      Name = "People";
     }
 
     public void Reload(List<PersonM> source, GroupMode groupMode, CollectionViewGroupByItem<PersonM>[] groupByItems, bool expandAll) {
