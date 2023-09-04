@@ -9,8 +9,8 @@ using System.Linq;
 
 namespace PictureManager.Domain.CollectionViews {
   public static class GroupByItems {
-    private static readonly IconText _dateGroup = new(Res.IconCalendar, "Date");
-    private static readonly IconText _peopleGroupsGroup = new(Res.IconPeopleMultiple, "Groups");
+    private static readonly ListItem _dateGroup = new(Res.IconCalendar, "Date");
+    private static readonly ListItem _peopleGroupsGroup = new(Res.IconPeopleMultiple, "Groups");
     private static readonly CategoryGroupM _unknownPeopleGroup =
       new(-1, "Unknown", Category.People, Res.IconPeopleMultiple);
 
@@ -132,7 +132,7 @@ namespace PictureManager.Domain.CollectionViews {
       var groupItems = people
         .GroupBy(x => x.Parent)
         .Select(x => x.Key ?? _unknownPeopleGroup)
-        .OrderBy(x => x.GetTitle)
+        .OrderBy(x => x.Name)
         .Select(x => new CollectionViewGroupByItem<PersonM>(x, GroupPersonByGroup));
 
       group.AddItems(groupItems);
