@@ -379,7 +379,7 @@ namespace PictureManager.Domain.Models {
 
       var segments = GetSegments(_core.MediaItemsViews.Current.GetSelectedOrAll(), result).ToList();
       SegmentsView ??= new(_core.PeopleM, this);
-      _core.MainTabsM.Activate(SegmentsView, "Segments");
+      _core.MainTabs.Activate(Res.IconSegment, "Segments", SegmentsView);
       SegmentsView.Reload(segments);
     }
   }

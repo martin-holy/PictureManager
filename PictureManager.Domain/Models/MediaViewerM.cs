@@ -127,7 +127,7 @@ namespace PictureManager.Domain.Models {
         _core.VideoClipsM.SetMediaItem(null);
         MediaPlayerM.IsPlaying = false;
         MediaPlayerM.Source = String.Empty;
-        _core.ToolsTabsM.Deactivate(_core.VideoClipsM);
+        _core.ToolsTabsM.Close(_core.VideoClipsM);
       }
 
       if (mediaItem == null) return;
@@ -145,7 +145,7 @@ namespace PictureManager.Domain.Models {
         _core.VideoClipsM.SetMediaItem(mediaItem);
         MediaPlayerM.Source = mediaItem.FilePath;
         MediaPlayerM.TimelineSmallChange = smallChange;
-        _core.ToolsTabsM.Activate(_core.VideoClipsM, "Clips");
+        _core.ToolsTabsM.Activate(Res.IconMovieClapper, "Clips", _core.VideoClipsM);
       }
     }
   }

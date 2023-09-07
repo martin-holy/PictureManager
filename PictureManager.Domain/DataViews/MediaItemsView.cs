@@ -20,7 +20,7 @@ namespace PictureManager.Domain.DataViews {
     private bool _isImporting;
     private int _importCount;
     private int _importDoneCount;
-    private IProgress<int> _importProgress { get; }
+    private readonly IProgress<int> _importProgress;
 
     public event EventHandler SelectionChangedEventHandler = delegate { };
     public event EventHandler FilteredChangedEventHandler = delegate { };
@@ -28,7 +28,6 @@ namespace PictureManager.Domain.DataViews {
     public List<MediaItemM> LoadedItems { get; } = new();
     public List<MediaItemM> FilteredItems { get; } = new();
     public MediaItemsFilterM Filter { get; } = new();
-    public HeaderedListItem<object, string> MainTabsItem { get; }
     public DragDropHelper.CanDragFunc CanDragFunc { get; }
     public bool IsLoading { get => _isLoading; set { _isLoading = value; OnPropertyChanged(); } }
     public bool IsImporting { get => _isImporting; set { _isImporting = value; OnPropertyChanged(); } }
@@ -41,9 +40,8 @@ namespace PictureManager.Domain.DataViews {
 
     public RelayCommand<object> SelectAllCommand { get; }
 
-    public MediaItemsView(Core core, double thumbScale, string tabTitle) : base(thumbScale) {
+    public MediaItemsView(Core core, double thumbScale) : base(thumbScale) {
       _core = core;
-      MainTabsItem = new(this, tabTitle);
       CanDragFunc = CanDrag;
       _importProgress = new Progress<int>(x => ImportDoneCount += x);
 

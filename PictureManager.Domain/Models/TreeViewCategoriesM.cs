@@ -1,37 +1,38 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.Controls;
+using MH.Utils.BaseClasses;
 using PictureManager.Domain.BaseClasses;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace PictureManager.Domain.Models {
-  public sealed class TreeViewCategoriesM : ObservableObject {
+  public sealed class TreeViewCategoriesM : TabControl {
     private readonly Core _core;
-    private TreeCategoryBase _selectedCategory;
 
-    public ObservableCollection<TreeCategoryBase> Items { get; }
     public TreeViewSearchM TreeViewSearchM { get; }
     public Dictionary<object, int> MarkedTags { get; } = new();
-    public TreeCategoryBase SelectedCategory { get => _selectedCategory; set { _selectedCategory = value; OnPropertyChanged(); } }
     public RelayCommand<object> ShowSearchCommand { get; }
 
     public TreeViewCategoriesM(Core core) {
       _core = core;
       TreeViewSearchM = new(_core);
       ShowSearchCommand = new(ShowSearch);
-      Items = new() {
-        _core.FavoriteFoldersM,
-        _core.FoldersM,
-        _core.RatingsTreeM,
-        _core.PeopleM,
-        _core.FolderKeywordsM,
-        _core.KeywordsM,
-        _core.GeoNamesM,
-        _core.ViewersM };
 
-      foreach (var item in Items)
-        item.IsExpanded = true;
+      Add(_core.FavoriteFoldersM);
+      Add(_core.FoldersM);
+      Add(_core.RatingsTreeM);
+      Add(_core.PeopleM);
+      Add(_core.FolderKeywordsM);
+      Add(_core.KeywordsM);
+      Add(_core.GeoNamesM);
+      Add(_core.ViewersM);
+
+      Selected = Tabs[0];
+    }
+
+    private void Add(TreeCategoryBase cat) {
+      cat.IsExpanded = true;
+      Add(new ListItem(cat.Icon, cat.Name, cat.TreeView) { IsNameHidden = true });
     }
 
     private void ShowSearch() {
