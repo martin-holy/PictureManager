@@ -16,107 +16,13 @@
       </ResourceDictionary>
     </DataTemplate.Resources>
 
-    <TabControl
-      x:Name="Tabs"
-      TabStripPlacement="Top"
-      BorderThickness="0"
-      ItemsSource="{Binding Items}"
-      SelectedItem="{Binding Selected, Mode=TwoWay}"
-      Visibility="{Binding HasItems,
-                   ElementName=Tabs,
-                   Converter={StaticResource AllToVisibilityConverter}}">
-
-      <TabControl.Style>
-        <Style TargetType="{x:Type TabControl}">
-          <Setter Property="Template">
-            <Setter.Value>
-              <ControlTemplate TargetType="{x:Type TabControl}">
-                <Grid Background="{StaticResource ColorBrushBackground}">
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                  </Grid.RowDefinitions>
-
-                  <DockPanel Grid.Row="0" ZIndex="1">
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                      <mhc:IconButton
-                        Padding="5"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        Command="{Binding CloseTabCommand}"
-                        ToolTip="Close tab"
-                        Icon="{StaticResource IconXCross}"
-                        Width="20"
-                        Height="20"/>
-
-                      <mhc:IconToggleButton
-                        Icon="{StaticResource IconPin}"
-                        Width="20"
-                        Height="20"
-                        IsThreeState="False"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Top"
-                        IsChecked="{Binding IsPinned, RelativeSource=
-                                   {RelativeSource AncestorType=mhc:SlidePanel}}"
-                        ToolTip="Pin panel"/>
-                    </StackPanel>
-
-                    <TabPanel
-                      IsItemsHost="True"
-                      KeyboardNavigation.TabIndex="1"
-                      Margin="0"/>
-                  </DockPanel>
-
-                  <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">
-                    <ItemsControl.ItemsPanel>
-                      <ItemsPanelTemplate>
-                        <Grid/>
-                      </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemTemplate>
-                      <DataTemplate>
-                        <ContentPresenter Content="{Binding Content}"/>
-                      </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-
-                    <ItemsControl.ItemContainerStyle>
-                      <Style>
-                        <Style.Triggers>
-                          <DataTrigger Binding="{Binding IsSelected}" Value="False">
-                            <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
-                          </DataTrigger>
-                        </Style.Triggers>
-                      </Style>
-                    </ItemsControl.ItemContainerStyle>
-                  </ItemsControl>
-                </Grid>
-              </ControlTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </TabControl.Style>
-
-      <TabControl.ItemContainerStyle>
-        <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
-          <Setter Property="Header" Value="{Binding}"/>
-          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-          <Setter Property="Background" Value="{StaticResource ColorBrushBackground}"/>
-          <Setter Property="Content" Value="{Binding Content}"/>
-          <Setter Property="HeaderTemplate">
-            <Setter.Value>
-              <DataTemplate>
-                <!-- Tab text -->
-                <TextBlock
-                  Text="{Binding ContentHeader}"
-                  Margin="0"
-                  Effect="{StaticResource MH.Effects.DropShadow}"
-                  FontSize="{StaticResource TabItemFontSize}"/>
-              </DataTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </TabControl.ItemContainerStyle>
+    <TabControl Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}">
+      <mhc:Slots.List>
+        <mhc:Slot
+          Name="TabStripSlot"
+          Placement="Right"
+          Content="{StaticResource SlidePanel-PinButton}"/>
+      </mhc:Slots.List>
     </TabControl>
   </DataTemplate>
 </ResourceDictionary>

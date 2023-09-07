@@ -1,171 +1,40 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries">
-  
-  <DataTemplate DataType="{x:Type m:MainTabsM}">
+  xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
+
+  <DataTemplate x:Key="PM.Views.MainTabsV" DataType="{x:Type mhuic:TabControl}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceDictionary Source="MediaItemsViewV.xaml"/>
           <ResourceDictionary Source="PeopleViewV.xaml"/>
-          <ResourceDictionary Source="SegmentV.xaml"/>
           <ResourceDictionary Source="SegmentsViewV.xaml"/>
           <ResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
-
-        <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto"/>
-              <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <DockPanel Grid.Column="0" ZIndex="1">
-              <mhc:IconButton
-                DockPanel.Dock="Top"
-                Icon="{StaticResource IconPlus}"
-                Width="24"
-                Height="24"
-                Padding="6"
-                ToolTip="Add Media Items View Tab"
-                HorizontalAlignment="Center"
-                Command="{Binding MediaItemsViews.AddViewCommand, Source={x:Static pm:App.Core}}"/>
-
-              <TabPanel
-                IsItemsHost="True"
-                KeyboardNavigation.TabIndex="1"
-                Margin="0"/>
-            </DockPanel>
-
-            <ItemsControl Grid.Column="1" ItemsSource="{Binding Items}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <Grid/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <ContentPresenter Content="{Binding Content}"/>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-
-              <ItemsControl.ItemContainerStyle>
-                <Style>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
-                      <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-          </Grid>
-        </ControlTemplate>
       </ResourceDictionary>
     </DataTemplate.Resources>
 
     <TabControl
-      x:Name="Tabs"
-      Background="Transparent"
-      BorderThickness="0"
-      TabStripPlacement="Left"
-      ItemsSource="{Binding Items}"
-      SelectedItem="{Binding Selected, Mode=TwoWay}"
-      Template="{StaticResource TabControlTemplate}">
+      Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}"
+      TabStripPlacement="Left">
 
-      <b:Interaction.Triggers>
-        <b:EventTrigger EventName="SizeChanged">
-          <b:InvokeCommandAction
-            Command="{Binding UpdateTabHeadersSizeCommand}"
-            CommandParameter="{Binding ActualHeight, ElementName=Tabs}"/>
-        </b:EventTrigger>
-        <b:EventTrigger EventName="Loaded">
-          <b:InvokeCommandAction
-            Command="{Binding UpdateTabHeadersSizeCommand}"
-            CommandParameter="{Binding ActualHeight, ElementName=Tabs}"/>
-        </b:EventTrigger>
-      </b:Interaction.Triggers>
-
-      <TabControl.ItemContainerStyle>
-        <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
-          <Setter Property="MaxHeight" Value="{Binding Path=DataContext.(m:MainTabsM.TabMaxHeight), ElementName=Tabs}"/>
-          <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-          <Setter Property="Header" Value="{Binding}"/>
-          
-          <Setter Property="HeaderTemplate">
-            <Setter.Value>
-              <DataTemplate>
-                <DockPanel x:Name="TabHeader" Background="Transparent">
-                  <Grid DockPanel.Dock="Top" Height="28">
-                    <!-- Close button -->
-                    <mhc:IconButton
-                      Icon="{StaticResource IconXCross}"
-                      Width="18"
-                      Height="18"
-                      Padding="4"
-                      ToolTip="Close"
-                      HorizontalAlignment="Center"
-                      Command="{Binding Path=DataContext.(m:MainTabsM.CloseTabCommand), ElementName=Tabs}"
-                      CommandParameter="{Binding}"
-                      Visibility="{Binding IsMouseOver,
-                                   ElementName=TabHeader,
-                                   Converter={StaticResource AllToVisibilityConverter}}"/>
-                    
-                    <!-- Tab Icon -->
-                    <Path
-                      Data="{Binding Content,
-                             Converter={StaticResource ResourceConverter},
-                             ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToIcon}}"
-                      Fill="{Binding Content,
-                             Converter={StaticResource ResourceConverter},
-                             ConverterParameter={x:Static rd:Dictionaries.MainTabsTypeToIconBrush}}"
-                      Effect="{StaticResource MH.Effects.DropShadow}"
-                      Width="16"
-                      Height="16"
-                      HorizontalAlignment="Center">
-
-                      <Path.Style>
-                        <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
-                          <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsMouseOver, ElementName=TabHeader}" Value="True">
-                              <Setter Property="Visibility" Value="Hidden"/>
-                            </DataTrigger>
-                          </Style.Triggers>
-                        </Style>
-                      </Path.Style>
-
-                      <Path.LayoutTransform>
-                        <RotateTransform Angle="270"/>
-                      </Path.LayoutTransform>
-                    </Path>
-
-                  </Grid>
-
-                  <!-- Tab text -->
-                  <TextBlock
-                    Text="{Binding ContentHeader}"
-                    Effect="{StaticResource MH.Effects.DropShadow}"
-                    FontSize="{StaticResource TabItemFontSize}">
-
-                    <TextBlock.LayoutTransform>
-                      <RotateTransform Angle="270"/>
-                    </TextBlock.LayoutTransform>
-                  </TextBlock>
-                  
-                </DockPanel>
-              </DataTemplate>
-            </Setter.Value>
-          </Setter>
-        </Style>
-      </TabControl.ItemContainerStyle>
-
+      <mhc:Slots.List>
+        <mhc:Slot Name="TabStripSlot" Placement="Top">
+          <mhc:Slot.Content>
+            <mhc:IconButton
+              Icon="{StaticResource IconPlus}"
+              Width="24"
+              Height="24"
+              Padding="6"
+              ToolTip="Add Media Items View Tab"
+              HorizontalAlignment="Center"
+              Command="{Binding MediaItemsViews.AddViewCommand, Source={x:Static pm:App.Core}}"/>
+          </mhc:Slot.Content>
+        </mhc:Slot>
+      </mhc:Slots.List>
     </TabControl>
   </DataTemplate>
-
 </ResourceDictionary>
