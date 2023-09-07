@@ -1,0 +1,17 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:me="clr-namespace:MH.UI.WPF.MarkupExtensions"
+  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+
+  <x:Array Type="{x:Type sys:Type}" x:Key="GenTypeArray.ITreeItem">
+    <x:Type Type="mhuInt:ITreeItem"/>
+  </x:Array>
+
+  <me:GenericType
+    x:Key="GenType.TreeView.ITreeItem"
+    BaseType="{x:Type mhuic:TreeView`1}"
+    InnerTypes="{StaticResource GenTypeArray.ITreeItem}"/>
+</ResourceDictionary>
