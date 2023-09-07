@@ -2,10 +2,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
-  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls">
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="IListItem.xaml"/>
+    <u:CachedResourceDictionary Source="IListItem.xaml"/>
   </ResourceDictionary.MergedDictionaries>
     
   <DataTemplate x:Key="MH.DataTemplates.TabItemHeader.Closeable">

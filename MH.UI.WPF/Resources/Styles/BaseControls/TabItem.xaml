@@ -2,10 +2,11 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
-  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils">
+  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="../../DataTemplates/TabItemHeader.xaml"/>
+    <u:CachedResourceDictionary Source="../../DataTemplates/TabItemHeader.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <Style x:Key="MH.Styles.BaseControls.TabItem" TargetType="{x:Type TabItem}">

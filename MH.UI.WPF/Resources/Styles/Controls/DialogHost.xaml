@@ -3,13 +3,14 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls"
   xmlns:mhbc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
-  xmlns:rd="clr-namespace:MH.UI.WPF.Resources">
+  xmlns:rd="clr-namespace:MH.UI.WPF.Resources"
+  xmlns:u="clr-namespace:MH.UI.WPF.Utils">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="../../Brushes.xaml"/>
-    <ResourceDictionary Source="../../Effects.xaml"/>
-    <ResourceDictionary Source="../Icon.xaml"/>
-    <ResourceDictionary Source="WindowButtons.xaml"/>
+    <u:CachedResourceDictionary Source="../../Brushes.xaml"/>
+    <u:CachedResourceDictionary Source="../../Effects.xaml"/>
+    <u:CachedResourceDictionary Source="../Icon.xaml"/>
+    <u:CachedResourceDictionary Source="WindowButtons.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type mhc:DialogHost}">
