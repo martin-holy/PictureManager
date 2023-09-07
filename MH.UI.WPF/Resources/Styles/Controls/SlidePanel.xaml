@@ -12,4 +12,14 @@
       </Setter.Value>
     </Setter>
   </Style>
+
+  <c:IconToggleButton
+    x:Key="SlidePanel-PinButton"
+    x:Shared="False"
+    Icon="{StaticResource IconPin}"
+    Width="20"
+    Height="20"
+    IsThreeState="False"
+    IsChecked="{Binding IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanel}}"
+    ToolTip="Pin panel"/>
 </ResourceDictionary>
