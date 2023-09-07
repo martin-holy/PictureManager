@@ -40,6 +40,11 @@
 ## MH.UI.WPF
   # Custom Window
    - minimize window will break full screen mode
+## CollectionView
+  - segments grouped by keywords,
+    clear grouping on keyword with sub keywords,
+    set new keyword on segments in cleared grouping,
+    clear grouping is restored
 
 # Update
 ##
@@ -53,7 +58,6 @@
   - change Tree.GetThisAndParentRecursive using yield like in FoldersDataAdapter
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
-  - make base class for ToolsTabsM and MainTabsM
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## DB
   - remove direct access to Helper.IsModified
@@ -62,15 +66,17 @@
   - select/mark searched item after selecting item in search result
   - Items can be null, to save memory
   - Folder move: rethink selecting target folder after move
-  - change it to tab control with tab for each category
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
 ## VideoClips:
   - recreate video thumbnails button
+  - use TreeItemSelectedEvent instead SelectedItemChanged XAML
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
   - replace behaviors with InputBindings where possible
   - change converters using MarkupExtension like in RatingConverter
   - use Grid instead of StackPanel when is used many times like in TreeItemV
+  - use BaseMarkupExtensionConverter for converters
+  - use SharedResourceDictionary with WeekReference stackowerflow.com/questions/6857355/...
 ## MH.UI.WPF
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
@@ -97,8 +103,6 @@
   - show keywords groups in GroupByDialog
 ## SegmentV
   - make selection bigger. remove margin and replace it by transparent border
-## CollectionViewGroup
-  - update icon for expand all
 ## Tabs
   - base class for all tabs (TreeViewCategory tabs, tools tabs and main tabs)
     and allow moving tab to left|middle|right panel
@@ -106,6 +110,8 @@
   - replace mouse wheel + CTRL for zoom with slider
 ## SegmentsRects
   - sort by X for correct overlap
+## CategoryViewGroup
+  - GroupedBy instance for empty group with icon from View 
 
 # New
 ##
@@ -129,7 +135,6 @@
   - kdyz se nepodari ulozit metadata do obrazku, tak zaznamenat k MediaItemu, ze jsou metadata pouze v DB a obrazek nijak neupravovat
 ## CatTreeView
   - filter na delku videa
-  - nova kategorie "keywords groups" kde budou kombinace keywords, people, ... ktery se vyskytujou na jednom MediaItem
   - LeftMouseButtonClick on Person or Keyword opens menu with options (load, filter, set to person, set to segment, set to media item)
   - show small segment next to person icon or show just small segment
 ## Video Clips
@@ -166,6 +171,8 @@
     - disable/enable available
   - put somewhere icon with count of selected segments and show them in ToolTip or dialog or ...
   - filter for segment resolution
+## TreeView
+  - show ScrollToParent on mouse hover. Icon with ToolTip (Parent.Name) for each parent. Maybe shared button for whole TreeView
 
 
 #Shortcuts:
