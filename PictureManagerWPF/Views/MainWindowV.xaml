@@ -77,7 +77,8 @@
       <Grid>
         <!-- Main Tabs -->
         <ContentPresenter
-          Content="{Binding MainTabsM}"
+          Content="{Binding MainTabs}"
+          ContentTemplate="{StaticResource PM.Views.MainTabsV}"
           Visibility="{Binding MediaViewerM.IsVisible,
                        Source={x:Static pm:App.Core},
                        Converter={StaticResource AllToVisibilityConverter}, 
@@ -92,7 +93,7 @@
     <mhc:SlidePanelsGrid.PanelRight>
       <mhc:SlidePanel
         IsOpen="{Binding ToolsTabsM.IsOpen, Mode=TwoWay}"
-        CanOpen="{Binding ToolsTabsM.Items.Count, Converter={StaticResource AllToBoolConverter}}"
+        CanOpen="{Binding ToolsTabsM.Tabs.Count, Converter={StaticResource AllToBoolConverter}}"
         Content="{Binding ToolsTabsM}"
         Width="362"/>
     </mhc:SlidePanelsGrid.PanelRight>

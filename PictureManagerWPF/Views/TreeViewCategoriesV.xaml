@@ -3,33 +3,55 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils">
+  xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:TreeViewCategoriesM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
+          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/GenericTypes.xaml"/>
           <ResourceDictionary Source="TreeViewSearchV.xaml"/>
           <ResourceDictionary Source="TreeItemV.xaml"/>
           <ResourceDictionary Source="RatingTreeV.xaml"/>
           <ResourceDictionary Source="TreeContextMenus.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
-        <ControlTemplate x:Key="TabControlTemplate" TargetType="{x:Type TabControl}">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto"/>
-              <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <DataTemplate DataType="{StaticResource GenType.TreeView.ITreeItem}">
+          <mhc:CatTreeView TreeView="{Binding}"/>
+        </DataTemplate>
 
-            <DockPanel Grid.Row="0" ZIndex="1">
-              <StackPanel
-                DockPanel.Dock="Right"
-                Orientation="Horizontal"
-                HorizontalAlignment="Right">
+        <DataTemplate x:Key="BigIcon" DataType="{x:Type mhuInt:IListItem}">
+          <Path
+            Style="{StaticResource MH.Styles.Icon}"
+            Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+            Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
+                   ConverterParameter={x:Static res:Dictionaries.IconNameToBrush}}"
+            Width="24"
+            Height="24"/>
+        </DataTemplate>
 
-                <!-- Search -->
+        <Style x:Key="TabItem-BigIcon" TargetType="{x:Type TabItem}" BasedOn="{StaticResource MH.Styles.BaseControls.TabItem}">
+          <Setter Property="HeaderTemplate" Value="{StaticResource BigIcon}"/>
+        </Style>
+      </ResourceDictionary>
+    </DataTemplate.Resources>
+
+    <Grid Background="{StaticResource MH.Control.Static.Background}">
+      <TabControl
+        x:Name="Tabs"
+        Style="{StaticResource MH.Styles.BaseControls.TabControl-Slot}"
+        ItemContainerStyle="{StaticResource TabItem-BigIcon}">
+
+        <mhc:Slots.List>
+          <mhc:Slot Name="TabStripSlot" Placement="Right">
+            <mhc:Slot.Content>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
                 <mhc:IconButton
                   Width="28"
                   Height="28"
@@ -37,83 +59,13 @@
                   ToolTip="Search"
                   Command="{Binding ShowSearchCommand}"/>
 
-                <!-- Button to pin slide panel -->
-                <mhc:IconToggleButton
-                  Icon="{StaticResource IconPin}"
-                  Width="20"
-                  Height="20"
-                  IsThreeState="False"
-                  IsChecked="{Binding IsPinned, RelativeSource=
-                         {RelativeSource AncestorType=mhc:SlidePanel}}"
-                  ToolTip="Pin panel"/>
-              </StackPanel>
-
-              <TabPanel
-                IsItemsHost="True"
-                KeyboardNavigation.TabIndex="1"
-                Margin="2,0,0,0"/>
-            </DockPanel>
-
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding Items}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <Grid/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <mhc:CatTreeView TreeView="{Binding TreeView}"/>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-
-              <ItemsControl.ItemContainerStyle>
-                <Style>
-                  <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsSelected}" Value="False">
-                      <Setter Property="ContentPresenter.Visibility" Value="Hidden"/>
-                    </DataTrigger>
-                  </Style.Triggers>
-                </Style>
-              </ItemsControl.ItemContainerStyle>
-            </ItemsControl>
-          </Grid>
-        </ControlTemplate>
-      </ResourceDictionary>
-    </DataTemplate.Resources>
-
-    <Grid Background="{StaticResource MH.Brushes.Background}">
-      <TabControl
-        x:Name="Tabs"
-        Background="Transparent"
-        BorderThickness="0"
-        TabStripPlacement="Top"
-        ItemsSource="{Binding Items}"
-        SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
-        Template="{StaticResource TabControlTemplate}">
-
-        <TabControl.ItemContainerStyle>
-          <Style TargetType="{x:Type TabItem}" BasedOn="{StaticResource {x:Type TabItem}}">
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
-            <Setter Property="ToolTip" Value="{Binding Name}"/>
-            <Setter Property="Header" Value="{Binding}"/>
-            <Setter Property="HeaderTemplate">
-              <Setter.Value>
-                <DataTemplate DataType="{x:Type mhubc:TreeItem}">
-                  <Path
-                    Style="{StaticResource MH.Styles.Icon}"
-                    Width="24"
-                    Height="24"
-                    Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
-                    Fill="{Binding Icon,
-                           Converter={StaticResource ResourceConverter},
-                           ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
-                    Effect="{StaticResource MH.Effects.DropShadow}"/>
-                </DataTemplate>
-              </Setter.Value>
-            </Setter>
-          </Style>
-        </TabControl.ItemContainerStyle>
+                <ContentPresenter
+                  Grid.Column="1"
+                  Content="{StaticResource SlidePanel-PinButton}"/>
+              </Grid>
+            </mhc:Slot.Content>
+          </mhc:Slot>
+        </mhc:Slots.List>
       </TabControl>
 
       <ContentPresenter Content="{Binding TreeViewSearchM}" Margin="0,3,0,0"/>
