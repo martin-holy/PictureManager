@@ -10,6 +10,8 @@ namespace MH.Utils.BaseClasses {
 
     public bool IsSelected { get => Bits[BitsMasks.IsSelected]; set { Bits[BitsMasks.IsSelected] = value; OnPropertyChanged(); } }
     public bool IsHidden { get => Bits[BitsMasks.IsHidden]; set { Bits[BitsMasks.IsHidden] = value; OnPropertyChanged(); } }
+    public bool IsIconHidden { get => Bits[BitsMasks.IsIconHidden]; set { Bits[BitsMasks.IsIconHidden] = value; OnPropertyChanged(); } }
+    public bool IsNameHidden { get => Bits[BitsMasks.IsNameHidden]; set { Bits[BitsMasks.IsNameHidden] = value; OnPropertyChanged(); } }
     public string Icon { get => _icon; set { _icon = value; OnPropertyChanged(); } }
     public string Name { get => _name; set { _name = value; OnPropertyChanged(); } }
     public object Data { get; set; }
