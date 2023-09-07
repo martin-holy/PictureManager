@@ -1,57 +1,58 @@
 <Application
   x:Class="PictureManager.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
   
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="ResourceDictionaries/Converters.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/DataTypes.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Converters.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/DataTypes.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/Icons.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Brushes/Brushes.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Fonts/Fonts.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/Icons.xaml"/>
 
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
-        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/BaseControls/Common.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
+        <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml"/>
 
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
-        <ResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/NamedStyles/BorderStyles.xaml"/>
+        <wpfu:CachedResourceDictionary Source="ResourceDictionaries/NamedStyles/TextBlockStyles.xaml"/>
 
-        <ResourceDictionary Source="Views/Styles/InfoBoxThumbStyle.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/Styles/InfoBoxThumbStyle.xaml"/>
 
-        <ResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/FileOperationCollisionDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/FileOperationDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/FolderBrowserDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/FolderKeywordsDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/ImagesToVideoDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/SetSegmentPersonDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
-        <ResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/AboutDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/CompressDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/ErrorDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/FileOperationCollisionDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/FileOperationDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/FolderBrowserDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/FolderKeywordsDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/ImagesToVideoDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/LogDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/ResizeImagesDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/RotationDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/SetSegmentPersonDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/SettingsDialogV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Dialogs/ToggleDialogV.xaml"/>
 
-        <ResourceDictionary Source="Views/MainMenuV.xaml"/>
-        <ResourceDictionary Source="Views/MainTabsV.xaml"/>
-        <ResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
-        <ResourceDictionary Source="Views/MediaViewerV.xaml"/>
-        <ResourceDictionary Source="Views/RatingV.xaml"/>
-        <ResourceDictionary Source="Views/StatusPanelV.xaml"/>
-        <ResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
-        <ResourceDictionary Source="Views/ToolsTabsV.xaml"/>
-        <ResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
-        <ResourceDictionary Source="Views/List/PersonV.xaml"/>
-        <ResourceDictionary Source="Views/List/ListItemV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/MainMenuV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/MainTabsV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/MainWindowToolBarV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/MediaViewerV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/RatingV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/StatusPanelV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/TitleProgressBarV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/ToolsTabsV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/TreeViewCategoriesV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/List/PersonV.xaml"/>
+        <wpfu:CachedResourceDictionary Source="Views/List/ListItemV.xaml"/>
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>

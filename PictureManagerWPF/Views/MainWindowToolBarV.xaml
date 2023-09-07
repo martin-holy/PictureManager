@@ -4,14 +4,15 @@
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhu="clr-namespace:MH.Utils;assembly=MH.Utils"
   xmlns:pm="clr-namespace:PictureManager"
-  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="MainWindowToolBarV" DataType="{x:Type pmd:Core}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemsFilterV.xaml"/>
-          <ResourceDictionary Source="ViewersToolBarV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="MediaItemsFilterV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="ViewersToolBarV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>

@@ -3,16 +3,17 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI">
+  xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate x:Key="PM.Views.MainTabsV" DataType="{x:Type mhuic:TabControl}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemsViewV.xaml"/>
-          <ResourceDictionary Source="PeopleViewV.xaml"/>
-          <ResourceDictionary Source="SegmentsViewV.xaml"/>
-          <ResourceDictionary Source="ViewerV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="MediaItemsViewV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="PeopleViewV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="SegmentsViewV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="ViewerV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>

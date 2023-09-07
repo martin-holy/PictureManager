@@ -4,17 +4,18 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:mhuInt="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
-  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF">
+  xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:TreeViewCategoriesM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/GenericTypes.xaml"/>
-          <ResourceDictionary Source="TreeViewSearchV.xaml"/>
-          <ResourceDictionary Source="TreeItemV.xaml"/>
-          <ResourceDictionary Source="RatingTreeV.xaml"/>
-          <ResourceDictionary Source="TreeContextMenus.xaml"/>
+          <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/GenericTypes.xaml"/>
+          <wpfu:CachedResourceDictionary Source="TreeViewSearchV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="TreeItemV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="RatingTreeV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="TreeContextMenus.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
         <DataTemplate DataType="{StaticResource GenType.TreeView.ITreeItem}">

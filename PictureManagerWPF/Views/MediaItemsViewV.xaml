@@ -10,7 +10,7 @@
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemThumbnailV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="MediaItemThumbnailV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>
