@@ -14,9 +14,16 @@ namespace MH.UI.WPF.Controls {
 
   public static class Slots {
     public static readonly DependencyProperty ListProperty = DependencyProperty.RegisterAttached(
-      "List", typeof(IList), typeof(Slots), new(new List<Slot>()));
+      "ListInternal", typeof(IList), typeof(Slots));
 
-    public static IList GetList(DependencyObject d) => (IList)d.GetValue(ListProperty);
+    public static IList GetList(DependencyObject d) {
+      var list = (IList)d.GetValue(ListProperty);
+      if (list != null) return list;
+      list = new List<Slot>();
+      d.SetValue(ListProperty, list);
+      return list;
+    }
+
     public static void SetList(DependencyObject d, IList value) => d.SetValue(ListProperty, value);
 
     public static Slot GetSlot(object value, object parameter) =>
