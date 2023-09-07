@@ -41,19 +41,21 @@ namespace PictureManager.Domain.Models {
     private void OpenPeopleToolsTab() {
       PeopleToolsTabM ??= new(_core, this);
       PeopleToolsTabM.ReloadFrom();
-      _core.ToolsTabsM.Activate(PeopleToolsTabM, "People", true);
+      _core.ToolsTabsM.Activate(Res.IconPeopleMultiple, "People", PeopleToolsTabM);
+      _core.ToolsTabsM.Open();
     }
 
     public void OpenPeopleView() {
       PeopleView ??= new(this);
       PeopleView.Reload();
-      _core.MainTabsM.Activate(PeopleView, "People");
+      _core.MainTabs.Activate(Res.IconPeopleMultiple, "People", PeopleView);
     }
 
     public void OpenPersonDetail(PersonM person) {
       PersonDetail ??= new(this, _core.SegmentsM);
       PersonDetail.Reload(person);
-      _core.ToolsTabsM.Activate(PersonDetail, "Person", true);
+      _core.ToolsTabsM.Activate(Res.IconPeople, "Person", PersonDetail);
+      _core.ToolsTabsM.Open();
     }
 
     public override void OnItemSelect(object o) {
@@ -63,9 +65,8 @@ namespace PictureManager.Domain.Models {
         case PersonM p:
           ToggleDialogM.TogglePerson(Core.Instance, p);
           break;
-        case ITreeCategory cat:
-          if (cat is PeopleM)
-            _core.PeopleM.OpenPeopleView();
+        case PeopleM:
+          OpenPeopleView();
           break;
       }
     }

@@ -89,7 +89,8 @@ namespace PictureManager.Domain.Models {
       var groupByItems = GroupByItems.GetFoldersFromSegments(source).ToArray();
 
       Reload(source, GroupMode.GroupByRecursive, groupByItems, true);
-      tt.Activate(this, "Segments", true);
+      tt.Activate(Res.IconSegment, "Segments", this);
+      tt.Open();
     }
   }
 }

@@ -1,3 +1,4 @@
+using MH.UI.Controls;
 using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
@@ -16,8 +17,8 @@ namespace PictureManager.Domain {
     public static Core Instance { get { lock (_lock) { return _instance ??= new(); } } }
 
     public SimpleDB Sdb { get; }
-    public MainTabsM MainTabsM { get; } = new();
-    public ToolsTabsM ToolsTabsM { get; } = new();
+    public TabControl MainTabs { get; } = new() { CanCloseTabs = true };
+    public ToolsTabsM ToolsTabsM { get; } = new() { CanCloseTabs = true };
     public TitleProgressBarM TitleProgressBarM { get; } = new();
     public ImageComparerM ImageComparerM { get; } = new();
 
@@ -58,7 +59,7 @@ namespace PictureManager.Domain {
 
       ViewersM = new(this); // CategoryGroupsM
       ViewerDetailM = new(ViewersM);
-      SegmentsM = new(this); // MainTabsM, MediaViewerM, MainWindowM, MediaItemsViews
+      SegmentsM = new(this); // MainTabs, MediaViewerM, MainWindowM, MediaItemsViews
       CategoryGroupsM = new();
       FavoriteFoldersM = new();
       FolderKeywordsM = new();
@@ -159,7 +160,7 @@ namespace PictureManager.Domain {
         SegmentsM.RemovePersonFromSegments(e.Data);
 
         if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
-          ToolsTabsM.Deactivate(PeopleM.PersonDetail);
+          ToolsTabsM.Close(PeopleM.PersonDetail);
       };
 
       PeopleM.PeopleDeletedEvent += (_, e) => {
@@ -288,10 +289,10 @@ namespace PictureManager.Domain {
 
       #endregion
 
-      #region MainTabsM EventHandlers
+      #region MainTabs EventHandlers
 
-      MainTabsM.TabClosedEventHandler += (_, e) => {
-        switch (e.Data.Content) {
+      MainTabs.TabClosedEvent += (_, e) => {
+        switch (e.Data.Data) {
           case MediaItemsView miView:
             MediaItemsViews.CloseView(miView);
             break;
@@ -301,9 +302,9 @@ namespace PictureManager.Domain {
         }
       };
 
-      MainTabsM.PropertyChanged += (_, e) => {
-        if (nameof(MainTabsM.Selected).Equals(e.PropertyName))
-          MediaItemsViews.SetCurrentView(MainTabsM.Selected?.Content as MediaItemsView);
+      MainTabs.PropertyChanged += (_, e) => {
+        if (nameof(MainTabs.Selected).Equals(e.PropertyName))
+          MediaItemsViews.SetCurrentView(MainTabs.Selected?.Data as MediaItemsView);
       };
 
       #endregion

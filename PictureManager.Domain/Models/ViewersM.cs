@@ -12,7 +12,6 @@ namespace PictureManager.Domain.Models {
     private ViewerM _current;
     private ViewerM _selected;
 
-    public HeaderedListItem<object, string> ViewerMainTabsItem { get; set; }
     public ViewersDataAdapter DataAdapter { get; set; }
     public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public ViewerM Selected {
@@ -35,7 +34,7 @@ namespace PictureManager.Domain.Models {
 
     public override void OnItemSelect(object o) {
       if (o is not ViewerM v) return;
-      _core.MainTabsM.Activate(_core.ViewerDetailM, "Viewer");
+      _core.MainTabs.Activate(Res.IconEye, "Viewer", _core.ViewerDetailM);
       _core.ViewersM.Selected = v;
     }
 

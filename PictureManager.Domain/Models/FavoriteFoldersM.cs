@@ -21,7 +21,7 @@ namespace PictureManager.Domain.Models {
     public override void OnItemSelect(object o) {
       if (o is not FavoriteFolderM ff) return;
       if (!Core.Instance.FoldersM.IsFolderVisible(ff.Folder)) return;
-      Core.Instance.TreeViewCategoriesM.SelectedCategory = Core.Instance.FoldersM;
+      Core.Instance.TreeViewCategoriesM.Select(Core.Instance.FoldersM.TreeView);
       Core.Instance.FoldersM.TreeView.ScrollTo(ff.Folder);
     }
 

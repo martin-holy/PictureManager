@@ -58,24 +58,24 @@ namespace PictureManager.Domain.DataViews {
         : null;
     }
 
-    public void AddViewIfNotActive(string tabTitle) {
-      if (_core.MainTabsM.Selected?.Content is MediaItemsView view) {
-        if (tabTitle != null)
-          view.MainTabsItem.ContentHeader = tabTitle;
+    public void AddViewIfNotActive(string tabName) {
+      if (_core.MainTabs.Selected?.Data is MediaItemsView) {
+        if (tabName != null)
+          _core.MainTabs.Selected.Name = tabName;
 
         return;
       }
 
-      AddView(tabTitle);
+      AddView(tabName);
     }
 
-    public void AddView(string tabTitle) {
-      var view = new MediaItemsView(_core, DefaultThumbScale, tabTitle);
+    public void AddView(string tabName) {
+      var view = new MediaItemsView(_core, DefaultThumbScale);
       _all.Add(view);
       Current = view;
       view.SelectionChangedEventHandler += OnViewSelectionChanged;
       view.FilteredChangedEventHandler += OnViewFilteredChanged;
-      _core.MainTabsM.AddItem(view.MainTabsItem);
+      _core.MainTabs.Add(Res.IconImageMultiple, tabName, view);
     }
 
     private void OnViewSelectionChanged(object o, EventArgs e) {
