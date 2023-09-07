@@ -1,0 +1,74 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mhuic="clr-namespace:MH.UI.Controls;assembly=MH.UI"
+  xmlns:mhc="clr-namespace:MH.UI.WPF.Controls">
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="IListItem.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+    
+  <DataTemplate x:Key="MH.DataTemplates.TabItemHeader.Closeable">
+    <Grid x:Name="tabHeader" Background="Transparent">
+      <ContentPresenter
+        x:Name="header"
+        Content="{Binding}"
+        ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"
+        Effect="{StaticResource MH.Effects.DropShadow}"
+        TextBlock.FontSize="16"/>
+
+      <Border
+        x:Name="btnClose"
+        Background="{StaticResource MH.Item.Selected.Background}"
+        Visibility="Hidden"
+        Width="22"
+        Height="22"
+        CornerRadius="3"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Center">
+
+        <mhc:IconButton
+          Icon="{StaticResource IconXCross}"
+          Width="18"
+          Height="18"
+          Margin="0"
+          Padding="4"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center"
+          ToolTip="Close"
+          Command="{Binding
+                    Path=DataContext.(mhuic:TabControl.CloseTabCommand),
+                    RelativeSource={RelativeSource AncestorType=TabControl}}"
+          CommandParameter="{Binding}"/>
+      </Border>
+    </Grid>
+
+    <DataTemplate.Triggers>
+      <MultiDataTrigger>
+        <MultiDataTrigger.Conditions>
+          <Condition Binding="{Binding IsMouseOver, ElementName=tabHeader}" Value="True"/>
+          <Condition Binding="{Binding Path=DataContext.(mhuic:TabControl.CanCloseTabs), RelativeSource={RelativeSource AncestorType=TabControl}}" Value="True"/>
+        </MultiDataTrigger.Conditions>
+        <Setter TargetName="btnClose" Property="Visibility" Value="Visible"/>
+      </MultiDataTrigger>
+      <DataTrigger Value="Left" Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType=TabControl}}">
+        <Setter TargetName="btnClose" Property="HorizontalAlignment" Value="Center"/>
+        <Setter TargetName="btnClose" Property="VerticalAlignment" Value="Bottom"/>
+        <Setter TargetName="header" Property="LayoutTransform">
+          <Setter.Value>
+            <RotateTransform Angle="270"/>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+      <DataTrigger Value="Right" Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType=TabControl}}">
+        <Setter TargetName="btnClose" Property="HorizontalAlignment" Value="Center"/>
+        <Setter TargetName="btnClose" Property="VerticalAlignment" Value="Top"/>
+        <Setter TargetName="header" Property="LayoutTransform">
+          <Setter.Value>
+            <RotateTransform Angle="90"/>
+          </Setter.Value>
+        </Setter>
+      </DataTrigger>
+    </DataTemplate.Triggers>
+  </DataTemplate>
+</ResourceDictionary>
