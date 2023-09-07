@@ -26,10 +26,6 @@
   - ulozeni v klipech nezmeni modifed v main toolbaru
 ## TreeViewCategories
   - Folder reload after folder move => reload is maybe to soon
-  - ScrollTo in TreeViewSearch doesn't work when People category is collapsed just for the first time
-  - click on rating stars doesn't set metadata
-## FolderKeywords
-  - do not show expand buttons in TreeView when there is nothing to expand
 ## PeopleM
   - remove deleted people from selection. MergePeople, ...
 ## PeopleV
@@ -76,12 +72,10 @@
   - change converters using MarkupExtension like in RatingConverter
   - use Grid instead of StackPanel when is used many times like in TreeItemV
   - use BaseMarkupExtensionConverter for converters
-  - use SharedResourceDictionary with WeekReference stackowerflow.com/questions/6857355/...
 ## MH.UI.WPF
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
   - make ExpandCollapseToggleStyle and TreeViewItemFocusVisual as resource for CatTreeView and TreeWrapView
-  - merge CatTreeView and TreeWrapView templates
   - use RelativeSource AncestorType= without x:Type
   # Style
    - Label - remove default padding?
@@ -104,8 +98,7 @@
 ## SegmentV
   - make selection bigger. remove margin and replace it by transparent border
 ## Tabs
-  - base class for all tabs (TreeViewCategory tabs, tools tabs and main tabs)
-    and allow moving tab to left|middle|right panel
+  - allow moving tab to left|middle|right panel
 ## MediaItemsView
   - replace mouse wheel + CTRL for zoom with slider
 ## SegmentsRects
