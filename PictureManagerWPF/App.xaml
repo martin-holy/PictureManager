@@ -17,6 +17,7 @@
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Styles/Icon.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Brushes.xaml"/>
         <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Effects.xaml"/>
+        <ResourceDictionary Source="/MH.UI.WPF;component/Resources/Icons.xaml"/>
 
         <ResourceDictionary Source="ResourceDictionaries/MHUIWPF.xaml"/>
 
