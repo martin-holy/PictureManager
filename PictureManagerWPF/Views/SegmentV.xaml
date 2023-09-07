@@ -4,13 +4,14 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
+          <wpfu:CachedResourceDictionary Source="MediaItemThumbnailLiteV.xaml"/>
         </ResourceDictionary.MergedDictionaries>
       </ResourceDictionary>
     </DataTemplate.Resources>

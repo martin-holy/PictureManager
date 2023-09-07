@@ -5,10 +5,11 @@
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <ResourceDictionary.MergedDictionaries>
-    <ResourceDictionary Source="SegmentsRectsV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="SegmentsRectsV.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type m:MediaViewerM}">

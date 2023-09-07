@@ -5,13 +5,14 @@
   xmlns:sys="clr-namespace:System;assembly=System.Runtime"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:vm="clr-namespace:PictureManager.ViewModels"
-  xmlns:b="http://schemas.microsoft.com/xaml/behaviors">
+  xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:MediaItemM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
-          <ResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
+          <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
         </ResourceDictionary.MergedDictionaries>
 
         <sys:Double x:Key="ThumbnailInfoMinSize">170.0</sys:Double>
