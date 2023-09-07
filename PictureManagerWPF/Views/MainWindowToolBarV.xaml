@@ -223,21 +223,19 @@
         </StackPanel>
       </StackPanel>
 
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-        <!-- Button to pin slide panel -->
-        <mhc:IconToggleButton
-          Icon="{StaticResource IconPin}"
-          Width="20"
-          Height="20"
-          IsThreeState="False"
-          IsChecked="{Binding IsPinned, RelativeSource=
-                     {RelativeSource AncestorType=mhc:SlidePanel}}"
-          ToolTip="Pin panel"/>
+      <Grid HorizontalAlignment="Right">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition/>
+          <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <ContentPresenter Content="{StaticResource SlidePanel-PinButton}"/>
 
         <ContentPresenter
+          Grid.Column="1"
           Content="{Binding RelativeSource={RelativeSource AncestorType=mhc:CustomWindow}}"
           ContentTemplate="{StaticResource MH.Styles.Controls.WindowButtons}"/>
-      </StackPanel>
+      </Grid>
     </Grid>
   </DataTemplate>
 </ResourceDictionary>
