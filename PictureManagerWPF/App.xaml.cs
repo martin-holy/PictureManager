@@ -25,10 +25,11 @@ namespace PictureManager {
       MainWindow.Show();
 
       await Core.Instance.InitAsync(splashScreen.ProgressMessage);
-      Core.Instance.AfterInit();
 
       Current.Properties[nameof(AppProperty.Core)] = Core.Instance;
       Current.Properties[nameof(AppProperty.Ui)] = new AppCore();
+
+      Core.Instance.AfterInit();
 
       ShutdownMode = ShutdownMode.OnMainWindowClose;
       MainWindow = new MainWindowV();
