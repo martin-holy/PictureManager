@@ -78,7 +78,7 @@ namespace PictureManager.Domain {
     public static string TypeToGroupByDialogTemplateKey(object o) =>
       o switch {
         PersonM => "PM.Views.List.PersonV",
-        IListItem => "PM.Views.List.ListItemV",
+        IListItem => "MH.DataTemplates.IListItem",
         _ => null
       };
   }
