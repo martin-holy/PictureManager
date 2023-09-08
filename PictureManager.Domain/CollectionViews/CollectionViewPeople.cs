@@ -27,9 +27,8 @@ namespace PictureManager.Domain.CollectionViews {
       return top;
     }
 
-    // TODO change SegmentUiFullWidth to int
     public override int GetItemWidth(PersonM item) =>
-      (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
+      SegmentsM.SegmentUiFullWidth;
 
     public override int SortCompare(PersonM itemA, PersonM itemB) =>
       string.Compare(itemA.Name, itemB.Name, StringComparison.CurrentCultureIgnoreCase);
