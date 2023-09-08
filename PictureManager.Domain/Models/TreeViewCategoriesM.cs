@@ -11,12 +11,10 @@ namespace PictureManager.Domain.Models {
 
     public TreeViewSearchM TreeViewSearchM { get; }
     public Dictionary<object, int> MarkedTags { get; } = new();
-    public RelayCommand<object> ShowSearchCommand { get; }
 
     public TreeViewCategoriesM(Core core) {
       _core = core;
       TreeViewSearchM = new(_core);
-      ShowSearchCommand = new(ShowSearch);
 
       Add(_core.FavoriteFoldersM);
       Add(_core.FoldersM);
@@ -33,11 +31,6 @@ namespace PictureManager.Domain.Models {
     private void Add(TreeCategoryBase cat) {
       cat.IsExpanded = true;
       Add(new ListItem(cat.Icon, cat.Name, cat.TreeView) { IsNameHidden = true });
-    }
-
-    private void ShowSearch() {
-      TreeViewSearchM.SearchText = string.Empty;
-      TreeViewSearchM.IsVisible = true;
     }
 
     // TODO rename, check usage, use it less
