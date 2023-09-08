@@ -29,7 +29,7 @@ namespace PictureManager.Domain.CollectionViews {
     }
 
     public override int GetItemWidth(SegmentM item) =>
-      (int)Core.Instance.SegmentsM.SegmentUiFullWidth;
+      SegmentsM.SegmentUiFullWidth;
 
     public override int SortCompare(SegmentM itemA, SegmentM itemB) =>
       string.Compare(itemA.MediaItem.FileName, itemB.MediaItem.FileName, StringComparison.CurrentCultureIgnoreCase);

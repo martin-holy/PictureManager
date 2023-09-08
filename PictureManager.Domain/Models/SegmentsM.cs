@@ -14,7 +14,6 @@ using static MH.Utils.DragDropHelper;
 namespace PictureManager.Domain.Models {
   public sealed class SegmentsM : ObservableObject {
     private readonly Core _core;
-    private double _segmentUiSize;
     private bool _canSelectAsSamePerson;
 
     public SegmentsDataAdapter DataAdapter { get; set; }
@@ -22,11 +21,11 @@ namespace PictureManager.Domain.Models {
     public SegmentsDrawerM SegmentsDrawerM { get; }
     public SegmentsView SegmentsView { get; private set; }
     public Selecting<SegmentM> Selected { get; } = new();
-    public static int SegmentSize = 100;
+    public static int SegmentSize { get; set; } = 100;
+    public static int SegmentUiSize { get; set; }
+    public static int SegmentUiFullWidth { get; set; }
     public bool CanSelectAsSamePerson { get => _canSelectAsSamePerson; set { _canSelectAsSamePerson = value; OnPropertyChanged(); } }
-    public double SegmentUiFullWidth { get; set; }
-    public double SegmentUiSize { get => _segmentUiSize; set { _segmentUiSize = value; OnPropertyChanged(); } }
-
+    
     public CanDragFunc CanDragFunc { get; }
 
     public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
@@ -77,7 +76,8 @@ namespace PictureManager.Domain.Models {
         || Selected.Items.Count(x => x.Person == null) > 1;
     }
 
-    public void SetSegmentUiSize(double size, double scrollBarSize) {
+    public static void SetSegmentUiSize(double scale) {
+      var size = (int)(SegmentSize / scale);
       SegmentUiSize = size;
       SegmentUiFullWidth = size + 6; // + border, margin
     }
