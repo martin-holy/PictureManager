@@ -47,15 +47,11 @@ namespace PictureManager.Domain {
     public static Func<double> GetDisplayScale { get; set; }
     public static Settings Settings { get; set; }
 
-    public RelayCommand<object> LoadedCommand { get; }
-
     private Core() {
       Tasks.SetUiTaskScheduler();
       Settings = new();
       Settings.Load();
       Sdb = new();
-
-      LoadedCommand = new(Loaded);
 
       ViewersM = new(this); // CategoryGroupsM
       ViewerDetailM = new(ViewersM);
@@ -121,6 +117,12 @@ namespace PictureManager.Domain {
     }
 
     public void AfterInit() {
+      var scale = GetDisplayScale();
+      MediaItemsViews.DefaultThumbScale = 1 / scale;
+      SegmentsM.SetSegmentUiSize(scale);
+
+      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
+
       if (KeywordsM.AutoAddedGroup == null)
         KeywordsM.AutoAddedGroup = CategoryGroupsM.GroupCreate("Auto Added", Category.Keywords);
 
@@ -308,13 +310,6 @@ namespace PictureManager.Domain {
       };
 
       #endregion
-    }
-
-    private void Loaded() {
-      var scale = GetDisplayScale();
-      MediaItemsViews.DefaultThumbScale = 1 / scale;
-      SegmentsM.SetSegmentUiSize(SegmentsM.SegmentSize / scale, 14);
-      MediaItemsM.OnPropertyChanged(nameof(MediaItemsM.MediaItemsCount));
     }
 
     public void SaveMetadataPrompt() {
