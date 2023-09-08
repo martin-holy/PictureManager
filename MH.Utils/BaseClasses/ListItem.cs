@@ -37,7 +37,7 @@ namespace MH.Utils.BaseClasses {
       Content = content;
     }
 
-    public ListItem(T content, string iconName, string name) : base(iconName, name) {
+    public ListItem(T content, string icon, string name) : base(icon, name) {
       Content = content;
     }
   }

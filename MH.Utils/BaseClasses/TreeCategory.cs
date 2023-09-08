@@ -32,7 +32,7 @@ namespace MH.Utils.BaseClasses {
       item => GetCategory(item)?.GroupDelete(item),
       item => item != null);
 
-    public TreeCategory(string iconName, string name) : base(iconName, name) { }
+    public TreeCategory(string icon, string name) : base(icon, name) { }
 
     public virtual void ItemCreate(ITreeItem root) => throw new NotImplementedException();
     public virtual void ItemRename(ITreeItem item) => throw new NotImplementedException();
