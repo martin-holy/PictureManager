@@ -43,10 +43,10 @@
           <StackPanel Orientation="Horizontal" Background="Transparent">
             <Path
               Style="{StaticResource MH.Styles.Icon}"
-              Data="{Binding IconName, Converter={StaticResource ResourceConverter}}"
-              Fill="{Binding IconName,
+              Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+              Fill="{Binding Icon,
                       Converter={StaticResource ResourceConverter},
-                      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+                      ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
               HorizontalAlignment="Center"/>
 
             <TextBlock Style="{StaticResource TreeItemTitle}" Text="{Binding Name}"/>

@@ -38,12 +38,12 @@
         <StackPanel Orientation="Horizontal">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding IconName,
+            Data="{Binding Icon,
                    Converter={StaticResource ResourceConverter},
                    FallbackValue={StaticResource IconFolder}}"
-            Fill="{Binding IconName,
+            Fill="{Binding Icon,
                    Converter={StaticResource ResourceConverter},
-                   ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+                   ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
             HorizontalAlignment="Center"/>
 
           <TextBlock
@@ -58,11 +58,11 @@
         <StackPanel Orientation="Horizontal" Background="Transparent">
           <Path
             Style="{StaticResource MH.Styles.Icon}"
-            Data="{Binding IconName,
+            Data="{Binding Icon,
                    Converter={StaticResource ResourceConverter}}"
-            Fill="{Binding IconName,
+            Fill="{Binding Icon,
                    Converter={StaticResource ResourceConverter},
-                   ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+                   ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
           <TextBlock
             Text="{Binding Name}"

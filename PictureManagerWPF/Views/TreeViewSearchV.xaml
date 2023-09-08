@@ -59,11 +59,11 @@
 
               <Path
                 Style="{StaticResource MH.Styles.Icon}"
-                Data="{Binding IconName,
+                Data="{Binding Icon,
                        Converter={StaticResource ResourceConverter}}"
-                Fill="{Binding IconName,
+                Fill="{Binding Icon,
                        Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+                       ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
               <TextBlock Grid.Column="1" Text="{Binding Title}" Margin="4"/>
             </Grid>

@@ -6,7 +6,7 @@ using PictureManager.Domain.TreeCategories;
 
 namespace PictureManager.ResourceDictionaries {
   public static class Dictionaries {
-    public static readonly Dictionary<object, object> IconNameToBrush = new() {
+    public static readonly Dictionary<object, object> IconToBrush = new() {
       { "default", "ColorBrushWhite" },
       { Res.IconFolder, "ColorBrushFolder" },
       { Res.IconFolderStar, "ColorBrushFolder" },

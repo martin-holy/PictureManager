@@ -24,7 +24,7 @@
           Effect="{StaticResource MH.Effects.DropShadow}"
           Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
           Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
-                 ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+                 ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
         <TextBlock
           Text="{Binding Name}"
@@ -44,9 +44,9 @@
         Height="32"
         Margin="10"
         Data="{StaticResource IconQuestion}"/>
-      <!--Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
+      <!--TODO decide Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
       Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
-      ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"-->
+      ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"-->
 
       <Grid Margin="0,10,0,0">
         <Grid.RowDefinitions>
