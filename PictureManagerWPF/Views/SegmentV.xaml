@@ -129,8 +129,8 @@
       <Grid>
         <Image
           Stretch="Fill"
-          Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
-          Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
+          Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
+          Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
           <Image.Source>
             <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
               <Binding Path="FilePathCache" IsAsync="True"/>

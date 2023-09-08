@@ -1,7 +1,6 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
@@ -14,8 +13,8 @@
 
       <Image
         Stretch="Fill"
-        Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
-        Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
+        Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
+        Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
         <Image.Source>
           <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
             <Binding Path="FilePathCache" IsAsync="True"/>
