@@ -7,17 +7,17 @@
   xmlns:res="clr-namespace:MH.UI.WPF.Resources;assembly=MH.UI.WPF"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
+  <ResourceDictionary.MergedDictionaries>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/GenericTypes.xaml"/>
+    <wpfu:CachedResourceDictionary Source="TreeViewSearchV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="TreeItemV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="RatingTreeV.xaml"/>
+    <wpfu:CachedResourceDictionary Source="TreeContextMenus.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+
   <DataTemplate DataType="{x:Type m:TreeViewCategoriesM}">
     <DataTemplate.Resources>
       <ResourceDictionary>
-        <ResourceDictionary.MergedDictionaries>
-          <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/GenericTypes.xaml"/>
-          <wpfu:CachedResourceDictionary Source="TreeViewSearchV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="TreeItemV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="RatingTreeV.xaml"/>
-          <wpfu:CachedResourceDictionary Source="TreeContextMenus.xaml"/>
-        </ResourceDictionary.MergedDictionaries>
-
         <DataTemplate DataType="{StaticResource GenType.TreeView.ITreeItem}">
           <mhc:CatTreeView TreeView="{Binding}"/>
         </DataTemplate>
@@ -58,7 +58,7 @@
                   Height="28"
                   Icon="{StaticResource IconMagnify}"
                   ToolTip="Search"
-                  Command="{Binding ShowSearchCommand}"/>
+                  Command="{Binding TreeViewSearchM.OpenCommand}"/>
 
                 <ContentPresenter
                   Grid.Column="1"
@@ -69,17 +69,20 @@
         </mhc:Slots.List>
       </TabControl>
 
-      <ContentPresenter Content="{Binding TreeViewSearchM}" Margin="0,3,0,0"/>
+      <ContentPresenter
+        x:Name="Search"
+        Content="{Binding TreeViewSearchM}"
+        Visibility="Collapsed"/>
     </Grid>
 
     <DataTemplate.Triggers>
-      <!-- BlurEffect when Search is visible -->
-      <DataTrigger Binding="{Binding TreeViewSearchM.IsVisible}" Value="True">
+      <DataTrigger Binding="{Binding TreeViewSearchM.IsOpen}" Value="True">
         <Setter TargetName="Tabs" Property="Effect">
           <Setter.Value>
             <BlurEffect Radius="4" KernelType="Gaussian"/>
           </Setter.Value>
         </Setter>
+        <Setter TargetName="Search" Property="Visibility" Value="Visible"/>
       </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
