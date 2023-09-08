@@ -2,71 +2,51 @@
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
+
+  <ResourceDictionary.MergedDictionaries>
+    <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/DataTemplates/IListItem.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
 
   <DataTemplate DataType="{x:Type m:TreeViewSearchM}">
-    <Grid
-      Margin="4"
-      Visibility="{Binding IsVisible, Converter={StaticResource AllToVisibilityConverter}}">
-
+    <Grid Margin="4,7,4,4">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto"/>
         <RowDefinition Height="Auto"/>
       </Grid.RowDefinitions>
 
-      <!-- Search Box -->
-      <Grid Grid.Row="0">
-        <TextBox
-          x:Name="search"
-          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-          FontSize="16"/>
+      <TextBox
+        x:Name="search"
+        Grid.Row="0"
+        Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+        FontSize="16"/>
 
-        <mhc:IconButton
-          Icon="{StaticResource IconXCross}"
-          Width="18"
-          Height="18"
-          HorizontalAlignment="Right"
-          VerticalAlignment="Center"
-          Margin="0,0,4,0"
-          Command="{Binding CloseCommand}"/>
-      </Grid>
+      <mhc:IconButton
+        Grid.Row="0"
+        Icon="{StaticResource IconXCross}"
+        Width="18"
+        Height="18"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Center"
+        Margin="0,0,4,0"
+        Command="{Binding CloseCommand}"/>
 
-      <!-- Search Result -->
       <ListBox
+        x:Name="result"
         Grid.Row="1"
-        ItemsSource="{Binding SearchResult}"
         MaxHeight="400"
-        HorizontalContentAlignment="Stretch"
-        VerticalContentAlignment="Stretch"
-        Visibility="{Binding SearchResult.Count, Converter={StaticResource AllToVisibilityConverter}}">
+        ItemsSource="{Binding SearchResult}"
+        SelectedItem="{Binding Selected}">
 
         <ListBox.ItemTemplate>
           <DataTemplate>
-            <Grid Background="Transparent" ToolTip="{Binding ToolTip}">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-              </Grid.ColumnDefinitions>
-
-              <Grid.InputBindings>
-                <MouseBinding
-                  MouseAction="LeftClick"
-                  Command="{Binding DataContext.NavigateToCommand, RelativeSource=
-                           {RelativeSource AncestorType=ListBox}}"
-                  CommandParameter="{Binding}"/>
-              </Grid.InputBindings>
-
-              <Path
-                Style="{StaticResource MH.Styles.Icon}"
-                Data="{Binding Icon,
-                       Converter={StaticResource ResourceConverter}}"
-                Fill="{Binding Icon,
-                       Converter={StaticResource ResourceConverter},
-                       ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
-
-              <TextBlock Grid.Column="1" Text="{Binding Title}" Margin="4"/>
-            </Grid>
+            <ContentControl
+              Background="Transparent"
+              ToolTip="{Binding ToolTip}"
+              Content="{Binding}"
+              ContentTemplate="{StaticResource MH.DataTemplates.IListItem}">
+            </ContentControl>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
@@ -79,6 +59,9 @@
           Property="FocusManager.FocusedElement"
           Value="{Binding ElementName=search}"/>
       </Trigger>
+      <DataTrigger Binding="{Binding SearchResult.Count}" Value="0">
+        <Setter TargetName="result" Property="Visibility" Value="Collapsed"/>
+      </DataTrigger>
     </DataTemplate.Triggers>
   </DataTemplate>
 </ResourceDictionary>
