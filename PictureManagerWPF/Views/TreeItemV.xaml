@@ -5,8 +5,7 @@
   xmlns:mhuint="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
-  xmlns:pm="clr-namespace:PictureManager">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -92,8 +91,8 @@
               <Border BorderThickness="1" BorderBrush="Black">
                 <Image
                   Stretch="Fill"
-                  Width="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}"
-                  Height="{Binding SegmentsM.SegmentUiSize, Source={x:Static pm:App.Core}}">
+                  Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
+                  Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
                   <Image.Source>
                     <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
                       <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
