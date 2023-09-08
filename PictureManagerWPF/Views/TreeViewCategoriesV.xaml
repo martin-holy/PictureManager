@@ -27,7 +27,7 @@
             Style="{StaticResource MH.Styles.Icon}"
             Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
             Fill="{Binding Icon, Converter={StaticResource ResourceConverter},
-                   ConverterParameter={x:Static res:Dictionaries.IconNameToBrush}}"
+                   ConverterParameter={x:Static res:Dictionaries.IconToBrush}}"
             Width="24"
             Height="24"/>
         </DataTemplate>
