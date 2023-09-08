@@ -1,5 +1,6 @@
 ﻿using MH.Utils.Interfaces;
 using PictureManager.Domain.Models;
+using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain {
@@ -46,7 +47,7 @@ namespace PictureManager.Domain {
     public const string IconCheckMark = "IconCheckMark";
     public const string IconXCross = "IconXCross";
 
-    public static readonly Dictionary<string, string> IconToIconColorDic = new() {
+    public static readonly Dictionary<object, object> IconToBrushDic = new() {
       { _default, ColorBrushWhite },
       { IconFolder, ColorBrushFolder },
       { IconFolderStar, ColorBrushFolder },
@@ -60,6 +61,24 @@ namespace PictureManager.Domain {
       { IconDrive, ColorBrushDrive },
       { IconDriveError, ColorBrushDrive },
       { IconCd, ColorBrushDrive }
+    };
+
+    public static readonly Dictionary<object, object> TypeToTreeContextMenuDic = new() {
+      { typeof(DriveM), "TreeContextMenuDrive" },
+      { typeof(FolderM), "TreeContextMenuFolder" },
+      { typeof(FavoriteFolderM), "TreeContextMenuFavoriteFolder" },
+      { typeof(PeopleM), "TreeContextMenuPeople" },
+      { typeof(PersonM), "TreeContextMenuPerson" },
+      { typeof(FolderKeywordsM), "TreeContextMenuFolderKeywords" },
+      { typeof(KeywordsM), "TreeContextMenuKeywords" },
+      { typeof(KeywordM), "TreeContextMenuKeyword" },
+      { typeof(GeoNamesM), "TreeContextMenuGeoNames" },
+      { typeof(GeoNameM), "TreeContextMenuGeoName" },
+      { typeof(ViewersM), "TreeContextMenuViewers" },
+      { typeof(ViewerM), "TreeContextMenuViewer" },
+      { typeof(VideoClipsTreeCategory), "TreeContextMenuVideoClips" },
+      { typeof(CategoryGroupM), "TreeContextMenuGroup" },
+      { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
     };
 
     public static string CategoryToIcon(Category category) =>
