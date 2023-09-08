@@ -24,7 +24,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public List<MediaItemM> MediaItems { get; } = new();
     public FolderKeywordM FolderKeyword { get; set; }
-    public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIconName(); } }
+    public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIcon(); } }
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
     public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
@@ -36,10 +36,10 @@ namespace PictureManager.Domain.Models {
 
     public override void OnIsExpandedChanged(bool value) {
       if (value) LoadSubFolders(false);
-      UpdateIconName();
+      UpdateIcon();
     }
 
-    public void UpdateIconName() {
+    public void UpdateIcon() {
       if (Parent is FoldersM) return;
 
       Icon = IsExpanded

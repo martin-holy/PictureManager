@@ -229,7 +229,7 @@ namespace PictureManager.Domain.Models {
         }
 
         item.IsAccessible = di.IsReady;
-        item.Icon = GetDriveIconName(di.DriveType);
+        item.Icon = GetDriveIcon(di.DriveType);
 
         // add placeholder so the Drive can be expanded
         if (di.IsReady && item.Items.Count == 0)
@@ -243,7 +243,7 @@ namespace PictureManager.Domain.Models {
       }
     }
 
-    public static string GetDriveIconName(DriveType type) =>
+    public static string GetDriveIcon(DriveType type) =>
       type switch {
         DriveType.CDRom => Res.IconCd,
         DriveType.Network => Res.IconDrive,

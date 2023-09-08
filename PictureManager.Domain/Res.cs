@@ -62,7 +62,7 @@ namespace PictureManager.Domain {
       { IconCd, ColorBrushDrive }
     };
 
-    public static string CategoryToIconName(Category category) =>
+    public static string CategoryToIcon(Category category) =>
       category switch {
         Category.FavoriteFolders => IconFolderStar,
         Category.Folders => IconFolder,

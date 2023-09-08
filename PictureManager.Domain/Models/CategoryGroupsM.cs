@@ -14,7 +14,7 @@ namespace PictureManager.Domain.Models {
 
     public CategoryGroupM GroupCreate(string name, Category category) {
       ITreeItem parent = Categories[category];
-      var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIconName(category)) { Parent = parent };
+      var group = new CategoryGroupM(DataAdapter.GetNextId(), name, category, Res.CategoryToIcon(category)) { Parent = parent };
       group.Items.CollectionChanged += GroupItems_CollectionChanged;
       Tree.SetInOrder(parent.Items, group, x => x.Name);
       DataAdapter.All.Add(group);
