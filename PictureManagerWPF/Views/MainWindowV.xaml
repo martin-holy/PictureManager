@@ -32,9 +32,6 @@
     <b:EventTrigger EventName="Closing">
       <b:InvokeCommandAction Command="{Binding MainWindowM.ClosingCommand}"/>
     </b:EventTrigger>
-    <b:EventTrigger EventName="Loaded">
-      <b:InvokeCommandAction Command="{Binding LoadedCommand}"/>
-    </b:EventTrigger>
   </b:Interaction.Triggers>
 
   <mhc:SlidePanelsGrid ActiveLayout="{Binding MainWindowM.ActiveLayout}">
