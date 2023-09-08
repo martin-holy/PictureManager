@@ -18,7 +18,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; }
     public Category Category { get; }
 
-    public CategoryGroupM(int id, string name, Category category, string iconName) : base(iconName, name) {
+    public CategoryGroupM(int id, string name, Category category, string icon) : base(icon, name) {
       Id = id;
       Category = category;
     }

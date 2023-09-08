@@ -14,7 +14,7 @@ namespace PictureManager.Domain.BaseClasses {
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemRenameEventHandler = delegate { };
     public event EventHandler<ObjectEventArgs<ITreeItem>> AfterItemDeleteEventHandler = delegate { };
 
-    public TreeCategoryBase(string iconName, Category category, string name) : base(iconName, name) {
+    public TreeCategoryBase(string icon, Category category, string name) : base(icon, name) {
       TreeView.RootHolder.Add(this);
       // TODO use OnItemSelect override or TreeItemSelectedEvent in derived classes?
       TreeView.TreeItemSelectedEvent += (_, e) => OnItemSelect(e.Data);
@@ -35,7 +35,7 @@ namespace PictureManager.Domain.BaseClasses {
 
     public override void ItemCreate(ITreeItem root) {
       if (!GetNewName(true, string.Empty, out var newName,
-        root, ValidateNewItemName, Res.CategoryToIconName(Category))) return;
+        root, ValidateNewItemName, Res.CategoryToIcon(Category))) return;
 
       try {
         root.IsExpanded = true;
@@ -49,7 +49,7 @@ namespace PictureManager.Domain.BaseClasses {
 
     public override void ItemRename(ITreeItem item) {
       if (!GetNewName(true, item.Name, out var newName,
-        item, ValidateNewItemName, Res.CategoryToIconName(Category))) return;
+        item, ValidateNewItemName, Res.CategoryToIcon(Category))) return;
 
       try {
         ModelItemRename(item, newName);
@@ -79,14 +79,14 @@ namespace PictureManager.Domain.BaseClasses {
 
     public override void GroupCreate(ITreeItem root) {
       if (!GetNewName(false, string.Empty, out var newName,
-        root, ValidateNewGroupName, Res.CategoryToIconName(Category))) return;
+        root, ValidateNewGroupName, Res.CategoryToIcon(Category))) return;
 
       ModelGroupCreate(root, newName);
     }
 
     public override void GroupRename(ITreeGroup group) {
       if (!GetNewName(false, group.Name, out var newName,
-        group, ValidateNewGroupName, Res.CategoryToIconName(Category))) return;
+        group, ValidateNewGroupName, Res.CategoryToIcon(Category))) return;
 
       ModelGroupRename(group, newName);
     }

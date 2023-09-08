@@ -25,7 +25,7 @@ namespace PictureManager.Domain.DataAdapters {
 
     public override CategoryGroupM FromCsv(string[] csv) {
       var category = (Category)int.Parse(csv[2]);
-      return new(int.Parse(csv[0]), csv[1], category, Res.CategoryToIconName(category));
+      return new(int.Parse(csv[0]), csv[1], category, Res.CategoryToIcon(category));
     }
 
     public override string ToCsv(CategoryGroupM categoryGroup) =>
