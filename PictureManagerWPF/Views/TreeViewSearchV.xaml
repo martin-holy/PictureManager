@@ -45,8 +45,7 @@
               Background="Transparent"
               ToolTip="{Binding ToolTip}"
               Content="{Binding}"
-              ContentTemplate="{StaticResource MH.DataTemplates.IListItem}">
-            </ContentControl>
+              ContentTemplate="{StaticResource MH.DataTemplates.IListItem}"/>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>
