@@ -4,8 +4,8 @@
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:mhuint="clr-namespace:MH.Utils.Interfaces;assembly=MH.Utils"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
-  xmlns:rd="clr-namespace:PictureManager.ResourceDictionaries"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain">
 
   <HierarchicalDataTemplate DataType="{x:Type mhubc:TreeItem}" ItemsSource="{Binding Items}">
     <Grid x:Name="grid" Background="Transparent">
@@ -22,7 +22,7 @@
             PropertyName="ContextMenu"
             Value="{Binding
                     Converter={StaticResource ResourceConverter},
-                    ConverterParameter={x:Static rd:Dictionaries.TypeToTreeContextMenu}}"/>
+                    ConverterParameter={x:Static pmd:Res.TypeToTreeContextMenuDic}}"/>
         </b:EventTrigger>
       </b:Interaction.Triggers>
 
@@ -34,7 +34,7 @@
                Converter={StaticResource ResourceConverter}}"
         Fill="{Binding Icon,
                Converter={StaticResource ResourceConverter},
-               ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
+               ConverterParameter={x:Static pmd:Res.IconToBrushDic}}"/>
       
       <TextBlock
         x:Name="name"
