@@ -31,7 +31,7 @@
                    Converter={StaticResource ResourceConverter}}"
             Fill="{Binding Path=Content.(mhbc:Dialog.Icon),
                    Converter={StaticResource ResourceConverter},
-                   ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"/>
+                   ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"/>
 
           <TextBlock
             Text="{Binding Path=Content.(mhbc:Dialog.Title)}"
@@ -82,7 +82,7 @@
                              Converter={StaticResource ResourceConverter}}"
                       Fill="{Binding Icon,
                              Converter={StaticResource ResourceConverter},
-                             ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+                             ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
                       Visibility="{Binding Icon,
                                    Converter={StaticResource AllToVisibilityConverter}}"/>
 

@@ -62,7 +62,7 @@
           Foreground="{Binding
             Path=GroupedBy.Data.(mhuInt:IListItem.Icon),
             Converter={StaticResource ResourceConverter},
-            ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+            ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
           ToolTip="Group by"
           Command="{Binding View.OpenGroupByDialogCommand}"
           CommandParameter="{Binding}"/>

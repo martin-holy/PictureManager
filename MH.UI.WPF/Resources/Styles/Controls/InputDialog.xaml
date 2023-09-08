@@ -19,7 +19,7 @@
         Data="{Binding Icon, Converter={StaticResource ResourceConverter}}"
         Fill="{Binding Icon,
                Converter={StaticResource ResourceConverter},
-               ConverterParameter={x:Static rd:Dictionaries.IconNameToBrush}}"
+               ConverterParameter={x:Static rd:Dictionaries.IconToBrush}}"
         Width="32"
         Height="32"
         HorizontalAlignment="Center"
