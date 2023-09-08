@@ -20,6 +20,6 @@
     Width="20"
     Height="20"
     IsThreeState="False"
-    IsChecked="{Binding IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanel}}"
+    IsChecked="{Binding IsPinned, RelativeSource={RelativeSource AncestorType=c:SlidePanel}, FallbackValue=False}"
     ToolTip="Pin panel"/>
 </ResourceDictionary>
