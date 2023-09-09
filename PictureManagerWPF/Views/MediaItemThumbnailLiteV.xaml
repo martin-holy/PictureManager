@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate DataType="{x:Type m:MediaItemM}">
     <Border
@@ -13,7 +14,7 @@
 
       <Grid>
         <Image
-          Source="{Binding IsAsync=True, Converter={StaticResource MediaItemThumbnailSourceConverter}}"
+          Source="{Binding IsAsync=True, Converter={pmConv:MediaItemThumbSourceConverter}}"
           Stretch="Fill"/>
 
         <ItemsControl

@@ -10,7 +10,6 @@
   </ResourceDictionary.MergedDictionaries>
 
   <converters:MediaItemThumbScaleConvertor x:Key="MediaItemThumbScaleConvertor"/>
-  <converters:MediaItemThumbnailSourceConverter x:Key="MediaItemThumbnailSourceConverter"/>
   <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
   
