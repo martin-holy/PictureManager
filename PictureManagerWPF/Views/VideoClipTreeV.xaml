@@ -4,6 +4,7 @@
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:mhubc="clr-namespace:MH.Utils.BaseClasses;assembly=MH.Utils"
   xmlns:pm="clr-namespace:PictureManager"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
 
   <HierarchicalDataTemplate DataType="{x:Type m:VideoClipM}">
@@ -37,7 +38,7 @@
       <StackPanel Orientation="Horizontal">
         <Image
           Source="{Binding ThumbPath,
-                   Converter={StaticResource ImageSourceConverter},
+                   Converter={pmConv:ImageSourceConverter},
                    ConverterParameter=IgnoreImageCache}" 
           Stretch="Uniform"
           Width="100"
