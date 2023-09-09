@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain">
+  xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate x:Key="PM.Views.List.PersonV" DataType="{x:Type m:PersonM}">
     <DockPanel>
@@ -30,7 +31,7 @@
                   Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
                   Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
                   <Image.Source>
-                    <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
+                    <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
                       <Binding Path="(m:PersonM.Segment).FilePathCache" IsAsync="True"/>
                       <Binding Path="(m:PersonM.Segment)"/>
                     </MultiBinding>

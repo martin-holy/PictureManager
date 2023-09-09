@@ -5,6 +5,7 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
 
   <DataTemplate DataType="{x:Type m:SegmentM}">
@@ -132,7 +133,7 @@
           Width="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}"
           Height="{Binding Source={x:Static m:SegmentsM.SegmentUiSize}}">
           <Image.Source>
-            <MultiBinding Converter="{StaticResource SegmentThumbnailSourceConverter}">
+            <MultiBinding Converter="{pmConv:SegmentThumbnailSourceConverter}">
               <Binding Path="FilePathCache" IsAsync="True"/>
               <Binding/>
             </MultiBinding>
