@@ -1,23 +1,21 @@
-﻿using PictureManager.Domain;
+﻿using MH.UI.WPF.Converters;
+using MH.Utils;
+using PictureManager.Domain;
 using PictureManager.Domain.Models;
 using System;
-using System.Globalization;
-using System.Windows.Data;
 
-namespace PictureManager.Converters {
-  public class MediaViewerImageSourceConverter : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-      try {
-        if (value is not MediaItemM mi || mi.MediaType != Domain.MediaType.Image) return null;
+namespace PictureManager.Converters; 
 
-        return Utils.Imaging.GetBitmapImage(mi.FilePath, (MediaOrientation)mi.Orientation);
-      }
-      catch (Exception ex) {
-        Console.WriteLine(ex);
-        return null;
-      }
+public class MediaViewerImageSourceConverter : BaseMarkupExtensionConverter {
+  public override object Convert(object value, object parameter) {
+    try {
+      return value is MediaItemM { MediaType: MediaType.Image } mi
+        ? Utils.Imaging.GetBitmapImage(mi.FilePath, (MediaOrientation)mi.Orientation)
+        : null;
     }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => value;
+    catch (Exception ex) {
+      Log.Error(ex);
+      return null;
+    }
   }
 }

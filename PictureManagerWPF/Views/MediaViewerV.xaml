@@ -4,6 +4,7 @@
   xmlns:pm="clr-namespace:PictureManager"
   xmlns:m="clr-namespace:PictureManager.Domain.Models;assembly=PictureManager.Domain"
   xmlns:pmd="clr-namespace:PictureManager.Domain;assembly=PictureManager.Domain"
+  xmlns:pmConv="clr-namespace:PictureManager.Converters"
   xmlns:mhc="clr-namespace:MH.UI.WPF.Controls;assembly=MH.UI.WPF"
   xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
   xmlns:wpfu="clr-namespace:MH.UI.WPF.Utils;assembly=MH.UI.WPF">
@@ -64,7 +65,7 @@
           <!-- Image -->
           <Image
             x:Name="image"
-            Source="{Binding Current, Converter={StaticResource MediaViewerImageSourceConverter}}"
+            Source="{Binding Current, Converter={pmConv:MediaViewerImageSourceConverter}}"
             Width="{Binding ContentWidth}"
             Height="{Binding ContentHeight}"
             Visibility="{Binding Current.MediaType,
