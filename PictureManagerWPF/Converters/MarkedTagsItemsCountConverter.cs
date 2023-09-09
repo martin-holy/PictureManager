@@ -1,18 +1,13 @@
-﻿using System;
+﻿using MH.UI.WPF.Converters;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Windows.Data;
 
-namespace PictureManager.Converters {
-  public class MarkedTagsItemsCountConverter : IMultiValueConverter {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) =>
-      values?.Length == 2 && values[0] is Dictionary<object, int> tags
-        ? tags.ContainsKey(values[1])
-          ? tags[values[1]].ToString()
-          : string.Empty
-        : string.Empty;
+namespace PictureManager.Converters; 
 
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
+public class MarkedTagsItemsCountConverter : BaseMarkupExtensionMultiConverter {
+  public override object Convert(object[] values, object parameter) =>
+    values?.Length == 2 && values[0] is Dictionary<object, int> tags
+      ? tags.ContainsKey(values[1])
+        ? tags[values[1]].ToString()
+        : string.Empty
+      : string.Empty;
 }
