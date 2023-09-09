@@ -9,7 +9,6 @@
     <wpfu:CachedResourceDictionary Source="/MH.UI.WPF;component/Resources/EqualityConverterSigns.xaml"/>
   </ResourceDictionary.MergedDictionaries>
 
-  <converters:MediaItemThumbScaleConvertor x:Key="MediaItemThumbScaleConvertor"/>
   <converters:MediaViewerImageSourceConverter x:Key="MediaViewerImageSourceConverter"/>
   <converters:SegmentThumbnailSourceConverter x:Key="SegmentThumbnailSourceConverter"/>
   

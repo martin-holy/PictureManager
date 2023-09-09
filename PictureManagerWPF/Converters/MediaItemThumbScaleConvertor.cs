@@ -1,17 +1,13 @@
-﻿using PictureManager.Domain.DataViews;
+﻿using MH.UI.WPF.Converters;
+using PictureManager.Domain.DataViews;
 using System;
-using System.Globalization;
-using System.Windows.Data;
 
-namespace PictureManager.Converters {
-  public class MediaItemThumbScaleConvertor : IValueConverter {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-      App.Core.MediaItemsViews.Current?.ThumbScale is { } scale
-        && Math.Abs(scale - MediaItemsViews.DefaultThumbScale) > 0 && value is int size
-        ? Math.Round(size / MediaItemsViews.DefaultThumbScale * scale, 0)
-        : value;
+namespace PictureManager.Converters; 
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-      throw new NotSupportedException();
-  }
+public class MediaItemThumbScaleConvertor : BaseMarkupExtensionConverter {
+  public override object Convert(object value, object parameter) =>
+    App.Core.MediaItemsViews.Current?.ThumbScale is { } scale
+    && Math.Abs(scale - MediaItemsViews.DefaultThumbScale) > 0 && value is int size
+      ? Math.Round(size / MediaItemsViews.DefaultThumbScale * scale, 0)
+      : value;
 }
