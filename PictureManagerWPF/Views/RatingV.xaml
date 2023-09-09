@@ -5,18 +5,26 @@
   xmlns:pmConv="clr-namespace:PictureManager.Converters">
 
   <DataTemplate DataType="{x:Type m:RatingM}">
-    <StackPanel Orientation="Horizontal">
-      <StackPanel.Resources>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+        <ColumnDefinition/>
+      </Grid.ColumnDefinitions>
+
+      <Grid.Resources>
         <Style TargetType="{x:Type Path}" BasedOn="{StaticResource MH.Styles.Icon}">
           <Setter Property="Data" Value="{StaticResource IconStar}"/>
         </Style>
-      </StackPanel.Resources>
+      </Grid.Resources>
 
-      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=0}"/>
-      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=1}"/>
-      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=2}"/>
-      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=3}"/>
-      <Path Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=4}"/>
-    </StackPanel>
+      <Path Grid.Column="0" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=0}"/>
+      <Path Grid.Column="1" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=1}"/>
+      <Path Grid.Column="2" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=2}"/>
+      <Path Grid.Column="3" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=3}"/>
+      <Path Grid.Column="4" Fill="{Binding Value, Converter={pmConv:RatingConverter}, ConverterParameter=4}"/>
+    </Grid>
   </DataTemplate>
 </ResourceDictionary>
