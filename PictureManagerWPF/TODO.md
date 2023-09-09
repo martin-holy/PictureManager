@@ -26,6 +26,7 @@
   - ulozeni v klipech nezmeni modifed v main toolbaru
 ## TreeViewCategories
   - Folder reload after folder move => reload is maybe to soon
+  - wrong scroll to top item on size change (open close media items tab)
 ## PeopleM
   - remove deleted people from selection. MergePeople, ...
 ## PeopleV
