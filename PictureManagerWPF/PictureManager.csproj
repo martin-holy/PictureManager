@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
@@ -11,8 +11,11 @@
     <Month>$([System.DateTime]::Now.ToString("MM"))</Month>
     <Date>$([System.DateTime]::Now.ToString("dd"))</Date>
     <Time>$([System.DateTime]::Now.ToString("HHmm"))</Time>
-    <Version>$(Year).$(Month).$(Date).$(Time)</Version>
-    <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>
+    <!--<Version>$(Year).$(Month).$(Date).$(Time)</Version>
+    <AssemblyVersion>$(Year).$(Month).$(Date).$(Time)</AssemblyVersion>-->
+    <Version>23.09.05.1154</Version>
+    <AssemblyVersion>23.09.05.1154</AssemblyVersion>
+    <FileVersion>$(Year).$(Month).$(Date).$(Time)</FileVersion>
     <Authors>Martin Holý</Authors>
     <Copyright>Martin Holý (2015 - 2023)</Copyright>
     <ApplicationIcon>modryhory.ico</ApplicationIcon>
