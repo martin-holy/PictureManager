@@ -26,7 +26,7 @@ namespace PictureManager.Domain.Models {
     public FolderKeywordM FolderKeyword { get; set; }
     public bool IsAccessible { get => _isAccessible; set { _isAccessible = value; OnPropertyChanged(); UpdateIcon(); } }
     public bool IsAvailable { get => _isAvailable; set { _isAvailable = value; OnPropertyChanged(); } }
-    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
+    public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public string FullPathCache => FullPath.Replace(Path.VolumeSeparatorChar.ToString(), Core.Settings.CachePath);
 
     public FolderM(int id, string name, ITreeItem parent) : base(Res.IconFolder, name) {

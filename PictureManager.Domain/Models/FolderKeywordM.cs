@@ -6,7 +6,7 @@ using MH.Utils.Interfaces;
 
 namespace PictureManager.Domain.Models {
   public sealed class FolderKeywordM : TreeItem {
-    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
+    public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
     public List<FolderM> Folders { get; } = new();
 
     public FolderKeywordM(string name, ITreeItem parent) : base(Res.IconFolderPuzzle, name) {

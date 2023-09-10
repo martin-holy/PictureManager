@@ -44,7 +44,7 @@ namespace PictureManager.Domain.Dialogs {
   }
 
   public class FolderTreeViewItem : TreeItem {
-    public string FullPath => Tree.GetFullName(this, Path.DirectorySeparatorChar.ToString(), x => x.Name);
+    public string FullPath => this.GetFullName(Path.DirectorySeparatorChar.ToString(), x => x.Name);
 
     public FolderTreeViewItem(ITreeItem parent, string name) : base(Res.IconFolder, name) {
       Parent = parent;
