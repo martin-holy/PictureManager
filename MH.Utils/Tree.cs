@@ -115,19 +115,8 @@ namespace MH.Utils {
       }
     }
 
-    // TODO replace with GetThisAndParents
-    public static void GetThisAndParentRecursive<T>(T self, ref List<T> output) where T : ITreeItem {
-      output.Add(self);
-      var parent = self.Parent;
-      while (parent is T t) {
-        output.Add(t);
-        parent = parent.Parent;
-      }
-    }
-
-    public static string GetFullName<T>(T self, string separator, Func<T, string> nameSelector) where T : ITreeItem {
-      var list = new List<T>();
-      GetThisAndParentRecursive(self, ref list);
+    public static string GetFullName<T>(this T self, string separator, Func<T, string> nameSelector) where T : class, ITreeItem {
+      var list = self.GetThisAndParents().ToList();
       list.Reverse();
       return string.Join(separator, list.Select(nameSelector));
     }
