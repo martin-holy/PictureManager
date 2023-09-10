@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
 using PictureManager.Domain.DataViews;
@@ -138,12 +139,12 @@ namespace PictureManager.Domain.Models {
 
       if (Keywords != null) {
         InfoBoxKeywords = new();
-        var allKeywords = new List<KeywordM>();
+        var keywords = Keywords
+          .SelectMany(x => x.GetThisAndParents())
+          .Distinct()
+          .OrderBy(x => x.FullName);
 
-        foreach (var keyword in Keywords)
-          MH.Utils.Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
-
-        foreach (var keyword in allKeywords.Distinct().OrderBy(x => x.FullName)) {
+        foreach (var keyword in keywords) {
           InfoBoxKeywords.Add(keyword.Name);
           InfoBoxThumb.Add(keyword.Name);
         }
