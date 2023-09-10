@@ -2,9 +2,6 @@
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
     setting SpeedRatio to SpeedRatio before or after Play() doesn't help
-## TreeViewCategories
-  - TreeViewSearch XAML error
-    (Cannot save value from target back to source. KeyNotFoundException: The given key '1' was not present in the dictionary.)
 ## MediaViewer
   - zamrznuti pri mazani videa, kdyz se zrovna prehrava (nevim co s tim)
 
@@ -42,6 +39,10 @@
     clear grouping on keyword with sub keywords,
     set new keyword on segments in cleared grouping,
     clear grouping is restored
+  - group by keyword,
+    collapse segments with the keyword,
+    choice the keyword for segment in empty group,
+    group with the keyword have sub group with the same keyword
 
 # Update
 ##
@@ -52,7 +53,6 @@
   - change all Tree View Categories like Video Clips
   - Log button
   - make thumbnail images sharper (size is 2.7x bigger)
-  - change Tree.GetThisAndParentRecursive using yield like in FoldersDataAdapter
   - show media items with selected people
   - replace Equals with ReferenceEquals where possible
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
@@ -66,18 +66,12 @@
   - multilevel groups (so make base class for folders, folderKeywords, keywords, geonames, category group, ...)
 ## VideoClips:
   - recreate video thumbnails button
-  - use TreeItemSelectedEvent instead SelectedItemChanged XAML
 ## XAML
   - remove "x:Static pm:App.Ui, x:Static pm:App.Core" from Views and add properties to ViewModels?
-  - replace behaviors with InputBindings where possible
-  - change converters using MarkupExtension like in RatingConverter
-  - use Grid instead of StackPanel when is used many times like in TreeItemV
   - use BaseMarkupExtensionConverter for converters
 ## MH.UI.WPF
   - use button foreground and background for icon in IconButton and IconToggleButton
   - add background behind text in IconTextButton
-  - make ExpandCollapseToggleStyle and TreeViewItemFocusVisual as resource for CatTreeView and TreeWrapView
-  - use RelativeSource AncestorType= without x:Type
   # Style
    - Label - remove default padding?
    - MH.Styles.IconShadow
