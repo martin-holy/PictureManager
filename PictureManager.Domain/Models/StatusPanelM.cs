@@ -1,4 +1,5 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.Utils;
+using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -36,8 +37,7 @@ namespace PictureManager.Domain.Models {
           return paths;
         }
 
-        var fks = new List<FolderKeywordM>();
-        MH.Utils.Tree.GetThisAndParentRecursive(_core.MediaItemsM.Current.Folder.FolderKeyword, ref fks);
+        var fks = _core.MediaItemsM.Current.Folder.FolderKeyword.GetThisAndParents().ToList();
         fks.Reverse();
         foreach (var fk in fks)
           if (fk.Parent != null) {

@@ -110,11 +110,7 @@ namespace PictureManager.Domain.Models {
     public static List<KeywordM> Toggle(List<KeywordM> list, KeywordM keyword) {
       list ??= new();
 
-      var allKeywords = new List<KeywordM>();
-      foreach (var k in list)
-        Tree.GetThisAndParentRecursive(k, ref allKeywords);
-
-      if (allKeywords.Any(x => x.Equals(keyword))) {
+      if (list.SelectMany(x => x.GetThisAndParents()).Any(x => x.Equals(keyword))) {
         list.Remove(keyword);
         if (list.Count == 0)
           list = null;
@@ -122,9 +118,7 @@ namespace PictureManager.Domain.Models {
       else {
         // remove possible redundant keywords 
         // example: if new keyword is "Weather/Sunny" keyword "Weather" is redundant
-        var newKeywords = new List<KeywordM>();
-        Tree.GetThisAndParentRecursive(keyword, ref newKeywords);
-        foreach (var newKeyword in newKeywords)
+        foreach (var newKeyword in keyword.GetThisAndParents())
           list.Remove(newKeyword);
 
         list.Add(keyword);
@@ -133,16 +127,11 @@ namespace PictureManager.Domain.Models {
       return list;
     }
 
-    public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) {
-      if (keywords == null)
-        return Enumerable.Empty<KeywordM>();
-
-      var allKeywords = new List<KeywordM>();
-
-      foreach (var keyword in keywords)
-        Tree.GetThisAndParentRecursive(keyword, ref allKeywords);
-
-      return allKeywords.Distinct().OrderBy(x => x.FullName).ToArray();
-    }
+    public static IEnumerable<KeywordM> GetAllKeywords(IEnumerable<KeywordM> keywords) =>
+      keywords?
+        .SelectMany(x => x.GetThisAndParents())
+        .Distinct()
+        .OrderBy(x => x.FullName)
+        .ToArray() ?? Enumerable.Empty<KeywordM>();
   }
 }

@@ -67,20 +67,15 @@ namespace PictureManager.Domain.Models {
       _excKeywords = ExcludedKeywords.ToHashSet();
       _incFoldersTree = new();
 
-      foreach (var folder in IncludedFolders) {
-        var fos = new List<FolderM>();
-        Tree.GetThisAndParentRecursive(folder, ref fos);
-        foreach (var fo in fos)
-          _incFoldersTree.Add(fo);
-      }
+      foreach (var fo in IncludedFolders.SelectMany(x => x.GetThisAndParents()))
+        _incFoldersTree.Add(fo);
     }
 
     public bool CanSee(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
       // OR
       // If Any part of Included Folder ID matches Test Folder ID
-      var testFos = new List<FolderM>();
-      Tree.GetThisAndParentRecursive(folder, ref testFos);
+      var testFos = folder.GetThisAndParents().ToArray();
       var incContain = testFos.Any(testFo => _incFolders.Any(incFo => incFo == testFo))
                        || _incFoldersTree.Any(incFo => incFo == folder);
       var excContain = testFos.Any(testFo => _excFolders.Any(excFo => excFo == testFo));
@@ -90,8 +85,7 @@ namespace PictureManager.Domain.Models {
 
     public bool CanSeeContentOf(FolderM folder) {
       // If Any part of Test Folder ID matches Any Included Folder ID
-      var testFos = new List<FolderM>();
-      Tree.GetThisAndParentRecursive(folder, ref testFos);
+      var testFos = folder.GetThisAndParents().ToArray();
       var incContain = testFos.Any(testFo => _incFolders.Any(incFo => incFo == testFo));
       var excContain = testFos.Any(testFo => _excFolders.Any(excFo => excFo == testFo));
 
@@ -110,13 +104,13 @@ namespace PictureManager.Domain.Models {
 
       var keywords = new List<ITreeItem>();
       if (mi.Keywords != null)
-        foreach (var keyword in mi.Keywords)
-          Tree.GetThisAndParentRecursive(keyword, ref keywords);
+        keywords.AddRange(mi.Keywords.SelectMany(x => x.GetThisAndParents()));
 
       if (mi.Segments != null)
-        foreach (var segment in mi.Segments.Where(x => x.Keywords != null))
-        foreach (var keyword in segment.Keywords)
-          Tree.GetThisAndParentRecursive(keyword, ref keywords);
+        keywords.AddRange(
+          mi.Segments
+            .Where(s => s.Keywords != null)
+            .SelectMany(s => s.Keywords.SelectMany(k => k.GetThisAndParents())));
 
       if (keywords.OfType<CategoryGroupM>().Any(cg => ExcludedCategoryGroups.Contains(cg))) return false;
       if (keywords.OfType<KeywordM>().Any(k => _excKeywords.Contains(k))) return false;
