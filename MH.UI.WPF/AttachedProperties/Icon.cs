@@ -9,7 +9,7 @@ public static class Icon {
   public static readonly DependencyProperty FillProperty = DependencyProperty.RegisterAttached(
     "Fill", typeof(Brush), typeof(Icon));
   public static readonly DependencyProperty SizeProperty = DependencyProperty.RegisterAttached(
-    "Data", typeof(double), typeof(Icon));
+    "Size", typeof(double), typeof(Icon));
 
   public static PathGeometry GetData(DependencyObject d) => (PathGeometry)d.GetValue(DataProperty);
   public static void SetData(DependencyObject d, PathGeometry value) => d.SetValue(DataProperty, value);
