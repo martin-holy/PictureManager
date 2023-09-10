@@ -19,7 +19,7 @@ namespace PictureManager.Domain.Models {
     public int Id { get; } // this is GeoNameId not just DB Id
     public string ToponymName { get; }
     public string Fcode { get; }
-    public string FullName => Tree.GetFullName(this, "\n", x => x.Name);
+    public string FullName => this.GetFullName("\n", x => x.Name);
 
     public GeoNameM(int id, string name, string toponymName, string fCode, ITreeItem parent) : base(Res.IconLocationCheckin, name) {
       Id = id;

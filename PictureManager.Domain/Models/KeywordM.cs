@@ -17,7 +17,7 @@ namespace PictureManager.Domain.Models {
     #endregion
     
     public int Id { get; }
-    public string FullName => Tree.GetFullName(this, "/", x => x.Name);
+    public string FullName => this.GetFullName("/", x => x.Name);
 
     public KeywordM() { }
 
