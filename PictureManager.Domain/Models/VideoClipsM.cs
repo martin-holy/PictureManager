@@ -21,7 +21,6 @@ namespace PictureManager.Domain.Models {
 
     public RelayCommand<bool> SetMarkerCommand { get; }
     public RelayCommand<PlayType> SetPlayTypeCommand { get; }
-    public RelayCommand<object> SetCurrentVideoClipCommand { get; }
     public RelayCommand<object> SplitCommand { get; }
     public RelayCommand<object> SaveCommand { get; }
     public RelayCommand<int> SeekToPositionCommand { get; }
@@ -35,13 +34,9 @@ namespace PictureManager.Domain.Models {
       SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
       SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
 
-      SetCurrentVideoClipCommand = new(
-        item => SetCurrentVideoClip(item as VideoClipM),
-        item => item is VideoClipM);
-
       SplitCommand = new(
         VideoClipSplit,
-        () => !String.IsNullOrEmpty(MediaPlayerM?.Source));
+        () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
 
       SaveCommand = new(
         () => {
@@ -105,7 +100,7 @@ namespace PictureManager.Domain.Models {
         TreeCategory.ItemCreate(TreeCategory);
     }
 
-    private void SetCurrentVideoClip(VideoClipM vc) {
+    public void SetCurrentVideoClip(VideoClipM vc) {
       CurrentVideoClip = vc;
       MediaPlayerM.ClipTimeStart = vc.TimeStart;
       MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
