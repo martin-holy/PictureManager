@@ -49,5 +49,10 @@ namespace PictureManager.Domain.TreeCategories {
       GroupsM.ItemCanRename(name, _videoClipsM.CurrentMediaItem)
         ? null
         : $"{name} group already exists!";
+
+    public override void OnItemSelect(object o) {
+      if (o is VideoClipM vc)
+        _videoClipsM.SetCurrentVideoClip(vc);
+    }
   }
 }
