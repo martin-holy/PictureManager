@@ -15,7 +15,7 @@ namespace MH.UI.Controls {
     public Selecting<T> SelectedTreeItems { get; } = new();
     public ITreeItem TopItem { get; set; }
     public bool IsSizeChanging { get => _isSizeChanging; set { _isSizeChanging = value; OnSizeChanging(value); } }
-    public bool IsScrollUnitItem { get; set; } = true;
+    public bool IsScrollUnitItem { get; set; }
     // TODO rename and combine with single and multi select
     public bool ShowTreeItemSelection { get; set; }
     public Action ScrollToTopAction { get; set; }
