@@ -35,12 +35,11 @@ namespace MH.Utils {
       return default;
     }
 
-    public static List<T> GetBranch<T>(this T item, bool expanded) where T : class, ITreeItem {
+    public static List<T> GetBranch<T>(this T item) where T : class, ITreeItem {
       var items = new List<T>();
 
       while (item != null) {
         items.Add(item);
-        if (expanded) item.IsExpanded = true;
         item = item.Parent as T;
       }
 
