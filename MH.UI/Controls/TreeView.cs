@@ -46,14 +46,14 @@ namespace MH.UI.Controls {
 
     public virtual void ScrollTo(ITreeItem item) {
       var branch = item.GetBranch();
+      for (int i = 0; i < branch.Count - 1; i++)
+        branch[i].IsExpanded = true;
+
       int? index = !IsScrollUnitItem
         ? null
         : RootHolder is [ITreeItem root]
           ? item.GetIndex(root)
           : -1;
-
-      for (int i = 0; i < branch.Count - 1; i++)
-        branch[i].IsExpanded = true;
 
       ScrollToItemsAction?.Invoke(branch, index);
     }
