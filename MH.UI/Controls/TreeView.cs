@@ -44,13 +44,18 @@ namespace MH.UI.Controls {
       return TopItem != null;
     }
 
-    public virtual void ScrollTo(ITreeItem item) =>
-      ScrollToItemsAction?.Invoke(
-        item.GetBranch(true),
-        !IsScrollUnitItem
-          ? null
-          : RootHolder.Count != 0 && RootHolder[0] is ITreeItem root
-            ? item.GetIndex(root)
-            : -1);
+    public virtual void ScrollTo(ITreeItem item) {
+      var branch = item.GetBranch();
+      int? index = !IsScrollUnitItem
+        ? null
+        : RootHolder is [ITreeItem root]
+          ? item.GetIndex(root)
+          : -1;
+
+      for (int i = 0; i < branch.Count - 1; i++)
+        branch[i].IsExpanded = true;
+
+      ScrollToItemsAction?.Invoke(branch, index);
+    }
   }
 }
