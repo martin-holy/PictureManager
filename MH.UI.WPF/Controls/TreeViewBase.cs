@@ -27,6 +27,7 @@ namespace MH.UI.WPF.Controls {
     public override void OnApplyTemplate() {
       base.OnApplyTemplate();
 
+      TreeView.IsScrollUnitItem = GetValue(VirtualizingPanel.ScrollUnitProperty) is ScrollUnit.Item;
       ScrollViewer = (ScrollViewer)Template.FindName("PART_ScrollViewer", this);
 
       ScrollViewer.ScrollChanged += (_, e) => {
@@ -122,8 +123,7 @@ namespace MH.UI.WPF.Controls {
     /// </summary>
     public void DragDropAutoScroll(DragEventArgs e) {
       const int px = 25;
-      // TODO get the IsScrollUnitItem info from WPF control
-      var unit = TreeView.IsScrollUnitItem ? 1 : px;
+      var unit = GetValue(VirtualizingPanel.ScrollUnitProperty) is ScrollUnit.Item ? 1 : px;
       var pos = e.GetPosition(this);
       if (pos.Y < px)
         ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset - unit);
