@@ -12,6 +12,7 @@ namespace MH.Utils.BaseClasses {
     public bool IsExpanded {
       get => Bits[BitsMasks.IsExpanded];
       set {
+        if (Bits[BitsMasks.IsExpanded] == value) return;
         Bits[BitsMasks.IsExpanded] = value;
         OnIsExpandedChanged(value);
         OnPropertyChanged();
