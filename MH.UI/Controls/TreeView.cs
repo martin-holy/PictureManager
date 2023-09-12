@@ -55,6 +55,7 @@ namespace MH.UI.Controls {
           ? item.GetIndex(root)
           : -1;
 
+      TopItem = item;
       ScrollToItemsAction?.Invoke(branch, index);
     }
   }
