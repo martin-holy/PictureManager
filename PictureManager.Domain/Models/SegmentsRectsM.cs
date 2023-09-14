@@ -238,7 +238,7 @@ namespace PictureManager.Domain.Models {
 
       SegmentsM.Selected.DeselectAll();
 
-      foreach (var segment in MediaItem.Segments)
+      foreach (var segment in MediaItem.Segments.OrderBy(x => x.X))
         MediaItemSegmentsRects.Add(new(segment, Scale));
     }
 
