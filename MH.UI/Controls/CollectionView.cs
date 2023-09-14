@@ -15,7 +15,7 @@ namespace MH.UI.Controls {
     private readonly GroupByDialog<T> _groupByDialog = new();
 
     public ICollectionViewGroup<T> Root { get; set; }
-    public new T TopItem { get; set; }
+    public T TopItem { get; set; }
     public T LastSelectedItem { get; set; }
     public ICollectionViewGroup<T> TopGroup { get; set; }
     public ICollectionViewRow<T> LastSelectedRow { get; set; }
@@ -132,9 +132,9 @@ namespace MH.UI.Controls {
         _groupByItemsRoots.Add(group);
     }
 
-    public override bool SetTopItem(object o) {
-      var row = o as ICollectionViewRow<T>;
-      var group = o as ICollectionViewGroup<T>;
+    public override void OnTopTreeItemChanged() {
+      var row = TopTreeItem as ICollectionViewRow<T>;
+      var group = TopTreeItem as ICollectionViewGroup<T>;
 
       TopItem = default;
       TopGroup = null;
@@ -146,8 +146,6 @@ namespace MH.UI.Controls {
         if (row.Leaves.Count > 0)
           TopItem = Selecting<T>.GetNotSelectedItem(TopGroup.Source, row.Leaves[0]);
       }
-
-      return row != null || group != null;
     }
 
     public void ScrollTo(ICollectionViewGroup<T> group, T item) {

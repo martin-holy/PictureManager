@@ -10,16 +10,16 @@ using System.Linq;
 namespace MH.UI.Controls {
   public class TreeView<T> : ObservableObject, ITreeView where T : ITreeItem {
     private bool _isSizeChanging;
+    private ITreeItem _topTreeItem;
 
     public ExtObservableCollection<object> RootHolder { get; } = new();
     public Selecting<T> SelectedTreeItems { get; } = new();
-    public ITreeItem TopItem { get; set; }
+    public ITreeItem TopTreeItem { get => _topTreeItem; set { _topTreeItem = value; OnTopTreeItemChanged(); } }
     public bool IsSizeChanging { get => _isSizeChanging; set { _isSizeChanging = value; OnSizeChanging(value); } }
-    public bool IsScrollUnitItem { get; set; }
     // TODO rename and combine with single and multi select
     public bool ShowTreeItemSelection { get; set; }
     public Action ScrollToTopAction { get; set; }
-    public Action<IEnumerable<object>, int?> ScrollToItemsAction { get; set; }
+    public Action<IEnumerable<object>> ScrollToItemsAction { get; set; }
 
     public RelayCommand<object> TreeItemSelectedCommand { get; }
     public event EventHandler<ObjectEventArgs<T>> TreeItemSelectedEvent = delegate { };
@@ -29,7 +29,7 @@ namespace MH.UI.Controls {
     }
 
     public virtual void OnSizeChanging(bool value) {
-      if (!value) ScrollTo(TopItem);
+      if (!value) ScrollTo(TopTreeItem);
     }
 
     public virtual void OnTreeItemSelected(object o) {
@@ -39,24 +39,17 @@ namespace MH.UI.Controls {
       SelectedTreeItems.Select(t.Parent?.Items.Cast<T>().ToList(), t, Keyboard.IsCtrlOn(), Keyboard.IsShiftOn());
     }
 
-    public virtual bool SetTopItem(object o) {
-      TopItem = o as ITreeItem;
-      return TopItem != null;
-    }
+    public virtual void OnTopTreeItemChanged() { }
 
     public virtual void ScrollTo(ITreeItem item) {
+      if (ReferenceEquals(TopTreeItem, item)) return;
+
       var branch = item.GetBranch();
       for (int i = 0; i < branch.Count - 1; i++)
         branch[i].IsExpanded = true;
 
-      int? index = !IsScrollUnitItem
-        ? null
-        : RootHolder is [ITreeItem root]
-          ? item.GetIndex(root)
-          : -1;
-
-      TopItem = item;
-      ScrollToItemsAction?.Invoke(branch, index);
+      TopTreeItem = item;
+      ScrollToItemsAction?.Invoke(branch);
     }
   }
 }
