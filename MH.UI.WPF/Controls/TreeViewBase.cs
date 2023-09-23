@@ -31,7 +31,7 @@ namespace MH.UI.WPF.Controls {
 
       ScrollViewer.ScrollChanged += (_, _) => {
         if (TreeView is { IsSizeChanging: false } && !_isScrollingTo)
-         TreeView.TopTreeItem = GetTopItem();
+          TreeView.TopTreeItem = GetTopItem();
       };
 
       if (TreeView != null) {
