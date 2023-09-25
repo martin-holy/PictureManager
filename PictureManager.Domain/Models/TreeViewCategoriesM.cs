@@ -12,6 +12,7 @@ public sealed class TreeViewCategoriesM : TabControl {
   public Dictionary<object, int> MarkedTags { get; } = new();
 
   public void AddCategories() {
+    Tabs.Clear();
     AddCategory(Core.FavoriteFoldersTreeCategory);
     AddCategory(Core.FoldersM.TreeCategory);
     AddCategory(Core.RatingsTreeCategory);
