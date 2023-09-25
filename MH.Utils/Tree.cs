@@ -88,16 +88,22 @@ namespace MH.Utils {
       return level;
     }
 
-    public static T GetTopParent<T>(T item) where T : ITreeItem {
-      var top = item;
-      var parent = item?.Parent;
-
-      while (parent is T t) {
-        top = t;
-        parent = parent.Parent;
+    public static T GetParentOf<T>(ITreeItem item) where T : ITreeItem {
+      var i = item;
+      while (i != null) {
+        if (i is T t) return t;
+        i = i.Parent;
       }
+      return default;
+    }
 
-      return top;
+    public static ITreeItem GetRoot(ITreeItem item) {
+      var i = item;
+      while (i != null) {
+        if (i.Parent == null) return i;
+        i = i.Parent;
+      }
+      return default;
     }
 
     public static void GetThisAndItemsRecursive<T>(object root, ref List<T> output) {
