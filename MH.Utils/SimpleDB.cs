@@ -17,11 +17,15 @@ namespace MH.Utils {
 
     public int Changes { get => _changes; set { _changes = value; OnPropertyChanged(); } }
 
+    public event EventHandler ReadyEvent = delegate { };
+
     public SimpleDB() {
       Directory.CreateDirectory("db");
       _isSequencesFilePath = Path.Combine("db", "IdSequences.csv");
       LoadIdSequences();
     }
+
+    public void RaiseReadyEvent() => ReadyEvent(this, EventArgs.Empty);
 
     public void AddDataAdapter(IDataAdapter dataAdapter) {
       if (!_idSequences.TryGetValue(dataAdapter.TableName, out var maxId))
