@@ -61,15 +61,15 @@ namespace PictureManager.Domain.Dialogs {
       var lioSep = path.LastIndexOf(Path.DirectorySeparatorChar);
       var folderPath = path[..lioSep];
       var fileName = path[(lioSep + 1)..];
-      var folder = Tree.GetByPath(Core.Instance.FoldersM, folderPath, Path.DirectorySeparatorChar) as FolderM;
+      var folder = Tree.GetByPath(Core.FoldersM.TreeCategory, folderPath, Path.DirectorySeparatorChar) as FolderM;
       var mi = folder?.GetMediaItemByName(fileName);
       
       if (mi == null)
-        mi = Core.Instance.MediaItemsM.AddNew(folder, fileName);
+        mi = Core.MediaItemsM.AddNew(folder, fileName);
 
       var mim = new MediaItemMetadata(mi);
-      Core.Instance.MediaItemsM.ReadMetadata(mim, false);
-      if (mim.Success) mim.FindRefs(Core.Instance);
+      Core.MediaItemsM.ReadMetadata(mim, false);
+      if (mim.Success) mim.FindRefs();
 
       return mi;
     }

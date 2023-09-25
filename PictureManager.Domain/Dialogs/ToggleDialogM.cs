@@ -27,32 +27,32 @@ public sealed class ToggleDialogM : Dialog {
     return _instance;
   }
 
-  public static void ToggleKeyword(Core core, KeywordM keyword) {
-    if (!GetCounts(core, keyword, out var counts)) return;
+  public static void ToggleKeyword(KeywordM keyword) {
+    if (keyword == null || !GetCounts(keyword, out var counts)) return;
 
     var dlg = GetInstance(Res.IconTagLabel, _keywordTitle, counts, keyword);
     switch (Show(dlg)) {
-      case 1: core.SegmentsM.ToggleKeywordOnSelected(keyword); break;
-      case 2: core.PeopleM.ToggleKeywordOnSelected(keyword); break;
-      case 3: core.MediaItemsM.SetMetadata(keyword); break;
+      case 1: Core.SegmentsM.ToggleKeywordOnSelected(keyword); break;
+      case 2: Core.PeopleM.ToggleKeywordOnSelected(keyword); break;
+      case 3: Core.MediaItemsM.SetMetadata(keyword); break;
     }
   }
 
-  public static void TogglePerson(Core core, PersonM person) {
-    if (!GetCounts(core, person, out var counts)) return;
+  public static void TogglePerson(PersonM person) {
+    if (person == null || !GetCounts(person, out var counts)) return;
 
     var dlg = GetInstance(Res.IconPeople, _personTitle, counts, person);
     switch (Show(dlg)) {
-      case 1: core.SegmentsM.SetSelectedAsPerson(person); break;
-      case 3: core.MediaItemsM.SetMetadata(person); break;
+      case 1: Core.SegmentsM.SetSelectedAsPerson(person); break;
+      case 3: Core.MediaItemsM.SetMetadata(person); break;
     }
   }
 
-  private static bool GetCounts(Core core, object item, out Tuple<int, int, int> counts) {
+  private static bool GetCounts(object item, out Tuple<int, int, int> counts) {
     counts = new(
-      core.SegmentsM.Selected.Items.Count,
-      item is PersonM ? 0 : core.PeopleM.Selected.Items.Count,
-      core.MediaItemsM.IsEditModeOn ? core.MediaItemsM.GetActive().Length : 0);
+      Core.SegmentsM.Selected.Items.Count,
+      item is PersonM ? 0 : Core.PeopleM.Selected.Items.Count,
+      Core.MediaItemsM.IsEditModeOn ? Core.MediaItemsM.GetActive().Length : 0);
 
     return counts.Item1 != 0 || counts.Item2 != 0 || counts.Item3 != 0;
   }

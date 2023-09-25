@@ -7,7 +7,6 @@ using System.Linq;
 
 namespace PictureManager.Domain.Models {
   public sealed class TreeViewSearchM : ObservableObject {
-    private readonly Core _core;
     private string _searchText;
     private bool _isOpen;
     private TreeViewSearchItemM _selected;
@@ -20,16 +19,14 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> OpenCommand { get; }
     public RelayCommand<object> CloseCommand { get; }
 
-    public TreeViewSearchM(Core core) {
-      _core = core;
-
+    public TreeViewSearchM() {
       OpenCommand = new(Open);
       CloseCommand = new(() => IsOpen = false);
     }
 
     private void NavigateTo(TreeViewSearchItemM item) {
       if (item == null) return;
-      _core.TreeViewCategoriesM.Select(item.Category.TreeView);
+      Core.TreeViewCategoriesM.Select(item.Category.TreeView);
       item.Category.TreeView.ScrollTo((ITreeItem)item.Data);
       IsOpen = false;
     }
@@ -49,31 +46,31 @@ namespace PictureManager.Domain.Models {
       }
 
       // People
-      AddToSearchResult(_core.PeopleM.DataAdapter.All
+      AddToSearchResult(Core.Db.People.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, x, (x.Parent as CategoryGroupM)?.Name, _core.PeopleM)));
+        .Select(x => new TreeViewSearchItemM(Res.IconPeople, x.Name, x, (x.Parent as CategoryGroupM)?.Name, Core.PeopleM.TreeCategory)));
 
       // Keywords
-      AddToSearchResult(_core.KeywordsM.DataAdapter.All
+      AddToSearchResult(Core.Db.Keywords.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, _core.KeywordsM)));
+        .Select(x => new TreeViewSearchItemM(Res.IconTag, x.Name, x, x.FullName, Core.KeywordsM.TreeCategory)));
 
       // GeoNames
-      AddToSearchResult(_core.GeoNamesM.DataAdapter.All
+      AddToSearchResult(Core.Db.GeoNames.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase))
-        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, _core.GeoNamesM)));
+        .Select(x => new TreeViewSearchItemM(Res.IconLocationCheckin, x.Name, x, x.FullName, Core.GeoNamesM.TreeCategory)));
 
       // Folders
-      var result = _core.FoldersM.DataAdapter.All
+      var result = Core.Db.Folders.All
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-                && _core.ViewersM.CanViewerSee(x))
-        .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, _core.FoldersM)).ToList();
+                && Core.ViewersM.CanViewerSee(x))
+        .Select(x => new TreeViewSearchItemM(Res.IconFolder, x.Name, x, x.FullPath, Core.FoldersM.TreeCategory)).ToList();
 
       // Folder Keywords
-      result.AddRange(_core.FolderKeywordsM.All
+      result.AddRange(Core.Db.FolderKeywords.All2
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
-                && x.Folders.All(f => _core.ViewersM.CanViewerSee(f)))
-        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, _core.FolderKeywordsM)));
+                && x.Folders.All(f => Core.ViewersM.CanViewerSee(f)))
+        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.FolderKeywordsTreeCategory)));
       AddToSearchResult(result);
     }
   }

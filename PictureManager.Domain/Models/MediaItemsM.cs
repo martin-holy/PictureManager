@@ -2,8 +2,7 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.Dialogs;
 using PictureManager.Domain.HelperClasses;
@@ -17,16 +16,12 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaItemsM : ObservableObject {
-    private readonly Core _core;
-    private readonly SegmentsM _segmentsM;
-
     private bool _isEditModeOn;
     private MediaItemM _current;
 
     public MediaItemsDataAdapter DataAdapter { get; set; }
     public static HashSet<MediaItemM> ThumbIgnoreCache { get; } = new();
     public HashSet<MediaItemM> ModifiedItems { get; } = new();
-    public Dictionary<MediaItemM, ExtObservableCollection<ITreeItem>> MediaItemVideoClips { get; } = new();
     public MediaItemM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
     public int MediaItemsCount => DataAdapter.All.Count;
     public int ModifiedItemsCount => ModifiedItems.Count;
@@ -55,9 +50,8 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
     public RelayCommand<object> RebuildThumbnailsCommand { get; }
 
-    public MediaItemsM(Core core, SegmentsM segmentsM) {
-      _core = core;
-      _segmentsM = segmentsM;
+    public MediaItemsM() {
+      DataAdapter = Core.Db.MediaItems = new();
 
       CompressCommand = new(Compress, () => GetActive().Any());
       DeleteCommand = new(Delete, () => GetActive().Any());
@@ -65,8 +59,8 @@ namespace PictureManager.Domain.Models {
       RenameCommand = new(Rename, () => Current != null);
 
       ResizeImagesCommand = new(
-        () => Core.DialogHostShow(new ResizeImagesDialogM(_core.MediaItemsViews.Current.GetSelectedOrAll())),
-        () => _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
+        () => Core.DialogHostShow(new ResizeImagesDialogM(Core.MediaItemsViews.Current.GetSelectedOrAll())),
+        () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       EditCommand = new(
         () => IsEditModeOn = true,
@@ -77,12 +71,12 @@ namespace PictureManager.Domain.Models {
       CommentCommand = new(Comment, () => Current != null);
 
       ReloadMetadataCommand = new(
-        () => ReloadMetadata(_core.MediaItemsViews.Current.GetSelectedOrAll()),
-        () => _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
+        () => ReloadMetadata(Core.MediaItemsViews.Current.GetSelectedOrAll()),
+        () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       AddGeoNamesFromFilesCommand = new(
         () => AddGeoNamesFromFiles(Core.Settings.GeoNamesUserName),
-        () => _core.MediaItemsViews.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
+        () => Core.MediaItemsViews.Current?.FilteredItems.Count(x => x.IsSelected) > 0);
 
       ReloadMetadataInFolderCommand = new(
         x => ReloadMetadata(x.GetMediaItems(Keyboard.IsShiftOn()), true),
@@ -90,7 +84,7 @@ namespace PictureManager.Domain.Models {
 
       RebuildThumbnailsCommand = new(
         x => RebuildThumbnails(x, Keyboard.IsShiftOn()),
-        x => x is FolderM || _core.MediaItemsViews.Current?.FilteredItems.Count > 0);
+        x => x is FolderM || Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
       ImagesToVideoCommand = new(
         ImagesToVideo, 
@@ -160,7 +154,7 @@ namespace PictureManager.Domain.Models {
       if (mi.Segments != null) {
         copy.Segments = new();
         foreach (var segment in mi.Segments) {
-          var sCopy = _segmentsM.GetCopy(segment);
+          var sCopy = Core.SegmentsM.GetCopy(segment);
           sCopy.MediaItem = copy;
           copy.Segments.Add(sCopy);
         }
@@ -240,11 +234,11 @@ namespace PictureManager.Domain.Models {
         Res.IconQuestion,
         true)) != 1) return;
 
-      var view = _core.MediaItemsViews.Current;
+      var view = Core.MediaItemsViews.Current;
       Current = ListExtensions.GetNextOrPreviousItem(
         view != null
           ? view.FilteredItems
-          : _core.MediaViewerM.MediaItems,
+          : Core.MediaViewerM.MediaItems,
         items);
       DeleteFromDbAndDrive(items);
     }
@@ -301,8 +295,8 @@ namespace PictureManager.Domain.Models {
       _ = Core.DialogHostShow(fop);
 
       if (mode == FileOperationMode.Move) {
-        Current = ListExtensions.GetNextOrPreviousItem(_core.MediaItemsViews.Current.FilteredItems, items);
-        _core.MediaItemsViews.Current.Remove(items, true);
+        Current = ListExtensions.GetNextOrPreviousItem(Core.MediaItemsViews.Current.FilteredItems, items);
+        Core.MediaItemsViews.Current.Remove(items, true);
       }
     }
 
@@ -327,7 +321,7 @@ namespace PictureManager.Domain.Models {
           var result = FileOperationCollisionDialogM.Open(mi.FilePath, destFilePath, ref miNewFileName);
 
           if (result == CollisionResult.Skip) {
-            Tasks.RunOnUiThread(() => _core.MediaItemsViews.Current.Selected.Set(mi, false));
+            Tasks.RunOnUiThread(() => Core.MediaItemsViews.Current.Selected.Set(mi, false));
             continue;
           }
 
@@ -438,7 +432,7 @@ namespace PictureManager.Domain.Models {
 
       var progress = new ProgressBarDialog("Adding GeoNames ...", Res.IconLocationCheckin, true, 1);
       progress.AddEvents(
-        _core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
+        Core.MediaItemsViews.Current.FilteredItems.Where(x => x.IsSelected).ToArray(),
         null,
         // action
         async mi => {
@@ -446,11 +440,11 @@ namespace PictureManager.Domain.Models {
             var mim = new MediaItemMetadata(mi);
             ReadMetadata(mim, true);
             if (mim.Success)
-              await Tasks.RunOnUiThread(() => mim.FindRefs(_core));
+              await Tasks.RunOnUiThread(() => mim.FindRefs());
           }
           if (mi.Lat == null || mi.Lng == null) return;
 
-          var lastGeoName = _core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, geoNamesUserName);
+          var lastGeoName = Core.GeoNamesM.InsertGeoNameHierarchy((double)mi.Lat, (double)mi.Lng, geoNamesUserName);
           if (lastGeoName == null) return;
 
           mi.GeoName = lastGeoName;
@@ -474,7 +468,7 @@ namespace PictureManager.Domain.Models {
       var mediaItems = source switch {
         FolderM folder => folder.GetMediaItems(recursive),
         List<MediaItemM> items => items,
-        _ => _core.MediaItemsViews.Current.GetSelectedOrAll(),
+        _ => Core.MediaItemsViews.Current.GetSelectedOrAll(),
       };
 
       foreach (var mi in mediaItems) {
@@ -483,7 +477,7 @@ namespace PictureManager.Domain.Models {
         File.Delete(mi.FilePathCache);
       }
 
-      _core.MediaItemsViews.Current.ReWrapAll();
+      Core.MediaItemsViews.Current.ReWrapAll();
     }
 
     public void SetOrientation(MediaItemM[] mediaItems, MediaOrientation orientation) {
@@ -551,7 +545,7 @@ namespace PictureManager.Domain.Models {
           else
             IsEditModeOn = false;
 
-          _core.StatusPanelM.OnPropertyChanged(nameof(_core.StatusPanelM.FileSize));
+          Core.StatusPanelM.OnPropertyChanged(nameof(Core.StatusPanelM.FileSize));
         });
 
       progress.Start();
@@ -569,7 +563,7 @@ namespace PictureManager.Domain.Models {
           ReadMetadata(mim, false);
 
           await Tasks.RunOnUiThread(() => {
-            if (mim.Success) mim.FindRefs(_core);
+            if (mim.Success) mim.FindRefs();
             SetModified(mi, false);
             mi.SetInfoBox();
           });
@@ -595,7 +589,7 @@ namespace PictureManager.Domain.Models {
           var mim = new MediaItemMetadata(mi);
           ReadMetadata(mim, false);
           if (mim.Success)
-            await Tasks.RunOnUiThread(() => mim.FindRefs(_core));
+            await Tasks.RunOnUiThread(() => mim.FindRefs());
 
           // set info box just for loaded media items
           if (updateInfoBox)
@@ -615,8 +609,8 @@ namespace PictureManager.Domain.Models {
 
       SetOrientation(GetActive(), (MediaOrientation)rotation);
 
-      if (_core.MediaViewerM.IsVisible)
-        _core.MediaViewerM.Current = _core.MediaViewerM.Current;
+      if (Core.MediaViewerM.IsVisible)
+        Core.MediaViewerM.Current = Core.MediaViewerM.Current;
     }
 
     public async void Rename() {
@@ -641,7 +635,7 @@ namespace PictureManager.Domain.Models {
 
       try {
         Rename(Current, inputDialog.Answer + Path.GetExtension(Current.FileName));
-        _core.MediaItemsViews.Current?.SoftLoad(_core.MediaItemsViews.Current.FilteredItems, true, false);
+        Core.MediaItemsViews.Current?.SoftLoad(Core.MediaItemsViews.Current.FilteredItems, true, false);
         OnPropertyChanged(nameof(Current));
       }
       catch (Exception ex) {
@@ -669,13 +663,13 @@ namespace PictureManager.Domain.Models {
     }
 
     public MediaItemM[] GetActive() =>
-      _core.MainWindowM.IsFullScreen
+      Core.MainWindowM.IsFullScreen
         ? Current == null
           ? Array.Empty<MediaItemM>()
           : new[] { Current }
-        : _core.MediaItemsViews.Current == null
+        : Core.MediaItemsViews.Current == null
           ? Array.Empty<MediaItemM>()
-          : _core.MediaItemsViews.Current.Selected.Items.ToArray();
+          : Core.MediaItemsViews.Current.Selected.Items.ToArray();
 
     public void SetMetadata(object item) {
       var items = GetActive();

@@ -1,123 +1,70 @@
 ﻿using MH.Utils.BaseClasses;
-using MH.Utils.Extensions;
-using MH.Utils.Interfaces;
-using PictureManager.Domain.BaseClasses;
-using PictureManager.Domain.DataAdapters;
-using System;
-using System.Linq;
+using PictureManager.Domain.TreeCategories;
 
-namespace PictureManager.Domain.Models {
-  public sealed class ViewersM : TreeCategoryBase {
-    private readonly Core _core;
-    private ViewerM _current;
-    private ViewerM _selected;
+namespace PictureManager.Domain.Models;
 
-    public ViewersDataAdapter DataAdapter { get; set; }
-    public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
-    public ViewerM Selected {
-      get => _selected;
-      set {
-        _selected = value;
-        OnPropertyChanged();
-        value.Reload(_core.CategoryGroupsM.DataAdapter.All);
-      }
+public sealed class ViewersM : ObservableObject {
+  private ViewerM _current;
+  private ViewerM _selected;
+
+  public ViewersTreeCategory TreeCategory { get; }
+  public ViewerDetailM ViewerDetailM { get; }
+  public ViewerM Current { get => _current; set { _current = value; OnPropertyChanged(); } }
+  public ViewerM Selected {
+    get => _selected;
+    set {
+      _selected = value;
+      OnPropertyChanged();
+      value.Reload(Core.Db.CategoryGroups.All);
     }
-
-    public RelayCommand<ViewerM> SetCurrentCommand { get; }
-    public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
-
-    public ViewersM(Core core) : base(Res.IconEye, Category.Viewers, "Viewers") {
-      _core = core;
-      SetCurrentCommand = new(SetCurrent);
-      UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
-    }
-
-    public override void OnItemSelect(object o) {
-      if (o is not ViewerM v) return;
-      _core.MainTabs.Activate(Res.IconEye, "Viewer", _core.ViewerDetailM);
-      _core.ViewersM.Selected = v;
-    }
-
-    protected override ITreeItem ModelItemCreate(ITreeItem root, string name) {
-      var item = new ViewerM(DataAdapter.GetNextId(), name, root);
-      root.Items.SetInOrder(item, x => x.Name);
-      DataAdapter.All.Add(item);
-
-      return item;
-    }
-
-    protected override void ModelItemRename(ITreeItem item, string name) {
-      item.Name = name;
-      item.Parent.Items.SetInOrder(item, x => x.Name);
-      DataAdapter.IsModified = true;
-    }
-
-    protected override void ModelItemDelete(ITreeItem item) {
-      var viewer = (ViewerM)item;
-      viewer.Parent.Items.Remove(viewer);
-      viewer.Parent = null;
-      viewer.IncludedFolders.Clear();
-      viewer.ExcludedFolders.Clear();
-      viewer.ExcludedKeywords.Clear();
-      DataAdapter.All.Remove(viewer);
-      DataAdapter.IsModified = true;
-    }
-
-    protected override string ValidateNewItemName(ITreeItem root, string name) =>
-      DataAdapter.All.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
-        ? $"{name} item already exists!"
-        : null;
-
-    private void UpdateExcludedCategoryGroups() {
-      Selected.UpdateExcludedCategoryGroups();
-      DataAdapter.IsModified = true;
-    }
-
-    public void AddFolder(ViewerM viewer, FolderM folder, bool included) {
-      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).SetInOrder(folder, x => x.FullPath);
-      DataAdapter.IsModified = true;
-    }
-
-    public void RemoveFolder(ViewerM viewer, FolderM folder, bool included) {
-      (included ? viewer.IncludedFolders : viewer.ExcludedFolders).Remove(folder);
-      DataAdapter.IsModified = true;
-    }
-
-    public void AddKeyword(ViewerM viewer, KeywordM keyword) {
-      viewer.ExcludedKeywords.SetInOrder(keyword, x => x.FullName);
-      DataAdapter.IsModified = true;
-    }
-
-    public void RemoveKeyword(ViewerM viewer, KeywordM keyword) {
-      viewer.ExcludedKeywords.Remove(keyword);
-      DataAdapter.IsModified = true;
-    }
-
-    public void SetCurrent(ViewerM viewer) {
-      if (Current != null)
-        Current.IsDefault = false;
-
-      if (viewer != null)
-        viewer.IsDefault = true;
-      else
-        Current = null;
-
-
-      DataAdapter.Save();
-      _core.SaveDBPrompt();
-      DataAdapter.DB.LoadAllTables(null);
-      DataAdapter.DB.LinkReferences(null);
-      DataAdapter.DB.ClearDataAdapters();
-      _core.AfterInit();
-    }
-
-    public bool CanViewerSee(FolderM folder) =>
-      Current?.CanSee(folder) != false;
-
-    public bool CanViewerSeeContentOf(FolderM folder) =>
-      Current?.CanSeeContentOf(folder) != false;
-
-    public bool CanViewerSee(MediaItemM mediaItem) =>
-      Current?.CanSee(mediaItem) != false;
   }
+
+  public RelayCommand<ViewerM> SetCurrentCommand { get; }
+  public RelayCommand<ViewerM> UpdateExcludedCategoryGroupsCommand { get; }
+
+  public ViewersM() {
+    Core.Db.Viewers = new(this);
+    TreeCategory = new();
+    ViewerDetailM = new(this);
+    SetCurrentCommand = new(SetCurrent);
+    UpdateExcludedCategoryGroupsCommand = new(UpdateExcludedCategoryGroups);
+  }
+
+  private void UpdateExcludedCategoryGroups() {
+    Selected.UpdateExcludedCategoryGroups();
+    Core.Db.Viewers.IsModified = true;
+  }
+
+  public void OpenDetail(ViewerM viewer) {
+    if (viewer == null) return;
+    Core.MainTabs.Activate(Res.IconEye, "Viewer", ViewerDetailM);
+    Selected = viewer;
+  }
+
+  public void SetCurrent(ViewerM viewer) {
+    if (Current != null)
+      Current.IsDefault = false;
+
+    if (viewer != null)
+      viewer.IsDefault = true;
+    else
+      Current = null;
+
+    var da = Core.Db.Viewers;
+    da.Save();
+    Core.Instance.SaveDBPrompt();
+    da.DB.LoadAllTables(null);
+    da.DB.LinkReferences(null);
+    da.DB.ClearDataAdapters();
+    Core.Instance.AfterInit();
+  }
+
+  public bool CanViewerSee(FolderM folder) =>
+    Current?.CanSee(folder) != false;
+
+  public bool CanViewerSeeContentOf(FolderM folder) =>
+    Current?.CanSeeContentOf(folder) != false;
+
+  public bool CanViewerSee(MediaItemM mediaItem) =>
+    Current?.CanSee(mediaItem) != false;
 }

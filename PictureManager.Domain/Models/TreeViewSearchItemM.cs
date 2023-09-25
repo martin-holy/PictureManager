@@ -1,15 +1,15 @@
-﻿using MH.Utils.BaseClasses;
+﻿using MH.UI.BaseClasses;
+using MH.Utils.BaseClasses;
 using MH.Utils.Interfaces;
-using PictureManager.Domain.BaseClasses;
 
-namespace PictureManager.Domain.Models {
-  public sealed class TreeViewSearchItemM : ListItem {
-    public string ToolTip { get; }
-    public TreeCategoryBase Category { get; }
+namespace PictureManager.Domain.Models; 
 
-    public TreeViewSearchItemM(string icon, string name, ITreeItem data, string toolTip, TreeCategoryBase category) : base(icon, name, data) {
-      ToolTip = toolTip;
-      Category = category;
-    }
+public sealed class TreeViewSearchItemM : ListItem {
+  public string ToolTip { get; }
+  public TreeCategory Category { get; }
+
+  public TreeViewSearchItemM(string icon, string name, ITreeItem data, string toolTip, TreeCategory category) : base(icon, name, data) {
+    ToolTip = toolTip;
+    Category = category;
   }
 }
