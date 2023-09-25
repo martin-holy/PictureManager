@@ -20,7 +20,7 @@ public class MediaItemThumbSourceConverter : BaseMarkupExtensionConverter {
       // TODO use buffer system like in segment
       if (!File.Exists(mi.FilePathCache)) {
         if (!File.Exists(mi.FilePath)) {
-          Core.Instance.MediaItemsM.Delete(new List<MediaItemM> { mi });
+          Core.MediaItemsM.Delete(new List<MediaItemM> { mi });
           return Binding.DoNothing;
         }
 

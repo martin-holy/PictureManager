@@ -29,7 +29,7 @@
               Command="{Binding ViewersM.SetCurrentCommand, Source={x:Static pm:App.Core}}"/>
 
             <CollectionContainer
-              Collection="{Binding ViewersM.Items, Source={x:Static pm:App.Core}}"/>
+              Collection="{Binding ViewersM.TreeCategory.Items, Source={x:Static pm:App.Core}}"/>
           </CompositeCollection>
         </MenuItem.ItemsSource>
 
