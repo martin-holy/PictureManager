@@ -96,7 +96,7 @@ namespace PictureManager.Domain.CollectionViews {
 
     public static CollectionViewGroupByItem<PersonM> GetKeywordsInGroupFromPeople(IEnumerable<PersonM> people) {
       var group = new CollectionViewGroupByItem<PersonM>(
-        Core.Instance.KeywordsM, GroupPersonByKeyword) { IsGroup = true };
+        Core.KeywordsM.TreeCategory, GroupPersonByKeyword) { IsGroup = true };
       group.AddItems(GetKeywordsFromPeople(people));
 
       return group;
@@ -104,7 +104,7 @@ namespace PictureManager.Domain.CollectionViews {
 
     public static CollectionViewGroupByItem<SegmentM> GetKeywordsInGroupFromSegments(IEnumerable<SegmentM> segments) {
       var group = new CollectionViewGroupByItem<SegmentM>(
-        Core.Instance.KeywordsM, GroupSegmentByKeyword) { IsGroup = true };
+        Core.KeywordsM.TreeCategory, GroupSegmentByKeyword) { IsGroup = true };
       group.AddItems(GetKeywordsFromSegments(segments));
 
       return group;
@@ -112,7 +112,7 @@ namespace PictureManager.Domain.CollectionViews {
 
     public static CollectionViewGroupByItem<MediaItemM> GetPeopleInGroupFromMediaItems(IEnumerable<MediaItemM> mediaItems) {
       var group = new CollectionViewGroupByItem<MediaItemM>(
-        Core.Instance.PeopleM, GroupMediaItemByPerson) { IsGroup = true };
+        Core.PeopleM.TreeCategory, GroupMediaItemByPerson) { IsGroup = true };
       group.AddItems(GetPeopleFromMediaItems(mediaItems));
 
       return group;
@@ -120,7 +120,7 @@ namespace PictureManager.Domain.CollectionViews {
 
     public static CollectionViewGroupByItem<SegmentM> GetPeopleInGroupFromSegments(IEnumerable<SegmentM> segments) {
       var group = new CollectionViewGroupByItem<SegmentM>(
-        Core.Instance.PeopleM, GroupSegmentByPerson) { IsGroup = true };
+        Core.PeopleM.TreeCategory, GroupSegmentByPerson) { IsGroup = true };
       group.AddItems(GetPeopleFromSegments(segments));
 
       return group;
@@ -153,7 +153,7 @@ namespace PictureManager.Domain.CollectionViews {
         .Contains(folder);
 
     private static bool GroupMediaItemByPerson(MediaItemM item, object parameter) =>
-      ReferenceEquals(parameter, Core.Instance.PeopleM)
+      ReferenceEquals(parameter, Core.PeopleM)
       || item.People?.Any(x => ReferenceEquals(x, parameter)) == true
       || item.Segments?.Any(x => ReferenceEquals(x.Person, parameter)) == true;
 
@@ -164,7 +164,7 @@ namespace PictureManager.Domain.CollectionViews {
         .Contains(folder);
 
     private static bool GroupSegmentByKeyword(SegmentM item, object parameter) =>
-      ReferenceEquals(parameter, Core.Instance.KeywordsM)
+      ReferenceEquals(parameter, Core.KeywordsM)
       || item.Keywords != null
       && parameter is KeywordM keyword
       && item.Keywords
@@ -172,7 +172,7 @@ namespace PictureManager.Domain.CollectionViews {
         .Contains(keyword);
 
     private static bool GroupSegmentByPerson(SegmentM item, object parameter) =>
-      ReferenceEquals(parameter, Core.Instance.PeopleM)
+      ReferenceEquals(parameter, Core.PeopleM)
       || ReferenceEquals(parameter, item.Person);
 
     public static bool GroupPersonByGroup(PersonM item, object parameter) =>
@@ -181,7 +181,7 @@ namespace PictureManager.Domain.CollectionViews {
       || ReferenceEquals(parameter, item.Parent);
 
     private static bool GroupPersonByKeyword(PersonM item, object parameter) =>
-      ReferenceEquals(parameter, Core.Instance.KeywordsM)
+      ReferenceEquals(parameter, Core.KeywordsM)
       || item.Keywords != null
       && parameter is KeywordM keyword
       && item.Keywords

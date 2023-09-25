@@ -6,7 +6,6 @@ using System.IO;
 
 namespace PictureManager.Domain.Models {
   public sealed class MediaViewerM : ObservableObject {
-    private readonly Core _core;
     private double _scale;
     private int _contentWidth;
     private int _contentHeight;
@@ -57,8 +56,7 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> PreviousCommand { get; }
     public RelayCommand<MouseWheelEventArgs> NavigateCommand { get; }
 
-    public MediaViewerM(Core core) {
-      _core = core;
+    public MediaViewerM() {
       MediaPlayerM = new();
       PresentationPanel = new(this);
       NextCommand = new(Next, CanNext);
@@ -124,16 +122,16 @@ namespace PictureManager.Domain.Models {
 
     private void SetMediaItemSource(MediaItemM mediaItem) {
       if (mediaItem == null || mediaItem.MediaType != MediaType.Video) {
-        _core.VideoClipsM.SetMediaItem(null);
+        Core.VideoClipsM.SetMediaItem(null);
         MediaPlayerM.IsPlaying = false;
         MediaPlayerM.Source = String.Empty;
-        _core.ToolsTabsM.Close(_core.VideoClipsM);
+        Core.ToolsTabsM.Close(Core.VideoClipsM);
       }
 
       if (mediaItem == null) return;
 
       if (!File.Exists(mediaItem.FilePath)) {
-        _core.MediaItemsM.Delete(new List<MediaItemM> { mediaItem });
+        Core.MediaItemsM.Delete(new List<MediaItemM> { mediaItem });
         return;
       }
 
@@ -142,10 +140,10 @@ namespace PictureManager.Domain.Models {
         var fps = (double)data[3] > 0 ? (double)data[3] : 30.0;
         var smallChange = Math.Round(1000 / fps, 0);
 
-        _core.VideoClipsM.SetMediaItem(mediaItem);
+        Core.VideoClipsM.SetMediaItem(mediaItem);
         MediaPlayerM.Source = mediaItem.FilePath;
         MediaPlayerM.TimelineSmallChange = smallChange;
-        _core.ToolsTabsM.Activate(Res.IconMovieClapper, "Clips", _core.VideoClipsM);
+        Core.ToolsTabsM.Activate(Res.IconMovieClapper, "Clips", Core.VideoClipsM);
       }
     }
   }

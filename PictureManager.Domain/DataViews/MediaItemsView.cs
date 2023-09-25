@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.DataViews {
   public class MediaItemsView : CollectionViewMediaItems {
-    private readonly Core _core;
     private bool _isLoading;
     private bool _isImporting;
     private int _importCount;
@@ -40,8 +39,7 @@ namespace PictureManager.Domain.DataViews {
 
     public RelayCommand<object> SelectAllCommand { get; }
 
-    public MediaItemsView(Core core, double thumbScale) : base(thumbScale) {
-      _core = core;
+    public MediaItemsView(double thumbScale) : base(thumbScale) {
       CanDragFunc = CanDrag;
       _importProgress = new Progress<int>(x => ImportDoneCount += x);
 
@@ -56,14 +54,14 @@ namespace PictureManager.Domain.DataViews {
       if (item == null) return;
 
       Selected.DeselectAll();
-      _core.MainWindowM.IsFullScreen = true;
+      Core.MainWindowM.IsFullScreen = true;
       // TODO open group or all with default sort or all sorted by groups or ...?
-      _core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
+      Core.MediaViewerM.SetMediaItems(FilteredItems.ToList(), item);
     }
 
     public override void OnSelectItem(IEnumerable<MediaItemM> source, MediaItemM item, bool isCtrlOn, bool isShiftOn) {
       base.OnSelectItem(source, item, isCtrlOn, isShiftOn);
-      _core.MediaItemsM.Current = Selected.Items.Contains(item) ? item : null;
+      Core.MediaItemsM.Current = Selected.Items.Contains(item) ? item : null;
     }
 
     private object CanDrag(object source) {
@@ -82,7 +80,7 @@ namespace PictureManager.Domain.DataViews {
     }
 
     private void SelectionChanged() {
-      if (!ReferenceEquals(this, _core.MediaItemsViews.Current) || _core.MediaViewerM.IsVisible) return;
+      if (!ReferenceEquals(this, Core.MediaItemsViews.Current) || Core.MediaViewerM.IsVisible) return;
 
       SelectionChangedEventHandler(this, EventArgs.Empty);
       OnPropertyChanged(nameof(PositionSlashCount));
@@ -134,8 +132,8 @@ namespace PictureManager.Domain.DataViews {
       items.OrderBy(x => x.FileName);
 
     private MediaItemM GetItemToScrollTo() =>
-      FilteredItems.Contains(_core.MediaItemsM.Current)
-        ? _core.MediaItemsM.Current
+      FilteredItems.Contains(Core.MediaItemsM.Current)
+        ? Core.MediaItemsM.Current
         : Selected.Items.Count != 0
           ? Selected.Items[0]
           : null;
@@ -156,13 +154,13 @@ namespace PictureManager.Domain.DataViews {
       if (!and && !hide)
         Clear();
 
-      var folders = _core.FoldersM.GetFolders(item, recursive);
+      var folders = Core.FoldersM.GetFolders(item, recursive);
       var newItems = new List<MediaItemMetadata>();
       var toLoad = new List<MediaItemM>();
 
       foreach (var folder in folders) {
         if (!Directory.Exists(folder.FullPath)
-          || !_core.ViewersM.CanViewerSeeContentOf(folder)) continue;
+          || !Core.ViewersM.CanViewerSeeContentOf(folder)) continue;
 
         // add MediaItems from current Folder to dictionary for faster search
         var mediaItems = folder.MediaItems.ToDictionary(x => x.FileName);
@@ -173,11 +171,11 @@ namespace PictureManager.Domain.DataViews {
           select Path.GetFileName(file)
           into fileName
           where !mediaItems.Remove(fileName)
-          select new MediaItemMetadata(_core.MediaItemsM.AddNew(folder, fileName)));
+          select new MediaItemMetadata(Core.MediaItemsM.AddNew(folder, fileName)));
 
         // remove MediaItems deleted outside of this application
         foreach (var mi in mediaItems.Values)
-          _core.MediaItemsM.Delete(mi);
+          Core.MediaItemsM.Delete(mi);
 
         toLoad.AddRange(folder.MediaItems);
       }
@@ -201,20 +199,20 @@ namespace PictureManager.Domain.DataViews {
           items.Where(x => x.MediaItem.MediaType == MediaType.Image),
           new() { MaxDegreeOfParallelism = Environment.ProcessorCount },
           mim => {
-            _core.MediaItemsM.ReadMetadata(mim, false);
+            Core.MediaItemsM.ReadMetadata(mim, false);
             _importProgress.Report(1);
           }));
 
       foreach (var mim in items.Where(x => x.MediaItem.MediaType == MediaType.Video)) {
-        _core.MediaItemsM.ReadMetadata(mim, false);
+        Core.MediaItemsM.ReadMetadata(mim, false);
         _importProgress.Report(1);
       }
 
       foreach (var mim in items)
         if (mim.Success)
-          mim.FindRefs(_core);
+          mim.FindRefs();
         else
-          _core.MediaItemsM.Delete(mim.MediaItem);
+          Core.MediaItemsM.Delete(mim.MediaItem);
 
       IsImporting = false;
       IsLoading = true;
@@ -232,7 +230,7 @@ namespace PictureManager.Domain.DataViews {
         }
 
         if (and && LoadedItems.Contains(mi)) return;
-        if (!_core.ViewersM.CanViewerSee(mi)) return;
+        if (!Core.ViewersM.CanViewerSee(mi)) return;
 
         mi.SetThumbSize();
         mi.SetInfoBox();
@@ -271,7 +269,7 @@ namespace PictureManager.Domain.DataViews {
       var foldersSet = await Task.Run(() => items
         .Select(x => x.Folder)
         .Distinct()
-        .Where(x => _core.ViewersM.CanViewerSeeContentOf(x))
+        .Where(x => Core.ViewersM.CanViewerSeeContentOf(x))
         .ToHashSet());
 
       var skip = items
@@ -282,7 +280,7 @@ namespace PictureManager.Domain.DataViews {
       AfterLoad();
       IsLoading = false;
 
-      if (_core.MediaViewerM.IsVisible && FilteredItems.Count > 0)
+      if (Core.MediaViewerM.IsVisible && FilteredItems.Count > 0)
         OpenItem(FilteredItems[0]);
     }
 
@@ -294,10 +292,10 @@ namespace PictureManager.Domain.DataViews {
       FilteredChangedEventHandler(this, EventArgs.Empty);
       //Filter.UpdateSizeRanges(LoadedItems, maxSizeSelection);
 
-      if (FilteredItems.Contains(_core.MediaItemsM.Current))
-        ScrollTo(Root, _core.MediaItemsM.Current);
+      if (FilteredItems.Contains(Core.MediaItemsM.Current))
+        ScrollTo(Root, Core.MediaItemsM.Current);
       else {
-        _core.MediaItemsM.Current = null;
+        Core.MediaItemsM.Current = null;
         if (Selected.Items.Count != 0)
           ScrollTo(Root, Selected.Items[0]);
       }

@@ -2,6 +2,8 @@
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Database;
+using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +42,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void UpdateIcon() {
-      if (Parent is FoldersM) return;
+      if (Parent is FoldersTreeCategory) return;
 
       Icon = IsExpanded
         ? Res.IconFolderOpen
@@ -69,25 +71,25 @@ namespace PictureManager.Domain.Models {
         var folder = Items.Cast<FolderM>().SingleOrDefault(x => x.Name.Equals(dirName, StringComparison.OrdinalIgnoreCase));
         
         if (folder != null) {
-          folder.IsHidden = !Core.Instance.FoldersM.IsFolderVisible(folder);
+          folder.IsHidden = !Core.FoldersM.IsFolderVisible(folder);
           continue;
         }
 
         // add new Folder to the database
-        folder = new(Core.Instance.FoldersM.DataAdapter.GetNextId(), dirName, this);
-        Core.Instance.FoldersM.DataAdapter.All.Add(folder);
+        folder = new(Core.Db.Folders.GetNextId(), dirName, this);
+        Core.Db.Folders.All.Add(folder);
 
         // add new Folder to the tree
         Items.Add(folder);
 
         if (FolderKeyword != null)
-          Core.Instance.FolderKeywordsM.LinkFolderWithFolderKeyword(this, FolderKeyword);
+          Core.Db.FolderKeywords.LinkFolderWithFolderKeyword(this, FolderKeyword);
       }
 
       // remove Folders deleted outside of this application
       foreach (var item in Items.Cast<FolderM>().ToArray()) {
         if (dirNames.Contains(item.Name)) continue;
-        Core.Instance.FoldersM.ItemDelete(item);
+        Core.Db.Folders.ItemDelete(item);
       }
 
       // add placeholder so the folder can be expanded
@@ -106,7 +108,7 @@ namespace PictureManager.Domain.Models {
           else {
             if (Directory.EnumerateDirectories(item.FullPath).GetEnumerator().MoveNext()) {
               item.Items.Add(FoldersM.FolderPlaceHolder);
-              item.FolderKeyword?.Items.Add(FolderKeywordsM.FolderKeywordPlaceHolder);
+              item.FolderKeyword?.Items.Add(FolderKeywordsDataAdapter.FolderKeywordPlaceHolder);
             }
             item.IsAccessible = true;
           }

@@ -19,7 +19,7 @@ namespace PictureManager.Domain.Models {
     public RelayCommand<object> AddSelectedCommand { get; }
     public RelayCommand<object> OpenCommand { get; }
 
-    public SegmentsDrawerM(SegmentsM segmentsM, Core core) : base(segmentsM) {
+    public SegmentsDrawerM(SegmentsM segmentsM) : base(segmentsM) {
       _segmentsM = segmentsM;
 
       CanDragFunc = CanDrag;
@@ -29,7 +29,7 @@ namespace PictureManager.Domain.Models {
       AddSelectedCommand = new(
         () => Update(_segmentsM.Selected.Items.ToArray(), true),
         () => _segmentsM.Selected.Items.Count > 0);
-      OpenCommand = new(() => Open(core.ToolsTabsM));
+      OpenCommand = new(() => Open(Core.ToolsTabsM));
     }
 
     private object CanDrag(object source) =>

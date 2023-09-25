@@ -1,210 +1,148 @@
-﻿using MH.Utils;
-using MH.Utils.BaseClasses;
-using MH.Utils.Interfaces;
-using PictureManager.Domain.DataAdapters;
+﻿using MH.Utils.BaseClasses;
 using PictureManager.Domain.TreeCategories;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
-namespace PictureManager.Domain.Models {
-  public sealed class VideoClipsM : ObservableObject {
-    private readonly MediaItemsM _mediaItemsM;
+namespace PictureManager.Domain.Models;
 
-    public VideoClipsDataAdapter DataAdapter { get; set; }
-    public VideoClipsTreeCategory TreeCategory { get; }
-    public MediaItemM CurrentMediaItem { get; set; }
-    public VideoClipM CurrentVideoClip { get; set; }
-    public MediaPlayerM MediaPlayerM { get; set; }
-    public Action<string> CreateThumbnail { get; set; }
+public sealed class VideoClipsM : ObservableObject {
+  public MediaItemM CurrentMediaItem { get; set; }
+  public VideoClipM CurrentVideoClip { get; set; }
+  public MediaPlayerM MediaPlayerM { get; set; }
+  public VideoClipsTreeCategory TreeCategory { get; }
+  public Action<string> CreateThumbnail { get; set; }
 
-    public RelayCommand<bool> SetMarkerCommand { get; }
-    public RelayCommand<PlayType> SetPlayTypeCommand { get; }
-    public RelayCommand<object> SplitCommand { get; }
-    public RelayCommand<object> SaveCommand { get; }
-    public RelayCommand<int> SeekToPositionCommand { get; }
+  public RelayCommand<bool> SetMarkerCommand { get; }
+  public RelayCommand<PlayType> SetPlayTypeCommand { get; }
+  public RelayCommand<object> SplitCommand { get; }
+  public RelayCommand<object> SaveCommand { get; }
+  public RelayCommand<int> SeekToPositionCommand { get; }
 
-    public VideoClipsM(MediaItemsM mi, MediaPlayerM player) {
-      _mediaItemsM = mi;
-      TreeCategory = new(this, mi);
-      MediaPlayerM = player;
-      MediaPlayerM.SelectNextClip = SelectNext;
+  public VideoClipsM(MediaPlayerM player) {
+    Core.Db.VideoClipsGroups = new(this);
+    var da = Core.Db.VideoClips = new(this);
+    da.ItemCreatedEvent += OnItemCreated;
 
-      SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
-      SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
+    TreeCategory = new();
 
-      SplitCommand = new(
-        VideoClipSplit,
-        () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
+    MediaPlayerM = player;
+    MediaPlayerM.SelectNextClip = SelectNext;
 
-      SaveCommand = new(
-        () => {
-          DataAdapter.Save();
-          TreeCategory.GroupsM.DataAdapter.Save();
-        },
-        () =>
-          DataAdapter.IsModified ||
-          TreeCategory.GroupsM.DataAdapter.IsModified
-      );
+    SetMarkerCommand = new(SetMarker, () => CurrentVideoClip != null);
+    SetPlayTypeCommand = new(pt => MediaPlayerM.PlayType = pt);
 
-      SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
+    SplitCommand = new(
+      VideoClipSplit,
+      () => !string.IsNullOrEmpty(MediaPlayerM?.Source));
+
+    SaveCommand = new(
+      () => {
+        Core.Db.VideoClips.Save();
+        Core.Db.VideoClipsGroups.Save();
+      },
+      () =>
+        Core.Db.VideoClips.IsModified ||
+        Core.Db.VideoClipsGroups.IsModified
+    );
+
+    SeekToPositionCommand = new(pos => MediaPlayerM.TimelinePosition = pos);
+  }
+
+  private void OnItemCreated(object sender, ObjectEventArgs<VideoClipM> e) {
+    CurrentVideoClip = e.Data;
+    CurrentMediaItem.HasVideoClips = true;
+    TreeCategory.UpdateClipsTitles();
+    SetMarker(true);
+    TreeCategory.TreeView.ScrollTo(e.Data);
+  }
+
+  private void VideoClipSplit() {
+    if (CurrentVideoClip?.TimeEnd == 0)
+      SetMarker(false);
+    else
+      TreeCategory.ItemCreate(TreeCategory);
+  }
+
+  public void SetCurrentVideoClip(VideoClipM vc) {
+    if (vc == null) return;
+    CurrentVideoClip = vc;
+    MediaPlayerM.ClipTimeStart = vc.TimeStart;
+    MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
+
+    if (MediaPlayerM.PlayType != PlayType.Video) {
+      MediaPlayerM.Volume = vc.Volume;
+      MediaPlayerM.Speed = vc.Speed;
     }
 
-    public VideoClipM Create(ITreeItem root, string name) {
-      var item = new VideoClipM(DataAdapter.GetNextId(), CurrentMediaItem) {
-        Parent = root,
-        Name = name,
-        IsSelected = true
-      };
-      
-      _mediaItemsM.MediaItemVideoClips.TryAdd(CurrentMediaItem, TreeCategory.Items);
+    if (MediaPlayerM.IsPlaying)
+      MediaPlayerM.StartClipTimer();
+  }
 
-      root.Items.Add(item);
-      CurrentVideoClip = item;
-      CurrentMediaItem.HasVideoClips = true;
-      DataAdapter.All.Add(item);
-      UpdateClipsTitles();
-      SetMarker(true);
-      TreeCategory.TreeView.ScrollTo(item);
+  private void SetMarker(bool start) {
+    var vc = CurrentVideoClip;
 
-      return item;
+    vc.SetMarker(
+      start,
+      (int)Math.Round(MediaPlayerM.TimelinePosition),
+      MediaPlayerM.Volume,
+      MediaPlayerM.Speed);
+
+    Core.Db.VideoClips.IsModified = true;
+
+    MediaPlayerM.ClipTimeStart = vc.TimeStart;
+    MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
+
+    if (start) {
+      CreateThumbnail(vc.ThumbPath);
+      vc.OnPropertyChanged(nameof(vc.ThumbPath));
     }
+  }
 
-    public void Rename(ITreeItem item, string name) {
-      item.Name = name;
-      DataAdapter.IsModified = true;
-      UpdateClipsTitles();
-    }
+  public void SetMediaItem(MediaItemM mi) {
+    CurrentMediaItem = mi;
+    TreeCategory.ReloadClips(mi);
+  }
 
-    public void Delete(ITreeItem item) {
-      var vc = (VideoClipM)item;
-      File.Delete(vc.ThumbPath);
+  private void SelectNext(bool inGroup, bool selectFirst) {
+    var clip = GetNextClip(inGroup, selectFirst);
+    if (clip == null) return;
+    if (clip.Equals(CurrentVideoClip))
+      clip.IsSelected = false;
+    clip.IsSelected = true;
+  }
 
-      vc.MediaItem.HasVideoClips = TreeCategory.Items.Count != 0;
-      vc.MediaItem = null;
-      vc.Parent.Items.Remove(vc);
-      vc.Parent = null;
-      vc.People = null;
-      vc.Keywords = null;
+  private VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
+    var groups = new List<List<VideoClipM>>();
 
-      DataAdapter.All.Remove(vc);
-      DataAdapter.IsModified = true;
-      UpdateClipsTitles();
-    }
+    groups.AddRange(TreeCategory.Items.OfType<VideoClipsGroupM>()
+      .Where(g => g.Items.Count > 0)
+      .Select(g => g.Items.Cast<VideoClipM>().ToList()));
 
-    private void VideoClipSplit() {
-      if (CurrentVideoClip?.TimeEnd == 0)
-        SetMarker(false);
-      else
-        TreeCategory.ItemCreate(TreeCategory);
-    }
+    var clips = TreeCategory.Items.OfType<VideoClipM>().ToList();
+    if (clips.Count != 0) 
+      groups.Add(clips);
 
-    public void SetCurrentVideoClip(VideoClipM vc) {
-      CurrentVideoClip = vc;
-      MediaPlayerM.ClipTimeStart = vc.TimeStart;
-      MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
-
-      if (MediaPlayerM.PlayType != PlayType.Video) {
-        MediaPlayerM.Volume = vc.Volume;
-        MediaPlayerM.Speed = vc.Speed;
-      }
-
-      if (MediaPlayerM.IsPlaying)
-        MediaPlayerM.StartClipTimer();
-    }
-
-    private void SetMarker(bool start) {
-      var vc = CurrentVideoClip;
-
-      vc.SetMarker(
-        start,
-        (int)Math.Round(MediaPlayerM.TimelinePosition),
-        MediaPlayerM.Volume,
-        MediaPlayerM.Speed);
-
-      DataAdapter.IsModified = true;
-
-      MediaPlayerM.ClipTimeStart = vc.TimeStart;
-      MediaPlayerM.ClipTimeEnd = vc.TimeEnd;
-
-      if (start) {
-        CreateThumbnail(vc.ThumbPath);
-        vc.OnPropertyChanged(nameof(vc.ThumbPath));
-      }
-    }
-
-    public void SetMediaItem(MediaItemM mi) {
-      SetCurrentMediaItem(mi);
-      UpdateClipsTitles();
-      TreeCategory.SetExpanded<ITreeItem>(true);
-    }
-
-    private void SetCurrentMediaItem(MediaItemM mi) {
-      CurrentMediaItem = mi;
-      TreeCategory.Items = mi != null && _mediaItemsM.MediaItemVideoClips.TryGetValue(mi, out var clips)
-        ? clips
-        : new();
-
-      TreeCategory.TreeView.RootHolder.Clear();
-      TreeCategory.TreeView.RootHolder.Add(TreeCategory);
-    }
-
-    private void UpdateClipsTitles() {
-      var nr = 0;
-      var clips = TreeCategory.Items.OfType<VideoClipsGroupM>()
-        .SelectMany(g => g.Items.Select(x => x))
-        .Concat(TreeCategory.Items.OfType<VideoClipM>())
-        .Cast<VideoClipM>();
-
-      foreach (var clip in clips) {
-        nr++;
-        clip.Title = string.IsNullOrEmpty(clip.Name)
-          ? $"Clip #{nr}"
-          : clip.Name;
-      }
-    }
-
-    private void SelectNext(bool inGroup, bool selectFirst) {
-      var clip = GetNextClip(inGroup, selectFirst);
-      if (clip == null) return;
-      if (clip.Equals(CurrentVideoClip))
-        clip.IsSelected = false;
-      clip.IsSelected = true;
-    }
-
-    private VideoClipM GetNextClip(bool inGroup, bool selectFirst) {
-      var groups = new List<List<VideoClipM>>();
-
-      groups.AddRange(TreeCategory.Items.OfType<VideoClipsGroupM>()
-        .Where(g => g.Items.Count > 0)
-        .Select(g => g.Items.Cast<VideoClipM>().ToList()));
-
-      var clips = TreeCategory.Items.OfType<VideoClipM>().ToList();
-      if (clips.Count != 0) 
-        groups.Add(clips);
-
-      if (groups.Count == 0)
-        return null;
-
-      if (selectFirst)
-        return groups[0][0];
-
-      for (var i = 0; i < groups.Count; i++) {
-        var group = groups[i];
-        var idx = group.IndexOf(CurrentVideoClip);
-
-        if (idx < 0) continue;
-
-        if (idx < group.Count - 1)
-          return group[idx + 1];
-
-        return inGroup
-          ? group[0]
-          : groups[i < groups.Count - 1 ? i + 1 : 0][0];
-      }
-
+    if (groups.Count == 0)
       return null;
+
+    if (selectFirst)
+      return groups[0][0];
+
+    for (var i = 0; i < groups.Count; i++) {
+      var group = groups[i];
+      var idx = group.IndexOf(CurrentVideoClip);
+
+      if (idx < 0) continue;
+
+      if (idx < group.Count - 1)
+        return group[idx + 1];
+
+      return inGroup
+        ? group[0]
+        : groups[i < groups.Count - 1 ? i + 1 : 0][0];
     }
+
+    return null;
   }
 }

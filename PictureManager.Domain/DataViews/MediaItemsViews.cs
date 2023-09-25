@@ -9,8 +9,7 @@ using System.Threading.Tasks;
 
 namespace PictureManager.Domain.DataViews {
   public sealed class MediaItemsViews : ObservableObject {
-    private readonly Core _core;
-    private List<MediaItemsView> _all { get; } = new();
+    private readonly List<MediaItemsView> _all = new();
     private MediaItemsView _current;
     
     public MediaItemsView Current { get => _current; set { _current = value; OnPropertyChanged(); } }
@@ -21,8 +20,7 @@ namespace PictureManager.Domain.DataViews {
     public RelayCommand<object> LoadByTagCommand { get; }
     public RelayCommand<object> ShuffleCommand { get; }
 
-    public MediaItemsViews(Core core) {
-      _core = core;
+    public MediaItemsViews() {
       AddViewCommand = new(AddView);
       CopyPathsCommand = new(
         () => Clipboard.SetText(string.Join("\n", Current.Selected.Items.Select(x => x.FilePath))),
@@ -46,22 +44,22 @@ namespace PictureManager.Domain.DataViews {
 
       if (view.Equals(Current)) {
         Current = null;
-        _core.MediaItemsM.Current = null;
+        Core.MediaItemsM.Current = null;
       }
     }
 
     public void SetCurrentView(MediaItemsView view) {
       Current = view;
       Current?.UpdateSelected();
-      _core.MediaItemsM.Current = Current?.Selected.Items.Count > 0
+      Core.MediaItemsM.Current = Current?.Selected.Items.Count > 0
         ? Current.Selected.Items[0]
         : null;
     }
 
     public void AddViewIfNotActive(string tabName) {
-      if (_core.MainTabs.Selected?.Data is MediaItemsView) {
+      if (Core.MainTabs.Selected?.Data is MediaItemsView) {
         if (tabName != null)
-          _core.MainTabs.Selected.Name = tabName;
+          Core.MainTabs.Selected.Name = tabName;
 
         return;
       }
@@ -70,21 +68,21 @@ namespace PictureManager.Domain.DataViews {
     }
 
     public void AddView(string tabName) {
-      var view = new MediaItemsView(_core, DefaultThumbScale);
+      var view = new MediaItemsView(DefaultThumbScale);
       _all.Add(view);
       Current = view;
       view.SelectionChangedEventHandler += OnViewSelectionChanged;
       view.FilteredChangedEventHandler += OnViewFilteredChanged;
-      _core.MainTabs.Add(Res.IconImageMultiple, tabName, view);
+      Core.MainTabs.Add(Res.IconImageMultiple, tabName, view);
     }
 
     private void OnViewSelectionChanged(object o, EventArgs e) {
-      _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
-      _core.StatusPanelM.Update();
+      Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      Core.StatusPanelM.Update();
     }
 
     private void OnViewFilteredChanged(object o, EventArgs e) {
-      _core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
+      Core.TreeViewCategoriesM.MarkUsedKeywordsAndPeople();
     }
 
     public void ReloadViewIfContains(MediaItemM[] mediaItems) {
@@ -108,10 +106,10 @@ namespace PictureManager.Domain.DataViews {
       var hide = Keyboard.IsAltOn();
       var recursive = Keyboard.IsShiftOn();
       var items = item switch {
-        RatingTreeM rating => _core.MediaItemsM.DataAdapter.All.Where(x => x.Rating == rating.Rating.Value),
-        PersonM person => _core.MediaItemsM.GetMediaItems(person),
-        KeywordM keyword => _core.MediaItemsM.GetMediaItems(keyword, recursive),
-        GeoNameM geoName => _core.MediaItemsM.GetMediaItems(geoName, recursive),
+        RatingTreeM rating => Core.MediaItemsM.DataAdapter.All.Where(x => x.Rating == rating.Rating.Value),
+        PersonM person => Core.MediaItemsM.GetMediaItems(person),
+        KeywordM keyword => Core.MediaItemsM.GetMediaItems(keyword, recursive),
+        GeoNameM geoName => Core.MediaItemsM.GetMediaItems(geoName, recursive),
         _ => Array.Empty<MediaItemM>()
       };
 

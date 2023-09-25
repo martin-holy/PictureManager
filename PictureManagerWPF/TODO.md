@@ -1,3 +1,12 @@
+# MH.Utils
+ # Bugs
+
+ # Update
+   Resources
+    - use constant strings for icons
+ # New
+
+
 # Bugs - Need Help
 ## VideoPlayer
   - if SpeedRatio is > 2, Pause()/Play() will cause ignoring SpeedRatio and plays on SpeedRatio = 1
@@ -23,7 +32,6 @@
   - ulozeni v klipech nezmeni modifed v main toolbaru
 ## TreeViewCategories
   - Folder reload after folder move => reload is maybe to soon
-  - wrong scroll to top item on size change (open close media items tab)
 ## PeopleM
   - remove deleted people from selection. MergePeople, ...
 ## PeopleV
@@ -38,10 +46,10 @@
   - segments grouped by keywords,
     clear grouping on keyword with sub keywords,
     set new keyword on segments in cleared grouping,
-    clear grouping is restored
+    cleared grouping is restored
   - group by keyword,
     collapse segments with the keyword,
-    choice the keyword for segment in empty group,
+    set the keyword for segment in empty group,
     group with the keyword have sub group with the same keyword
 
 # Update
@@ -58,6 +66,7 @@
   - make selection border on base class level in CategoryView and remove it from segment, person, mediaItem
 ## DB
   - remove direct access to Helper.IsModified
+  - derive from Sdb and add static properties for each DataAdapter?
 ## TreeViewCategories
   - MarkUsedKeywordsAndPeople add Keywords from Segments
   - select/mark searched item after selecting item in search result
@@ -79,13 +88,11 @@
   - use only one method to get keywords in which will be filtering by current viewer
 ## Dialog
   - add CanExecute for buttons like Yes/Ok
+  - remove DialogHostShow from Core
 ## Segments
   - with segment creation create unknown person (#1234) as well so that every segment has person
 ## ToggleDialog
-  - make it static or returning one instance
   - show selected items on dialog
-## MediaViewer
-  - hide cursor only in presentation mode
 ## SegmentsMatching
   - from selected people and segments
 ## PeopleV
@@ -96,10 +103,10 @@
   - allow moving tab to left|middle|right panel
 ## MediaItemsView
   - replace mouse wheel + CTRL for zoom with slider
-## SegmentsRects
-  - sort by X for correct overlap
 ## CategoryViewGroup
-  - GroupedBy instance for empty group with icon from View 
+  - GroupedBy instance for empty group with icon from View
+## MediaItems
+  - Imaging.GetMediaType(fileName) in MediaItemM is slowing load from DB
 
 # New
 ##
@@ -111,6 +118,10 @@
     - has own thumbnail icon
     - opening from thumbnail will show paused video 
       - so I need another video player mode to scroll trough VideoImages and than to next media item or MediaViewer will have mix of images, videos and videoImages?
+  - slider with drag point for adjusting slider drag change value where:
+    if the point is more away from the slider => change value is smaller
+    and if is clor => change value is bigger
+    (or zooming time line)
 ## one source for MediaItemsView and MediaViewer
   - collection of MediaItems with filtering used in MediaItemsView and MediaViewer.
     so I can choice how to display filtered data: in MediaItemsView or MediaViewer

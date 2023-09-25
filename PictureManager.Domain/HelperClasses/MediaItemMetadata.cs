@@ -13,19 +13,19 @@ namespace PictureManager.Domain.HelperClasses {
       MediaItem = mediaItem;
     }
 
-    public void FindRefs(Core core) {
+    public void FindRefs() {
       MediaItem.People = null;
       if (People != null) {
         MediaItem.People = new(People.Length);
         foreach (var person in People)
-          MediaItem.People.Add(core.PeopleM.GetPerson(person, true));
+          MediaItem.People.Add(Core.Db.People.GetPerson(person, true));
       }
 
       MediaItem.Keywords = null;
       if (Keywords != null) {
         MediaItem.Keywords = new();
         foreach (var k in Keywords.OrderByDescending(x => x).Distinct()) {
-          var keyword = core.KeywordsM.GetByFullPath(k.Replace('|', ' '));
+          var keyword = Core.KeywordsM.GetByFullPath(k.Replace('|', ' '));
           if (keyword != null)
             MediaItem.Keywords.Add(keyword);
         }
@@ -33,7 +33,7 @@ namespace PictureManager.Domain.HelperClasses {
 
       if (!string.IsNullOrEmpty(GeoName)) {
         // TODO find/create GeoName
-        MediaItem.GeoName = core.GeoNamesM.DataAdapter.All
+        MediaItem.GeoName = Core.Db.GeoNames.All
           .SingleOrDefault(x => x.GetHashCode() == int.Parse(GeoName));
       }
     }

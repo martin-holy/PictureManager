@@ -8,7 +8,7 @@ namespace PictureManager.Domain.DataViews {
     public PeopleView(PeopleM peopleM) : base(peopleM) { }
 
     public void Reload() {
-      var source = PeopleM.GetAll(PeopleM).ToList();
+      var source = PeopleM.GetAll().ToList();
       var groupByItems = GetGroupByItems(source).ToArray();
 
       Reload(source, GroupMode.ThenByRecursive, groupByItems, false);

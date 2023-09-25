@@ -47,9 +47,9 @@ namespace PictureManager.Domain.Models {
 
     private void DoDropFolder(object data, bool haveSameOrigin, bool included) {
       if (haveSameOrigin)
-        ViewersM.RemoveFolder(ViewersM.Selected, (FolderM)data, included);
+        Core.Db.Viewers.RemoveFolder(ViewersM.Selected, (FolderM)data, included);
       else
-        ViewersM.AddFolder(ViewersM.Selected, (FolderM)data, included);
+        Core.Db.Viewers.AddFolder(ViewersM.Selected, (FolderM)data, included);
     }
 
     private DragDropEffects CanDropKeywordMethod(object target, object data, bool haveSameOrigin) {
@@ -68,9 +68,9 @@ namespace PictureManager.Domain.Models {
 
     private void DoDropKeywordMethod(object data, bool haveSameOrigin) {
       if (haveSameOrigin)
-        ViewersM.RemoveKeyword(ViewersM.Selected, (KeywordM)data);
+        Core.Db.Viewers.RemoveKeyword(ViewersM.Selected, (KeywordM)data);
       else
-        ViewersM.AddKeyword(ViewersM.Selected, (KeywordM)data);
+        Core.Db.Viewers.AddKeyword(ViewersM.Selected, (KeywordM)data);
     }
   }
 }

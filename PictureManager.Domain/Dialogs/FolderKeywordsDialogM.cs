@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace PictureManager.Domain.Dialogs {
   public sealed class FolderKeywordsDialogM : Dialog {
-    private readonly Core _core;
     private FolderM _selectedFolder;
 
     public FolderM SelectedFolder { get => _selectedFolder; set { _selectedFolder = value; OnPropertyChanged(); } }
@@ -14,11 +13,9 @@ namespace PictureManager.Domain.Dialogs {
     public RelayCommand<FolderM> SelectCommand { get; }
 
     public static RelayCommand<object> OpenCommand { get; } = new(
-      () => Core.DialogHostShow(new FolderKeywordsDialogM(Core.Instance)));
+      () => Core.DialogHostShow(new FolderKeywordsDialogM()));
 
-    public FolderKeywordsDialogM(Core core) : base("Folder Keywords", Res.IconFolderPuzzle) {
-      _core = core;
-
+    public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
       SelectCommand = new(x => SelectedFolder = x);
       var removeCommand = new RelayCommand<object>(
         () => Remove(SelectedFolder),
@@ -28,7 +25,7 @@ namespace PictureManager.Domain.Dialogs {
         new("Remove", Res.IconXCross, removeCommand),
         new("Close", Res.IconXCross, CloseCommand, false, true) };
 
-      foreach (var folder in _core.FolderKeywordsM.DataAdapter.All.OrderBy(x => x.FullPath))
+      foreach (var folder in Core.Db.FolderKeywords.All.OrderBy(x => x.FullPath))
         Items.Add(folder);
     }
 
@@ -36,7 +33,7 @@ namespace PictureManager.Domain.Dialogs {
       if (folder == null) return;
       if (Core.DialogHostShow(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
 
-      _core.FolderKeywordsM.Remove(folder);
+      Core.Db.FolderKeywords.ItemDelete(folder);
       Items.Remove(folder);
     }
   }

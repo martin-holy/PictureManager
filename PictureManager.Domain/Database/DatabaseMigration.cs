@@ -38,27 +38,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace PictureManager.Domain.DataAdapters {
+namespace PictureManager.Domain.Database {
   public static class DatabaseMigration {
     public static void Resolver(int oldVersion, int newVersion) {
-      var core = Core.Instance;
-
       // 0 => 1
       if (oldVersion < 1) {
         SimpleDB.MigrateFile(
-          core.FavoriteFoldersM.DataAdapter.TableFilePath,
+          Core.Db.FavoriteFolders.TableFilePath,
           record => $"{record}|Favorite folder name");
 
          SimpleDB.MigrateFile(
-          core.KeywordsM.DataAdapter.TableFilePath,
+           Core.Db.Keywords.TableFilePath,
           record => record[..record.LastIndexOf('|')]);
 
         SimpleDB.MigrateFile(
-          core.PeopleM.DataAdapter.TableFilePath,
+          Core.Db.People.TableFilePath,
           record => $"{record}||");
 
         SimpleDB.MigrateFile(
-          core.ViewersM.DataAdapter.TableFilePath,
+          Core.Db.Viewers.TableFilePath,
           record => {
             var lio = record.LastIndexOf('|');
             return $"{record[..lio]}||{record[lio..]}";
@@ -67,12 +65,12 @@ namespace PictureManager.Domain.DataAdapters {
 
       // 1 => 2
       if (oldVersion < 2) {
-        core.FavoriteFoldersM.DataAdapter.IsModified = true;
-        core.FoldersM.DataAdapter.IsModified = true;
-        core.MediaItemsM.DataAdapter.IsModified = true;
-        core.SegmentsM.DataAdapter.IsModified = true;
-        core.VideoClipsM.DataAdapter.IsModified = true;
-        core.VideoClipsM.TreeCategory.GroupsM.DataAdapter.IsModified = true;
+        Core.Db.FavoriteFolders.IsModified = true;
+        Core.Db.Folders.IsModified = true;
+        Core.Db.MediaItems.IsModified = true;
+        Core.Db.Segments.IsModified = true;
+        Core.Db.VideoClips.IsModified = true;
+        Core.Db.VideoClipsGroups.IsModified = true;
       }
 
       // 2 => 3

@@ -4,7 +4,7 @@ using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 
 namespace PictureManager.Domain {
-  public static class Res {
+    public static class Res {
     private const string _default = "default";
 
     public const string ColorBrushWhite = "ColorBrushWhite";
@@ -66,17 +66,17 @@ namespace PictureManager.Domain {
     public static readonly Dictionary<object, object> TypeToTreeContextMenuDic = new() {
       { typeof(DriveM), "TreeContextMenuDrive" },
       { typeof(FolderM), "TreeContextMenuFolder" },
-      { typeof(FavoriteFolderM), "TreeContextMenuFavoriteFolder" },
-      { typeof(PeopleM), "TreeContextMenuPeople" },
+      { typeof(FavoriteFoldersTreeCategory), "TreeContextMenuFavoriteFolder" },
+      { typeof(PeopleTreeCategory), "TreeContextMenuPeople" },
       { typeof(PersonM), "TreeContextMenuPerson" },
-      { typeof(FolderKeywordsM), "TreeContextMenuFolderKeywords" },
-      { typeof(KeywordsM), "TreeContextMenuKeywords" },
+      { typeof(FolderKeywordsTreeCategory), "TreeContextMenuFolderKeywords" },
+      { typeof(KeywordsTreeCategory), "TreeContextMenuKeywords" },
       { typeof(KeywordM), "TreeContextMenuKeyword" },
       { typeof(GeoNamesM), "TreeContextMenuGeoNames" },
       { typeof(GeoNameM), "TreeContextMenuGeoName" },
       { typeof(ViewersM), "TreeContextMenuViewers" },
       { typeof(ViewerM), "TreeContextMenuViewer" },
-      { typeof(VideoClipsTreeCategory), "TreeContextMenuVideoClips" },
+      { typeof(VideoClipsM), "TreeContextMenuVideoClips" },
       { typeof(CategoryGroupM), "TreeContextMenuGroup" },
       { typeof(VideoClipsGroupM), "TreeContextMenuVideoClipsGroup" }
     };
