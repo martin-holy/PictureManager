@@ -1,58 +1,59 @@
-﻿using MH.UI.WPF.Utils;
+﻿using MH.UI.Interfaces;
+using MH.UI.WPF.Utils;
 using MH.Utils;
 using MH.Utils.Interfaces;
 using System.Windows;
 using System.Windows.Controls;
 using static MH.Utils.DragDropHelper;
 
-namespace MH.UI.WPF.Controls {
-  public class CatTreeView : TreeViewBase {
-    public CanDragFunc CanDragFunc { get; }
-    public CanDropFunc CanDropFunc { get; }
-    public DoDropAction DoDropAction { get; }
+namespace MH.UI.WPF.Controls;
 
-    static CatTreeView() {
-      DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
-    }
+public class CatTreeView : TreeViewBase {
+  public CanDragFunc CanDragFunc { get; }
+  public CanDropFunc CanDropFunc { get; }
+  public DoDropAction DoDropAction { get; }
 
-    public CatTreeView() {
-      CanDragFunc = CanDrag;
-      CanDropFunc = CanDrop;
-      DoDropAction = DoDrop;
-    }
+  static CatTreeView() {
+    DefaultStyleKeyProperty.OverrideMetadata(typeof(CatTreeView), new FrameworkPropertyMetadata(typeof(CatTreeView)));
+  }
 
-    private static object CanDrag(object source) {
-      return source is ITreeCategory
+  public CatTreeView() {
+    CanDragFunc = CanDrag;
+    CanDropFunc = CanDrop;
+    DoDropAction = DoDrop;
+  }
+
+  private static object CanDrag(object source) {
+    return source is ITreeCategory
+      ? null
+      : Tree.GetParentOf<ITreeCategory>(source as ITreeItem) is null
         ? null
-        : Tree.GetTopParent(source as ITreeItem) is not ITreeCategory
-          ? null
-          : source;
+        : source;
+  }
+
+  private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
+    var e = Utils.DragDropHelper.DragEventArgs;
+    DragDropAutoScroll(e);
+
+    var cat = Tree.GetParentOf<ITreeCategory>(target as ITreeItem);
+
+    if (cat?.CanDrop(data, target as ITreeItem) == true) {
+      if (target is ITreeGroup) return MH.Utils.DragDropEffects.Move;
+      if (!cat.CanCopyItem && !cat.CanMoveItem) return MH.Utils.DragDropEffects.None;
+      if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return MH.Utils.DragDropEffects.Copy;
+      if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return MH.Utils.DragDropEffects.Move;
     }
 
-    private MH.Utils.DragDropEffects CanDrop(object target, object data, bool haveSameOrigin) {
-      var e = Utils.DragDropHelper.DragEventArgs;
-      DragDropAutoScroll(e);
+    return MH.Utils.DragDropEffects.None;
+  }
 
-      var cat = Tree.GetTopParent(target as ITreeItem) as ITreeCategory;
+  private static void DoDrop(object data, bool haveSameOrigin) {
+    var e = Utils.DragDropHelper.DragEventArgs;
+    var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
+    if (tvi?.DataContext is not ITreeItem dest ||
+        Tree.GetParentOf<ITreeCategory>(dest) is not { } cat) return;
 
-      if (cat?.CanDrop(data, target as ITreeItem) == true) {
-        if (target is ITreeGroup) return MH.Utils.DragDropEffects.Move;
-        if (!cat.CanCopyItem && !cat.CanMoveItem) return MH.Utils.DragDropEffects.None;
-        if (cat.CanCopyItem && (e.KeyStates & DragDropKeyStates.ControlKey) != 0) return MH.Utils.DragDropEffects.Copy;
-        if (cat.CanMoveItem && (e.KeyStates & DragDropKeyStates.ControlKey) == 0) return MH.Utils.DragDropEffects.Move;
-      }
-
-      return MH.Utils.DragDropEffects.None;
-    }
-
-    private static void DoDrop(object data, bool haveSameOrigin) {
-      var e = Utils.DragDropHelper.DragEventArgs;
-      var tvi = Extensions.FindTemplatedParent<TreeViewItem>((FrameworkElement)e.OriginalSource);
-      if (tvi?.DataContext is not ITreeItem dest ||
-          Tree.GetTopParent(dest) is not ITreeCategory cat) return;
-
-      var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
-      cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
-    }
+    var aboveDest = e.GetPosition(tvi).Y < tvi.ActualHeight / 2;
+    cat.OnDrop(data, dest, aboveDest, (e.KeyStates & DragDropKeyStates.ControlKey) > 0);
   }
 }
