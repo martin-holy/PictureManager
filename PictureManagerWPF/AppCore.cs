@@ -21,8 +21,8 @@ namespace PictureManager {
 
       MH.UI.WPF.Resources.Dictionaries.IconToBrush = Res.IconToBrushDic;
 
-      MediaItemsVM = new(App.Core, App.Core.MediaItemsM);
-      SegmentsRectsVM = new(App.Core.SegmentsM.SegmentsRectsM);
+      MediaItemsVM = new(App.Core, Core.MediaItemsM);
+      SegmentsRectsVM = new(Core.SegmentsM.SegmentsRectsM);
     }
 
     private static void SetDelegates() {
@@ -37,8 +37,8 @@ namespace PictureManager {
       MH.UI.WPF.Utils.Init.SetDelegates();
       GroupByDialogDataTemplateSelector.TypeToKey = Res.TypeToGroupByDialogTemplateKey;
 
-      App.Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
-      App.Core.MediaViewerM.GetVideoMetadata = FileInformation.GetVideoMetadata;
+      Core.VideoClipsM.CreateThumbnail = Utils.Imaging.CreateVideoClipThumbnail;
+      Core.MediaViewerM.GetVideoMetadata = FileInformation.GetVideoMetadata;
     }
 
     private static double GetDisplayScale() =>

@@ -98,7 +98,7 @@
           <!-- DB Button -->
           <mhc:IconTextButton
             Icon="{StaticResource IconDatabase}"
-            Text="{Binding Sdb.Changes}"
+            Text="{Binding Db.Changes}"
             Command="{Binding MainWindowM.SaveDbCommand}"/>
 
           <!-- Log Button -->
