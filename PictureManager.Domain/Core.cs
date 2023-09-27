@@ -46,7 +46,6 @@ public sealed class Core {
 
   public delegate Dictionary<string, string> FileOperationDeleteFunc(List<string> items, bool recycle, bool silent);
   public static FileOperationDeleteFunc FileOperationDelete { get; set; }
-  public static Func<Dialog, int> DialogHostShow { get; set; }
   public static Func<double> GetDisplayScale { get; set; }
 
   private Core() {
