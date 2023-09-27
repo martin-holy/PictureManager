@@ -137,14 +137,9 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
     if (item.Keywords != null)
       copy.Keywords = new (item.Keywords);
 
-    if (item.Segments != null) {
-      copy.Segments = new();
-      foreach (var segment in item.Segments) {
-        var sCopy = Core.SegmentsM.GetCopy(segment);
-        sCopy.MediaItem = copy;
-        copy.Segments.Add(sCopy);
-      }
-    }
+    if (item.Segments != null)
+      foreach (var segment in item.Segments)
+        Core.Db.Segments.ItemCopy(segment, copy);
 
     copy.Folder.MediaItems.Add(copy);
     All.Add(copy);

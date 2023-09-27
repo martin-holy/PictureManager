@@ -46,7 +46,7 @@ public sealed class PeopleM {
     Core.ToolsTabsM.Open();
   }
 
-  public void SegmentPersonChange(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
+  public void OnSegmentPersonChanged(SegmentM segment, PersonM oldPerson, PersonM newPerson) {
     if (newPerson != null)
       newPerson.Segment ??= segment;
 

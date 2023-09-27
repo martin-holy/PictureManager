@@ -1,18 +1,20 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using PictureManager.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace PictureManager.Domain.Database;
-
-// TODO move DB related code from SegmentsM here
 
 /// <summary>
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
 public class SegmentsDataAdapter : DataAdapter<SegmentM> {
   private readonly SegmentsM _model;
+
+  public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
+  public event EventHandler<ObjectEventArgs<(SegmentM[], KeywordM)>> SegmentsKeywordChangedEvent = delegate { };
 
   public SegmentsDataAdapter(SegmentsM model) : base("Segments", 5) {
     _model = model;
@@ -100,5 +102,81 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
 
     // table props are not needed any more
     TableProps.Clear();
+  }
+
+  public SegmentM ItemCreate(double x, double y, int size, MediaItemM mediaItem) =>
+    ItemCreate(new(GetNextId(), x, y, size) { MediaItem = mediaItem });
+
+  public SegmentM ItemCopy(SegmentM item, MediaItemM mediaItem) =>
+    ItemCreate(new(GetNextId(), item.X, item.Y, item.Size) {
+      MediaItem = mediaItem,
+      Person = item.Person,
+      Keywords = item.Keywords?.ToList()
+    });
+
+  private SegmentM ItemCreate(SegmentM item) {
+    All.Add(item);
+    RaiseItemCreated(item);
+    OnItemCreated(item);
+
+    return item;
+  }
+
+  protected override void OnItemCreated(SegmentM item) {
+    item.MediaItem.Segments ??= new();
+    item.MediaItem.Segments.Add(item);
+  }
+
+  public void ItemsDelete(IList<SegmentM> items) {
+    if (items == null) return;
+    foreach (var item in items) ItemDelete(item);
+    RaiseItemsDeleted(items);
+  }
+
+  public void ItemDelete(SegmentM item) {
+    All.Remove(item);
+    RaiseItemDeleted(item);
+    OnItemDeleted(item);
+  }
+
+  protected override void OnItemDeleted(SegmentM item) {
+    if (item.MediaItem.Segments.Remove(item) && !item.MediaItem.Segments.Any())
+      item.MediaItem.Segments = null;
+
+    item.MediaItem = null;
+    item.Person = null;
+  }
+
+  public void RemovePersonFromSegments(PersonM person) {
+    foreach (var segment in All.Where(s => s.Person?.Equals(person) == true)) {
+      segment.Person = null;
+      IsModified = true;
+    }
+  }
+
+  private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
+    segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
+    IsModified = true;
+  }
+
+  private void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
+    foreach (var segment in segments)
+      ToggleKeyword(segment, keyword);
+
+    SegmentsKeywordChangedEvent(this, new((segments, keyword)));
+  }
+
+  public void RemoveKeywordFromSegments(KeywordM keyword) =>
+    ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
+
+  public void ToggleKeywordOnSelected(KeywordM keyword) =>
+    ToggleKeyword(_model.Selected.Items.ToArray(), keyword);
+
+  public void ChangePerson(SegmentM segment, PersonM person) {
+    var oldPerson = segment.Person;
+    segment.Person = person;
+    segment.MediaItem.SetInfoBox();
+    IsModified = true;
+    SegmentPersonChangedEvent(this, new((segment, oldPerson, person)));
   }
 }

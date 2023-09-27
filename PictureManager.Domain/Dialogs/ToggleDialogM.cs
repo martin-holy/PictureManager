@@ -32,7 +32,7 @@ public sealed class ToggleDialogM : Dialog {
 
     var dlg = GetInstance(Res.IconTagLabel, _keywordTitle, counts, keyword);
     switch (Show(dlg)) {
-      case 1: Core.SegmentsM.ToggleKeywordOnSelected(keyword); break;
+      case 1: Core.Db.Segments.ToggleKeywordOnSelected(keyword); break;
       case 2: Core.PeopleM.ToggleKeywordOnSelected(keyword); break;
       case 3: Core.MediaItemsM.SetMetadata(keyword); break;
     }
