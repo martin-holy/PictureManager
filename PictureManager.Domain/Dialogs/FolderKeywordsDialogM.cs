@@ -13,7 +13,7 @@ namespace PictureManager.Domain.Dialogs {
     public RelayCommand<FolderM> SelectCommand { get; }
 
     public static RelayCommand<object> OpenCommand { get; } = new(
-      () => Core.DialogHostShow(new FolderKeywordsDialogM()));
+      () => Show(new FolderKeywordsDialogM()));
 
     public FolderKeywordsDialogM() : base("Folder Keywords", Res.IconFolderPuzzle) {
       SelectCommand = new(x => SelectedFolder = x);
@@ -31,7 +31,7 @@ namespace PictureManager.Domain.Dialogs {
 
     private void Remove(FolderM folder) {
       if (folder == null) return;
-      if (Core.DialogHostShow(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
+      if (Show(new MessageDialog("Remove Confirmation", "Are you sure?", Res.IconQuestion, true)) != 1) return;
 
       Core.Db.FolderKeywords.ItemDelete(folder);
       Items.Remove(folder);
