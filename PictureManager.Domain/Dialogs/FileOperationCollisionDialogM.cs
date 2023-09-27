@@ -41,7 +41,7 @@ namespace PictureManager.Domain.Dialogs {
 
       Tasks.RunOnUiThread(() => {
         var cd = new FileOperationCollisionDialogM(srcFilePath, destFilePath);
-        result = (CollisionResult)Core.DialogHostShow(cd);
+        result = (CollisionResult)Show(cd);
         outFileName = cd.FileName;
       }).GetAwaiter().GetResult();
 

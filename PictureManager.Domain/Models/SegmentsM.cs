@@ -179,7 +179,7 @@ public sealed class SegmentsM : ObservableObject {
       }
       else {
         var spd = new SetSegmentPersonDialogM(this, people);
-        if (Core.DialogHostShow(spd) != 1) return;
+        if (Dialog.Show(spd) != 1) return;
         newPerson = spd.Person;
         toUpdate = spd.Segments;
       }
@@ -211,7 +211,7 @@ public sealed class SegmentsM : ObservableObject {
       : $"{Selected.Items.Count} selected segments";
     var msg = $"Do you want to set {msgCount} as unknown?";
 
-    if (Core.DialogHostShow(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
+    if (Dialog.Show(new MessageDialog("Set as unknown", msg, Res.IconQuestion, true)) != 1)
       return;
 
     var segments = Selected.Items.ToArray();
@@ -308,7 +308,7 @@ public sealed class SegmentsM : ObservableObject {
       new("Segments with persons", null, md.SetResult(2)),
       new("One from each", null, md.SetResult(3)) };
 
-    return Core.DialogHostShow(md);
+    return Dialog.Show(md);
   }
 
   private void OpenSegmentsView() {

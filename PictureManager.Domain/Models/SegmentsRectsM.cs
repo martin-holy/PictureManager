@@ -192,7 +192,7 @@ namespace PictureManager.Domain.Models {
     }
 
     public void Delete(SegmentRectM item) {
-      if (Core.DialogHostShow(new MessageDialog(
+      if (Dialog.Show(new MessageDialog(
         "Delete Segment",
         "Do you really want to delete this segment?",
         Res.IconQuestion,

@@ -60,7 +60,7 @@ namespace PictureManager.Domain.Models {
         null);
 
       progress.Start();
-      Core.DialogHostShow(progress);
+      Dialog.Show(progress);
     }
   }
 }

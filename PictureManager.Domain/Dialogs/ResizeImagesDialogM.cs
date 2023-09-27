@@ -121,7 +121,7 @@ namespace PictureManager.Domain.Dialogs {
     private void OpenFolderBrowser() {
       var dir = new FolderBrowserDialogM();
 
-      if (Core.DialogHostShow(dir) != 1) return;
+      if (Show(dir) != 1) return;
 
       if (!DirPaths.Contains(dir.SelectedFolder.FullPath)) {
         DirPaths.Insert(0, dir.SelectedFolder.FullPath);
