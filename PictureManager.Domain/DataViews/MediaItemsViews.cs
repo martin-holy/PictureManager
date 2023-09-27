@@ -31,7 +31,7 @@ namespace PictureManager.Domain.DataViews {
         () => Current?.FilteredItems.Count > 0);
     }
 
-    public void RemoveMediaItems(List<MediaItemM> items) {
+    public void RemoveMediaItems(IList<MediaItemM> items) {
       foreach (var view in _all)
         view.Remove(items, Current == view);
     }
@@ -106,10 +106,10 @@ namespace PictureManager.Domain.DataViews {
       var hide = Keyboard.IsAltOn();
       var recursive = Keyboard.IsShiftOn();
       var items = item switch {
-        RatingTreeM rating => Core.MediaItemsM.DataAdapter.All.Where(x => x.Rating == rating.Rating.Value),
-        PersonM person => Core.MediaItemsM.GetMediaItems(person),
-        KeywordM keyword => Core.MediaItemsM.GetMediaItems(keyword, recursive),
-        GeoNameM geoName => Core.MediaItemsM.GetMediaItems(geoName, recursive),
+        RatingTreeM rating => Core.Db.MediaItems.GetItems(rating.Rating),
+        PersonM person => Core.Db.MediaItems.GetItems(person),
+        KeywordM keyword => Core.Db.MediaItems.GetItems(keyword, recursive),
+        GeoNameM geoName => Core.Db.MediaItems.GetItems(geoName, recursive),
         _ => Array.Empty<MediaItemM>()
       };
 

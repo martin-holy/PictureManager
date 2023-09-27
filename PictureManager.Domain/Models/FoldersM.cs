@@ -203,7 +203,7 @@ public sealed class FoldersM {
         renamed.Remove(filePath);
       }
 
-      Core.MediaItemsM.CopyTo(mi, targetFolder, fileName);
+      Core.Db.MediaItems.ItemCopy(mi, targetFolder, fileName);
     }
 
     // Copy all subFolders
@@ -252,7 +252,7 @@ public sealed class FoldersM {
       // skip if this file was skipped
       if (skipped.Remove(mi.FilePath)) continue;
 
-      Core.MediaItemsM.MoveTo(mi, targetFolder, mi.FileName);
+      Core.Db.MediaItems.ItemMove(mi, targetFolder, mi.FileName);
     }
 
     // Move all subFolders

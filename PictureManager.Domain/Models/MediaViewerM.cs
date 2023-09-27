@@ -131,7 +131,7 @@ namespace PictureManager.Domain.Models {
       if (mediaItem == null) return;
 
       if (!File.Exists(mediaItem.FilePath)) {
-        Core.MediaItemsM.Delete(new List<MediaItemM> { mediaItem });
+        Core.Db.MediaItems.ItemsDelete(new[] { mediaItem });
         return;
       }
 

@@ -96,7 +96,7 @@ namespace PictureManager.Domain.DataViews {
       SelectionChanged();
     }
 
-    public void Remove(List<MediaItemM> items, bool isCurrent) {
+    public void Remove(IList<MediaItemM> items, bool isCurrent) {
       var needReload = false;
 
       foreach (var item in items) {
@@ -171,11 +171,11 @@ namespace PictureManager.Domain.DataViews {
           select Path.GetFileName(file)
           into fileName
           where !mediaItems.Remove(fileName)
-          select new MediaItemMetadata(Core.MediaItemsM.AddNew(folder, fileName)));
+          select new MediaItemMetadata(Core.Db.MediaItems.ItemCreate(folder, fileName)));
 
         // remove MediaItems deleted outside of this application
         foreach (var mi in mediaItems.Values)
-          Core.MediaItemsM.Delete(mi);
+          Core.MediaItemsM.DataAdapter.ItemDelete(mi);
 
         toLoad.AddRange(folder.MediaItems);
       }
@@ -212,7 +212,7 @@ namespace PictureManager.Domain.DataViews {
         if (mim.Success)
           mim.FindRefs();
         else
-          Core.MediaItemsM.Delete(mim.MediaItem);
+          Core.MediaItemsM.DataAdapter.ItemDelete(mim.MediaItem);
 
       IsImporting = false;
       IsLoading = true;

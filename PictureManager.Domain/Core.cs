@@ -104,7 +104,7 @@ public sealed class Core {
 
     Db.Folders.ItemDeletedEvent += (_, e) => {
       Db.FavoriteFolders.ItemDeleteByFolder(e.Data);
-      MediaItemsM.Delete(e.Data.MediaItems.ToList());
+      Db.MediaItems.ItemsDelete(e.Data.MediaItems.ToArray());
     };
 
     #region PeopleM EventHandlers
@@ -149,11 +149,15 @@ public sealed class Core {
 
     #region MediaItemsM EventHandlers
 
-    MediaItemsM.MediaItemDeletedEventHandler += (_, e) => {
+    Db.MediaItems.ItemRenamedEvent += (_, _) => {
+      MediaItemsViews.Current?.SoftLoad(MediaItemsViews.Current.FilteredItems, true, false);
+    };
+
+    Db.MediaItems.ItemDeletedEvent += (_, e) => {
       SegmentsM.Delete(e.Data.Segments);
     };
 
-    MediaItemsM.MediaItemsDeletedEventHandler += (_, e) => {
+    Db.MediaItems.ItemsDeletedEvent += (_, e) => {
       MediaItemsViews.RemoveMediaItems(e.Data);
 
       if (MediaViewerM.IsVisible) {

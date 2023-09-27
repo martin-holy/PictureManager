@@ -65,7 +65,7 @@ namespace PictureManager.Domain.Dialogs {
       var mi = folder?.GetMediaItemByName(fileName);
       
       if (mi == null)
-        mi = Core.MediaItemsM.AddNew(folder, fileName);
+        mi = Core.Db.MediaItems.ItemCreate(folder, fileName);
 
       var mim = new MediaItemMetadata(mi);
       Core.MediaItemsM.ReadMetadata(mim, false);
