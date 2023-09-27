@@ -50,7 +50,7 @@ namespace PictureManager.Domain.Models {
       _startY = y;
       _editMode = SegmentEditMode.ResizeEdge;
       _isCurrentModified = true;
-      Current = new(SegmentsM.AddNewSegment(x, y, 0, MediaItem), Scale);
+      Current = new(SegmentsM.DataAdapter.ItemCreate(x, y, 0, MediaItem), Scale);
       SegmentsM.Select(null, Current.Segment, false, false);
       MediaItemSegmentsRects.Add(Current);
     }
@@ -198,7 +198,7 @@ namespace PictureManager.Domain.Models {
         Res.IconQuestion,
         true)) != 1) return;
 
-      SegmentsM.Delete(item.Segment);
+      SegmentsM.DataAdapter.ItemDelete(item.Segment);
       MediaItemSegmentsRects.Remove(item);
     }
 

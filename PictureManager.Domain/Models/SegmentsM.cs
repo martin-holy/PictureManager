@@ -28,10 +28,7 @@ public sealed class SegmentsM : ObservableObject {
     
   public CanDragFunc CanDragFunc { get; }
 
-  public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangeEventHandler = delegate { };
   public event EventHandler<ObjectEventArgs<(SegmentM[], PersonM[])>> SegmentsPersonChangedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<(SegmentM[], KeywordM)>> SegmentsKeywordChangedEvent = delegate { };
-  public event EventHandler<ObjectEventArgs<SegmentM>> SegmentDeletedEventHandler = delegate { };
 
   public RelayCommand<object> SetSelectedAsSamePersonCommand { get; }
   public RelayCommand<object> SetSelectedAsUnknownCommand { get; }
@@ -43,6 +40,9 @@ public sealed class SegmentsM : ObservableObject {
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
 
+    DataAdapter.ItemCreatedEvent += OnItemCreated;
+    DataAdapter.ItemDeletedEvent += OnItemDeleted;
+
     SetSelectedAsSamePersonCommand = new(SetSelectedAsSamePerson);
     SetSelectedAsUnknownCommand = new(SetSelectedAsUnknown, () => Selected.Items.Count > 0);
     ViewMediaItemsWithSegmentCommand = new(ViewMediaItemsWithSegment);
@@ -51,6 +51,21 @@ public sealed class SegmentsM : ObservableObject {
       () => Core.MediaItemsViews.Current?.FilteredItems.Count > 0);
 
     CanDragFunc = CanDrag;
+  }
+
+  private void OnItemCreated(object sender, ObjectEventArgs<SegmentM> e) =>
+    SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, false);
+
+  private void OnItemDeleted(object sender, ObjectEventArgs<SegmentM> e) {
+    Selected.Set(e.Data, false);
+
+    try {
+      if (File.Exists(e.Data.FilePathCache))
+        File.Delete(e.Data.FilePathCache);
+    }
+    catch (Exception ex) {
+      Log.Error(ex);
+    }
   }
 
   public void Select(List<SegmentM> segments, SegmentM segment, bool isCtrlOn, bool isShiftOn) {
@@ -87,23 +102,6 @@ public sealed class SegmentsM : ObservableObject {
       ? Selected.Items.ToArray()
       : new[] { one };
 
-  public SegmentM AddNewSegment(double x, double y, int size, MediaItemM mediaItem) {
-    var newSegment = new SegmentM(DataAdapter.GetNextId(), x, y, size) { MediaItem = mediaItem };
-    mediaItem.Segments ??= new();
-    mediaItem.Segments.Add(newSegment);
-    DataAdapter.All.Add(newSegment);
-    SegmentsView?.CvSegments.ReGroupItems(new[] { newSegment }, false);
-
-    return newSegment;
-  }
-
-  public SegmentM GetCopy(SegmentM s) =>
-    new(DataAdapter.GetNextId(), s.X, s.Y, s.Size) {
-      MediaItem = s.MediaItem,
-      Person = s.Person,
-      Keywords = s.Keywords?.ToList()
-    };
-
   /// <summary>
   /// Sets new Person to all Segments that are selected 
   /// or that have the same Person (with id less than 0) as some of the selected.
@@ -129,10 +127,9 @@ public sealed class SegmentsM : ObservableObject {
     Core.PeopleM.MergePeople(person, unknownPeople.ToArray());
 
     foreach (var segment in segments)
-      ChangePerson(segment, person);
+      DataAdapter.ChangePerson(segment, person);
 
     Selected.DeselectAll();
-
     SegmentsPersonChangedEvent(this, new((segments, people)));
   }
 
@@ -193,7 +190,7 @@ public sealed class SegmentsM : ObservableObject {
     var affectedPeople = people.Concat(new[] { newPerson }).Distinct().ToArray();
 
     foreach (var segment in toUpdate)
-      ChangePerson(segment, newPerson);
+      DataAdapter.ChangePerson(segment, newPerson);
 
     Selected.DeselectAll();
     Core.PeopleM.Selected.DeselectAll();
@@ -224,69 +221,10 @@ public sealed class SegmentsM : ObservableObject {
       .Distinct()
       .ToArray();
     foreach (var segment in segments)
-      ChangePerson(segment, null);
+      DataAdapter.ChangePerson(segment, null);
 
     Selected.DeselectAll();
     SegmentsPersonChangedEvent(this, new((segments, people)));
-  }
-
-  private void ToggleKeyword(SegmentM segment, KeywordM keyword) {
-    segment.Keywords = KeywordsM.Toggle(segment.Keywords, keyword);
-    DataAdapter.IsModified = true;
-  }
-
-  private void ToggleKeyword(SegmentM[] segments, KeywordM keyword) {
-    foreach (var segment in segments)
-      ToggleKeyword(segment, keyword);
-
-    SegmentsKeywordChangedEvent(this, new((segments, keyword)));
-  }
-
-  public void RemoveKeywordFromSegments(KeywordM keyword) =>
-    ToggleKeyword(DataAdapter.All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
-
-  public void ToggleKeywordOnSelected(KeywordM keyword) =>
-    ToggleKeyword(Selected.Items.ToArray(), keyword);
-
-  public void RemovePersonFromSegments(PersonM person) {
-    foreach (var segment in DataAdapter.All.Where(s => s.Person?.Equals(person) == true)) {
-      segment.Person = null;
-      DataAdapter.IsModified = true;
-    }
-  }
-
-  private void ChangePerson(SegmentM segment, PersonM person) {
-    SegmentPersonChangeEventHandler(this, new((segment, segment.Person, person)));
-    segment.Person = person;
-    segment.MediaItem.SetInfoBox();
-    DataAdapter.IsModified = true;
-  }
-
-  public void Delete(IEnumerable<SegmentM> segments) {
-    if (segments == null) return;
-    foreach (var segment in segments.ToArray())
-      Delete(segment);
-  }
-
-  public void Delete(SegmentM segment) {
-    DataAdapter.All.Remove(segment);
-    SegmentDeletedEventHandler(this, new(segment));
-    Selected.Set(segment, false);
-    ChangePerson(segment, null);
-
-    // remove Segment from MediaItem
-    if (segment.MediaItem.Segments.Remove(segment) && !segment.MediaItem.Segments.Any())
-      segment.MediaItem.Segments = null;
-
-    try {
-      if (File.Exists(segment.FilePathCache))
-        File.Delete(segment.FilePathCache);
-
-      segment.MediaItem = null;
-    }
-    catch (Exception ex) {
-      Log.Error(ex);
-    }
   }
 
   public List<MediaItemM> GetMediaItemsWithSegment(SegmentM segmentM) {

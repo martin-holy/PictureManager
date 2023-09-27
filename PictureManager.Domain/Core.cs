@@ -115,7 +115,7 @@ public sealed class Core {
 
     Db.People.ItemDeletedEvent  += (_, e) => {
       MediaItemsM.RemovePersonFromMediaItems(e.Data);
-      SegmentsM.RemovePersonFromSegments(e.Data);
+      Db.Segments.RemovePersonFromSegments(e.Data);
 
       if (ReferenceEquals(PeopleM.PersonDetail?.PersonM, e.Data))
         ToolsTabsM.Close(PeopleM.PersonDetail);
@@ -141,7 +141,7 @@ public sealed class Core {
 
     Db.Keywords.ItemDeletedEvent += (_, e) => {
       PeopleM.RemoveKeywordFromPeople(e.Data);
-      SegmentsM.RemoveKeywordFromSegments(e.Data);
+      Db.Segments.RemoveKeywordFromSegments(e.Data);
       MediaItemsM.RemoveKeywordFromMediaItems(e.Data);
     };
 
@@ -154,7 +154,7 @@ public sealed class Core {
     };
 
     Db.MediaItems.ItemDeletedEvent += (_, e) => {
-      SegmentsM.Delete(e.Data.Segments);
+      Db.Segments.ItemsDelete(e.Data.Segments);
     };
 
     Db.MediaItems.ItemsDeletedEvent += (_, e) => {
@@ -222,8 +222,8 @@ public sealed class Core {
 
     #region SegmentsM EventHandlers
 
-    SegmentsM.SegmentPersonChangeEventHandler += (_, e) => {
-      PeopleM.SegmentPersonChange(e.Data.Item1, e.Data.Item2, e.Data.Item3);
+    Db.Segments.SegmentPersonChangedEvent += (_, e) => {
+      PeopleM.OnSegmentPersonChanged(e.Data.Item1, e.Data.Item2, e.Data.Item3);
     };
 
     SegmentsM.SegmentsPersonChangedEvent += (_, e) => {
@@ -238,12 +238,13 @@ public sealed class Core {
         MediaViewerM.Current?.SetInfoBox();
     };
 
-    SegmentsM.SegmentsKeywordChangedEvent += (_, e) => {
+    Db.Segments.SegmentsKeywordChangedEvent += (_, e) => {
       PeopleM.PersonDetail?.ReGroupIfContains(e.Data.Item1, false);
       SegmentsM.SegmentsView?.CvSegments.ReGroupItems(e.Data.Item1, false);
     };
 
-    SegmentsM.SegmentDeletedEventHandler += (_, e) => {
+    Db.Segments.ItemDeletedEvent += (_, e) => {
+      PeopleM.OnSegmentPersonChanged(e.Data, e.Data.Person, null);
       PeopleM.PersonDetail?.ReGroupIfContains(new[] { e.Data }, true);
       SegmentsM.SegmentsDrawerM.Remove(e.Data);
       SegmentsM.SegmentsView?.CvSegments.ReGroupItems(new[] { e.Data }, true);
