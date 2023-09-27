@@ -1,4 +1,5 @@
-﻿using MH.Utils.Extensions;
+﻿using MH.Utils.BaseClasses;
+using MH.Utils.Extensions;
 using PictureManager.Domain;
 using System;
 using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace PictureManager {
         x => x,
         null);
       progress.Start();
-      Core.DialogHostShow(progress);
+      Dialog.Show(progress);
     }
 
     public static void CommentChars() {

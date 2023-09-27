@@ -15,7 +15,7 @@ namespace PictureManager {
       base.OnStartup(e);
 
       AppDomain.CurrentDomain.UnhandledException += delegate (object _, UnhandledExceptionEventArgs args) {
-        Core.DialogHostShow(new ErrorDialogM((Exception)args.ExceptionObject));
+        Dialog.Show(new ErrorDialogM((Exception)args.ExceptionObject));
       };
 
       CommandManager.RequerySuggested += RelayCommand.InvokeCanExecuteChanged;
