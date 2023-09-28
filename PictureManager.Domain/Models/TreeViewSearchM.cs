@@ -70,7 +70,7 @@ namespace PictureManager.Domain.Models {
       result.AddRange(Core.Db.FolderKeywords.All2
         .Where(x => x.Name.Contains(SearchText, StringComparison.CurrentCultureIgnoreCase)
                 && x.Folders.All(f => Core.ViewersM.CanViewerSee(f)))
-        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.FolderKeywordsTreeCategory)));
+        .Select(x => new TreeViewSearchItemM(Res.IconFolderPuzzle, x.Name, x, x.FullPath, Core.Db.FolderKeywords.Model)));
       AddToSearchResult(result);
     }
   }

@@ -13,11 +13,11 @@ public sealed class TreeViewCategoriesM : TabControl {
 
   public void AddCategories() {
     Tabs.Clear();
-    AddCategory(Core.FavoriteFoldersTreeCategory);
+    AddCategory(Core.Db.FavoriteFolders.Model);
     AddCategory(Core.FoldersM.TreeCategory);
     AddCategory(Core.RatingsTreeCategory);
     AddCategory(Core.PeopleM.TreeCategory);
-    AddCategory(Core.FolderKeywordsTreeCategory);
+    AddCategory(Core.Db.FolderKeywords.Model);
     AddCategory(Core.KeywordsM.TreeCategory);
     AddCategory(Core.GeoNamesM.TreeCategory);
     AddCategory(Core.ViewersM.TreeCategory);

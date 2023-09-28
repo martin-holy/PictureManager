@@ -1,4 +1,5 @@
 ﻿using MH.Utils;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.TreeCategories;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,11 @@ using System.Linq;
 namespace PictureManager.Domain.Models;
 
 public sealed class KeywordsM {
-  public KeywordsTreeCategory TreeCategory { get; } = new();
+  public KeywordsTreeCategory TreeCategory { get; }
+
+  public KeywordsM(KeywordsDataAdapter da) {
+    TreeCategory = new(da);
+  }
 
   // TODO refactor using Items and not All
   public KeywordM GetByFullPath(string fullPath) {

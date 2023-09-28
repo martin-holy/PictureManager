@@ -35,8 +35,8 @@ public sealed class SegmentsM : ObservableObject {
   public RelayCommand<SegmentM> ViewMediaItemsWithSegmentCommand { get; }
   public RelayCommand<object> OpenSegmentsViewCommand { get; }
 
-  public SegmentsM() {
-    DataAdapter = Core.Db.Segments = new(this);
+  public SegmentsM(SegmentsDataAdapter da) {
+    DataAdapter = da;
     SegmentsRectsM = new(this);
     SegmentsDrawerM = new(this);
 

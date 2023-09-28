@@ -1,15 +1,15 @@
 ﻿using MH.UI.BaseClasses;
 using MH.Utils;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
 using System.Linq;
 
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class VideoClipsTreeCategory : TreeCategory<VideoClipM, VideoClipsGroupM> {
-  public VideoClipsTreeCategory() : base(Res.IconMovieClapper, "Clips", (int)Category.VideoClips) {
-    DataAdapter = Core.Db.VideoClips;
-    GroupDataAdapter = Core.Db.VideoClipsGroups;
+  public VideoClipsTreeCategory(VideoClipsDataAdapter da) : base(Res.IconMovieClapper, "Clips", (int)Category.VideoClips) {
+    DataAdapter = da;
     IsExpanded = true;
     CanMoveItem = true;
 

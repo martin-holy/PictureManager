@@ -3,18 +3,33 @@
 namespace PictureManager.Domain.Database;
 
 public sealed class Db : SimpleDB {
-  public CategoryGroupsDataAdapter CategoryGroups { get; set; }
-  public FavoriteFoldersDataAdapter FavoriteFolders { get; set; }
-  public FolderKeywordsDataAdapter FolderKeywords { get; set; }
-  public FoldersDataAdapter Folders { get; set; }
-  public GeoNamesDataAdapter GeoNames { get; set; }
-  public KeywordsDataAdapter Keywords { get; set; }
-  public MediaItemsDataAdapter MediaItems { get; set; }
-  public PeopleDataAdapter People { get; set; }
-  public SegmentsDataAdapter Segments { get; set; }
-  public VideoClipsDataAdapter VideoClips { get; set; }
-  public VideoClipsGroupsDataAdapter VideoClipsGroups { get; set; }
-  public ViewersDataAdapter Viewers { get; set; }
+  public CategoryGroupsDataAdapter CategoryGroups { get; }
+  public FavoriteFoldersDataAdapter FavoriteFolders { get; }
+  public FolderKeywordsDataAdapter FolderKeywords { get; }
+  public FoldersDataAdapter Folders { get; }
+  public GeoNamesDataAdapter GeoNames { get; }
+  public KeywordsDataAdapter Keywords { get; }
+  public MediaItemsDataAdapter MediaItems { get; }
+  public PeopleDataAdapter People { get; }
+  public SegmentsDataAdapter Segments { get; }
+  public VideoClipsDataAdapter VideoClips { get; }
+  public VideoClipsGroupsDataAdapter VideoClipsGroups { get; }
+  public ViewersDataAdapter Viewers { get; }
+
+  public Db() {
+    CategoryGroups = new();
+    FavoriteFolders = new(this);
+    FolderKeywords = new(this);
+    Folders = new();
+    GeoNames = new();
+    Keywords = new(this);
+    MediaItems = new(this);
+    People = new(this);
+    Segments = new(this);
+    VideoClips = new(this);
+    VideoClipsGroups = new(this, VideoClips.Model);
+    Viewers = new(this);
+  }
 
   public void AddDataAdapters() {
     AddDataAdapter(CategoryGroups);

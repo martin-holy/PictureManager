@@ -13,9 +13,15 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Folder|FileName|Width|Height|Orientation|Rating|Comment|GeoName|People|Keywords|IsOnlyInDb
 /// </summary>
 public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
+  private readonly Db _db;
+
+  public MediaItemsM Model { get; }
   public event EventHandler<ObjectEventArgs<MediaItemM>> ItemRenamedEvent = delegate { };
 
-  public MediaItemsDataAdapter() : base("MediaItems", 12) { }
+  public MediaItemsDataAdapter(Db db) : base("MediaItems", 12) {
+    _db = db;
+    Model = new(this);
+  }
 
   private void RaiseItemRenamed(MediaItemM item) => ItemRenamedEvent(this, new(item));
 
@@ -58,18 +64,18 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
   public override void LinkReferences() {
     foreach (var (mi, csv) in AllCsv) {
       // reference to Folder and back reference from Folder to MediaItems
-      mi.Folder = Core.Db.Folders.AllDict[int.Parse(csv[1])];
+      mi.Folder = _db.Folders.AllDict[int.Parse(csv[1])];
       mi.Folder.MediaItems.Add(mi);
 
       // reference to People
-      mi.People = LinkList(csv[9], Core.Db.People.AllDict);
+      mi.People = LinkList(csv[9], _db.People.AllDict);
 
       // reference to Keywords
-      mi.Keywords = LinkList(csv[10], Core.Db.Keywords.AllDict);
+      mi.Keywords = LinkList(csv[10], _db.Keywords.AllDict);
 
       // reference to GeoName
       if (!string.IsNullOrEmpty(csv[8]))
-        mi.GeoName = Core.Db.GeoNames.AllDict[int.Parse(csv[8])];
+        mi.GeoName = _db.GeoNames.AllDict[int.Parse(csv[8])];
     }
   }
 
@@ -139,7 +145,7 @@ public sealed class MediaItemsDataAdapter : DataAdapter<MediaItemM> {
 
     if (item.Segments != null)
       foreach (var segment in item.Segments)
-        Core.Db.Segments.ItemCopy(segment, copy);
+        _db.Segments.ItemCopy(segment, copy);
 
     copy.Folder.MediaItems.Add(copy);
     All.Add(copy);

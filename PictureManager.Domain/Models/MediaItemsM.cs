@@ -49,8 +49,8 @@ public sealed class MediaItemsM : ObservableObject {
   public RelayCommand<FolderM> ReloadMetadataInFolderCommand { get; }
   public RelayCommand<object> RebuildThumbnailsCommand { get; }
 
-  public MediaItemsM() {
-    DataAdapter = Core.Db.MediaItems = new();
+  public MediaItemsM(MediaItemsDataAdapter da) {
+    DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
     DataAdapter.ItemRenamedEvent += OnItemRenamed;
     DataAdapter.ItemDeletedEvent += OnItemDeleted;

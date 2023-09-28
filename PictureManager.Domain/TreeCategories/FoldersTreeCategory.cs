@@ -3,6 +3,7 @@ using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Dialogs;
 using MH.Utils.Interfaces;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,9 @@ using System.Linq;
 namespace PictureManager.Domain.TreeCategories;
 
 public sealed class FoldersTreeCategory : TreeCategory<FolderM> {
-  public FoldersTreeCategory() : base(Res.IconFolder, "Folders", (int)Category.Folders) {
-    DataAdapter = Core.Db.Folders = new(this);
+  public FoldersTreeCategory(FoldersDataAdapter da) :
+    base(Res.IconFolder, "Folders", (int)Category.Folders) {
+    DataAdapter = da;
     DataAdapter.ItemCreatedEvent += OnItemCreated;
     DataAdapter.ItemRenamedEvent += OnItemRenamed;
 

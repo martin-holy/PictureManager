@@ -11,13 +11,15 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|MediaItemId|PersonId|SegmentBox|Keywords
 /// </summary>
 public class SegmentsDataAdapter : DataAdapter<SegmentM> {
-  private readonly SegmentsM _model;
+  private readonly Db _db;
 
+  public SegmentsM Model { get; }
   public event EventHandler<ObjectEventArgs<(SegmentM, PersonM, PersonM)>> SegmentPersonChangedEvent = delegate { };
   public event EventHandler<ObjectEventArgs<(SegmentM[], KeywordM)>> SegmentsKeywordChangedEvent = delegate { };
 
-  public SegmentsDataAdapter(SegmentsM model) : base("Segments", 5) {
-    _model = model;
+  public SegmentsDataAdapter(Db db) : base("Segments", 5) {
+    _db = db;
+    Model = new(this);
   }
 
   public override void Save() =>
@@ -45,14 +47,14 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
   public override void PropsToCsv() {
     TableProps.Clear();
     TableProps.Add(nameof(SegmentsM.SegmentSize), SegmentsM.SegmentSize.ToString());
-    TableProps.Add("SegmentsDrawer", string.Join(",", _model.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
+    TableProps.Add("SegmentsDrawer", string.Join(",", Model.SegmentsDrawerM.Items.Select(x => x.GetHashCode().ToString())));
   }
 
   public override void LinkReferences() {
     var withoutMediaItem = new List<SegmentM>();
 
     foreach (var (segment, csv) in AllCsv) {
-      if (Core.Db.MediaItems.AllDict.TryGetValue(int.Parse(csv[1]), out var mi)) {
+      if (_db.MediaItems.AllDict.TryGetValue(int.Parse(csv[1]), out var mi)) {
         segment.MediaItem = mi;
         mi.Segments ??= new();
         mi.Segments.Add(segment);
@@ -60,11 +62,11 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
         var personId = int.Parse(csv[2]);
 
         if (personId != 0) {
-          if (!Core.Db.People.AllDict.TryGetValue(personId, out var person)) {
+          if (!_db.People.AllDict.TryGetValue(personId, out var person)) {
             // this needs to stay because not all segments have to be loaded
             // (segments from other drives)
             person = new(personId, $"P {personId}");
-            Core.Db.People.AllDict.Add(person.GetHashCode(), person);
+            _db.People.AllDict.Add(person.GetHashCode(), person);
           }
 
           segment.Person = person;
@@ -76,7 +78,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
       }
 
       // reference to Keywords
-      segment.Keywords = LinkList(csv[4], Core.Db.Keywords.AllDict);
+      segment.Keywords = LinkList(csv[4], _db.Keywords.AllDict);
     }
 
     // in case MediaItem was deleted
@@ -88,7 +90,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
     if (TableProps.TryGetValue(nameof(SegmentsM.SegmentSize), out var segmentSize))
       SegmentsM.SegmentSize = int.Parse(segmentSize);
     if (TableProps.TryGetValue("SegmentsDrawer", out var segmentsDrawer) && !string.IsNullOrEmpty(segmentsDrawer)) {
-      _model.SegmentsDrawerM.Items.Clear();
+      Model.SegmentsDrawerM.Items.Clear();
 
       var drawer = segmentsDrawer
         .Split(',')
@@ -97,7 +99,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
         .ThenBy(x => x.MediaItem.FileName);
 
       foreach (var segment in drawer)
-        _model.SegmentsDrawerM.Items.Add(segment);
+        Model.SegmentsDrawerM.Items.Add(segment);
     }
 
     // table props are not needed any more
@@ -170,7 +172,7 @@ public class SegmentsDataAdapter : DataAdapter<SegmentM> {
     ToggleKeyword(All.Where(x => x.Keywords?.Contains(keyword) == true).ToArray(), keyword);
 
   public void ToggleKeywordOnSelected(KeywordM keyword) =>
-    ToggleKeyword(_model.Selected.Items.ToArray(), keyword);
+    ToggleKeyword(Model.Selected.Items.ToArray(), keyword);
 
   public void ChangePerson(SegmentM segment, PersonM person) {
     var oldPerson = segment.Person;

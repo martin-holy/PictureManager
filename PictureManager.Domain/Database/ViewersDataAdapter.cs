@@ -10,19 +10,22 @@ namespace PictureManager.Domain.Database;
 /// DB fields: ID|Name|IncludedFolders|ExcludedFolders|ExcludedCategoryGroups|ExcludedKeywords|IsDefault
 /// </summary>
 public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
-  private readonly ViewersM _model;
+  private readonly Db _db;
 
-  public ViewersDataAdapter(ViewersM model) : base("Viewers", 7) {
-    _model = model;
+  public ViewersM Model { get; }
+
+  public ViewersDataAdapter(Db db) : base("Viewers", 7) {
+    _db = db;
+    Model = new(this);
   }
 
   public override ViewerM FromCsv(string[] csv) {
-    var viewer = new ViewerM(int.Parse(csv[0]), csv[1], _model.TreeCategory) {
+    var viewer = new ViewerM(int.Parse(csv[0]), csv[1], Model.TreeCategory) {
       IsDefault = csv[6] == "1"
     };
 
     if (viewer.IsDefault)
-      _model.Current = viewer;
+      Model.Current = viewer;
 
     return viewer;
   }
@@ -40,13 +43,13 @@ public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
         : string.Empty);
 
   public override void LinkReferences() {
-    _model.TreeCategory.Items.Clear();
+    Model.TreeCategory.Items.Clear();
 
     foreach (var (viewer, csv) in AllCsv.OrderBy(x => x.Item1.Name)) {
       // reference to IncludedFolders
       if (!string.IsNullOrEmpty(csv[2]))
         foreach (var folderId in csv[2].Split(',').Select(int.Parse)) {
-          var f = Core.Db.Folders.AllDict.TryGetValue(folderId, out var incF)
+          var f = _db.Folders.AllDict.TryGetValue(folderId, out var incF)
             ? incF
             : new(folderId, "?", null);
           viewer.IncludedFolders.SetInOrder(f, x => x.FullPath);
@@ -55,7 +58,7 @@ public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
       // reference to ExcludedFolders
       if (!string.IsNullOrEmpty(csv[3]))
         foreach (var folderId in csv[3].Split(',').Select(int.Parse)) {
-          var f = Core.Db.Folders.AllDict.TryGetValue(folderId, out var excF)
+          var f = _db.Folders.AllDict.TryGetValue(folderId, out var excF)
             ? excF
             : new(folderId, "?", null);
           viewer.ExcludedFolders.SetInOrder(f, x => x.FullPath);
@@ -64,21 +67,21 @@ public class ViewersDataAdapter : TreeDataAdapter<ViewerM> {
       // ExcludedCategoryGroups
       if (!string.IsNullOrEmpty(csv[4]))
         foreach (var groupId in csv[4].Split(','))
-          viewer.ExcludedCategoryGroups.Add(Core.Db.CategoryGroups.AllDict[int.Parse(groupId)]);
+          viewer.ExcludedCategoryGroups.Add(_db.CategoryGroups.AllDict[int.Parse(groupId)]);
 
       // ExcKeywords
       if (!string.IsNullOrEmpty(csv[5]))
         foreach (var keywordId in csv[5].Split(','))
-          viewer.ExcludedKeywords.Add(Core.Db.Keywords.AllDict[int.Parse(keywordId)]);
+          viewer.ExcludedKeywords.Add(_db.Keywords.AllDict[int.Parse(keywordId)]);
 
       // adding Viewer to Viewers
-      _model.TreeCategory.Items.Add(viewer);
+      Model.TreeCategory.Items.Add(viewer);
     }
 
-    _model.Current?.UpdateHashSets();
+    Model.Current?.UpdateHashSets();
 
-    foreach (var group in Core.Db.CategoryGroups.AllDict.Values)
-      group.IsHidden = _model.Current?.ExcludedCategoryGroups.Contains(group) == true;
+    foreach (var group in _db.CategoryGroups.AllDict.Values)
+      group.IsHidden = Model.Current?.ExcludedCategoryGroups.Contains(group) == true;
   }
 
   public override ViewerM ItemCreate(ITreeItem parent, string name) =>

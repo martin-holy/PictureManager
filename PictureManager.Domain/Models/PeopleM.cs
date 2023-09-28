@@ -1,6 +1,7 @@
 ﻿using MH.Utils;
 using MH.Utils.BaseClasses;
 using MH.Utils.Extensions;
+using PictureManager.Domain.Database;
 using PictureManager.Domain.DataViews;
 using PictureManager.Domain.TreeCategories;
 using System;
@@ -10,6 +11,8 @@ using System.Linq;
 namespace PictureManager.Domain.Models;
 
 public sealed class PeopleM {
+  private readonly PeopleDataAdapter _da;
+
   public PeopleTreeCategory TreeCategory { get; }
   public PeopleView PeopleView { get; private set; }
   public PeopleToolsTabM PeopleToolsTabM { get; private set; }
@@ -20,8 +23,9 @@ public sealed class PeopleM {
 
   public event EventHandler<ObjectEventArgs<PersonM[]>> PeopleKeywordChangedEvent = delegate { };
 
-  public PeopleM() {
-    TreeCategory = new(this);
+  public PeopleM(PeopleDataAdapter da) {
+    _da = da;
+    TreeCategory = new(this, _da);
     OpenPeopleToolsTabCommand = new(OpenPeopleToolsTab);
     OpenPersonDetailCommand = new(OpenPersonDetail);
   }
@@ -58,7 +62,7 @@ public sealed class PeopleM {
     if (oldPerson.TopSegments?.Contains(segment) != true) return;
 
     oldPerson.TopSegments = ObservableCollectionExtensions.Toggle(oldPerson.TopSegments, segment, true);
-    Core.Db.People.IsModified = true;
+    _da.IsModified = true;
   }
 
   public void ToggleTopSegment(PersonM person, SegmentM segment) {
@@ -73,13 +77,13 @@ public sealed class PeopleM {
     if (person.TopSegments?.Count > 0)
       person.Segment = (SegmentM)person.TopSegments[0];
 
-    Core.Db.People.IsModified = true;
+    _da.IsModified = true;
   }
 
   private void ToggleKeyword(PersonM person, KeywordM keyword) {
     person.Keywords = ListExtensions.Toggle(person.Keywords, keyword, true);
     person.UpdateDisplayKeywords();
-    Core.Db.People.IsModified = true;
+    _da.IsModified = true;
   }
 
   private void ToggleKeyword(IEnumerable<PersonM> people, KeywordM keyword) {
@@ -91,7 +95,7 @@ public sealed class PeopleM {
   }
 
   public void RemoveKeywordFromPeople(KeywordM keyword) =>
-    ToggleKeyword(Core.Db.People.All
+    ToggleKeyword(_da.All
       .Where(x => x.Keywords?.Contains(keyword) == true), keyword);
 
   public void ToggleKeywordOnSelected(KeywordM keyword) =>
@@ -164,9 +168,9 @@ public sealed class PeopleM {
       PersonDetail?.Reload(person);
 
     foreach (var oldPerson in people)
-      Core.Db.People.All.Remove(oldPerson);
+      _da.All.Remove(oldPerson);
 
-    Core.Db.People.RaisePeopleDeleted(new(people));
+    _da.RaisePeopleDeleted(new(people));
   }
 
   public static PersonM[] GetFromMediaItems(MediaItemM[] mediaItems) =>
